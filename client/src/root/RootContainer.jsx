@@ -4,11 +4,9 @@ import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   return {
-    showLeft: state.ui.layout.showLeft,
     leftOpen: state.ui.layout.leftOpen,
     showRight: state.ui.layout.showRight,
     featuresEnabled: state.domain.config.featuresEnabled,
-    authEnabled: !!state.domain.config.auth,
   }
 }
 
@@ -17,7 +15,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 const RootContainer = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(Root)
+    connect(mapStateToProps, mapDispatchToProps)(Root)
 )
 
 export default RootContainer

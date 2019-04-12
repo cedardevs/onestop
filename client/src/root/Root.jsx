@@ -11,6 +11,8 @@ import MapContainer from '../search/map/MapContainer'
 import FiltersContainer from '../filter/FiltersContainer'
 import FiltersHiddenContainer from '../filter/FiltersHiddenContainer'
 
+import GranuleFiltersContainer from '../filter/granules/GranuleFiltersContainer'
+
 import Result from '../result/Result'
 import CollectionsContainer from '../result/collections/CollectionsContainer'
 import GranuleListContainer from '../result/granules/GranuleListContainer'
@@ -76,133 +78,162 @@ export default class Root extends Component {
 
   unsupportedBrowserWarning() {
     const wikiUrl =
-      'https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers'
+        'https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers'
     return (
-      <aside role="alert" style={styleBrowserWarning}>
+        <aside role="alert" style={styleBrowserWarning}>
         <span
-          style={styleClose}
-          onClick={() => {
-            this.setState({browserWarning: false})
-          }}
+            style={styleClose}
+            onClick={() => {
+              this.setState({browserWarning: false})
+            }}
         >
           x
         </span>
-        <p style={styleBrowserWarningParagraph}>
-          The browser that you are using to view this page is not currently
-          supported. For a list of currently supported & tested browsers, please
-          visit the
-          <span>
+          <p style={styleBrowserWarningParagraph}>
+            The browser that you are using to view this page is not currently
+            supported. For a list of currently supported & tested browsers, please
+            visit the
+            <span>
             {' '}
-            <a style={styleBrowserWarningLink} href={wikiUrl}>
+              <a style={styleBrowserWarningLink} href={wikiUrl}>
               OneStop Documentation
             </a>
           </span>
-        </p>
-      </aside>
+          </p>
+        </aside>
     )
   }
 
   render() {
     const {
-      showLeft,
       leftOpen,
       showRight,
       featuresEnabled,
-      authEnabled,
     } = this.props
 
     const header = (
-      <div>
-        <BannerContainer />
-        <Route path="/">
-          <HeaderContainer />
-        </Route>
-        {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
-      </div>
+        <div>
+          <BannerContainer />
+          <Route path="/">
+            <HeaderContainer />
+          </Route>
+          {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
+        </div>
     )
 
-    const left = leftOpen ? <FiltersContainer /> : <FiltersHiddenContainer />
     const leftWidth = leftOpen ? '20em' : '2em'
+    const collectionFilter = leftOpen ? <FiltersContainer/> : <FiltersHiddenContainer/>
+    const granuleFilter = leftOpen ? <GranuleFiltersContainer/> : <FiltersHiddenContainer/>
+
+    const left = (
+        <div style={{width: '100%'}}>
+          <Switch>
+            <Route path={ROUTE.search.path} exact>
+              {collectionFilter}
+            </Route>
+            <Route path={"/collections/granules/AWn-RRV8eqb5xjJcfGTW?q=co-ops"}>
+              {granuleFilter}
+            </Route>
+            <Route>
+              <div>fallback</div>
+            </Route>
+          </Switch>
+        </div>
+    )
+    // const left = (
+    //     <Switch>
+    //
+    //       <Route path={ROUTE.search.path}>
+    //         {collectionFilter}
+    //       </Route>
+    //       <Route path={ROUTE.granules.parameterized}>
+    //         <div>GRANULE FILTER</div>
+    //       </Route>
+    //     </Switch>
+    // )
+
+    console.log("leftOpen", leftOpen)
+
     const cart = featuresEnabled.includes(FEATURE_CART) ? (
-      <Route path={ROUTE.cart.path}>
-        <CartContainer />
-      </Route>
+        <Route path={ROUTE.cart.path}>
+          <CartContainer />
+        </Route>
     ) : null
 
     const middle = (
-      <div style={{width: '100%'}}>
-        <Switch>
-          <Route path="/" exact />
-          <Route path="/">
-            <LoadingBarContainer />
-          </Route>
-        </Switch>
-        <Switch>
-          <Route path={ROUTE.search.path} exact>
-            {/*TODO: replace this with ArcGIS map?*/}
-            <MapContainer selection={true} features={false} />
-          </Route>
-        </Switch>
+        <div style={{width: '100%'}}>
+          <Switch>
+            <Route path="/" exact />
+            <Route path="/">
+              <LoadingBarContainer />
+            </Route>
+          </Switch>
+          <Switch>
+            <Route path={ROUTE.search.path} exact>
+              {/*TODO: replace this with ArcGIS map?*/}
+              <MapContainer selection={true} features={false} />
+            </Route>
+          </Switch>
 
-        <Switch>
-          {/*Each page inside this switch should have a Meta!*/}
-          <Route path="/" exact>
-            <LandingContainer />
-          </Route>
+          <Switch>
+            {/*Each page inside this switch should have a Meta!*/}
+            <Route path="/" exact>
+              <LandingContainer />
+            </Route>
 
-          <Route path={ROUTE.details.path}>
-            {/*TODO parameterize this path!*/}
-            <DetailContainer />
-          </Route>
+            <Route path={ROUTE.details.path}>
+              {/*TODO parameterize this path!*/}
+              <DetailContainer />
+            </Route>
 
-          <Route path={ROUTE.search.path}>
-            <Switch>
-              <Route path={ROUTE.search.path} exact>
-                <Result>
-                  <CollectionsContainer />
-                </Result>
-              </Route>
-              <Route path={ROUTE.granules.parameterized}>
-                {/*TODO parameterize this path!*/}
-                <GranuleListContainer />
-              </Route>
-            </Switch>
-          </Route>
+            <Route path={ROUTE.search.path}>
+              <Switch>
+                <Route path={ROUTE.search.path} exact>
+                  <Result>
+                    <CollectionsContainer />
+                  </Result>
+                </Route>
+                <Route path={ROUTE.granules.parameterized}>
+                  {/*TODO parameterize this path!*/}
+                  <GranuleListContainer />
+                </Route>
+              </Switch>
+            </Route>
 
-          <Route path={ROUTE.about.path}>
-            <AboutContainer />
-          </Route>
+            <Route path={ROUTE.about.path}>
+              <AboutContainer />
+            </Route>
 
-          <Route path={ROUTE.help.path}>
-            <Help />
-          </Route>
+            <Route path={ROUTE.help.path}>
+              <Help />
+            </Route>
 
-          {cart}
+            {cart}
 
-          <Route path={ROUTE.error.path}>
-            <ErrorContainer />
-          </Route>
+            <Route path={ROUTE.error.path}>
+              <ErrorContainer />
+            </Route>
 
-          {/* 404 not found */}
-          <Route component={NotFoundContainer} />
-        </Switch>
-      </div>
+            {/* 404 not found */}
+            <Route component={NotFoundContainer} />
+          </Switch>
+        </div>
     )
 
     return (
-      <Background>
-        <Container
-          header={header}
-          left={left}
-          leftWidth={leftWidth}
-          leftVisible={leftOpen}
-          middle={middle}
-          right={null}
-          rightWidth={256}
-          rightVisible={showRight}
-          footer={<FooterContainer />}
-        />
-      </Background>
+        <Background>
+          <Container
+              header={header}
+              left={left}
+              leftWidth={leftWidth}
+              leftVisible={leftOpen}
+              middle={middle}
+              right={null}
+              rightWidth={256}
+              rightVisible={showRight}
+              footer={<FooterContainer />}
+          />
+        </Background>
     )
   }
 }
