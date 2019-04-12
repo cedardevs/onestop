@@ -1,6 +1,5 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
 
 const path = require('path')

@@ -26,18 +26,16 @@ import LoadingBarContainer from '../loading/LoadingBarContainer'
 
 import FooterContainer from './FooterContainer'
 
-import {COLOR_SECONDARY_DARK} from '../common/defaultStyles'
+import {SiteColors} from '../common/defaultStyles'
 import {FEATURE_CART} from '../utils/featureUtils'
 import {ROUTE} from '../utils/urlUtils'
 import NotFoundContainer from '../common/info/NotFoundContainer'
 
 const styleBrowserWarning = {
-  background: COLOR_SECONDARY_DARK,
-  width: '96%',
-  margin: '1em auto',
-  padding: '0.3em 1em',
-  borderRadius: '3px',
-  color: '#fff',
+  background: SiteColors.WARNING,
+  textAlign: 'center',
+  padding: '0.618em',
+  fontSize: '1.2em',
 }
 
 const styleBrowserWarningLink = {
@@ -64,13 +62,12 @@ export default class Root extends Component {
 
   hasUnsupportedFeatures() {
     let browserWarning = false
-    const htmlClasses = document.documentElement.className.split(' ')
-    htmlClasses.forEach(htmlClass => {
-      if (htmlClass.startsWith('no-')) {
-        browserWarning = true
-        return
-      }
-    })
+    const flexSupport =
+      document.body.style.flex !== undefined &&
+      document.body.style.flexFlow !== undefined
+    if (!flexSupport) {
+      browserWarning = true
+    }
     return browserWarning
   }
 
@@ -79,14 +76,6 @@ export default class Root extends Component {
       'https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers'
     return (
       <aside role="alert" style={styleBrowserWarning}>
-        <span
-          style={styleClose}
-          onClick={() => {
-            this.setState({browserWarning: false})
-          }}
-        >
-          x
-        </span>
         <p style={styleBrowserWarningParagraph}>
           The browser that you are using to view this page is not currently
           supported. For a list of currently supported & tested browsers, please
@@ -96,7 +85,7 @@ export default class Root extends Component {
             <a style={styleBrowserWarningLink} href={wikiUrl}>
               OneStop Documentation
             </a>
-          </span>
+          </span>.
         </p>
       </aside>
     )
@@ -117,7 +106,6 @@ export default class Root extends Component {
         <Route path="/">
           <HeaderContainer />
         </Route>
-        {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
       </div>
     )
 
@@ -189,20 +177,25 @@ export default class Root extends Component {
       </div>
     )
 
-    return (
-      <Background>
-        <Container
-          header={header}
-          left={left}
-          leftWidth={leftWidth}
-          leftVisible={leftOpen}
-          middle={middle}
-          right={null}
-          rightWidth={256}
-          rightVisible={showRight}
-          footer={<FooterContainer />}
-        />
-      </Background>
-    )
+    if (this.state.browserWarning) {
+      return this.unsupportedBrowserWarning()
+    }
+    else {
+      return (
+        <Background>
+          <Container
+            header={header}
+            left={left}
+            leftWidth={leftWidth}
+            leftVisible={leftOpen}
+            middle={middle}
+            right={null}
+            rightWidth={256}
+            rightVisible={showRight}
+            footer={<FooterContainer />}
+          />
+        </Background>
+      )
+    }
   }
 }
