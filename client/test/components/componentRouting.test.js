@@ -5,18 +5,18 @@ import App from '../../src/App'
 
 import store from '../../src/store' // create Redux store with appropriate middleware
 import history from '../../src/history'
-import TopicsMenu from '../../src/landing/TopicsMenu'
-import FeaturedDatasets from '../../src/landing/FeaturedDatasets'
-import Banner from '../../src/root/banner/Banner'
-import Header from '../../src/root/Header'
-import Footer from '../../src/root/Footer'
-import FooterLink from '../../src/root/FooterLink'
-import SearchFields from '../../src/search/SearchFields'
-import Landing from '../../src/landing/Landing'
-import Filters from '../../src/filter/Filters'
-import Collections from '../../src/result/collections/Collections'
-import Detail from '../../src/detail/Detail'
-import GranuleList from '../../src/result/granules/GranuleList' // create history object based on environment
+import TopicsMenu from '../../src/components/landing/TopicsMenu'
+import FeaturedDatasets from '../../src/components/landing/FeaturedDatasets'
+import Disclaimer from '../../src/components/disclaimer/Disclaimer'
+import Header from '../../src/components/header/Header'
+import Footer from '../../src/components/footer/Footer'
+import FooterLink from '../../src/components/footer/FooterLink'
+import CollectionSearch from '../../src/components/collections/filters/CollectionSearch'
+import Landing from '../../src/components/landing/Landing'
+import CollectionFilters from '../../src/components/collections/filters/CollectionFilters'
+import Collections from '../../src/components/collections/results/Collections'
+import Detail from '../../src/components/collections/detail/Detail'
+import GranuleList from '../../src/components/granules/results/GranuleList' // create history object based on environment
 
 const debugStore = (label, path) => {
   const state = store.getState()
@@ -34,7 +34,7 @@ describe('The home page', () => {
   })
 
   it('should render banner if banner message exists', () => {
-    const banner = component.find(Banner)
+    const banner = component.find(Disclaimer)
     expect(banner.length).toBe(1)
     const props = banner.props()
     if (!props.message) {
@@ -53,8 +53,8 @@ describe('The home page', () => {
     expect(component.find(Landing).length).toBe(1)
   })
 
-  it('should have SearchFields under Landing', () => {
-    const searchFields = component.find(SearchFields)
+  it('should have CollectionSearch under Landing', () => {
+    const searchFields = component.find(CollectionSearch)
     expect(searchFields.length).toBe(1)
     expect(searchFields.closest(Landing).length).toBe(1)
   })
@@ -100,8 +100,8 @@ describe('The home page', () => {
     )
   })
 
-  it('should NOT have Filters', () => {
-    expect(component.find(Filters).length).toBe(0)
+  it('should NOT have CollectionFilters', () => {
+    expect(component.find(CollectionFilters).length).toBe(0)
   })
 
   it('should NOT have Collections', () => {
@@ -143,8 +143,8 @@ describe('The collections page', () => {
     expect(locationAfter.search).toBe(query)
   })
 
-  it('should have Filters', () => {
-    expect(component.find(Filters).length).toBe(1)
+  it('should have CollectionFilters', () => {
+    expect(component.find(CollectionFilters).length).toBe(1)
   })
 
   it('should have Collections', () => {

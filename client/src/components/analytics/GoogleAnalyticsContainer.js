@@ -1,0 +1,27 @@
+import {connect} from 'react-redux'
+import GoogleAnalytics from './GoogleAnalytics'
+
+import {withRouter} from 'react-router'
+
+import {initAnalytics} from '../../actions/AnalyticsActions'
+
+const mapStateToProps = state => {
+  return {
+    analyticsConfig: state.domain.config.googleAnalytics,
+    analyticsInitiated: state.domain.config.analyticsInitiated,
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    initAnalytics: () => {
+      dispatch(initAnalytics())
+    },
+  }
+}
+
+const GoogleAnalyticsContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(GoogleAnalytics)
+)
+
+export default GoogleAnalyticsContainer

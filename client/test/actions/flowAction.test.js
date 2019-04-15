@@ -5,15 +5,14 @@ import App from '../../src/App'
 import store from '../../src/store' // create Redux store with appropriate middleware
 import history from '../../src/history'
 
-import * as FlowActions from '../../src/actions/FlowActions'
 import {RESET_STORE} from '../../src/reducers/reducer'
-import {API_PATH} from '../../src/utils/urlUtils'
+import {apiPath} from '../../src/utils/urlUtils'
 import {
   mockCollectionCountResponse,
   mockGranuleCountResponse,
-} from '../mockCount'
-import {mockConfigResponse} from '../mockConfig'
-import {mockInfoResponse} from '../mockInfo'
+} from '../mocks/mockCount'
+import {mockConfigResponse} from '../mocks/mockConfig'
+import {mockInfoResponse} from '../mocks/mockInfo'
 
 const debugStore = (label, path) => {
   const state = store.getState()
@@ -50,14 +49,14 @@ describe('The flow actions', () => {
 
   it('initialize triggers config, version info, total counts, and data loading', async () => {
     // mock fetch config
-    fetchMock.get(`path:${API_PATH}/uiConfig`, mockConfigResponse)
+    fetchMock.get(`path:${apiPath()}/uiConfig`, mockConfigResponse)
 
     // mock fetch info
-    fetchMock.get(`path:${API_PATH}/actuator/info`, mockInfoResponse)
+    fetchMock.get(`path:${apiPath()}/actuator/info`, mockInfoResponse)
 
     // mock fetch collection & granule counts
-    fetchMock.get(`path:${API_PATH}/collection`, mockCollectionCountResponse)
-    fetchMock.get(`path:${API_PATH}/granule`, mockGranuleCountResponse)
+    fetchMock.get(`path:${apiPath()}/collection`, mockCollectionCountResponse)
+    fetchMock.get(`path:${apiPath()}/granule`, mockGranuleCountResponse)
 
     // debugStore("BEFORE")
 

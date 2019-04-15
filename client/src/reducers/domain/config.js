@@ -6,7 +6,7 @@ import {
 } from '../../actions/ConfigActions'
 import {INIT_ANALYTICS} from '../../actions/AnalyticsActions'
 export const initialState = Immutable({
-  banner: {},
+  disclaimer: {},
   featured: [],
   featuresEnabled: [],
   headerDropdownMenuFeatureAvailable: false,

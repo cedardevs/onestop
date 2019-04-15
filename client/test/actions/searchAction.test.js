@@ -9,12 +9,12 @@ import {
   collectionErrorsArray,
   mockSearchCollectionResponse,
   mockSearchCollectionErrorResponse,
-} from '../mockSearchCollection'
+} from '../mocks/mockSearchCollection'
 
 import * as SearchRequestActions from '../../src/actions/SearchRequestActions'
 import * as SearchParamActions from '../../src/actions/SearchParamActions'
 import {RESET_STORE} from '../../src/reducers/reducer'
-import {mockSearchGranuleResponse} from '../mockSearchGranule'
+import {mockSearchGranuleResponse} from '../mocks/mockSearchGranule'
 import {toggleFacet} from '../../src/actions/SearchParamActions'
 
 const debugStore = (label, path) => {
