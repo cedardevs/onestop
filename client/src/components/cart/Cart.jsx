@@ -8,6 +8,10 @@ import {identifyProtocol} from '../../utils/resultUtils'
 import cancel from 'fa/ban.svg'
 import {fontFamilySerif} from '../../utils/styleUtils'
 import ScriptDownloader from './ScriptDownloader'
+import {FEATURE_CART} from '../../utils/featureUtils'
+import {Route} from 'react-router'
+import {ROUTE} from '../../utils/urlUtils'
+import CartContainer from './CartContainer'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -104,11 +108,17 @@ export default class Cart extends React.Component {
 
   render() {
     const {
+      featuresEnabled,
       loading,
       selectedGranules,
       numberOfGranulesSelected,
       deselectAllGranules,
     } = this.props
+
+    if (!featuresEnabled.includes(FEATURE_CART)) {
+      return null
+    }
+
     const {numShownItems} = this.state
     const selectedGranulesCount = Object.keys(selectedGranules).length
     const shownGranules =
@@ -164,27 +174,29 @@ export default class Cart extends React.Component {
     )
 
     return (
-      <div style={styleCenterContent}>
-        <Meta title="File Access Cart" robots="noindex" />
+      <Route path={ROUTE.cart.path}>
+        <div style={styleCenterContent}>
+          <Meta title="File Access Cart" robots="noindex" />
 
-        <div style={styleCartListWrapper}>
-          {cartActionsWrapper}
-          <ListView
-            items={selectedGranules}
-            loading={!!loading}
-            resultsMessage={'Files for download'}
-            resultsMessageEmpty={'No files selected for download'}
-            shown={shownGranules}
-            total={selectedGranulesCount}
-            onItemSelect={this.handleSelectItem}
-            ListItemComponent={CartItem}
-            GridItemComponent={null}
-            propsForItem={this.propsForResult}
-            customControl={selectedGranulesCount > 0 ? clearCartButton : null}
-          />
-          {showMoreButton}
+          <div style={styleCartListWrapper}>
+            {cartActionsWrapper}
+            <ListView
+              items={selectedGranules}
+              loading={!!loading}
+              resultsMessage={'Files for download'}
+              resultsMessageEmpty={'No files selected for download'}
+              shown={shownGranules}
+              total={selectedGranulesCount}
+              onItemSelect={this.handleSelectItem}
+              ListItemComponent={CartItem}
+              GridItemComponent={null}
+              propsForItem={this.propsForResult}
+              customControl={selectedGranulesCount > 0 ? clearCartButton : null}
+            />
+            {showMoreButton}
+          </div>
         </div>
-      </div>
+      </Route>
     )
   }
 }

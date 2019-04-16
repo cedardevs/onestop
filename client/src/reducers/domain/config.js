@@ -3,10 +3,10 @@ import {
   CLEAR_CONFIG,
   SET_CONFIG,
   TOGGLE_FEATURES,
-} from '../../actions/ConfigActions'
-import {INIT_ANALYTICS} from '../../actions/AnalyticsActions'
+} from '../../actions/config/ConfigActions'
+import {INIT_ANALYTICS} from '../../actions/config/AnalyticsActions'
 export const initialState = Immutable({
-  disclaimer: {},
+  disclaimer: undefined,
   featured: [],
   featuresEnabled: [],
   headerDropdownMenuFeatureAvailable: false,

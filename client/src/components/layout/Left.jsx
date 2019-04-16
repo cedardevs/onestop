@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import {boxShadow} from '../../style/defaultStyles'
 
 import {FilterColors} from '../../style/defaultStyles'
@@ -33,7 +33,7 @@ const styleClosed = width => {
   }
 }
 
-export default class Left extends Component {
+export default class Left extends React.Component {
   componentWillMount() {
     this.setState({
       open: this.props.open,

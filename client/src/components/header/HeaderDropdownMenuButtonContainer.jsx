@@ -1,11 +1,11 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
-import {setHeaderMenuOpen} from '../../actions/LayoutActions'
+import {setHeaderMenuOpen} from '../../actions/layout/LayoutActions'
 import HeaderDropdownMenuButton from './HeaderDropdownMenuButton'
 
 const mapStateToProps = state => {
   return {
-    open: state.ui.layout.headerMenuOpen,
+    open: state.layout.headerMenuOpen,
   }
 }
 

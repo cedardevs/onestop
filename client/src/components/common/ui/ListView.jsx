@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
@@ -65,7 +65,7 @@ const styleFocusDefault = {
   margin: '.259em',
 }
 
-export default class ListView extends Component {
+export default class ListView extends React.Component {
   constructor(props) {
     super(props)
     this.state = {

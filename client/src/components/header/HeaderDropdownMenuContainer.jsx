@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import HeaderDropdownMenu from './HeaderDropdownMenu'
 import {withRouter} from 'react-router'
 import {abbreviateNumber} from '../../utils/readableUtils'
-import {setHeaderMenuOpen} from '../../actions/LayoutActions'
+import {setHeaderMenuOpen} from '../../actions/layout/LayoutActions'
 import {getSelectedGranulesFromStorage} from '../../utils/localStorageUtil'
 
 const mapStateToProps = state => {
@@ -13,7 +13,7 @@ const mapStateToProps = state => {
     numberOfGranulesSelected
   )
   return {
-    open: state.ui.layout.headerMenuOpen,
+    open: state.layout.headerMenuOpen,
     featuresEnabled: state.domain.config.featuresEnabled,
     abbreviatedNumberOfGranulesSelected: abbreviatedNumberOfGranulesSelected,
   }

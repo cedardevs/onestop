@@ -7,9 +7,9 @@ import store from '../../src/store' // create Redux store with appropriate middl
 import history from '../../src/history'
 import ScriptDownloader from '../../src/components/cart/ScriptDownloader'
 import mockCartItems from './mockCartItems'
-import {insertSelectedGranule} from '../../src/actions/CartActions'
+import {insertSelectedGranule} from '../../src/actions/cart/CartActions'
 import {insertGranule} from '../../src/utils/localStorageUtil'
-import {toggleFeatures} from '../../src/actions/ConfigActions'
+import {toggleFeatures} from '../../src/actions/config/ConfigActions'
 
 const debugStore = (label, path) => {
   const state = store.getState()

@@ -1,7 +1,7 @@
 import React from 'react'
 import {Route, Switch} from 'react-router'
 
-import CollectionSearchContainer from '../collections/filters/CollectionSearchContainer'
+import CollectionSearchContainer from '../filters/collections/CollectionSearchContainer'
 import Logo from './Logo'
 import HeaderLink from './HeaderLink'
 
@@ -224,25 +224,27 @@ class Header extends React.Component {
     )
 
     return (
-      <div style={styleWrapper}>
-        <div style={styleHeader}>
-          <FlexRow
-            style={styleUserWelcome}
-            key="welcomeUser"
-            items={[ welcomeUser ]}
-          />
-          <FlexRow
-            style={styleHeaderFlexRow}
-            items={[
-              <FlexRow
-                key="insignia-and-search"
-                items={[ skipLink, insignia, search ]}
-              />,
-              menu,
-            ]}
-          />
+      <Route path="/">
+        <div style={styleWrapper}>
+          <div style={styleHeader}>
+            <FlexRow
+              style={styleUserWelcome}
+              key="welcomeUser"
+              items={[ welcomeUser ]}
+            />
+            <FlexRow
+              style={styleHeaderFlexRow}
+              items={[
+                <FlexRow
+                  key="insignia-and-search"
+                  items={[ skipLink, insignia, search ]}
+                />,
+                menu,
+              ]}
+            />
+          </div>
         </div>
-      </div>
+      </Route>
     )
   }
 }

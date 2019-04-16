@@ -1,5 +1,5 @@
 import Immutable from 'seamless-immutable'
-import reducer from '../../src/reducers/reducer'
+import reducer from '../../src/reducer'
 
 describe('The main reducer', function(){
   it('returns a composed initial state', function(){

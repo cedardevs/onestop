@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 
@@ -33,7 +33,7 @@ const styleShoweMoreButtonHover = {
   cursor: 'pointer',
 }
 
-class Keywords extends Component {
+class Keywords extends React.Component {
   constructor(props) {
     super(props)
     this.state = {

@@ -1,8 +1,11 @@
 import {connect} from 'react-redux'
 import TopicsMenu from './TopicsMenu'
-import {triggerSearch, clearFacets} from '../../actions/SearchRequestActions'
-import {updateQuery} from '../../actions/SearchParamActions'
-import {showCollections} from '../../actions/FlowActions'
+import {
+  triggerSearch,
+  clearFacets,
+} from '../../actions/search/collections/SearchRequestActions'
+import {updateQuery} from '../../actions/search/collections/SearchParamActions'
+import {showCollections} from '../../actions/search/collections/FlowActions'
 
 import {withRouter} from 'react-router'
 

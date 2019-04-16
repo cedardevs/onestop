@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import {FilterColors} from '../../../style/defaultStyles'
 
 const styleDefault = iconAndText => {
@@ -35,7 +35,7 @@ const styleIconPadding = {
   padding: '0 0.618em',
 }
 
-export default class Button extends Component {
+export default class Button extends React.Component {
   componentWillMount() {
     this.setState({
       hovering: false,

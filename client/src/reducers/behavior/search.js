@@ -11,8 +11,8 @@ import {
   TOGGLE_SELECTION,
   CLEAR_SELECTIONS,
   REMOVE_ALL_FILTERS,
-} from '../../actions/SearchParamActions'
-import {CLEAR_FACETS} from '../../actions/SearchRequestActions'
+} from '../../actions/search/collections/SearchParamActions'
+import {CLEAR_FACETS} from '../../actions/search/collections/SearchRequestActions'
 
 export const initialState = Immutable({
   queryText: '',

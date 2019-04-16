@@ -1,7 +1,7 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import reducer from '../../src/reducers/reducer'
-import * as actions from '../../src/actions/SearchParamActions'
+import reducer from '../../src/reducer'
+import * as actions from '../../src/actions/search/collections/SearchParamActions'
 
 describe('The search params actions', function(){
   describe('for geometries', function(){

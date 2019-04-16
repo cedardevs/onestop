@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import MapThumbnail from '../../common/MapThumbnail'
 import FlexRow from '../../common/ui/FlexRow'
@@ -37,7 +37,7 @@ const stylePreviewMap = {
   paddingTop: '0.25em',
 }
 
-class OverviewView extends Component {
+class OverviewView extends React.Component {
   constructor(props) {
     super(props)
     this.state = {

@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import {processUrl} from '../../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
 import GranulesSummary from './GranulesSummary'
@@ -83,7 +83,7 @@ const styleIdentifierLast = {
   margin: 0,
 }
 
-export default class DescriptionView extends Component {
+export default class DescriptionView extends React.Component {
   constructor(props) {
     super(props)
     this.state = {

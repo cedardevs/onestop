@@ -6,7 +6,7 @@ import {
   fetchedGranules,
   clearGranules,
   FACETS_RECEIVED,
-} from '../../../src/actions/SearchRequestActions'
+} from '../../../src/actions/search/collections/SearchRequestActions'
 
 describe('The results reducer', function(){
   it('has a default state', function(){

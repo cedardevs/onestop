@@ -1,8 +1,8 @@
 import {connect} from 'react-redux'
 import Header from './Header'
-import {showHome} from '../../actions/FlowActions'
+import {showHome} from '../../actions/search/collections/FlowActions'
 import {withRouter} from 'react-router'
-import {getUser, logoutUser} from '../../actions/UserActions'
+import {getUser, logoutUser} from '../../actions/user/UserActions'
 import {FEATURE_CART} from '../../utils/featureUtils'
 
 const mapStateToProps = state => {
@@ -18,7 +18,7 @@ const mapStateToProps = state => {
     userProfileEndpoint = state.domain.config.auth.userProfileEndpoint
   }
 
-  const user = state.domain.user
+  const user = state.user
   const dropdownAvailable =
     state.domain.config.headerDropdownMenuFeatureAvailable
   const featuresEnabled = state.domain.config.featuresEnabled
@@ -39,7 +39,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     goHome: () => dispatch(showHome(ownProps.history)),
-    getUser: userProfileEndpoint => dispatch(getUser(userProfileEndpoint)),
     logoutUser: () => dispatch(logoutUser()),
   }
 }

@@ -1,5 +1,9 @@
 import Immutable from 'seamless-immutable'
-import {CLEAR_INFO, SET_INFO, SET_TOTAL_COUNTS} from '../../actions/InfoActions'
+import {
+  CLEAR_INFO,
+  SET_INFO,
+  SET_TOTAL_COUNTS,
+} from '../../actions/search/api/InfoActions'
 
 export const initialState = Immutable({
   version: '',

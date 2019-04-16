@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import {Key} from '../../../utils/keyboardUtils'
 
 const styleContainer = {
@@ -49,7 +49,7 @@ const styleCheckmarkChecked = {
   opacity: '1',
 }
 
-class Checkbox extends Component {
+class Checkbox extends React.Component {
   constructor(props) {
     super(props)
     this.state = {checked: !!props.checked, hovering: false, pressing: false}

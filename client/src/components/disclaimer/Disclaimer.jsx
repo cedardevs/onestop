@@ -14,13 +14,13 @@ class Disclaimer extends React.Component {
   }
 
   render() {
-    const {message} = this.props
+    const {disclaimer} = this.props
 
-    if (!message) {
+    if (!disclaimer) {
       return null
     }
 
-    return <div style={styleDisclaimer}>{this.props.message}</div>
+    return <div style={styleDisclaimer}>{disclaimer}</div>
   }
 }
 

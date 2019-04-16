@@ -1,5 +1,5 @@
 import React from 'react'
-import CollectionSearchContainer from '../collections/filters/CollectionSearchContainer'
+import CollectionSearchContainer from '../filters/collections/CollectionSearchContainer'
 import TopicsMenuContainer from './TopicsMenuContainer'
 import FeaturedDatasetsContainer from './FeaturedDatasetsContainer'
 import {fontFamilySerif} from '../../utils/styleUtils'

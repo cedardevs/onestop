@@ -11,11 +11,11 @@ import {
   mockSearchCollectionErrorResponse,
 } from '../mocks/mockSearchCollection'
 
-import * as SearchRequestActions from '../../src/actions/SearchRequestActions'
-import * as SearchParamActions from '../../src/actions/SearchParamActions'
-import {RESET_STORE} from '../../src/reducers/reducer'
+import * as SearchRequestActions from '../../src/actions/search/collections/SearchRequestActions'
+import * as SearchParamActions from '../../src/actions/search/collections/SearchParamActions'
+import {RESET_STORE} from '../../src/reducer'
 import {mockSearchGranuleResponse} from '../mocks/mockSearchGranule'
-import {toggleFacet} from '../../src/actions/SearchParamActions'
+import {toggleFacet} from '../../src/actions/search/collections/SearchParamActions'
 
 const debugStore = (label, path) => {
   const state = store.getState()

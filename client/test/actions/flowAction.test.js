@@ -5,7 +5,7 @@ import App from '../../src/App'
 import store from '../../src/store' // create Redux store with appropriate middleware
 import history from '../../src/history'
 
-import {RESET_STORE} from '../../src/reducers/reducer'
+import {RESET_STORE} from '../../src/reducer'
 import {apiPath} from '../../src/utils/urlUtils'
 import {
   mockCollectionCountResponse,

@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import A from '../../common/link/Link'
@@ -48,7 +48,7 @@ const styleExpandableInfoContent = {
   padding: '0.618em',
 }
 
-class DSMMRating extends Component {
+class DSMMRating extends React.Component {
   componentWillMount() {
     this.setState({
       showInfo: false,

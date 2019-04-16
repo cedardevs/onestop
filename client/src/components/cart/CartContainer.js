@@ -10,7 +10,7 @@ import {
 import {
   removeAllSelectedGranule,
   removeSelectedGranule,
-} from '../../actions/CartActions'
+} from '../../actions/cart/CartActions'
 
 // import mockCartItems from '../../../test/cart/mockCartItems'
 
@@ -37,6 +37,7 @@ const mapStateToProps = state => {
   // const numberOfGranulesSelected = Object.keys(selectedGranules).length
 
   return {
+    featuresEnabled: state.domain.config.featuresEnabled,
     loading: state.ui.loading ? 1 : 0,
     selectedGranules: selectedGranules,
     numberOfGranulesSelected: numberOfGranulesSelected,

@@ -2,6 +2,7 @@ import React from 'react'
 import './LoadingBar.css'
 
 import defaultStyles from '../../style/defaultStyles'
+import {Route, Switch} from 'react-router'
 
 export class LoadingBar extends React.Component {
   constructor(props) {
@@ -26,16 +27,21 @@ export class LoadingBar extends React.Component {
   render() {
     const {loading, loadingText, style} = this.props
     return (
-      <div style={style}>
-        <div
-          aria-live="polite"
-          aria-atomic="false"
-          style={defaultStyles.hideOffscreen}
-        >
-          <div id={this.props.loadingAlertId}>{this.state.loadingText}</div>
-        </div>
-        <div className={loading ? 'loadingContainer' : null} />
-      </div>
+      <Switch>
+        <Route path="/" exact />
+        <Route path="/">
+          <div style={style}>
+            <div
+              aria-live="polite"
+              aria-atomic="false"
+              style={defaultStyles.hideOffscreen}
+            >
+              <div id={this.props.loadingAlertId}>{this.state.loadingText}</div>
+            </div>
+            <div className={loading ? 'loadingContainer' : null} />
+          </div>
+        </Route>
+      </Switch>
     )
   }
 }

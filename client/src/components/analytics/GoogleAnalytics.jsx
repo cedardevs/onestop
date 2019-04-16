@@ -1,10 +1,10 @@
 // utils/GoogleAnalytics.js
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import * as ReactGA from 'react-ga'
 import {Route} from 'react-router-dom'
 
-export default class GoogleAnalytics extends Component {
+export default class GoogleAnalytics extends React.Component {
   componentDidMount() {
     const {location} = this.props
     this.logPageChange(location.pathname, location.search)

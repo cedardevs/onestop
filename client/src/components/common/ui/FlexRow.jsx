@@ -1,11 +1,11 @@
-import React, {Component} from 'react'
+import React from 'react'
 
 const style = {
   display: 'flex',
   flexDirection: 'row',
 }
 
-export default class FlexRow extends Component {
+export default class FlexRow extends React.Component {
   render() {
     const {rowId, tabIndex, role} = this.props
     const styles = Object.assign({}, style, this.props.style)

@@ -2,9 +2,12 @@ import {connect} from 'react-redux'
 import NotFound from './NotFound'
 
 import {withRouter} from 'react-router'
-import {clearFacets, triggerSearch} from '../../actions/SearchRequestActions'
-import {showCollections} from '../../actions/FlowActions'
-import {updateQuery} from '../../actions/SearchParamActions'
+import {
+  clearFacets,
+  triggerSearch,
+} from '../../actions/search/collections/SearchRequestActions'
+import {showCollections} from '../../actions/search/collections/FlowActions'
+import {updateQuery} from '../../actions/search/collections/SearchParamActions'
 
 const mapStateToProps = state => {
   return {}

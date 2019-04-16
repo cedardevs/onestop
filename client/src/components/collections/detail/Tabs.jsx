@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import FlexRow from '../../common/ui/FlexRow'
 import {Key} from '../../../utils/keyboardUtils'
 import {fontFamilySerif} from '../../../utils/styleUtils'
@@ -43,7 +43,7 @@ const styleFocusDefault = (focused, active) => {
   }
 }
 
-class TabButton extends Component {
+class TabButton extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -165,7 +165,7 @@ const styleContentDefault = {
   borderTop: '1px solid gray',
 }
 
-export default class Tabs extends Component {
+export default class Tabs extends React.Component {
   constructor(props) {
     super(props)
   }

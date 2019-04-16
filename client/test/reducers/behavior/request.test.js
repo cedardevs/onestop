@@ -3,11 +3,11 @@ import {request, initialState} from '../../../src/reducers/behavior/request'
 import {
   fetchingGranules,
   fetchedGranules,
-} from '../../../src/actions/SearchRequestActions'
+} from '../../../src/actions/search/collections/SearchRequestActions'
 import {
   startSearch,
   completeSearch,
-} from '../../../src/actions/SearchRequestActions'
+} from '../../../src/actions/search/collections/SearchRequestActions'
 
 describe('The request reducer', function(){
   it('has a default state', function(){

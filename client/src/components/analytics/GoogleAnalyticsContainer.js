@@ -3,7 +3,7 @@ import GoogleAnalytics from './GoogleAnalytics'
 
 import {withRouter} from 'react-router'
 
-import {initAnalytics} from '../../actions/AnalyticsActions'
+import {initAnalytics} from '../../actions/config/AnalyticsActions'
 
 const mapStateToProps = state => {
   return {

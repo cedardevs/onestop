@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import DescriptionView from './DescriptionView'
@@ -63,7 +63,7 @@ const styleFocusDefault = {
 }
 
 //-- Component
-class Detail extends Component {
+class Detail extends React.Component {
   constructor(props) {
     super(props)
     this.state = {

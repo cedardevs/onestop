@@ -1,17 +1,20 @@
 import {connect} from 'react-redux'
 import Root from './Root'
 import {withRouter} from 'react-router'
+import {closeRight, openRight} from '../../actions/layout/LayoutActions'
 
 const mapStateToProps = state => {
   return {
-    leftOpen: state.ui.layout.leftOpen,
-    showRight: state.ui.layout.showRight,
-    featuresEnabled: state.domain.config.featuresEnabled,
+    leftOpen: state.layout.leftOpen,
+    rightOpen: state.layout.rightOpen,
   }
 }
 
 const mapDispatchToProps = dispatch => {
-  return {}
+  return {
+    closeRight: () => dispatch(closeRight()),
+    openRight: () => dispatch(openRight()),
+  }
 }
 
 const RootContainer = withRouter(

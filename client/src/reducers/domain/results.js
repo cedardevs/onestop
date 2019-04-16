@@ -11,8 +11,8 @@ import {
   FACETS_RECEIVED,
   CLEAR_FACETS,
   COLLECTION_DETAIL_LOADED,
-} from '../../actions/SearchRequestActions'
-import {REMOVE_ALL_FILTERS} from '../../actions/SearchParamActions'
+} from '../../actions/search/collections/SearchRequestActions'
+import {REMOVE_ALL_FILTERS} from '../../actions/search/collections/SearchParamActions'
 
 export const initialState = Immutable({
   collections: {},

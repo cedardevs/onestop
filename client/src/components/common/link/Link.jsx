@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import {buildGovExternalOnClick} from '../../../utils/urlUtils'
 
 const styleLink = {
@@ -11,7 +11,7 @@ const stylePressDefault = {}
 
 const styleFocusDefault = {}
 
-class Link extends Component {
+class Link extends React.Component {
   componentWillMount() {
     this.setState({
       hovering: false,

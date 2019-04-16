@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 
 const styleMiddle = () => {
   return {
@@ -12,7 +12,7 @@ const styleMiddle = () => {
   }
 }
 
-export default class Middle extends Component {
+export default class Middle extends React.Component {
   render() {
     const {content} = this.props
     const contentElement = (

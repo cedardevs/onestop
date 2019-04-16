@@ -5,8 +5,8 @@ import {
   loadDetails,
   loadCollections,
   loadGranulesList,
-} from './actions/FlowActions'
-import {getSitemap} from './actions/SearchRequestActions'
+} from './actions/search/collections/FlowActions'
+import {getSitemap} from './actions/search/collections/SearchRequestActions'
 import {isDetailPage, isGranuleListPage, isSitemap} from './utils/urlUtils'
 
 const loadFromUrl = (path, newQueryString) => {

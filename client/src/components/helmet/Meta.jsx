@@ -1,12 +1,12 @@
 import {Helmet} from 'react-helmet'
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import {toJsonLd, appJsonLd} from '../../utils/jsonLdUtils'
 
 import {getBasePath} from '../../utils/urlUtils'
 
-export default class Meta extends Component {
+export default class Meta extends React.Component {
   formatTitle = title => {
     const words = _.words(title)
 

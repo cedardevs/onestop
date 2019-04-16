@@ -1,11 +1,11 @@
-import React, {Component} from 'react'
+import React from 'react'
 
 const styleHeader = {
   flex: '0 0 auto',
   zIndex: 2,
 }
 
-export default class Header extends Component {
+export default class Header extends React.Component {
   render() {
     const {content} = this.props
     return (

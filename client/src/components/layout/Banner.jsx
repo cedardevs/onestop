@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 
 import BrowserDetection from 'react-browser-detection'
 
@@ -45,7 +45,7 @@ const styleFallbackGradient = arcHeight => {
   }
 }
 
-export default class Banner extends Component {
+export default class Banner extends React.Component {
   render() {
     const {graphic, height, arcHeight, visible} = this.props
 

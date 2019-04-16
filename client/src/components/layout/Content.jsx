@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import FlexRow from '../common/ui/FlexRow'
 import Left from './Left'
 import Middle from './Middle'
@@ -13,7 +13,7 @@ const styleContent = {
   width: '100%',
 }
 
-export default class Content extends Component {
+export default class Content extends React.Component {
   render() {
     const {
       style,

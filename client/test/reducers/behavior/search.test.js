@@ -7,7 +7,7 @@ import {
   toggleSelection,
   toggleExcludeGlobal,
   clearSelections,
-} from '../../../src/actions/SearchParamActions'
+} from '../../../src/actions/search/collections/SearchParamActions'
 
 describe('The search reducer', function(){
   it('has a default state', function(){

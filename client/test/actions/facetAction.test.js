@@ -1,8 +1,8 @@
 import {
   facetsReceived,
   clearFacets,
-} from '../../src/actions/SearchRequestActions'
-import reducer from '../../src/reducers/reducer'
+} from '../../src/actions/search/collections/SearchRequestActions'
+import reducer from '../../src/reducer'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 

@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import Detail from './Detail'
 
 import {withRouter} from 'react-router'
-import {showGranulesList} from '../../../actions/FlowActions'
+import {showGranulesList} from '../../../actions/search/collections/FlowActions'
 
 const mapStateToProps = state => {
   const focusedItem = state.domain.results.collectionDetail

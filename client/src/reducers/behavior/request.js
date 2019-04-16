@@ -4,11 +4,11 @@ import {
   SEARCH_COMPLETE,
   GET_COLLECTION_START,
   COLLECTION_DETAIL_LOADED,
-} from '../../actions/SearchRequestActions'
+} from '../../actions/search/collections/SearchRequestActions'
 import {
   FETCHING_GRANULES,
   FETCHED_GRANULES,
-} from '../../actions/SearchRequestActions'
+} from '../../actions/search/collections/SearchRequestActions'
 
 export const initialState = Immutable({
   collectionInFlight: false,

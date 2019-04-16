@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import {fontFamilySerif} from '../../utils/styleUtils'
 const noaaLogo = require('../../../img/noaa_logo_circle_72x72.svg')
@@ -108,7 +108,7 @@ const styleOnestopO = {
 
 //-- Component
 
-export default class Logo extends Component {
+export default class Logo extends React.Component {
   componentWillMount() {
     this.setState({
       focusingImage: false,

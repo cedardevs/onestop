@@ -11,12 +11,12 @@ import Disclaimer from '../../src/components/disclaimer/Disclaimer'
 import Header from '../../src/components/header/Header'
 import Footer from '../../src/components/footer/Footer'
 import FooterLink from '../../src/components/footer/FooterLink'
-import CollectionSearch from '../../src/components/collections/filters/CollectionSearch'
+import CollectionSearch from '../../src/components/filters/collections/CollectionSearch'
 import Landing from '../../src/components/landing/Landing'
-import CollectionFilters from '../../src/components/collections/filters/CollectionFilters'
-import Collections from '../../src/components/collections/results/Collections'
+import CollectionFilters from '../../src/components/filters/collections/CollectionFilters'
+import Collections from '../../src/components/results/collections/Collections'
 import Detail from '../../src/components/collections/detail/Detail'
-import GranuleList from '../../src/components/granules/results/GranuleList' // create history object based on environment
+import GranuleList from '../../src/components/results/granules/GranuleList' // create history object based on environment
 
 const debugStore = (label, path) => {
   const state = store.getState()
