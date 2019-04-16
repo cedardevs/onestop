@@ -28,7 +28,7 @@ dependencies {
   compile('org.slf4j:slf4j-api:1.7.25')
   compile('ch.qos.logback:logback-classic:1.2.3')
   compile(project(':common'))
-  compile('org.wololo:jts2geojson:0.3.1')
+  compile('org.locationtech.jts.io:jts-io-common:1.16.1')
 
   testCompile("org.spockframework:spock-core:${project.spockVersion}")
   testCompile('org.apache.kafka:kafka-streams-test-utils:2.1.0')
@@ -40,7 +40,7 @@ dependencies {
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
   testCompile("com.github.cedardevs:schemas:${project.schemasVersion}:test")
   testCompile("com.github.cedardevs:schemas:${project.schemasVersion}:sources")
-  testCompile('org.wololo:jts2geojson:0.3.1')
+
 }
 
 jar {

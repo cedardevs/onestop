@@ -116,7 +116,7 @@ class ValidateGeometrySpec extends Specification {
 
     where:
     testCase                | value                                           | expected
-    'Invalid Coordinate'    | buildGeoJson('Point', InvalidCoordinate )       | "Invalid Coordinate"
+    'Invalid Coordinate'    | buildGeoJson('Point', InvalidCoordinate )       | "Non-numeric Coordinate"
     'Duplicated Rings'      | buildGeoJson('MultiPolygon', duplicateRings)    | 'Duplicate Rings'
     'Too Few Points'        | buildGeoJson('LineString', TooFewPoints)        | "Too few distinct points in geometry component"
     'Nested Shells'         | buildGeoJson('MultiPolygon', nestedShells)      | 'Nested shells'

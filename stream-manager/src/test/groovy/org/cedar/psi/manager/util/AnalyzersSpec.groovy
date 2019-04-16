@@ -89,7 +89,7 @@ class AnalyzersSpec extends Specification {
         spatialBounding : [
             spatialBoundingExists: true,
             isValid: true,
-            validationError: " "
+            validationError: null
         ],
         titles          : [
             titleExists             : true,
@@ -352,7 +352,7 @@ class AnalyzersSpec extends Specification {
     where:
     testCase      | value                 | expected   | expectedValidation  | expectedError
     'missing'     | null                  | false      | false               | "Missing geographic bounding box"
-    'present'     | buildPoint()          | true       | true                | " "
+    'present'     | buildPoint()          | true       | true                | null
     'null values' | buildMissingCorners() | true       | false               | "Invalid number of points in LineString (found 1 - must be 0 or >= 2)"
   }
 
