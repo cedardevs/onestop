@@ -1,27 +1,8 @@
 package org.cedar.onestop.api.search.controller
 
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class SitemapGeneratorSpec extends Specification {
-
-  @Unroll
-  def 'Sitemap uses correct baseUrl from request #requestUrl'() {
-    when:
-    String baseUrl = SitemapGenerator.getBaseUrl(requestUrl)
-
-    then:
-    baseUrl == expectedUrl
-
-    where:
-    requestUrl | expectedUrl
-    // what is (currently) sent by localhost client
-    "http://localhost/onestop/sitemap.xml" | "http://localhost/onestop"
-    // local dev curl
-    "http://localhost:30097/onestop/sitemap.xml" | "http://localhost:30097/onestop"
-    // sciapps
-    "https://sciapps/onestop/sitemap.xml" | "https://sciapps/onestop"
-  }
 
   def 'Sitemap xml is correct with one submap'() {
     given:
