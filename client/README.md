@@ -1,68 +1,81 @@
-Experiments in Creating a OneStop Web App
+OneStop Browser Client
 ===
 
 ## Getting started
-Getting your development environment set up should be straightforward:
+This guide focuses on running the OneStop browser client via `Node` for local development. Running the search API (used by the client) and other components, refer to the more expansive [Developer Guide](../docs).
 
 1. Clone this repo
+1. `cd client`
 1. Run `npm install`
-    - Installs dependencies into ./node_modules
-1. Run `npm run dev`
-    - Starts up a webpack dev server hosting the app
+    - installs dependencies into `./node_modules`
+1. Run one of the following:
+  - `npm run dev` (search API on port 8097)
+  - `npm run kub` (search API on port 30097)
+    - Starts up `webpack-dev-server` hosting a hot-reload version of the client
     - Starts mocha in watch mode to automatically run the tests as you work
-1. Go to http://localhost:8080/onestop/
+1. Go to http://localhost:9090/onestop/
+
+## Format JavaScript+CSS with Prettier
+
+Prettier is a code formatter . We actually use `prettier-miscellaneous` which is a fork allowing for more configuration. In particular, the `breakBeforeElse` option specified in our `.prettierrc.json` is [not supported](https://github.com/prettier/prettier/issues/840) by the default `prettier` package.
+
+Formatting is a manual process, but our CI builds will warn when a commit is not formatted.
+
+Ideally, these should be done before every commit by the developer.
+
+#### Dry-run with `--list-different`
+`npm run formatCheck`
+
+#### Overwrite files with fixed formatting
+`npm run format`
 
 ## Stack
-#### Development/Build Environment
+#### Development and Build Environment
   - npm
   - babel
   - webpack
   - es6 
   
-#### Testing/Code Quality
-  - mocha
-  - chai <sup>[1](#chaistyle)</sup>
+#### Testing, and Code Quality
+  - jest
+  - enzyme
   - eslint
   
 #### Client-Side Libraries/Frameworks
-  - redux
-  - immutable <sup>[2](#immutable)</sup>
   - react
-
-#### Outstanding Questions
-###### <a name="chaistyle">Chai Style</a>
-Though we've been using the 'should' style so far out of habit, we still need to decide which of chai's assertion styles we prefer
-
-###### <a name="immutable">Immutable</a>
-Some of us are excited about using immutable.js but we haven't decided to dive into it as a team yet.
+  - redux
+  - seamless-immutable
+  - isomorphic-fetch
+  - leaflet
+  - etc...
 
 ## Project Structure
-The project root contains directories for different resource types, e.g. img/, style/, src/, etc
 
-Within the src/ folder, javascript is organized by feature. Different module types within each feature are indicated by file name.
+#### Source Files
 
-## Deployment
-There are a number of possible future deployment options which we have not fully evaluated or decided on... but for now we're deploying to AWS via a Jenkins job:
+- **src/**
+    - high-level entry points, configurations, and wrappers
+- **src/actions/**
+    - [Redux Actions](https://redux.js.org/basics/actions)
+- **src/components/**
+    - [React Components](https://reactjs.org/docs/react-component.html) and [Redux Containers](https://redux.js.org/basics/usage-with-react)
+- **src/fonts/**
+    - until we can use external fonts, we are forced to package our own nicer fonts (bloats our bundle!)
+- **src/reducers/**
+    - [Redux Reducers](https://redux.js.org/basics/reducers) specifying how the state changes in response to actions sent to the store.
+- **src/style/**
+    - CSS Stylesheets (where React inline styles are insufficient) and other style-related utilities.
+- **src/utils/** 
+    - Common utility functions to facilitate easier unit testing outside the context of React lifecycles.
 
-#### Jenkins + AWS:
-There is a Jenkins jobs called [onestop-client](https://jenkins.ngdc.noaa.gov/job/onestop-client/) which builds the app using `npm build`. The job currently runs on the session slave, here:
-    
-    ssh session
-    sudo /usr/local/bin/become_ingest
-    cd /home/ingest/jenkins-slave-ingest/workspace/onestop-client
-    
-The job then uses the awscli (instaled via pip) to push the resulting static content to an S3 bucket.
+#### Test Files
+- ./test
+    - TODO: explain test configs and etc...
 
-The job publishes the client as the `aws-cojenkins-ec` user with the `AWS_ACCESS_KEY_ID` and and `AWS_SECRET_ACCESS_KEY` environment variables configured for the slave.
-    
-The static content is pushed to an S3 bucket called 'onestop-client' which has public web hosting enabled.
-
-The client is available at: http://onestop-client.s3-website-us-west-2.amazonaws.com/
-
-#### Json schema validation
-The requests to api are validated against a json schema.
+#### JSON schema validation
+The requests to api are validated against a JSON schema.
 Here are a few links related to validation and schema.
-http://json-schema.org/
-https://github.com/fge/sample-json-schemas/blob/master/geojson/geometry.json
-http://json.schemastore.org
+- [JSON Schema](http://json-schema.org/)
+- [Sample Geometry Schema](https://github.com/fge/sample-json-schemas/blob/master/geojson/geometry.json)
+- [JSON Schema Store](http://json.schemastore.org)
 
