@@ -1,1 +1,69 @@
----apiVersion: apps/v1beta2kind: Deploymentmetadata:  name: {{ include "psi-manager.fullname" . }}  labels:    app.kubernetes.io/name: {{ include "psi-manager.name" . }}    helm.sh/chart: {{ include "psi-manager.chart" . }}    app.kubernetes.io/instance: {{ .Release.Name }}    app.kubernetes.io/managed-by: {{ .Release.Service }}spec:  replicas: {{ .Values.replicaCount }}  selector:    matchLabels:      app: {{ include "psi-manager.name" . }}      release: {{ .Release.Name }}  template:    metadata:      labels:        app: {{ include "psi-manager.name" . }}        release: {{ .Release.Name }}      annotations:        {{- with .Values.config }}        checksum/config: {{ . | sha256sum }}        {{- end }}    spec:      {{- with .Values.image.pullSecrets }}      imagePullSecrets:        {{- toYaml . | nindent 8 }}      {{- end }}      containers:      - name: {{ .Chart.Name }}        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"        imagePullPolicy: {{ .Values.image.pullPolicy }}        env:        - name: KAFKA_BOOTSTRAP_SERVERS          value: "{{ include "psi-manager.kafka.bootstrapServers" . }}"        - name: SCHEMA_REGISTRY_URL          value: "{{ include "psi-manager.cp-schema-registry.url" . }}"        {{- if .Values.config }}        - name: spring.config.additional-location          value: /etc/conf/application.yaml        {{- end }}        volumeMounts:        {{- if .Values.config }}        - name: config          mountPath: /etc/conf        {{- end }}        {{/* TODO: liveness, readiness */}}        resources:          {{- toYaml .Values.resources | nindent 10 }}      {{- if .Values.config }}      volumes:      - name: config        configMap:          name: {{ include "psi-manager.fullname" . }}-config      {{- end }}      {{- with .Values.nodeSelector }}      nodeSelector:        {{- toYaml . | nindent 8 }}      {{- end }}      {{- with .Values.affinity }}      affinity:        {{- toYaml . | nindent 8 }}      {{- end }}      {{- with .Values.tolerations }}      tolerations:        {{- toYaml . | nindent 8 }}      {{- end }}
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "psi-manager.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "psi-manager.name" . }}
+    helm.sh/chart: {{ include "psi-manager.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "psi-manager.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "psi-manager.name" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        {{- with .Values.config }}
+        checksum/config: {{ . | sha256sum }}
+        {{- end }}
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "{{ include "psi-manager.kafka.bootstrapServers" . }}"
+        - name: SCHEMA_REGISTRY_URL
+          value: "{{ include "psi-manager.cp-schema-registry.url" . }}"
+        {{- if .Values.config }}
+        - name: spring.config.additional-location
+          value: /etc/conf/application.yaml
+        {{- end }}
+        volumeMounts:
+        {{- if .Values.config }}
+        - name: config
+          mountPath: /etc/conf
+        {{- end }}
+        {{/* TODO: liveness, readiness */}}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      {{- if .Values.config }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "psi-manager.fullname" . }}-config
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
