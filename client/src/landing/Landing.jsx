@@ -52,7 +52,7 @@ class Landing extends React.Component {
   render() {
     return (
       <div style={styleCenterContent}>
-        <Meta />
+        <Meta rootSearchAction={true} />
         <div style={styleShowcase}>
           <h1 style={styleHeroHeader} aria-label="One Stop">
             <span>

@@ -12,7 +12,6 @@ const styleHeading = {
   fontSize: '1.2em',
   margin: '0 0 0.618em 0',
   padding: 0,
-  fontSize: '1.2em',
 }
 
 const styleLegendList = {

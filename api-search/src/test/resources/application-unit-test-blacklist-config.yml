@@ -1,0 +1,19 @@
+
+spring.profiles.include:
+  - trending-search
+  - unit-test-blacklist
+
+---
+spring:
+  profiles: unit-test-blacklist
+
+trending:
+  additionalBlacklistedSearchTerms:
+  - +nwlon +ports
+  - '"digital elevation"'
+  - '"Gridded Satellite GOES"'
+  - '"NOAA Climate Data Record"'
+  blacklistedCollections:
+    - a
+    - b
+    - c

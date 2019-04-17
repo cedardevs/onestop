@@ -1,6 +1,7 @@
 import Immutable from 'seamless-immutable'
 import _ from 'lodash'
 
+// synchronous actions
 export const UPDATE_QUERY = 'update_query'
 export const updateQuery = searchText => {
   return {
@@ -70,6 +71,13 @@ export const clearSelections = () => {
   }
 }
 
+export const TOGGLE_EXCLUDE_GLOBAL = 'TOGGLE_EXCLUDE_GLOBAL'
+export const toggleExcludeGlobal = () => {
+  return {
+    type: TOGGLE_EXCLUDE_GLOBAL,
+  }
+}
+
 export const TOGGLE_FACET = 'TOGGLE_FACET'
 export const toggleFacet = (category, facetName, selected) => {
   return (dispatch, getState) => {
@@ -83,15 +91,6 @@ export const toggleFacet = (category, facetName, selected) => {
     dispatch({
       type: TOGGLE_FACET,
       selectedFacets: newSelectedFacets,
-    })
-  }
-}
-
-export const TOGGLE_EXCLUDE_GLOBAL = 'TOGGLE_EXCLUDE_GLOBAL'
-export const toggleExcludeGlobal = () => {
-  return (dispatch, getState) => {
-    dispatch({
-      type: TOGGLE_EXCLUDE_GLOBAL,
     })
   }
 }

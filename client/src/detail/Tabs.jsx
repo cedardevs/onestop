@@ -60,7 +60,7 @@ class TabButton extends Component {
     this.props.onChange({currentTarget: {value: this.props.value}})
   }
 
-  handleKeyPressed = e => {
+  handleKeyUp = e => {
     if (e.keyCode === Key.SPACE) {
       e.preventDefault() // prevent scrolling down on space press
       this.handleChange()
@@ -122,7 +122,7 @@ class TabButton extends Component {
         aria-selected={active}
         aria-controls={tabContentId}
         tabIndex={tabIndex}
-        onKeyUp={this.handleKeyPressed}
+        onKeyUp={this.handleKeyUp}
         onKeyDown={this.handleKeyDown}
         onClick={this.handleClick}
         onFocus={this.handleFocus}

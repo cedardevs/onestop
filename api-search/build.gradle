@@ -1,8 +1,14 @@
-apply plugin: 'war'
-apply plugin: 'groovy'
-apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.cedar.dockerplugin'
+plugins {
+  // https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
+  id "io.forgo.keystoreplugin" version "1.0"
+  id 'war'
+  id 'groovy'
+  id 'org.springframework.boot' // version declared in top-level buildscript
+  id 'io.spring.dependency-management'
+  id 'org.cedar.dockerplugin'
+  id "com.moowork.node"
+}
+
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 sourceCompatibility = 1.8
@@ -20,14 +26,25 @@ dependencies {
   compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
-  compile "org.elasticsearch.client:rest:${project.esVersion}"
+  compile "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-devtools'
-  compile 'org.springframework.cloud:spring-cloud-context'
+  compile 'org.springframework.boot:spring-boot-starter-security'
+
+  compile 'org.springframework.security:spring-security-core'
+  compile 'org.springframework.security:spring-security-config'
+  compile 'org.springframework.security:spring-security-oauth2-client'
+  compile 'org.springframework.security:spring-security-oauth2-jose'
+
+  compile "com.auth0:java-jwt:${project.auth0JavaJWT}"
+
   compile 'com.github.java-json-tools:json-schema-validator:2.2.8'
   compile 'org.apache.commons:commons-lang3:3.7'
   compile 'org.apache.lucene:lucene-expressions:7.2.1'
+
+  // version to override another library's dependency to solve a CVE:
+  compile 'com.google.guava:guava:27.0.1-jre'
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
@@ -38,33 +55,73 @@ dependencies {
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile "org.testcontainers:testcontainers:${project.testContainersVersion}"
+  testCompile "org.testcontainers:elasticsearch:${project.testContainersVersion}"
 }
 
 ext {
   fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
+
+  /*
+   * "bootrun" login.gov configurations
+   * -- IMPORTANT:
+   *    -> individual developers testing with bootrun w/out skaffold need to run the `./gradlew api-search:jks` task
+   *       to generate a working keystore to sign JWTs in the login process
+   *
+   *    -> this will require you to copy the contents of the generated `.keystore/logingov.crt` public key
+   *    into the login.gov Dashboard test app (matching the clientId being used below). This will break
+   *    other developer's workflow who are testing against the same clientId because the public key will no longer match
+   *    the private key they are using to sign their JWTs. If you wish to work in parallel, it is better to use a
+   *    constant configuration via skaffold or sciapps. Otherwise, you may wish to register your own test app with
+   *    login.gov. Just remember NOT to check in your custom clientId to this build file!
+   */
+  boolean testWithOneStop = false
+
+  envVars = [:] as Map<String, ?>
+
+  if(testWithOneStop) {
+    // local testing with frontend client proxying from 8080
+    // -- use these values if you want to test logging in via OneStop running on 8080
+    envVars.LOGIN_GOV_CLIENT_ID = "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8080"
+    envVars.LOGIN_GOV_ALLOWED_ORIGIN = "http://localhost:8080"
+    envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8080/onestop"
+    envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8080/onestop"
+    envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8080/onestop"
+  }
+  else {
+    // local testing with standalone search api on port 8097
+    // -- use these values if you want to test logging in directly against api-search on 8097
+    envVars.LOGIN_GOV_CLIENT_ID = "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8097"
+    envVars.LOGIN_GOV_ALLOWED_ORIGIN = "http://localhost:8097"
+    envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
+    envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
+    envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
+  }
+
+  // login.gov keystore configuration (for JWT signing on token request)
+  keystoreOutputDir = ".keystore"
+  keystoreFile = "logingov.jks"
+
+  envVars.LOGIN_GOV_KEYSTORE_FILE = "${keystoreOutputDir}/${keystoreFile}"
+  envVars.LOGIN_GOV_KEYSTORE_ALIAS = "logingov"
+  envVars.LOGIN_GOV_KEYSTORE_PASSWORD = "password"
 }
 
-war {
-  enabled = true
-  baseName = "${rootProject.name}-${project.name}"
-  finalizedBy bootWar
-}
+// keystore plugin readme:
+// https://github.com/forgo/keystore-gradle-plugin/blob/master/README.md
+keystore {
+  outputDir = "${project.keystoreOutputDir}"
 
-bootWar {
-  excludeDevtools = true
-  classifier = 'all'
-  launchScript()
-  onlyIf { !tasks.getByName('war').state.upToDate }
-}
+  keyFile = "logingov.key"
+  keyPassword = "${project.envVars.LOGIN_GOV_KEYSTORE_PASSWORD}"
 
-bootRun {
-  dependsOn ':dockerComposeInfraStart'
-  finalizedBy ':dockerComposeInfraStop'
-}
+  certFile = "logingov.crt"
 
-configurations.configure {
-  integrationTestCompile.extendsFrom testCompile
-  integrationTestRuntime.extendsFrom testRuntime
+  pkcs12File = "logingov.pkcs12"
+  pkcs12Password = "${project.envVars.LOGIN_GOV_KEYSTORE_PASSWORD}"
+
+  jksFile = "${project.keystoreFile}"
+  jksPassword = "${project.envVars.LOGIN_GOV_KEYSTORE_PASSWORD}"
+  alias = "${project.envVars.LOGIN_GOV_KEYSTORE_ALIAS}"
 }
 
 sourceSets {
@@ -76,24 +133,111 @@ sourceSets {
   }
 }
 
+war {
+  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
+  enabled = true
+  // TODO disabled dynamic project-based name for #827, plan to re-enable in #828
+  // baseName = "${rootProject.name}-${project.name}"
+  baseName = "onestop-search"
+  finalizedBy bootWar
+}
+
+bootWar {
+  excludeDevtools = true
+  classifier = 'all'
+  launchScript()
+  onlyIf { !tasks.getByName('war').state.upToDate }
+}
+
+task sourceJar(type: Jar) {
+  classifier "sources"
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
+// these environment variables would normally be set by kubernetes objects;
+// however, this is problematic running via gradle tasks (build, test, bootRun...) -- where these environment
+// variables are not set and can require different values (e.g. - keystore path/file)
+//task environmentVariables(type: Exec) {
+bootRun {
+  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
+  environment project.envVars as Map<String, ?>
+}
+
+test {
+  environment project.envVars as Map<String, ?>
+}
+
+configurations.configure {
+  integrationTestCompile.extendsFrom testCompile
+  integrationTestRuntime.extendsFrom testRuntime
+}
+
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
+  dependsOn 'generateJsonSchema'
   mustRunAfter 'test'
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
   reports.junitXml.destination = file("${buildDir}/integration-test-results")
   reports.html.destination =  file("${buildDir}/reports/integrationTests")
+  environment project.envVars as Map<String, ?>
 }
 
 check.dependsOn integrationTest
 
-task sourceJar(type: Jar) {
-  classifier "sources"
+build.dependsOn sourceJar
 
-  baseName = "${rootProject.name}-${project.name}"
-  from "${projectDir}/src"
+// copy schema dir to tmp
+task setupOpenapiGenPart1(type: Copy) {
+  from "schema"
+  into "${buildDir}/tmp/schema"
 }
 
-build.dependsOn sourceJar
+// override the actual geometry so that the openApi is valid 
+task setupOpenapiGenPart2(type: Copy) {
+  dependsOn "setupOpenapiGenPart1"
+  from "schema/components"
+  include "override-geometry.json"
+  into "${buildDir}/tmp/schema/components"
+    rename { filename ->
+      filename.replace 'override-geometry', 'geometry'
+    }
+}
+
+node {
+  version = '10.15.3'
+  npmVersion = '6.1.0'
+  download = true
+}
+
+// NOTE: The 'buildRequest' task defined in package.json generates json dereference
+task generateJsonSchema(type: NpmTask) {
+  outputs.upToDateWhen { false }
+  dependsOn 'npmInstall'
+  args = ['run', 'buildRequest']
+}
+
+// NOTE: The 'build' task defined in package.json pipes the output directly to the output file
+task generateOpenApi(type: NpmTask) {
+  outputs.upToDateWhen { false }
+  dependsOn { ['npmInstall','processResources', 'setupOpenapiGenPart2'] }
+  args = ['run', 'build']
+  outputs.file("$buildDir/resources/main/static/docs/openapi.yaml")
+}
+
+// NOTE: The 'testSchemas' task defined in package.json generates json dereference for test
+task generateTestSchemas(type: NpmTask) {
+  dependsOn {['copyPartialSchemas', 'npmInstall']}
+  args = ['run', 'testSchemas']
+}
+
+// copy schemas for testing
+task copyPartialSchemas(type: Copy) {
+  from 'schema/'
+  into "${buildDir}/resources/test/schema/"
+}
+
+test.dependsOn 'generateTestSchemas', 'generateJsonSchema'
 
 publishing {
   publications {
@@ -107,8 +251,12 @@ publishing {
 
 processResources {
   outputs.upToDateWhen { false }
-  filesMatching("**/application.yml") {
-    expand( project.properties )
+  filesMatching("**/application*.yml") {
+    expand( [
+            esVersion: project.esVersion,
+            version: project.version,
+            buildDate: project.buildDate,
+    ] )
   }
 }
 
@@ -117,6 +265,6 @@ docker {
 }
 
 BuildDockerImage.dependsOn(bootWar)
-assemble.dependsOn(BuildDockerImage)
+// assemble.dependsOn(BuildDockerImage)
 PublishDockerImage.dependsOn(BuildDockerImage)
 publish.dependsOn PublishDockerImage

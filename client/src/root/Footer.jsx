@@ -53,19 +53,19 @@ const styleIcon = {
 
 const links = [
   {
-    href: '//www.ncdc.noaa.gov/about-ncdc/privacy',
+    href: '//www.ncei.noaa.gov/privacy',
     text: 'Privacy Policy',
   },
   {
-    href: 'http://www.noaa.gov/foia-freedom-of-information-act',
+    href: '//www.noaa.gov/foia-freedom-of-information-act',
     text: 'Freedom of Information Act',
   },
   {
-    href: 'http://www.cio.noaa.gov/services_programs/info_quality.html',
+    href: '//www.cio.noaa.gov/services_programs/info_quality.html',
     text: 'Information Quality',
   },
   {
-    href: 'http://www.noaa.gov/disclaimer.html',
+    href: '//www.noaa.gov/disclaimer.html',
     text: 'Disclaimer',
   },
   {
@@ -81,7 +81,7 @@ const links = [
     text: 'Department of Commerce',
   },
   {
-    href: 'http://www.noaa.gov/',
+    href: '//www.noaa.gov/',
     text: 'NOAA',
   },
   {

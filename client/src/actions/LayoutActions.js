@@ -1,3 +1,4 @@
+// synchronous actions
 export const SET_LEFT_OPEN_CLOSE = 'SET_LEFT_OPEN_CLOSE'
 export const openLeft = () => {
   return {
@@ -23,5 +24,21 @@ export const TOGGLE_MAP = 'TOGGLE_MAP'
 export const toggleMap = () => {
   return {
     type: TOGGLE_MAP,
+  }
+}
+
+export const SET_HEADER_MENU_OPEN = 'SET_HEADER_MENU_OPEN'
+export const setHeaderMenuOpen = isOpen => {
+  return {
+    type: SET_HEADER_MENU_OPEN,
+    value: isOpen,
+  }
+}
+
+export const SHOW_GRANULE_VIDEO = 'SHOW_GRANULE_VIDEO'
+export const showGranuleVideo = granuleId => {
+  return {
+    type: SHOW_GRANULE_VIDEO,
+    granuleVideo: granuleId,
   }
 }

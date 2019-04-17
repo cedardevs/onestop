@@ -116,6 +116,7 @@ export const FilterColors = {
   DARK_EMPHASIS: '#12347C',
   // text
   DISABLED_TEXT: '#636363',
+  DISABLED_BACKGROUND: '#636363',
   INVERSE_TEXT: '#FFF',
   TEXT: 'black',
 }

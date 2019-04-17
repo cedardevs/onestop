@@ -29,7 +29,7 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     toggleExcludeGlobal: () => {
       dispatch(toggleExcludeGlobal())
@@ -39,7 +39,7 @@ const mapDispatchToProps = dispatch => {
     submit: () => {
       dispatch(clearCollections())
       dispatch(triggerSearch())
-      dispatch(showCollections())
+      dispatch(showCollections(ownProps.history))
     },
     updateDateRange: (startDate, endDate) =>
       dispatch(updateDateRange(startDate, endDate)),

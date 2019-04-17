@@ -1,0 +1,4 @@
+---
+sitemap:
+  client-path: http://localhost:30000/onestop
+  api-path: http://localhost:30097/onestop-search

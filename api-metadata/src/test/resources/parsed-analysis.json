@@ -1,0 +1,49 @@
+{
+  "identification": {
+    "fileIdentifier": {
+      "exists": true,
+      "fileIdentifierString": "gov.noaa.nodc:GHRSST-ABOM-L4HRfnd-AUS-RAMSSA_09km"
+    },
+    "doi": {
+      "exists": false,
+      "doiString": null
+    },
+    "parentIdentifier": {
+      "exists": false,
+      "parentIdentifierString": null
+    },
+    "hierarchyLevelName": {
+      "exists": false,
+      "matchesIdentifiers": true
+    }
+  },
+  "temporalBounding": {
+    "begin": {
+      "exists": true,
+      "precision": "Days",
+      "validSearchFormat": true,
+      "zoneSpecified": "UNDEFINED",
+      "utcDateTimeString": "2008-04-01T00:00Z"
+    },
+    "end": {
+      "exists": false,
+      "precision": "UNDEFINED",
+      "validSearchFormat": "UNDEFINED",
+      "zoneSpecified": "UNDEFINED",
+      "utcDateTimeString": "UNDEFINED"
+    },
+    "instant": {
+      "exists": false,
+      "precision": "UNDEFINED",
+      "validSearchFormat": "UNDEFINED",
+      "zoneSpecified": "UNDEFINED",
+      "utcDateTimeString": "UNDEFINED"
+    },
+    "range": {
+      "descriptor": "ONGOING",
+      "beginLTEEnd": true
+    }
+
+  },
+  "spatialBounding":{}
+}

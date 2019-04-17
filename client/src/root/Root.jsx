@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {Route, Switch} from 'react-router'
 
-import Background from '../layout/Background'
 import Container from '../layout/Container'
+import Background from '../layout/Background'
 
 import BannerContainer from './banner/BannerContainer'
 import HeaderContainer from './HeaderContainer'
@@ -18,21 +18,24 @@ import ErrorContainer from '../error/ErrorContainer'
 import LandingContainer from '../landing/LandingContainer'
 import DetailContainer from '../detail/DetailContainer'
 import Help from '../common/info/Help'
+
 import AboutContainer from '../common/info/AboutContainer'
+import CartContainer from '../cart/CartContainer'
 
 import LoadingBarContainer from '../loading/LoadingBarContainer'
 
 import FooterContainer from './FooterContainer'
 
-import {COLOR_SECONDARY_DARK} from '../common/defaultStyles'
+import {SiteColors} from '../common/defaultStyles'
+import {FEATURE_CART} from '../utils/featureUtils'
+import {ROUTE} from '../utils/urlUtils'
+import NotFoundContainer from '../common/info/NotFoundContainer'
 
 const styleBrowserWarning = {
-  background: COLOR_SECONDARY_DARK,
-  width: '96%',
-  margin: '1em auto',
-  padding: '0.3em 1em',
-  borderRadius: '3px',
-  color: '#fff',
+  background: SiteColors.WARNING,
+  textAlign: 'center',
+  padding: '0.618em',
+  fontSize: '1.2em',
 }
 
 const styleBrowserWarningLink = {
@@ -49,7 +52,6 @@ const styleClose = {}
 export default class Root extends Component {
   constructor(props) {
     super(props)
-
     this.hasUnsupportedFeatures = this.hasUnsupportedFeatures.bind(this)
     this.state = {
       leftVisible: true,
@@ -60,13 +62,12 @@ export default class Root extends Component {
 
   hasUnsupportedFeatures() {
     let browserWarning = false
-    const htmlClasses = document.documentElement.className.split(' ')
-    htmlClasses.forEach(htmlClass => {
-      if (htmlClass.startsWith('no-')) {
-        browserWarning = true
-        return
-      }
-    })
+    const flexSupport =
+      document.body.style.flex !== undefined &&
+      document.body.style.flexFlow !== undefined
+    if (!flexSupport) {
+      browserWarning = true
+    }
     return browserWarning
   }
 
@@ -75,14 +76,6 @@ export default class Root extends Component {
       'https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers'
     return (
       <aside role="alert" style={styleBrowserWarning}>
-        <span
-          style={styleClose}
-          onClick={() => {
-            this.setState({browserWarning: false})
-          }}
-        >
-          x
-        </span>
         <p style={styleBrowserWarningParagraph}>
           The browser that you are using to view this page is not currently
           supported. For a list of currently supported & tested browsers, please
@@ -92,14 +85,20 @@ export default class Root extends Component {
             <a style={styleBrowserWarningLink} href={wikiUrl}>
               OneStop Documentation
             </a>
-          </span>
+          </span>.
         </p>
       </aside>
     )
   }
 
   render() {
-    const {showLeft, leftOpen, showRight} = this.props
+    const {
+      showLeft,
+      leftOpen,
+      showRight,
+      featuresEnabled,
+      authEnabled,
+    } = this.props
 
     const header = (
       <div>
@@ -107,12 +106,16 @@ export default class Root extends Component {
         <Route path="/">
           <HeaderContainer />
         </Route>
-        {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
       </div>
     )
 
     const left = leftOpen ? <FiltersContainer /> : <FiltersHiddenContainer />
     const leftWidth = leftOpen ? '20em' : '2em'
+    const cart = featuresEnabled.includes(FEATURE_CART) ? (
+      <Route path={ROUTE.cart.path}>
+        <CartContainer />
+      </Route>
+    ) : null
 
     const middle = (
       <div style={{width: '100%'}}>
@@ -123,12 +126,11 @@ export default class Root extends Component {
           </Route>
         </Switch>
         <Switch>
-          <Route path="/collections" exact>
+          <Route path={ROUTE.search.path} exact>
             {/*TODO: replace this with ArcGIS map?*/}
             <MapContainer selection={true} features={false} />
           </Route>
         </Switch>
-        {this.props.children}
 
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
@@ -136,53 +138,64 @@ export default class Root extends Component {
             <LandingContainer />
           </Route>
 
-          <Route path="/collections/details">
+          <Route path={ROUTE.details.path}>
             {/*TODO parameterize this path!*/}
             <DetailContainer />
           </Route>
 
-          <Route path="/collections">
-            <Result>
-              <Switch>
-                <Route path="/collections" exact>
+          <Route path={ROUTE.search.path}>
+            <Switch>
+              <Route path={ROUTE.search.path} exact>
+                <Result>
                   <CollectionsContainer />
-                </Route>
-                <Route path="/collections/granules">
-                  {/*TODO parameterize this path!*/}
-                  <GranuleListContainer />
-                </Route>
-              </Switch>
-            </Result>
+                </Result>
+              </Route>
+              <Route path={ROUTE.granules.parameterized}>
+                {/*TODO parameterize this path!*/}
+                <GranuleListContainer />
+              </Route>
+            </Switch>
           </Route>
 
-          <Route path="/about">
+          <Route path={ROUTE.about.path}>
             <AboutContainer />
           </Route>
-          <Route path="/help">
+
+          <Route path={ROUTE.help.path}>
             <Help />
           </Route>
 
-          <Route path="/error">
+          {cart}
+
+          <Route path={ROUTE.error.path}>
             <ErrorContainer />
           </Route>
+
+          {/* 404 not found */}
+          <Route component={NotFoundContainer} />
         </Switch>
       </div>
     )
 
-    return (
-      <Background>
-        <Container
-          header={header}
-          left={left}
-          leftWidth={leftWidth}
-          leftVisible={leftOpen}
-          middle={middle}
-          right={null}
-          rightWidth={256}
-          rightVisible={showRight}
-          footer={<FooterContainer />}
-        />
-      </Background>
-    )
+    if (this.state.browserWarning) {
+      return this.unsupportedBrowserWarning()
+    }
+    else {
+      return (
+        <Background>
+          <Container
+            header={header}
+            left={left}
+            leftWidth={leftWidth}
+            leftVisible={leftOpen}
+            middle={middle}
+            right={null}
+            rightWidth={256}
+            rightVisible={showRight}
+            footer={<FooterContainer />}
+          />
+        </Background>
+      )
+    }
   }
 }

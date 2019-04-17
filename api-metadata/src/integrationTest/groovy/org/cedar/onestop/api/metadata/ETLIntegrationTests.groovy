@@ -1,19 +1,14 @@
 package org.cedar.onestop.api.metadata
 
 import org.cedar.onestop.api.metadata.service.ETLService
-import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
+import org.cedar.onestop.api.metadata.service.MetadataManagementService
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import spock.lang.Specification
-import spock.lang.Unroll
 
-@Unroll
-@ActiveProfiles("integration")
-@SpringBootTest(classes = [Application, IntegrationTestConfig])
-class ETLIntegrationTests extends Specification {
+class ETLIntegrationTests extends IntegrationTest {
 
   @Autowired
   private ElasticsearchService elasticsearchService
@@ -39,14 +34,24 @@ class ETLIntegrationTests extends Specification {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
   private String FLAT_GRANULE_SEARCH_INDEX
 
+  @Value('${elasticsearch.index.prefix:}')
+  String PREFIX
+
+  @Value('${elasticsearch.index.universal-type}')
+  private String TYPE
+
   private final String COLLECTION_TYPE = 'collection'
   private final String GRANULE_TYPE = 'granule'
   private final String FLAT_GRANULE_TYPE = 'flattenedGranule'
 
+  @Autowired
+  @Qualifier("elasticsearchRestClient")
+  RestClient restClient
+
   void setup() {
-    elasticsearchService.dropStagingIndices()
+    elasticsearchService.performRequest("PUT", "_cluster/settings", ['transient': ['script.max_compilations_per_minute': 200]])
     elasticsearchService.dropSearchIndices()
-    elasticsearchService.ensureIndices()
+    elasticsearchService.dropStagingIndices()
   }
 
   def 'update does nothing when staging is empty'() {
@@ -96,12 +101,16 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    etlService.updateSearchIndices()
+    etlService.updateSearchIndices() // runs the ETLs
+
+    def collectionVersions = indexedCollectionVersions().keySet()
+    def granuleVersions = indexedGranuleVersions().keySet()
+    def flatGranuleVersions = indexedFlatGranuleVersions().keySet()
 
     then:
-    indexedCollectionVersions().keySet() == ['gov.noaa.nodc:NDBC-COOPS'] as Set
-    indexedGranuleVersions().keySet()  == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
-    indexedFlatGranuleVersions().keySet() == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
+    collectionVersions  == ['gov.noaa.nodc:NDBC-COOPS'] as Set
+    granuleVersions     == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
+    flatGranuleVersions == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
   }
 
   def 'updating twice does nothing the second time'() {
@@ -251,7 +260,7 @@ class ETLIntegrationTests extends Specification {
   }
 
 
-  //---- Helpers -----
+  //---- Helper functions -----
 
   private void insertMetadataFromPath(String path) {
     insertMetadata(ClassLoader.systemClassLoader.getResourceAsStream(path).text)
@@ -284,7 +293,6 @@ class ETLIntegrationTests extends Specification {
   }
 
   private Map indexedItemVersions(String index) {
-    elasticsearchService.refresh(index)
     def endpoint = "$index/_search"
     def request = [
         version: true,

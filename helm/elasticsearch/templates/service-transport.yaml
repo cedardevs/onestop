@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "elasticsearch.fullname" . }}-transport
+  labels:
+    app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
+    helm.sh/chart: {{ include "elasticsearch.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.typeTransport }}
+  clusterIP: None
+  ports:
+    - port: {{ .Values.service.portTransport }}
+      targetPort: transport
+      protocol: TCP
+      name: transport
+    # If the service type was overriden from the default ClusterIP to NodePort
+    # (and we've also specified nodePort), nodePort will be exposed outside the cluster.
+    # This is simple switch for non-production environments to allow for easier debugging.
+    {{- if (and (eq .Values.service.typeTransport "NodePort") (not (empty .Values.service.nodePortTransport))) }}
+      nodePort: {{ .Values.service.nodePortTransport }}
+    {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

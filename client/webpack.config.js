@@ -1,40 +1,24 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
 
 const path = require('path')
 require('babel-polyfill')
-const modernizrrc = path.resolve(__dirname, '.modernizrrc.json')
-require(modernizrrc)
+
 const nodeEnv = process.env.NODE_ENV || 'development'
 const isProd = nodeEnv === 'production'
+
+const rootPath = 'onestop'
+const assetPath = 'static'
 
 const smp = new SpeedMeasurePlugin()
 
 const basePlugins = [
   new HtmlWebpackPlugin({
     inject: false,
-    title: 'NOAA OneStop',
     template: require('html-webpack-template'),
     lang: 'en-US',
-    favicon: '../img/noaa-favicon.ico',
-    meta: [
-      {
-        property: 'dcterms.format', content: 'text/html',
-      },
-      {
-        property: 'og:type',
-        content: 'website',
-      },
-    ],
-  }),
-  new webpack.optimize.CommonsChunkPlugin({
-    name: 'vendor',
-    minChunks: function (module) {
-      return module.context && module.context.indexOf('node_modules') !== -1
-    },
-  }),
+  })
 ]
 
 const devPlugins = [
@@ -51,9 +35,6 @@ const prodPlugins = [
       'NODE_ENV': JSON.stringify('production'),
     },
   }),
-  new webpack.optimize.UglifyJsPlugin({
-    compress: {warnings: false},
-  }),
   new webpack.LoaderOptionsPlugin({
     minimize: true,
     debug: false,
@@ -62,10 +43,12 @@ const prodPlugins = [
 
 const devEntryPoints = [
   'babel-polyfill',
-  modernizrrc,
 
   // bundle the client for webpack-dev-server and connect to the provided endpoint
-  'webpack-dev-server/client?http://localhost:8080',
+  // ensure host and port here matches the host and port specified in the `devServer` section
+  // otherwise, you may see console warnings like: `sockjs-node ERR_CONNECTION_REFUSED`
+  // see: https://github.com/webpack/webpack-dev-server/issues/416#issuecomment-287797086
+  'webpack-dev-server/client?http://localhost:9090',
 
   // bundle the client for hot reloading hot reload for successful updates
   'webpack/hot/only-dev-server',
@@ -75,7 +58,6 @@ const devEntryPoints = [
 
 const prodEntryPoints = [
   'babel-polyfill',
-  modernizrrc,
   './index.jsx',
 ]
 
@@ -85,10 +67,8 @@ module.exports = env => {
     output:
         {
           path: path.resolve(__dirname, 'build/dist'),
-          publicPath:
-              './',
-          filename:
-              '[name]-[hash].bundle.js',
+          publicPath: `/${rootPath}/`,
+          filename: '[name]-[hash].bundle.js',
         }
     ,
     context: path.resolve(__dirname, 'src'),
@@ -96,11 +76,19 @@ module.exports = env => {
         isProd ? false : 'cheap-module-eval-source-map',
     devServer:
         isProd ? {} : {
-          publicPath: '/onestop/',
+          publicPath: `/${rootPath}/`,
+          historyApiFallback: {
+            index: `/${rootPath}/`,
+          },
+          // ensure host and port here matches the host and port specified in the `devEntryPoints` above
+          // otherwise, you may see console warnings like: `sockjs-node ERR_CONNECTION_REFUSED`
+          // see: https://github.com/webpack/webpack-dev-server/issues/416#issuecomment-287797086
+          host: 'localhost',
+          port: 9090,
           disableHostCheck: true,
           hot: true,
           proxy: {
-            '/onestop/api/*': {
+            '/onestop-search/*': {
               target: `${env.URL_API_SEARCH}/`,
               secure: false,
             },
@@ -109,9 +97,6 @@ module.exports = env => {
     module:
         {
           rules: [{
-            test: /\.modernizrrc.json/,
-            use: ['modernizr-loader', 'json-loader'],
-          }, {
             enforce: 'pre',
             test: /\.js$/,
             use: 'eslint-loader',
@@ -122,11 +107,8 @@ module.exports = env => {
             use: {
               loader: 'babel-loader',
               options: {
-                presets: [
-                  ['env', {modules: false}],
-                  'react',
-                  'stage-0',
-                ],
+                babelrc: true,
+                babelrcRoots: ['.', '../'],
               },
             },
           }, {
@@ -158,6 +140,20 @@ module.exports = env => {
                   hash: 'sha512',
                   digestType: 'hex',
                   name: '[hash].[ext]',
+                  outputPath: `${assetPath}/img`
+                },
+              },
+            ],
+          }, {
+            test: /\.(ico)$/,
+            exclude: /node_modules/,
+            include: /img/,
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  name: '[name].[ext]',
+                  outputPath: assetPath
                 },
               },
             ],
@@ -165,8 +161,9 @@ module.exports = env => {
             test: /\.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
             use: [{loader: 'file-loader'
               , options: {
-                name: 'fonts/[name].[ext]',
-              }
+                name: '/[name].[ext]',
+                outputPath: `${assetPath}/fonts`
+            }
           }]
           }],
         }
@@ -182,8 +179,6 @@ module.exports = env => {
           {
             'fa':
                 path.resolve(__dirname, 'img/font-awesome/white/svg/'),
-            modernizr$:
-                path.resolve(__dirname, '.modernizrrc.json'),
           },
     }
     ,

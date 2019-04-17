@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import L from 'leaflet'
-import E from 'esri-leaflet'
+import * as E from 'esri-leaflet'
 import _ from 'lodash'
 import {
   ensureDatelineFriendlyGeometry,
@@ -57,6 +57,7 @@ class MapThumbnail extends React.Component {
     }
 
     this.map = L.map(ReactDOM.findDOMNode(this), {
+      preferCanvas: true,
       layers: layers,
       maxZoom: this.props.interactive ? 10 : 3,
       zoomControl: this.props.interactive,

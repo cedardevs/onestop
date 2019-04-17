@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Geometry",
+  "description": "One geometry as defined by GeoJSON",
+  "oneOf": [
+    {
+      "$ref": "geo.json#/definitions/Point"
+    },
+    {
+      "$ref": "geo.json#/definitions/MultiPoint"
+    },
+    {
+      "$ref": "geo.json#/definitions/LineString"
+    },
+    {
+      "$ref": "geo.json#/definitions/MultiLineString"
+    },
+    {
+      "$ref": "geo.json#/definitions/Polygon"
+    },
+    {
+      "$ref": "geo.json#/definitions/MultiPolygon"
+    }
+  ]
+}

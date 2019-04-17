@@ -1,9 +1,9 @@
-import fetch from 'isomorphic-fetch'
+import 'isomorphic-fetch'
 import _ from 'lodash'
 import {showLoading, hideLoading} from './FlowActions'
 import {showErrors} from './ErrorActions'
 import {assembleSearchRequest} from '../utils/queryUtils'
-import {getApiPath} from '../reducers/domain/api'
+import {apiPath} from '../utils/urlUtils'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -154,7 +154,8 @@ const buildSearchAction = (
 
     prefetchHandler(dispatch)
 
-    const endpoint = getApiPath(state) + '/search/' + endpointName
+    const endpoint = apiPath() + '/search/' + endpointName
+
     const fetchParams = {
       method: 'POST',
       headers: {
@@ -168,11 +169,11 @@ const buildSearchAction = (
       .then(response => checkForErrors(response))
       .then(response => response.json())
       .then(json => successHandler(dispatch, json))
-      .catch(ajaxError =>
-        ajaxError.response
+      .catch(ajaxError => {
+        return ajaxError.response
           .json()
           .then(errorJson => errorHandler(dispatch, errorJson))
-      )
+      })
       .catch(jsError => errorHandler(dispatch, jsError))
   }
 }
@@ -223,7 +224,7 @@ const buildGetAction = (
 ) => {
   return (dispatch, getState) => {
     prefetchHandler(dispatch)
-    const endpoint = getApiPath(getState()) + '/' + endpointName + '/' + id
+    const endpoint = apiPath() + '/' + endpointName + '/' + id
     const fetchParams = {
       method: 'GET',
       headers: {
@@ -243,5 +244,24 @@ const buildGetAction = (
           .then(errorJson => errorHandler(dispatch, errorJson))
       )
       .catch(jsError => errorHandler(dispatch, jsError))
+  }
+}
+
+export const getSitemap = () => {
+  return buildSitemapAction()
+}
+
+const buildSitemapAction = () => {
+  return (dispatch, getState) => {
+    let state = getState()
+
+    const endpoint = apiPath() + '/sitemap.xml'
+    const fetchParams = {
+      method: 'GET',
+    }
+
+    return fetch(endpoint, fetchParams)
+      .then(response => checkForErrors(response))
+      .then(response => (window.location.href = response.url))
   }
 }

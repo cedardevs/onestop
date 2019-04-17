@@ -1,6 +1,7 @@
 package org.cedar.onestop
 
 import org.junit.ClassRule
+import org.junit.Ignore
 import org.junit.Test
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
@@ -14,6 +15,7 @@ import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 import groovy.json.JsonSlurper
 
+@Ignore
 class LoadAndSearchTests extends Specification {
 
   @Shared
@@ -24,11 +26,12 @@ class LoadAndSearchTests extends Specification {
 
   static esApiBase = "http://localhost:9200"
   static searchApiBase = "http://localhost:8097/onestop/api"
-  static metadataApiBase = "http://localhost:8098/onestop/api"
+  static metadataApiBase = "http://localhost:8098/onestop/admin"
   static restTemplate = new RestTemplate()
 
   def setupSpec() {
     def pollingConditions = new PollingConditions()
+    pollingConditions.setDelay(5)
     pollingConditions.within(60, {
       restTemplate.exchange(RequestEntity.get(esApiBase.toURI()).build(), Map).statusCode == HttpStatus.OK
       restTemplate.exchange(RequestEntity.get("${searchApiBase}/actuator/info".toURI()).build(), Map).statusCode == HttpStatus.OK

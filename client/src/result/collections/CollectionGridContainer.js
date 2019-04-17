@@ -20,10 +20,10 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     selectCollection: id => {
-      dispatch(showDetails(id))
+      dispatch(showDetails(ownProps.history, id))
     },
     fetchMoreResults: () => {
       dispatch(incrementCollectionsOffset())

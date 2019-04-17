@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import defaultStyles from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
+import {getBasePath} from '../utils/urlUtils'
 
 //-- Styles
 const styleLogoWrapper = {
@@ -99,6 +99,13 @@ const styleOneStopOImageWrapper = {
   fill: 'inherit',
   transition: 'fill 0.3s ease',
 }
+
+const styleOnestopO = {
+  display: 'inline-block',
+  width: 0,
+  overflowX: 'hidden',
+}
+
 //-- Component
 
 export default class Logo extends Component {
@@ -199,47 +206,33 @@ export default class Logo extends Component {
     return (
       <div style={styleLogoWrapper}>
         <div style={styleNoaaLogoWrapper}>
-          <a
-            href="http://www.noaa.gov"
-            title="NOAA"
-            aria-hidden={true}
-            onClick={() => this.props.onClick()}
-            onFocus={this.handleImageFocus}
-            onBlur={this.handleImageBlur}
-            onMouseOver={this.handleImageMouseOver}
-            onMouseOut={this.handleImageMouseOut}
-            style={{outline: 'none'}}
-          >
-            <img
-              style={styleNoaaLogoMerged}
-              id="logo"
-              alt="NOAA Logo"
-              src={noaaLogo}
-            />
-          </a>
+          <img
+            style={styleNoaaLogoMerged}
+            id="logo"
+            alt="NOAA Logo"
+            src={noaaLogo}
+          />
         </div>
         <div style={styleTextWrapperMerged}>
           <a
-            href="#"
+            href={getBasePath()}
             style={stylesOneStopLink}
-            onClick={() => this.props.onClick()}
+            onClick={this.props.onClick}
             onFocus={this.handleTextFocus}
             onBlur={this.handleTextBlur}
             onMouseOver={this.handleTextMouseOver}
             onMouseOut={this.handleTextMouseOut}
           >
             <span style={stylesOneStopText} aria-label="One Stop">
-              <span style={styleOneStopOImageWrapper} aria-hidden="true">
+              <span style={styleOneStopOImageWrapper}>
                 <SvgIcon
                   size="1.1em"
                   verticalAlign="initial"
                   path={stop_circle_o}
+                  aria-hidden="true"
                 />
               </span>
-              <span
-                aria-hidden="true"
-                style={{display: 'inline-block', width: 0, overflowX: 'hidden'}}
-              >
+              <span tabIndex={-1} aria-hidden="true" style={styleOnestopO}>
                 O
               </span>
               <span aria-hidden="true">neStop</span>

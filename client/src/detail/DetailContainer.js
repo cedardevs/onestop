@@ -4,7 +4,7 @@ import Detail from './Detail'
 
 import {withRouter} from 'react-router'
 
-const mapStateToProps = (state, reactProps) => {
+const mapStateToProps = state => {
   const focusedItem = state.domain.results.collectionDetail
   return {
     id: focusedItem ? focusedItem.collection.id : null,
@@ -14,10 +14,10 @@ const mapStateToProps = (state, reactProps) => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     navigateToGranules: id => {
-      dispatch(showGranulesList(id))
+      dispatch(showGranulesList(ownProps.history, id))
     },
   }
 }

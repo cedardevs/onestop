@@ -1,0 +1,5 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Geometry",
+  "description": "One geometry as defined by GeoJSON. Can be a point, multipoint, linestring, mutlilinestring, polygon, or multipolygon."
+}

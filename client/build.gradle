@@ -3,18 +3,22 @@ apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 node {
-    version = '8.10.0'
+    version = '10.15.1'
     download = true
 }
 
 clean {
     doFirst {
-        file("${buildDir}/dist").deleteDir()
-        file("${buildDir}/libs").deleteDir()
+      npm_clean
     }
 }
 
-def sourceDirs = ['node_modules', 'img', 'src', 'style']
+task npm_clean(type: Exec) {
+  executable = "bash"
+  args = ["-c", "npm run clean"]
+}
+
+def sourceDirs = ['node_modules', 'img', 'src']
 
 task compile(type: NodeTask) {
     dependsOn 'npmInstall'
@@ -59,6 +63,11 @@ npm_test {
     inputs.dir('test').skipWhenEmpty()
 }
 
+task formatCheck (type: Exec) {
+  executable = "bash"
+  args = ["-c", "npm run formatCheck"]
+}
+
 task test {
     dependsOn 'npm_test'
 }
@@ -71,6 +80,7 @@ task retire(type: Exec) {
 check {
     dependsOn 'test'
     dependsOn 'retire'
+    dependsOn 'formatCheck'
 }
 
 build {
@@ -98,7 +108,11 @@ publishing {
     }
 }
 
+docker {
+  additionalBuildArgs = [TAR_NAME: tarResults.outputs.files.singleFile.name]
+}
+
 BuildDockerImage.dependsOn(tarResults)
-assemble.dependsOn(BuildDockerImage)
+// assemble.dependsOn(BuildDockerImage)
 PublishDockerImage.dependsOn(BuildDockerImage)
 publish.dependsOn PublishDockerImage

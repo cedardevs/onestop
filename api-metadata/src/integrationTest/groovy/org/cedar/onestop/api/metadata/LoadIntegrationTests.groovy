@@ -3,25 +3,17 @@ package org.cedar.onestop.api.metadata
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.core.io.ClassPathResource
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
-import spock.lang.Specification
-import spock.lang.Unroll
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-
-@Unroll
-@ActiveProfiles("integration")
-@SpringBootTest(classes = [Application, IntegrationTestConfig], webEnvironment = RANDOM_PORT)
-class LoadIntegrationTests extends Specification {
+class LoadIntegrationTests extends IntegrationTest {
 
   /**
    * These tests cover:
@@ -41,6 +33,7 @@ class LoadIntegrationTests extends Specification {
   private String contextPath
 
   @Autowired
+  @Qualifier("elasticsearchRestClient")
   RestClient restClient
 
   @Autowired
@@ -54,8 +47,9 @@ class LoadIntegrationTests extends Specification {
 
   void setup() {
     restTemplate = new RestTemplate()
+
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    metadataURI = "http://localhost:${port}/${contextPath}/metadata"
+    metadataURI = "http://localhost:${port}${contextPath}/metadata"
     elasticsearchService.dropSearchIndices()
     elasticsearchService.dropStagingIndices()
     elasticsearchService.ensureIndices()
@@ -97,32 +91,6 @@ class LoadIntegrationTests extends Specification {
     reloadResult.statusCode == HttpStatus.OK
   }
 
-  def 'load multiple metadata records'() {
-    when:
-    def loadRequest = buildMultiLoadRequest(collectionPath, granulePath)
-    def loadResult = restTemplate.exchange(loadRequest, Map)
-    refreshIndices()
-
-    then: "Load returns CREATED"
-    loadResult.statusCode == HttpStatus.MULTI_STATUS
-    loadResult.body.data*.meta.status.every { it == HttpStatus.CREATED.value() }
-
-    and: "All documents can be retrieved"
-    def elasticsearchIds = loadResult.body.data*.id
-    elasticsearchIds.each {
-      def getRequest = RequestEntity.get("$metadataURI/$it".toURI()).build()
-      def getResult = restTemplate.exchange(getRequest, Map)
-      assert getResult.statusCode == HttpStatus.OK
-      assert getResult.body.data.id[0] == it
-    }
-
-    when: "Same metadata is loaded again"
-    def reloadResult = restTemplate.exchange(loadRequest, Map)
-
-    then: "Load returns OK"
-    reloadResult.statusCode == HttpStatus.MULTI_STATUS
-    reloadResult.body.data*.meta.status.every { it == HttpStatus.OK.value() }
-  }
 
   /**
    * Load three metadata records:
@@ -234,143 +202,11 @@ class LoadIntegrationTests extends Specification {
     getResult.body.detail instanceof String
   }
 
-  def 'delete a collection by elasticsearch id with recursive #recursive'() {
-    setup:
-    def loadRequest = buildMultiLoadRequest(collectionPath, granulePath)
-    def loadResult = restTemplate.exchange(loadRequest, Map)
-    def collectionId = loadResult.body.data.find({it.type == 'collection'}).id
-    def granuleId = loadResult.body.data.find({it.type == 'granule'}).id
-    refreshIndices()
-
-    when:
-    def deleteRequest = RequestEntity.delete("$metadataURI/$collectionId?recursive=$recursive".toURI()).build()
-    def deleteResult = restTemplate.exchange(deleteRequest, Map)
-    refreshIndices()
-
-    then:
-    deleteResult.statusCode == HttpStatus.OK
-    deleteResult.body.meta.deleted == (recursive ? 2 : 1)
-
-    and:
-    def collectionRequest = RequestEntity.get("$metadataURI/$collectionId".toURI()).build()
-    def collectionResult = restTemplate.exchange(collectionRequest, Map)
-    collectionResult.statusCode == HttpStatus.NOT_FOUND
-
-    and:
-    def granuleRequest = RequestEntity.get("$metadataURI/$granuleId".toURI()).build()
-    def granuleResult = restTemplate.exchange(granuleRequest, Map)
-    granuleResult.statusCode == (recursive ? HttpStatus.NOT_FOUND : HttpStatus.OK)
-
-    where:
-    recursive << [true, false]
-  }
-
-  def 'delete a collection by fileIdentifier with recursive #recursive'() {
-    setup:
-    def loadRequest = buildMultiLoadRequest(collectionPath, granulePath)
-    def loadResult = restTemplate.exchange(loadRequest, Map)
-    def fileIdentifier = loadResult.body.data.find({it.type == 'collection'}).attributes.fileIdentifier
-    def collectionId = loadResult.body.data.find({it.type == 'collection'}).id
-    def granuleId = loadResult.body.data.find({it.type == 'granule'}).id
-    refreshIndices()
-
-    when:
-    def deleteRequest = RequestEntity.delete("$metadataURI?fileIdentifier=$fileIdentifier&recursive=$recursive".toURI()).build()
-    def deleteResult = restTemplate.exchange(deleteRequest, Map)
-    refreshIndices()
-
-    then:
-    deleteResult.statusCode == HttpStatus.OK
-    deleteResult.body.meta.deleted == (recursive ? 2 : 1)
-
-    and:
-    def collectionRequest = RequestEntity.get("$metadataURI/$collectionId".toURI()).build()
-    def collectionResult = restTemplate.exchange(collectionRequest, Map)
-    collectionResult.statusCode == HttpStatus.NOT_FOUND
-
-    and:
-    def granuleRequest = RequestEntity.get("$metadataURI/$granuleId".toURI()).build()
-    def granuleResult = restTemplate.exchange(granuleRequest, Map)
-    granuleResult.statusCode == (recursive ? HttpStatus.NOT_FOUND : HttpStatus.OK)
-
-    where:
-    recursive << [true, false]
-  }
-
-  def 'delete a collection by doi with recursive #recursive'() {
-    setup:
-    def loadRequest = buildMultiLoadRequest(collectionPath, granulePath)
-    def loadResult = restTemplate.exchange(loadRequest, Map)
-    def doi = loadResult.body.data.find({it.type == 'collection'}).attributes.doi
-    def collectionId = loadResult.body.data.find({it.type == 'collection'}).id
-    def granuleId = loadResult.body.data.find({it.type == 'granule'}).id
-    refreshIndices()
-
-    when:
-    def deleteRequest = RequestEntity.delete("$metadataURI?doi=$doi&recursive=$recursive".toURI()).build()
-    def deleteResult = restTemplate.exchange(deleteRequest, Map)
-    refreshIndices()
-
-    then:
-    deleteResult.statusCode == HttpStatus.OK
-    deleteResult.body.meta.deleted == (recursive ? 2 : 1)
-
-    and:
-    def collectionRequest = RequestEntity.get("$metadataURI/$collectionId".toURI()).build()
-    def collectionResult = restTemplate.exchange(collectionRequest, Map)
-    collectionResult.statusCode == HttpStatus.NOT_FOUND
-
-    and:
-    def granuleRequest = RequestEntity.get("$metadataURI/$granuleId".toURI()).build()
-    def granuleResult = restTemplate.exchange(granuleRequest, Map)
-    granuleResult.statusCode == (recursive ? HttpStatus.NOT_FOUND : HttpStatus.OK)
-
-    where:
-    recursive << [true, false]
-  }
-
-  def 'delete a collection by fileIdentifier and doi with recursive #recursive'() {
-    setup:
-    def loadRequest = buildMultiLoadRequest(collectionPath, granulePath)
-    def loadResult = restTemplate.exchange(loadRequest, Map)
-    def doi = loadResult.body.data.find({it.type == 'collection'}).attributes.doi
-    def fileIdentifier = loadResult.body.data.find({it.type == 'collection'}).attributes.fileIdentifier
-    def collectionId = loadResult.body.data.find({it.type == 'collection'}).id
-    def granuleId = loadResult.body.data.find({it.type == 'granule'}).id
-    refreshIndices()
-
-    when:
-    def deleteRequest = RequestEntity.delete("$metadataURI?doi=$doi&fileIdentifier=$fileIdentifier&recursive=$recursive".toURI()).build()
-    def deleteResult = restTemplate.exchange(deleteRequest, Map)
-    refreshIndices()
-
-    then:
-    deleteResult.statusCode == HttpStatus.OK
-    deleteResult.body.meta.deleted == (recursive ? 2 : 1)
-
-    and:
-    def collectionRequest = RequestEntity.get("$metadataURI/$collectionId".toURI()).build()
-    def collectionResult = restTemplate.exchange(collectionRequest, Map)
-    collectionResult.statusCode == HttpStatus.NOT_FOUND
-
-    and:
-    def granuleRequest = RequestEntity.get("$metadataURI/$granuleId".toURI()).build()
-    def granuleResult = restTemplate.exchange(granuleRequest, Map)
-    granuleResult.statusCode == (recursive ? HttpStatus.NOT_FOUND : HttpStatus.OK)
-
-    where:
-    recursive << [true, false]
-  }
-
-
   private buildLoadRequest(String content) {
-    RequestEntity.post(metadataURI.toURI()).contentType(MediaType.APPLICATION_XML).body(new ClassPathResource(content))
-  }
-
-  private buildMultiLoadRequest(String[] paths) {
-    def multipartMap = new LinkedMultiValueMap<String, Object>()
-    paths.each { multipartMap.add("files", new ClassPathResource(it)) }
-    RequestEntity.post(metadataURI.toURI()).contentType(MediaType.MULTIPART_FORM_DATA).body(multipartMap)
+    RequestEntity.post(metadataURI.toURI())
+            .contentType(MediaType.APPLICATION_XML)
+            .header(HttpHeaders.USER_AGENT, "Spring's RestTemplate") // value can be whatever
+            .body(new ClassPathResource(content))
   }
 
   private refreshIndices() {

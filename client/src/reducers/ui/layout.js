@@ -5,9 +5,11 @@ import {
   SET_LEFT_OPEN_CLOSE,
   TOGGLE_RIGHT,
   TOGGLE_MAP,
+  SET_HEADER_MENU_OPEN,
+  SHOW_GRANULE_VIDEO,
 } from '../../actions/LayoutActions'
 
-import {LOCATION_CHANGE} from 'react-router-redux'
+import {LOCATION_CHANGE} from 'connected-react-router'
 
 export const initialState = Immutable({
   showLeft: true,
@@ -16,11 +18,16 @@ export const initialState = Immutable({
   showMap: false,
   showAppliedFilterBubbles: false,
   onDetailPage: false,
+  headerMenuOpen: false,
+  granuleVideo: null,
 })
 
 export const layout = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_CHANGE:
+      if (!action.payload) {
+        return state
+      }
       const path = action.payload.pathname
       const onDetailPage = isDetailPage(path)
       const onGranuleListPage = isGranuleListPage(path)
@@ -38,6 +45,10 @@ export const layout = (state = initialState, action) => {
     case TOGGLE_MAP:
       const previousShowMap = state.showMap
       return Immutable.set(state, 'showMap', !previousShowMap)
+    case SHOW_GRANULE_VIDEO:
+      return Immutable.set(state, 'granuleVideo', action.granuleVideo)
+    case SET_HEADER_MENU_OPEN:
+      return Immutable.set(state, 'headerMenuOpen', action.value)
     default:
       return state
   }

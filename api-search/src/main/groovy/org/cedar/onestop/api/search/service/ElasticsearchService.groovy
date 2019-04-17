@@ -6,8 +6,8 @@ import groovy.util.logging.Slf4j
 import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
-import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.Response
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -26,6 +26,9 @@ class ElasticsearchService {
   @Value('${elasticsearch.index.search.flattened-granule.name}')
   private String FLATTENED_GRANULE_SEARCH_INDEX
 
+  @Value('${elasticsearch.index.sitemap.name}')
+  private String SITEMAP_INDEX
+
   @Value('${elasticsearch.index.universal-type}')
   private String TYPE
 
@@ -43,15 +46,15 @@ class ElasticsearchService {
   }
 
   Map searchFlattenedGranules(Map searchParams) {
-    return queryElasticsearch(searchParams, PREFIX+FLATTENED_GRANULE_SEARCH_INDEX)
+    return searchFromRequest(searchParams, PREFIX+FLATTENED_GRANULE_SEARCH_INDEX)
   }
 
   Map searchGranules(Map searchParams) {
-    return queryElasticsearch(searchParams, PREFIX+GRANULE_SEARCH_INDEX)
+    return searchFromRequest(searchParams, PREFIX+GRANULE_SEARCH_INDEX)
   }
 
   Map searchCollections(Map searchParams) {
-    return queryElasticsearch(searchParams, PREFIX+COLLECTION_SEARCH_INDEX)
+    return searchFromRequest(searchParams, PREFIX+COLLECTION_SEARCH_INDEX)
   }
 
   Map getCollectionById(String id) {
@@ -82,6 +85,32 @@ class ElasticsearchService {
   Map getGranuleById(String id) {
     return getById(GRANULE_SEARCH_INDEX, id)
   }
+
+  Map getSitemapById(String id) {
+    return getById(SITEMAP_INDEX, id)
+  }
+
+  Map searchSitemap() {
+    def requestBody = [
+      _source: ["lastUpdatedDate",]
+    ]
+    String searchEndpoint = "${PREFIX}${SITEMAP_INDEX}/_search"
+    log.debug("searching for sitemap against endpoint ${searchEndpoint}")
+    def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
+
+    def result = [
+      data: searchResponse.hits.hits.collect {
+        [id: it._id, type: determineType(it._index), attributes: it._source]
+      },
+      meta: [
+          took : searchResponse.took,
+          total: searchResponse.hits.total
+      ]
+    ]
+    return result
+  }
+
 
   Map getFlattenedGranuleById(String id) {
     return getById(FLATTENED_GRANULE_SEARCH_INDEX, id)
@@ -122,6 +151,7 @@ class ElasticsearchService {
 
   private Map getById(String index, String id) {
     String endpoint = "/${PREFIX}${index}/${TYPE}/${id}"
+    log.debug("get by id against endpoint ${endpoint}")
     def response = parseResponse(restClient.performRequest('GET', endpoint))
     def type = determineType(index)
     if (response.found) {
@@ -142,29 +172,30 @@ class ElasticsearchService {
     }
   }
 
-  private Map queryElasticsearch(Map params, String index) {
+  Map queryElasticsearch(Map query, String index) {
+    def searchEntity = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
+    Response response = restClient.performRequest('GET', "${index}/_search", Collections.EMPTY_MAP, searchEntity)
+    return parseResponse(response)
+  }
+
+  Map searchFromRequest(Map params, String index) {
     // TODO: does this parse step need to change based on new different endpoints?
     def query = searchRequestParserService.parseSearchQuery(params)
     def getFacets = params.facets as boolean
-    def pageParams = params.page as Map
 
-    def requestBody = addAggregations(query, getFacets)
+    Map requestBody = addAggregations(query, getFacets)
 
     // default summary to true
     def summary = params.summary == null ? true : params.summary as boolean
-    if(summary) {
+    if (summary) {
       requestBody = addSourceFilter(requestBody)
     }
-
-    String searchEndpoint = "${index}/_search"
-
-    requestBody.size = pageParams?.max ?: 10
-    requestBody.from = pageParams?.offset ?: 0
+    if (params.containsKey('page')) {
+      requestBody = addPagination(requestBody, params.page as Map)
+    }
     requestBody = pruneEmptyElements(requestBody)
 
-    def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
-    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
-
+    Map searchResponse = queryElasticsearch(requestBody, index)
     def result = [
         data: searchResponse.hits.hits.collect {
           [id: it._id, type: determineType(it._index), attributes: it._source]
@@ -196,7 +227,7 @@ class ElasticsearchService {
     return requestBody
   }
 
-  private Map addSourceFilter(Map requestBody) {
+  private static Map addSourceFilter(Map requestBody) {
     def sourceFilter = [
         "internalParentIdentifier",
         "title",
@@ -210,6 +241,12 @@ class ElasticsearchService {
         "citeAsStatements"
     ]
     requestBody._source = sourceFilter
+    return requestBody
+  }
+
+  private static Map addPagination(Map requestBody, Map pageParams) {
+    requestBody.size = pageParams?.max != null ? pageParams.max : 10
+    requestBody.from = pageParams?.offset ?: 0
     return requestBody
   }
 

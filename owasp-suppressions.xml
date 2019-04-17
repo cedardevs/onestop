@@ -1,5 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+  <suppress>
+     <notes><![CDATA[
+     file name: json-schema-core-1.2.8.jar
+     Tests have been added to confirm that XML parsing has DTD disabled, and endpoints accepting application/json data reject all xml.
+     ]]></notes>
+     <gav regex="true">^com\.github\.java-json-tools:json-schema-core:.*$</gav>
+     <cve>CVE-2018-1000840</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      file name: zookeeper-3.4.13.jar
+      The CVE (https://nvd.nist.gov/vuln/detail/CVE-2018-8012) explicitly states that it only applies to
+      versions of zookeeper prior to 3.4.10. We're currently using 3.4.13.
+    ]]></notes>
+    <gav regex="true">^org\.apache\.zookeeper:zookeeper:3\.4\.[1-9][0-9]+$</gav>
+    <cve>CVE-2018-8012</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      Applies to spring framework versions prior to 5.0.x, which are not in use in this application
+      ]]></notes>
+    <cve>CVE-2016-9878</cve>
+    <cve>CVE-2018-1270</cve>
+    <cve>CVE-2018-1271</cve>
+    <cve>CVE-2018-1272</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      file name: avro-1.8.2.jar (shaded: com.google.guava:guava:11.0.2)
+      This vulnerability refers to an unbounded allocation that can occur during the deserialization of several specific
+      classes provided by the Guava library. Howver, the only usage of Guava in this project is as a shaded dependency
+      within the avro jar, and only the specific classes in use by avro have been shaded into it. Those shaded dependencies
+      include neither AtomicDoubleArray nor CompoundOrdering_CustomFieldSerializer, the two classes containing the
+      vulnerability (see the fix implemented later in Guava: https://github.com/google/guava/commit/7ec8718f1e6e2814dabaa4b9f96b6b33a813101c)
+      In short, this vulnerability *as flagged due to avro-1.8.2.jar* is not present in this project.
+    ]]></notes>
+    <sha1>906d56dcbd43343b6ca42188ae18ba98dc6c2fdf</sha1>
+    <cve>CVE-2018-10237</cve>
+  </suppress>
 
   <suppress>
     <notes><![CDATA[
@@ -11,6 +53,15 @@
 
   <suppress>
     <notes><![CDATA[
+      file name: xz-1.5.jar
+      This CVE (https://nvd.nist.gov/vuln/detail/CVE-2015-4035) refers to a script which is included in the
+      xzgrep command line tool. That script is not included in this jar, which is used to compress avro messages.
+    ]]></notes>
+    <cve>CVE-2015-4035</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
       Has to do with a flaw in default CORS filter configuration.
       Note that the default packaged war of this application does not contain
       this dependency as it is designed to be deployed to an existing servlet
@@ -18,6 +69,42 @@
       ]]></notes>
     <filePath regex="true">.*\btomcat-.*\.jar</filePath>
     <cve>CVE-2018-8014</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      This vulnerability is marked as only present in Spring Framework 5.0.5.RELEASE. Because we are using Spring Boot
+      2.1.4.RELEASE as of this suppression, this corresponds to Spring Framework 5.1.6.RELEASE which does not have this
+      vulnerability, and it is coming up as a false positive. See the DependencyCheck GitHub issue comment here:
+      https://github.com/jeremylong/DependencyCheck/issues/1827#issuecomment-479649131
+    ]]></notes>
+    <cve>CVE-2018-1258</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      These CVE vulnerabilities are all described in relation to Spring Framework versions <= 4. Because the dependency
+      triggering these (spring-retry-1.2.4.RELEASE.jar) is coming from 'org.springframework.kafka:spring-kafka' and --
+      as of this suppression -- the version of spring-kafka is 2.2.5.RELEASE, we know that the corresponding Spring
+      version is 5.1.6.RELEASE. This can be confirmed by reviewing the `build.gradle` file for the 'spring-kafka' project
+      under the v.2.2.5 tag. See: https://github.com/spring-projects/spring-kafka/blob/v2.2.5.RELEASE/build.gradle
+    ]]></notes>
+    <cve>CVE-2011-2730</cve>
+    <cve>CVE-2013-4152</cve>
+    <cve>CVE-2013-6429</cve>
+    <cve>CVE-2013-7315</cve>
+    <cve>CVE-2014-0054</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      We are supressing this CVE for two reasons. First, it is triggered by our dependency on 'org.testcontainers:testcontainers:1.10.7'
+      which has a subdependency of 'org.apache.commons:commons-compress:1.18'. According to the official CVE description, this
+      vulnerability applies to versions 1.7 to 1.17 of commons-compress (specifically using ZipArchiveInputStream). Our
+      dependency graph indicates we are using a newer version. Second, this dependency is strictly used for testing and not production
+      artifacts.
+    ]]></notes>
+    <cve>CVE-2018-11771</cve>
   </suppress>
 
 </suppressions>

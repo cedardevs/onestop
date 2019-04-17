@@ -1,4 +1,5 @@
-FROM openjdk:8
+FROM tomcat:latest
+
 ARG WAR_NAME
 ARG VCS_REF
 ARG VERSION
@@ -12,8 +13,7 @@ LABEL org.label-schema.vendor=CEDAR
 LABEL org.label-schema.vcs-url=https://github.com/cedardevs/onestop
 LABEL org.label-schema.vcs-ref=${VCS_REF}
 
-WORKDIR /usr/src/app
-COPY build/libs/${WAR_NAME} /usr/src/app
-RUN ln -s ./${WAR_NAME} api.war
-EXPOSE 8098
-CMD ["java", "-jar", "/usr/src/app/api.war"]
+# IMPORTANT NOTE: this cannot be deployed as onestop#admin.war, because this causes an unresolvable path for liquibase / H2. If it needs to be referenced with the context path /onestop/admin, an external proxy will be necessary
+ADD build/libs/${WAR_NAME} /usr/local/tomcat/webapps/onestop-admin.war
+
+EXPOSE 8080
