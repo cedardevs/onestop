@@ -26,7 +26,7 @@ class ElasticsearchService {
   @Value('${elasticsearch.index.search.flattened-granule.name}')
   private String FLATTENED_GRANULE_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
+  @Value('${elasticsearch.index.sitemap.name}')
   private String SITEMAP_INDEX
 
   @Value('${elasticsearch.index.universal-type}')
@@ -94,7 +94,8 @@ class ElasticsearchService {
     def requestBody = [
       _source: ["lastUpdatedDate",]
     ]
-    String searchEndpoint = "${SITEMAP_INDEX}/_search"
+    String searchEndpoint = "${PREFIX}${SITEMAP_INDEX}/_search"
+    log.debug("searching for sitemap against endpoint ${searchEndpoint}")
     def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
     def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
 
@@ -150,6 +151,7 @@ class ElasticsearchService {
 
   private Map getById(String index, String id) {
     String endpoint = "/${PREFIX}${index}/${TYPE}/${id}"
+    log.debug("get by id against endpoint ${endpoint}")
     def response = parseResponse(restClient.performRequest('GET', endpoint))
     def type = determineType(index)
     if (response.found) {

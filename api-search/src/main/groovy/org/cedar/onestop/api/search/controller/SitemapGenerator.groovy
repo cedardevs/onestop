@@ -4,10 +4,6 @@ import java.time.Instant
 
 class SitemapGenerator {
 
-  public static String getBaseUrl(String requestUrl) {
-    // TODO note this doesn't work perfectly with local dev - it doesn't know about the port. Otherwise it seems fine...
-    return("${requestUrl.split('/sitemap')[0]}")
-  }
 
   public static String makeSitemap(String baseUrl, def sitemapData) {
     def data = sitemapData.collect({site -> """
@@ -26,7 +22,7 @@ class SitemapGenerator {
   }
 
   public static String makeSiteSubmap(String baseUrl, def submapData) {
-    return submapData[0].attributes.content.collect({collectionId -> "${baseUrl}/#/collections/details/${collectionId}"}).join('\n')
+    return submapData[0].attributes.content.collect({collectionId -> "${baseUrl}/collections/details/${collectionId}"}).join('\n')
   }
 
 }

@@ -28,8 +28,6 @@ features:
 # APPLICATION.YML ADDITIONAL SPRING CONFIG
 ###############################################################################
 config: |-
-  features:
-    sitemap: true
   ui:
     googleAnalytics:
       profiles:

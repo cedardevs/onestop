@@ -1,27 +1,8 @@
 package org.cedar.onestop.api.search.controller
 
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class SitemapGeneratorSpec extends Specification {
-
-  @Unroll
-  def 'Sitemap uses correct baseUrl from request #requestUrl'() {
-    when:
-    String baseUrl = SitemapGenerator.getBaseUrl(requestUrl)
-
-    then:
-    baseUrl == expectedUrl
-
-    where:
-    requestUrl | expectedUrl
-    // what is (currently) sent by localhost client
-    "http://localhost/onestop/sitemap.xml" | "http://localhost/onestop"
-    // local dev curl
-    "http://localhost:30097/onestop/sitemap.xml" | "http://localhost:30097/onestop"
-    // sciapps
-    "https://sciapps/onestop/sitemap.xml" | "https://sciapps/onestop"
-  }
 
   def 'Sitemap xml is correct with one submap'() {
     given:
@@ -101,15 +82,15 @@ class SitemapGeneratorSpec extends Specification {
 
     then:
     simplifyMultilineComparison(submap, """\
-      baseUrl/#/collections/details/AWRISjND41RXYexPu0jX
-      baseUrl/#/collections/details/AWRISjdu41RXYexPu0ja
-      baseUrl/#/collections/details/AWRISkI641RXYexPu0jh
-      baseUrl/#/collections/details/AWRISjFx41RXYexPu0jW
-      baseUrl/#/collections/details/AWRISkRr41RXYexPu0jj
-      baseUrl/#/collections/details/AWRISiae41RXYexPu0jP
-      baseUrl/#/collections/details/AWRISkmw41RXYexPu0jo
-      baseUrl/#/collections/details/AWRISjqg41RXYexPu0jb
-      baseUrl/#/collections/details/AWRISi5g41RXYexPu0jU""" )
+      baseUrl/collections/details/AWRISjND41RXYexPu0jX
+      baseUrl/collections/details/AWRISjdu41RXYexPu0ja
+      baseUrl/collections/details/AWRISkI641RXYexPu0jh
+      baseUrl/collections/details/AWRISjFx41RXYexPu0jW
+      baseUrl/collections/details/AWRISkRr41RXYexPu0jj
+      baseUrl/collections/details/AWRISiae41RXYexPu0jP
+      baseUrl/collections/details/AWRISkmw41RXYexPu0jo
+      baseUrl/collections/details/AWRISjqg41RXYexPu0jb
+      baseUrl/collections/details/AWRISi5g41RXYexPu0jU""" )
 
   }
 
