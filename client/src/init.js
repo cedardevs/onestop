@@ -26,13 +26,8 @@ const loadFromUrl = (path, newQueryString) => {
 
 store.dispatch(initialize())
 
-const routingWatch = watch(
-  store.getState,
-  'behavior.routing.locationBeforeTransitions'
-)
+const routingWatch = watch(store.getState, 'routing.locationBeforeTransitions')
 const routingUpdates = locationBeforeTransitions => {
-  console.log('locationBeforeTransition', locationBeforeTransitions)
-
   loadFromUrl(
     locationBeforeTransitions.location.pathname,
     locationBeforeTransitions.location.search

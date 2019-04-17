@@ -70,8 +70,8 @@ function collectionTestCases(){
     {
       name: 'a text search',
       inputState: {
-        behavior: {
-          search: {
+        search: {
+          collectionFilter: {
             queryText: 'test text',
           },
         },
@@ -94,8 +94,8 @@ function collectionTestCases(){
     {
       name: 'a temporal search',
       inputState: {
-        behavior: {
-          search: {
+        search: {
+          collectionFilter: {
             startDateTime: '2017-01-01',
             endDateTime: '2017-01-20',
           },
@@ -120,8 +120,8 @@ function collectionTestCases(){
     {
       name: 'a spatial search',
       inputState: {
-        behavior: {
-          search: {
+        search: {
+          collectionFilter: {
             geoJSON: {
               geometry: {
                 type: 'Polygon',
@@ -171,8 +171,8 @@ function collectionTestCases(){
     {
       name: 'a facet search',
       inputState: {
-        behavior: {
-          search: {
+        search: {
+          collectionFilter: {
             selectedFacets: {
               science: [ 'Atmosphere' ],
             },
@@ -198,8 +198,8 @@ function collectionTestCases(){
     {
       name: 'all filters applied',
       inputState: {
-        behavior: {
-          search: {
+        search: {
+          collectionFilter: {
             geoJSON: {
               geometry: {
                 type: 'Polygon',
@@ -270,8 +270,8 @@ function collectionTestCases(){
     {
       name: 'more results requested',
       inputState: {
-        domain: {
-          results: {
+        search: {
+          collectionResult: {
             collectionsPageOffset: 20,
           },
         },
@@ -294,8 +294,8 @@ function granuleTestCases(){
     {
       name: 'one collection',
       inputState: {
-        behavior: {
-          search: {
+        search: {
+          collectionFilter: {
             selectedIds: [ 'ABC123' ],
           },
         },
@@ -318,8 +318,8 @@ function granuleTestCases(){
     {
       name: 'two collections',
       inputState: {
-        behavior: {
-          search: {
+        search: {
+          collectionFilter: {
             selectedIds: [ 'ABC123', 'XYZ789' ],
           },
         },
@@ -342,8 +342,8 @@ function granuleTestCases(){
     {
       name: 'two collections and a text query',
       inputState: {
-        behavior: {
-          search: {
+        search: {
+          collectionFilter: {
             queryText: 'test',
             selectedIds: [ 'ABC123', 'XYZ789' ],
           },
@@ -367,13 +367,11 @@ function granuleTestCases(){
     {
       name: 'more results requested',
       inputState: {
-        behavior: {
-          search: {
+        search: {
+          collectionFilter: {
             selectedIds: [],
           },
-        },
-        domain: {
-          results: {
+          collectionResult: {
             granulesPageOffset: 20,
           },
         },

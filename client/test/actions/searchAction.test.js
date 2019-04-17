@@ -13,10 +13,10 @@ import {
 
 import * as CollectionFilterActions from '../../src/actions/search/CollectionFilterActions'
 import * as CollectionRequestActions from '../../src/actions/search/CollectionRequestActions'
-import * as CollectionResultActions from '../../src/actions/search/CollectionResultActions'
+import * as SearchActions from '../../src/actions/search/SearchActions'
+
 import {RESET_STORE} from '../../src/reducer'
 import {mockSearchGranuleResponse} from '../mocks/mockSearchGranule'
-import {collectionToggleFacet} from '../../src/actions/search/CollectionFilterActions'
 
 const debugStore = (label, path) => {
   const state = store.getState()
@@ -63,7 +63,7 @@ describe('The search action', () => {
 
     // trigger search and ask for facets
     const retrieveFacets = true
-    await store.dispatch(SearchRequestActions.triggerSearch(retrieveFacets))
+    await store.dispatch(SearchActions.triggerSearch(retrieveFacets))
 
     const actualCollections = store.getState().search.collectionResult
       .collections
@@ -100,7 +100,7 @@ describe('The search action', () => {
 
     // trigger search and ask for facets
     const retrieveFacets = true
-    await store.dispatch(SearchRequestActions.triggerSearch(retrieveFacets))
+    await store.dispatch(SearchActions.triggerSearch(retrieveFacets))
 
     const actualCollections = store.getState().search.collectionResult
       .collections
@@ -125,9 +125,9 @@ describe('The search action', () => {
 
     // trigger search and ask for facets
     const retrieveFacets = true
-    await store.dispatch(SearchRequestActions.triggerSearch(retrieveFacets))
+    await store.dispatch(SearchActions.triggerSearch(retrieveFacets))
 
-    const actualErrors = store.getState().behavior.errors
+    const actualErrors = store.getState().errors
     const expectedErrors = collectionErrorsArray
 
     expect(actualErrors).toEqual(expectedErrors)
@@ -149,7 +149,7 @@ describe('The search action', () => {
 
     // trigger search and ask for facets
     const retrieveFacets = true
-    store.dispatch(CollectionResultActions.triggerSearch(retrieveFacets))
+    store.dispatch(SearchActions.triggerSearch(retrieveFacets))
 
     const actualCollections = store.getState().search.collectionResult
       .collections
@@ -161,23 +161,23 @@ describe('The search action', () => {
   })
 
   it('collectionUpdateQueryText sets queryText', async () => {
-    const queryTextBefore = stateBefore.behavior.collectionFilter.queryText
+    const queryTextBefore = stateBefore.search.collectionFilter.queryText
     const newQueryText = 'bermuda triangle'
     // update search query via redux store action
     await store.dispatch(
       CollectionFilterActions.collectionUpdateQueryText(newQueryText)
     )
-    const queryTextAfter = store.getState().behavior.collectionFilter.queryText
+    const queryTextAfter = store.getState().search.collectionFilter.queryText
     expect(queryTextAfter).not.toBe(queryTextBefore)
     expect(queryTextAfter).toBe(newQueryText)
   })
 
   it('collectionSearchRequest sets collectionSearchRequestInFlight', async () => {
     const collectionInFlightBefore =
-      stateBefore.behavior.request.collectionSearchRequestInFlight
+      stateBefore.search.collectionRequest.collectionSearchRequestInFlight
     // the `collectionSearchRequest` action is what triggers the `collectionSearchRequestInFlight` to true
     await store.dispatch(CollectionRequestActions.collectionSearchRequest())
-    const collectionInFlightAfter = store.getState().behavior.request
+    const collectionInFlightAfter = store.getState().search.collectionRequest
       .collectionSearchRequestInFlight
     expect(collectionInFlightBefore).not.toBeTruthy()
     expect(collectionInFlightAfter).toBeTruthy()
@@ -205,7 +205,7 @@ describe('The search action', () => {
     )
     const collectionsAfter = store.getState().search.collectionResult
       .collections
-    const collectionInFlightAfter = store.getState().behavior.request
+    const collectionInFlightAfter = store.getState().search.collectionRequest
       .collectionSearchRequestInFlight
 
     const expectedCollectionKeys = Array.from(items.keys())
@@ -260,7 +260,7 @@ describe('The granule actions', () => {
     )
 
     // trigger search
-    await store.dispatch(CollectionResultActions.fetchGranules())
+    await store.dispatch(SearchActions.fetchGranules())
 
     const actualGranules = store.getState().search.collectionResult.granules
     const expectedGranules = {
@@ -307,13 +307,17 @@ describe('The granule actions', () => {
     await Promise.all(
       selectedFacets.map(facet => {
         return store.dispatch(
-          collectionToggleFacet(facet.category, facet.facetName, facet.selected)
+          CollectionFilterActions.collectionToggleFacet(
+            facet.category,
+            facet.facetName,
+            facet.selected
+          )
         )
       })
     )
 
     // trigger search
-    await store.dispatch(CollectionResultActions.fetchGranules())
+    await store.dispatch(SearchActions.fetchGranules())
 
     const actualGranules = store.getState().search.collectionResult.granules
     const expectedGranules = {

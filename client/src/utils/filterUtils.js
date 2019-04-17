@@ -12,7 +12,7 @@ export const toggleSelectedId = (selectedIds, value, idx = 0) => {
   }
   else {
     // recurse through selectedIds until base case is met
-    return toggleId(selectedIds, value, idx + 1)
+    return toggleSelectedId(selectedIds, value, idx + 1)
   }
 }
 

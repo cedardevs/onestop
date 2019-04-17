@@ -2,7 +2,7 @@ import Immutable from 'seamless-immutable'
 import {
   collectionFilter,
   initialState,
-} from '../../../src/reducers/behavior/collection'
+} from '../../../src/reducers/search/collectionFilter'
 import {
   collectionUpdateFilters,
   collectionUpdateGeometry,

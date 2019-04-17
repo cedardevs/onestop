@@ -140,7 +140,7 @@ describe('The collections page', () => {
   })
 
   it('should have a router search equal to the url query', () => {
-    expect(locationAfter.collectionFilter).toBe(query)
+    expect(locationAfter.search).toBe(query)
   })
 
   it('should have CollectionFilters', () => {

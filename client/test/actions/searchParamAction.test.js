@@ -2,6 +2,9 @@ import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import reducer from '../../src/reducer'
 import * as actions from '../../src/actions/search/CollectionFilterActions'
+import {COLLECTION_UPDATE_DATE_RANGE} from '../../src/actions/search/CollectionFilterActions'
+import {COLLECTION_TOGGLE_FACET} from '../../src/actions/search/CollectionFilterActions'
+import {COLLECTION_UPDATE_GEOMETRY} from '../../src/actions/search/CollectionFilterActions'
 
 describe('The search params actions', function(){
   describe('for geometries', function(){
@@ -10,7 +13,7 @@ describe('The search params actions', function(){
     it('set geoJSON', function(){
       const mapAction = actions.collectionUpdateGeometry(geoJSON)
       const expectedAction = {
-        type: 'new_geometry',
+        type: COLLECTION_UPDATE_GEOMETRY,
         geoJSON: {geometry: 'test object'},
       }
 
@@ -24,7 +27,7 @@ describe('The search params actions', function(){
     it('sets start date time ', function(){
       const temporalAction = actions.collectionUpdateDateRange(datetime, '')
       const expectedAction = {
-        type: 'COLLECTION_UPDATE_DATE_RANGE',
+        type: COLLECTION_UPDATE_DATE_RANGE,
         startDate: '2016-07-25T15:45:00-06:00',
         endDate: '',
       }
@@ -35,7 +38,7 @@ describe('The search params actions', function(){
     it('sets end date time ', function(){
       const temporalAction = actions.collectionUpdateDateRange('', datetime)
       const expectedAction = {
-        type: 'COLLECTION_UPDATE_DATE_RANGE',
+        type: COLLECTION_UPDATE_DATE_RANGE,
         startDate: '',
         endDate: '2016-07-25T15:45:00-06:00',
       }
@@ -52,7 +55,7 @@ describe('The search params actions', function(){
     it('adds facet to facets selected', function(){
       const facets = {name: 'a', value: 'a', selected: true}
       const expectedActions = {
-        type: 'COLLECTION_TOGGLE_FACET',
+        type: COLLECTION_TOGGLE_FACET,
         selectedFacets: {a: [ 'a' ]},
       }
 
@@ -69,12 +72,12 @@ describe('The search params actions', function(){
 
     it('removes facet from facets selected', function(){
       const toggleOnAction = {
-        type: 'COLLECTION_TOGGLE_FACET',
+        type: COLLECTION_TOGGLE_FACET,
         selectedFacets: {a: [ 'a' ]},
       }
       const state = reducer(initialState, toggleOnAction)
       const expectedActions = {
-        type: 'COLLECTION_TOGGLE_FACET',
+        type: COLLECTION_TOGGLE_FACET,
         selectedFacets: {},
       }
       const store = mockStore(state)

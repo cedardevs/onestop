@@ -326,7 +326,6 @@ export const showDetails = (history, id) => {
       pathname: `/collections/details/${id}`,
       search: _.isEmpty(query) ? null : `?${query}`,
     }
-    console.log('id', id)
     history.push(locationDescriptor)
   }
 }

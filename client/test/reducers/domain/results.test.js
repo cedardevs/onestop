@@ -101,7 +101,7 @@ describe('The collectionResult reducer', function(){
 
   it('should handle COLLECTION_METADATA_RECEIVED', () => {
     const facetsRecAction = {
-      type: 'COLLECTION_METADATA_RECEIVED',
+      type: COLLECTION_METADATA_RECEIVED,
       metadata: {
         facets: {
           science: {
