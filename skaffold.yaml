@@ -78,6 +78,8 @@ deploy:
         features.login-gov: false
         features.sitemap: true
         env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
+        env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
+        env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
         # config: |-
         #   ---
         #   logging.level.org.cedar.onestop.api.search: DEBUG
