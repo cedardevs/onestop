@@ -82,15 +82,15 @@ class SitemapGeneratorSpec extends Specification {
 
     then:
     simplifyMultilineComparison(submap, """\
-      baseUrl/#/collections/details/AWRISjND41RXYexPu0jX
-      baseUrl/#/collections/details/AWRISjdu41RXYexPu0ja
-      baseUrl/#/collections/details/AWRISkI641RXYexPu0jh
-      baseUrl/#/collections/details/AWRISjFx41RXYexPu0jW
-      baseUrl/#/collections/details/AWRISkRr41RXYexPu0jj
-      baseUrl/#/collections/details/AWRISiae41RXYexPu0jP
-      baseUrl/#/collections/details/AWRISkmw41RXYexPu0jo
-      baseUrl/#/collections/details/AWRISjqg41RXYexPu0jb
-      baseUrl/#/collections/details/AWRISi5g41RXYexPu0jU""" )
+      baseUrl/collections/details/AWRISjND41RXYexPu0jX
+      baseUrl/collections/details/AWRISjdu41RXYexPu0ja
+      baseUrl/collections/details/AWRISkI641RXYexPu0jh
+      baseUrl/collections/details/AWRISjFx41RXYexPu0jW
+      baseUrl/collections/details/AWRISkRr41RXYexPu0jj
+      baseUrl/collections/details/AWRISiae41RXYexPu0jP
+      baseUrl/collections/details/AWRISkmw41RXYexPu0jo
+      baseUrl/collections/details/AWRISjqg41RXYexPu0jb
+      baseUrl/collections/details/AWRISi5g41RXYexPu0jU""" )
 
   }
 
