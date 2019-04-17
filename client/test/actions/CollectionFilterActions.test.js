@@ -1,17 +1,27 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import reducer from '../../src/reducer'
-import * as actions from '../../src/actions/search/CollectionFilterActions'
-import {COLLECTION_UPDATE_DATE_RANGE} from '../../src/actions/search/CollectionFilterActions'
-import {COLLECTION_TOGGLE_FACET} from '../../src/actions/search/CollectionFilterActions'
-import {COLLECTION_UPDATE_GEOMETRY} from '../../src/actions/search/CollectionFilterActions'
+import * as CollectionFilterActions from '../../src/actions/search/CollectionFilterActions'
+import {
+  COLLECTION_UPDATE_GEOMETRY,
+  COLLECTION_UPDATE_DATE_RANGE,
+  COLLECTION_TOGGLE_FACET,
+} from '../../src/actions/search/CollectionFilterActions'
+import {
+  COLLECTION_METADATA_RECEIVED,
+  collectionMetadataReceived,
+} from '../../src/actions/search/CollectionResultActions'
+import {COLLECTION_CLEAR_FACETS} from '../../src/actions/search/CollectionFilterActions'
+import {collectionClearFacets} from '../../src/actions/search/CollectionFilterActions'
 
 describe('The search params actions', function(){
   describe('for geometries', function(){
     const geoJSON = {geometry: 'test object'}
 
     it('set geoJSON', function(){
-      const mapAction = actions.collectionUpdateGeometry(geoJSON)
+      const mapAction = CollectionFilterActions.collectionUpdateGeometry(
+        geoJSON
+      )
       const expectedAction = {
         type: COLLECTION_UPDATE_GEOMETRY,
         geoJSON: {geometry: 'test object'},
@@ -25,7 +35,10 @@ describe('The search params actions', function(){
     const datetime = '2016-07-25T15:45:00-06:00'
 
     it('sets start date time ', function(){
-      const temporalAction = actions.collectionUpdateDateRange(datetime, '')
+      const temporalAction = CollectionFilterActions.collectionUpdateDateRange(
+        datetime,
+        ''
+      )
       const expectedAction = {
         type: COLLECTION_UPDATE_DATE_RANGE,
         startDate: '2016-07-25T15:45:00-06:00',
@@ -36,7 +49,10 @@ describe('The search params actions', function(){
     })
 
     it('sets end date time ', function(){
-      const temporalAction = actions.collectionUpdateDateRange('', datetime)
+      const temporalAction = CollectionFilterActions.collectionUpdateDateRange(
+        '',
+        datetime
+      )
       const expectedAction = {
         type: COLLECTION_UPDATE_DATE_RANGE,
         startDate: '',
@@ -61,7 +77,7 @@ describe('The search params actions', function(){
 
       const store = mockStore(initialState)
       store.dispatch(
-        actions.collectionToggleFacet(
+        CollectionFilterActions.collectionToggleFacet(
           facets.name,
           facets.value,
           facets.selected
@@ -82,8 +98,45 @@ describe('The search params actions', function(){
       }
       const store = mockStore(state)
 
-      store.dispatch(actions.collectionToggleFacet('a', 'a', false))
+      store.dispatch(
+        CollectionFilterActions.collectionToggleFacet('a', 'a', false)
+      )
       expect(store.getActions()[0]).toEqual(expectedActions)
     })
+  })
+})
+
+describe('The facet action', function(){
+  const middlewares = [ thunk ]
+  const mockStore = configureMockStore(middlewares)
+  const initialState = reducer(undefined, {})
+
+  it('processes new facets', function(){
+    const metadata = {
+      took: 2,
+      total: 1,
+      facets: {
+        science: [
+          {term: 'Land Surface', count: 2},
+          {term: 'Land Surface > Topography', count: 2},
+        ],
+      },
+    }
+    const facetAction = collectionMetadataReceived(metadata)
+    const expectedAction = {
+      type: COLLECTION_METADATA_RECEIVED,
+      metadata: metadata,
+    }
+
+    expect(facetAction).toEqual(expectedAction)
+  })
+
+  it('clears facets', function(){
+    const state = reducer(initialState, {})
+    const expectedActions = {type: COLLECTION_CLEAR_FACETS}
+    const store = mockStore(state)
+
+    store.dispatch(collectionClearFacets())
+    expect(store.getActions()[0]).toEqual(expectedActions)
   })
 })

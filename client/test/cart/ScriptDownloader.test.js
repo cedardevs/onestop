@@ -6,7 +6,7 @@ import App from '../../src/App'
 import store from '../../src/store' // create Redux store with appropriate middleware
 import history from '../../src/history'
 import ScriptDownloader from '../../src/components/cart/ScriptDownloader'
-import mockCartItems from './mockCartItems'
+import mockCartItems from '../mocks/mockCartItems'
 import {insertSelectedGranule} from '../../src/actions/CartActions'
 import {insertGranule} from '../../src/utils/localStorageUtil'
 import {toggleFeatures} from '../../src/actions/ConfigActions'

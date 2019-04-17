@@ -1,4 +1,4 @@
-import {layout, initialState} from '../../../src/reducers/layout'
+import {layout, initialState} from '../../src/reducers/layout'
 // import {push} from 'react-router-redux'
 import {LOCATION_CHANGE} from 'react-router-redux'
 
