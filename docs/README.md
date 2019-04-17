@@ -227,6 +227,7 @@ OneStop leverages these profiles to enact certain feature toggles. The features 
 | Spring Profile | Feature Description | Default Value |
 | --- | --- | --- |
 | <pre><code>login-gov</code></pre> | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `api-user` service with a PostgreSQL backing DB. | *false* |
+| <pre><code>sitemap</code></pre> | Enables a the `/sitemap.xml` and `/sitemap/{id}.txt` public endpoints. | *false* |
 
 ### Changing & Overriding Profiles
 
