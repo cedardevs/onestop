@@ -7,7 +7,7 @@ import {
   TOGGLE_MAP,
   SET_HEADER_MENU_OPEN,
   SHOW_GRANULE_VIDEO,
-} from '../actions/layout/LayoutActions'
+} from '../actions/LayoutActions'
 
 import {LOCATION_CHANGE} from 'connected-react-router'
 

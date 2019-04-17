@@ -14,8 +14,6 @@ export const closeLeft = () => {
 }
 
 export const TOGGLE_RIGHT_OPEN = 'TOGGLE_RIGHT_OPEN'
-console.log('open')
-
 export const openRight = () => {
   return {
     type: TOGGLE_RIGHT_OPEN,
@@ -23,7 +21,6 @@ export const openRight = () => {
   }
 }
 export const closeRight = () => {
-  console.log('close')
   return {
     type: TOGGLE_RIGHT_OPEN,
     open: false,

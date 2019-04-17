@@ -1,14 +1,12 @@
 import {connect} from 'react-redux'
-import GoogleAnalytics from './GoogleAnalytics'
-
 import {withRouter} from 'react-router'
-
-import {initAnalytics} from '../../actions/config/AnalyticsActions'
+import GoogleAnalytics from './GoogleAnalytics'
+import {initAnalytics} from '../../actions/ConfigActions'
 
 const mapStateToProps = state => {
   return {
-    analyticsConfig: state.domain.config.googleAnalytics,
-    analyticsInitiated: state.domain.config.analyticsInitiated,
+    analyticsConfig: state.config.googleAnalytics,
+    analyticsInitiated: state.config.analyticsInitiated,
   }
 }
 

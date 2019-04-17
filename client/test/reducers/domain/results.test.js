@@ -1,17 +1,23 @@
 import Immutable from 'seamless-immutable'
-import {results, initialState} from '../../../src/reducers/domain/results'
 import {
-  completeSearch,
-  clearCollections,
-  fetchedGranules,
-  clearGranules,
-  FACETS_RECEIVED,
-} from '../../../src/actions/search/collections/SearchRequestActions'
+  collectionResult,
+  initialState,
+} from '../../../src/reducers/search/collectionResult'
+import {
+  collectionClearResults,
+  collectionClearDetailGranulesResult,
+  COLLECTION_METADATA_RECEIVED,
+} from '../../../src/actions/search/CollectionResultActions'
 
-describe('The results reducer', function(){
+import {
+  collectionSearchSuccess,
+  collectionDetailGranulesSuccess,
+} from '../../../src/actions/search/CollectionRequestActions'
+
+describe('The collectionResult reducer', function(){
   it('has a default state', function(){
     const initialAction = {type: 'init'}
-    const result = results(initialState, initialAction)
+    const result = collectionResult(initialState, initialAction)
 
     expect(result.collections).toBeInstanceOf(Object)
     expect(result.granules).toBeInstanceOf(Object)
@@ -22,9 +28,9 @@ describe('The results reducer', function(){
     const firstSetCollections = new Map()
     firstSetCollections.set('A', {id: 1})
     const expectedFirstMap = {A: {id: 1}}
-    const firstRoundResult = results(
+    const firstRoundResult = collectionResult(
       initialState,
-      completeSearch(firstSetCollections)
+      collectionSearchSuccess(firstSetCollections)
     )
     expect(firstRoundResult.collections).toEqual(expectedFirstMap)
 
@@ -32,9 +38,9 @@ describe('The results reducer', function(){
     secondSetCollections.set('B', {id: 2})
     secondSetCollections.set('C', {id: 3})
     const expectedSecondMap = {A: {id: 1}, B: {id: 2}, C: {id: 3}}
-    const secondRoundResult = results(
+    const secondRoundResult = collectionResult(
       firstRoundResult,
-      completeSearch(secondSetCollections)
+      collectionSearchSuccess(secondSetCollections)
     )
     expect(secondRoundResult.collections).toEqual(expectedSecondMap)
   })
@@ -45,7 +51,10 @@ describe('The results reducer', function(){
       totalCollections: 1,
       collectionsPageOffset: 20,
     })
-    const result = results(stateWithCollections, clearCollections())
+    const result = collectionResult(
+      stateWithCollections,
+      collectionClearResults()
+    )
     expect(result.collections).toEqual({})
     expect(result.totalCollections).toBe(0)
     expect(result.collectionsPageOffset).toBe(0)
@@ -57,9 +66,9 @@ describe('The results reducer', function(){
       {id: 'B', attributes: {version: 1}},
     ]
     const firstRoundMap = {A: {version: 1}, B: {version: 1}}
-    const firstRoundResult = results(
+    const firstRoundResult = collectionResult(
       initialState,
-      fetchedGranules(firstRoundData)
+      collectionDetailGranulesSuccess(firstRoundData)
     )
     expect(firstRoundResult.granules).toEqual(firstRoundMap)
 
@@ -68,9 +77,9 @@ describe('The results reducer', function(){
       {id: 'C', attributes: {version: 1}},
     ]
     const secondRoundMap = {A: {version: 1}, B: {version: 2}, C: {version: 1}}
-    const secondRoundResult = results(
+    const secondRoundResult = collectionResult(
       firstRoundResult,
-      fetchedGranules(secondRoundData)
+      collectionDetailGranulesSuccess(secondRoundData)
     )
     expect(secondRoundResult.granules).toEqual(secondRoundMap)
   })
@@ -81,15 +90,18 @@ describe('The results reducer', function(){
       totalGranules: 1,
       granulesPageOffset: 20,
     })
-    const result = results(stateWithGranules, clearGranules())
+    const result = collectionResult(
+      stateWithGranules,
+      collectionClearDetailGranulesResult()
+    )
     expect(result.granules).toEqual({})
     expect(result.totalGranules).toBe(0)
     expect(result.granulesPageOffset).toBe(0)
   })
 
-  it('should handle FACETS_RECEIVED', () => {
+  it('should handle COLLECTION_METADATA_RECEIVED', () => {
     const facetsRecAction = {
-      type: 'FACETS_RECEIVED',
+      type: 'COLLECTION_METADATA_RECEIVED',
       metadata: {
         facets: {
           science: {
@@ -133,7 +145,7 @@ describe('The results reducer', function(){
       granulesPageOffset: 0,
       pageSize: 20,
     }
-    let stateWithFacets = results(initialState, facetsRecAction)
+    let stateWithFacets = collectionResult(initialState, facetsRecAction)
     expect(stateWithFacets).toEqual(expectedState)
   })
 })

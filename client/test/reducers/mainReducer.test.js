@@ -11,7 +11,7 @@ describe('The main reducer', function(){
     expect(result).toBeInstanceOf(Object)
     expect(result.domain).toBeInstanceOf(Object)
     expect(result.behavior).toBeInstanceOf(Object)
-    expect(result.behavior.search).toBeInstanceOf(Object)
+    expect(result.behavior.collectionFilter).toBeInstanceOf(Object)
     expect(result.behavior.routing).toBeInstanceOf(Object)
     expect(result.behavior.errors).toBeInstanceOf(Object)
     expect(result.ui).toBeInstanceOf(Object)

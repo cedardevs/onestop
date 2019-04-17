@@ -1,13 +1,14 @@
 import {connect} from 'react-redux'
-import NotFound from './NotFound'
-
 import {withRouter} from 'react-router'
+import NotFound from './NotFound'
 import {
-  clearFacets,
   triggerSearch,
-} from '../../actions/search/collections/SearchRequestActions'
-import {showCollections} from '../../actions/search/collections/FlowActions'
-import {updateQuery} from '../../actions/search/collections/SearchParamActions'
+  showCollections,
+} from '../../actions/search/SearchActions'
+import {
+  collectionClearFacets,
+  collectionUpdateQueryText,
+} from '../../actions/search/CollectionFilterActions'
 
 const mapStateToProps = state => {
   return {}
@@ -16,12 +17,12 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
-      dispatch(clearFacets())
+      dispatch(collectionClearFacets())
       dispatch(triggerSearch())
       dispatch(showCollections(ownProps.history))
     },
-    updateQuery: text => {
-      dispatch(updateQuery(text))
+    collectionUpdateQueryText: text => {
+      dispatch(collectionUpdateQueryText(text))
     },
   }
 }

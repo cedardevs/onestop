@@ -1,19 +1,18 @@
 import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
 import TimeFilter from '../time/TimeFilter'
 import {
-  removeDateRange,
-  updateDateRange,
-} from '../../../actions/search/collections/SearchParamActions'
+  collectionRemoveDateRange,
+  collectionUpdateDateRange,
+} from '../../../actions/search/CollectionFilterActions'
+import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
 import {
-  clearCollections,
   triggerSearch,
-} from '../../../actions/search/collections/SearchRequestActions'
-import {showCollections} from '../../../actions/search/collections/FlowActions'
-
-import {withRouter} from 'react-router'
+  showCollections,
+} from '../../../actions/search/SearchActions'
 
 const mapStateToProps = state => {
-  const {startDateTime, endDateTime} = state.behavior.search
+  const {startDateTime, endDateTime} = state.search.collectionFilter
   return {
     startDateTime: startDateTime,
     endDateTime: endDateTime,
@@ -23,13 +22,13 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     updateDateRange: (startDate, endDate) => {
-      dispatch(updateDateRange(startDate, endDate))
+      dispatch(collectionUpdateDateRange(startDate, endDate))
     },
     removeDateRange: () => {
-      dispatch(removeDateRange())
+      dispatch(collectionRemoveDateRange())
     },
     submit: () => {
-      dispatch(clearCollections())
+      dispatch(collectionClearResults())
       dispatch(triggerSearch())
       dispatch(showCollections(ownProps.history))
     },

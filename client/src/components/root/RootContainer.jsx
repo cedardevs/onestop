@@ -1,7 +1,6 @@
 import {connect} from 'react-redux'
-import Root from './Root'
 import {withRouter} from 'react-router'
-import {closeRight, openRight} from '../../actions/layout/LayoutActions'
+import Root from './Root'
 
 const mapStateToProps = state => {
   return {
@@ -10,15 +9,6 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    closeRight: () => dispatch(closeRight()),
-    openRight: () => dispatch(openRight()),
-  }
-}
-
-const RootContainer = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(Root)
-)
+const RootContainer = withRouter(connect(mapStateToProps, null)(Root))
 
 export default RootContainer

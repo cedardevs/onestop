@@ -1,32 +1,30 @@
 import {connect} from 'react-redux'
-import FacetFilter from '../facet/FacetFilter'
-import {toggleFacet} from '../../../actions/search/collections/SearchParamActions'
-import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
-import {showCollections} from '../../../actions/search/collections/FlowActions'
-
-import {
-  clearCollections,
-  triggerSearch,
-} from '../../../actions/search/collections/SearchRequestActions'
-
 import {withRouter} from 'react-router'
+import FacetFilter from '../facet/FacetFilter'
+import {collectionToggleFacet} from '../../../actions/search/CollectionFilterActions'
+import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
+import {
+  triggerSearch,
+  showCollections,
+} from '../../../actions/search/SearchActions'
+import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
 
 const mapStateToProps = state => {
   return {
     facets: buildKeywordHierarchyMap(
-      state.domain.results.facets,
-      state.behavior.search.selectedFacets
+      state.search.collectionResult.facets,
+      state.search.collectionFilter.selectedFacets
     ),
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    toggleFacet: (category, facetName, selected) => {
-      dispatch(toggleFacet(category, facetName, selected))
+    collectionToggleFacet: (category, facetName, selected) => {
+      dispatch(collectionToggleFacet(category, facetName, selected))
     },
     submit: () => {
-      dispatch(clearCollections())
+      dispatch(collectionClearResults())
       dispatch(triggerSearch())
       dispatch(showCollections(ownProps.history))
     },

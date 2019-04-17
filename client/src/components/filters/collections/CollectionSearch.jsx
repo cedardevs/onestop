@@ -113,12 +113,7 @@ class CollectionSearch extends React.Component {
 
   clearQueryString = () => {
     this.setState({warning: ''})
-    this.props.updateQuery('')
-  }
-
-  clearSearchParams = () => {
-    this.setState({warning: ''})
-    this.props.clearSearch()
+    this.props.collectionUpdateQueryText('')
   }
 
   validateAndSubmit = () => {
@@ -141,7 +136,7 @@ class CollectionSearch extends React.Component {
   }
 
   render() {
-    const {home, updateQuery, queryString} = this.props
+    const {home, collectionUpdateQueryText, queryString} = this.props
     const {warning, focusingWarningClose} = this.state
 
     const instructionalCopy = home ? 'Search NOAA Data' : 'New NOAA Data Search'
@@ -192,7 +187,7 @@ class CollectionSearch extends React.Component {
         <div role="search" style={styleSearchWrapper}>
           <TextSearchField
             onEnterKeyDown={this.validateAndSubmit}
-            onChange={updateQuery}
+            onChange={collectionUpdateQueryText}
             onClear={this.clearQueryString}
             value={queryString}
             warningPopup={warningPopup}

@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import FiltersHidden from './FiltersHidden'
-import {openLeft} from '../../actions/layout/LayoutActions'
+import {openLeft} from '../../actions/LayoutActions'
 
 import {withRouter} from 'react-router'
 

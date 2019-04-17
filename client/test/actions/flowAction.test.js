@@ -61,7 +61,7 @@ describe('The flow actions', () => {
     // debugStore("BEFORE")
 
     // trigger initialize
-    // store.dispatch(FlowActions.initialize()).then(() => {
+    // store.dispatch(SearchActions.initialize()).then(() => {
     //   debugStore("THEN1")
     // })
 
@@ -95,7 +95,7 @@ describe('The flow actions', () => {
   //   })
   // })
 
-  // it('do not dispatch a transition to the collections view, just a clearSelections action, when no search params are present', function () {
+  // it('do not dispatch a transition to the collections view, just a collectionClearSelectedIds action, when no search params are present', function () {
   //   const getState = sinon.stub().returns(mockDefaultState)
   //   const fn = actions.showCollections()
   //
@@ -103,7 +103,7 @@ describe('The flow actions', () => {
   //   expect(dispatch.callCount).toBe(1)
   // })
   //
-  // it('dispatch a clearSelections action and transition to the collections view when search params are present', function () {
+  // it('dispatch a collectionClearSelectedIds action and transition to the collections view when search params are present', function () {
   //   const stateWithSearchParams = _.merge(mockDefaultState, {behavior: {search: {queryText: 'oceans'}}})
   //   const getState = sinon.stub().returns(stateWithSearchParams)
   //   const fn = actions.showCollections()

@@ -1,8 +1,8 @@
 import {connect} from 'react-redux'
 import Header from './Header'
-import {showHome} from '../../actions/search/collections/FlowActions'
+import {showHome} from '../../actions/search/SearchActions'
 import {withRouter} from 'react-router'
-import {getUser, logoutUser} from '../../actions/user/UserActions'
+import {logoutUser} from '../../actions/UserActions'
 import {FEATURE_CART} from '../../utils/featureUtils'
 
 const mapStateToProps = state => {
@@ -11,17 +11,16 @@ const mapStateToProps = state => {
   let logoutEndpoint = undefined
   let userProfileEndpoint = undefined
 
-  if (state.domain.config.auth) {
-    authEnabled = !!state.domain.config.auth
-    loginEndpoint = state.domain.config.auth.loginEndpoint
-    logoutEndpoint = state.domain.config.auth.logoutEndpoint
-    userProfileEndpoint = state.domain.config.auth.userProfileEndpoint
+  if (state.config.auth) {
+    authEnabled = !!state.config.auth
+    loginEndpoint = state.config.auth.loginEndpoint
+    logoutEndpoint = state.config.auth.logoutEndpoint
+    userProfileEndpoint = state.config.auth.userProfileEndpoint
   }
 
   const user = state.user
-  const dropdownAvailable =
-    state.domain.config.headerDropdownMenuFeatureAvailable
-  const featuresEnabled = state.domain.config.featuresEnabled
+  const dropdownAvailable = state.config.headerDropdownMenuFeatureAvailable
+  const featuresEnabled = state.config.featuresEnabled
 
   const cartEnabled = featuresEnabled.includes(FEATURE_CART)
 

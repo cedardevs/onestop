@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import GranuleFilters from './GranuleFilters'
-import {closeLeft} from '../../../actions/layout/LayoutActions'
+import {closeLeft} from '../../../actions/LayoutActions'
 
 import {withRouter} from 'react-router'
 

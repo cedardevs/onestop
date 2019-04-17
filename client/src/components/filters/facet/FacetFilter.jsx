@@ -55,7 +55,7 @@ export default class FacetFilter extends React.Component {
   updateStoreAndSubmitSearch = (facet, selected) => {
     const category = facet.category
     const term = facet.term
-    this.props.toggleFacet(category, term, selected)
+    this.props.collectionToggleFacet(category, term, selected)
     this.props.submit()
   }
 

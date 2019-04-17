@@ -3,7 +3,7 @@ import {
   CLEAR_INFO,
   SET_INFO,
   SET_TOTAL_COUNTS,
-} from '../../actions/search/api/InfoActions'
+} from '../../actions/search/InfoActions'
 
 export const initialState = Immutable({
   version: '',

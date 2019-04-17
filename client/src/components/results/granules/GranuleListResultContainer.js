@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {showGranuleVideo} from '../../../actions/layout/LayoutActions'
+import {showGranuleVideo} from '../../../actions/LayoutActions'
 import GranuleListResult from './GranuleListResult'
 const mapStateToProps = state => {
   const {granuleVideo} = state.layout

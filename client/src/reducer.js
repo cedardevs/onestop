@@ -1,39 +1,34 @@
 import {combineReducers} from 'redux-seamless-immutable'
 
-import search from './reducers/behavior/search'
-import routing from './reducers/behavior/routing'
-import errors from './reducers/behavior/error'
-import request from './reducers/behavior/request'
-
-import config from './reducers/domain/config'
-import info from './reducers/domain/info'
-import results from './reducers/domain/results'
-
-import loading from './reducers/ui/loading'
-
-///
-
-import layout from './reducers/layout'
 import cart from './reducers/cart'
+import config from './reducers/config'
+import errors from './reducers/errors'
+import layout from './reducers/layout'
+import routing from './reducers/routing'
 import user from './reducers/user'
+
+import collectionFilter from './reducers/search/collectionFilter'
+import collectionRequest from './reducers/search/collectionRequest'
+import collectionResult from './reducers/search/collectionResult'
+// TODO: granule reducers
+// import granuleFilter from './reducers/search/granuleFilter'
+// import granuleRequest from './reducer/search/granuleRequest'
+// import granuleResult from './reducers/search/granuleResult'
+import info from './reducers/search/info'
+import loading from './reducers/search/loading'
 
 export const RESET_STORE = 'reset_store'
 
-const domain = combineReducers({
-  config,
+const search = combineReducers({
+  collectionFilter,
+  collectionRequest,
+  collectionResult,
+  // TODO: granule reducers
+  // granuleFilter,
+  // granuleRequest,
+  // granuleResult,
   info,
-  results,
-})
-
-const ui = combineReducers({
   loading,
-})
-
-const behavior = combineReducers({
-  request,
-  search,
-  routing,
-  errors,
 })
 
 // TODO: Pass search state elements to query removing the need for state duplication
@@ -43,13 +38,13 @@ const reducer = (state, action) => {
     state = undefined
   }
   return {
-    domain: domain((state && state.domain) || undefined, action),
-    behavior: behavior((state && state.behavior) || undefined, action),
-    ui: ui((state && state.ui) || undefined, action),
-    //
-    layout: layout((state && state.layout) || undefined, action),
     cart: cart((state && state.cart) || undefined, action),
+    config: config((state && state.config) || undefined, action),
+    errors: errors((state && state.errors) || undefined, action),
+    layout: layout((state && state.layout) || undefined, action),
+    routing: routing((state && state.routing) || undefined, action),
     user: user((state && state.user) || undefined, action),
+    search: search((state && state.search) || undefined, action),
   }
 }
 

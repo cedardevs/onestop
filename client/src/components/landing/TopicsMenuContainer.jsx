@@ -1,23 +1,25 @@
 import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
 import TopicsMenu from './TopicsMenu'
+import {} from '../../actions/search/CollectionResultActions'
+import {
+  collectionClearFacets,
+  collectionUpdateQueryText,
+} from '../../actions/search/CollectionFilterActions'
 import {
   triggerSearch,
-  clearFacets,
-} from '../../actions/search/collections/SearchRequestActions'
-import {updateQuery} from '../../actions/search/collections/SearchParamActions'
-import {showCollections} from '../../actions/search/collections/FlowActions'
-
-import {withRouter} from 'react-router'
+  showCollections,
+} from '../../actions/search/SearchActions'
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
-      dispatch(clearFacets())
+      dispatch(collectionClearFacets())
       dispatch(triggerSearch())
       dispatch(showCollections(ownProps.history))
     },
-    updateQuery: text => {
-      dispatch(updateQuery(text))
+    collectionUpdateQueryText: text => {
+      dispatch(collectionUpdateQueryText(text))
     },
   }
 }

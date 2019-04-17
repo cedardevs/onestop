@@ -22,8 +22,8 @@ const styleTopicsMenu = {
 
 class TopicsMenu extends React.Component {
   search = query => {
-    const {submit, updateQuery} = this.props
-    updateQuery(query)
+    const {submit, collectionUpdateQueryText} = this.props
+    collectionUpdateQueryText(query)
     submit(query)
   }
 

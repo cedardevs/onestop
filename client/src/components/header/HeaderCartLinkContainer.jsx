@@ -12,7 +12,7 @@ const mapStateToProps = state => {
     numberOfGranulesSelected
   )
   return {
-    featuresEnabled: state.domain.config.featuresEnabled,
+    featuresEnabled: state.config.featuresEnabled,
     numberOfGranulesSelected: numberOfGranulesSelected,
     abbreviatedNumberOfGranulesSelected: abbreviatedNumberOfGranulesSelected,
   }

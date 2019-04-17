@@ -1,18 +1,22 @@
 import Immutable from 'seamless-immutable'
-import {search, initialState} from '../../../src/reducers/behavior/search'
 import {
-  updateSearch,
-  newGeometry,
-  removeGeometry,
-  toggleSelection,
-  toggleExcludeGlobal,
-  clearSelections,
-} from '../../../src/actions/search/collections/SearchParamActions'
+  collectionFilter,
+  initialState,
+} from '../../../src/reducers/behavior/collection'
+import {
+  collectionUpdateFilters,
+  collectionUpdateGeometry,
+  collectionRemoveGeometry,
+  collectionToggleSelectedId,
+  collectionToggleExcludeGlobal,
+  collectionClearSelectedIds,
+  COLLECTION_TOGGLE_FACET,
+} from '../../../src/actions/search/CollectionFilterActions'
 
 describe('The search reducer', function(){
   it('has a default state', function(){
     const initialAction = {type: 'init'}
-    const result = search(initialState, initialAction)
+    const result = collectionFilter(initialState, initialAction)
 
     expect(result).toEqual({
       queryText: '',
@@ -25,7 +29,7 @@ describe('The search reducer', function(){
     })
   })
 
-  describe('updateSearch cases', function(){
+  describe('collectionUpdateFilters cases', function(){
     it('updates all search params', function(){
       const newSearchParams = {
         queryText: 'new',
@@ -40,8 +44,8 @@ describe('The search reducer', function(){
         excludeGlobal: true,
       }
 
-      const updateAction = updateSearch(newSearchParams)
-      const result = search(initialState, updateAction)
+      const updateAction = collectionUpdateFilters(newSearchParams)
+      const result = collectionFilter(initialState, updateAction)
       expect(result).toEqual(newSearchParams)
     })
 
@@ -50,17 +54,21 @@ describe('The search reducer', function(){
         queryText: 'new',
       }
 
-      const updateAction = updateSearch(newSearchParams)
-      const result = search(initialState, updateAction)
+      const updateAction = collectionUpdateFilters(newSearchParams)
+      const result = collectionFilter(initialState, updateAction)
       expect(result).toEqual(Immutable.merge(initialState, newSearchParams))
     })
 
     it('works for empty or undefined params', function(){
-      expect(search(initialState, updateSearch({}))).toEqual(initialState)
-      expect(search(initialState, updateSearch(null))).toEqual(initialState)
-      expect(search(initialState, updateSearch(undefined))).toEqual(
-        initialState
-      )
+      expect(
+        collectionFilter(initialState, collectionUpdateFilters({}))
+      ).toEqual(initialState)
+      expect(
+        collectionFilter(initialState, collectionUpdateFilters(null))
+      ).toEqual(initialState)
+      expect(
+        collectionFilter(initialState, collectionUpdateFilters(undefined))
+      ).toEqual(initialState)
     })
   })
 
@@ -85,42 +93,45 @@ describe('The search reducer', function(){
     }
 
     it('updates the state for a new geometry', function(){
-      const newGeomAction = newGeometry(validGeoJSON)
-      const result = search(initialState, newGeomAction)
+      const newGeomAction = collectionUpdateGeometry(validGeoJSON)
+      const result = collectionFilter(initialState, newGeomAction)
       expect(result.geoJSON).toEqual(validGeoJSON)
     })
 
     it('defaults back to initial state for geometry removal', function(){
-      const removeGeomAction = removeGeometry()
-      const result = search({geoJSON: validGeoJSON}, removeGeomAction)
+      const removeGeomAction = collectionRemoveGeometry()
+      const result = collectionFilter({geoJSON: validGeoJSON}, removeGeomAction)
       expect(result.geoJSON).toBeNull()
     })
   })
 
   describe('selected collections cases', function(){
     it('toggles selected collections', function(){
-      const toggleA = toggleSelection('A')
-      const toggleB = toggleSelection('B')
+      const toggleA = collectionToggleSelectedId('A')
+      const toggleB = collectionToggleSelectedId('B')
       // toggle A --> ['A']
-      const addedAResult = search(initialState, toggleA)
+      const addedAResult = collectionFilter(initialState, toggleA)
       expect(addedAResult.selectedIds).toEqual([ 'A' ])
       // toggle B --> ['A', 'B']
-      const addedBResult = search(addedAResult, toggleB)
+      const addedBResult = collectionFilter(addedAResult, toggleB)
       expect(addedBResult.selectedIds).toEqual([ 'A', 'B' ])
       // toggle A --> ['B']
-      const removedAResult = search(addedBResult, toggleA)
+      const removedAResult = collectionFilter(addedBResult, toggleA)
       expect(removedAResult.selectedIds).toEqual([ 'B' ])
     })
 
     it('can clear existing collection selections', function(){
       const stateWithCollections = Immutable({selectedIds: [ 'ABC' ]})
-      const result = search(stateWithCollections, clearSelections())
+      const result = collectionFilter(
+        stateWithCollections,
+        collectionClearSelectedIds()
+      )
       expect(result.selectedIds).toEqual([])
     })
   })
 
   describe('facet cases', function(){
-    it('should handle TOGGLE_FACET w/ facets selected', () => {
+    it('should handle COLLECTION_TOGGLE_FACET w/ facets selected', () => {
       const selectedFacets = {
         science: [ 'Oceans', 'Oceans > Ocean Temperature' ],
         instruments: [
@@ -128,50 +139,50 @@ describe('The search reducer', function(){
         ],
       }
       const modFacetsAction = {
-        type: 'TOGGLE_FACET',
+        type: COLLECTION_TOGGLE_FACET,
         selectedFacets: selectedFacets,
       }
 
-      const reducerResp = search(initialState, modFacetsAction)
+      const reducerResp = collectionFilter(initialState, modFacetsAction)
       expect(reducerResp.selectedFacets).toEqual(selectedFacets)
     })
 
-    it('should handle TOGGLE_FACET w/ no facets selected', () => {
-      const actionWithNoFacets = {type: 'TOGGLE_FACETS', selectedFacets: {}}
-      const reducerResp = search(initialState, actionWithNoFacets)
+    it('should handle COLLECTION_TOGGLE_FACET w/ no facets selected', () => {
+      const actionWithNoFacets = {
+        type: COLLECTION_TOGGLE_FACET,
+        selectedFacets: {},
+      }
+      const reducerResp = collectionFilter(initialState, actionWithNoFacets)
       expect(reducerResp.selectedFacets).toEqual({})
     })
   })
 
   describe('toggleGlobal', function(){
-    it('should handle TOGGLE_EXCLUDE_GLOBAL starting at null', () => {
-      const toggleExcludeGlobalAction = {
-        type: 'TOGGLE_EXCLUDE_GLOBAL',
-      }
-
-      const reducerResp = search(initialState, toggleExcludeGlobalAction)
+    it('should handle COLLECTION_TOGGLE_EXCLUDE_GLOBAL starting at null', () => {
+      const reducerResp = collectionFilter(
+        initialState,
+        collectionToggleExcludeGlobal()
+      )
       expect(reducerResp.excludeGlobal).toBeTruthy()
     })
-    it('should handle TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at true', () => {
+    it('should handle COLLECTION_TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at true', () => {
       const globalExcludedState = {
         excludeGlobal: true,
       }
-      const toggleExcludeGlobalAction = {
-        type: 'TOGGLE_EXCLUDE_GLOBAL',
-      }
-
-      const reducerResp = search(globalExcludedState, toggleExcludeGlobalAction)
+      const reducerResp = collectionFilter(
+        globalExcludedState,
+        collectionToggleExcludeGlobal()
+      )
       expect(reducerResp.excludeGlobal).toBeFalsy()
     })
-    it('should handle TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at false', () => {
+    it('should handle COLLECTION_TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at false', () => {
       const globalExcludedState = {
         excludeGlobal: false,
       }
-      const toggleExcludeGlobalAction = {
-        type: 'TOGGLE_EXCLUDE_GLOBAL',
-      }
-
-      const reducerResp = search(globalExcludedState, toggleExcludeGlobalAction)
+      const reducerResp = collectionFilter(
+        globalExcludedState,
+        collectionToggleExcludeGlobal()
+      )
       expect(reducerResp.excludeGlobal).toBeTruthy()
     })
   })

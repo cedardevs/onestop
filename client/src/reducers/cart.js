@@ -5,7 +5,7 @@ import {
   REMOVE_MULTIPLE_SELECTED_GRANULES,
   REMOVE_SELECTED_GRANULE,
   CLEAR_SELECTED_GRANULES,
-} from '../actions/cart/CartActions'
+} from '../actions/CartActions'
 
 export const initialState = Immutable({
   selectedGranules: {},

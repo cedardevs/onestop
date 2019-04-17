@@ -1,18 +1,18 @@
 import {connect} from 'react-redux'
-import {showDetails} from '../../../actions/search/collections/FlowActions'
-import {
-  incrementCollectionsOffset,
-  triggerSearch,
-} from '../../../actions/search/collections/SearchRequestActions'
-// import CollectionGrid from './CollectionGridComponent'
+import {triggerSearch, showDetails} from '../../../actions/search/SearchActions'
+import {collectionIncrementResultsOffset} from '../../../actions/search/CollectionResultActions'
 import CollectionGrid from './CollectionGrid'
 
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {collections, totalCollections, pageSize} = state.domain.results
+  const {
+    collections,
+    totalCollections,
+    pageSize,
+  } = state.search.collectionResult
   return {
-    loading: state.ui.loading ? 1 : 0,
+    loading: state.search.loading ? 1 : 0,
     results: collections,
     totalHits: totalCollections,
     returnedHits: (collections && Object.keys(collections).length) || 0,
@@ -26,7 +26,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(showDetails(ownProps.history, id))
     },
     fetchMoreResults: () => {
-      dispatch(incrementCollectionsOffset())
+      dispatch(collectionIncrementResultsOffset())
       dispatch(triggerSearch(false))
     },
   }

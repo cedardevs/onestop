@@ -5,8 +5,8 @@ import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   return {
-    collectionsCount: state.domain.info.collectionsCount,
-    granulesCount: state.domain.info.granulesCount,
+    collectionsCount: state.search.info.collectionsCount,
+    granulesCount: state.search.info.granulesCount,
   }
 }
 

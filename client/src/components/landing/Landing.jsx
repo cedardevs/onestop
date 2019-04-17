@@ -46,7 +46,6 @@ class Landing extends React.Component {
   constructor(props) {
     super(props)
     this.submit = props.submit
-    this.updateQuery = props.updateQuery
   }
 
   render() {

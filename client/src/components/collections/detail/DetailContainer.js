@@ -1,16 +1,15 @@
 import {connect} from 'react-redux'
-import Detail from './Detail'
-
 import {withRouter} from 'react-router'
-import {showGranulesList} from '../../../actions/search/collections/FlowActions'
+import Detail from './Detail'
+import {showGranulesList} from '../../../actions/search/SearchActions'
 
 const mapStateToProps = state => {
-  const focusedItem = state.domain.results.collectionDetail
+  const focusedItem = state.search.collectionResult.collectionDetail
   return {
     id: focusedItem ? focusedItem.collection.id : null,
     item: focusedItem ? focusedItem.collection.attributes : null,
     totalGranuleCount: focusedItem ? focusedItem.totalGranuleCount : null,
-    loading: state.behavior.request.getCollectionInFlight,
+    loading: state.search.collectionRequest.collectionDetailRequestInFlight,
   }
 }
 

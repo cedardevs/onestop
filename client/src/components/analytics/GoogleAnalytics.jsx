@@ -7,7 +7,7 @@ import {Route} from 'react-router-dom'
 export default class GoogleAnalytics extends React.Component {
   componentDidMount() {
     const {location} = this.props
-    this.logPageChange(location.pathname, location.search)
+    this.logPageChange(location.pathname, location.collectionFilter)
   }
 
   componentDidUpdate({location: prevLocation}) {
@@ -28,7 +28,7 @@ export default class GoogleAnalytics extends React.Component {
 
     const {location: {pathname, search}} = this.props
     const isDifferentPathname = pathname !== prevLocation.pathname
-    const isDifferentSearch = search !== prevLocation.search
+    const isDifferentSearch = search !== prevLocation.collectionFilter
 
     if (analyticsInitiated && (isDifferentPathname || isDifferentSearch)) {
       this.logPageChange(pathname, search)

@@ -1,52 +1,48 @@
 import Immutable from 'seamless-immutable'
 import {
-  GET_USER_REQUEST,
-  GET_USER_SUCCESS,
-  GET_USER_FAILURE,
-  LOGOUT_USER,
-} from '../actions/user/UserActions'
+  USER_PROFILE_REQUEST,
+  USER_PROFILE_SUCCESS,
+  USER_PROFILE_FAILURE,
+  USER_LOGOUT,
+} from '../actions/UserActions'
 
 export const initialState = Immutable({
   isAuthenticated: false,
-  info: null,
+  profile: null,
   expired: false,
   isFetching: false,
 })
 
-export const info = (state = initialState, action) => {
+export const user = (state = initialState, action) => {
   switch (action.type) {
-    case GET_USER_REQUEST:
-      const isFetchingState = state.setIn([ 'isFetching' ], true, action.item)
-      return isFetchingState
+    case USER_PROFILE_REQUEST:
+      return state.setIn([ 'isFetching' ], true, action.item)
 
-    case GET_USER_SUCCESS:
+    case USER_PROFILE_SUCCESS:
       if (action.payload.email) {
-        const userState = state
-          .setIn([ 'info' ], action.payload)
+        return state
+          .setIn([ 'profile' ], action.profile)
           .setIn([ 'isFetching' ], false)
           .setIn([ 'isAuthenticated' ], true)
           .setIn([ 'expired' ], false)
-        return userState
       }
       else {
         return state.setIn([ 'expired' ], true)
       }
 
-    case GET_USER_FAILURE:
-      const userFailState = state
+    case USER_PROFILE_FAILURE:
+      return state
         .setIn([ 'error' ], action.error)
         .setIn([ 'isFetching' ], false)
-      return userFailState
 
-    case LOGOUT_USER:
-      const userLogoutState = state
-        .setIn([ 'info' ], {})
+    case USER_LOGOUT:
+      return state
+        .setIn([ 'profile' ], {})
         .setIn([ 'expired' ], true)
         .setIn([ 'isAuthenticated' ], false)
-      return userLogoutState
     default:
       return state
   }
 }
 
-export default info
+export default user

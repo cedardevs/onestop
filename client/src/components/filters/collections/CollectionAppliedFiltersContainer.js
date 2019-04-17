@@ -1,18 +1,17 @@
 import {connect} from 'react-redux'
-import {
-  toggleExcludeGlobal,
-  toggleFacet,
-  updateDateRange,
-  removeGeometry,
-} from '../../../actions/search/collections/SearchParamActions'
-import {
-  clearCollections,
-  triggerSearch,
-} from '../../../actions/search/collections/SearchRequestActions'
-import {showCollections} from '../../../actions/search/collections/FlowActions'
-import CollectionAppliedFilters from './CollectionAppliedFilters'
-
 import {withRouter} from 'react-router'
+import {
+  collectionToggleExcludeGlobal,
+  collectionToggleFacet,
+  collectionUpdateDateRange,
+  collectionRemoveGeometry,
+} from '../../../actions/search/CollectionFilterActions'
+import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
+import {
+  triggerSearch,
+  showCollections,
+} from '../../../actions/search/SearchActions'
+import CollectionAppliedFilters from './CollectionAppliedFilters'
 
 const mapStateToProps = state => {
   const {
@@ -21,7 +20,7 @@ const mapStateToProps = state => {
     endDateTime,
     geoJSON,
     excludeGlobal,
-  } = state.behavior.search
+  } = state.search.collectionFilter
   return {
     selectedFacets,
     startDateTime,
@@ -35,18 +34,18 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     toggleExcludeGlobal: () => {
-      dispatch(toggleExcludeGlobal())
+      dispatch(collectionToggleExcludeGlobal())
     },
-    toggleFacet: (category, facetName, selected) =>
-      dispatch(toggleFacet(category, facetName, selected)),
+    collectionToggleFacet: (category, facetName, selected) =>
+      dispatch(collectionToggleFacet(category, facetName, selected)),
     submit: () => {
-      dispatch(clearCollections())
+      dispatch(collectionClearResults())
       dispatch(triggerSearch())
       dispatch(showCollections(ownProps.history))
     },
     updateDateRange: (startDate, endDate) =>
-      dispatch(updateDateRange(startDate, endDate)),
-    removeGeometry: () => dispatch(removeGeometry()),
+      dispatch(collectionUpdateDateRange(startDate, endDate)),
+    removeGeometry: () => dispatch(collectionRemoveGeometry()),
   }
 }
 

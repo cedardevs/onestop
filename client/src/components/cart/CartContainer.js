@@ -1,7 +1,6 @@
 import {connect} from 'react-redux'
-import Cart from './Cart'
-
 import {withRouter} from 'react-router'
+import Cart from './Cart'
 import {
   removeAllGranulesFromLocalStorage,
   removeGranuleFromLocalStorage,
@@ -10,7 +9,7 @@ import {
 import {
   removeAllSelectedGranule,
   removeSelectedGranule,
-} from '../../actions/cart/CartActions'
+} from '../../actions/CartActions'
 
 // import mockCartItems from '../../../test/cart/mockCartItems'
 
@@ -20,7 +19,7 @@ import {
 //   ).length
 //
 //   return {
-//     loading: state.ui.loading ? 1 : 0,
+//     loading: state.search.loading ? 1 : 0,
 //     selectedGranules: state.cart.granules.selectedGranules,
 //     numberOfGranulesSelected: numberOfGranulesSelected,
 //   }
@@ -37,8 +36,8 @@ const mapStateToProps = state => {
   // const numberOfGranulesSelected = Object.keys(selectedGranules).length
 
   return {
-    featuresEnabled: state.domain.config.featuresEnabled,
-    loading: state.ui.loading ? 1 : 0,
+    featuresEnabled: state.config.featuresEnabled,
+    loading: state.search.loading ? 1 : 0,
     selectedGranules: selectedGranules,
     numberOfGranulesSelected: numberOfGranulesSelected,
   }

@@ -1,14 +1,11 @@
 import {connect} from 'react-redux'
-import {
-  incrementGranulesOffset,
-  fetchGranules,
-} from '../../../actions/search/collections/SearchRequestActions'
+import {collectionIncrementDetailGranulesResultOffset} from '../../../actions/search/CollectionResultActions'
 import {
   insertSelectedGranule,
   insertMultipleSelectedGranules,
   removeSelectedGranule,
   removeMultipleSelectedGranules,
-} from '../../../actions/cart/CartActions'
+} from '../../../actions/CartActions'
 import {
   insertGranule,
   removeGranuleFromLocalStorage,
@@ -18,10 +15,11 @@ import {
 import GranuleList from './GranuleList'
 
 import {withRouter} from 'react-router'
+import {collectionDetailGranulesRequest} from '../../../actions/search/CollectionRequestActions'
 
 const mapStateToProps = state => {
-  const {granules, totalGranules} = state.domain.results
-  const focusedItem = state.domain.results.collectionDetail
+  const {granules, totalGranules} = state.search.collectionResult
+  const focusedItem = state.search.collectionResult.collectionDetail
   return {
     collectionTitle: focusedItem
       ? focusedItem.collection.attributes.title
@@ -29,17 +27,17 @@ const mapStateToProps = state => {
     results: granules,
     totalHits: totalGranules,
     returnedHits: (granules && Object.keys(granules).length) || 0,
-    loading: state.ui.loading ? 1 : 0,
+    loading: state.search.loading ? 1 : 0,
     selectedGranules: getSelectedGranulesFromStorage(state),
-    featuresEnabled: state.domain.config.featuresEnabled,
+    featuresEnabled: state.config.featuresEnabled,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
     fetchMoreResults: () => {
-      dispatch(incrementGranulesOffset())
-      dispatch(fetchGranules(false))
+      dispatch(collectionIncrementDetailGranulesResultOffset())
+      dispatch(collectionDetailGranulesRequest(false))
     },
     selectGranule: (item, itemId) => {
       insertGranule(itemId, item)

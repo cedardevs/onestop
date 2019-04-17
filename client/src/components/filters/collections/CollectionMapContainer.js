@@ -1,19 +1,19 @@
 import {connect} from 'react-redux'
 import Map from '../spatial/Map'
 import {
-  newGeometry,
-  removeGeometry,
-} from '../../../actions/search/collections/SearchParamActions'
+  collectionUpdateGeometry,
+  collectionRemoveGeometry,
+} from '../../../actions/search/CollectionFilterActions'
+import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
 import {
-  clearCollections,
   triggerSearch,
-} from '../../../actions/search/collections/SearchRequestActions'
-import {showCollections} from '../../../actions/search/collections/FlowActions'
+  showCollections,
+} from '../../../actions/search/SearchActions'
 
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {geoJSON} = state.behavior.search
+  const {geoJSON} = state.search.collectionFilter
   return {
     geoJsonSelection: geoJSON,
     showMap: state.layout.showMap,
@@ -22,10 +22,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    handleNewGeometry: geoJSON => dispatch(newGeometry(geoJSON)),
-    removeGeometry: () => dispatch(removeGeometry()),
+    handleNewGeometry: geoJSON => dispatch(collectionUpdateGeometry(geoJSON)),
+    removeGeometry: () => dispatch(collectionRemoveGeometry()),
     submit: () => {
-      dispatch(clearCollections())
+      dispatch(collectionClearResults())
       dispatch(triggerSearch())
       dispatch(showCollections(ownProps.history))
     },

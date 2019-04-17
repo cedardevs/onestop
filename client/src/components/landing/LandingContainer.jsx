@@ -1,28 +1,25 @@
 import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
 import Landing from './Landing'
 import {
   triggerSearch,
-  clearFacets,
-} from '../../actions/search/collections/SearchRequestActions'
-import {updateQuery} from '../../actions/search/collections/SearchParamActions'
-import {showCollections} from '../../actions/search/collections/FlowActions'
-
-import {withRouter} from 'react-router'
+  showCollections,
+} from '../../actions/search/SearchActions'
+import {collectionClearFacets} from '../../actions/search/CollectionFilterActions'
 
 const mapStateToProps = state => {
   return {
-    featured: state.domain.config.featured,
+    featured: state.config.featured,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
-      dispatch(clearFacets())
+      dispatch(collectionClearFacets())
       dispatch(triggerSearch())
       dispatch(showCollections(ownProps.history))
     },
-    updateQuery: text => dispatch(updateQuery(text)),
   }
 }
 

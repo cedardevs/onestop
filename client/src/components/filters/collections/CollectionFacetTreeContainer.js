@@ -5,7 +5,7 @@ import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   return {
-    loading: state.ui.loading,
+    loading: state.search.loading,
   }
 }
 

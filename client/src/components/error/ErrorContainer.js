@@ -1,15 +1,14 @@
 import {connect} from 'react-redux'
-import Error from './Error'
-import {goBack} from 'connected-react-router'
-import {clearErrors} from '../../actions/error/ErrorActions'
-import {updateSearch} from '../../actions/search/collections/SearchParamActions'
-import {showHome} from '../../actions/search/collections/FlowActions'
-
 import {withRouter} from 'react-router'
+import {goBack} from 'connected-react-router'
+import Error from './Error'
+import {clearErrors} from '../../actions/ErrorActions'
+import {collectionUpdateFilters} from '../../actions/search/CollectionFilterActions'
+import {showHome} from '../../actions/search/SearchActions'
 
 const mapStateToProps = state => {
   return {
-    errors: state.behavior.errors,
+    errors: state.errors,
   }
 }
 
@@ -21,7 +20,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     goHome: () => {
       dispatch(clearErrors())
-      dispatch(updateSearch())
+      dispatch(collectionUpdateFilters())
       dispatch(showHome(ownProps.history))
     },
   }

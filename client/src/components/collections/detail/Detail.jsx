@@ -115,6 +115,8 @@ class Detail extends React.Component {
       navigateToGranules,
     } = this.props
 
+    console.log('Detail::props', this.props)
+
     if (loading) {
       return (
         <div style={styleCenterContent}>

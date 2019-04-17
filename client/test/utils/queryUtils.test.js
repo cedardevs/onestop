@@ -1,6 +1,6 @@
 import Immutable from 'seamless-immutable'
 import * as queryUtils from '../../src/utils/queryUtils'
-import {initialState} from '../../src/reducers/behavior/search'
+import {initialState} from '../../src/reducers/search/collectionFilter'
 
 describe('The queryUtils', function(){
   describe('assembles collection requests', function(){
@@ -43,7 +43,7 @@ describe('The queryUtils', function(){
 
   it(`encodes & decodes a queryString accurately`, function(){
     queryTestCases().forEach(testCase => {
-      const tempState = {behavior: {search: testCase.state}}
+      const tempState = {search: {collectionFilter: testCase.state}}
       const encodedString = queryUtils.encodeQueryString(tempState)
       expect(encodedString).toBe(testCase.string)
       const decodedString = queryUtils.decodeQueryString(encodedString)

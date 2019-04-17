@@ -137,7 +137,7 @@ class Header extends React.Component {
     } = this.props
 
     const {focusingSkipLink} = this.state
-    const userEmail = user && user.info ? user.info.email : null
+    const userEmail = user && user.profile ? user.profile.email : null
 
     const userActionButton = authEnabled ? !user.isAuthenticated ? (
       <HeaderLink title="Login" to={loginEndpoint} isExternalLink={true} />

@@ -1,10 +1,8 @@
-import {
-  facetsReceived,
-  clearFacets,
-} from '../../src/actions/search/collections/SearchRequestActions'
+import {collectionMetadataReceived} from '../../src/actions/search/CollectionResultActions'
 import reducer from '../../src/reducer'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
+import {collectionClearFacets} from '../../src/actions/search/CollectionFilterActions'
 
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
@@ -23,18 +21,21 @@ describe('The facet action', function(){
         ],
       },
     }
-    const facetAction = facetsReceived(metadata)
-    const expectedAction = {type: 'FACETS_RECEIVED', metadata: metadata}
+    const facetAction = collectionMetadataReceived(metadata)
+    const expectedAction = {
+      type: 'COLLECTION_METADATA_RECEIVED',
+      metadata: metadata,
+    }
 
     expect(facetAction).toEqual(expectedAction)
   })
 
   it('clears facets', function(){
     const state = reducer(initialState, {})
-    const expectedActions = {type: 'CLEAR_FACETS'}
+    const expectedActions = {type: 'COLLECTION_CLEAR_FACETS'}
     const store = mockStore(state)
 
-    store.dispatch(clearFacets())
+    store.dispatch(collectionClearFacets())
     expect(store.getActions()[0]).toEqual(expectedActions)
   })
 })

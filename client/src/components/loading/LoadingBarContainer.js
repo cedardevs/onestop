@@ -4,7 +4,7 @@ import LoadingBar from './LoadingBar'
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {loading} = state.ui
+  const {loading} = state.search.loading
 
   const text = loading ? 'loading' : 'load complete'
   const loadingId = `loading-id::${loading}`

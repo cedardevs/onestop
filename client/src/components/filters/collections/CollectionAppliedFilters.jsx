@@ -30,7 +30,7 @@ export default class CollectionAppliedFilters extends React.Component {
   }
 
   unselectFacetAndSubmitSearch = (category, term) => {
-    this.props.toggleFacet(category, term, false)
+    this.props.collectionToggleFacet(category, term, false)
     this.props.submit()
   }
 

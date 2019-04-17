@@ -18,7 +18,7 @@ export const setErrors = errors => {
 
 // composite actions
 export const showErrors = errors => {
-  return (dispatch, getState) => {
+  return dispatch => {
     dispatch(setErrors(errors))
     dispatch(push('/error'))
   }

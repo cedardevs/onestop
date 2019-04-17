@@ -1,34 +1,34 @@
 import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
 import CollectionSearch from './CollectionSearch'
+import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
+import {
+  collectionRemoveFilters,
+  collectionUpdateQueryText,
+  collectionUpdateFilters,
+} from '../../../actions/search/CollectionFilterActions'
 import {
   triggerSearch,
-  clearCollections,
-} from '../../../actions/search/collections/SearchRequestActions'
-import {
-  removeAllFilters,
-  updateQuery,
-  updateSearch,
-} from '../../../actions/search/collections/SearchParamActions'
-import {showCollections} from '../../../actions/search/collections/FlowActions'
-
-import {withRouter} from 'react-router'
+  showCollections,
+} from '../../../actions/search/SearchActions'
 
 const mapStateToProps = state => {
   return {
-    queryString: state.behavior.search.queryText,
+    queryString: state.search.collectionFilter.queryText,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
-      dispatch(removeAllFilters())
-      dispatch(clearCollections())
+      dispatch(collectionRemoveFilters())
+      dispatch(collectionClearResults())
       dispatch(triggerSearch())
       dispatch(showCollections(ownProps.history))
     },
-    updateQuery: text => dispatch(updateQuery(text)),
-    clearSearch: () => dispatch(updateSearch()),
+    collectionUpdateQueryText: text =>
+      dispatch(collectionUpdateQueryText(text)),
+    clearSearch: () => dispatch(collectionUpdateFilters()),
   }
 }
 

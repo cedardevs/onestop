@@ -5,7 +5,7 @@ import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   return {
-    version: state.domain.info.version,
+    version: state.search.info.version,
   }
 }
 

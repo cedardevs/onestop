@@ -1,8 +1,8 @@
 import 'isomorphic-fetch'
-import {apiPath} from '../../../utils/urlUtils'
+import {apiPath} from '../../utils/urlUtils'
 
 // synchronous actions
-export const SET_INFO = 'set_info'
+export const SET_INFO = 'SET_INFO'
 export const setInfo = info => {
   return {
     type: SET_INFO,
@@ -10,14 +10,14 @@ export const setInfo = info => {
   }
 }
 
-export const CLEAR_INFO = 'clear_info'
+export const CLEAR_INFO = 'CLEAR_INFO'
 export const clearInfo = () => {
   return {
     type: CLEAR_INFO,
   }
 }
 
-export const SET_TOTAL_COUNTS = 'set_total_counts'
+export const SET_TOTAL_COUNTS = 'SET_TOTAL_COUNTS'
 export const setTotalCounts = counts => {
   return {
     type: SET_TOTAL_COUNTS,
@@ -27,7 +27,7 @@ export const setTotalCounts = counts => {
 
 // asynchronous actions
 export const fetchInfo = () => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const url = apiPath() + '/actuator/info'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
@@ -38,7 +38,7 @@ export const fetchInfo = () => {
 }
 
 export const fetchCounts = () => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const urlCollectionCounts = apiPath() + '/collection'
     const urlGranuleCounts = apiPath() + '/granule'
     const params = {headers: {Accept: 'application/json'}}

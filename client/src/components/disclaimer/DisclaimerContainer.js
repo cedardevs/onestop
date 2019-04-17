@@ -5,7 +5,7 @@ import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   return {
-    disclaimer: state.domain.config.disclaimer,
+    disclaimer: state.config.disclaimer,
   }
 }
 

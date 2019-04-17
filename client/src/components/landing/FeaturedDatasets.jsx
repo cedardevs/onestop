@@ -1,6 +1,5 @@
 import React from 'react'
 import FlexRow from '../common/ui/FlexRow'
-import FlexColumn from '../common/ui/FlexColumn'
 import {processUrl} from '../../utils/urlUtils'
 import {fontFamilySerif} from '../../utils/styleUtils'
 import Button from '../common/input/Button'
@@ -165,8 +164,8 @@ class FeaturedDatasets extends React.Component {
   }
 
   search = query => {
-    const {submit, updateQuery} = this.props
-    updateQuery(query)
+    const {submit, collectionUpdateQueryText} = this.props
+    collectionUpdateQueryText(query)
     submit(query)
   }
 

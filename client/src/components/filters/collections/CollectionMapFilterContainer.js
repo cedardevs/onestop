@@ -1,42 +1,42 @@
 import {connect} from 'react-redux'
 import MapFilter from '../spatial/MapFilter'
 import {
-  toggleExcludeGlobal,
-  newGeometry,
-  removeGeometry,
-} from '../../../actions/search/collections/SearchParamActions'
-import {toggleMap} from '../../../actions/layout/LayoutActions'
+  collectionToggleExcludeGlobal,
+  collectionUpdateGeometry,
+  collectionRemoveGeometry,
+} from '../../../actions/search/CollectionFilterActions'
+import {toggleMap} from '../../../actions/LayoutActions'
+import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
 import {
-  clearCollections,
   triggerSearch,
-} from '../../../actions/search/collections/SearchRequestActions'
-import {showCollections} from '../../../actions/search/collections/FlowActions'
+  showCollections,
+} from '../../../actions/search/SearchActions'
 
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   return {
     showMap: state.layout.showMap,
-    geoJSON: state.behavior.search.geoJSON,
-    excludeGlobal: state.behavior.search.excludeGlobal,
+    geoJSON: state.search.collectionFilter.geoJSON,
+    excludeGlobal: state.search.collectionFilter.excludeGlobal,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     toggleExcludeGlobal: () => {
-      dispatch(toggleExcludeGlobal())
+      dispatch(collectionToggleExcludeGlobal())
     },
     submit: () => {
-      dispatch(clearCollections())
+      dispatch(collectionClearResults())
       dispatch(triggerSearch())
       dispatch(showCollections(ownProps.history))
     },
     toggleMap: () => {
       dispatch(toggleMap())
     },
-    removeGeometry: () => dispatch(removeGeometry()),
-    handleNewGeometry: geoJSON => dispatch(newGeometry(geoJSON)),
+    removeGeometry: () => dispatch(collectionRemoveGeometry()),
+    handleNewGeometry: geoJSON => dispatch(collectionUpdateGeometry(geoJSON)),
   }
 }
 

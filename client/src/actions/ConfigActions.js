@@ -1,10 +1,9 @@
 import 'isomorphic-fetch'
 
-import {HEADER_DROPDOWN_FEATURES} from '../../utils/featureUtils'
-
 import _ from 'lodash'
-import {apiPath} from '../../utils/urlUtils'
-import {getUser} from '../user/UserActions'
+import {apiPath} from '../utils/urlUtils'
+import {getUser} from './UserActions'
+import {HEADER_DROPDOWN_FEATURES} from '../utils/featureUtils'
 
 // synchronous actions
 export const SET_CONFIG = 'set_config'
@@ -28,7 +27,6 @@ export const toggleFeatures = featuresList => {
   const headerDropdownMenuFeatureAvailable = featuresEnabled.some(f =>
     HEADER_DROPDOWN_FEATURES.includes(f)
   )
-
   return {
     type: TOGGLE_FEATURES,
     featuresEnabled: featuresEnabled,
@@ -36,9 +34,16 @@ export const toggleFeatures = featuresList => {
   }
 }
 
+export const INIT_ANALYTICS = 'INIT_ANALYTICS'
+export const initAnalytics = () => {
+  return {
+    type: INIT_ANALYTICS,
+  }
+}
+
 // asynchronous actions
 export const fetchConfig = () => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const url = apiPath() + '/uiConfig'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
