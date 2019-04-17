@@ -124,7 +124,8 @@ class RegistryIntegrationSpec extends Specification {
             "contentType": "application/json",
             "method"     : "POST",
             "source"     : "common-ingest",
-            "type"       : "granule"
+            "type"       : "granule",
+            "operation"  : null
         ]
     ]
   }
