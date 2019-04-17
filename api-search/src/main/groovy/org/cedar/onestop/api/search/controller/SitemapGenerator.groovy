@@ -22,7 +22,7 @@ class SitemapGenerator {
   }
 
   public static String makeSiteSubmap(String baseUrl, def submapData) {
-    return submapData[0].attributes.content.collect({collectionId -> "${baseUrl}/#/collections/details/${collectionId}"}).join('\n')
+    return submapData[0].attributes.content.collect({collectionId -> "${baseUrl}/collections/details/${collectionId}"}).join('\n')
   }
 
 }

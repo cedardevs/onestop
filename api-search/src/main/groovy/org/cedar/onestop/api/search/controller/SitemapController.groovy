@@ -24,8 +24,11 @@ class SitemapController {
   private UiConfig uiConfig
   private ElasticsearchService elasticsearchService
 
+  @Value('${sitemap.api-path}')
+  private String API_BASE_URL
+
   @Value('${sitemap.client-path}')
-  private String BASE_URL
+  private String CLIENT_BASE_URL
 
   @Autowired
   public SitemapController(ElasticsearchService elasticsearchService, UiConfig uiConfig) {
@@ -36,7 +39,7 @@ class SitemapController {
 
   @RequestMapping(path = '/sitemap.xml', method = GET)
   String getSitemap( HttpServletRequest request, HttpServletResponse response) {
-    return SitemapGenerator.makeSitemap(BASE_URL, elasticsearchService.searchSitemap().data)
+    return SitemapGenerator.makeSitemap(API_BASE_URL, elasticsearchService.searchSitemap().data)
   }
 
   @RequestMapping(path = "/sitemap/{id}.txt", method = [GET, HEAD])
@@ -46,7 +49,7 @@ class SitemapController {
 
     if (result.data) {
       response.status = HttpStatus.OK.value()
-      return  SitemapGenerator.makeSiteSubmap(BASE_URL, result.data)
+      return  SitemapGenerator.makeSiteSubmap(CLIENT_BASE_URL, result.data)
 
     }
     else {
