@@ -86,18 +86,21 @@ class GranuleFilters extends React.Component {
       {
         name: 'location',
         heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
+        // TODO: replace w/new granule specific container
         // content: <CollectionMapFilterContainer isOpen={this.state.location} />,
         content: 'put granule map filter here',
       },
       {
         name: 'time',
         heading: <FilterHeading icon={timeFilterIcon} text="Date" />,
+        // TODO: replace w/new granule specific container
         // content: <CollectionTimeFilterContainer />,
         content: 'put granule time filter here',
       },
       {
         name: 'keywords',
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
+        // TODO: replace w/new granule specific container
         // content: (
         //     <CollectionFacetFilterContainer submit={this.props.submit} marginNest={'1em'} />
         // ),
