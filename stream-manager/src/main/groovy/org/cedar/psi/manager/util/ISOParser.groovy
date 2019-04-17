@@ -297,6 +297,7 @@ class ISOParser {
   }
 
   static Object parseBounding(def bbox) {
+    // bbox is empty, return a null GeoJSON object
     if (!bbox) {
       return null
     }
@@ -306,12 +307,13 @@ class ISOParser {
     def north = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "") ? null : bbox.northBoundLatitude.Decimal.toDouble()
     def south = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toDouble()
 
-    // explicitly check for null values.
-    if (west == null || east == null || north == null || south == null) {
+    // all corners are null, return a null GeoJSON object
+    if (west == null && east == null && north == null && south == null) {
       return null
     }
 
-    def type, coordinates, builder
+    def coordinates, builder
+
     if (west == east && north == south) {
       builder = Point.newBuilder()
       coordinates = [west, north]
@@ -323,6 +325,7 @@ class ISOParser {
       coordinates = [[west, south], [east, north]]
     }
     else {
+      // this returns with correlating null values as well
       builder = Polygon.newBuilder()
       coordinates = [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
     }

@@ -231,6 +231,20 @@ class ISOParserSpec extends Specification {
     spatialBounding == [spatialBounding: null, isGlobal: false]
   }
 
+  def "any, but not all, corners of the bounding box are null,"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-any-null-coords-metadata.xml").text
+    def metadata = new XmlSlurper().parseText(document)
+
+    when:
+    def spatialBounding = ISOParser.parseSpatialInfo(metadata)
+
+    then:
+    spatialBounding.spatialBounding.coordinates == [[[null, 40.0], [-105.0, 40.0], [-105.0, null], [null, null], [null, 40.0]]]
+    spatialBounding.spatialBounding.type == PolygonType.Polygon
+    !spatialBounding.isGlobal
+  }
+
   def "LineString spatial bounding correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-linestring-coords-metadata.xml").text
