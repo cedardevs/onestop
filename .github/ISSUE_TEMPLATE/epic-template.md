@@ -26,6 +26,9 @@ assignees: ''
 **Target Sprint**
 {start} - {end}
 
+**Assumptions**
+- {assumption 1}
+
 **Tasks**
 1. [ ] first task required to complete this epic
 2. [ ] second task required to complete this epic
