@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-**Summary**
+### Summary
 <table>
   <tr>
     <td><b>As a</b></td>
@@ -23,18 +23,18 @@ assignees: ''
   </tr>
 </table>
 
-**Target Sprint**
+### Sprint
 {start} - {end}
 
-**Assumptions**
+### Assumptions
 - {assumption 1}
 
-**Tasks**
-1. [ ] first task required to complete this epic
-2. [ ] second task required to complete this epic
-3. [ ] third task required to complete this epic
+### Tasks
+- [ ] first task required to complete this epic
+- [ ] second task required to complete this epic
+- [ ] third task required to complete this epic
 
-**References**
+### References
 <table>
   <tr>
     <td><b>Point of contact</b></td>
