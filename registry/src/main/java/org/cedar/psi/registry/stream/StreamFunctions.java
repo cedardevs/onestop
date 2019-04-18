@@ -7,6 +7,7 @@ import org.cedar.schemas.avro.psi.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public class StreamFunctions {
   public static Reducer<Input> mergeInputContent = (aggregate, nextValue) -> {
     log.debug("Merging new input {} into existing aggregate {}", nextValue, aggregate);
 
-    Input.Builder resultBuilder = Input.newBuilder(aggregate);
+    var resultBuilder = Input.newBuilder(aggregate);
     if (nextValue.getContentType() != null) {
       resultBuilder.setContentType(nextValue.getContentType());
     }
@@ -47,7 +48,7 @@ public class StreamFunctions {
   public static Reducer<Input> replaceInputMethod = (aggregate, nextValue) -> {
     log.debug("{} existing aggregate {}", nextValue.getMethod() == DELETE ? "Deleting" : "Resurrecting", aggregate);
 
-    Input.Builder resultBuilder = Input.newBuilder(aggregate);
+    var resultBuilder = Input.newBuilder(aggregate);
     if (nextValue.getMethod() != null) {
       resultBuilder.setMethod(nextValue.getMethod());
     }
@@ -74,10 +75,19 @@ public class StreamFunctions {
   };
 
   private static String mergeJsonMapStrings(String a, String b) {
-    JsonSlurper slurper = new JsonSlurper();
-    Map first = (Map) slurper.parseText(a);
-    Map second = (Map) slurper.parseText(b);
+    var first = parseJsonMap(a);
+    var second = parseJsonMap(b);
     second.forEach((k, v) -> first.merge(k, v, (v1, v2) -> v2));
     return JsonOutput.toJson(first);
+  }
+
+  private static Map parseJsonMap(String json) {
+    if (json == null || json == "") {
+      return new LinkedHashMap();
+    }
+    else {
+      JsonSlurper slurper = new JsonSlurper();
+      return (Map) slurper.parseText(json);
+    }
   }
 }

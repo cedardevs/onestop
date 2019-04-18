@@ -50,6 +50,8 @@ dependencies {
   testCompile('com.github.cedardevs:schemas:5-inputSchemas-SNAPSHOT:test')
 }
 
+sourceCompatibility = '11'
+
 sourceSets {
   integrationTest {
     groovy.srcDir file('src/integrationTest/groovy')

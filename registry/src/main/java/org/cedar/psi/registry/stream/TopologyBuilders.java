@@ -15,21 +15,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TopologyBuilders {
   private static final Logger log = LoggerFactory.getLogger(TopologyBuilders.class);
 
   public static Topology buildTopology(long publishInterval) {
-    StreamsBuilder builder = new StreamsBuilder();
+    var builder = new StreamsBuilder();
     Topics.inputTypes().forEach(type -> addTopologyForType(builder, type, publishInterval));
     return builder.build();
   }
 
   public static StreamsBuilder addTopologyForType(StreamsBuilder builder, RecordType type, Long publishInterval) {
     // build input table for each source
-    Map<String, KTable> inputTables = Topics.inputSources(type).stream()
+    var inputTables = Topics.inputSources(type).stream()
         .collect(Collectors.toMap(
             source -> source,
             source -> {

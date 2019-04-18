@@ -6,10 +6,8 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.PunctuationType;
-import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.cedar.schemas.avro.psi.ParsedRecord;
-import org.cedar.schemas.avro.psi.Publishing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,10 +50,10 @@ public class DelayedPublisherTransformer implements Transformer<String, ParsedRe
   @Override
   public KeyValue<String, ParsedRecord> transform(String key, ParsedRecord value) {
     log.debug("transforming value for key {}", key);
-    Long now = context.timestamp();
-    Publishing publishingInfo = value != null ? value.getPublishing() : null;
-    Long incomingPublishTime = publishingInfo != null ? publishingInfo.getUntil() : null;
-    Long storedPublishTime = triggerKeysStore.get(key);
+    var now = context.timestamp();
+    var publishingInfo = value != null ? value.getPublishing() : null;
+    var incomingPublishTime = publishingInfo != null ? publishingInfo.getUntil() : null;
+    var storedPublishTime = triggerKeysStore.get(key);
     boolean isPrivate = publishingInfo != null ? publishingInfo.getIsPrivate() : false;
 
     log.debug("transforming value with private {} and publish date {}", isPrivate, incomingPublishTime);
@@ -91,18 +89,18 @@ public class DelayedPublisherTransformer implements Transformer<String, ParsedRe
 
   void publishUpTo(long timestamp) {
     log.debug("publishing up to {}", timestamp);
-    KeyValueIterator<Long, String> iterator = this.triggerTimesStore.all();
+    var iterator = this.triggerTimesStore.all();
     while (iterator.hasNext() && iterator.peekNextKey() <= timestamp) {
-      KeyValue<Long, String> keyValue = iterator.next();
-      Long triggerTime = keyValue.key;
-      List<String> triggerKeys = deserializeList(keyValue.value);
+      var keyValue = iterator.next();
+      var triggerTime = keyValue.key;
+      var triggerKeys = deserializeList(keyValue.value);
       triggerKeys.forEach( triggerKey -> {
         log.debug("found publish event for {}", keyValue);
-        ParsedRecord value = lookupStore.get(triggerKey);
+        var value = lookupStore.get(triggerKey);
         if (value != null) {
           log.debug("looked up existing state for {}: {}", triggerKey, value);
-          Publishing publishingInfo = value != null ? value.getPublishing() : null;
-          Long publishTimestamp = publishingInfo != null ? publishingInfo.getUntil() : null;
+          var publishingInfo = value != null ? value.getPublishing() : null;
+          var publishTimestamp = publishingInfo != null ? publishingInfo.getUntil() : null;
           if (publishTimestamp != null && publishTimestamp <= timestamp) {
             log.debug("current publish date for {} has passed => publish", triggerKey);
             context.forward(triggerKey, value);
@@ -126,15 +124,15 @@ public class DelayedPublisherTransformer implements Transformer<String, ParsedRe
   }
 
   void addTrigger(Long key, String value) {
-    List<String> currentList = getTrigger(key);
+    var currentList = getTrigger(key);
     currentList.add(value);
     currentList.sort(Comparator.naturalOrder());
-    String newString = JsonOutput.toJson(currentList);
+    var newString = JsonOutput.toJson(currentList);
     triggerTimesStore.put(key, newString);
   }
 
   void removeTrigger(Long key, String value) {
-    List<String> currentList = getTrigger(key);
+    var currentList = getTrigger(key);
     if (currentList == null) { return; }
     currentList.remove(value);
     currentList.sort(Comparator.naturalOrder());
@@ -142,7 +140,7 @@ public class DelayedPublisherTransformer implements Transformer<String, ParsedRe
       triggerTimesStore.delete(key);
     }
     else {
-      String newString = JsonOutput.toJson(currentList);
+      var newString = JsonOutput.toJson(currentList);
       triggerTimesStore.put(key, newString);
     }
   }
