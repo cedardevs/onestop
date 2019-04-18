@@ -10,6 +10,46 @@ class SearchRequestParserServiceTest extends Specification {
   private slurper = new JsonSlurper()
   private requestParser = new SearchRequestParserService(null)
 
+  def "Request with zeros in #type filter #relative (#relation) creates valid elasticsearch request"() {
+    // confirms a bug fix - 0s were causing no filter to be created
+    given: 'datetime or year filters before/after 0'
+    def json = """{
+        "filters": [{
+                      "type": "${type}",
+                      "relation": "${relation}",
+                      "${relative}": 0
+                  }],
+        "summary": false
+    }"""
+    def params = slurper.parseText(json)
+
+    when:
+    def yearFilters = requestParser.constructYearFilter(params.filters)
+
+    then: 'the query should not be empty'
+    yearFilters.size() == 1
+
+    where:
+    type | relation | relative
+    'year' | 'intersects' | 'after'
+    'year' | 'intersects' | 'before'
+    'year' | 'disjoint' | 'after'
+    'year' | 'disjoint' | 'before'
+    'year' | 'contains' | 'after'
+    'year' | 'contains' | 'before'
+    'year' | 'within' | 'after'
+    'year' | 'within' | 'before'
+
+    'datetime' | 'intersects' | 'after'
+    'datetime' | 'intersects' | 'before'
+    'datetime' | 'disjoint' | 'after'
+    'datetime' | 'disjoint' | 'before'
+    'datetime' | 'contains' | 'after'
+    'datetime' | 'contains' | 'before'
+    'datetime' | 'within' | 'after'
+    'datetime' | 'within' | 'before'
+  }
+
   def "Request with #label creates empty elasticsearch request"() {
     given:
     def params = slurper.parseText(json)
@@ -122,7 +162,7 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
-  def 'Datetime filter request generates expected elasticsearch query'() {
+  def 'Default datetime filter request generates expected elasticsearch query'() {
     given:
     def request = '{"filters":[{"type":"datetime","before":"2011-11-11", "after":"2010-10-10"}]}'
     def params = slurper.parseText(request)
@@ -133,13 +173,34 @@ class SearchRequestParserServiceTest extends Specification {
         bool: [
             must  : [:],
             filter: [
-                [range: [
-                    'beginDate': [lte: '2011-11-11']
-                ]],
-                [range: [
-                    'endDate': [gte: '2010-10-10']
-                ]]
-            ]]
+                [[ bool: [
+                    should: [
+                        [ bool: [
+                            must: [
+                                [ range: [ beginDate: [ lte: '2011-11-11' ]] ],
+                                [ range: [ endDate: [ gte: '2010-10-10' ]] ]
+                            ]
+                        ] ],
+                        [ bool: [
+                            must: [
+                                [ range: [ endDate: [ gte: '2010-10-10' ]] ]
+                            ],
+                            must_not: [
+                                [ exists: [ field: 'beginDate' ] ]
+                            ]
+                        ] ],
+                        [ bool: [
+                            must: [
+                                [ range: [ beginDate: [ lte: '2011-11-11' ]] ]
+                            ],
+                            must_not: [
+                                [ exists: [ field: 'endDate' ] ]
+                            ]
+                        ] ]
+                    ]
+                ] ]]
+            ]
+        ]
     ]
 
     then:

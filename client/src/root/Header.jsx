@@ -1,16 +1,21 @@
 import React from 'react'
 import {Route, Switch} from 'react-router'
 
-import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import Logo from './Logo'
 import HeaderLink from './HeaderLink'
+
 import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 
-import {SiteColors} from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
 import FlexRow from '../common/FlexRow'
+
+import HeaderCartLinkContainer from './HeaderCartLinkContainer'
+
+const styleWrapper = {
+  position: 'relative',
+}
 
 const styleHeader = {
   backgroundColor: '#222C37',
@@ -26,17 +31,21 @@ const styleHeaderFlexRow = {
 
 const styleNav = {
   flex: '1',
-  minWidth: '17em',
+  minWidth: '22em',
   display: 'flex',
   justifyContent: 'flex-end',
   marginTop: '1em',
 }
 
+const styleUserWelcome = {
+  justifyContent: 'flex-end',
+}
+
 const styleLinkList = {
   padding: 0,
-  margin: 0,
+  margin: '0 0.618em 0 0',
   listStyleType: 'none',
-  fontSize: '1.5em',
+  fontSize: '1.2em',
   display: 'inline-flex',
   justifyContent: 'center',
   flexWrap: 'wrap',
@@ -48,6 +57,7 @@ const styleLinkListItem = (firstItem, lastItem) => {
       ? '0 0 0 0.309em'
       : firstItem ? '0 0.309em 0 0' : '0 0.309em 0 0.309em',
     borderRight: !lastItem ? '1px solid white' : 0,
+    display: 'inline-flex',
   }
 }
 
@@ -92,12 +102,13 @@ const styleSkipLinkHover = {
 class Header extends React.Component {
   constructor(props) {
     super(props)
+    this.props = props
     this.state = {
       focusingSkipLink: false,
     }
   }
 
-  handleFocus = e => {
+  handleFocusSkipLink = e => {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -106,7 +117,7 @@ class Header extends React.Component {
     })
   }
 
-  handleBlur = e => {
+  handleBlurSkipLink = e => {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -116,35 +127,63 @@ class Header extends React.Component {
   }
 
   render() {
+    const {
+      user,
+      authEnabled,
+      cartEnabled,
+      loginEndpoint,
+      logoutEndpoint,
+      logoutUser,
+    } = this.props
+
     const {focusingSkipLink} = this.state
+    const userEmail = user && user.info ? user.info.email : null
+
+    const userActionButton = authEnabled ? !user.isAuthenticated ? (
+      <HeaderLink title="Login" to={loginEndpoint} isExternalLink={true} />
+    ) : (
+      <HeaderLink
+        title="Logout"
+        to={logoutEndpoint}
+        isExternalLink={true}
+        onClick={() => logoutUser()}
+      />
+    ) : null
+
+    const userListItem = authEnabled ? (
+      <li style={styleLinkListItem(false, !cartEnabled)}>{userActionButton}</li>
+    ) : null
+
+    const cartListItem = cartEnabled ? (
+      <li style={styleLinkListItem(false, cartEnabled)}>
+        {cartEnabled ? <HeaderCartLinkContainer /> : null}
+      </li>
+    ) : null
+
+    const welcomeUser = userEmail ? (
+      <div style={styleUserWelcome} key="emailDisplay">
+        Logged in as {userEmail}
+      </div>
+    ) : null
 
     const menuContent = (
       <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>
-          <HeaderLink title="Home" to="/">
-            Home
+          <HeaderLink title="About" to="/about">
+            About
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, false)}>
-          <HeaderLink title="About Us" to="/about">
-            About Us
-          </HeaderLink>
-        </li>
-        <li style={styleLinkListItem(false, true)}>
+        <li style={styleLinkListItem(false, !authEnabled && !cartEnabled)}>
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
         </li>
+        {userListItem}
+        {cartListItem}
       </ul>
     )
 
-    const insignia = (
-      <Logo
-        key="insignia"
-        onClick={this.props.goHome}
-        style={{flex: '0 0 275px'}}
-      />
-    )
+    const insignia = <Logo key="insignia" style={{flex: '0 0 275px'}} />
 
     const search = (
       <Switch key="header:search:route">
@@ -156,9 +195,6 @@ class Header extends React.Component {
         </Route>
       </Switch>
     )
-    // this.props.showSearch ? (
-    //   <SearchFieldsContainer key="search" />
-    // ) : null
 
     const menu = (
       <nav key="menu" aria-label="Main" style={styleNav}>
@@ -168,7 +204,7 @@ class Header extends React.Component {
 
     const stylesMerged = {
       ...styleSkipLinkWrapper,
-      ...(this.state.focusingSkipLink ? styleShowSkipLink : styleHideSkipLink),
+      ...(focusingSkipLink ? styleShowSkipLink : styleHideSkipLink),
     }
 
     const skipLink = (
@@ -178,8 +214,8 @@ class Header extends React.Component {
           styleHover={styleSkipLinkHover}
           styleFocus={styleSkipLinkFocus}
           text="Skip To Main Content"
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
+          onFocus={this.handleFocusSkipLink}
+          onBlur={this.handleBlurSkipLink}
           onClick={() => {
             document.getElementById('mainBlock').focus()
           }}
@@ -188,24 +224,27 @@ class Header extends React.Component {
     )
 
     return (
-      <div style={styleHeader}>
-        <FlexRow
-          style={styleHeaderFlexRow}
-          items={[
-            <FlexRow
-              key="insignia-and-search"
-              items={[ skipLink, insignia, search ]}
-            />,
-            menu,
-          ]}
-        />
+      <div style={styleWrapper}>
+        <div style={styleHeader}>
+          <FlexRow
+            style={styleUserWelcome}
+            key="welcomeUser"
+            items={[ welcomeUser ]}
+          />
+          <FlexRow
+            style={styleHeaderFlexRow}
+            items={[
+              <FlexRow
+                key="insignia-and-search"
+                items={[ skipLink, insignia, search ]}
+              />,
+              menu,
+            ]}
+          />
+        </div>
       </div>
     )
   }
-}
-
-Header.propTypes = {
-  goHome: PropTypes.func.isRequired,
 }
 
 export default Header

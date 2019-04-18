@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {FilterColors} from '../defaultStyles'
 
 const styleDefault = iconAndText => {
   return {
@@ -24,6 +25,10 @@ const stylePressDefault = {}
 
 const styleFocusDefault = {
   outline: '2px dashed white',
+}
+
+const styleDisabledDefault = {
+  background: FilterColors.DISABLED_BACKGROUND,
 }
 
 const styleIconPadding = {
@@ -134,9 +139,12 @@ export default class Button extends Component {
 
   render() {
     const {
+      id,
       text,
+      styleText,
       icon,
       iconAfter,
+      iconPadding,
       styleIcon,
       onClick,
       style,
@@ -146,6 +154,8 @@ export default class Button extends Component {
       title,
       ariaExpanded,
       ariaSelected,
+      disabled,
+      styleDisabled,
     } = this.props
 
     const iconAndText = icon && text
@@ -156,7 +166,10 @@ export default class Button extends Component {
       ...(this.state.hovering ? {...styleHoverDefault, ...styleHover} : {}),
       ...(this.state.pressing ? {...stylePressDefault, ...stylePress} : {}),
       ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {}),
-      ...(icon && !text ? styleIconPadding : {}),
+      ...(disabled ? {...styleDisabledDefault, ...styleDisabled} : {}),
+      ...(icon && !text
+        ? iconPadding ? {padding: iconPadding} : styleIconPadding
+        : {}),
     }
 
     const styleIconResolved = styleIcon
@@ -165,6 +178,7 @@ export default class Button extends Component {
 
     return (
       <button
+        id={id}
         style={stylesMerged}
         onClick={onClick}
         onMouseOver={this.handleMouseOver}
@@ -177,27 +191,16 @@ export default class Button extends Component {
         aria-expanded={ariaExpanded}
         aria-selected={ariaSelected}
         aria-label={title || text}
+        disabled={disabled}
       >
         {icon && !iconAfter && !this.props.children ? (
-          <img
-            src={icon}
-            width="2em"
-            height="2em"
-            style={styleIconResolved}
-            aria-hidden={true}
-            alt=""
-          />
+          <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
         ) : null}
-        {text && !this.props.children ? <span>{text}</span> : null}
+        {text && !this.props.children ? (
+          <span style={styleText}>{text}</span>
+        ) : null}
         {icon && iconAfter && !this.props.children ? (
-          <img
-            src={icon}
-            style={styleIconResolved}
-            aria-hidden={true}
-            alt=""
-            width="2em"
-            height="2em"
-          />
+          <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
         ) : null}
         {this.props.children ? <div>{this.props.children}</div> : null}
       </button>

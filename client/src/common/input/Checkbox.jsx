@@ -137,7 +137,7 @@ class Checkbox extends Component {
     })
   }
 
-  handleKeyPressed = e => {
+  handleKeyUp = e => {
     if (e.keyCode === Key.SPACE) {
       e.preventDefault() // prevent scrolling down on space press
       e.stopPropagation()
@@ -184,6 +184,7 @@ class Checkbox extends Component {
       <div style={styleContainer}>
         <div
           role="checkbox"
+          title={this.props.title}
           aria-checked={this.state.checked}
           aria-label={this.props.label}
           aria-disabled={this.props.disabled}
@@ -195,7 +196,7 @@ class Checkbox extends Component {
           onMouseDown={this.handleMouseDown}
           onBlur={this.handleBlur}
           onFocus={this.handleFocus}
-          onKeyUp={this.handleKeyPressed}
+          onKeyUp={this.handleKeyUp}
           onKeyDown={this.handleKeyDown}
         >
           <div style={styleCheck} />
@@ -210,7 +211,9 @@ class Checkbox extends Component {
           onChange={() => {}}
           style={styleInput}
         />
-        <label htmlFor={this.props.id}>{this.props.label}</label>
+        <label style={this.props.styleLabel} htmlFor={this.props.id}>
+          {this.props.label}
+        </label>
       </div>
     )
   }

@@ -1,0 +1,46 @@
+---
+icam:
+  keystore:
+    alias: \${ICAM_KEYSTORE_ALIAS}
+    file: \${ICAM_KEYSTORE_FILE}
+    password: \${ICAM_KEYSTORE_PASSWORD}
+    #keyPassword: \${ICAM_KEY_PASSWORD}
+    type: JKS
+
+roles.names: ADMIN;USER
+user.roles: elliott.richerson@noaa.gov:ADMIN;david.neufeld@noaa.gov:ADMIN
+
+spring:
+  jpa:
+    database: HSQL
+    show-sql: true
+    hibernate:
+        dialect: org.hibernate.dialect.HSQLDialect
+        ddl-auto: update
+
+# SAML Identity Provider Configuration
+# Note: for cu-server-admin, this config will be replaced by the
+#   proper 'sciapps' endpoint version of the identity provider info
+#   the production endpoint would similarly need to override this section
+# -----------------------------------------------------------------
+# ICAM (localhost)
+# -----------------------------------------------------------------
+identityprovider:
+  name: "ICAM (localhost)"
+  loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/SSOPOST/metaAlias/noaa-online/noaa-online-idp"
+  loginBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+  logoutEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/IDPSloRedirect/metaAlias/noaa-online/noaa-online-idp"
+  logoutBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+  issuerSP: "https://localhost:30098/onestop-admin/"
+  issuerIDP: "noaa-online-idp"
+  authnContextRefs:
+    - "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified"
+  authnContextComparisonType: "minimum"
+  assertionConsumerServiceURL: "https://localhost:30098/onestop-admin/loginConsume"
+  assertionConsumerServiceLogoutURL: "https://localhost:30098/onestop-admin/logoutConsume"
+  nameIDPolicyFormat: "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
+  signatureAlgorithm: "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+  signatureCanonicalizationAlgorithm: "http://www.w3.org/2001/10/xml-exc-c14n#"
+  digestAlgorithm: "http://www.w3.org/2000/09/xmldsig#sha1"
+  emailAssertionName: "mail"
+  uuidAssertionName: "uid"

@@ -8,6 +8,7 @@ import VideoView from './VideoView'
 import Tabs from './Tabs'
 import {boxShadow} from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
+import {identifyProtocol} from '../utils/resultUtils'
 
 //-- Styles
 
@@ -25,6 +26,14 @@ const styleDetailWrapper = {
   marginRight: '3px',
   marginLeft: '1px',
   backgroundColor: 'white',
+}
+
+const styleLoadingMessage = {
+  textAlign: 'center',
+}
+
+const styleErrorMessage = {
+  textAlign: 'center',
 }
 
 const styleTitle = {
@@ -108,8 +117,10 @@ class Detail extends Component {
 
     if (loading) {
       return (
-        <div style={styleDetailWrapper}>
-          <h1>Loading...</h1>
+        <div style={styleCenterContent}>
+          <div style={styleDetailWrapper}>
+            <h1 style={styleLoadingMessage}>Loading...</h1>
+          </div>
         </div>
       )
     }
@@ -117,8 +128,12 @@ class Detail extends Component {
     if (!item) {
       // TODO error style? actually report an error in the flow if the collection is not found when search returns?
       return (
-        <div style={styleDetailWrapper}>
-          <h1>There was a problem loading your collection.</h1>
+        <div style={styleCenterContent}>
+          <div style={styleDetailWrapper}>
+            <h1 style={styleErrorMessage}>
+              There was a problem loading your collection.
+            </h1>
+          </div>
         </div>
       )
     }
@@ -139,7 +154,7 @@ class Detail extends Component {
     ]
 
     const videoLinks = item.links.filter(
-      link => link.linkProtocol === 'video:youtube'
+      link => identifyProtocol(link).label === 'Video'
     )
     const showVideoTab = videoLinks.length > 0
     if (showVideoTab) {
@@ -175,6 +190,7 @@ class Detail extends Component {
           </h1>
           <DescriptionView
             item={item}
+            itemUuid={id}
             totalGranuleCount={totalGranuleCount}
             navigateToGranules={() => navigateToGranules(id)}
           />

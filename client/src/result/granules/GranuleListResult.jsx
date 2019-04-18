@@ -2,18 +2,26 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import MapThumbnail from '../../common/MapThumbnail'
-import {processUrl} from '../../utils/urlUtils'
+import {processUrl, isGovExternal} from '../../utils/urlUtils'
 import * as util from '../../utils/resultUtils'
 import FlexColumn from '../../common/FlexColumn'
 import FlexRow from '../../common/FlexRow'
 import {boxShadow} from '../../common/defaultStyles'
 import A from '../../common/link/Link'
+import Button from '../../common/input/Button'
 import {fontFamilySerif} from '../../utils/styleUtils'
+import Checkbox from '../../common/input/Checkbox'
+import {FEATURE_CART} from '../../utils/featureUtils'
+import {play_circle_o, SvgIcon} from '../../common/SvgIcon'
+import VideoTray from './VideoTray'
+import {granuleDownloadableLinks} from '../../utils/cartUtils'
 
 const styleResult = {
   minHeight: '15.5em',
   margin: '0 1.618em 1.618em 0',
+  padding: '0.618em',
   boxShadow: boxShadow,
+  borderRadius: '0 0.309em 0.309em 0',
   backgroundColor: 'white',
   transition: '0.3s background-color ease',
 }
@@ -40,18 +48,16 @@ const styleMap = {
 
 const styleTitle = {
   fontFamily: fontFamilySerif(),
-  fontSize: '1.3em',
+  fontSize: '1em',
   color: 'rgb(0, 0, 50)',
-  border: '.1em dashed transparent', // prevents resize when focus border is set
-  margin: '.259em',
-  padding: '.259em',
   overflowWrap: 'break-word',
   wordWrap: 'break-word',
+  margin: '0 0 0.618em 0',
 }
 
 const styleSectionHeader = {
   fontFamily: fontFamilySerif(),
-  fontSize: '1.1em',
+  fontSize: '1em',
   margin: '0.618em 0 0 0',
 }
 
@@ -61,17 +67,44 @@ const styleSectionContent = {
 
 const styleFocusDefault = {
   outline: 'none',
-  border: '.1em dashed white',
+  // border: '.1em dashed white',
+  textDecoration: 'underline',
+}
+
+const styleBadgeLink = {
+  textDecoration: 'none',
+  display: 'inline-flex',
+  paddingRight: '0.309em',
+}
+
+const styleBadgeLinkFocused = {
+  outline: '2px dashed white',
+  outlineOffset: '0.105em',
+}
+
+const stylePlayButton = {
+  alignSelf: 'center',
+  background: 'none',
+  border: 'none',
+  outline: 'none',
+  padding: '0.309',
+}
+
+const styleHoverPlayButton = {
+  background: 'none',
+  fill: 'blue',
+}
+
+const styleFlexRowR2L = {
+  flexDirection: 'row-reverse',
+  flexGrow: 1,
 }
 
 class ListResult extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
   componentWillMount() {
     this.setState({
       focusing: false,
+      videoPlaying: null,
     })
   }
 
@@ -130,14 +163,44 @@ class ListResult extends React.Component {
   }
 
   renderBadge = (link, itemId) => {
-    const {protocol, url, displayName} = link
+    const {protocol, url, displayName, linkProtocol} = link
     const linkText = displayName ? displayName : protocol.label
     const labelledBy = displayName
       ? // title the link with references to elements: linkText, protocolLegend, granuleTitle
         `ListResult::Link::${url} protocol::legend::${protocol.id}  ListResult::title::${itemId}`
       : // linkText is the same as protocol, so only include one of the two
         `protocol::legend::${protocol.id} ListResult::title::${itemId}`
-
+    let focusRef = null
+    const allowVideo =
+      linkProtocol === 'video:youtube' ||
+      (url.includes('.mp4') && !isGovExternal(url))
+    const videoPlay =
+      protocol.label === 'Video' && allowVideo ? (
+        <Button
+          key={`video-play-button-${url}`}
+          styleHover={styleHoverPlayButton}
+          style={stylePlayButton}
+          ref={ref => {
+            focusRef = ref
+          }}
+          onClick={() => {
+            this.props.showGranuleVideo(this.props.itemId)
+            this.setState(prevState => {
+              return {
+                ...prevState,
+                videoPlaying: {
+                  protocol: linkProtocol,
+                  url: url,
+                  returnFocusRef: focusRef,
+                },
+              }
+            })
+          }}
+          title={`Play ${linkText}`}
+        >
+          <SvgIcon size="1em" path={play_circle_o} />
+        </Button>
+      ) : null
     return (
       <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
         <A
@@ -145,7 +208,8 @@ class ListResult extends React.Component {
           key={url}
           aria-labelledby={labelledBy}
           target="_blank"
-          style={{textDecoration: 'none', display: 'inline-flex'}}
+          style={styleBadgeLink}
+          styleFocus={styleBadgeLinkFocused}
         >
           <div style={util.styleBadge(protocol)} aria-hidden="true">
             {util.renderBadgeIcon(protocol)}
@@ -162,6 +226,7 @@ class ListResult extends React.Component {
             {linkText}
           </div>
         </A>
+        {videoPlay}
       </li>
     )
   }
@@ -175,6 +240,7 @@ class ListResult extends React.Component {
         displayName: link.linkName
           ? link.linkName
           : link.linkDescription ? link.linkDescription : null,
+        linkProtocol: link.linkProtocol, // needed to handle videos consistently
       }))
       .sortBy(info => info.protocol.id)
       .map(link => {
@@ -192,14 +258,20 @@ class ListResult extends React.Component {
   }
 
   handleFocus = event => {
-    this.setState({
-      focusing: true,
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
     })
   }
 
   handleBlur = event => {
-    this.setState({
-      focusing: false,
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+      }
     })
   }
 
@@ -222,7 +294,18 @@ class ListResult extends React.Component {
   }
 
   render() {
-    const {itemId, item, showLinks, showTimeAndSpace} = this.props
+    const {
+      itemId,
+      item,
+      granuleVideoId,
+      showLinks,
+      showTimeAndSpace,
+      handleCheckboxChange,
+      checkGranule,
+      featuresEnabled,
+    } = this.props
+
+    const {videoPlaying} = this.state
 
     const styleFocused = {
       ...(this.state.focusing ? styleFocusDefault : {}),
@@ -233,7 +316,7 @@ class ListResult extends React.Component {
       ...styleFocused,
     }
 
-    const rightItems = [
+    const title = (
       <h2
         id={`ListResult::title::${itemId}`}
         key={`ListResult::title::${itemId}`}
@@ -246,9 +329,23 @@ class ListResult extends React.Component {
         style={styleOverallHeadingApplied}
       >
         {item.title}
-      </h2>,
-    ]
+      </h2>
+    )
 
+    const granuleDownloadable = granuleDownloadableLinks([ item ]).length > 0
+    const selectGranuleCheckbox =
+      featuresEnabled.includes(FEATURE_CART) && granuleDownloadable ? (
+        <Checkbox
+          key={`checkbox-${itemId}`}
+          title={`Mark ${item.title} as file to download`}
+          label={`Mark as file to download`}
+          id={itemId}
+          checked={checkGranule}
+          onChange={handleCheckboxChange(itemId, item)}
+        />
+      ) : null
+
+    const rightItems = []
     if (showLinks) {
       rightItems.push(this.renderLinks(item.links))
     }
@@ -267,16 +364,17 @@ class ListResult extends React.Component {
     const left = (
       <FlexColumn
         key={'ListResult::leftColumn'}
-        style={{width: '32%'}}
+        style={{width: '50%'}}
         items={[
           this.renderDisplayImage(item.thumbnail, item.spatialBounding),
         ]}
       />
     )
+
     const right = (
       <FlexColumn
         key={'ListResult::rightColumn'}
-        style={{marginLeft: '1.618em', width: '68%'}}
+        style={{marginLeft: '1.618em', width: '50%'}}
         items={rightItems}
       />
     )
@@ -286,16 +384,37 @@ class ListResult extends React.Component {
       ...(this.state.focusing ? styleResultFocus : {}),
     }
 
+    const video = (
+      <VideoTray
+        closeTray={() => {
+          this.props.showGranuleVideo(null)
+        }}
+        trayCloseComplete={() => {
+          ReactDOM.findDOMNode(videoPlaying.returnFocusRef).scrollIntoView({
+            behavior: 'smooth',
+          })
+          ReactDOM.findDOMNode(videoPlaying.returnFocusRef).focus()
+        }}
+        url={videoPlaying ? videoPlaying.url : null}
+        protocol={videoPlaying ? videoPlaying.protocol : null}
+        showVideo={videoPlaying && granuleVideoId === itemId}
+      />
+    )
+
+    const flexRowR2L = (
+      <FlexRow style={styleFlexRowR2L} items={[ right, left ]} />
+    )
+
     return (
       <div
         style={styleResultMerged}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
       >
-        <FlexRow
-          style={{padding: '1.618em', flexDirection: 'row-reverse'}}
-          items={[ right, left ]}
-        />
+        {title}
+        {flexRowR2L}
+        {video}
+        <div style={{marginTop: '1em'}}>{selectGranuleCheckbox}</div>
       </div>
     )
   }

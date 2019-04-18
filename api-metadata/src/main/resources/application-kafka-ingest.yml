@@ -1,0 +1,12 @@
+---
+kafka:
+  bootstrap:
+    servers: "localhost:9092"
+    max_poll_records: 20
+    max_wait_ms: 300000  # 5 min
+  topic:
+    granules: "psi-registry-granule-parsed-changelog"
+    collections: "psi-registry-collection-parsed-changelog"
+
+schema-registry:
+  url: "http://localhost:8081"

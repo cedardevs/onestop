@@ -1,0 +1,13 @@
+---
+dependencies:
+  - name: nginx-ingress
+    version: ~1.1.4
+    repository: "@stable"
+  - name: elasticsearch
+    version: ~0.1.0
+    repository: file://../elasticsearch
+    condition: elasticsearch.enabled,global.elasticsearch.enabled
+  - name: kibana
+    version: ~0.1.0
+    repository: file://../kibana
+    condition: kibana.enabled,global.kibana.enabled

@@ -1,3 +1,5 @@
+.keystore
+
 ## Spring Boot local config
 */application.yml
 */application.properties
@@ -7,6 +9,7 @@ dist/
 
 ### Extracted testData directory
 upload/testData
+upload/testData/curl.output
 
 ### IntelliJ
 .idea/
@@ -101,3 +104,7 @@ Temporary Items
 
 # files created by promote script
 *--
+
+#Files created by eclipse plugin in VS Code
+.project
+.classpath

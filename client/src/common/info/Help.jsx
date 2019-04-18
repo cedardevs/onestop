@@ -179,6 +179,25 @@ export default class Help extends React.Component {
                 </li>
               </ul>
             </li>
+
+            <li>
+              Metadata can also be searched by using a regex. Regex terms can be
+              written using two different methods. The easiest method is to use
+              double quotes to capture the regex along with the reserved
+              characters literally. Regex terms must be enclosed with forward
+              slashes. Regex terms not enclosed with double quotes must have
+              every reserved character escaped by a backslash.
+              <ul style={styleExamples}>
+                <li style={styleExamplesListItem}>"/^GHRSST"</li>
+                <li style={styleExamplesListItem}>"/^GHRSST.*(Version 2)$"</li>
+              </ul>
+              <ul style={styleExamples}>
+                <li style={styleExamplesListItem}>\/\^GHRSST</li>
+                <li style={styleExamplesListItem}>
+                  \/\^GHRSST\.\*(Version 2)\$\/
+                </li>
+              </ul>
+            </li>
           </ul>
 
           <hr style={styleHR} />

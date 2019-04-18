@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Upload ISO to OneStop</title>
+    <style>
+        /* CSS RESET */
+
+        /* http://meyerweb.com/eric/tools/css/reset/
+           v2.0 | 20110126
+           License: none (public domain)
+        */
+
+        html, body, div, span, applet, object, iframe,
+        h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+        a, abbr, acronym, address, big, cite, code,
+        del, dfn, em, img, ins, kbd, q, s, samp,
+        small, strike, strong, sub, sup, tt, var,
+        b, u, i, center,
+        dl, dt, dd, ol, ul, li,
+        fieldset, form, label, legend,
+        table, caption, tbody, tfoot, thead, tr, th, td,
+        article, aside, canvas, details, embed,
+        figure, figcaption, footer, header, hgroup,
+        menu, nav, output, ruby, section, summary,
+        time, mark, audio, video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+        /* HTML5 display-role reset for older browsers */
+        article, aside, details, figcaption, figure,
+        footer, header, hgroup, menu, nav, section {
+            display: block;
+        }
+        body {
+            line-height: 1;
+        }
+        ol, ul {
+            list-style: none;
+        }
+        blockquote, q {
+            quotes: none;
+        }
+        blockquote:before, blockquote:after,
+        q:before, q:after {
+            content: '';
+            content: none;
+        }
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        /* MEDIA QUERIES */
+        @media (min-width: 160px) {
+            body {
+                font-size: 11px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        @media (min-width: 320px) {
+            body {
+                font-size: 12px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        @media (min-width: 480px) {
+            body {
+                font-size: 13px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        @media (min-width: 640px) {
+            body {
+                font-size: 14px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        @media (min-width: 800px) {
+            body {
+                font-size: 15px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        @media (min-width: 960px) {
+            body {
+                font-size: 16px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        /* CUSTOM STYLES */
+
+        body, html {
+            height: 100%;
+            display: grid;
+        }
+
+        body {
+            transition: all 0.2s ease-out;
+            font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Roboto",
+            "Arial", sans-serif;
+            /* letter-spacing: 0.1em; */
+            /* line-height: 1.33em; */
+            color: white;
+            background: #222C37;
+            min-height: 100%;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 1.618em;
+            margin: 0 0 0.618em 0;
+        }
+
+        p {
+            margin: 0 0 1.618em 0;
+        }
+
+        .list {
+            list-style-type: square;
+            margin: 0 0 1.618em 1.618em;
+        }
+
+        .list li {
+            margin: 0 0 0.618em 0;
+        }
+
+        #upload_container {
+            margin: auto;
+            padding: 8em;
+        }
+
+        #upload_form {
+            margin: 0 0 1.618em 0;
+        }
+
+        #file_selector {
+            overflow: hidden;
+            position: relative;
+        }
+
+        #file_selector [type=file] {
+            cursor: inherit;
+            display: block;
+            font-size: 999px;
+            filter: alpha(opacity=0);
+            min-height: 100%;
+            min-width: 100%;
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            text-align: right;
+            top: 0;
+        }
+
+        /* Example stylistic flourishes */
+
+        #file_selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            background: #277CB2;
+            border-radius: 0.309em;
+            text-align: center;
+            font-size: 1.25em;
+            margin: 0 0 1em 0;
+            padding: 0.618em;
+        }
+
+        #file_selector:hover {
+            background: linear-gradient(#277CB2, #28323E);
+        }
+
+        #file_selector [type=file] {
+            cursor: pointer;
+        }
+
+        #submit_button {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            background: #3F6E45;;
+            border-radius: 0.309em;
+            border: transparent;
+            text-align: center;
+            font-size: 1.25em;
+            margin: 0 0 1.618em 0;
+            padding: 0.618em;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #submit_button:hover {
+            background: linear-gradient(#3F6E45, #203326);
+        }
+
+        #submit_button:focus {
+            outline: 2px solid white;
+        }
+
+        #submit_button:disabled {
+            background:gray;
+        }
+
+        #files_summary {
+            background: #F9F9F9;
+            color: #222;
+            padding: 1.618em;
+            margin: 0 0 1.618em 0;
+            border: 0.105em solid #666;
+        }
+
+        #no_files_summary, #some_files_summary {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #invalid_files_summary {
+            color: red;
+        }
+
+        #invalid_files_summary > ul {
+            margin: 0.618em 0 0 1.618em;
+        }
+
+        #invalid_warning {
+            font-weight: bold;
+        }
+    </style>
+  </head>
+  <body>
+      <div id="upload_container">
+
+          <h1>Secure Onestop Metadata Upload</h1>
+          <p>Select file(s) to upload (up to 500 MB).</p>
+          <ul class="list">
+              <li>The files must be ISO or ISOLite.</li>
+              <li>If you uploaded granules with no corresponding collection, they will not show in OneStop results, and you will see no error upon submission of this form.</li>
+          </ul>
+
+          <form id="upload_form" th:action="@{/metadata-form}" method="post" enctype="multipart/form-data">
+              <label id="file_selector" for="files_input">
+                  Select file(s)
+                  <input type="file" name="files" id="files_input" accept=".xml" multiple />
+              </label>
+              <input id="submit_button" type="submit" value="Upload Metadata">
+          </form>
+
+          <div id="files_summary">
+              <div>No files currently selected for upload.</div>
+          </div>
+      </div>
+
+    <script defer>
+      // get a handle on the input and summary section
+      let input = document.getElementById('files_input');
+      let summary = document.getElementById('files_summary');
+      let submit = document.getElementById('submit_button');
+
+      // hide the default "Choose Files" input in favor of the styled label
+      // and custom javascript to enhance status feedback
+      input.style.opacity = 0;
+
+      // add event listener for when the file input changes
+      input.addEventListener('change', updateSummary);
+
+      // update summary when input changes
+      function updateSummary() {
+
+        // remove contents of summary section
+        while(summary.firstChild) {
+          summary.removeChild(summary.firstChild);
+        }
+
+        // assign updated files to variable
+        let updated_files = input.files;
+
+        // if there are no selected files, provide that feedback in the summary
+        if(updated_files.length === 0) {
+          submit.disabled = true;
+          submit.style.display = 'none';
+          let elementNoFiles = document.createElement('div');
+          elementNoFiles.id = 'no_files_summary'
+          elementNoFiles.textContent = 'No files currently selected for upload';
+          summary.appendChild(elementNoFiles);
+        }
+        // when files are selected, validate them and aggregate summary info
+        else {
+
+          let total_size = 0
+          let n_files = updated_files.length
+
+          let files_valid = []
+          let files_invalid = []
+
+          for(let i = 0; i < n_files; i++) {
+            let file = updated_files[i]
+            if(validFileType(file)) {
+              files_valid.push(file.name)
+              total_size += file.size
+            } else {
+              files_invalid.push(file.name)
+            }
+          }
+
+          if(files_invalid.length > 0) {
+            submit.disabled = true;
+            submit.style.display = 'none';
+
+            let elementInvalidFiles = document.createElement('div');
+            elementInvalidFiles.id = 'invalid_files_summary';
+
+            let elementInvalidWarning = document.createElement('div');
+            elementInvalidWarning.id = 'invalid_warning';
+            elementInvalidWarning.textContent = 'Some files you selected were not XML. Please remove the following files from your selection';
+
+            let list = document.createElement('ul');
+            list.className = 'list';
+            summary.appendChild(list);
+            for(let j = 0; j < files_invalid.length; j++) {
+              let listItem = document.createElement('li');
+              listItem.textContent = files_invalid[j];
+              list.appendChild(listItem);
+            }
+
+            elementInvalidFiles.appendChild(elementInvalidWarning);
+            elementInvalidFiles.appendChild(list);
+
+            summary.appendChild(elementInvalidFiles);
+
+          }
+          else {
+
+            submit.disabled = false;
+            submit.style.display = 'flex';
+
+            let elementNumberOfFiles = document.createElement('div');
+            elementNumberOfFiles.className = 'summary_line';
+            elementNumberOfFiles.textContent = 'Number of Files: ' + n_files.toString();
+
+            let elementTotalSize = document.createElement('div');
+            elementTotalSize.className = 'summary_line';
+            elementTotalSize.textContent = 'Total Size: ' + bytesToHumanReadable(total_size);
+
+            let elementSomeFiles = document.createElement('div');
+            elementSomeFiles.id = 'some_files_summary';
+
+            elementSomeFiles.appendChild(elementNumberOfFiles)
+            elementSomeFiles.appendChild(elementTotalSize)
+            summary.appendChild(elementSomeFiles)
+          }
+        }
+      }
+
+      // validate the types of files selected for upload
+      const VALID_FILE_TYPES = [
+        'text/xml',
+      ]
+
+      function validFileType(file) {
+        for(let i = 0; i < VALID_FILE_TYPES.length; i++) {
+          if(file.type === VALID_FILE_TYPES[i]) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      // convert byte number to human readable formats (bytes|KB|MB|GB)
+      function bytesToHumanReadable(bytes) {
+        const BYTES_PER_KB = 1024;
+        const BYTES_PER_MB = 1048576;
+        const BYTES_PER_GB = 1073741824;
+        if(bytes < BYTES_PER_KB) {
+          return bytes + 'bytes';
+        }
+        else if(bytes >= BYTES_PER_KB && bytes < BYTES_PER_MB) {
+          return (bytes/BYTES_PER_KB).toFixed(1) + 'KB';
+        }
+        else if(bytes >= BYTES_PER_MB && bytes < BYTES_PER_GB) {
+          return (bytes/BYTES_PER_MB).toFixed(1) + 'MB';
+        }
+        else if(bytes >= BYTES_PER_GB) {
+          return (bytes/BYTES_PER_GB).toFixed(1) + 'GB';
+        }
+      }
+    </script>
+
+
+  </body>
+</html>

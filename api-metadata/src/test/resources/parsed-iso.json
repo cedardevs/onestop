@@ -1,0 +1,265 @@
+{
+  "fileIdentifier": "gov.noaa.nodc:GHRSST-AMSRE-REMSS-L2P",
+  "parentIdentifier": null,
+  "hierarchyLevelName": null,
+  "doi": null,
+  "purpose": "Basic research",
+  "status": "onGoing",
+  "credit": "L2P data is sponsored by the National Oceanographic Partnership Program (NOPP).",
+  "title": "GHRSST Level 2P Global Subskin Sea Surface Temperature from the Advanced Scanning Microwave Radiometer",
+  "alternateTitle": "AMSRE 25km gridded SST data set",
+  "description": "version 2 format specifications.",
+  "keywords": [
+    {
+      "values": [
+        "SIO > Super Important Organization",
+        "OSIO > Other Super Important Organization",
+        "SSIO > Super SIO (Super Important Organization)"
+      ],
+      "type": "dataCenter",
+      "namespace": "Global Change Master Directory (GCMD) Data Center Keywords"
+    },
+    {
+      "values": [
+        "0003665",
+        "0003666",
+        "0003667",
+        "0003668",
+        "0003669"
+      ],
+      "type": null,
+      "namespace": "NCEI ACCESSION NUMBER"
+    },
+    {
+      "values": [
+        "EARTH SCIENCE > OCEANS > OCEAN TEMPERATURE > SEA SURFACE TEMPERATURE"
+      ],
+      "type": "theme",
+      "namespace": "GCMD Keywords - Earth science services Keywords"
+    },
+    {
+      "values": [
+        "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
+        "Oceans > Salinity/Density > Salinity",
+        "Volcanoes > This Keyword > Is Invalid",
+        "Spectral/Engineering > Microwave > Brightness Temperature",
+        "Spectral/Engineering > Microwave > Temperature Anomalies"
+      ],
+      "type": "theme",
+      "namespace": "GCMD Keywords - Earth Science Keywords"
+    },
+    {
+      "values": [
+        "Geographic Region > Arctic",
+        "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
+        "Liquid Earth > This Keyword > Is Invalid"
+      ],
+      "type": "place",
+      "namespace": "GCMD Keywords - Locations"
+    },
+    {
+      "values": [
+        "Seasonal"
+      ],
+      "type": "dataResolution",
+      "namespace": "Global Change Master Directory Keywords - Temporal Data Resolution"
+    },
+    {
+      "values": [
+        "> 1 Km"
+      ],
+      "type": "dataResolution",
+      "namespace": "GCMD Keywords - Vertical Data Resolution"
+    }
+  ],
+  "topicCategories": [
+    "environment",
+    "oceans",
+    "climatologyMeteorologyAtmosphere",
+    "biota"
+  ],
+  "temporalBounding": {
+    "beginDate": "2002-06-01",
+    "beginIndeterminate": null,
+    "endDate": "2011-10-04",
+    "endIndeterminate": null,
+    "instant": null,
+    "instantIndeterminate": null,
+    "description": null
+  },
+  "spatialBounding": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -180.0,
+          -90.0
+        ],
+        [
+          180.0,
+          -90.0
+        ],
+        [
+          180.0,
+          90.0
+        ],
+        [
+          -180.0,
+          90.0
+        ],
+        [
+          -180.0,
+          -90.0
+        ]
+      ]
+    ]
+  },
+  "isGlobal": true,
+  "acquisitionInstruments": [
+    {
+      "instrumentIdentifier": "AMSR-E > Advanced Microwave Scanning Radiometer-EOS",
+      "instrumentType": "sensor",
+      "instrumentDescription": "The Advanced Microwave Scann"
+    }
+  ],
+  "acquisitionOperations": [
+    {
+      "operationDescription": null,
+      "operationIdentifier": "Super Important Project",
+      "operationStatus": null,
+      "operationType": null
+    }
+  ],
+  "acquisitionPlatforms": [
+    {
+      "platformIdentifier": "AQUA > Earth Observing System, AQUA",
+      "platformDescription": "Aqua is a NASA polar orbiting mission designed to collect information on the Earth's atmospheric",
+      "platformSponsor": [
+        "Remote Sensing Systems",
+        "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
+      ]
+    }
+  ],
+  "dataFormats": [
+    {
+      "name": "NETCDF",
+      "version": "netCDF-4"
+    }
+  ],
+  "links": [
+    {
+      "linkName": "Descriptive Information",
+      "linkProtocol": "HTTPS",
+      "linkUrl": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.nodc:GHRSST-AMSRE-REMSS-L2P",
+      "linkDescription": "Navigate directly to the URL for a descriptive web page with download links.",
+      "linkFunction": "information"
+    },
+    {
+      "linkName": "FTP",
+      "linkProtocol": "FTP",
+      "linkUrl": "ftp://ftp.nodc.noaa.gov/pub/data.nodc/ghrsst/L2P/AMSRE/REMSS/",
+      "linkDescription": "These data are available through the File Transfer Protocol (FTP). You may use any FTP client to download these data.",
+      "linkFunction": "download"
+    }
+  ],
+  "responsibleParties": [
+    {
+      "individualName": null,
+      "organizationName": "Super Important Organization",
+      "positionName": null,
+      "role": "publisher",
+      "email": "email@sio.co",
+      "phone": "555-123-4567"
+    },
+    {
+      "individualName": "Edward M. Armstrong",
+      "organizationName": "US NASA; Jet Propulsion Laboratory (JPL)",
+      "positionName": null,
+      "role": "originator",
+      "email": "edward.m.armstrong@jpl.nasa.gov",
+      "phone": "555-555-5559"
+    },
+    {
+      "individualName": "Jarianna Whackositz",
+      "organizationName": "Secret Underground Society",
+      "positionName": "Software Developer",
+      "role": "resourceProvider",
+      "email": "jw@mock-creator-email.org",
+      "phone": "555-555-5558"
+    },
+    {
+      "individualName": "John Smith",
+      "organizationName": "University of Boulder",
+      "positionName": "Chief Awesomeness Officer",
+      "role": "pointOfContact",
+      "email": "NCEI.Info@noaa.gov",
+      "phone": "555-555-5555"
+    }
+  ],
+  "thumbnail": "https://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-AMSRE-REMSS-L2P",
+  "thumbnailDescription": "Preview graphic",
+  "creationDate": null,
+  "revisionDate": "2017-08-23",
+  "publicationDate": "2010-11-09",
+  "citeAsStatements": [
+    "[CITE AS STATEMENT 2]",
+    "[CITE AS STATEMENT 1]"
+  ],
+  "crossReferences": [
+    {
+      "title": "Full details of the AQUA mission",
+      "date": null,
+      "links": [
+        {
+          "linkName": "Full details of the AQUA mission",
+          "linkProtocol": "HTTP",
+          "linkUrl": "http://aqua.nasa.gov/",
+          "linkDescription": "Full details of the AQUA mission",
+          "linkFunction": null
+        }
+      ]
+    },
+    {
+      "title": "Portal to the GHRSST Global Data Assembly Center and data access",
+      "date": null,
+      "links": [
+        {
+          "linkName": "Portal to the GHRSST Global Data Assembly Center and data access",
+          "linkProtocol": "HTTP",
+          "linkUrl": "http://ghrsst.jpl.nasa.gov",
+          "linkDescription": "Portal to the GHRSST Global Data Assembly Center and data access",
+          "linkFunction": null
+        }
+      ]
+    }
+  ],
+  "largerWorks": [
+    {
+      "title": "[TITLE OF PROJECT]",
+      "date": "9999-10-10",
+      "links": [
+      ]
+    }
+  ],
+  "useLimitation": "accessLevel: Public",
+  "legalConstraints": [
+    "Cite as: Remote Sensing Systems (REMSS) (2002). GHRSST Level 2P Global Subskin Sea Surface Temperature from the Advanced Scanning Microwave Radiometer - Earth Observing System (AMSR-E) on the NASA Aqua Satellite (GDS versions 1 and 2). National Oceanographic Data Center, NOAA. Dataset. [access date]",
+    "NOAA and NCEI cannot provide any warranty as to the accuracy, reliability, or completeness of furnished data. Users assume responsibility to determine the usability of these data. The user is responsible for the results of any application of this data for other than its intended purpose."
+  ],
+  "accessFeeStatement": null,
+  "orderingInstructions": null,
+  "edition": "7.0",
+  "dsmmAccessibility": 5,
+  "dsmmDataIntegrity": 3,
+  "dsmmDataQualityAssessment": 2,
+  "dsmmDataQualityAssurance": 3,
+  "dsmmDataQualityControlMonitoring": 1,
+  "dsmmPreservability": 5,
+  "dsmmProductionSustainability": 2,
+  "dsmmTransparencyTraceability": 2,
+  "dsmmUsability": 4,
+  "dsmmAverage": 3,
+  "updateFrequency": "asNeeded",
+  "presentationForm": "tableDigital",
+  "services": []
+}

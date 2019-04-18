@@ -471,8 +471,11 @@ class MetadataParser {
     return parseKeywordsAndTopics(new XmlSlurper().parseText(xml))
   }
 
-  // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
-  static final MIN_DATE_LONG = -292275055L
+  // Year must be in the range [-292275055,292278994] in order to be parsed as a date by ES (Joda time magic number). However,
+  // this number is a bit arbitrary, and prone to change when ES switches to the Java time library (minimum supported year
+  // being -999999999). We will limit the year ourselves instead to -100,000,000 -- since this is a fairly safe bet for
+  // supportability across many date libraries if the utcDateTime ends up used as is by a downstream app.
+  static final MIN_DATE_LONG = -100_000_000L
   static final MAX_DATE_LONG = 292278994L
 
   // handle 3 optional date formats in priority of full-parse option to minimal-parse options
@@ -601,7 +604,8 @@ class MetadataParser {
     def north = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "")  ? null : bbox.northBoundLatitude.Decimal.toFloat()
     def south = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toFloat()
 
-    if (!west || !east || !north || !south) { return null }
+    // explicitly check for null value.
+    if (west == null || east == null || north == null || south == null) { return null }
 
     def type, coordinates
     if (west == east && north == south) {

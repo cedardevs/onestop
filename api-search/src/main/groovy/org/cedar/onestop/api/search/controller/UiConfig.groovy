@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component
 @ConfigurationProperties('ui')
 class UiConfig {
 
-  Boolean granuleDetails
   BannerConfig banner
   List<FeaturedConfig> featured
 
@@ -21,10 +20,39 @@ class UiConfig {
     String background
   }
 
-  static class FeaturedConfig {
+  static class FeaturedConfig { // featured datasets
     String title
     String searchTerm
     String imageUrl
+  }
+
+  List<FeatureToggles> enabledFeatureToggles
+
+  static class FeatureToggles {
+    String featureName
+  }
+
+  GoogleAnalytics googleAnalytics
+
+  static class GoogleAnalytics{
+    List<Map> profiles
+    Map reactGaOptions
+  }
+
+// * This is simply a reference to the kinds of properties that could be proviced under reactGaOptions
+//  class ReactGAOptions {
+//    Boolean debug
+//    String titleCase
+//    String gaOptions
+//    String gaAddress
+//    Boolean alwaysSendToDefaultTracker
+//  }
+
+  Auth auth
+  static class Auth{
+    String loginEndpoint
+    String logoutEndpoint
+    String userProfileEndpoint
   }
 
 }

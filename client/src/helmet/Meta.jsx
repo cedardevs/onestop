@@ -2,6 +2,9 @@ import {Helmet} from 'react-helmet'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
+import {toJsonLd, appJsonLd} from '../utils/jsonLdUtils'
+
+import {getBasePath} from '../utils/urlUtils'
 
 export default class Meta extends Component {
   formatTitle = title => {
@@ -24,11 +27,21 @@ export default class Meta extends Component {
   }
 
   render() {
-    const {title, formatTitle, description, robots, thumbnail} = this.props
+    const {
+      title,
+      formatTitle,
+      description,
+      robots,
+      thumbnail,
+      item,
+      itemUuid,
+      rootSearchAction,
+    } = this.props
 
     /*
     Default values for every variable are critial, because otherwise helmet will leave meta tags set to old values when you return to a previous page (such as clicking the home link after visiting a collection.)
     */
+    const URL = `${window.location.origin + window.location.pathname}`
     const titleValue = title ? title : 'NOAA OneStop'
     const formattedTitle = formatTitle
       ? this.formatTitle(titleValue)
@@ -39,10 +52,26 @@ export default class Meta extends Component {
     const robotsValue = robots || 'index, nofollow'
     const imageValue =
       thumbnail || 'https://data.noaa.gov/datasetsearch/img/oneStop.jpg'
+    const jsonLD = item ? (
+      <script type="application/ld+json">
+        {toJsonLd(itemUuid, item, URL)}
+      </script>
+    ) : null
+    const searchActionJsonLd = rootSearchAction ? (
+      <script type="application/ld+json">{appJsonLd(URL)}</script>
+    ) : null
+
+    var faviconPath = `${getBasePath()}/static/noaa-favicon.ico`.replace(
+      '//',
+      '/',
+      'g'
+    )
 
     return (
       <Helmet>
-        <link href="./noaa-favicon.ico" rel="shortcut icon" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href={faviconPath} rel="shortcut icon" />
+        <meta property="og:url" content={URL} />
 
         <meta property="robots" content={robotsValue} />
 
@@ -52,6 +81,8 @@ export default class Meta extends Component {
 
         <meta property="description" content={descriptionValue} />
         <meta property="og:description" content={descriptionValue} />
+        <meta property="dcterms.format" content="text/html" />
+        <meta property="og:type" content="website" />
         <meta
           property="og:site_name"
           content="National Oceanic and Atmospheric Administration"
@@ -61,7 +92,8 @@ export default class Meta extends Component {
         <meta property="og:image:width" content="800" />
         <meta property="og:image:height" content="400" />
 
-        <meta property="og:url" content={`${location.href}`} />
+        {jsonLD}
+        {searchActionJsonLd}
       </Helmet>
     )
   }

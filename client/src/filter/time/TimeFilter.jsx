@@ -290,7 +290,7 @@ export default class TimeFilter extends Component {
     )
   }
 
-  createYearField = (name, value) => {
+  createYearField = (name, value, onChange) => {
     const id = `${name}DateYear`
     const label = `year ${name}`
     return (
@@ -306,6 +306,7 @@ export default class TimeFilter extends Component {
             placeholder="YYYY"
             aria-placeholder="Y Y Y Y"
             value={value}
+            onChange={onChange}
             maxLength="4"
             style={styleYear}
             aria-label={label}
@@ -315,7 +316,7 @@ export default class TimeFilter extends Component {
     )
   }
 
-  createMonthField = (name, value) => {
+  createMonthField = (name, value, onChange) => {
     const id = `${name}DateMonth`
     const label = `month ${name}`
     return (
@@ -328,6 +329,7 @@ export default class TimeFilter extends Component {
             id={id}
             name={id}
             value={value}
+            onChange={onChange}
             style={styleMonth}
             aria-label={label}
           >
@@ -350,7 +352,7 @@ export default class TimeFilter extends Component {
     )
   }
 
-  createDayField = (name, value) => {
+  createDayField = (name, value, onChange) => {
     const id = `${name}DateDay`
     const label = `day ${name}`
     return (
@@ -366,6 +368,7 @@ export default class TimeFilter extends Component {
             placeholder="DD"
             aria-placeholder="D D"
             value={value}
+            onChange={onChange}
             maxLength="2"
             style={styleDay}
             aria-label={label}
@@ -377,16 +380,17 @@ export default class TimeFilter extends Component {
 
   createDateFieldset = (name, year, month, day, valid) => {
     const legendText = `${_.capitalize(name)} Date:`
+
+    const onDateChange = event => {
+      this.onChange(event.target.name, event.target.value)
+    }
+
     return (
-      <Fieldset
-        onFieldsetChange={event =>
-          this.onChange(event.target.name, event.target.value)}
-        legendText={legendText}
-      >
+      <Fieldset legendText={legendText}>
         <div style={styleDate}>
-          {this.createYearField(name, year)}
-          {this.createMonthField(name, month)}
-          {this.createDayField(name, day)}
+          {this.createYearField(name, year, onDateChange)}
+          {this.createMonthField(name, month, onDateChange)}
+          {this.createDayField(name, day, onDateChange)}
 
           <div style={styleField}>
             <span />

@@ -1,0 +1,54 @@
+/*
+  These are the base font sizes for the whole site <body>
+  at different screen widths. The transitions allow the size
+  to grow and shrink seamlessly if a browser window is being
+  actively resized or rotated on a mobile device.
+
+  You can think of these font sizes as what represents '1em'
+  in subsequent styles on the page. We attempt to make all our
+  component inline-styles 'em'-based so that our content looks
+  natural and proportional for as many screen sizes as possible.
+  This is also especially important for dimensional styles such
+  as padding, margin, offsets, borders, shadows, etc...
+ */
+@media (min-width: 160px) {
+  body {
+    font-size: 11px;
+    transition: all 0.2s ease-out;
+  }
+}
+
+@media (min-width: 320px) {
+  body {
+    font-size: 12px;
+    transition: all 0.2s ease-out;
+  }
+}
+
+@media (min-width: 480px) {
+  body {
+    font-size: 13px;
+    transition: all 0.2s ease-out;
+  }
+}
+
+@media (min-width: 640px) {
+  body {
+    font-size: 14px;
+    transition: all 0.2s ease-out;
+  }
+}
+
+@media (min-width: 800px) {
+  body {
+    font-size: 15px;
+    transition: all 0.2s ease-out;
+  }
+}
+
+@media (min-width: 960px) {
+  body {
+    font-size: 16px;
+    transition: all 0.2s ease-out;
+  }
+}
