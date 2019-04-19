@@ -17,7 +17,7 @@ Start with the following pages:
 * [[Swagger API Docs|https://app.swaggerhub.com/apis/cedardevs/one-stop_search_api/2.0.0]]
 * [Deployment Overview - Client](/docs/deployment/client-deployment.md)
 * [Application Configuration](/docs/deployment/application-configuration.md)
-* [Loading Metadata](Data-Load-Process)
+* [Loading Metadata](/docs/usage/metadata-loading.md)
 
 
 ## Legal

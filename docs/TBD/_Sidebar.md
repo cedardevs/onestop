@@ -5,11 +5,11 @@
 
 # Usage
 
-* [Supported Browsers](OneStop-Client-Supported-Browsers)
-* [Search API Requests](OneStop-Search-API-Requests)
-* [Search API Responses](OneStop-Search-API-Responses)
-* [Data Load Process](Data-Load-Process)
-* [Community Standards Support](OneStop-Support-for-Community-Standards)
+* [Supported Browsers](/docs/usage/supported-browsers.md)
+* [Search API Requests](/docs/usage/search-api-requests.md)
+* [Search API Responses](/docs/usage/search-api-responses.md)
+* [Data Load Process](/docs/usage/metadata-loading.md)
+* [Community Standards Support](/docs/usage/community-standards.md)
 
 # Deployment
 
