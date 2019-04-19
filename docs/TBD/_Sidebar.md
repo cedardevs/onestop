@@ -15,7 +15,7 @@
 
 * [Configuration](Application-Configuration-101)
 * [Client](Client-Deployment-Overview)
-* [Server](API-Deployment-Overview)
+* [Server](../deployment/api-deployment.md)
 * [CSW & OpenSearch](CSW-&-OpenSearch-APIs)
 * [Feature Toggles](Feature-Toggles)
 

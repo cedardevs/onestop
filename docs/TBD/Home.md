@@ -4,8 +4,8 @@ OneStop Search
 [![Build Status](https://travis-ci.org/cedardevs/onestop.svg?branch=master)](https://travis-ci.org/cedardevs/onestop)
 [ ![Download](https://api.bintray.com/packages/cedardevs/maven/onestop/images/download.svg) ](https://bintray.com/cedardevs/maven/onestop/_latestVersion)
 
-OneStop search software is used to allow discovery and access to the 
-National Oceanic and Atmospheric Administration’s publicly available 
+OneStop search software is used to allow discovery and access to the
+National Oceanic and Atmospheric Administration’s publicly available
 data holdings. It is being developed on a grant by a team of researchers
 from the University of Colorado (more legal info below).
 
@@ -13,7 +13,7 @@ from the University of Colorado (more legal info below).
 Welcome to the OneStop wiki pages! If you have any questions, please open [an issue](https://github.com/cires-ncei/onestop/issues) via Github Issues.
 
 Start with the following pages:
-* [[Deployment Overview - API|API-Deployment-Overview]]
+* [Deployment Overview - API](../deployment/api-deployment.md)
 * [[Swagger API Docs|https://app.swaggerhub.com/apis/cedardevs/one-stop_search_api/2.0.0]]
 * [[Deployment Overview - Client|Client-Deployment-Overview]]
 * [[Application Configuration|Application-Configuration-101]]
@@ -22,10 +22,10 @@ Start with the following pages:
 
 ## Legal
 
-This software was developed 
-under the OneStop project: 1553647, 
+This software was developed
+under the OneStop project: 1553647,
 NOAA award number NA12OAR4320127 to CIRES.
-This code is licensed under GPL version 2. 
+This code is licensed under GPL version 2.
 © 2016 The Regents of the University of Colorado.
 
 This program is free software; you can redistribute it and/or
