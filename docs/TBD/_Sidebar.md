@@ -25,4 +25,4 @@
 * [Internal Development Practices](/docs/development/internal-practices.md)
 * [Hotfix Strategy](/docs/development/hotfix-strategy.md)
 * [Docker](/docs/development/local-docker.md)
-* [Release Prep Checklist](Release-Checklist)
+* [Release Prep Checklist](/docs/development/release-checklist.md)
