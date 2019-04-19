@@ -23,6 +23,6 @@
 
 * [Contribution Guidelines](/docs/development/contribution-guidelines.md)
 * [Internal Development Practices](Internal-Development-Practices)
-* [Hotfix Strategy](Hotfix-Strategy)
+* [Hotfix Strategy](/docs/development/hotfix-strategy.md)
 * [Docker](/docs/development/local-docker.md)
 * [Release Prep Checklist](Release-Checklist)
