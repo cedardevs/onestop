@@ -46,7 +46,7 @@ High code coverage numbers are generally good, and we would prefer that our cove
 
 ## Our Use of Branches
 
-See [[our branching model guidelines|Internal-Development-Practices#git-workflow]] for more information on our internal git/GitHub release workflow.
+See [our branching model guidelines](Internal-Development-Practices#git-workflow) for more information on our internal git/GitHub release workflow.
 
 
 [license]: https://github.com/cires-ncei/onestop/wiki#legal

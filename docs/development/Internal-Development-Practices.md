@@ -1,13 +1,13 @@
-This document outlines our Agile practices and how we utilize GitHub for managing & tracking our work. This is the **internal (OneStop team members)** process for development. External contributors should read our [[contribution guidelines|Contribution-Guidelines]].
+This document outlines our Agile practices and how we utilize GitHub for managing & tracking our work. This is the **internal (OneStop team members)** process for development. External contributors should read our [contribution guidelines](Contribution-Guidelines).
 
 ## Table of Contents
-* [[Sprints|Internal-Development-Practices#sprints]]
-* [[Sprint Planning|Internal-Development-Practices#sprint-planning]]
-* [[Backlog Refining|Internal-Development-Practices#backlog-refining]]
+* [Sprints](Internal-Development-Practices#sprints)
+* [Sprint Planning](Internal-Development-Practices#sprint-planning)
+* [Backlog Refining](Internal-Development-Practices#backlog-refining)
 * [[Epics, User Stories, and Bugs|Internal-Development-Practices#epics-user-stories-and-bugs]]
-* [[User Interface Development|Internal-Development-Practices#user-interface-development]]
-* [[Versioning|Internal-Development-Practices#versioning]]
-* [[Git Workflow|Internal-Development-Practices#git-workflow]]
+* [User Interface Development](Internal-Development-Practices#user-interface-development)
+* [Versioning](Internal-Development-Practices#versioning)
+* [Git Workflow](Internal-Development-Practices#git-workflow)
 
 
 ## Sprints
@@ -38,7 +38,7 @@ In the first step of the meeting we make sure all stories in the `Done` column o
 So that we make sure not to forget any bugs that have been reported, before adding any other work to our upcoming sprint we will review all open bugs. If any are critical, add them to the `Todo` column. This is also a good opportunity to review if any bugs have actually been resolved via work in other issues or if they are no longer relevant. In such cases, we can note where the bug was resolved/deemed no longer a concern and close the issue.
 
 #### #3: Review Pending Stories For Current Epics
-Looking at the `Groomed` column, we will pull in defined work from the open epic(s) to the current sprint that the team agrees we have the bandwidth to support. This is NOT where we define specific tasks to be worked for an epic; that is done during [[backlog refining|Internal-Development-Practices#backlog-refining]]. Work pulled into the upcoming sprint should already be clearly defined and ready to be worked on.
+Looking at the `Groomed` column, we will pull in defined work from the open epic(s) to the current sprint that the team agrees we have the bandwidth to support. This is NOT where we define specific tasks to be worked for an epic; that is done during [backlog refining](Internal-Development-Practices#backlog-refining). Work pulled into the upcoming sprint should already be clearly defined and ready to be worked on.
 
 
 
