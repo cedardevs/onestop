@@ -13,7 +13,7 @@ For Overview, Usage, Deployment, and Development information about this project:
 
 ## Legal
 
-This software was developed by Team Foam-Cat,
+This software was developed,
 under the OneStop project: 1553647,
 NOAA award number NA12OAR4320137 to CIRES.
 This code is licensed under GPL version 2.
