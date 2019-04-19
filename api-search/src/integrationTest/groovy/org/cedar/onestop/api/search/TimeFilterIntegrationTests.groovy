@@ -12,7 +12,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
   ElasticsearchService esService
 
   void setup() {
-    refreshAndLoadGenericTestIndex(DATES_INDEX)
+    refreshAndLoadGenericTestIndex(DATES_INDEX) // TODO put big warning with link to integration test readme in the comments somewhere
   }
 
   def 'Datetime filter q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {
