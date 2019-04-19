@@ -16,7 +16,7 @@
 * [Configuration](/docs/deployment/application-configuration.md)
 * [Client](/docs/deployment/client-deployment.md)
 * [Server](/docs/deployment/api-deployment.md)
-* [CSW & OpenSearch](CSW-&-OpenSearch-APIs)
+* [CSW & OpenSearch](/docs/deployment/csw-and-opensearch.md)
 * [Feature Toggles](Feature-Toggles)
 
 # Development
