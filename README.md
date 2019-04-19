@@ -10,7 +10,6 @@ from the University of Colorado (more legal info below).
 
 For Overview, Usage, Deployment, and Development information about this project:
   - [Quickstart](/docs)
-  - [Wiki](https://github.com/cedardevs/onestop/wiki)
 
 ## Legal
 
