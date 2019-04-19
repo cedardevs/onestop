@@ -6,10 +6,10 @@ import org.apache.http.RequestLine
 import org.apache.http.StatusLine
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
+import org.elasticsearch.Version
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import spock.lang.Specification
-
 
 class ElasticsearchServiceTests extends Specification {
 
@@ -18,7 +18,9 @@ class ElasticsearchServiceTests extends Specification {
   static TEST_COLLECTION_SEARCH = TEST_PREFIX + 'search_collection'
 
   def mockRestClient = Mock(RestClient)
-  def elasticsearchService = new ElasticsearchService(mockRestClient)
+  def mockVersion = Version.V_6_1_2
+  def elasticsearchService = new ElasticsearchService(mockRestClient, mockVersion)
+
 
   def setup() {
     elasticsearchService.COLLECTION_SEARCH_INDEX = TEST_COLLECTION_SEARCH

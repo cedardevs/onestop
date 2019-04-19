@@ -5,6 +5,7 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
+import org.elasticsearch.Version
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.ResponseException
 import org.elasticsearch.client.RestClient
@@ -49,14 +50,20 @@ class ElasticsearchService {
 
 
   private RestClient restClient
+  private Version version
 
   private Boolean sitemapEnabled() {
     return environment.activeProfiles.contains('sitemap')
   }
 
   @Autowired
-  ElasticsearchService(RestClient restClient) {
+  ElasticsearchService(RestClient restClient, Version version) {
     this.restClient = restClient
+    this.version = version
+    boolean supported = version.onOrAfter(Version.V_5_6_0)
+    if(!supported) {
+      throw new RuntimeException("Admin API does not support version ${version.toString()} of Elasticsearch")
+    }
   }
 
   public void ensureIndices() {

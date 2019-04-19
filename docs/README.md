@@ -31,7 +31,7 @@ Table of Contents
   - needed by Gradle 5 wrapper and... everything
 - **Docker** [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
   - needed to run test containers in integration tests
-- **Elasticsearch 5.6.14**
+- **Elasticsearch 6.1.2**
   - running on port 9200
   - `brew install elasticsearch@5.6`
   - `brew services start elasticsearch@5.6`
