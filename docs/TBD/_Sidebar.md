@@ -1,7 +1,7 @@
 # Overview
 
 * [Home](Home)
-* [Metadata Indexing Details](Metadata-Indexing-Details)
+* [Metadata Indexing Details](/docs/design/iso-indexing-mapping.md)
 
 # Usage
 
