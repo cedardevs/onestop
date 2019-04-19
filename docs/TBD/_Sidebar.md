@@ -21,7 +21,7 @@
 
 # Development
 
-* [Contribution Guidelines](Contribution-Guidelines)
+* [Contribution Guidelines](/docs/development/contribution-guidelines.md)
 * [Internal Development Practices](Internal-Development-Practices)
 * [Hotfix Strategy](Hotfix-Strategy)
 * [Docker](Docker)

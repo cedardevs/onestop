@@ -1,4 +1,4 @@
-This document outlines our Agile practices and how we utilize GitHub for managing & tracking our work. This is the **internal (OneStop team members)** process for development. External contributors should read our [contribution guidelines](Contribution-Guidelines).
+This document outlines our Agile practices and how we utilize GitHub for managing & tracking our work. This is the **internal (OneStop team members)** process for development. External contributors should read our [contribution guidelines](/docs/development/contribution-guidelines.md).
 
 ## Table of Contents
 * [Sprints](Internal-Development-Practices#sprints)
