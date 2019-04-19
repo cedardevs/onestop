@@ -140,7 +140,7 @@ class MetadataManagementService {
           result.meta.error = [
               status: HttpStatus.BAD_REQUEST.value(),
               title : 'Unable to parse FileIdentifier or DOI from document; metadata not loaded.',
-              detail: "Please confirm the document contains valid identifiers"
+              detail: "Please confirm the document contains valid identifiers."
           ]
         }else{ //check for existing records
           source.stagedDate = System.currentTimeMillis()
