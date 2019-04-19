@@ -13,10 +13,10 @@ from the University of Colorado (more legal info below).
 Welcome to the OneStop wiki pages! If you have any questions, please open [an issue](https://github.com/cires-ncei/onestop/issues) via Github Issues.
 
 Start with the following pages:
-* [Deployment Overview - API](../deployment/api-deployment.md)
+* [Deployment Overview - API](/docs/deployment/api-deployment.md)
 * [[Swagger API Docs|https://app.swaggerhub.com/apis/cedardevs/one-stop_search_api/2.0.0]]
 * [[Deployment Overview - Client|Client-Deployment-Overview]]
-* [[Application Configuration|Application-Configuration-101]]
+* [Application Configuration](/docs/deployment/application-configuration.md)
 * [[Loading Metadata|Data-Load-Process]]
 
 
