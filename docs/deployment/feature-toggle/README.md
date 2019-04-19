@@ -9,10 +9,10 @@ These are the current features in OneStop, their location, and default values.
 * update security values as needed - see documentation on the private repo
 
 #### Sitemap feature
-* [Sitemap](Sitemap-feature-toggle) (default: false)
+* [Sitemap](/docs/deployment/feature-toggle/sitemap.md) (default: false)
 
 ## API-search
 ### onestop/api-search/src/main/resources/application.yml
 
-* [Trending Searches](Trending-Searches-feature-toggle) (default: false)
-* [Download Cart](Download-Cart-feature-toggle) (default: not enabled)
+* [Trending Searches](/docs/deployment/feature-toggle/trending-searches.md) (default: false)
+* [Download Cart](/docs/deployment/feature-toggle/download-cart.md) (default: not enabled)
