@@ -111,21 +111,27 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.data.id == granuleId
     retrieveResponse.body.data.type == 'granule'
     retrieveResponse.body.links.parsed == "${baseUrl}metadata/granule/common-ingest/${granuleId}/parsed"
-    retrieveResponse.body.data.attributes.content == granuleText
-    retrieveResponse.body.data.attributes.contentType == "application/json"
-    retrieveResponse.body.data.attributes.source == "common-ingest"
+    retrieveResponse.body.data.attributes.rawJson == JsonOutput.toJson(granuleMap)
+    retrieveResponse.body.data.attributes.initialSource == "common-ingest"
 
     and: // let's verify the full response just this once
     retrieveResponse.body.data == [
         id        : granuleId,
         type      : 'granule',
         attributes: [
-            "content"    : granuleText,
-            "contentType": "application/json",
-            "method"     : "POST",
-            "source"     : "common-ingest",
-            "type"       : "granule",
-            "operation"  : null
+            rawJson        : JsonOutput.toJson(granuleMap),
+            rawXml         : null,
+            initialSource  : "common-ingest",
+            type           : "granule",
+            fileInformation: null,
+            fileLocations  : [],
+            publishing     : null,
+            relationships  : [],
+            deleted        : false,
+            events         : [
+                [timestamp: null, method: "POST", source: "common-ingest", operation: null]
+            ],
+            errors         : []
         ]
     ]
   }

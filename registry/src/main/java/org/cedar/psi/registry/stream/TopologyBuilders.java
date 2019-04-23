@@ -27,6 +27,12 @@ public class TopologyBuilders {
   }
 
   public static StreamsBuilder addTopologyForType(StreamsBuilder builder, RecordType type, Long publishInterval) {
+    var inputTopics = Topics.inputSources(type).stream()
+        .map((s) -> Topics.inputTopic(type, s))
+        .collect(Collectors.toList());
+
+    // TODO - aggregate items from all input topics into a single KTable
+
     // build input table for each source
     var inputTables = Topics.inputSources(type).stream()
         .collect(Collectors.toMap(
@@ -34,7 +40,10 @@ public class TopologyBuilders {
             source -> {
               return builder.<String, Input>stream(Topics.inputTopic(type, source))
                   .groupByKey()
-                  .reduce(StreamFunctions.reduceInputs, Materialized.as(Topics.inputStore(type, source)));
+                  .aggregate(
+                      StreamFunctions.aggregatedInputInitializer,
+                      StreamFunctions.inputAggregator,
+                      Materialized.as(Topics.inputStore(type, source)));
             }
     ));
 

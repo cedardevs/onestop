@@ -4,7 +4,6 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
-import org.cedar.schemas.avro.psi.Method
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -54,7 +53,7 @@ class MetadataRestController {
     links.self = links.remove('input')
 
     if (result) {
-      if (result.method == Method.DELETE) {
+      if (result.deleted) {
         response.status = HttpStatus.NOT_FOUND.value()
         links.remove('parsed')
         links.resurrection = buildResurrectionLink(request, type, source, id)

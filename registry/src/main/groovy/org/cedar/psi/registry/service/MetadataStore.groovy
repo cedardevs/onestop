@@ -5,7 +5,7 @@ import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
-import org.cedar.schemas.avro.psi.Input
+import org.cedar.schemas.avro.psi.AggregatedInput
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,7 +37,7 @@ class MetadataStore {
     }
   }
 
-  Input retrieveInput(RecordType type, String source, String id) {
+  AggregatedInput retrieveInput(RecordType type, String source, String id) {
     try {
       def inputValue = getInputStore(type, source)?.get(id)
       return inputValue ?: null
@@ -48,7 +48,7 @@ class MetadataStore {
     }
   }
 
-  ReadOnlyKeyValueStore<String, Input> getInputStore(RecordType type, String source) {
+  ReadOnlyKeyValueStore<String, AggregatedInput> getInputStore(RecordType type, String source) {
     streamsApp?.store(inputStore(type, source), QueryableStoreTypes.keyValueStore())
   }
 

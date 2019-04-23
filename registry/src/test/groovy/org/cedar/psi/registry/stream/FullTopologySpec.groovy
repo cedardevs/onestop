@@ -60,8 +60,13 @@ class FullTopologySpec extends Specification {
     driver.pipeInput(inputFactory.create(inputTopic, key, value1))
     driver.pipeInput(inputFactory.create(inputTopic, key, value2))
 
+    and:
+    def aggregate = inputStore.get('A')
+
     then:
-    inputStore.get('A') == buildTestGranule('{"size":42,"name":"test"}', Method.PATCH)
+    aggregate instanceof AggregatedInput
+    aggregate.rawJson == '{"size":42,"name":"test"}'
+    aggregate.events.size() == 2
   }
 
   def 'values for discovery and publishing are set to the default values'() {
