@@ -38,8 +38,7 @@ config: |-
         alwaysSendToDefaultTracker: false
     enabledFeatureToggles:
       - featureName: cart
-    banner:
-      message: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
+    disclaimer: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
     featured:
       - title: GOES Data
         searchTerm: '"Gridded Satellite GOES"'
