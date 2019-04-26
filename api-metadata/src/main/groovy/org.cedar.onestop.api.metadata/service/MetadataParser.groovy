@@ -844,16 +844,25 @@ class MetadataParser {
   }
 
   static Set parseServices(GPathResult metadata) {
-      def serviceIds = metadata.identificationInfo.'**'.findAll {
-        it.name() == 'SV_ServiceIdentification'
+    Set services = []
+    def serviceNodes = metadata.identificationInfo.SV_ServiceIdentification
+    serviceNodes.each{ service  ->
+      String serviceTitle = service?.citation?.CI_Citation?.title?.CharacterString?.text()
+      Set links = []
+      service.containsOperations.'**'.each{ resource ->
+        if(resource.name() == 'CI_OnlineResource'){
+          links.add([
+              serviceName       : resource.name.CharacterString.text().toString().trim() ?: null,
+              serviceProtocol   : resource.protocol.CharacterString.text() ?: null, //todo  revisit when metadata team adds protocol
+              serviceUrl        : resource.linkage.URL.text().toString().trim() ?: null,
+              serviceDescription: resource.description.CharacterString.text().toString().trim() ?: null,
+              serviceFunction   : resource.function.CI_OnLineFunctionCode.@codeListValue.text().toString().trim() ?: null
+          ] as Map)
+        }
       }
-      Set services = []
-      serviceIds.each { service ->
-        def xmlBlobService = XmlUtil.serialize(service) ?: null
-        // blob of XML needs to be base64 encoded for elastic search to include is as 'binary' type
-        services.add(xmlBlobService.bytes.encodeBase64().toString())
-      }
-      return services
+      services.add([title:  serviceTitle, links: links])
+    }
+    return services
   }
 
   static Set parseServices(String xml) {

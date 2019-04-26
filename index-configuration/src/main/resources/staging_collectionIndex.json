@@ -619,9 +619,44 @@
           "index": false
         },
         "services": {
-          "type": "binary",
-          "doc_values": false,
-          "index": false
+          "type": "nested",
+          "properties": {
+            "title":{
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "links":{
+              "type": "nested",
+              "properties": {
+                "serviceName": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "serviceProtocol": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "serviceUrl": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "serviceDescription": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "serviceFunction": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                }
+              }
+            }
+          }
         }
       }
     }

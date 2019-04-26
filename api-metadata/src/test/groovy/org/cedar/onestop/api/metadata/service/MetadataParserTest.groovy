@@ -195,6 +195,27 @@ class MetadataParserTest extends Specification {
         ]
     ] as Set
 
+    parsedXml.services == [
+        [
+            title: 'Multibeam Bathymetric Surveys ArcGIS Map Service',
+            links: [
+                [
+                    serviceName       : 'Multibeam Bathymetric Surveys ArcGIS Cached Map Service',
+                    serviceProtocol   : 'http',
+                    serviceUrl        : 'https://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/multibeam/MapServer',
+                    serviceDescription: 'Capabilities document for Open Geospatial Consortium Web Map Service for Multibeam Bathymetric Surveys',
+                    serviceFunction   : 'search'
+                ],
+                [
+                    serviceName       : 'Multibeam Bathymetric Surveys Web Map Service (WMS)',
+                    serviceProtocol   : 'http',
+                    serviceUrl        : 'https://maps.ngdc.noaa.gov/arcgis/services/web_mercator/multibeam_dynamic/MapServer/WMSServer?request=GetCapabilities&service=WMS',
+                    serviceDescription: 'The Multibeam Bathymetric Surveys ArcGIS cached map service provides rapid display of ship tracks from global scales down to zoom level 9 (approx. 1:1,200,000 scale).',
+                    serviceFunction   : 'search'
+                ]
+            ] as Set
+        ]
+    ] as Set
     parsedXml.contacts == [
         [
             individualName  : 'John Smith',
@@ -825,27 +846,60 @@ class MetadataParserTest extends Specification {
 
   def "Services are correctly parsed"() {
     given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("realWorldServiceMetadata.xml").text
+    Set<Map> expectedServiceLinks = [ // data extracted from https://ferret.pmel.noaa.gov/uafwaf/iso/granule/thredds_dodsC_ersstv3Agg.xml
+    //each metadata record can contain multiple SV_ServiceIdentification nodes
+     [
+       "title": "NOAA ERSSTv3b (in situ only) THREDDS OPeNDAP", // SV_ServiceIdentificatin.citation.CI_Citation.title
+        //"serviceType":"THREDDS OpeNDAP", //serviceType.LocalName
+        //"couplingType":"tight", //couplingType.SV_CouplingType
+       "links": [ //list of CI_Online_Resources,
+         [ //a  CI_Online_Resources
+           "serviceName": "OPeNDAP",
+           "serviceProtocol": null,
+           "serviceUrl":"https://www.ncei.noaa.gov/thredds/dodsC/ersstv3Agg",
+           "serviceDescription":"THREDDS OPeNDAP",
+           "serviceFunction" : "download"
+         ]
+       ] as Set
+     ],
+     [
+       "title": "NOAA ERSSTv3b (in situ only) Open Geospatial Consortium Web Coverage Service (WCS)",
+//      "serviceType":"Open Geospatial Consortium Web Coverage Service (WCS)", //serviceType.LocalName
+//      "couplingType":"tight", //couplingType.SV_CouplingType
+       "links": [
+         [ //CI_Online_Resources
+           "serviceName": "OGC-WCS",
+           "serviceProtocol": null,
+           "serviceUrl":"https://www.ncei.noaa.gov/thredds/wcs/ersstv3Agg?service=WCS&version=1.0.0&request=GetCapabilities",
+           "serviceDescription":"Open Geospatial Consortium Web Coverage Service (WCS)",
+           "serviceFunction" : "download"
+         ]
+       ] as Set
+
+     ],
+     [
+       "title": "NOAA ERSSTv3b (in situ only) Open Geospatial Consortium Web Map Service (WMS)",
+       //      "serviceType":"Open Geospatial Consortium Web Map Service (WMS)", //serviceType.LocalName
+       //      "couplingType":"tight", //couplingType.SV_CouplingType
+       "links": [
+         [ //CI_Online_Resources
+           "serviceName": "OGC-WMS",
+           "serviceProtocol": null,
+           "serviceUrl":"https://www.ncei.noaa.gov/thredds/wms/ersstv3Agg?service=WMS&version=1.3.0&request=GetCapabilities",
+           "serviceDescription":"Open Geospatial Consortium Web Map Service (WMS)",
+           "serviceFunction" : "download"
+         ]
+       ] as Set
+     ]
+    ]
 
     when:
-    def serviceTextBlobs = MetadataParser.parseServices(document)
-    serviceTextBlobs.each { String s ->
-      // blob of XML needs to be base64 encoded for elastic search to include is as 'binary' type
-      // decoding here (for testing purposes) to see if the original string is XML or causes a parsing exception
-      byte[] decodedXML = s.decodeBase64()
-      String xmlString = new String(decodedXML)
-      new XmlSlurper().parseText(xmlString)
-    }
+    Set serviceLinks = MetadataParser.parseServices(document)
 
     then:
     notThrown(Exception)
-    serviceTextBlobs.each { String s ->
-      assert s in String
-      byte[] decodedXML = s.decodeBase64()
-      String xmlString = new String(decodedXML)
-      def serviceNode = new XmlSlurper().parseText(xmlString)
-      assert serviceNode.name() == 'SV_ServiceIdentification'
-    }
+    assert serviceLinks == expectedServiceLinks
   }
 
   def "Miscellaneous items are correctly parsed"() {
