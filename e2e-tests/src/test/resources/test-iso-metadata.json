@@ -166,6 +166,27 @@
     "orderingInstructions": null,
     "edition": null,
     "dsmmAverage": 2.6666666667,
-    "stagedDate": null
+    "stagedDate": null,
+    "services":[
+        {
+            "title": "Multibeam Bathymetric Surveys ArcGIS Map Service",
+            "links": [
+                {
+                    "serviceName"       : "Multibeam Bathymetric Surveys ArcGIS Cached Map Service",
+                    "serviceProtocol"   : "http",
+                    "serviceUrl"        : "https://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/multibeam/MapServer",
+                    "serviceDescription": "Capabilities document for Open Geospatial Consortium Web Map Service for Multibeam Bathymetric Surveys",
+                    "serviceFunction"   : "search"
+                },
+                {
+                    "serviceName"       : "Multibeam Bathymetric Surveys Web Map Service (WMS)",
+                    "serviceProtocol"   : "http",
+                    "serviceUrl"        : "https://maps.ngdc.noaa.gov/arcgis/services/web_mercator/multibeam_dynamic/MapServer/WMSServer?request=GetCapabilities&service=WMS",
+                    "serviceDescription": "The Multibeam Bathymetric Surveys ArcGIS cached map service provides rapid display of ship tracks from global scales down to zoom level 9 (approx. 1:1,200,000 scale).",
+                    "serviceFunction"   : "search"
+                }
+            ]
+        }
+    ]
   }
 }
