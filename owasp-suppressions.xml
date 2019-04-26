@@ -2,6 +2,14 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
   <suppress>
      <notes><![CDATA[
+     This CVE applies only when running on Windows. Neither our dev, test, or production environments are Windows.
+     ]]></notes>
+     <cve>CVE-2019-0232</cve>
+     <cve>CVE-2019-0232</cve>
+  </suppress>
+
+  <suppress>
+     <notes><![CDATA[
      file name: json-schema-core-1.2.8.jar
      Tests have been added to confirm that XML parsing has DTD disabled, and endpoints accepting application/json data reject all xml.
      ]]></notes>
