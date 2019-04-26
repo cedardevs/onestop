@@ -4,6 +4,8 @@
 
 ### Table of Contents
 * [Quickstart](/docs/development/quickstart.md)
+* [Client Dev guide](/docs/development/client.md)
+* [Api Validation](/docs/development/api-validation.md)
 * [Contribution Guidelines](/docs/development/contribution-guidelines.md)
 * [Internal Development Practices](/docs/development/internal-practices.md)
 * [Hotfix Strategy](/docs/development/hotfix-strategy.md)
