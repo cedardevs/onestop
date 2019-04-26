@@ -85,6 +85,8 @@ class IntegrationTest extends Specification {
   ]
 
   void refreshAndLoadGenericTestIndex(String index) {
+        // See /docs/development/integration-tests/README.md for more information about bulk data file and their structure
+
     Response response = restClient.performRequest('DELETE', '_all')
     println("DELETE _all: ${response}")
 

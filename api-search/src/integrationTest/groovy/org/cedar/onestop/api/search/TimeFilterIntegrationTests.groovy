@@ -12,7 +12,8 @@ class TimeFilterIntegrationTests extends IntegrationTest {
   ElasticsearchService esService
 
   void setup() {
-    refreshAndLoadGenericTestIndex(DATES_INDEX) // TODO put big warning with link to integration test readme in the comments somewhere
+    // See /docs/development/integration-tests/time-filter.md for more information about the test data used in these tests. It explains the logic behind the test cases chosen, and how they are organized to minimize unrelated test data interactions.
+    refreshAndLoadGenericTestIndex(DATES_INDEX)
   }
 
   def 'Datetime filter q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {

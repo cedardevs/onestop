@@ -11,3 +11,4 @@
 * [Hotfix Strategy](/docs/development/hotfix-strategy.md)
 * [Docker](/docs/development/local-docker.md)
 * [Release Prep Checklist](/docs/development/release-checklist.md)
+* [Integration Tests](/docs/development/integration-tests)
