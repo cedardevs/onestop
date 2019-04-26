@@ -80,7 +80,7 @@ http://localhost:<port>/onestop
 ./gradlew uploadTestData --apiAdminPort=8098
 ```
 
-# Quick Start (Kubernetes + Helm + Skaffold)
+## Quick Start (Kubernetes + Helm + Skaffold)
 ### System Requirements
 - [Basic System Requirements](#basic-system-requirements) listed above
   - *excluding* local Elasticsearch installation
@@ -187,7 +187,7 @@ helm delete client --purge
 skaffold delete
 ```
 
-# Feature Toggles
+## Feature Toggles
 By default, security-related features are disabled locally. This is to streamline development because security features require access to keystores with specific credentials needed for identity providers OneStop leverages.
 
 ### Keystores and Credentials

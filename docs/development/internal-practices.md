@@ -1,3 +1,5 @@
+# Internal Practices
+
 This document outlines our Agile practices and how we utilize GitHub for managing & tracking our work. This is the **internal (OneStop team members)** process for development. External contributors should read our [contribution guidelines](/docs/development/contribution-guidelines.md).
 
 ## Table of Contents
@@ -11,14 +13,14 @@ This document outlines our Agile practices and how we utilize GitHub for managin
 
 
 ## Sprints
-The work-in-progress is always depicted via the issues and pull requests found on our [current sprint board][sprint board]. 
+The work-in-progress is always depicted via the issues and pull requests found on our [current sprint board][sprint board].
 
 Issues in the `Todo` column are in priority order and worked on from the top down. In order to track the work done, all commits should be linked to their corresponding issues in one of three ways:
   * Referencing the issue number (n) in your commit message with `#n`
   * With a comment on the commit message (through GitHub) with the issue number appended
   * If working on a branch, prepend pull request with `n-`. In the description, all issues in this branch are automatically linked to the pull request (and moved on the waffle board) if `Resolves #n` is written for every issue.
 
-Completed work is moved into the `Ready to Review` column, where another team member will review the associated commits and, if found acceptable, move the issue to `Done` and close it. All team members should participate in reviewing work and strive to keep the number of issues in the `Ready to Review` column below 10. 
+Completed work is moved into the `Ready to Review` column, where another team member will review the associated commits and, if found acceptable, move the issue to `Done` and close it. All team members should participate in reviewing work and strive to keep the number of issues in the `Ready to Review` column below 10.
 
 Work represented in the `Done` column is discussed in sprint reviews and the column is emptied at the start of the next sprint.
 
@@ -106,18 +108,18 @@ When it's time for the creation of a new release, the code is merged onto both `
       git push
       ```
 
-  2. Write the release notes on GitHub: 
+  2. Write the release notes on GitHub:
      * [Draft the release][draft release] from the corresponding tag on the `master` branch.
      * Have at least one team member review the release notes.
      * Publish the [release](https://github.com/cedardevs/onestop/releases) on GitHub.
 
 
 ### Active Development
-Development on future releases exists on the `master` branch until it is ready for release. 
+Development on future releases exists on the `master` branch until it is ready for release.
 
 
 #### Bug Fixes
-Once a release branch has been created, new commits to it are strictly bug fixes. These may be pushed back to `master` or other working branches if the bug exists in the next release code as well. 
+Once a release branch has been created, new commits to it are strictly bug fixes. These may be pushed back to `master` or other working branches if the bug exists in the next release code as well.
 
 Bug fixes are *only* applied to the most recent release branch; once a new release exists, prior releases are considered deprecated and known bugs will not be resolved in earlier release branches.
 
@@ -132,7 +134,7 @@ We introduce new features and major changes with the following steps:
 
   1. Write code, write tests!  
 
-  1. [Create a pull request](https://github.com/cedardevs/onestop/compare) once development is complete and 
+  1. [Create a pull request](https://github.com/cedardevs/onestop/compare) once development is complete and
     request a review.
 
   1. Reviewer merges changes back into the `master` branch and deletes working branch.

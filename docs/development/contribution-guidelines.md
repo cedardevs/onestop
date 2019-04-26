@@ -1,4 +1,4 @@
-## Welcome!
+# Contribution Guidelines
 
 We’re so glad you’re thinking about contributing to the OneStop project! If you’re unsure about anything, just ask — or submit your issue or pull request anyway. The worst that can happen is we’ll politely ask you to change something. We appreciate all friendly contributions.
 

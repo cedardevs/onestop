@@ -1,4 +1,4 @@
-# Client
+# Client Deployment
 
 ## Installation
 The client is a a pure HTML/JavaScript/CSS application packaged as a tarball. To host it simply expand the tar into the root of your web server.

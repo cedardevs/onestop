@@ -1,8 +1,10 @@
+# Search API Responses
+
 ## Response Format
 OneStop API responses are built around the [JSON API Specification](http://jsonapi.org/). Successful responses (with facets requested) are formatted as such, where the fields within the `attributes` object are specified [here](#attributes-fields):
 ``` json
  {  
-    "data": [
+ "data": [
      {
        "id"        : "1",
        "type"      : "collection",
@@ -29,15 +31,15 @@ OneStop API responses are built around the [JSON API Specification](http://jsona
             "count": 1
           }
         }
-      ], 
+      ],
       "services"            : [],
-      "locations"           : [], 
-      "instruments"         : [], 
-      "platforms"           : [], 
-      "projects"            : [], 
-      "dataCenters"         : [], 
-      "horizontalResolution": [], 
-      "verticalResolution"  : [], 
+      "locations"           : [],
+      "instruments"         : [],
+      "platforms"           : [],
+      "projects"            : [],
+      "dataCenters"         : [],
+      "horizontalResolution": [],
+      "verticalResolution"  : [],
       "temporalResolution"  : []
     }
   }

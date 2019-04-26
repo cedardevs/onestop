@@ -1,3 +1,5 @@
+# Data Load Process
+
 ## Uploading Metadata
 The system stores ISO XML metadata records in order to power its search results.
 All metadata documents must have a `<gmd:fileIdentifier>` tag containing either a
@@ -10,7 +12,7 @@ All metadata documents must have a `<gmd:fileIdentifier>` tag containing either 
   <gmd:fileIdentifier>
     <gco:CharacterString>[IDENTIFIER]</gco:CharacterString>
   </gmd:fileIdentifier>
-  ... 
+  ...
 </gmi:MI_Metadata>  
 ```
 
@@ -29,7 +31,7 @@ the `fileIdentifier` OR the `doi` of the parent record verbatim. For example:
   <gmd:parentIdentifier>
     <gco:CharacterString>[PARENT'S FILE IDENTIFIER]</gco:CharacterString>
   </gmd:parentIdentifier>
-  ... 
+  ...
 </gmi:MI_Metadata>  
 ```
 

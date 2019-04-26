@@ -1,4 +1,6 @@
-# Important ES Note
+# Bulk Data in ES Integration Tests
+
+## Important ES Note
 
 - bulkData.txt must end in a blank line, or the bulk load will skip the last result.
 - For all queries, the full response is requested so we have access to all time fields.

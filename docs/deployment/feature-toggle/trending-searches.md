@@ -1,4 +1,6 @@
-# Configuration
+# Trending Searches Feature Toggle
+
+## Configuration
 
 This feature is disabled by default. It provides an endpoint in the Search API (`/trending/searches`) to identify the most recent searches being performed.
 
@@ -42,18 +44,18 @@ trending:
 ```
 
 
-## Additional Configuration Options
+### Additional Configuration Options
 
-| Variable       | Default           | 
+| Variable       | Default           |
 | ------------- |:-------------:|
 | Number of Results     | 10 |
-| Number of Days      | 1      | 
+| Number of Days      | 1      |
 | Index Name | logstash- |
-| Default Blacklisted Search Terms | weather, climate, satellites, fisheries, coasts, oceans    | 
+| Default Blacklisted Search Terms | weather, climate, satellites, fisheries, coasts, oceans    |
 | Additional Blacklisted Search Terms | N/A |
 | Blacklisted Collections | N/A |
 
-### Number of Results
+#### Number of Results
 
 This is the maximum number of top results returned by the trending endpoints.
 
@@ -62,7 +64,7 @@ trending:
   numResults: 10
 ```
 
-### Number of Days 
+#### Number of Days
 
 This is the number of days (assuming default logstash and filebeats configuration) to include when calculating most frequently used search terms. Specifically, it is the number of previous logstash indices to include.
 
@@ -71,7 +73,7 @@ trending:
   numDays: 1
 ```
 
-### Index Name 
+#### Index Name
 
 The name of the logstash index. Note that assumptions are made about the full format of the index name, using the default logstash index naming conventions.
 
@@ -80,11 +82,11 @@ elasticsearch:
   index:
     trending:
       name:
-        logstash- 
+        logstash-
 ```
 
 
-### Default Blacklisted Search Terms 
+#### Default Blacklisted Search Terms
 
 It is recommended not to change this configuration. Instead, modify Additional Blacklisted Search Terms to get additive lists of blacklisted terms.
 
@@ -96,10 +98,10 @@ trending:
     - satellites
     - fisheries
     - coasts
-    - oceans 
+    - oceans
 ```
 
-### Additional Blacklisted Search Terms
+#### Additional Blacklisted Search Terms
 
 This is empty by default, to allow an easy way to extend the list of blacklisted terms rather than overwrite it entirely.
 
@@ -112,7 +114,7 @@ trending:
     - term2
 ```
 
-### Blacklisted Collections
+#### Blacklisted Collections
 
 ```
 trending:
@@ -121,11 +123,11 @@ trending:
 ```
 
 
-# Requirements
+## Requirements
 
 This feature currently requires Logstash (combined with Filebeats) configured to read the Search API logs, use a custom Grok filter, and create logstash-* indices that the Search API has read access to.
 
-# Additional Notes
+## Additional Notes
 
 This search does not distinguish between terms used in collection and granule searches at this time.
 

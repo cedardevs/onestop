@@ -1,4 +1,6 @@
-# Syncing hotfix to Release and Master branches
+# Hotfix Strategy
+
+## Syncing hotfix to Release and Master branches
 
 These instructions assume the hotfix is a single commit, with changes that should be applied to both the current release branch and master. The git commands can be altered to handle multiple commits, but this is left as an exercise to the reader. If the change should not be applied, or differs between the two branches, just manually create two separate changes for each branch instead.
 
@@ -26,13 +28,13 @@ git commit -m "test"
 ```
 
 
-# Tagging a hotfix release
+## Tagging a hotfix release
 
 Once a hotfix has been committed to the release branch, tag a hotfix. For example, say the branch is release/N.x, and the current version is N.0.0.
 
-## TLDR; `bash promote.sh N.0.1 N.0.2`.
+### TLDR; `bash promote.sh N.0.1 N.0.2`.
 
-## The slightly longer description of what I normally do in practice:
+### The slightly longer description of what I normally do in practice:
 
 1. Checkout the release branch
 1. Comment out the line `updateAndCommit $incrementToVersion` from promote.sh (This is important on master, but doesn't really make much sense on the release branch, based on how we normally tag releases.) (It's also not a big deal if you skip this step.

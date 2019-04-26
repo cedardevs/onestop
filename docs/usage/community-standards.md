@@ -1,3 +1,5 @@
+# Community Standards
+
 In addition to the OneStop API (based on the [JSON API](http://jsonapi.org/) Standard), OneStop supports search using the Open Geospatial Consortium's (OGC) [Catalog Services for the Web](http://www.opengeospatial.org/standards/cat) (CSW) API, and the [OpenSearch](http://www.opensearch.org) specification.
 
 CSW Examples:

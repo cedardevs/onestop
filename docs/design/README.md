@@ -1,6 +1,6 @@
-## Design Documentation
+# Design Documentation
 
 ***
 
-### Table of Contents
+## Table of Contents
 * [Metadata Indexing Details](/docs/design/iso-indexing-mapping.md)
