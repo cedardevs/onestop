@@ -27,7 +27,7 @@ Have questions or need help with setup? Open [an issue][github issues] via Githu
 
 ### Running locally
 
-See the [API](/docs/deployment/api-deployment.md) and [Client](/docs/deployment/client-deployment.md) deployment overview pages.
+See the [Quickstart](/docs/development/quickstart.md) deployment overview pages.
 
 ## Coding guidelines
 
