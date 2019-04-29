@@ -848,13 +848,10 @@ class MetadataParserTest extends Specification {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("realWorldServiceMetadata.xml").text
     Set<Map> expectedServiceLinks = [ // data extracted from https://ferret.pmel.noaa.gov/uafwaf/iso/granule/thredds_dodsC_ersstv3Agg.xml
-    //each metadata record can contain multiple SV_ServiceIdentification nodes
      [
-       "title": "NOAA ERSSTv3b (in situ only) THREDDS OPeNDAP", // SV_ServiceIdentificatin.citation.CI_Citation.title
-        //"serviceType":"THREDDS OpeNDAP", //serviceType.LocalName
-        //"couplingType":"tight", //couplingType.SV_CouplingType
-       "links": [ //list of CI_Online_Resources,
-         [ //a  CI_Online_Resources
+       "title": "NOAA ERSSTv3b (in situ only) THREDDS OPeNDAP", // SV_ServiceIdentification.citation.CI_Citation.title
+       "links": [
+         [ //a  CI_Online_Resource under SV_ServiceIdentification
            "serviceName": "OPeNDAP",
            "serviceProtocol": null,
            "serviceUrl":"https://www.ncei.noaa.gov/thredds/dodsC/ersstv3Agg",
@@ -865,10 +862,8 @@ class MetadataParserTest extends Specification {
      ],
      [
        "title": "NOAA ERSSTv3b (in situ only) Open Geospatial Consortium Web Coverage Service (WCS)",
-//      "serviceType":"Open Geospatial Consortium Web Coverage Service (WCS)", //serviceType.LocalName
-//      "couplingType":"tight", //couplingType.SV_CouplingType
        "links": [
-         [ //CI_Online_Resources
+         [
            "serviceName": "OGC-WCS",
            "serviceProtocol": null,
            "serviceUrl":"https://www.ncei.noaa.gov/thredds/wcs/ersstv3Agg?service=WCS&version=1.0.0&request=GetCapabilities",
@@ -880,10 +875,8 @@ class MetadataParserTest extends Specification {
      ],
      [
        "title": "NOAA ERSSTv3b (in situ only) Open Geospatial Consortium Web Map Service (WMS)",
-       //      "serviceType":"Open Geospatial Consortium Web Map Service (WMS)", //serviceType.LocalName
-       //      "couplingType":"tight", //couplingType.SV_CouplingType
        "links": [
-         [ //CI_Online_Resources
+         [
            "serviceName": "OGC-WMS",
            "serviceProtocol": null,
            "serviceUrl":"https://www.ncei.noaa.gov/thredds/wms/ersstv3Agg?service=WMS&version=1.3.0&request=GetCapabilities",

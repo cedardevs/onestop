@@ -235,7 +235,6 @@ class SearchControllerIntegrationTests extends IntegrationTest {
 
   def 'Valid collection search request returns OK with expected service results'() {
     given:
-    // Summary fields for granule types contain internalParentIdentifier field unlike collections
     def summaryFields = [
         'title', 'thumbnail', 'spatialBounding', 'beginDate', 'beginYear', 'endDate',
         'endYear', 'links', 'citeAsStatements', 'internalParentIdentifier', 'services'
