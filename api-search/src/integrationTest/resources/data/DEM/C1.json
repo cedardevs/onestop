@@ -218,5 +218,45 @@
   "accessFeeStatement": null,
   "orderingInstructions": null,
   "edition": "First",
-  "dsmmAverage": 0
+  "dsmmAverage": 0,
+  "services" : [
+    {
+      "title": "Digital Elevation Models: Color Shaded Relief ArcGIS Image Service" ,
+      "links": [
+        {
+          "serviceName": "Digital Elevation Models: Color Shaded Relief ArcGIS Image Service",
+          "serviceProtocol": "http",
+          "serviceUrl": "http://gis.ngdc.noaa.gov/arcgis/rest/services/dem_hillshades/ImageServer",
+          "serviceDescription": "REST endpoint for Digital Elevation Models: Color Shaded Relief ArcGIS image service",
+          "serviceFunction": "search"
+        },
+        {
+          "serviceName": "Digital Elevation Models: Color Shaded Relief Web Map Service (WMS)",
+          "serviceProtocol": "http",
+          "serviceUrl": "http://gis.ngdc.noaa.gov/arcgis/services/dem_hillshades/ImageServer/WMSServer?request=GetCapabilities&service=WMS",
+          "serviceDescription": "Capabilities document for Open Geospatial Consortium Web Map Service for Digital Elevation Models: Color Shaded Relief",
+          "serviceFunction": "search"
+        }
+      ]
+    },
+    {
+      "title": "Digital Elevation Model Footprints ArcGIS Map Service" ,
+      "links": [
+        {
+          "serviceName": "Digital Elevation Model Footprints ArcGIS Dynamic Map Service",
+          "serviceProtocol": "http",
+          "serviceUrl": "http://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/dem_extents/MapServer",
+          "serviceDescription": "REST endpoint for Digital Elevation Model Footprints ArcGIS dynamic map service",
+          "serviceFunction": "search"
+        },
+        {
+          "serviceName": "Digital Elevation Model Footprints Web Map Service (WMS)",
+          "serviceProtocol": "http",
+          "serviceUrl": "http://maps.ngdc.noaa.gov/arcgis/services/web_mercator/dem_extents/MapServer/WMSServer?request=GetCapabilities&amp;service=WMS",
+          "serviceDescription": "Capabilities document for Open Geospatial Consortium Web Map Service for Digital Elevation Model Footprints",
+          "serviceFunction": "search"
+        }
+      ]
+    }
+  ]
 }

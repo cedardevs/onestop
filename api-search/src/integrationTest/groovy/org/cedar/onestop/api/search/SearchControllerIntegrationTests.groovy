@@ -233,6 +233,46 @@ class SearchControllerIntegrationTests extends IntegrationTest {
     type << ['granule', 'flattened-granule']
   }
 
+  def 'Valid collection search request returns OK with expected service results'() {
+    given:
+    // Summary fields for granule types contain internalParentIdentifier field unlike collections
+    def summaryFields = [
+        'title', 'thumbnail', 'spatialBounding', 'beginDate', 'beginYear', 'endDate',
+        'endYear', 'links', 'citeAsStatements', 'internalParentIdentifier', 'services'
+    ]
+    def endpointUri = "${baseUri}/search/collection".toURI()
+    def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "DEM"}
+            ]
+        }""".stripIndent()
+    def requestEntity = RequestEntity.post(endpointUri).contentType(contentType).body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: 'Search returns OK'
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: 'Expected results are returned'
+    def items = result.body.data
+    items.size() == 2
+
+    and: 'Returned summary fields only'
+    items.each {
+      if(it.attributes.fileIdentifier == 'e7a36e60-1bcb-47b1-ac0d-3c2a2a743f9b'){
+        assert it.attributes.keySet().containsAll(summaryFields)
+        assert it.attributes.keySet().size() == summaryFields.size()
+        assert it.attributes.services.size() == 2
+        assert it.attributes.services[0].title == 'Digital Elevation Models: Color Shaded Relief ArcGIS Image Service'
+        assert it.attributes.services[0].links.siize() == 2
+      }
+    }
+  }
+
   def 'Invalid search; #type endpoint returns BAD_REQUEST error when not conforming to schema'() {
     setup:
     def endpointUri = "${baseUri}/search/${type}".toURI()
