@@ -19,7 +19,7 @@ class ReadingLevelSpec extends Specification {
     words[12] == 'anyway'
 
     when:
-    def syllables = words.collect({it ->
+    def syllables = words.collect({ it ->
       println(it)
       return ReadingLevel.findSyllablesInWord(it)
     })//.sum()
@@ -43,8 +43,8 @@ class ReadingLevelSpec extends Specification {
     def sentences = ReadingLevel.totalSentences(text)
     def words = ReadingLevel.totalWords(text)
     def syllables = ReadingLevel.totalSyllables(text)
-    def fraction = words/sentences
-    def fraction2 = syllables/words
+    def fraction = words / sentences
+    def fraction2 = syllables / words
 
     then:
     sentences == 6
@@ -54,7 +54,7 @@ class ReadingLevelSpec extends Specification {
     closeTo(1.85, 0.01).matches(fraction2)
   }
 
-  def 'readability example #desc' () {
+  def 'readability example #desc'() {
     when:
     boolean wcagSuccess = ReadingLevel.wcagReadingLevelCriteria(text)
     Number easeScore = ReadingLevel.FleschReadingEaseScore(text)
@@ -66,12 +66,12 @@ class ReadingLevelSpec extends Specification {
     wcagSuccess == expectedWcagCriteriaSuccess
 
     where:
-    desc | expectedEase | expectedGrade | expectedWcagCriteriaSuccess | text
-    'A short example paragraph' | 48.45 | 7.04 | true | 'A few separate. Sentences! And such?! That are not too confusing? Hopefully... Anyway.'
-    'A clear readable example' | 92.17 | 3.26 | true | 'The goal is to have simple, clear text that anyone can read. This is not easy to do, or even truely to measure.'
-    'AnalyzerSpec title' | 3.35 | 14.28 | false | 'Multibeam Bathymetric Surveys ArcGIS Map Service'
-    'AnalyzerSpec alternate title' | 33.58 | 9.57 | false | 'Alternate Title for Testing'
-    'where is the negative reading ease score from?' | -41.98 | 20.85 | false | 'Important Organization\'s Important File\'s Super Important Title'
-    'A GHRSST description' | 20.6 | 16.51 | false | 'A Group for High Resolution Sea Surface Temperature (GHRSST) Level 2P dataset based on multi-channel sea surface temperature (SST) retrievals generated in real-time from the Infrared Atmospheric Sounding Interferometer (IASI) on the European Meteorological Operational-B (MetOp-B)satellite (launched 17 Sep 2012). The European Organization for the Exploitation of Meteorological Satellites (EUMETSAT),Ocean and Sea Ice Satellite Application Facility (OSI SAF) is producing SST products in near realtime from METOP/IASI. The Infrared Atmospheric Sounding Interferometer (IASI) measures inthe infrared part of the electromagnetic spectrum at a horizontal resolution of 12 km at nadir up to40km over a swath width of about 2,200 km. With 14 orbits in a sun-synchronous mid-morningorbit (9:30 Local Solar Time equator crossing, descending node) global observations can beprovided twice a day. The SST retrieval is performed and provided by the IASI L2 processor atEUMETSAT headquarters. The product format is compliant with the GHRSST Data Specification(GDS) version 2.'
+    desc                                             | expectedEase | expectedGrade | expectedWcagCriteriaSuccess | text
+    'A short example paragraph'                      | 48.45        | 7.04          | true                        | 'A few separate. Sentences! And such?! That are not too confusing? Hopefully... Anyway.'
+    'A clear readable example'                       | 92.17        | 3.26          | true                        | 'The goal is to have simple, clear text that anyone can read. This is not easy to do, or even truely to measure.'
+    'AnalyzerSpec title'                             | 3.35         | 14.28         | false                       | 'Multibeam Bathymetric Surveys ArcGIS Map Service'
+    'AnalyzerSpec alternate title'                   | 33.58        | 9.57          | false                       | 'Alternate Title for Testing'
+    'where is the negative reading ease score from?' | -41.98       | 20.85         | false                       | 'Important Organization\'s Important File\'s Super Important Title'
+    'A GHRSST description'                           | 20.6         | 16.51         | false                       | 'A Group for High Resolution Sea Surface Temperature (GHRSST) Level 2P dataset based on multi-channel sea surface temperature (SST) retrievals generated in real-time from the Infrared Atmospheric Sounding Interferometer (IASI) on the European Meteorological Operational-B (MetOp-B)satellite (launched 17 Sep 2012). The European Organization for the Exploitation of Meteorological Satellites (EUMETSAT),Ocean and Sea Ice Satellite Application Facility (OSI SAF) is producing SST products in near realtime from METOP/IASI. The Infrared Atmospheric Sounding Interferometer (IASI) measures inthe infrared part of the electromagnetic spectrum at a horizontal resolution of 12 km at nadir up to40km over a swath width of about 2,200 km. With 14 orbits in a sun-synchronous mid-morningorbit (9:30 Local Solar Time equator crossing, descending node) global observations can beprovided twice a day. The SST retrieval is performed and provided by the IASI L2 processor atEUMETSAT headquarters. The product format is compliant with the GHRSST Data Specification(GDS) version 2.'
   }
 }

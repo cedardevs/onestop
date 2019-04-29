@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Profile
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
 import static org.apache.kafka.streams.StreamsConfig.*
-import static org.cedar.psi.common.constants.StreamsApps.getREGISTRY_ID
+import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID
 
 @Slf4j
 @CompileStatic

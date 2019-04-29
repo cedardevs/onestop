@@ -1,4 +1,4 @@
-package org.cedar.psi.manager.util
+package org.cedar.psi.common.util
 
 import org.cedar.schemas.avro.geojson.LineStringType
 import org.cedar.schemas.avro.geojson.PointType

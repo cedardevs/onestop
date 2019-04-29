@@ -1,4 +1,4 @@
-package org.cedar.psi.manager.util
+package org.cedar.psi.common.util
 
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult

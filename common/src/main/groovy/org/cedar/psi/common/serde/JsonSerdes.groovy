@@ -6,7 +6,7 @@ import org.apache.kafka.common.serialization.Serde
 @CompileStatic
 class JsonSerdes {
 
-  static Serde<Map> Map() {
+  static Serde<Map<String, Object>> Map() {
     return new JsonMapSerde()
   }
 

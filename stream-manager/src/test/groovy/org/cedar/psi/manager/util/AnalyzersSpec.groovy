@@ -1,5 +1,6 @@
 package org.cedar.psi.manager.util
 
+import org.cedar.psi.common.util.ISOParser
 import org.cedar.schemas.avro.geojson.Point
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
@@ -9,6 +10,7 @@ import spock.lang.Unroll
 import java.time.temporal.ChronoUnit
 
 import static org.cedar.schemas.avro.psi.TimeRangeDescriptor.*
+import static spock.util.matcher.HamcrestMatchers.closeTo
 
 @Unroll
 class AnalyzersSpec extends Specification {
@@ -93,16 +95,16 @@ class AnalyzersSpec extends Specification {
             titleCharacters         : 63,
             alternateTitleExists    : true,
             alternateTitleCharacters: 51,
-            titleFleschReadingEaseScore: -41.98428571066,
-            alternateTitleFleschReadingEaseScore: 42.61571428934,
-            titleFleschKincaidReadingGradeLevel: 20.85428571378,
-            alternateTitleFleschKincaidReadingGradeLevel: 9.05428571378
+            titleFleschReadingEaseScore: -41.984285714285676,
+            alternateTitleFleschReadingEaseScore: 42.61571428571432,
+            titleFleschKincaidReadingGradeLevel: 20.854285714285712,
+            alternateTitleFleschKincaidReadingGradeLevel: 9.054285714285715
         ],
         description     : [
             descriptionExists    : true,
             descriptionCharacters: 65,
-            descriptionFleschReadingEaseScore: 19.10000000094,
-            descriptionFleschKincaidReadingGradeLevel: 12.83111111098,
+            descriptionFleschReadingEaseScore: 19.100000000000023,
+            descriptionFleschKincaidReadingGradeLevel: 12.831111111111113,
         ],
         thumbnail       : [
             thumbnailExists: true,
@@ -128,7 +130,7 @@ class AnalyzersSpec extends Specification {
 
   def 'extracts date info from date strings'() {
     when:
-    def result = Analyzers.dateInfo(input, start)
+    def result = new Analyzers.DateInfo(input, start)
 
     then:
     result.descriptor == descriptor
@@ -269,12 +271,12 @@ class AnalyzersSpec extends Specification {
     !result.matchesIdentifiers
   }
 
-  def 'analyzes #testCase strings'() {
+  def 'handles analysis of #testCase strings'() {
     when:
-    def result = Analyzers.stringInfo(value)
+    def result = new Analyzers.StringInfo(value)
 
     then:
-    result instanceof Map
+    result instanceof Analyzers.StringInfo
     result.exists == exists
     result.characters == length
     result.readingEase == ease
@@ -284,6 +286,21 @@ class AnalyzersSpec extends Specification {
     testCase  | value  | exists | length | ease    | grade
     'missing' | null   | false  | 0      | null    | null
     'empty'   | ''     | false  | 0      | null    | null
+  }
+
+  def 'analyzes #testCase strings'() {
+    when:
+    def result = new Analyzers.StringInfo(value)
+
+    then:
+    result instanceof Analyzers.StringInfo
+    result.exists == exists
+    result.characters == length
+    closeTo(ease, 0.01).matches(result.readingEase)
+    closeTo(grade, 0.01).matches(result.gradeLevel)
+
+    where:
+    testCase  | value  | exists | length | ease    | grade
     'present' | 'test' | true   | 4      | 121.220 | -3.40
   }
 
