@@ -13,7 +13,7 @@ services:
   api-search:
     image: cedardevs/onestop-api-search:latest
     ports:
-      - 8097:8097
+      - 8097:8080
     depends_on:
       - elasticsearch
     environment:
@@ -24,7 +24,7 @@ services:
   api-metadata:
     image: cedardevs/onestop-api-metadata:latest
     ports:
-      - 8098:8098
+      - 8098:8080
     depends_on:
       - elasticsearch
     environment:
@@ -40,4 +40,3 @@ services:
     ports:
       - 9300:9300
       - 9200:9200
-
