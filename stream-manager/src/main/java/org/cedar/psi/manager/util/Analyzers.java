@@ -53,7 +53,7 @@ public class Analyzers {
   }
 
   static Analysis analyze(Discovery discovery) {
-    log.debug("Analyzing record: $discovery");
+    log.debug("Analyzing record: {}", discovery);
     if (discovery == null) {
       return null;
     }
