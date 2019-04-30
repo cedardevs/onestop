@@ -9,7 +9,7 @@ build:
         DATE: now
         VCS_REF: local
         VERSION: 2.2.0
-        WAR_NAME: onestop-metadata-2.2.0.war
+        WAR_NAME: onestop-metadata.war
   - image: cedardevs/onestop-api-search
     context: ./api-search
     docker:
@@ -17,7 +17,7 @@ build:
         DATE: now
         VCS_REF: local
         VERSION: 2.2.0
-        WAR_NAME: onestop-search-2.2.0.war
+        WAR_NAME: onestop-search.war
   - image: cedardevs/onestop-client
     context: ./client
     docker:
@@ -25,7 +25,7 @@ build:
         DATE: now
         VCS_REF: local
         VERSION: 2.2.0
-        TAR_NAME: onestop-client-2.2.0.tar.gz
+        TAR_NAME: onestop-client.tar.gz
 
 deploy:
   helm:
