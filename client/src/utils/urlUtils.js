@@ -102,6 +102,14 @@ export const isSitemap = path => {
   return sitemapMatch(path) ? true : false
 }
 
+export const isHome = path => {
+  return path === '/'
+}
+
+export const isSearch = path => {
+  return isRoute(path, ROUTE.search)
+}
+
 export const isDetailPage = path => {
   return isRoute(path, ROUTE.details) ? true : false
 }

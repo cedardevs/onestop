@@ -1,13 +1,13 @@
 import store from './store'
 import watch from 'redux-watch'
+import {isDetailPage, isGranuleListPage, isSitemap} from './utils/urlUtils'
 import {
   initialize,
-  loadDetails,
+  getSitemap,
   loadCollections,
+  loadDetails,
   loadGranulesList,
-} from './actions/FlowActions'
-import {getSitemap} from './actions/SearchRequestActions'
-import {isDetailPage, isGranuleListPage, isSitemap} from './utils/urlUtils'
+} from './actions/search/SearchActions'
 
 const loadFromUrl = (path, newQueryString) => {
   if (isSitemap(path)) {
@@ -26,10 +26,7 @@ const loadFromUrl = (path, newQueryString) => {
 
 store.dispatch(initialize())
 
-const routingWatch = watch(
-  store.getState,
-  'behavior.routing.locationBeforeTransitions'
-)
+const routingWatch = watch(store.getState, 'routing.locationBeforeTransitions')
 const routingUpdates = locationBeforeTransitions => {
   loadFromUrl(
     locationBeforeTransitions.location.pathname,
