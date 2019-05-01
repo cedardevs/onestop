@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {recenterGeometry} from './geoUtils'
-import {initialState} from '../reducers/search/collectionFilter'
+import {initialState} from '../reducers/behavior/search'
 import {
   convertBboxStringToGeoJson,
   convertGeoJsonToBboxString,
@@ -16,28 +16,28 @@ export const assembleSearchRequestString = (
 }
 
 export const assembleSearchRequest = (state, granules, retrieveFacets) => {
-  const search = state.search || {}
-  const collectionFilter = search.collectionFilter || {}
-  const collectionResult = search.collectionResult || {}
+  const behavior = state.behavior || {}
+  const search = behavior.search || {}
+  const ui = state.ui || {}
+  const domain = state.domain || {}
+  const results = domain.results || {}
   const pageOffset =
-    (granules
-      ? collectionResult.granulesPageOffset
-      : collectionResult.collectionsPageOffset) || 0
-  const pageSize = collectionResult.pageSize || 20
+    (granules ? results.granulesPageOffset : results.collectionsPageOffset) || 0
+  const pageSize = results.pageSize || 20
   const page = assemblePagination(pageSize, pageOffset)
 
-  // collection search, assembled for search API / elasticsearch
-  let queries = assembleQueries(collectionFilter)
+  // collection search
+  let queries = assembleQueries(search)
   let filters = _.concat(
-    assembleFacetFilters(collectionFilter),
-    assembleGeometryFilters(collectionFilter),
-    assembleTemporalFilters(collectionFilter),
-    assembleAdditionalFilters(collectionFilter)
+    assembleFacetFilters(search),
+    assembleGeometryFilters(search),
+    assembleTemporalFilters(search),
+    assembleAdditionalFilters(search)
   )
 
   // change which filters are applied and drop query text for granules (until #445 allows changing filters applied to granules directly)
   if (granules) {
-    filters = _.concat(assembleSelectedCollectionsFilters(collectionFilter))
+    filters = _.concat(assembleSelectedCollectionsFilters(search))
     queries = []
   }
   filters = _.flatten(_.compact(filters))
@@ -98,8 +98,7 @@ const assemblePagination = (max, offset) => {
 }
 
 export const encodeQueryString = state => {
-  const searchParams =
-    (state && state.search && state.search.collectionFilter) || {}
+  const searchParams = (state && state.behavior && state.behavior.search) || {}
   const queryParams = _.map(searchParams, (v, k) => {
     const codec = _.find(codecs, c => c.longKey === k)
     const encode = codec && (v === true || !_.isEmpty(v))

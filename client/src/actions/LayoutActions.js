@@ -1,29 +1,22 @@
 // synchronous actions
-export const TOGGLE_LEFT_OPEN = 'TOGGLE_LEFT_OPEN'
+export const SET_LEFT_OPEN_CLOSE = 'SET_LEFT_OPEN_CLOSE'
 export const openLeft = () => {
   return {
-    type: TOGGLE_LEFT_OPEN,
-    open: true,
+    type: SET_LEFT_OPEN_CLOSE,
+    value: true,
   }
 }
 export const closeLeft = () => {
   return {
-    type: TOGGLE_LEFT_OPEN,
-    open: false,
+    type: SET_LEFT_OPEN_CLOSE,
+    value: false,
   }
 }
 
-export const TOGGLE_RIGHT_OPEN = 'TOGGLE_RIGHT_OPEN'
-export const openRight = () => {
+export const TOGGLE_RIGHT = 'TOGGLE_RIGHT'
+export const toggleRight = () => {
   return {
-    type: TOGGLE_RIGHT_OPEN,
-    open: true,
-  }
-}
-export const closeRight = () => {
-  return {
-    type: TOGGLE_RIGHT_OPEN,
-    open: false,
+    type: TOGGLE_RIGHT,
   }
 }
 

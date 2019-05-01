@@ -11,9 +11,5 @@
     "path": "node_modules/npm",
     "version": "6.1.0",
     "justification": "Prototype pollution attacks don't affect this project. We do not run server-side JS."
-  },
-  {
-    "path": "node_modules/webpack-dev-server",
-    "justification": "Development dependency: Not packaged in production code."
   }
 ]

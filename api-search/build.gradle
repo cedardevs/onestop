@@ -46,10 +46,6 @@ dependencies {
   // version to override another library's dependency to solve a CVE:
   compile 'com.google.guava:guava:27.0.1-jre'
 
-  // fix CVE-2019-0232, CVE-2019-0232 by forcing a higher version of the tomcat websocket dependency
-  compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.19'
-  compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.19'
-
   runtime 'org.springframework.boot:spring-boot-devtools'
 
   providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
@@ -197,7 +193,7 @@ task setupOpenapiGenPart1(type: Copy) {
   into "${buildDir}/tmp/schema"
 }
 
-// override the actual geometry so that the openApi is valid
+// override the actual geometry so that the openApi is valid 
 task setupOpenapiGenPart2(type: Copy) {
   dependsOn "setupOpenapiGenPart1"
   from "schema/components"
