@@ -142,7 +142,8 @@ war {
   enabled = true
   // TODO disabled dynamic project-based name for #827, plan to re-enable in #828
   // baseName = "${rootProject.name}-${project.name}"
-  baseName = "onestop-search"
+  // baseName = "onestop-search"
+  archiveName = "onestop-search.${extension}"
   finalizedBy bootWar
 }
 
