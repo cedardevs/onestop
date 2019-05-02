@@ -138,7 +138,8 @@ war {
   enabled = true
   // TODO disabled dynamic project-based name for #827, plan to re-enable in #828
   // baseName = "${rootProject.name}-${project.name}"
-  baseName = "onestop-search"
+  // baseName = "onestop-search"
+  archiveName = "onestop-search.${extension}"
   finalizedBy bootWar
 }
 
@@ -193,7 +194,7 @@ task setupOpenapiGenPart1(type: Copy) {
   into "${buildDir}/tmp/schema"
 }
 
-// override the actual geometry so that the openApi is valid 
+// override the actual geometry so that the openApi is valid
 task setupOpenapiGenPart2(type: Copy) {
   dependsOn "setupOpenapiGenPart1"
   from "schema/components"
