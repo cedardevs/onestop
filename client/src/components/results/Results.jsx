@@ -9,7 +9,7 @@ export default class Results extends React.Component {
   render() {
     return (
       <Switch>
-        <Route path={ROUTE.search.path} exact>
+        <Route path={ROUTE.collections.path} exact>
           <CollectionResult>
             <CollectionsContainer />
           </CollectionResult>

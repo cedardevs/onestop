@@ -58,7 +58,7 @@ export const ROUTE = Object.freeze({
     path: '/sitemap.xml',
     regex: /\/sitemap.xml/,
   },
-  search: {
+  collections: {
     path: '/collections',
     regex: /\/collections([^/])*$/,
   },
@@ -107,7 +107,7 @@ export const isHome = path => {
 }
 
 export const isSearch = path => {
-  return isRoute(path, ROUTE.search)
+  return isRoute(path, ROUTE.collections) || isRoute(path, ROUTE.granules)
 }
 
 export const isDetailPage = path => {

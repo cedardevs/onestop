@@ -96,7 +96,7 @@ export default class Root extends React.Component {
             <DetailContainer />
           </Route>
 
-          <Route path={ROUTE.search.path}>
+          <Route path={ROUTE.collections.path}>
             <ResultsContainer />
           </Route>
 
