@@ -3,7 +3,7 @@ import {connectRouter, routerMiddleware} from 'connected-react-router'
 import Immutable from 'seamless-immutable'
 import thunk from 'redux-thunk'
 import history from './history'
-import reducer from './reducer'
+import reducer from './reducers/reducer'
 
 const getCompose = () => {
   if (

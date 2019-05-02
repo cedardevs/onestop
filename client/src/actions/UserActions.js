@@ -1,46 +1,25 @@
-export const USER_PROFILE_REQUEST = 'USER_PROFILE_REQUEST'
-export const userProfileRequest = () => {
-  return {
-    type: USER_PROFILE_REQUEST,
-  }
-}
-export const USER_PROFILE_SUCCESS = 'USER_PROFILE_SUCCESS'
-export const userProfileSuccess = profile => {
-  return {
-    type: USER_PROFILE_SUCCESS,
-    payload: profile,
-  }
-}
-export const USER_PROFILE_FAILURE = 'USER_PROFILE_FAILURE'
-export const userProfileFailure = error => {
-  return {
-    type: USER_PROFILE_FAILURE,
-    error: error,
-  }
-}
-export const USER_LOGOUT = 'USER_LOGOUT'
+export const GET_USER_REQUEST = 'GET_USER_REQUEST'
+export const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
+export const GET_USER_FAILURE = 'GET_USER_FAILURE'
+export const LOGOUT_USER = 'LOGOUT_USER'
 
-export const getUser = userProfileEndpoint => {
+export const getUser = userEndpoint => {
   const requestOptions = {
     method: 'GET',
     redirect: 'error',
     mode: 'cors',
     credentials: 'include',
   }
-
   return dispatch => {
-    // notify reducer of our intention to request user profile
-    dispatch(userProfileRequest())
-
-    // initiate asynchronous request to user profile endpoint
-    return fetch(userProfileEndpoint, requestOptions)
+    dispatch({type: GET_USER_REQUEST})
+    return fetch(userEndpoint, requestOptions)
       .then(response => response.json())
       .then(
         response => {
-          dispatch(userProfileSuccess(response))
+          dispatch({type: GET_USER_SUCCESS, payload: response})
         },
         error => {
-          dispatch(userProfileFailure(error))
+          dispatch({type: GET_USER_FAILURE, error: error})
           throw error
         }
       )
@@ -48,5 +27,5 @@ export const getUser = userProfileEndpoint => {
 }
 
 export const logoutUser = () => {
-  return {type: USER_LOGOUT}
+  return {type: LOGOUT_USER}
 }

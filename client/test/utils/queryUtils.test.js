@@ -1,6 +1,6 @@
 import Immutable from 'seamless-immutable'
 import * as queryUtils from '../../src/utils/queryUtils'
-import {initialState} from '../../src/reducers/search/collectionFilter'
+import {initialState} from '../../src/reducers/behavior/search'
 
 describe('The queryUtils', function(){
   describe('assembles collection requests', function(){
@@ -43,7 +43,7 @@ describe('The queryUtils', function(){
 
   it(`encodes & decodes a queryString accurately`, function(){
     queryTestCases().forEach(testCase => {
-      const tempState = {search: {collectionFilter: testCase.state}}
+      const tempState = {behavior: {search: testCase.state}}
       const encodedString = queryUtils.encodeQueryString(tempState)
       expect(encodedString).toBe(testCase.string)
       const decodedString = queryUtils.decodeQueryString(encodedString)
@@ -70,8 +70,8 @@ function collectionTestCases(){
     {
       name: 'a text search',
       inputState: {
-        search: {
-          collectionFilter: {
+        behavior: {
+          search: {
             queryText: 'test text',
           },
         },
@@ -94,8 +94,8 @@ function collectionTestCases(){
     {
       name: 'a temporal search',
       inputState: {
-        search: {
-          collectionFilter: {
+        behavior: {
+          search: {
             startDateTime: '2017-01-01',
             endDateTime: '2017-01-20',
           },
@@ -120,8 +120,8 @@ function collectionTestCases(){
     {
       name: 'a spatial search',
       inputState: {
-        search: {
-          collectionFilter: {
+        behavior: {
+          search: {
             geoJSON: {
               geometry: {
                 type: 'Polygon',
@@ -171,8 +171,8 @@ function collectionTestCases(){
     {
       name: 'a facet search',
       inputState: {
-        search: {
-          collectionFilter: {
+        behavior: {
+          search: {
             selectedFacets: {
               science: [ 'Atmosphere' ],
             },
@@ -198,8 +198,8 @@ function collectionTestCases(){
     {
       name: 'all filters applied',
       inputState: {
-        search: {
-          collectionFilter: {
+        behavior: {
+          search: {
             geoJSON: {
               geometry: {
                 type: 'Polygon',
@@ -270,8 +270,8 @@ function collectionTestCases(){
     {
       name: 'more results requested',
       inputState: {
-        search: {
-          collectionResult: {
+        domain: {
+          results: {
             collectionsPageOffset: 20,
           },
         },
@@ -294,8 +294,8 @@ function granuleTestCases(){
     {
       name: 'one collection',
       inputState: {
-        search: {
-          collectionFilter: {
+        behavior: {
+          search: {
             selectedIds: [ 'ABC123' ],
           },
         },
@@ -318,8 +318,8 @@ function granuleTestCases(){
     {
       name: 'two collections',
       inputState: {
-        search: {
-          collectionFilter: {
+        behavior: {
+          search: {
             selectedIds: [ 'ABC123', 'XYZ789' ],
           },
         },
@@ -342,8 +342,8 @@ function granuleTestCases(){
     {
       name: 'two collections and a text query',
       inputState: {
-        search: {
-          collectionFilter: {
+        behavior: {
+          search: {
             queryText: 'test',
             selectedIds: [ 'ABC123', 'XYZ789' ],
           },
@@ -367,11 +367,13 @@ function granuleTestCases(){
     {
       name: 'more results requested',
       inputState: {
-        search: {
-          collectionFilter: {
+        behavior: {
+          search: {
             selectedIds: [],
           },
-          collectionResult: {
+        },
+        domain: {
+          results: {
             granulesPageOffset: 20,
           },
         },

@@ -2,8 +2,8 @@ import React from 'react'
 import {Provider} from 'react-redux'
 import {Route, Switch} from 'react-router'
 import {ConnectedRouter} from 'connected-react-router'
-import RootContainer from './components/root/RootContainer'
-import GoogleAnalyticsContainer from './components/analytics/GoogleAnalyticsContainer'
+import RootContainer from './root/RootContainer'
+import AnalyticsContainer from './analytics/AnalyticsContainer'
 import {ROUTE} from './utils/urlUtils'
 import _ from 'lodash'
 
@@ -28,7 +28,7 @@ const App = (store, history) => {
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <div>
-          {isTest ? null : <GoogleAnalyticsContainer />}
+          {isTest ? null : <AnalyticsContainer />}
           <Switch>
             <Route path={ROUTE.sitemap.path} exact onEnter={reload} />
             <RootContainer />
