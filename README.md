@@ -1,5 +1,5 @@
-OneStop Search
-===
+# OneStop Search
+
 [![Build Status](https://circleci.com/gh/cedardevs/onestop.svg?style=svg)](https://circleci.com/gh/cedardevs/onestop)
 [![Code Coverage](https://codecov.io/gh/cedardevs/onestop/branch/master/graph/badge.svg)](https://codecov.io/gh/cedardevs/onestop)
 
@@ -8,13 +8,13 @@ National Oceanic and Atmospheric Administration’s publicly available
 data holdings. It is being developed on a grant by a team of researchers
 from the University of Colorado (more legal info below).
 
-For Overview, Usage, Deployment, and Development information about this project:
-  - [Quickstart](/docs)
-  - [Wiki](https://github.com/cedardevs/onestop/wiki)
+## Documentation
+
+For Overview, Usage, Deployment, and Development information about this project, check out the [docs](/docs).
 
 ## Legal
 
-This software was developed by Team Foam-Cat,
+This software was developed,
 under the OneStop project: 1553647,
 NOAA award number NA12OAR4320137 to CIRES.
 This code is licensed under GPL version 2.
