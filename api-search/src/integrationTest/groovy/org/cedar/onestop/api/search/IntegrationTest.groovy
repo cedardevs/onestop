@@ -3,10 +3,11 @@ package org.cedar.onestop.api.search
 import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
@@ -15,24 +16,27 @@ import spock.lang.Unroll
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @ActiveProfiles("integration")
-@SpringBootTest(classes = [Application, IntegrationTestConfig], webEnvironment = RANDOM_PORT)
+@SpringBootTest(classes = [Application, ElasticsearchTestConfig], webEnvironment = RANDOM_PORT)
 @Unroll
 class IntegrationTest extends Specification {
 
   @Autowired
+  ElasticsearchConfig esConfig
+
+  @Autowired
   RestClient restClient
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-  String COLLECTION_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
-  String GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
-  String FLATTENED_GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.universal-type}')
-  String TYPE
+//  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
+//  String COLLECTION_SEARCH_INDEX
+//
+//  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
+//  String GRANULE_SEARCH_INDEX
+//
+//  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
+//  String FLATTENED_GRANULE_SEARCH_INDEX
+//
+//  @Value('${elasticsearch.index.universal-type}')
+//  String TYPE
 
   static final Map testData = [
       'DEM': [
@@ -88,8 +92,7 @@ class IntegrationTest extends Specification {
     Response response = restClient.performRequest('DELETE', '_all')
     println("DELETE _all: ${response}")
 
-    def cl = ClassLoader.systemClassLoader
-    def genericIndexJson = cl.getResourceAsStream("generic/${index}/index.json").text
+    def genericIndexJson = ElasticsearchConfig.jsonFromFile("generic/${index}/index.json")
     def genericIndexMapping = new NStringEntity(genericIndexJson, ContentType.APPLICATION_JSON)
     def bulkRequests = cl.getResourceAsStream("generic/${index}/bulkData.txt").text
     def bulkRequestBody = new NStringEntity(bulkRequests, ContentType.APPLICATION_JSON)

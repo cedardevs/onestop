@@ -28,6 +28,9 @@ configurations {
 }
 
 dependencies {
+
+  compile(project(':elastic-common'))
+
   // Kafka dependencies for connecting with PSI
   compile('com.github.cedardevs:schemas:0.1.2')
   compile("io.confluent:kafka-streams-avro-serde:5.1.0")
@@ -152,9 +155,9 @@ sourceSets {
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
   }
-  main {
-    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
-  }
+//  main {
+//    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
+//  }
 }
 
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {

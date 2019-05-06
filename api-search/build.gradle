@@ -23,6 +23,8 @@ configurations {
 }
 
 dependencies {
+  compile(project(':elastic-common'))
+  
   compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
@@ -127,7 +129,7 @@ keystore {
 sourceSets {
   integrationTest {
     groovy.srcDir file('src/integrationTest/groovy')
-    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
+//    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
   }

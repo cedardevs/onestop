@@ -4,6 +4,7 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.text.WordUtils
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
+import org.elasticsearch.Version
 
 import java.time.temporal.ChronoUnit
 
@@ -65,13 +66,13 @@ class InventoryManagerToOneStopUtil {
     }
   }
 
-  static Map reformatMessageForSearch(ParsedRecord record) {
+  static Map reformatMessageForSearch(ParsedRecord record, Version version) {
     Discovery discovery = record.discovery
     Analysis analysis = record.analysis
 
     Map discoveryMap = AvroUtils.avroToMap(discovery, true)
 
-    // create gcmdkeywords
+    // create GCMD keywords
     Map gcmdKeywords = createGcmdKeyword(discovery)
     discoveryMap.putAll(gcmdKeywords)
 
@@ -85,7 +86,17 @@ class InventoryManagerToOneStopUtil {
 
     // drop fields
     discoveryMap.remove("responsibleParties")
-    discoveryMap.services = [] // FIXME this needs to be in place until we can use ES6 ignore_missing flags
+
+
+    if(version.onOrAfter(Version.V_6_0_0)) {
+
+    }
+    else {
+      // this needs to be in place until we can use ES6 ignore_missing flags
+      discoveryMap.services = []
+    }
+
+
     return discoveryMap
   }
 

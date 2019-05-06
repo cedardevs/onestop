@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.util.AvroUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,7 +36,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @DirtiesContext
 @EmbeddedKafka
 @ActiveProfiles(["integration", "kafka-ingest"])
-@SpringBootTest(classes = [Application, IntegrationTestConfig, KafkaConsumerConfig], webEnvironment = RANDOM_PORT)
+@SpringBootTest(classes = [Application, ElasticsearchTestConfig, KafkaConsumerConfig], webEnvironment = RANDOM_PORT)
 @TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
 class KafkaIngestIntegrationSpec extends Specification {
 

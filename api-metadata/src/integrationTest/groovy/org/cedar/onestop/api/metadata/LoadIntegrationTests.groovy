@@ -1,19 +1,41 @@
 package org.cedar.onestop.api.metadata
 
+import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityConfig
+import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
+import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
+import spock.lang.Specification
+import spock.lang.Unroll
 
-class LoadIntegrationTests extends IntegrationTest {
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+
+@ActiveProfiles(["integration"])
+@SpringBootTest(
+        classes = [
+                Application,
+                ElasticsearchTestConfig,
+                SpringSecurityDisabled,
+                SpringSecurityConfig,
+                IdentityProviderConfig
+        ],
+        webEnvironment = RANDOM_PORT
+)
+@Unroll
+class LoadIntegrationTests extends Specification {
 
   /**
    * These tests cover:

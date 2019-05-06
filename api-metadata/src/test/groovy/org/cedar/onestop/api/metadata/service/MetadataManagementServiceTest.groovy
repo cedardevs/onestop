@@ -1,21 +1,54 @@
 package org.cedar.onestop.api.metadata.service
 
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.elasticsearch.Version
+import org.elasticsearch.client.RestClient
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
 class MetadataManagementServiceTest extends Specification {
 
-  def mockElasticsearchService = Mock(ElasticsearchService)
-  def metadataManagementService = new MetadataManagementService(mockElasticsearchService)
+  ElasticsearchConfig esConfig = new ElasticsearchConfig(
+          'search_collection',
+          'staging_collection',
+          'search_granule',
+          'staging_granule',
+          'search_flattened_granule',
+          'sitemap',
+          'prefix-',
+          'collection_pipeline',
+          'granule_pipeline',
+          'doc',
+          10,
+          null,
+          2,
+          5
+  )
+  RestClient mockRestClient = Mock(RestClient)
+  ElasticsearchService elasticsearchService = new ElasticsearchService(mockRestClient, Version.V_6_1_2, esConfig)
+  MetadataManagementService metadataManagementService = new MetadataManagementService(elasticsearchService)
 
   def setup() {
-    metadataManagementService.PREFIX = 'prefix-'
-    metadataManagementService.COLLECTION_SEARCH_INDEX = 'search_collection'
-    metadataManagementService.COLLECTION_STAGING_INDEX = 'staging_collection'
-    metadataManagementService.GRANULE_SEARCH_INDEX = 'search_granule'
-    metadataManagementService.GRANULE_STAGING_INDEX = 'staging_granule'
-    metadataManagementService.FLAT_GRANULE_SEARCH_INDEX = 'search_flattened_granule'
+  }
+
+  def "Alias #alias correctly parsed to type"() {
+    given:
+    def aliasToParse = alias
+
+    when:
+    String type = esConfig.typeFromAlias(aliasToParse)
+
+    then:
+    type == expectedType
+
+    where:
+    alias                                 | expectedType
+    'prefix-search_collection'            | ElasticsearchConfig.TYPE_COLLECTION
+    'prefix-search_granule-1519243661952' | null
+    'prefix-search_flattened_granule'     | ElasticsearchConfig.TYPE_FLATTENED_GRANULE
+    'not-valid-index'                     | null
+
   }
 
   def "Index #index correctly parsed to type"() {
@@ -23,16 +56,16 @@ class MetadataManagementServiceTest extends Specification {
     def indexToParse = index
 
     when:
-    def parsedType = metadataManagementService.determineType(indexToParse)
+    String type = metadataManagementService.esConfig.typeFromIndex(indexToParse)
 
     then:
-    parsedType == expectedType
+    type == expectedType
 
     where:
     index                                 | expectedType
-    'prefix-search_collection'            | 'collection'
-    'prefix-search_granule-1519243661952' | 'granule'
-    'prefix-search_flattened_granule'     | 'flattenedGranule'
+    'prefix-search_collection'            | null
+    'prefix-search_granule-1519243661952' | ElasticsearchConfig.TYPE_GRANULE
+    'prefix-search_flattened_granule'     | null
     'not-valid-index'                     | null
 
   }
