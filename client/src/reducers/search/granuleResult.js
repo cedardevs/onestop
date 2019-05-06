@@ -1,7 +1,7 @@
 import Immutable from 'seamless-immutable'
 import {
-  GRANULE_CLEAR_FACETS,
-  GRANULE_REMOVE_FILTERS,
+  // GRANULE_CLEAR_FACETS,
+  // GRANULE_REMOVE_FILTERS,
 } from '../../actions/search/GranuleFilterActions'
 import {
   GRANULE_SEARCH_SUCCESS,
@@ -10,7 +10,7 @@ import {
 } from '../../actions/search/GranuleRequestActions'
 import {
   GRANULE_UPDATE_TOTAL,
-  GRANULE_INCREMENT_RESULTS_OFFSET,
+  // GRANULE_INCREMENT_RESULTS_OFFSET,
   GRANULE_CLEAR_RESULTS,
   // GRANULE_INCREMENT_DETAIL_GRANULES_RESULT_OFFSET,
   // GRANULE_CLEAR_DETAIL_GRANULES_RESULT,
@@ -32,18 +32,24 @@ export const initialState = Immutable({
 export const granuleResult = (state = initialState, action) => {
   switch (action.type) {
     // Result Effects from 'GranuleFilterActions'
-    case GRANULE_CLEAR_FACETS:
-      return Immutable.set(state, 'facets', initialState.facets)
-
-    case GRANULE_REMOVE_FILTERS:
-      return Immutable.set(state, 'facets', initialState.facets)
+    // case GRANULE_CLEAR_FACETS:
+    //   return Immutable.set(state, 'facets', initialState.facets)
+    //
+    // case GRANULE_REMOVE_FILTERS:
+    //   return Immutable.set(state, 'facets', initialState.facets)
 
     // Result Effects from 'GranuleRequestActions'
     case GRANULE_SEARCH_SUCCESS:
-      let newGranules = {}
-      action.items.forEach((val, key) => {
-        newGranules[key] = val
-      })
+      // let newGranules = {}
+      // action.items.forEach((val, key) => {
+      //   newGranules[key] = val
+      // })
+
+      let newGranules = action.items.reduce(
+          (existing, next) => existing.set(next.id, next.attributes),
+          state.granules
+        )
+
       let allGranules = state.granules.merge(newGranules)
       return Immutable.set(state, 'granules', allGranules)
 
@@ -81,12 +87,12 @@ export const granuleResult = (state = initialState, action) => {
     case GRANULE_METADATA_RECEIVED:
       return Immutable.set(state, 'facets', action.metadata.facets)
 
-    case GRANULE_INCREMENT_RESULTS_OFFSET:
-      return Immutable.set(
-        state,
-        'granulesPageOffset',
-        state.granulesPageOffset + state.pageSize
-      )
+    // case GRANULE_INCREMENT_RESULTS_OFFSET:
+    //   return Immutable.set(
+    //     state,
+    //     'granulesPageOffset',
+    //     state.granulesPageOffset + state.pageSize
+    //   )
 
     // case GRANULE_INCREMENT_DETAIL_GRANULES_RESULT_OFFSET:
     //   return Immutable.set(

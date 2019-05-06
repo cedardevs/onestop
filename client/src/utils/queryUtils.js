@@ -18,19 +18,22 @@ export const assembleSearchRequestString = (
 export const assembleGranuleSearchRequest = (state, granules, retrieveFacets) => {
   const search = state.search || {}
   const granuleFilter = search.granuleFilter || {}
+  const collectionFilter = search.collectionFilter || {}
   const granuleResult = search.granuleResult || {}
   const pageOffset = granuleResult.pageOffset || 0
   const pageSize = granuleResult.pageSize || 20
   const page = assemblePagination(pageSize, pageOffset)
 
   // collection search, assembled for search API / elasticsearch
-  let queries = assembleQueries(granuleFilter)
+  let queries = [] //assembleQueries(granuleFilter)
   let filters = _.concat(
     assembleFacetFilters(granuleFilter),
     assembleGeometryFilters(granuleFilter),
     assembleTemporalFilters(granuleFilter),
     assembleAdditionalFilters(granuleFilter)
   )
+
+  filters = _.concat(assembleSelectedCollectionsFilters(collectionFilter))
 
   filters = _.flatten(_.compact(filters))
 

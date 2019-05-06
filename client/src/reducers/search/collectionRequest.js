@@ -4,14 +4,14 @@ import {
   COLLECTION_SEARCH_SUCCESS,
   COLLECTION_DETAIL_REQUEST,
   COLLECTION_DETAIL_SUCCESS,
-  COLLECTION_DETAIL_GRANULES_REQUEST,
-  COLLECTION_DETAIL_GRANULES_SUCCESS,
+  // COLLECTION_DETAIL_GRANULES_REQUEST,
+  // COLLECTION_DETAIL_GRANULES_SUCCESS,
 } from '../../actions/search/CollectionRequestActions'
 
 export const initialState = Immutable({
   collectionSearchRequestInFlight: false,
   collectionDetailRequestInFlight: false,
-  collectionDetailGranulesRequestInFlight: false,
+  // collectionDetailGranulesRequestInFlight: false,
 })
 
 export const collectionRequest = (state = initialState, action) => {
@@ -28,19 +28,19 @@ export const collectionRequest = (state = initialState, action) => {
     case COLLECTION_DETAIL_SUCCESS:
       return Immutable.set(state, 'collectionDetailRequestInFlight', false)
 
-    case COLLECTION_DETAIL_GRANULES_REQUEST:
-      return Immutable.set(
-        state,
-        'collectionDetailGranulesRequestInFlight',
-        true
-      )
+    // case COLLECTION_DETAIL_GRANULES_REQUEST:
+    //   return Immutable.set(
+    //     state,
+    //     'collectionDetailGranulesRequestInFlight',
+    //     true
+    //   )
 
-    case COLLECTION_DETAIL_GRANULES_SUCCESS:
-      return Immutable.set(
-        state,
-        'collectionDetailGranulesRequestInFlight',
-        false
-      )
+    // case COLLECTION_DETAIL_GRANULES_SUCCESS:
+    //   return Immutable.set(
+    //     state,
+    //     'collectionDetailGranulesRequestInFlight',
+    //     false
+    //   )
 
     default:
       return state

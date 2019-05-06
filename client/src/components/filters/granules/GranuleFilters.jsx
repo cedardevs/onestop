@@ -94,7 +94,8 @@ class GranuleFilters extends React.Component {
       {
         name: 'time',
         heading: <FilterHeading icon={timeFilterIcon} text="Date" />,
-        content: <GranuleTimeFilterContainer />,
+        // content: <GranuleTimeFilterContainer />,
+        content: 'TBD'
       },
       {
         name: 'keywords',

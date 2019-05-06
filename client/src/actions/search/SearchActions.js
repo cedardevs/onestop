@@ -1,16 +1,21 @@
 import {
   assembleSearchRequest,
+  assembleGranuleSearchRequest,
   decodeQueryString,
   encodeQueryString,
 } from '../../utils/queryUtils'
 import {
-  collectionDetailGranulesRequest,
-  collectionDetailGranulesSuccess,
+  // collectionDetailGranulesRequest,
+  // collectionDetailGranulesSuccess,
   collectionDetailRequest,
   collectionDetailSuccess,
   collectionSearchRequest,
   collectionSearchSuccess,
 } from './CollectionRequestActions'
+import {
+  granuleSearchRequest,
+  granuleSearchSuccess,
+} from './GranuleRequestActions'
 import _ from 'lodash'
 import {showErrors} from '../ErrorActions'
 import {
@@ -29,9 +34,12 @@ import {
   collectionClearDetailGranulesResult,
   collectionClearResults,
   collectionMetadataReceived,
-  collectionUpdateDetailGranulesTotal,
+  // collectionUpdateDetailGranulesTotal,
   collectionUpdateTotal,
 } from './CollectionResultActions'
+import {
+  granuleUpdateTotal,
+} from './GranuleResultActions'
 import {fetchConfig} from '../ConfigActions'
 import {fetchCounts, fetchInfo} from './InfoActions'
 
@@ -104,26 +112,26 @@ export const triggerSearch = (retrieveFacets = true) => { // TODO rename to coll
 export const fetchGranules = () => {
   const bodyBuilder = state => {
     const granuleInFlight =
-      state.search.collectionRequest.collectionDetailGranulesRequestInFlight
+      state.search.granuleRequest.granuleSearchRequestInFlight
     let selectedCollections = state.search.collectionFilter.selectedIds
     if (granuleInFlight || !selectedCollections) {
       return undefined
     }
-    return assembleSearchRequest(state, true, false)
+    return assembleGranuleSearchRequest(state, true, false)
   }
   const prefetchHandler = dispatch => {
     dispatch(showLoading())
-    dispatch(collectionDetailGranulesRequest())
+    dispatch(granuleSearchRequest())
   }
   const successHandler = (dispatch, payload) => {
-    dispatch(collectionUpdateDetailGranulesTotal(payload.meta.total))
-    dispatch(collectionDetailGranulesSuccess(payload.data))
+    dispatch(granuleUpdateTotal(payload.meta.total))
+    dispatch(granuleSearchSuccess(payload.data))
     dispatch(hideLoading())
   }
   const errorHandler = (dispatch, e) => {
     dispatch(hideLoading())
     dispatch(showErrors(e.errors || e))
-    dispatch(collectionDetailGranulesSuccess([]))
+    dispatch(granuleSearchSuccess([]))
   }
 
   return buildSearchAction(

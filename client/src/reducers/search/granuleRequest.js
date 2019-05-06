@@ -10,8 +10,8 @@ import {
 
 export const initialState = Immutable({
   granuleSearchRequestInFlight: false,
-  granuleDetailRequestInFlight: false,
-  granuleDetailGranulesRequestInFlight: false,
+  // granuleDetailRequestInFlight: false,
+  // granuleDetailGranulesRequestInFlight: false,
 })
 
 export const granuleRequest = (state = initialState, action) => {
