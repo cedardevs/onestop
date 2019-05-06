@@ -91,9 +91,9 @@ class MetadataManagementService {
     esService.ensureStagingIndices()
     esService.ensurePipelines()
     esService.refreshAllIndices()
-    List<Map> results = Collections.emptyList()
+    List<Map> results = []
     def bulkRequest = new StringBuilder()
-    Set<Integer> loadedIndices = Collections.emptySet()
+    Set<Integer> loadedIndices = []
     
     documents.eachWithIndex { document, i ->
       def filename
@@ -199,7 +199,7 @@ class MetadataManagementService {
   
   Map getMetadata(String esId, boolean idsOnly = false) {
     esService.refreshAllIndices()
-    List<Map> resultsData = Collections.emptyList()
+    List<Map> resultsData = []
     [esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS].each { alias ->
       String endpoint = "${alias}/${esConfig.TYPE}/${esId}"
       if (idsOnly) {
@@ -235,7 +235,7 @@ class MetadataManagementService {
   Map findMetadata(String fileId, String doi, boolean idsOnly = false) {
     esService.refreshAllIndices()
     String endpoint = "${esConfig.COLLECTION_STAGING_INDEX_ALIAS},${esConfig.GRANULE_STAGING_INDEX_ALIAS}/_search"
-    List<Map> searchParams = Collections.emptyList()
+    List<Map> searchParams = []
     if (fileId) {
       searchParams.add([term: [fileIdentifier: fileId]])
     }
@@ -293,9 +293,9 @@ class MetadataManagementService {
   
   private Map delete(Map record, boolean recursive) {
     // collect up the ids, types, and potential granule parentIds to be deleted
-    List<String> ids = Collections.emptyList()
-    List<String> parentIds = Collections.emptyList()
-    List<Map> toBeDeleted = Collections.emptyList()
+    List<String> ids = []
+    List<String> parentIds = []
+    List<Map> toBeDeleted = []
     List<Map> data = record.data as List<Map>
     data.each {
       String id = it.id

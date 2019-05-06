@@ -119,7 +119,7 @@ class ElasticsearchService {
       return response.keySet().findAll({ it.startsWith(alias) })
     } catch (e) {
       log.warn "Failed to retrieve indices for alias \'${alias}\' due to: ${e.message}"
-      return Collections.emptySet()
+      return []
     }
   }
 

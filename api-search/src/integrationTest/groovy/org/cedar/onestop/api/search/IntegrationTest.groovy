@@ -26,18 +26,6 @@ class IntegrationTest extends Specification {
   @Autowired
   RestClient restClient
 
-//  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-//  String COLLECTION_SEARCH_INDEX
-//
-//  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
-//  String GRANULE_SEARCH_INDEX
-//
-//  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
-//  String FLATTENED_GRANULE_SEARCH_INDEX
-//
-//  @Value('${elasticsearch.index.universal-type}')
-//  String TYPE
-
   static final Map testData = [
       'DEM': [
           'C1': [

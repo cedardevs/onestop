@@ -76,8 +76,8 @@ class SitemapETLService {
     elasticsearchService.ensureSearchIndices()
     elasticsearchService.refresh(collectionIndex, destination)
 
-    List<List<String>> collections = Collections.emptyList()
-    List<String> lastSubcollection = Collections.emptyList()
+    List<List<String>> collections = []
+    List<String> lastSubcollection = []
 
     def nextScrollRequest = { String scroll_id ->
       def requestBody = [
@@ -124,7 +124,7 @@ class SitemapETLService {
 
     elasticsearchService.performRequest('DELETE', "_search/scroll/${scrollId}")
 
-    List<String> tasksInFlight = Collections.emptyList()
+    List<String> tasksInFlight = []
     Map countSitemappedThings = [
         total: 0,
         updated: 0,
