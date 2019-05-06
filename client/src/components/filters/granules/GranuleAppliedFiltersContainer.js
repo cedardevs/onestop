@@ -14,7 +14,6 @@ import {
 import AppliedFilters from '../AppliedFilters'
 
 const mapStateToProps = state => {
-  // const focusedItem = state.search.collectionResult.collectionDetail
   const {
     selectedFacets,
     startDateTime,
@@ -29,7 +28,6 @@ const mapStateToProps = state => {
     geoJSON,
     excludeGlobal,
     showAppliedFilters: state.layout.showAppliedFilterBubbles,
-    // collectionId: focusedItem ? focusedItem.collection.id : null,
   }
 }
 
@@ -41,7 +39,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     // toggleFacet: (category, facetName, selected) =>
     //   dispatch(collectionToggleFacet(category, facetName, selected)),
     submit: () => {
-      // dispatch(collectionClearResults())
+      // dispatch(collectionClearResults()) TODO
 
       dispatch(triggerGranuleSearch())
       dispatch(showGranules(ownProps.history, ownProps.match.params.id))

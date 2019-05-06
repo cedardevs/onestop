@@ -6,26 +6,23 @@ import {
 import {
   COLLECTION_SEARCH_SUCCESS,
   COLLECTION_DETAIL_SUCCESS,
-  // COLLECTION_DETAIL_GRANULES_SUCCESS,
 } from '../../actions/search/CollectionRequestActions'
 import {
   COLLECTION_UPDATE_TOTAL,
   COLLECTION_INCREMENT_RESULTS_OFFSET,
   COLLECTION_CLEAR_RESULTS,
   COLLECTION_INCREMENT_DETAIL_GRANULES_RESULT_OFFSET,
-  COLLECTION_CLEAR_DETAIL_GRANULES_RESULT,
+  COLLECTION_CLEAR_DETAIL_GRANULES_RESULT, // TODO leaving these for the moment, because you can get total granules on a collection as aggregate data instead of the direct granule query, I think...
   COLLECTION_UPDATE_DETAIL_GRANULES_TOTAL,
   COLLECTION_METADATA_RECEIVED,
 } from '../../actions/search/CollectionResultActions'
 
 export const initialState = Immutable({
   collections: {},
-  // granules: {},
   facets: {},
   totalCollections: 0,
   collectionsPageOffset: 0,
   totalGranules: 0,
-  // granulesPageOffset: 0,
   pageSize: 20,
   collectionDetail: null,
 })
@@ -51,13 +48,6 @@ export const collectionResult = (state = initialState, action) => {
     case COLLECTION_DETAIL_SUCCESS:
       return Immutable.set(state, 'collectionDetail', action.result)
 
-    // case COLLECTION_DETAIL_GRANULES_SUCCESS:
-    //   const newGranules = action.granules.reduce(
-    //     (existing, next) => existing.set(next.id, next.attributes),
-    //     state.granules
-    //   )
-    //   return Immutable.set(state, 'granules', newGranules)
-
     // Result Effects from 'CollectionResultActions'
     case COLLECTION_CLEAR_RESULTS:
       return Immutable.merge(state, {
@@ -71,9 +61,7 @@ export const collectionResult = (state = initialState, action) => {
 
     case COLLECTION_CLEAR_DETAIL_GRANULES_RESULT:
       return Immutable.merge(state, {
-        // granules: initialState.granules,
         totalGranules: initialState.totalGranules,
-        // granulesPageOffset: initialState.granulesPageOffset,
       })
 
     case COLLECTION_UPDATE_DETAIL_GRANULES_TOTAL:
@@ -88,13 +76,6 @@ export const collectionResult = (state = initialState, action) => {
         'collectionsPageOffset',
         state.collectionsPageOffset + state.pageSize
       )
-
-    // case COLLECTION_INCREMENT_DETAIL_GRANULES_RESULT_OFFSET:
-    //   return Immutable.set(
-    //     state,
-    //     'granulesPageOffset',
-    //     state.granulesPageOffset + state.pageSize
-    //   )
 
     default:
       return state

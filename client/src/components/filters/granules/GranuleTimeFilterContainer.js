@@ -12,12 +12,10 @@ import {
 } from '../../../actions/search/GranuleSearchActions'
 
 const mapStateToProps = state => {
-  // const focusedItem = state.search.collectionResult.collectionDetail
   const {startDateTime, endDateTime} = state.search.granuleFilter
   return {
     startDateTime: startDateTime,
     endDateTime: endDateTime,
-    // collectionId: focusedItem ? focusedItem.collection.id : null,
   }
 }
 

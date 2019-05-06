@@ -21,16 +21,3 @@ export const collectionDetailSuccess = (data, metadata) => ({
     totalGranuleCount: metadata.totalGranules,
   },
 })
-
-// export const COLLECTION_DETAIL_GRANULES_REQUEST =
-//   'COLLECTION_DETAIL_GRANULES_REQUEST'
-// export const collectionDetailGranulesRequest = () => ({
-//   type: COLLECTION_DETAIL_GRANULES_REQUEST,
-// })
-
-// export const COLLECTION_DETAIL_GRANULES_SUCCESS =
-//   'COLLECTION_DETAIL_GRANULES_SUCCESS'
-// export const collectionDetailGranulesSuccess = granules => ({
-//   type: COLLECTION_DETAIL_GRANULES_SUCCESS,
-//   granules,
-// })
