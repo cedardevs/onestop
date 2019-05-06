@@ -12,12 +12,12 @@ import {
 } from '../../../actions/search/GranuleSearchActions'
 
 const mapStateToProps = state => {
-  const focusedItem = state.search.collectionResult.collectionDetail
+  // const focusedItem = state.search.collectionResult.collectionDetail
   const {startDateTime, endDateTime} = state.search.granuleFilter
   return {
     startDateTime: startDateTime,
     endDateTime: endDateTime,
-    id: focusedItem ? focusedItem.collection.id : null,
+    // collectionId: focusedItem ? focusedItem.collection.id : null,
   }
 }
 
@@ -29,10 +29,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     removeDateRange: () => {
       dispatch(granuleRemoveDateRange())
     },
-    submit: collectionId => {
+    submit: () => {
       dispatch(granuleClearResults())
       dispatch(triggerGranuleSearch())
-      dispatch(showGranules(ownProps.history, collectionId))
+      dispatch(showGranules(ownProps.history, ownProps.match.params.id))
     },
   }
 }

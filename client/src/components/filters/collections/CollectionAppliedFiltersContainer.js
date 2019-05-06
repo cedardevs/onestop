@@ -11,7 +11,7 @@ import {
   triggerSearch,
   showCollections,
 } from '../../../actions/search/SearchActions'
-import CollectionAppliedFilters from './CollectionAppliedFilters'
+import AppliedFilters from '../AppliedFilters'
 
 const mapStateToProps = state => {
   const {
@@ -36,7 +36,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     toggleExcludeGlobal: () => {
       dispatch(collectionToggleExcludeGlobal())
     },
-    collectionToggleFacet: (category, facetName, selected) =>
+    toggleFacet: (category, facetName, selected) =>
       dispatch(collectionToggleFacet(category, facetName, selected)),
     submit: () => {
       dispatch(collectionClearResults())
@@ -50,7 +50,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 }
 
 const CollectionAppliedFiltersContainer = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(CollectionAppliedFilters)
+  connect(mapStateToProps, mapDispatchToProps)(AppliedFilters)
 )
 
 export default CollectionAppliedFiltersContainer
