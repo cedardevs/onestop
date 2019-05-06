@@ -31,7 +31,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     submit: collectionId => {
       dispatch(granuleClearResults())
-      console.log('wtf mate?', triggerGranuleSearch)
       dispatch(triggerGranuleSearch())
       dispatch(showGranules(ownProps.history, collectionId))
     },

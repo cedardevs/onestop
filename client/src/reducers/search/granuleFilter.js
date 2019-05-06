@@ -1,6 +1,6 @@
 import Immutable from 'seamless-immutable'
 import {
-  // GRANULE_UPDATE_FILTERS,
+  GRANULE_UPDATE_FILTERS,
   // GRANULE_REMOVE_FILTERS,
   // GRANULE_UPDATE_QUERY_TEXT,
   // GRANULE_UPDATE_GEOMETRY,
@@ -26,8 +26,8 @@ export const initialState = Immutable({
 
 export const granuleFilter = (state = initialState, action) => {
   switch (action.type) {
-    // case GRANULE_UPDATE_FILTERS:
-    //   return Immutable.merge(initialState, action.filters || {})
+    case GRANULE_UPDATE_FILTERS:
+      return Immutable.merge(initialState, action.filters || {})
 
     // case GRANULE_REMOVE_FILTERS:
     //   return Immutable.merge(state, {
@@ -51,6 +51,7 @@ export const granuleFilter = (state = initialState, action) => {
     //   return Immutable.set(state, 'geoJSON', initialState.geoJSON)
 
     case GRANULE_UPDATE_DATE_RANGE:
+    console.log('granule update date range',action )
       return Immutable.merge(state, {
         startDateTime: action.startDate,
         endDateTime: action.endDate,

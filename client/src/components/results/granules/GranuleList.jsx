@@ -77,8 +77,6 @@ export default class GranuleList extends React.Component {
       collectionTitle,
     } = this.props
 
-    console.log('granule results', results)
-
     // keep track of used protocols in results to avoid unnecessary legend keys
     const usedProtocols = new Set()
     _.forEach(results, value => {

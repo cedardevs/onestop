@@ -15,7 +15,7 @@ import {
   granuleSearchSuccess,
 } from './GranuleRequestActions'
 // import _ from 'lodash'
-// import {showErrors} from '../ErrorActions'
+import {showErrors} from '../ErrorActions'
 import {
   granuleClearFacets,
 //   collectionClearSelectedIds,
@@ -85,7 +85,8 @@ export const triggerGranuleSearch = (retrieveFacets = true) => {
       dispatch(granuleMetadataReceived(payload.meta))
     }
     dispatch(granuleUpdateTotal(payload.meta.total))
-    dispatch(granuleSearchSuccess(result))
+    console.log("trigger granule search (new path)")
+    dispatch(granuleSearchSuccess(payload.data))
     // dispatch(hideLoading()) // TODO detangle loading states!
   }
   const errorHandler = (dispatch, e) => {

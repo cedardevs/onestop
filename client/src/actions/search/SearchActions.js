@@ -16,6 +16,15 @@ import {
   granuleSearchRequest,
   granuleSearchSuccess,
 } from './GranuleRequestActions'
+import {
+  triggerGranuleSearch
+} from './GranuleSearchActions'
+import {
+  // collectionClearFacets,
+  // collectionClearSelectedIds,
+  // collectionToggleSelectedId,
+  granuleUpdateFilters,
+} from './GranuleFilterActions'
 import _ from 'lodash'
 import {showErrors} from '../ErrorActions'
 import {
@@ -125,6 +134,7 @@ export const fetchGranules = () => {
   }
   const successHandler = (dispatch, payload) => {
     dispatch(granuleUpdateTotal(payload.meta.total))
+    console.log("Fetch granules (old path)")
     dispatch(granuleSearchSuccess(payload.data))
     dispatch(hideLoading())
   }
@@ -171,6 +181,8 @@ export const buildSearchAction = ( // TODO move to searchActionHelpers or someth
       },
       body: JSON.stringify(body),
     }
+
+    console.log('fetch', endpoint, fetchParams)
 
     return fetch(endpoint, fetchParams)
       .then(response => checkForErrors(response))
@@ -313,14 +325,24 @@ export const showGranulesList = (history, id) => { // TODO replace with showGran
   }
 }
 
-export const loadGranulesList = path => {
-  return dispatch => {
-    const detailId = getCollectionIdFromGranuleListPath(path)
-    dispatch(getCollection(detailId))
-    dispatch(collectionClearSelectedIds())
-    dispatch(collectionToggleSelectedId(detailId))
-    dispatch(collectionClearDetailGranulesResult())
-    dispatch(fetchGranules())
+export const loadGranulesList = (path, newQueryString) => {
+
+  return (dispatch, getState) => {
+
+    if (newQueryString.indexOf('?') === 0) {
+      newQueryString = newQueryString.slice(1)
+    }
+    const searchFromQuery = decodeQueryString(newQueryString)
+    const searchFromState = _.get(getState(), 'search.granuleFilter')
+    if (!_.isEqual(searchFromQuery, searchFromState)) {
+      const detailId = getCollectionIdFromGranuleListPath(path)
+      dispatch(getCollection(detailId))
+      dispatch(collectionClearSelectedIds())
+      dispatch(collectionToggleSelectedId(detailId))
+      dispatch(collectionClearDetailGranulesResult())
+      dispatch(granuleUpdateFilters(searchFromQuery))
+      dispatch(triggerGranuleSearch())
+    }
   }
 }
 
