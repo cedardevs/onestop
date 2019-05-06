@@ -15,7 +15,34 @@ export const assembleSearchRequestString = (
   return JSON.stringify(assembleSearchRequest(state, granules, retrieveFacets))
 }
 
-export const assembleSearchRequest = (state, granules, retrieveFacets) => {
+export const assembleGranuleSearchRequest = (state, granules, retrieveFacets) => {
+  const search = state.search || {}
+  const granuleFilter = search.granuleFilter || {}
+  const granuleResult = search.granuleResult || {}
+  const pageOffset = granuleResult.pageOffset || 0
+  const pageSize = granuleResult.pageSize || 20
+  const page = assemblePagination(pageSize, pageOffset)
+
+  // collection search, assembled for search API / elasticsearch
+  let queries = assembleQueries(granuleFilter)
+  let filters = _.concat(
+    assembleFacetFilters(granuleFilter),
+    assembleGeometryFilters(granuleFilter),
+    assembleTemporalFilters(granuleFilter),
+    assembleAdditionalFilters(granuleFilter)
+  )
+
+  filters = _.flatten(_.compact(filters))
+
+  return {
+    queries: queries,
+    filters: filters,
+    facets: retrieveFacets,
+    page: page,
+  }
+}
+
+export const assembleSearchRequest = (state, granules, retrieveFacets) => { // TODO rename to include collection in name
   const search = state.search || {}
   const collectionFilter = search.collectionFilter || {}
   const collectionResult = search.collectionResult || {}
@@ -97,9 +124,9 @@ const assemblePagination = (max, offset) => {
   return {max: max, offset: offset}
 }
 
-export const encodeQueryString = state => {
+export const encodeQueryString = (state, filterStateName = 'collectionFilter') => { // TODO change default assumptions and make filterStateName explicitly required in all calls later
   const searchParams =
-    (state && state.search && state.search.collectionFilter) || {}
+    (state && state.search && state.search[filterStateName]) || {}
   const queryParams = _.map(searchParams, (v, k) => {
     const codec = _.find(codecs, c => c.longKey === k)
     const encode = codec && (v === true || !_.isEmpty(v))

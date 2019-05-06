@@ -218,7 +218,7 @@ export default class TimeFilter extends React.Component {
 
   clearDates = () => {
     this.props.removeDateRange()
-    this.props.submit()
+    this.props.submit(this.props.id)
 
     this.setState(this.initialState())
   }
@@ -262,7 +262,7 @@ export default class TimeFilter extends React.Component {
         : null
 
       this.props.updateDateRange(startDateString, endDateString)
-      this.props.submit()
+      this.props.submit(this.props.id)
     }
   }
 

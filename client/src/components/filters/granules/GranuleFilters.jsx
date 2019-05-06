@@ -6,6 +6,7 @@ import FlexRow from '../../common/ui/FlexRow'
 import Button from '../../common/input/Button'
 import FilterHeading from '../FilterHeading'
 
+import GranuleTimeFilterContainer from './GranuleTimeFilterContainer'
 // TODO: replace these with granule specific redux containers for new granule filtering
 // import CollectionTimeFilterContainer from './time/CollectionTimeFilterContainer'
 // import CollectionFacetFilterContainer from './facet/CollectionFacetFilterContainer'
@@ -93,9 +94,7 @@ class GranuleFilters extends React.Component {
       {
         name: 'time',
         heading: <FilterHeading icon={timeFilterIcon} text="Date" />,
-        // TODO: replace w/new granule specific container
-        // content: <CollectionTimeFilterContainer />,
-        content: 'put granule time filter here',
+        content: <GranuleTimeFilterContainer />,
       },
       {
         name: 'keywords',

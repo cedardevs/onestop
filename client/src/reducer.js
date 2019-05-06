@@ -10,10 +10,9 @@ import user from './reducers/user'
 import collectionFilter from './reducers/search/collectionFilter'
 import collectionRequest from './reducers/search/collectionRequest'
 import collectionResult from './reducers/search/collectionResult'
-// TODO: granule reducers
-// import granuleFilter from './reducers/search/granuleFilter'
-// import granuleRequest from './reducer/search/granuleRequest'
-// import granuleResult from './reducers/search/granuleResult'
+import granuleFilter from './reducers/search/granuleFilter'
+import granuleRequest from './reducers/search/granuleRequest'
+import granuleResult from './reducers/search/granuleResult'
 import info from './reducers/search/info'
 import loading from './reducers/search/loading'
 
@@ -23,10 +22,9 @@ const search = combineReducers({
   collectionFilter,
   collectionRequest,
   collectionResult,
-  // TODO: granule reducers
-  // granuleFilter,
-  // granuleRequest,
-  // granuleResult,
+  granuleFilter,
+  granuleRequest,
+  granuleResult,
   info,
   loading,
 })

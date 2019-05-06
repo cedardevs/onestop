@@ -18,7 +18,7 @@ import {withRouter} from 'react-router'
 import {collectionDetailGranulesRequest} from '../../../actions/search/CollectionRequestActions'
 
 const mapStateToProps = state => {
-  const {granules, totalGranules} = state.search.collectionResult
+  const {granules, totalGranules} = state.search.granuleResult
   const focusedItem = state.search.collectionResult.collectionDetail
   return {
     collectionTitle: focusedItem

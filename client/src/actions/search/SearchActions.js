@@ -50,7 +50,7 @@ export const hideLoading = () => {
   }
 }
 
-export const triggerSearch = (retrieveFacets = true) => {
+export const triggerSearch = (retrieveFacets = true) => { // TODO rename to collection something something
   const bodyBuilder = state => {
     const body = assembleSearchRequest(state, false, retrieveFacets)
     const inFlight =
@@ -135,7 +135,7 @@ export const fetchGranules = () => {
   )
 }
 
-const buildSearchAction = (
+export const buildSearchAction = ( // TODO move to searchActionHelpers or something?
   endpointName,
   bodyBuilder,
   prefetchHandler,
@@ -291,7 +291,7 @@ export const showCollections = history => {
   }
 }
 
-export const showGranulesList = (history, id) => {
+export const showGranulesList = (history, id) => { // TODO replace with showGranules from GranuleSearchActions? need to decombobulate the extra layer of state though...
   if (!id) {
     return
   }
