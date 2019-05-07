@@ -10,7 +10,7 @@ import {
 import {
   triggerSearch,
   showCollections,
-} from '../../../actions/search/SearchActions'
+} from '../../../actions/search/CollectionSearchActions'
 
 const mapStateToProps = state => {
   return {

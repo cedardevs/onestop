@@ -9,7 +9,7 @@ import {collectionClearResults} from '../../../actions/search/CollectionResultAc
 import {
   triggerSearch,
   showCollections,
-} from '../../../actions/search/SearchActions'
+} from '../../../actions/search/CollectionSearchActions'
 
 const mapStateToProps = state => {
   const {startDateTime, endDateTime} = state.search.collectionFilter

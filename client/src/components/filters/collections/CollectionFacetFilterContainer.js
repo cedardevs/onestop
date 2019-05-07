@@ -6,7 +6,7 @@ import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
 import {
   triggerSearch,
   showCollections,
-} from '../../../actions/search/SearchActions'
+} from '../../../actions/search/CollectionSearchActions'
 import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
 
 const mapStateToProps = state => {

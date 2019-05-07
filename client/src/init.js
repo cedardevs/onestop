@@ -4,10 +4,14 @@ import {isDetailPage, isGranuleListPage, isSitemap} from './utils/urlUtils'
 import {
   initialize,
   getSitemap,
+} from './actions/search/SearchActions'
+import {
   loadCollections,
   loadDetails,
+} from './actions/search/CollectionSearchActions'
+import {
   loadGranulesList,
-} from './actions/search/SearchActions'
+} from './actions/search/GranuleSearchActions'
 
 const loadFromUrl = (path, newQueryString) => {
   if (isSitemap(path)) {

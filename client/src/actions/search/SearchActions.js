@@ -71,97 +71,7 @@ export const hideLoading = () => {
   }
 }
 
-export const triggerSearch = (retrieveFacets = true) => { // TODO rename to collection something something
-  const bodyBuilder = state => {
-    const body = assembleSearchRequest(state, false, retrieveFacets)
-    const inFlight =
-      state.search.collectionRequest.collectionSearchRequestInFlight
-    const hasQueries = body && body.queries && body.queries.length > 0
-    const hasFilters = body && body.filters && body.filters.length > 0
-    if (inFlight || !(hasQueries || hasFilters)) {
-      return undefined
-    }
-    return body
-  }
-  const prefetchHandler = dispatch => {
-    dispatch(showLoading())
-    dispatch(collectionSearchRequest())
-  }
-  const successHandler = (dispatch, payload) => {
-    const result = _.reduce(
-      payload.data,
-      (map, resource) => {
-        return map.set(
-          resource.id,
-          _.assign({type: resource.type}, resource.attributes)
-        )
-      },
-      new Map()
-    )
-
-    if (retrieveFacets) {
-      dispatch(collectionMetadataReceived(payload.meta))
-    }
-    dispatch(collectionUpdateTotal(payload.meta.total))
-    dispatch(collectionSearchSuccess(result))
-    dispatch(hideLoading())
-  }
-  const errorHandler = (dispatch, e) => {
-    dispatch(hideLoading())
-    dispatch(showErrors(e.errors || e))
-    dispatch(collectionClearFacets())
-    dispatch(collectionSearchSuccess(new Map()))
-  }
-
-  return buildSearchAction(
-    'collection',
-    bodyBuilder,
-    prefetchHandler,
-    successHandler,
-    errorHandler
-  )
-}
-
-// export const fetchGranules = () => {
-//   // const bodyBuilder = state => {
-//   //   const granuleInFlight =
-//   //     state.search.granuleRequest.granuleSearchRequestInFlight
-//   //   let selectedCollections = state.search.collectionFilter.selectedIds
-//   //   if (granuleInFlight || !selectedCollections) {
-//   //     return undefined
-//   //   }
-//   //   return assembleGranuleSearchRequest(state, true, false)
-//   // }
-//   // const prefetchHandler = dispatch => {
-//   //   // dispatch(showLoading())
-//   //   // dispatch(granuleSearchRequest())
-//   //   dispatch(granuleSearchStart()) // TODO add params?
-//   // }
-//   // const successHandler = (dispatch, payload) => {
-//   //
-//   //       dispatch(granuleSearchComplete(payload.meta.total, payload.data, retrieveFacets? payload.meta: null))
-//   //   // dispatch(granuleUpdateTotal(payload.meta.total))
-//   //   // dispatch(granuleSearchSuccess(payload.data))
-//   //   // dispatch(hideLoading())
-//   // }
-//   // const errorHandler = (dispatch, e) => {
-//   // dispatch(granuleSearchError(e.errors || e))
-//   //   // dispatch(hideLoading())
-//   //   // dispatch(showErrors(e.errors || e))
-//   //   // dispatch(granuleSearchSuccess([]))
-//   // }
-//   //
-//   // return buildSearchAction(
-//   //   'granule',
-//   //   bodyBuilder,
-//   //   prefetchHandler,
-//   //   successHandler,
-//   //   errorHandler
-//   // )
-//   return triggerGranuleSearch()
-// }
-
-export const buildSearchAction = ( // TODO move to searchActionHelpers or something?
+export const buildSearchAction = (
   endpointName,
   bodyBuilder,
   prefetchHandler,
@@ -210,33 +120,7 @@ export const buildSearchAction = ( // TODO move to searchActionHelpers or someth
   }
 }
 
-export const getCollection = collectionId => {
-  const prefetchHandler = dispatch => {
-    dispatch(showLoading())
-    dispatch(collectionDetailRequest(collectionId))
-  }
-
-  const successHandler = (dispatch, payload) => {
-    dispatch(collectionDetailSuccess(payload.data[0], payload.meta))
-    dispatch(hideLoading())
-  }
-
-  const errorHandler = (dispatch, e) => {
-    dispatch(hideLoading())
-    dispatch(showErrors(e.errors || e))
-    dispatch(collectionDetailSuccess(null))
-  }
-
-  return buildGetAction(
-    'collection',
-    collectionId,
-    prefetchHandler,
-    successHandler,
-    errorHandler
-  )
-}
-
-const buildGetAction = (
+export const buildGetAction = (
   endpointName,
   id,
   prefetchHandler,
@@ -285,23 +169,6 @@ const buildSitemapAction = () => {
   }
 }
 
-export const loadCollections = newQueryString => {
-  return (dispatch, getState) => {
-    if (newQueryString.indexOf('?') === 0) {
-      newQueryString = newQueryString.slice(1)
-    }
-    const searchFromQuery = decodeQueryString(newQueryString)
-    const searchFromState = _.get(getState(), 'search.collectionFilter')
-    if (!_.isEqual(searchFromQuery, searchFromState)) {
-      dispatch(collectionClearResults())
-      dispatch(collectionClearDetailGranulesResult())
-      dispatch(collectionClearSelectedIds())
-      dispatch(collectionUpdateFilters(searchFromQuery))
-      dispatch(triggerSearch())
-    }
-  }
-}
-
 export const initialize = () => {
   return dispatch => {
     dispatch(fetchConfig())
@@ -310,77 +177,77 @@ export const initialize = () => {
   }
 }
 
-export const showCollections = history => {
-  return (dispatch, getState) => {
-    dispatch(collectionClearSelectedIds())
-    const query = encodeQueryString(getState())
-    if (!_.isEmpty(query)) {
-      const locationDescriptor = {
-        pathname: '/collections',
-        search: `?${query}`,
-      }
-      history.push(locationDescriptor)
-    }
-  }
-}
+// export const showCollections = history => {
+//   return (dispatch, getState) => {
+//     dispatch(collectionClearSelectedIds())
+//     const query = encodeQueryString(getState())
+//     if (!_.isEmpty(query)) {
+//       const locationDescriptor = {
+//         pathname: '/collections',
+//         search: `?${query}`,
+//       }
+//       history.push(locationDescriptor)
+//     }
+//   }
+// }
 
-export const showGranulesList = (history, id) => { // TODO replace with showGranules from GranuleSearchActions? need to decombobulate the extra layer of state though...
-  if (!id) {
-    return
-  }
-  return (dispatch, getState) => {
-    const query = encodeQueryString(getState())
-    const locationDescriptor = {
-      pathname: `/collections/granules/${id}`,
-      search: `?${query}`,
-    }
-    history.push(locationDescriptor)
-  }
-}
+// export const showGranulesList = (history, id) => { // TODO replace with showGranules from GranuleSearchActions? need to decombobulate the extra layer of state though...
+//   if (!id) {
+//     return
+//   }
+//   return (dispatch, getState) => {
+//     const query = encodeQueryString(getState())
+//     const locationDescriptor = {
+//       pathname: `/collections/granules/${id}`,
+//       search: `?${query}`,
+//     }
+//     history.push(locationDescriptor)
+//   }
+// }
 
-export const loadGranulesList = (path, newQueryString) => {
+// export const loadGranulesList = (path, newQueryString) => {
+//
+//   return (dispatch, getState) => {
+//
+//     if (newQueryString.indexOf('?') === 0) {
+//       newQueryString = newQueryString.slice(1)
+//     }
+//     const searchFromQuery = decodeQueryString(newQueryString)
+//     const searchFromState = _.get(getState(), 'search.granuleFilter')
+//     if (!_.isEqual(searchFromQuery, searchFromState)) {
+//       const detailId = getCollectionIdFromGranuleListPath(path)
+//       dispatch(getCollection(detailId))
+//       dispatch(collectionClearSelectedIds())
+//       dispatch(collectionToggleSelectedId(detailId))
+//       dispatch(collectionClearDetailGranulesResult())
+//       dispatch(granuleUpdateFilters(searchFromQuery))
+//       dispatch(triggerGranuleSearch())
+//     }
+//   }
+// }
 
-  return (dispatch, getState) => {
-
-    if (newQueryString.indexOf('?') === 0) {
-      newQueryString = newQueryString.slice(1)
-    }
-    const searchFromQuery = decodeQueryString(newQueryString)
-    const searchFromState = _.get(getState(), 'search.granuleFilter')
-    if (!_.isEqual(searchFromQuery, searchFromState)) {
-      const detailId = getCollectionIdFromGranuleListPath(path)
-      dispatch(getCollection(detailId))
-      dispatch(collectionClearSelectedIds())
-      dispatch(collectionToggleSelectedId(detailId))
-      dispatch(collectionClearDetailGranulesResult())
-      dispatch(granuleUpdateFilters(searchFromQuery))
-      dispatch(triggerGranuleSearch())
-    }
-  }
-}
-
-export const showDetails = (history, id) => {
-  if (!id) {
-    return
-  }
-  return (dispatch, getState) => {
-    const query = encodeQueryString(getState())
-    const locationDescriptor = {
-      pathname: `/collections/details/${id}`,
-      search: _.isEmpty(query) ? null : `?${query}`,
-    }
-    history.push(locationDescriptor)
-  }
-}
-
-export const loadDetails = path => {
-  return (dispatch, getState) => {
-    if (!getState().search.collectionRequest.collectionDetailRequestInFlight) {
-      const detailId = getCollectionIdFromDetailPath(path)
-      dispatch(getCollection(detailId))
-    }
-  }
-}
+// export const showDetails = (history, id) => {
+//   if (!id) {
+//     return
+//   }
+//   return (dispatch, getState) => {
+//     const query = encodeQueryString(getState())
+//     const locationDescriptor = {
+//       pathname: `/collections/details/${id}`,
+//       search: _.isEmpty(query) ? null : `?${query}`,
+//     }
+//     history.push(locationDescriptor)
+//   }
+// }
+//
+// export const loadDetails = path => {
+//   return (dispatch, getState) => {
+//     if (!getState().search.collectionRequest.collectionDetailRequestInFlight) {
+//       const detailId = getCollectionIdFromDetailPath(path)
+//       dispatch(getCollection(detailId))
+//     }
+//   }
+// }
 
 export const showHome = history => {
   return dispatch => {

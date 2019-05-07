@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {triggerSearch, showDetails} from '../../../actions/search/SearchActions'
+import {triggerSearch, showDetails} from '../../../actions/search/CollectionSearchActions'
 import {collectionIncrementResultsOffset} from '../../../actions/search/CollectionResultActions'
 import CollectionGrid from './CollectionGrid' // TODO this doesn't even exist?
 

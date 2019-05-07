@@ -4,7 +4,7 @@ import NotFound from './NotFound'
 import {
   triggerSearch,
   showCollections,
-} from '../../actions/search/SearchActions'
+} from '../../actions/search/CollectionSearchActions'
 import {
   collectionClearFacets,
   collectionUpdateQueryText,

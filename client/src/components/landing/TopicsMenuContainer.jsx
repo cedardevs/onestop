@@ -9,7 +9,7 @@ import {
 import {
   triggerSearch,
   showCollections,
-} from '../../actions/search/SearchActions'
+} from '../../actions/search/CollectionSearchActions'
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {

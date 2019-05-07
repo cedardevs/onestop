@@ -4,7 +4,7 @@ import Landing from './Landing'
 import {
   triggerSearch,
   showCollections,
-} from '../../actions/search/SearchActions'
+} from '../../actions/search/CollectionSearchActions'
 import {collectionClearFacets} from '../../actions/search/CollectionFilterActions'
 
 const mapStateToProps = state => {

@@ -10,7 +10,7 @@ import {collectionClearResults} from '../../../actions/search/CollectionResultAc
 import {
   triggerSearch,
   showCollections,
-} from '../../../actions/search/SearchActions'
+} from '../../../actions/search/CollectionSearchActions'
 import AppliedFilters from '../AppliedFilters'
 
 const mapStateToProps = state => {

@@ -7,7 +7,7 @@ import {
 import {
   triggerSearch,
   showCollections,
-} from '../../actions/search/SearchActions'
+} from '../../actions/search/CollectionSearchActions'
 
 import {withRouter} from 'react-router'
 
