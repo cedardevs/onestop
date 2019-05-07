@@ -82,8 +82,6 @@ export default class Root extends React.Component {
 
     const middle = (
       <div style={{width: '100%'}}>
-        <LoadingBarContainer />
-        <InteractiveMapContainer />
 
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
@@ -93,11 +91,18 @@ export default class Root extends React.Component {
 
           <Route path={ROUTE.details.path}>
             {/*TODO parameterize this path!*/}
-            <DetailContainer />
+            <div>
+              <LoadingBarContainer />
+              <DetailContainer />
+            </div>
           </Route>
 
           <Route path={ROUTE.collections.path}>
-            <ResultsContainer />
+            <div>
+              <LoadingBarContainer />
+              <InteractiveMapContainer />
+              <ResultsContainer />
+            </div>
           </Route>
 
           <Route path={ROUTE.about.path}>

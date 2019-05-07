@@ -13,6 +13,10 @@ import {
   // collectionDetailSuccess,
   granuleSearchRequest,
   granuleSearchSuccess,
+  granuleSearchStart,
+  granuleSearchComplete,
+  granuleSearchError,
+
 } from './GranuleRequestActions'
 // import _ from 'lodash'
 import {showErrors} from '../ErrorActions'
@@ -60,40 +64,22 @@ export const triggerGranuleSearch = (retrieveFacets = true) => {
       state.search.granuleRequest.granuleSearchRequestInFlight
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
-    if (inFlight || !(hasQueries || hasFilters)) {
+    let selectedCollections = state.search.collectionFilter.selectedIds
+    if (inFlight || !selectedCollections || !(hasQueries || hasFilters)) {
       return undefined
     }
     return body
   }
   const prefetchHandler = dispatch => {
-    // dispatch(showLoading()) // TODO detangle loading states!
-    dispatch(granuleSearchRequest())
+    dispatch(granuleSearchStart()) // TODO add params?
   }
   const successHandler = (dispatch, payload) => {
-    const result = _.reduce(
-      payload.data,
-      (map, resource) => {
-        return map.set(
-          resource.id,
-          _.assign({type: resource.type}, resource.attributes)
-        )
-      },
-      new Map()
-    )
 
-    if (retrieveFacets) {
-      dispatch(granuleMetadataReceived(payload.meta))
-    }
-    dispatch(granuleUpdateTotal(payload.meta.total))
-    console.log("trigger granule search (new path)")
-    dispatch(granuleSearchSuccess(payload.data))
-    // dispatch(hideLoading()) // TODO detangle loading states!
+    dispatch(granuleSearchComplete(payload.meta.total, payload.data, retrieveFacets? payload.meta: null))
   }
   const errorHandler = (dispatch, e) => {
-    // dispatch(hideLoading()) // TODO detangle loading states!
-    dispatch(showErrors(e.errors || e))
-    dispatch(granuleClearFacets())
-    dispatch(granuleSearchSuccess(new Map()))
+    // dispatch(showErrors(e.errors || e)) // TODO show errors
+    dispatch(granuleSearchError(e.errors || e))
   }
 
   return buildSearchAction(

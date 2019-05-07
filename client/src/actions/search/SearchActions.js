@@ -12,9 +12,13 @@ import {
   collectionSearchRequest,
   collectionSearchSuccess,
 } from './CollectionRequestActions'
+
 import {
   granuleSearchRequest,
   granuleSearchSuccess,
+  granuleSearchStart,
+  granuleSearchComplete,
+  granuleSearchError,
 } from './GranuleRequestActions'
 import {
   triggerGranuleSearch
@@ -118,40 +122,44 @@ export const triggerSearch = (retrieveFacets = true) => { // TODO rename to coll
   )
 }
 
-export const fetchGranules = () => {
-  const bodyBuilder = state => {
-    const granuleInFlight =
-      state.search.granuleRequest.granuleSearchRequestInFlight
-    let selectedCollections = state.search.collectionFilter.selectedIds
-    if (granuleInFlight || !selectedCollections) {
-      return undefined
-    }
-    return assembleGranuleSearchRequest(state, true, false)
-  }
-  const prefetchHandler = dispatch => {
-    dispatch(showLoading())
-    dispatch(granuleSearchRequest())
-  }
-  const successHandler = (dispatch, payload) => {
-    dispatch(granuleUpdateTotal(payload.meta.total))
-    console.log("Fetch granules (old path)")
-    dispatch(granuleSearchSuccess(payload.data))
-    dispatch(hideLoading())
-  }
-  const errorHandler = (dispatch, e) => {
-    dispatch(hideLoading())
-    dispatch(showErrors(e.errors || e))
-    dispatch(granuleSearchSuccess([]))
-  }
-
-  return buildSearchAction(
-    'granule',
-    bodyBuilder,
-    prefetchHandler,
-    successHandler,
-    errorHandler
-  )
-}
+// export const fetchGranules = () => {
+//   // const bodyBuilder = state => {
+//   //   const granuleInFlight =
+//   //     state.search.granuleRequest.granuleSearchRequestInFlight
+//   //   let selectedCollections = state.search.collectionFilter.selectedIds
+//   //   if (granuleInFlight || !selectedCollections) {
+//   //     return undefined
+//   //   }
+//   //   return assembleGranuleSearchRequest(state, true, false)
+//   // }
+//   // const prefetchHandler = dispatch => {
+//   //   // dispatch(showLoading())
+//   //   // dispatch(granuleSearchRequest())
+//   //   dispatch(granuleSearchStart()) // TODO add params?
+//   // }
+//   // const successHandler = (dispatch, payload) => {
+//   //
+//   //       dispatch(granuleSearchComplete(payload.meta.total, payload.data, retrieveFacets? payload.meta: null))
+//   //   // dispatch(granuleUpdateTotal(payload.meta.total))
+//   //   // dispatch(granuleSearchSuccess(payload.data))
+//   //   // dispatch(hideLoading())
+//   // }
+//   // const errorHandler = (dispatch, e) => {
+//   // dispatch(granuleSearchError(e.errors || e))
+//   //   // dispatch(hideLoading())
+//   //   // dispatch(showErrors(e.errors || e))
+//   //   // dispatch(granuleSearchSuccess([]))
+//   // }
+//   //
+//   // return buildSearchAction(
+//   //   'granule',
+//   //   bodyBuilder,
+//   //   prefetchHandler,
+//   //   successHandler,
+//   //   errorHandler
+//   // )
+//   return triggerGranuleSearch()
+// }
 
 export const buildSearchAction = ( // TODO move to searchActionHelpers or something?
   endpointName,
@@ -182,16 +190,21 @@ export const buildSearchAction = ( // TODO move to searchActionHelpers or someth
       body: JSON.stringify(body),
     }
 
-    console.log('fetch', endpoint, fetchParams)
-
     return fetch(endpoint, fetchParams)
       .then(response => checkForErrors(response))
-      .then(response => response.json())
+      .then(response => {
+        return response.json()})
       .then(json => successHandler(dispatch, json))
       .catch(ajaxError => {
+        // TODO how to handle when ajaxError doesn't have response.json()...????
+        if (ajaxError.response) {
         return ajaxError.response
           .json()
           .then(errorJson => errorHandler(dispatch, errorJson))
+        }
+        //return error
+        errorHandler(dispatch, ajaxError)
+          // : ajaxError
       })
       .catch(jsError => errorHandler(dispatch, jsError))
   }

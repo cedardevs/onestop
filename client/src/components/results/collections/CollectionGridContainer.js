@@ -1,7 +1,7 @@
 import {connect} from 'react-redux'
 import {triggerSearch, showDetails} from '../../../actions/search/SearchActions'
 import {collectionIncrementResultsOffset} from '../../../actions/search/CollectionResultActions'
-import CollectionGrid from './CollectionGrid'
+import CollectionGrid from './CollectionGrid' // TODO this doesn't even exist?
 
 import {withRouter} from 'react-router'
 

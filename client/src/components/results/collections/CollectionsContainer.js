@@ -12,7 +12,7 @@ const mapStateToProps = state => {
     pageSize,
   } = state.search.collectionResult
   return {
-    loading: state.search.loading ? 1 : 0,
+    loading: state.search.loading ? 1 : 0, // TODO gets passed to ListView.jsx (in common/ui)
     results: collections,
     totalHits: totalCollections,
     returnedHits: (collections && Object.keys(collections).length) || 0,

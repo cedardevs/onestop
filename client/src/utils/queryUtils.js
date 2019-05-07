@@ -24,7 +24,6 @@ export const assembleGranuleSearchRequest = (state, granules, retrieveFacets) =>
   const pageSize = granuleResult.pageSize || 20
   const page = assemblePagination(pageSize, pageOffset)
 
-  console.log('how is granule filter redux defined?', granuleFilter)
   // granule search, assembled for search API / elasticsearch
   let queries = [] //assembleQueries(granuleFilter)
   let filters = _.concat(
@@ -34,8 +33,6 @@ export const assembleGranuleSearchRequest = (state, granules, retrieveFacets) =>
     assembleAdditionalFilters(granuleFilter),
     assembleSelectedCollectionsFilters(collectionFilter)
   )
-
-  console.log("assembling granule search with filters", filters)
 
   filters = _.flatten(_.compact(filters))
 

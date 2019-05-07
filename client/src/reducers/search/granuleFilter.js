@@ -51,7 +51,6 @@ export const granuleFilter = (state = initialState, action) => {
     //   return Immutable.set(state, 'geoJSON', initialState.geoJSON)
 
     case GRANULE_UPDATE_DATE_RANGE:
-    console.log('granule update date range',action )
       return Immutable.merge(state, {
         startDateTime: action.startDate,
         endDateTime: action.endDate,

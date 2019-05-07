@@ -38,7 +38,9 @@ export class LoadingBar extends React.Component {
             >
               <div id={this.props.loadingAlertId}>{this.state.loadingText}</div>
             </div>
-            <div className={loading ? 'loadingContainer' : null} />
+            // <div className={loading ? 'loadingContainer' : null} />
+            <div style={{width: '100%',
+            height: '25px', backgroundColor: 'red'}} />
           </div>
         </Route>
       </Switch>

@@ -5,7 +5,7 @@ import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   return {
-    loading: state.search.loading,
+    loading: state.search.loading, // TODO does not appear to be used?
   }
 }
 
