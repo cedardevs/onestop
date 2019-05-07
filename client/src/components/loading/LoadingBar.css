@@ -13,8 +13,7 @@
 .loadingContainer {
   width: 100%;
   height: 25px;
-  background-color: 'red';
-  /* // linear-gradient(270deg, #000, #fff, #000); */
+  background: linear-gradient(270deg, #000, #fff, #000);
   background-size: 600% 600%;
   /* animation: loadingAnimation 4s ease infinite; */
 }

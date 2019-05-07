@@ -18,6 +18,7 @@ import AboutContainer from '../about/AboutContainer'
 import CartContainer from '../cart/CartContainer'
 
 import LoadingBarContainer from '../loading/LoadingBarContainer'
+import GranuleSearchLoadingContainer from '../loading/GranuleSearchLoadingContainer'
 
 import FooterContainer from '../footer/FooterContainer'
 
@@ -94,6 +95,14 @@ export default class Root extends React.Component {
             <div>
               <LoadingBarContainer />
               <DetailContainer />
+            </div>
+          </Route>
+
+          <Route path={ROUTE.granules.path}>
+            <div>
+              <GranuleSearchLoadingContainer />
+              <InteractiveMapContainer />
+              <ResultsContainer />
             </div>
           </Route>
 

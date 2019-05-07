@@ -29,7 +29,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     submit: () => {
       dispatch(granuleClearResults())
-      dispatch(triggerGranuleSearch())
+      dispatch(triggerGranuleSearch()) // TODO move clear granules into this by adding a flag so it knows when to reset the granules and when to add to the existing results
       dispatch(showGranules(ownProps.history, ownProps.match.params.id))
     },
   }
