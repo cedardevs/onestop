@@ -57,7 +57,7 @@ import {
 //   }
 // }
 
-export const triggerGranuleSearch = (retrieveFacets = true) => {
+export const triggerGranuleSearch = (clearPreviousResults = false, retrieveFacets = true) => {
   const bodyBuilder = state => {
     const body = assembleGranuleSearchRequest(state, false, retrieveFacets)
     const inFlight =
@@ -75,7 +75,7 @@ export const triggerGranuleSearch = (retrieveFacets = true) => {
   }
   const successHandler = (dispatch, payload) => {
 
-    dispatch(granuleSearchComplete(payload.meta.total, payload.data, retrieveFacets? payload.meta: null))
+    dispatch(granuleSearchComplete(clearPreviousResults, payload.meta.total, payload.data, retrieveFacets? payload.meta: null))
   }
   const errorHandler = (dispatch, e) => {
     // dispatch(showErrors(e.errors || e)) // TODO show errors

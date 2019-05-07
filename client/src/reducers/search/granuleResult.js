@@ -25,12 +25,22 @@ export const initialState = Immutable({
   granules: {},
   facets: {},
   totalGranules: 0,
+  loadedGranules: 0,
   granulesPageOffset: 0,
   totalGranules: 0,
   granulesPageOffset: 0,
   pageSize: 20,
   // granuleDetail: null,
 })
+
+const granuleResults = (state, granules, action) => {
+  return Immutable.merge(state, {
+    loadedGranules: (granules && Object.keys(granules).length) || 0,
+    granules: granules,
+    totalGranules: action.total,
+    facets: action.metadata? action.metadata.facets : initialState.facets,
+  })
+}
 
 export const granuleResult = (state = initialState, action) => {
   switch (action.type) {
@@ -93,19 +103,23 @@ export const granuleResult = (state = initialState, action) => {
     case GRANULE_SEARCH_COMPLETE:
       let newGranules = action.items.reduce(
           (existing, next) => existing.set(next.id, next.attributes),
-          state.granules
+          initialState.granules
         )
+      if(action.clearPreviousResults) {
+        return granuleResults(state, newGranules, action)
+
+
+      }
 
       let allGranules = state.granules.merge(newGranules)
-      return Immutable.merge(state, {
-        granules: allGranules,
-        totalGranules: action.total,
-        facets: action.metadata? action.metadata.facets : initialState.facets
-      })
+
+      return granuleResults(state, allGranules, action)
+
 
     case GRANULE_SEARCH_ERROR:
 
     return Immutable.merge(state, {
+      loadedGranules: initialState.loadedGranules,
       granules: initialState.granules,
       totalGranules: initialState.totalGranules,
       facets: action.metadata? action.metadata.facets : initialState.facets

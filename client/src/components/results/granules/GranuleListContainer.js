@@ -18,7 +18,7 @@ import {withRouter} from 'react-router'
 import {granuleSearchRequest} from '../../../actions/search/GranuleRequestActions'
 
 const mapStateToProps = state => {
-  const {granules, totalGranules} = state.search.granuleResult
+  const {granules, totalGranules, loadedGranules} = state.search.granuleResult
   const focusedItem = state.search.collectionResult.collectionDetail
   return {
     collectionTitle: focusedItem
@@ -26,7 +26,7 @@ const mapStateToProps = state => {
       : null,
     results: granules,
     totalHits: totalGranules,
-    returnedHits: (granules && Object.keys(granules).length) || 0,
+    returnedHits: loadedGranules,
     loading: state.search.loading ? 1 : 0, // TODO gets passed to ListView
     selectedGranules: getSelectedGranulesFromStorage(state),
     featuresEnabled: state.config.featuresEnabled,

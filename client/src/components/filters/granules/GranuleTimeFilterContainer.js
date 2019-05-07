@@ -5,7 +5,7 @@ import {
   granuleRemoveDateRange,
   granuleUpdateDateRange,
 } from '../../../actions/search/GranuleFilterActions'
-import {granuleClearResults} from '../../../actions/search/GranuleResultActions'
+// import {granuleClearResults} from '../../../actions/search/GranuleResultActions'
 import {
   triggerGranuleSearch,
   showGranules,
@@ -28,8 +28,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(granuleRemoveDateRange())
     },
     submit: () => {
-      dispatch(granuleClearResults())
-      dispatch(triggerGranuleSearch()) // TODO move clear granules into this by adding a flag so it knows when to reset the granules and when to add to the existing results
+      // dispatch(granuleClearResults())
+      dispatch(triggerGranuleSearch(true))
       dispatch(showGranules(ownProps.history, ownProps.match.params.id))
     },
   }
