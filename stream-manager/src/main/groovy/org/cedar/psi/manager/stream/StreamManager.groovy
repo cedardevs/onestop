@@ -12,8 +12,8 @@ import org.apache.kafka.streams.kstream.Produced
 import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.manager.config.ManagerConfig
-import org.cedar.psi.manager.util.Analyzers
 import org.cedar.psi.manager.util.RecordParser
+import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.avro.psi.Input
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType

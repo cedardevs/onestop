@@ -6,6 +6,7 @@ import org.cedar.schemas.avro.psi.ErrorEvent
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.Publishing
 import org.cedar.schemas.avro.psi.RecordType
+import org.cedar.schemas.parse.ISOParser
 
 @Slf4j
 class RecordParser {
