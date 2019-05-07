@@ -20,7 +20,7 @@ export const assembleGranuleSearchRequest = (state, granules, retrieveFacets) =>
   const granuleFilter = search.granuleFilter || {}
   const collectionFilter = search.collectionFilter || {}
   const granuleResult = search.granuleResult || {}
-  const pageOffset = granuleResult.pageOffset || 0
+  const pageOffset = granuleResult.granulesPageOffset || 0
   const pageSize = granuleResult.pageSize || 20
   const page = assemblePagination(pageSize, pageOffset)
 

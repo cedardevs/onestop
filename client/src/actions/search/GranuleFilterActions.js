@@ -90,12 +90,12 @@ export const granuleRemoveDateRange = () => {
 //     })
 //   }
 // }
-export const GRANULE_CLEAR_FACETS = 'GRANULE_CLEAR_FACETS'
-export const granuleClearFacets = () => {
-  return {
-    type: GRANULE_CLEAR_FACETS,
-  }
-}
+// export const GRANULE_CLEAR_FACETS = 'GRANULE_CLEAR_FACETS'
+// export const granuleClearFacets = () => {
+//   return {
+//     type: GRANULE_CLEAR_FACETS,
+//   }
+// }
 //
 // // Granule Exclude Global (Geometry) Results Filter
 // export const GRANULE_TOGGLE_EXCLUDE_GLOBAL =

@@ -19,7 +19,7 @@ import {
 // import _ from 'lodash'
 import {showErrors} from '../ErrorActions'
 import {
-  granuleClearFacets,
+  // granuleClearFacets,
   // collectionClearSelectedIds,
   // collectionToggleSelectedId,
   granuleUpdateFilters,
@@ -70,7 +70,6 @@ export const triggerGranuleSearch = (clearPreviousResults = false, retrieveFacet
     dispatch(granuleSearchStart()) // TODO add params?
   }
   const successHandler = (dispatch, payload) => {
-
     dispatch(granuleSearchComplete(clearPreviousResults, payload.meta.total, payload.data, retrieveFacets? payload.meta: null))
   }
   const errorHandler = (dispatch, e) => {

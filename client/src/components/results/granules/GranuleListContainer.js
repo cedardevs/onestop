@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {collectionIncrementDetailGranulesResultOffset} from '../../../actions/search/CollectionResultActions' // TODO change this to granule specific too
+import {granuleIncrementResultsOffset} from '../../../actions/search/GranuleRequestActions'
 import {
   insertSelectedGranule,
   insertMultipleSelectedGranules,
@@ -36,8 +36,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     fetchMoreResults: () => {
-      dispatch(collectionIncrementDetailGranulesResultOffset())
-      dispatch(triggerGranuleSearch(false)) // TODO test me!
+      dispatch(granuleIncrementResultsOffset())
+      dispatch(triggerGranuleSearch(false))
     },
     selectGranule: (item, itemId) => {
       insertGranule(itemId, item)

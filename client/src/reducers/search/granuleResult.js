@@ -10,6 +10,7 @@ import {
   // GRANULE_SEARCH_START,
   GRANULE_SEARCH_COMPLETE,
   GRANULE_SEARCH_ERROR,
+  GRANULE_INCREMENT_RESULTS_OFFSET,
 } from '../../actions/search/GranuleRequestActions'
 import {
   // GRANULE_INCREMENT_RESULTS_OFFSET,
@@ -24,8 +25,6 @@ export const initialState = Immutable({
   facets: {},
   totalGranules: 0,
   loadedGranules: 0,
-  granulesPageOffset: 0,
-  totalGranules: 0,
   granulesPageOffset: 0,
   pageSize: 20,
   // granuleDetail: null,
@@ -98,10 +97,7 @@ export const granuleResult = (state = initialState, action) => {
           initialState.granules
         )
       if(action.clearPreviousResults) {
-        return granuleResults(state, newGranules, action)
-
-
-      }
+        return granuleResults(state, newGranules, action)}
 
       let allGranules = state.granules.merge(newGranules)
 
@@ -117,22 +113,12 @@ export const granuleResult = (state = initialState, action) => {
       facets: action.metadata? action.metadata.facets : initialState.facets
     })
 
-
-
-
-    // case GRANULE_INCREMENT_RESULTS_OFFSET:
-    //   return Immutable.set(
-    //     state,
-    //     'granulesPageOffset',
-    //     state.granulesPageOffset + state.pageSize
-    //   )
-
-    // case GRANULE_INCREMENT_DETAIL_GRANULES_RESULT_OFFSET:
-    //   return Immutable.set(
-    //     state,
-    //     'granulesPageOffset',
-    //     state.granulesPageOffset + state.pageSize
-    //   )
+    case GRANULE_INCREMENT_RESULTS_OFFSET:
+      return Immutable.set(
+        state,
+        'granulesPageOffset',
+        state.granulesPageOffset + state.pageSize
+      )
 
     default:
       return state
