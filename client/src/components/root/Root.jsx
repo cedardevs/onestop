@@ -19,6 +19,7 @@ import CartContainer from '../cart/CartContainer'
 
 import LoadingBarContainer from '../loading/LoadingBarContainer'
 import GranuleSearchLoadingContainer from '../loading/GranuleSearchLoadingContainer'
+import CollectionSearchLoadingContainer from '../loading/CollectionSearchLoadingContainer'
 
 import FooterContainer from '../footer/FooterContainer'
 
@@ -93,7 +94,7 @@ export default class Root extends React.Component {
           <Route path={ROUTE.details.path}>
             {/*TODO parameterize this path!*/}
             <div>
-              <LoadingBarContainer />
+              <LoadingBarContainer /> {/* TODO replace this with something more specific for details */}
               <DetailContainer />
             </div>
           </Route>
@@ -108,7 +109,7 @@ export default class Root extends React.Component {
 
           <Route path={ROUTE.collections.path}>
             <div>
-              <LoadingBarContainer />
+              <CollectionSearchLoadingContainer />
               <InteractiveMapContainer />
               <ResultsContainer />
             </div>
