@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import {
   // collectionToggleExcludeGlobal,
-  // collectionToggleFacet,
+  granuleToggleFacet,
   granuleUpdateDateRange,
   // collectionRemoveGeometry,
 } from '../../../actions/search/GranuleFilterActions'
@@ -35,8 +35,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     // toggleExcludeGlobal: () => {
     //   dispatch(collectionToggleExcludeGlobal())
     // },
-    // toggleFacet: (category, facetName, selected) =>
-    //   dispatch(collectionToggleFacet(category, facetName, selected)),
+    toggleFacet: (category, facetName, selected) =>
+      dispatch(granuleToggleFacet(category, facetName, selected)),
     submit: () => {
       dispatch(triggerGranuleSearch(true))
       dispatch(showGranules(ownProps.history, ownProps.match.params.id))

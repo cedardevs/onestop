@@ -20,7 +20,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    collectionToggleFacet: (category, facetName, selected) => {
+    toggleFacet: (category, facetName, selected) => {
       dispatch(collectionToggleFacet(category, facetName, selected))
     },
     submit: () => {

@@ -74,22 +74,22 @@ export const granuleRemoveDateRange = () => {
 // }
 //
 // // Granule Keyword Filter Actions
-// export const GRANULE_TOGGLE_FACET = 'GRANULE_TOGGLE_FACET'
-// export const granuleToggleFacet = (category, facetName, selected) => {
-//   return (dispatch, getState) => {
-//     const {selectedFacets} = getState().search.granuleFilter
-//     const newSelectedFacets = updateSelectedFacets(
-//       selectedFacets,
-//       category,
-//       facetName,
-//       selected
-//     )
-//     dispatch({
-//       type: GRANULE_TOGGLE_FACET,
-//       selectedFacets: newSelectedFacets,
-//     })
-//   }
-// }
+export const GRANULE_TOGGLE_FACET = 'GRANULE_TOGGLE_FACET' // TODO rename, it's not toggle facet (singular) so much as setFacets
+export const granuleToggleFacet = (category, facetName, selected) => {
+  return (dispatch, getState) => {
+    const {selectedFacets} = getState().search.granuleFilter
+    const newSelectedFacets = updateSelectedFacets(
+      selectedFacets,
+      category,
+      facetName,
+      selected
+    )
+    dispatch({
+      type: GRANULE_TOGGLE_FACET,
+      selectedFacets: newSelectedFacets,
+    })
+  }
+}
 // export const GRANULE_CLEAR_FACETS = 'GRANULE_CLEAR_FACETS'
 // export const granuleClearFacets = () => {
 //   return {

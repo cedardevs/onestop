@@ -1,6 +1,6 @@
 import React from 'react'
 import Expandable from '../../common/ui/Expandable'
-import CollectionFacetTreeContainer from '../collections/CollectionFacetTreeContainer'
+import FacetTree from './FacetTree'
 import _ from 'lodash'
 import {FilterStyles} from '../../../style/defaultStyles'
 
@@ -55,7 +55,7 @@ export default class FacetFilter extends React.Component {
   updateStoreAndSubmitSearch = (facet, selected) => {
     const category = facet.category
     const term = facet.term
-    this.props.collectionToggleFacet(category, term, selected)
+    this.props.toggleFacet(category, term, selected)
     this.props.submit()
   }
 
@@ -77,7 +77,7 @@ export default class FacetFilter extends React.Component {
       )
 
       const expandableFacets = (
-        <CollectionFacetTreeContainer
+        <FacetTree
           headerId={facetCategory.id}
           facetMap={facetCategory.keywordFacets}
           hierarchy={facetCategory.hierarchy}

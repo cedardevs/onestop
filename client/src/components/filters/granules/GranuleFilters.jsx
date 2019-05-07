@@ -8,8 +8,7 @@ import FilterHeading from '../FilterHeading'
 
 import GranuleTimeFilterContainer from './GranuleTimeFilterContainer'
 // TODO: replace these with granule specific redux containers for new granule filtering
-// import CollectionTimeFilterContainer from './time/CollectionTimeFilterContainer'
-// import CollectionFacetFilterContainer from './facet/CollectionFacetFilterContainer'
+import GranuleFacetFilterContainer from './GranuleFacetFilterContainer'
 // import CollectionMapFilterContainer from './spatial/CollectionMapFilterContainer'
 
 import mapFilterIcon from '../../../../img/font-awesome/white/svg/globe.svg'
@@ -99,11 +98,7 @@ class GranuleFilters extends React.Component {
       {
         name: 'keywords',
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
-        // TODO: replace w/new granule specific container
-        // content: (
-        //     <CollectionFacetFilterContainer submit={this.props.submit} marginNest={'1em'} />
-        // ),
-        content: 'put granule keyword filter here',
+        content: <GranuleFacetFilterContainer/>
       },
     ]
   }
