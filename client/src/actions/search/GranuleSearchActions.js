@@ -38,9 +38,7 @@ import {
 // import {checkForErrors} from '../../utils/responseUtils'
 import {
 //   collectionClearResults,
-  granuleMetadataReceived,
 //   collectionUpdateDetailGranulesTotal,
-  granuleUpdateTotal,
 } from './GranuleResultActions'
 // import {fetchConfig} from '../ConfigActions'
 // import {fetchCounts, fetchInfo} from './InfoActions'

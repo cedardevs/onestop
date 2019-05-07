@@ -6,7 +6,6 @@ import {
   granuleUpdateDateRange,
   // collectionRemoveGeometry,
 } from '../../../actions/search/GranuleFilterActions'
-import {granuleClearResults} from '../../../actions/search/GranuleResultActions'
 import {
   triggerGranuleSearch,
   showGranules,

@@ -55,9 +55,6 @@ import {
   // collectionUpdateDetailGranulesTotal,
   collectionUpdateTotal,
 } from './CollectionResultActions'
-import {
-  granuleUpdateTotal,
-} from './GranuleResultActions'
 import {fetchConfig} from '../ConfigActions'
 import {fetchCounts, fetchInfo} from './InfoActions'
 

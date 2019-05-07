@@ -12,13 +12,11 @@ import {
   GRANULE_SEARCH_ERROR,
 } from '../../actions/search/GranuleRequestActions'
 import {
-  GRANULE_UPDATE_TOTAL,
   // GRANULE_INCREMENT_RESULTS_OFFSET,
-  GRANULE_CLEAR_RESULTS,
+  // GRANULE_CLEAR_RESULTS,
   // GRANULE_INCREMENT_DETAIL_GRANULES_RESULT_OFFSET,
   // GRANULE_CLEAR_DETAIL_GRANULES_RESULT,
   // GRANULE_UPDATE_DETAIL_GRANULES_TOTAL,
-  GRANULE_METADATA_RECEIVED,
 } from '../../actions/search/GranuleResultActions'
 
 export const initialState = Immutable({
@@ -77,16 +75,12 @@ export const granuleResult = (state = initialState, action) => {
     //   return Immutable.set(state, 'granules', newGranules)
 
     // Result Effects from 'GranuleResultActions'
-    case GRANULE_CLEAR_RESULTS:
-      return Immutable.merge(state, {
-        granules: initialState.granules,
-        totalGranules: initialState.totalGranules,
-        granulesPageOffset: initialState.granulesPageOffset,
-      })
-
-    // case GRANULE_UPDATE_TOTAL:
-    //   return Immutable.set(state, 'totalGranules', action.totalGranules)
-
+    // case GRANULE_CLEAR_RESULTS:
+    //   return Immutable.merge(state, {
+    //     granules: initialState.granules,
+    //     totalGranules: initialState.totalGranules,
+    //     granulesPageOffset: initialState.granulesPageOffset,
+    //   })
     // case GRANULE_CLEAR_DETAIL_GRANULES_RESULT:
     //   return Immutable.merge(state, {
     //     granules: initialState.granules,
@@ -97,8 +91,6 @@ export const granuleResult = (state = initialState, action) => {
     // case GRANULE_UPDATE_DETAIL_GRANULES_TOTAL:
     //   return Immutable.set(state, 'totalGranules', action.totalGranules)
 
-    // case GRANULE_METADATA_RECEIVED:
-    //   return Immutable.set(state, 'facets', action.metadata.facets)
 
     case GRANULE_SEARCH_COMPLETE:
       let newGranules = action.items.reduce(
