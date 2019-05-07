@@ -70,6 +70,15 @@ subprojects {
           details.because 'Enforce jackson-databind 2.9.8+ to avoid vulnerabilities CVE-2018-19360, CVE-2018-19361, CVE-2018-19362, CVE-2018-1000873'
         }
       }
+
+      resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group.startsWith('org.apache.tomcat') &&
+            details.requested.name.contains('tomcat') &&
+            details.requested.version <= '9.0.17') {
+          details.useVersion '9.0.19'
+          details.because 'Enforce tomcat 9.0.18+ to avoid vulnerabilities CVE-2019-0199 and CVE-2019-0232'
+        }
+      }
     }
     
   }
