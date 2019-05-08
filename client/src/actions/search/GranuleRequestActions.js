@@ -4,7 +4,12 @@ export const granuleSearchStart = () => ({
 })
 
 export const GRANULE_SEARCH_COMPLETE = 'GRANULE_SEARCH_COMPLETE'
-export const granuleSearchComplete = (clearPreviousResults, total, items, metadata) => ({
+export const granuleSearchComplete = (
+  clearPreviousResults,
+  total,
+  items,
+  metadata
+) => ({
   type: GRANULE_SEARCH_COMPLETE,
   clearPreviousResults: clearPreviousResults,
   total: total,
@@ -13,7 +18,7 @@ export const granuleSearchComplete = (clearPreviousResults, total, items, metada
 })
 
 export const GRANULE_SEARCH_ERROR = 'GRANULE_SEARCH_ERROR'
-export const granuleSearchError = (errors) => ({
+export const granuleSearchError = errors => ({
   type: GRANULE_SEARCH_ERROR,
   errors,
 })

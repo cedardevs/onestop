@@ -11,10 +11,6 @@ export default class ResultWithFilters extends React.Component {
   }
 
   render() {
-    return (
-      <div style={styleResult}>
-        {this.props.children}
-      </div>
-    )
+    return <div style={styleResult}>{this.props.children}</div>
   }
 }

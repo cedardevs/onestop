@@ -85,7 +85,7 @@ class GranuleFilters extends React.Component {
       {
         name: 'location',
         heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
-      content: <GranuleMapFilterContainer isOpen={this.state.location} />
+        content: <GranuleMapFilterContainer isOpen={this.state.location} />,
       },
       {
         name: 'time',
@@ -95,7 +95,7 @@ class GranuleFilters extends React.Component {
       {
         name: 'keywords',
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
-        content: <GranuleFacetFilterContainer marginNest={'1em'}/>
+        content: <GranuleFacetFilterContainer marginNest={'1em'} />,
       },
     ]
   }

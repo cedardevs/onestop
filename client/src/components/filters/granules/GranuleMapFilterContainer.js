@@ -14,7 +14,7 @@ import {
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  console.log("should it be showing the map?", state.layout.showMap)
+  console.log('should it be showing the map?', state.layout.showMap)
   return {
     showMap: state.layout.showMap,
     geoJSON: state.search.granuleFilter.geoJSON,

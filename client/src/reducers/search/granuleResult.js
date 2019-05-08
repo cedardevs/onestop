@@ -1,8 +1,7 @@
 import Immutable from 'seamless-immutable'
-import {
-  // GRANULE_CLEAR_FACETS,
-  // GRANULE_REMOVE_FILTERS,
-} from '../../actions/search/GranuleFilterActions'
+import // GRANULE_CLEAR_FACETS,
+// GRANULE_REMOVE_FILTERS,
+'../../actions/search/GranuleFilterActions'
 import {
   // GRANULE_SEARCH_SUCCESS,
   // GRANULE_DETAIL_SUCCESS,
@@ -12,13 +11,12 @@ import {
   GRANULE_SEARCH_ERROR,
   GRANULE_INCREMENT_RESULTS_OFFSET,
 } from '../../actions/search/GranuleRequestActions'
-import {
-  // GRANULE_INCREMENT_RESULTS_OFFSET,
-  // GRANULE_CLEAR_RESULTS,
-  // GRANULE_INCREMENT_DETAIL_GRANULES_RESULT_OFFSET,
-  // GRANULE_CLEAR_DETAIL_GRANULES_RESULT,
-  // GRANULE_UPDATE_DETAIL_GRANULES_TOTAL,
-} from '../../actions/search/GranuleResultActions'
+import // GRANULE_INCREMENT_RESULTS_OFFSET,
+// GRANULE_CLEAR_RESULTS,
+// GRANULE_INCREMENT_DETAIL_GRANULES_RESULT_OFFSET,
+// GRANULE_CLEAR_DETAIL_GRANULES_RESULT,
+// GRANULE_UPDATE_DETAIL_GRANULES_TOTAL,
+'../../actions/search/GranuleResultActions'
 
 export const initialState = Immutable({
   granules: {},
@@ -35,7 +33,7 @@ const granuleResults = (state, granules, action) => {
     loadedGranules: (granules && Object.keys(granules).length) || 0,
     granules: granules,
     totalGranules: action.total,
-    facets: action.metadata? action.metadata.facets : initialState.facets,
+    facets: action.metadata ? action.metadata.facets : initialState.facets,
   })
 }
 
@@ -90,28 +88,26 @@ export const granuleResult = (state = initialState, action) => {
     // case GRANULE_UPDATE_DETAIL_GRANULES_TOTAL:
     //   return Immutable.set(state, 'totalGranules', action.totalGranules)
 
-
     case GRANULE_SEARCH_COMPLETE:
       let newGranules = action.items.reduce(
-          (existing, next) => existing.set(next.id, next.attributes),
-          initialState.granules
-        )
-      if(action.clearPreviousResults) {
-        return granuleResults(state, newGranules, action)}
+        (existing, next) => existing.set(next.id, next.attributes),
+        initialState.granules
+      )
+      if (action.clearPreviousResults) {
+        return granuleResults(state, newGranules, action)
+      }
 
       let allGranules = state.granules.merge(newGranules)
 
       return granuleResults(state, allGranules, action)
 
-
     case GRANULE_SEARCH_ERROR:
-
-    return Immutable.merge(state, {
-      loadedGranules: initialState.loadedGranules,
-      granules: initialState.granules,
-      totalGranules: initialState.totalGranules,
-      facets: action.metadata? action.metadata.facets : initialState.facets
-    })
+      return Immutable.merge(state, {
+        loadedGranules: initialState.loadedGranules,
+        granules: initialState.granules,
+        totalGranules: initialState.totalGranules,
+        facets: action.metadata ? action.metadata.facets : initialState.facets,
+      })
 
     case GRANULE_INCREMENT_RESULTS_OFFSET:
       return Immutable.set(

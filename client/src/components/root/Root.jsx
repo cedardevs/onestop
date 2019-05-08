@@ -84,7 +84,6 @@ export default class Root extends React.Component {
 
     const middle = (
       <div style={{width: '100%'}}>
-
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
           <Route path="/" exact>
@@ -94,7 +93,8 @@ export default class Root extends React.Component {
           <Route path={ROUTE.details.path}>
             {/*TODO parameterize this path!*/}
             <div>
-              <LoadingBarContainer /> {/* TODO replace this with something more specific for details */}
+              <LoadingBarContainer />{' '}
+              {/* TODO replace this with something more specific for details */}
               <DetailContainer />
             </div>
           </Route>

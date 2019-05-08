@@ -1,7 +1,10 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 
-import {triggerSearch, showDetails} from '../../../actions/search/CollectionSearchActions'
+import {
+  triggerSearch,
+  showDetails,
+} from '../../../actions/search/CollectionSearchActions'
 import {collectionIncrementResultsOffset} from '../../../actions/search/CollectionResultActions'
 import Collections from './Collections'
 

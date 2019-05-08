@@ -20,9 +20,7 @@ import {
   granuleSearchComplete,
   granuleSearchError,
 } from './GranuleRequestActions'
-import {
-  triggerGranuleSearch
-} from './GranuleSearchActions'
+import {triggerGranuleSearch} from './GranuleSearchActions'
 import {
   // collectionClearFacets,
   // collectionClearSelectedIds,
@@ -100,18 +98,19 @@ export const buildSearchAction = (
     return fetch(endpoint, fetchParams)
       .then(response => checkForErrors(response))
       .then(response => {
-        return response.json()})
+        return response.json()
+      })
       .then(json => successHandler(dispatch, json))
       .catch(ajaxError => {
         // TODO how to handle when ajaxError doesn't have response.json()...????
         if (ajaxError.response) {
-        return ajaxError.response
-          .json()
-          .then(errorJson => errorHandler(dispatch, errorJson))
+          return ajaxError.response
+            .json()
+            .then(errorJson => errorHandler(dispatch, errorJson))
         }
         //return error
         errorHandler(dispatch, ajaxError)
-          // : ajaxError
+        // : ajaxError
       })
       .catch(jsError => errorHandler(dispatch, jsError))
   }

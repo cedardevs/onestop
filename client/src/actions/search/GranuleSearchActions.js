@@ -1,6 +1,4 @@
-import {
-  buildSearchAction,
-} from './SearchActions'
+import {buildSearchAction} from './SearchActions'
 import {
   assembleGranuleSearchRequest,
   decodeQueryString,
@@ -14,7 +12,6 @@ import {
   granuleSearchStart,
   granuleSearchComplete,
   granuleSearchError,
-
 } from './GranuleRequestActions'
 // import _ from 'lodash'
 import {showErrors} from '../ErrorActions'
@@ -23,28 +20,25 @@ import {
   // collectionClearSelectedIds,
   // collectionToggleSelectedId,
   granuleUpdateFilters,
-//   collectionUpdateFilters,
+  //   collectionUpdateFilters,
 } from './GranuleFilterActions'
 import {
   collectionClearSelectedIds,
   collectionToggleSelectedId,
-//   collectionUpdateFilters,
+  //   collectionUpdateFilters,
 } from './CollectionFilterActions'
 import {
-//   apiPath,
-//   getCollectionIdFromDetailPath,
+  //   apiPath,
+  //   getCollectionIdFromDetailPath,
   getCollectionIdFromGranuleListPath,
 } from '../../utils/urlUtils'
 // import {checkForErrors} from '../../utils/responseUtils'
-import {
-//   collectionClearResults,
+import //   collectionClearResults,
 //   collectionUpdateDetailGranulesTotal,
-} from './GranuleResultActions'
+'./GranuleResultActions'
 // import {fetchConfig} from '../ConfigActions'
 // import {fetchCounts, fetchInfo} from './InfoActions'
-import {
-  getCollection
-} from './CollectionSearchActions'
+import {getCollection} from './CollectionSearchActions'
 import {
   collectionClearDetailGranulesResult,
   // collectionClearResults,
@@ -53,11 +47,13 @@ import {
   // collectionUpdateTotal,
 } from './CollectionResultActions'
 
-export const triggerGranuleSearch = (clearPreviousResults = false, retrieveFacets = true) => {
+export const triggerGranuleSearch = (
+  clearPreviousResults = false,
+  retrieveFacets = true
+) => {
   const bodyBuilder = state => {
     const body = assembleGranuleSearchRequest(state, false, retrieveFacets)
-    const inFlight =
-      state.search.granuleRequest.granuleSearchRequestInFlight
+    const inFlight = state.search.granuleRequest.granuleSearchRequestInFlight
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     let selectedCollections = state.search.collectionFilter.selectedIds
@@ -70,7 +66,14 @@ export const triggerGranuleSearch = (clearPreviousResults = false, retrieveFacet
     dispatch(granuleSearchStart()) // TODO add params?
   }
   const successHandler = (dispatch, payload) => {
-    dispatch(granuleSearchComplete(clearPreviousResults, payload.meta.total, payload.data, retrieveFacets? payload.meta: null))
+    dispatch(
+      granuleSearchComplete(
+        clearPreviousResults,
+        payload.meta.total,
+        payload.data,
+        retrieveFacets ? payload.meta : null
+      )
+    )
   }
   const errorHandler = (dispatch, e) => {
     // dispatch(showErrors(e.errors || e)) // TODO show errors
@@ -87,9 +90,7 @@ export const triggerGranuleSearch = (clearPreviousResults = false, retrieveFacet
 }
 
 export const loadGranulesList = (path, newQueryString) => {
-
   return (dispatch, getState) => {
-
     if (newQueryString.indexOf('?') === 0) {
       newQueryString = newQueryString.slice(1)
     }
@@ -114,11 +115,11 @@ export const showGranules = (history, id) => {
   return (dispatch, getState) => {
     // dispatch(collectionClearSelectedIds()) TODO leaving this alone since we specifically do *not* want to reset the selected collection ID for granule searching, I think
     const query = encodeQueryString(getState(), 'granuleFilter') //TODO put the id in there too?
-      const locationDescriptor = {
-        pathname: `/collections/granules/${id}`, // TODO get this path from urlUtils.ROUTE?
-        search: !_.isEmpty(query) ? `?${query}` : '',
-      }
-      history.push(locationDescriptor)
+    const locationDescriptor = {
+      pathname: `/collections/granules/${id}`, // TODO get this path from urlUtils.ROUTE?
+      search: !_.isEmpty(query) ? `?${query}` : '',
+    }
+    history.push(locationDescriptor)
   }
 }
 //

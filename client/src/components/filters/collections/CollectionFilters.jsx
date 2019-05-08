@@ -94,9 +94,7 @@ class CollectionFilters extends React.Component {
       {
         name: 'keywords',
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
-        content: (
-          <CollectionFacetFilterContainer marginNest={'1em'} />
-        ),
+        content: <CollectionFacetFilterContainer marginNest={'1em'} />,
       },
     ]
   }

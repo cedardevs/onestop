@@ -1,7 +1,8 @@
 import {
   buildSearchAction,
   buildGetAction,
-  showLoading, hideLoading
+  showLoading,
+  hideLoading,
 } from './SearchActions'
 import {
   assembleSearchRequest,
@@ -25,9 +26,7 @@ import {
   granuleSearchComplete,
   granuleSearchError,
 } from './GranuleRequestActions'
-import {
-  triggerGranuleSearch
-} from './GranuleSearchActions'
+import {triggerGranuleSearch} from './GranuleSearchActions'
 import {
   // collectionClearFacets,
   // collectionClearSelectedIds,
@@ -58,7 +57,8 @@ import {
 import {fetchConfig} from '../ConfigActions'
 import {fetchCounts, fetchInfo} from './InfoActions'
 
-export const triggerSearch = (retrieveFacets = true) => { // TODO rename to collection something something
+export const triggerSearch = (retrieveFacets = true) => {
+  // TODO rename to collection something something
   const bodyBuilder = state => {
     const body = assembleSearchRequest(state, false, retrieveFacets)
     const inFlight =

@@ -7,7 +7,9 @@ const mapStateToProps = state => {
   const {loading} = state.search.granuleRequest.granuleSearchRequestInFlight
   const {granules, totalGranules, loadedGranules} = state.search.granuleResult
 
-  const text = loading ? 'Searching for files...' : `Loaded ${loadedGranules} of ${totalGranules} files.`
+  const text = loading
+    ? 'Searching for files...'
+    : `Loaded ${loadedGranules} of ${totalGranules} files.`
   const loadingId = `loading-id::${loading}`
 
   return {
@@ -17,6 +19,8 @@ const mapStateToProps = state => {
   }
 }
 
-const GranuleSearchLoadingContainer = withRouter(connect(mapStateToProps)(LoadingBar))
+const GranuleSearchLoadingContainer = withRouter(
+  connect(mapStateToProps)(LoadingBar)
+)
 
 export default GranuleSearchLoadingContainer

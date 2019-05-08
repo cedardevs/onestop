@@ -15,7 +15,11 @@ export const assembleSearchRequestString = (
   return JSON.stringify(assembleSearchRequest(state, granules, retrieveFacets))
 }
 
-export const assembleGranuleSearchRequest = (state, granules, retrieveFacets) => {
+export const assembleGranuleSearchRequest = (
+  state,
+  granules,
+  retrieveFacets
+) => {
   const search = state.search || {}
   const granuleFilter = search.granuleFilter || {}
   const collectionFilter = search.collectionFilter || {}
@@ -44,7 +48,8 @@ export const assembleGranuleSearchRequest = (state, granules, retrieveFacets) =>
   }
 }
 
-export const assembleSearchRequest = (state, granules, retrieveFacets) => { // TODO rename to include collection in name
+export const assembleSearchRequest = (state, granules, retrieveFacets) => {
+  // TODO rename to include collection in name
   const search = state.search || {}
   const collectionFilter = search.collectionFilter || {}
   const collectionResult = search.collectionResult || {}
@@ -126,7 +131,11 @@ const assemblePagination = (max, offset) => {
   return {max: max, offset: offset}
 }
 
-export const encodeQueryString = (state, filterStateName = 'collectionFilter') => { // TODO change default assumptions and make filterStateName explicitly required in all calls later
+export const encodeQueryString = (
+  state,
+  filterStateName = 'collectionFilter'
+) => {
+  // TODO change default assumptions and make filterStateName explicitly required in all calls later
   const searchParams =
     (state && state.search && state.search[filterStateName]) || {}
   const queryParams = _.map(searchParams, (v, k) => {

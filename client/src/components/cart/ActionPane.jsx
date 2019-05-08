@@ -66,8 +66,7 @@ export default class ActionPane extends React.Component {
         icon={email}
         styleIcon={styleIcon}
         iconPadding={'0.309em'}
-        onClick={() => {
-        }}
+        onClick={() => {}}
       />
     )
 

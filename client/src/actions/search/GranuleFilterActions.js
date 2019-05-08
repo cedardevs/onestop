@@ -98,8 +98,7 @@ export const granuleToggleFacet = (category, facetName, selected) => {
 // }
 //
 // Granule Exclude Global (Geometry) Results Filter
-export const GRANULE_TOGGLE_EXCLUDE_GLOBAL =
-  'GRANULE_TOGGLE_EXCLUDE_GLOBAL'
+export const GRANULE_TOGGLE_EXCLUDE_GLOBAL = 'GRANULE_TOGGLE_EXCLUDE_GLOBAL'
 export const granuleToggleExcludeGlobal = () => {
   return {
     type: GRANULE_TOGGLE_EXCLUDE_GLOBAL,
