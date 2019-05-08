@@ -2,18 +2,11 @@
 import {updateSelectedFacets} from '../../utils/filterUtils'
 
 // Collection High-Level Filter Actions
-export const COLLECTION_UPDATE_FILTERS = 'COLLECTION_UPDATE_FILTERS'
+export const COLLECTION_UPDATE_FILTERS = 'COLLECTION_UPDATE_FILTERS' // TODO rename setFiltersFromURL or something
 export const collectionUpdateFilters = filters => {
   return {
     type: COLLECTION_UPDATE_FILTERS,
     filters: filters,
-  }
-}
-
-export const COLLECTION_REMOVE_FILTERS = 'COLLECTION_REMOVE_FILTERS'
-export const collectionRemoveFilters = () => {
-  return {
-    type: COLLECTION_REMOVE_FILTERS,
   }
 }
 

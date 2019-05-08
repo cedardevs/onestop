@@ -200,4 +200,4 @@ class CollectionSearch extends React.Component {
   }
 }
 
-export default CollectionSearch
+export default CollectionSearch // TODO move this out of filters directory!

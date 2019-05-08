@@ -1,5 +1,4 @@
 import Immutable from 'seamless-immutable'
-import {COLLECTION_REMOVE_FILTERS} from '../../actions/search/CollectionFilterActions'
 import {
   COLLECTION_SEARCH_COMPLETE,
   COLLECTION_SEARCH_ERROR,
@@ -31,10 +30,6 @@ const collectionResults = (state, collections, action) => {
 
 export const collectionResult = (state = initialState, action) => {
   switch (action.type) {
-    // Result Effects from 'CollectionFilterActions'
-
-    case COLLECTION_REMOVE_FILTERS:
-      return Immutable.set(state, 'facets', initialState.facets)
 
     // Result Effects from 'CollectionRequestActions'
     case COLLECTION_SEARCH_COMPLETE:

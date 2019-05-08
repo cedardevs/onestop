@@ -1,7 +1,6 @@
 import Immutable from 'seamless-immutable'
 import {
   COLLECTION_UPDATE_FILTERS,
-  COLLECTION_REMOVE_FILTERS,
   COLLECTION_UPDATE_QUERY_TEXT,
   COLLECTION_UPDATE_GEOMETRY,
   COLLECTION_REMOVE_GEOMETRY,
@@ -28,18 +27,6 @@ export const collectionFilter = (state = initialState, action) => {
   switch (action.type) {
     case COLLECTION_UPDATE_FILTERS:
       return Immutable.merge(initialState, action.filters || {})
-
-    case COLLECTION_REMOVE_FILTERS:
-      return Immutable.merge(state, {
-        // this action is triggered by 'queryText' searches to ensure a fresh filter;
-        // consequently, we do not reset 'queryText' back to its initial state
-        geoJSON: initialState.geoJSON,
-        startDateTime: initialState.startDateTime,
-        endDateTime: initialState.endDateTime,
-        selectedFacets: initialState.selectedFacets,
-        selectedIds: initialState.selectedIds,
-        excludeGlobal: initialState.excludeGlobal,
-      })
 
     case COLLECTION_UPDATE_QUERY_TEXT:
       return Immutable.set(state, 'queryText', action.queryText)
