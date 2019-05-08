@@ -5,7 +5,6 @@ import {
   triggerCollectionSearch,
   showCollections,
 } from '../../actions/search/CollectionSearchActions'
-import {collectionClearFacets} from '../../actions/search/CollectionFilterActions'
 
 const mapStateToProps = state => {
   return {
@@ -16,8 +15,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
-      dispatch(collectionClearFacets())
-      dispatch(triggerCollectionSearch())
+      dispatch(triggerCollectionSearch(true))
       dispatch(showCollections(ownProps.history))
     },
   }

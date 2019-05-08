@@ -90,12 +90,6 @@ export const collectionToggleFacet = (category, facetName, selected) => {
     })
   }
 }
-export const COLLECTION_CLEAR_FACETS = 'COLLECTION_CLEAR_FACETS'
-export const collectionClearFacets = () => {
-  return {
-    type: COLLECTION_CLEAR_FACETS,
-  }
-}
 
 // Collection Exclude Global (Geometry) Results Filter
 export const COLLECTION_TOGGLE_EXCLUDE_GLOBAL =

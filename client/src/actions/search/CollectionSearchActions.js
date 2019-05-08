@@ -8,12 +8,12 @@ import {
   collectionSearchComplete,
   collectionSearchError,
 } from './CollectionRequestActions'
-// import { // TODO none of these are used - can the actions be removed entirely or are they in use elsewhere?
-//   collectionClearFacets,
-//   collectionClearSelectedIds,
-//   collectionToggleSelectedId,
-//   collectionUpdateFilters,
-// } from './CollectionFilterActions'
+import {
+  // TODO for these that are not used - can the actions be removed entirely or are they in use elsewhere?
+  collectionClearSelectedIds,
+  // collectionToggleSelectedId,
+  // collectionUpdateFilters,
+} from './CollectionFilterActions'
 // import {
 //   collectionMetadataReceived,
 //   collectionUpdateTotal,
@@ -77,7 +77,7 @@ export const triggerCollectionSearch = (
 
 export const showCollections = history => {
   return (dispatch, getState) => {
-    dispatch(collectionClearSelectedIds()) // TODO not found, broken when using map to filter..
+    dispatch(collectionClearSelectedIds())
     const query = encodeQueryString(getState())
     if (!_.isEmpty(query)) {
       const locationDescriptor = {

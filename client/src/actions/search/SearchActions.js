@@ -57,6 +57,7 @@ export const buildSearchAction = (
 }
 
 export const buildGetAction = (
+  // TODO add Async to the name here?
   endpointName,
   id,
   prefetchHandler,
@@ -87,6 +88,7 @@ export const buildGetAction = (
 }
 
 export const buildSitemapAction = () => {
+  // TODO this is less a builder than a fetchSitemap
   return dispatch => {
     const endpoint = apiPath() + '/sitemap.xml'
     const fetchParams = {

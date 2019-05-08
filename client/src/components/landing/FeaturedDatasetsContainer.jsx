@@ -1,9 +1,6 @@
 import {connect} from 'react-redux'
 import FeaturedDatasets from './FeaturedDatasets'
-import {
-  collectionClearFacets,
-  collectionUpdateQueryText,
-} from '../../actions/search/CollectionFilterActions'
+import {collectionUpdateQueryText} from '../../actions/search/CollectionFilterActions'
 import {
   triggerCollectionSearch,
   showCollections,
@@ -20,8 +17,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
-      dispatch(collectionClearFacets())
-      dispatch(triggerCollectionSearch())
+      dispatch(triggerCollectionSearch(true))
       dispatch(showCollections(ownProps.history))
     },
     collectionUpdateQueryText: text =>

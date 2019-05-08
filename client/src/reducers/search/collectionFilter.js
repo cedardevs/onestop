@@ -10,9 +10,13 @@ import {
   COLLECTION_TOGGLE_SELECTED_ID,
   COLLECTION_CLEAR_SELECTED_IDS,
   COLLECTION_TOGGLE_FACET,
-  COLLECTION_CLEAR_FACETS,
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
 } from '../../actions/search/CollectionFilterActions'
+import {
+  COLLECTION_SEARCH_START,
+  COLLECTION_SEARCH_COMPLETE,
+  COLLECTION_SEARCH_ERROR,
+} from '../../actions/search/CollectionRequestActions'
 import {toggleSelectedId} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
@@ -75,8 +79,15 @@ export const collectionFilter = (state = initialState, action) => {
     case COLLECTION_TOGGLE_FACET:
       return Immutable.set(state, 'selectedFacets', action.selectedFacets)
 
-    case COLLECTION_CLEAR_FACETS:
+
+case COLLECTION_SEARCH_COMPLETE:
+
+  if (action.clearPreviousResults) {
+     // reset the selected facets when there's a new search!
       return Immutable.set(state, 'selectedFacets', initialState.selectedFacets)
+  }
+  return state
+
 
     case COLLECTION_TOGGLE_EXCLUDE_GLOBAL:
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)

@@ -1,5 +1,3 @@
-import 'isomorphic-fetch'
-
 // export const COLLECTION_UPDATE_TOTAL = 'COLLECTION_UPDATE_TOTAL'
 // export const collectionUpdateTotal = totalCollections => ({
 //   type: COLLECTION_UPDATE_TOTAL,

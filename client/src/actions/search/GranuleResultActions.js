@@ -1,4 +1,4 @@
-import 'isomorphic-fetch'
+// import 'isomorphic-fetch'
 
 // export const GRANULE_UPDATE_TOTAL = 'GRANULE_UPDATE_TOTAL'
 // export const granuleUpdateTotal = totalGranules => ({
