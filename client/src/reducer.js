@@ -18,7 +18,6 @@ import granuleFilter from './reducers/search/granuleFilter'
 import granuleRequest from './reducers/search/granuleRequest'
 import granuleResult from './reducers/search/granuleResult'
 import info from './reducers/search/info'
-import loading from './reducers/search/loading'
 
 export const RESET_STORE = 'reset_store'
 
@@ -32,7 +31,6 @@ const search = combineReducers({
   granuleRequest,
   granuleResult,
   info,
-  loading,
 })
 
 // TODO: Pass search state elements to query removing the need for state duplication

@@ -57,7 +57,7 @@ export const loadCollections = newQueryString => {
 }
 
 export const loadDetails = path => {
-  console.log("it should load details now...", path)
+  console.log('it should load details now...', path)
   return (dispatch, getState) => {
     if (
       !getState().search.collectionDetailRequest.collectionDetailRequestInFlight

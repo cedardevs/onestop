@@ -62,6 +62,7 @@ export const triggerCollectionSearch = (
   }
   const errorHandler = (dispatch, e) => {
     // dispatch(showErrors(e.errors || e)) // TODO show errors
+    console.log(e.errors || e)
     dispatch(collectionSearchError(e.errors || e))
   }
 
@@ -76,7 +77,7 @@ export const triggerCollectionSearch = (
 
 export const showCollections = history => {
   return (dispatch, getState) => {
-    dispatch(collectionClearSelectedIds())
+    dispatch(collectionClearSelectedIds()) // TODO not found, broken when using map to filter..
     const query = encodeQueryString(getState())
     if (!_.isEmpty(query)) {
       const locationDescriptor = {

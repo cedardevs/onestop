@@ -44,10 +44,10 @@ export const collectionResult = (state = initialState, action) => {
 
     // Result Effects from 'CollectionRequestActions'
     case COLLECTION_SEARCH_COMPLETE:
-      let newCollections = action.items.reduce(
-        (existing, next) => existing.set(next.id, next.attributes),
-        initialState.collections
-      )
+      let newCollections = {}
+      action.items.forEach((val, key) => {
+        newCollections[key] = val
+      })
       if (action.clearPreviousResults) {
         return collectionResults(state, newCollections, action)
       }
