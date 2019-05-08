@@ -5,7 +5,6 @@ import {collectionClearResults} from '../../../actions/search/CollectionResultAc
 import {
   collectionRemoveFilters,
   collectionUpdateQueryText,
-  collectionUpdateFilters,
 } from '../../../actions/search/CollectionFilterActions'
 import {
   triggerCollectionSearch,
@@ -28,7 +27,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     collectionUpdateQueryText: text =>
       dispatch(collectionUpdateQueryText(text)),
-    clearSearch: () => dispatch(collectionUpdateFilters()),
   }
 }
 

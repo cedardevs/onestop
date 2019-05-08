@@ -8,14 +8,15 @@ import {
   collectionSearchComplete,
   collectionSearchError,
 } from './CollectionRequestActions'
-import {
-  // TODO for these that are not used - can the actions be removed entirely or are they in use elsewhere?
-  // collectionUpdateFilters,
-} from './CollectionFilterActions'
+import // TODO for these that are not used - can the actions be removed entirely or are they in use elsewhere?
+'./CollectionFilterActions'
 // import {
 //   collectionMetadataReceived,
 //   collectionUpdateTotal,
 // } from './CollectionResultActions'
+
+// TODO const newCollectionSearch = () => {return triggerCollectionSearch(true)}
+// TODO const triggerCollectionSearchWithoutFacets = () => {return triggerCollectionSearch(false, false)}
 
 export const triggerCollectionSearch = (
   clearPreviousResults = false,

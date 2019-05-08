@@ -5,9 +5,7 @@ import {
 } from '../utils/urlUtils'
 import {granuleUpdateFilters} from './search/GranuleFilterActions'
 import {triggerGranuleSearch} from './search/GranuleSearchActions'
-import {
-  collectionUpdateFilters,
-} from './search/CollectionFilterActions'
+import {collectionUpdateFilters} from './search/CollectionFilterActions'
 import {getCollection} from './get/CollectionGetDetailActions'
 import {triggerCollectionSearch} from './search/CollectionSearchActions'
 import {
