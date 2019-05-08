@@ -10,8 +10,6 @@ import {
 } from './CollectionRequestActions'
 import {
   // TODO for these that are not used - can the actions be removed entirely or are they in use elsewhere?
-  collectionClearSelectedIds,
-  // collectionToggleSelectedId,
   // collectionUpdateFilters,
 } from './CollectionFilterActions'
 // import {
@@ -77,7 +75,6 @@ export const triggerCollectionSearch = (
 
 export const showCollections = history => {
   return (dispatch, getState) => {
-    dispatch(collectionClearSelectedIds())
     const query = encodeQueryString(getState())
     if (!_.isEmpty(query)) {
       const locationDescriptor = {

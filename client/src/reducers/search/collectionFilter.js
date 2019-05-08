@@ -7,17 +7,16 @@ import {
   COLLECTION_REMOVE_GEOMETRY,
   COLLECTION_UPDATE_DATE_RANGE,
   COLLECTION_REMOVE_DATE_RANGE,
-  COLLECTION_TOGGLE_SELECTED_ID,
-  COLLECTION_CLEAR_SELECTED_IDS,
   COLLECTION_TOGGLE_FACET,
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
 } from '../../actions/search/CollectionFilterActions'
 import {
-  COLLECTION_SEARCH_START,
   COLLECTION_SEARCH_COMPLETE,
-  COLLECTION_SEARCH_ERROR,
 } from '../../actions/search/CollectionRequestActions'
-import {toggleSelectedId} from '../../utils/filterUtils'
+import {
+  COLLECTION_GET_DETAIL_START,
+} from '../../actions/get/CollectionDetailRequestActions'
+// import {toggleSelectedId} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
   queryText: '',
@@ -67,27 +66,27 @@ export const collectionFilter = (state = initialState, action) => {
         endDateTime: initialState.endDateTime,
       })
 
-    case COLLECTION_TOGGLE_SELECTED_ID:
+    case COLLECTION_GET_DETAIL_START:
+    console.log('selected id toggle???', action)
       return Immutable.set(
         state,
         'selectedIds',
-        toggleSelectedId(state.selectedIds, action.collectionId)
+        [action.id]
       )
-    case COLLECTION_CLEAR_SELECTED_IDS:
-      return Immutable.set(state, 'selectedIds', initialState.selectedIds)
 
     case COLLECTION_TOGGLE_FACET:
       return Immutable.set(state, 'selectedFacets', action.selectedFacets)
 
-
-case COLLECTION_SEARCH_COMPLETE:
-
-  if (action.clearPreviousResults) {
-     // reset the selected facets when there's a new search!
-      return Immutable.set(state, 'selectedFacets', initialState.selectedFacets)
-  }
-  return state
-
+    case COLLECTION_SEARCH_COMPLETE:
+      if (action.clearPreviousResults) {
+        // reset the selected facets when there's a new search!
+        return Immutable.set(
+          state,
+          'selectedFacets',
+          initialState.selectedFacets
+        )
+      }
+      return state
 
     case COLLECTION_TOGGLE_EXCLUDE_GLOBAL:
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)

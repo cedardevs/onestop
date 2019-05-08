@@ -1,7 +1,5 @@
 import Immutable from 'seamless-immutable'
-import {
-  COLLECTION_REMOVE_FILTERS,
-} from '../../actions/search/CollectionFilterActions'
+import {COLLECTION_REMOVE_FILTERS} from '../../actions/search/CollectionFilterActions'
 import {
   COLLECTION_SEARCH_COMPLETE,
   COLLECTION_SEARCH_ERROR,

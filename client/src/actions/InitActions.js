@@ -6,8 +6,6 @@ import {
 import {granuleUpdateFilters} from './search/GranuleFilterActions'
 import {triggerGranuleSearch} from './search/GranuleSearchActions'
 import {
-  collectionClearSelectedIds,
-  collectionToggleSelectedId,
   collectionUpdateFilters,
 } from './search/CollectionFilterActions'
 import {getCollection} from './get/CollectionGetDetailActions'
@@ -30,8 +28,6 @@ export const loadGranulesList = (path, newQueryString) => {
     if (!_.isEqual(searchFromQuery, searchFromState)) {
       const detailId = getCollectionIdFromGranuleListPath(path)
       dispatch(getCollection(detailId))
-      dispatch(collectionClearSelectedIds())
-      dispatch(collectionToggleSelectedId(detailId))
       dispatch(collectionClearDetailGranulesResult())
       dispatch(granuleUpdateFilters(searchFromQuery))
       dispatch(triggerGranuleSearch())
@@ -49,7 +45,7 @@ export const loadCollections = newQueryString => {
     if (!_.isEqual(searchFromQuery, searchFromState)) {
       dispatch(collectionClearResults())
       dispatch(collectionClearDetailGranulesResult())
-      dispatch(collectionClearSelectedIds())
+      // dispatch(collectionClearSelectedIds()) // TODO this implies that selectedIds is being overloaded in some way, or is too tied to a particular workflow...
       dispatch(collectionUpdateFilters(searchFromQuery))
       dispatch(triggerCollectionSearch())
     }

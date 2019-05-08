@@ -58,7 +58,6 @@ export const showGranules = (history, id) => {
     return
   }
   return (dispatch, getState) => {
-    // dispatch(collectionClearSelectedIds()) TODO leaving this alone since we specifically do *not* want to reset the selected collection ID for granule searching, I think
     const query = encodeQueryString(getState(), 'granuleFilter') //TODO put the id in there too?
     const locationDescriptor = {
       pathname: `/collections/granules/${id}`, // TODO get this path from urlUtils.ROUTE?

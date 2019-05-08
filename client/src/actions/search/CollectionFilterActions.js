@@ -57,22 +57,6 @@ export const collectionRemoveDateRange = () => {
   }
 }
 
-// Selected Collection IDs Filter Actions
-export const COLLECTION_TOGGLE_SELECTED_ID = 'COLLECTION_TOGGLE_SELECTED_ID'
-export const collectionToggleSelectedId = collectionId => {
-  return {
-    type: COLLECTION_TOGGLE_SELECTED_ID,
-    collectionId: collectionId,
-  }
-}
-
-export const COLLECTION_CLEAR_SELECTED_IDS = 'COLLECTION_CLEAR_SELECTED_IDS'
-export const collectionClearSelectedIds = () => {
-  return {
-    type: COLLECTION_CLEAR_SELECTED_IDS,
-  }
-}
-
 // Collection Keyword Filter Actions
 export const COLLECTION_TOGGLE_FACET = 'COLLECTION_TOGGLE_FACET'
 export const collectionToggleFacet = (category, facetName, selected) => {
