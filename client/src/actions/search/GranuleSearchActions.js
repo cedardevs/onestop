@@ -1,51 +1,14 @@
 import {buildSearchAction} from './SearchActions'
 import {
   assembleGranuleSearchRequest,
-  decodeQueryString,
   encodeQueryString,
 } from '../../utils/queryUtils'
+import {showErrors} from '../ErrorActions'
 import {
-  // collectionDetailGranulesRequest,
-  // collectionDetailGranulesSuccess,
-  // collectionDetailRequest,
-  // collectionDetailSuccess,
   granuleSearchStart,
   granuleSearchComplete,
   granuleSearchError,
 } from './GranuleRequestActions'
-// import _ from 'lodash'
-import {showErrors} from '../ErrorActions'
-import {
-  // granuleClearFacets,
-  // collectionClearSelectedIds,
-  // collectionToggleSelectedId,
-  granuleUpdateFilters,
-  //   collectionUpdateFilters,
-} from './GranuleFilterActions'
-import {
-  collectionClearSelectedIds,
-  collectionToggleSelectedId,
-  //   collectionUpdateFilters,
-} from './CollectionFilterActions'
-import {
-  //   apiPath,
-  //   getCollectionIdFromDetailPath,
-  getCollectionIdFromGranuleListPath,
-} from '../../utils/urlUtils'
-// import {checkForErrors} from '../../utils/responseUtils'
-import //   collectionClearResults,
-//   collectionUpdateDetailGranulesTotal,
-'./GranuleResultActions'
-// import {fetchConfig} from '../ConfigActions'
-// import {fetchCounts, fetchInfo} from './InfoActions'
-import {getCollection} from './CollectionSearchActions'
-import {
-  collectionClearDetailGranulesResult,
-  // collectionClearResults,
-  // collectionMetadataReceived,
-  // collectionUpdateDetailGranulesTotal,
-  // collectionUpdateTotal,
-} from './CollectionResultActions'
 
 export const triggerGranuleSearch = (
   clearPreviousResults = false,
@@ -89,25 +52,6 @@ export const triggerGranuleSearch = (
   )
 }
 
-export const loadGranulesList = (path, newQueryString) => {
-  return (dispatch, getState) => {
-    if (newQueryString.indexOf('?') === 0) {
-      newQueryString = newQueryString.slice(1)
-    }
-    const searchFromQuery = decodeQueryString(newQueryString)
-    const searchFromState = _.get(getState(), 'search.granuleFilter')
-    if (!_.isEqual(searchFromQuery, searchFromState)) {
-      const detailId = getCollectionIdFromGranuleListPath(path)
-      dispatch(getCollection(detailId))
-      dispatch(collectionClearSelectedIds())
-      dispatch(collectionToggleSelectedId(detailId))
-      dispatch(collectionClearDetailGranulesResult())
-      dispatch(granuleUpdateFilters(searchFromQuery))
-      dispatch(triggerGranuleSearch())
-    }
-  }
-}
-
 export const showGranules = (history, id) => {
   if (!id) {
     return
@@ -122,29 +66,3 @@ export const showGranules = (history, id) => {
     history.push(locationDescriptor)
   }
 }
-//
-// export const showGranulesList = (history, id) => {
-//   if (!id) {
-//     return
-//   }
-//   return (dispatch, getState) => {
-//     const query = encodeQueryString(getState())
-//     const locationDescriptor = {
-//       pathname: `/collections/granules/${id}`,
-//       search: `?${query}`,
-//     }
-//     history.push(locationDescriptor)
-//   }
-// }
-//
-// export const loadGranulesList = path => {
-//   return dispatch => {
-//     const detailId = getCollectionIdFromGranuleListPath(path)
-//     dispatch(getCollection(detailId))
-//     dispatch(collectionClearSelectedIds())
-//     dispatch(collectionToggleSelectedId(detailId))
-//     dispatch(collectionClearDetailGranulesResult())
-//     dispatch(fetchGranules())
-//   }
-// }
-//
