@@ -160,7 +160,7 @@ If you find yourself in a weird state, even after freshly cloning the project, y
 
 ##### Clear Caches
 ```
-./gradle clean
+./gradlew clean
 rm -rf ~/.gradle/caches
 cd client && rm -rf node_modules/
 ```
