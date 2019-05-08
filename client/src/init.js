@@ -7,7 +7,7 @@ import {
   loadCollections,
   loadDetails,
   loadGranulesList,
-} from './actions/search/InitSearchActions'
+} from './actions/InitActions'
 
 const loadFromUrl = (path, newQueryString) => {
   if (isSitemap(path)) {

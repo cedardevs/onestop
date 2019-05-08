@@ -4,6 +4,8 @@ import {checkForErrors} from '../../utils/responseUtils'
 import {collectionClearResults} from './CollectionResultActions'
 import {collectionUpdateFilters} from './CollectionFilterActions'
 
+// TODO rename this file to FetchHelper or something?
+
 export const buildSearchAction = (
   endpointName,
   bodyBuilder,

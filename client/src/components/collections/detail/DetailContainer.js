@@ -4,12 +4,13 @@ import Detail from './Detail'
 import {showGranules} from '../../../actions/search/GranuleSearchActions'
 
 const mapStateToProps = state => {
-  const focusedItem = state.search.collectionResult.collectionDetail
+  const focusedItem = state.search.collectionDetailResult.collectionDetail
   return {
     id: focusedItem ? focusedItem.collection.id : null,
     item: focusedItem ? focusedItem.collection.attributes : null,
     totalGranuleCount: focusedItem ? focusedItem.totalGranuleCount : null,
-    loading: state.search.collectionRequest.collectionDetailRequestInFlight,
+    loading:
+      state.search.collectionDetailRequest.collectionDetailRequestInFlight,
   }
 }
 

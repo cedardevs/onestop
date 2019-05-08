@@ -7,6 +7,7 @@ import {
 
 export const initialState = Immutable({
   granuleSearchRequestInFlight: false,
+  // TODO maybe put error message here?
 })
 
 export const granuleRequest = (state = initialState, action) => {

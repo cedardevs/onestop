@@ -19,7 +19,7 @@ import {triggerGranuleSearch} from '../../../actions/search/GranuleSearchActions
 
 const mapStateToProps = state => {
   const {granules, totalGranules, loadedGranules} = state.search.granuleResult
-  const focusedItem = state.search.collectionResult.collectionDetail
+  const focusedItem = state.search.collectionDetailResult.collectionDetail
   return {
     collectionTitle: focusedItem
       ? focusedItem.collection.attributes.title
