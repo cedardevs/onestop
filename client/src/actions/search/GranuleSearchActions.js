@@ -53,6 +53,7 @@ export const triggerGranuleSearch = (
 }
 
 export const showGranules = (history, id) => {
+  // TODO rename these functions to update URL ?
   if (!id) {
     return
   }

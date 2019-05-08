@@ -1,55 +1,11 @@
-import {
-  assembleSearchRequest,
-  assembleGranuleSearchRequest,
-  decodeQueryString,
-  encodeQueryString,
-} from '../../utils/queryUtils'
-import {
-  // collectionDetailGranulesRequest,
-  // collectionDetailGranulesSuccess,
-  collectionDetailRequest,
-  collectionDetailSuccess,
-  collectionSearchRequest,
-  collectionSearchSuccess,
-} from './CollectionRequestActions'
-
-import {
-  granuleSearchRequest,
-  granuleSearchSuccess,
-  granuleSearchStart,
-  granuleSearchComplete,
-  granuleSearchError,
-} from './GranuleRequestActions'
-import {triggerGranuleSearch} from './GranuleSearchActions'
-import {
-  // collectionClearFacets,
-  // collectionClearSelectedIds,
-  // collectionToggleSelectedId,
-  granuleUpdateFilters,
-} from './GranuleFilterActions'
-import _ from 'lodash'
-import {showErrors} from '../ErrorActions'
-import {
-  collectionClearFacets,
-  collectionClearSelectedIds,
-  collectionToggleSelectedId,
-  collectionUpdateFilters,
-} from './CollectionFilterActions'
-import {
-  apiPath,
-  getCollectionIdFromDetailPath,
-  getCollectionIdFromGranuleListPath,
-} from '../../utils/urlUtils'
+import {apiPath} from '../../utils/urlUtils'
 import {checkForErrors} from '../../utils/responseUtils'
-import {
-  collectionClearDetailGranulesResult,
-  collectionClearResults,
-  collectionMetadataReceived,
-  // collectionUpdateDetailGranulesTotal,
-  collectionUpdateTotal,
-} from './CollectionResultActions'
+
 import {fetchConfig} from '../ConfigActions'
 import {fetchCounts, fetchInfo} from './InfoActions'
+
+import {collectionClearResults} from './CollectionResultActions'
+import {collectionUpdateFilters} from './CollectionFilterActions'
 
 // synchronous actions
 export const LOADING_SHOW = 'LOADING_SHOW'
@@ -173,82 +129,10 @@ export const initialize = () => {
   }
 }
 
-// export const showCollections = history => {
-//   return (dispatch, getState) => {
-//     dispatch(collectionClearSelectedIds())
-//     const query = encodeQueryString(getState())
-//     if (!_.isEmpty(query)) {
-//       const locationDescriptor = {
-//         pathname: '/collections',
-//         search: `?${query}`,
-//       }
-//       history.push(locationDescriptor)
-//     }
-//   }
-// }
-
-// export const showGranulesList = (history, id) => { // TODO replace with showGranules from GranuleSearchActions? need to decombobulate the extra layer of state though...
-//   if (!id) {
-//     return
-//   }
-//   return (dispatch, getState) => {
-//     const query = encodeQueryString(getState())
-//     const locationDescriptor = {
-//       pathname: `/collections/granules/${id}`,
-//       search: `?${query}`,
-//     }
-//     history.push(locationDescriptor)
-//   }
-// }
-
-// export const loadGranulesList = (path, newQueryString) => {
-//
-//   return (dispatch, getState) => {
-//
-//     if (newQueryString.indexOf('?') === 0) {
-//       newQueryString = newQueryString.slice(1)
-//     }
-//     const searchFromQuery = decodeQueryString(newQueryString)
-//     const searchFromState = _.get(getState(), 'search.granuleFilter')
-//     if (!_.isEqual(searchFromQuery, searchFromState)) {
-//       const detailId = getCollectionIdFromGranuleListPath(path)
-//       dispatch(getCollection(detailId))
-//       dispatch(collectionClearSelectedIds())
-//       dispatch(collectionToggleSelectedId(detailId))
-//       dispatch(collectionClearDetailGranulesResult())
-//       dispatch(granuleUpdateFilters(searchFromQuery))
-//       dispatch(triggerGranuleSearch())
-//     }
-//   }
-// }
-
-// export const showDetails = (history, id) => {
-//   if (!id) {
-//     return
-//   }
-//   return (dispatch, getState) => {
-//     const query = encodeQueryString(getState())
-//     const locationDescriptor = {
-//       pathname: `/collections/details/${id}`,
-//       search: _.isEmpty(query) ? null : `?${query}`,
-//     }
-//     history.push(locationDescriptor)
-//   }
-// }
-//
-// export const loadDetails = path => {
-//   return (dispatch, getState) => {
-//     if (!getState().search.collectionRequest.collectionDetailRequestInFlight) {
-//       const detailId = getCollectionIdFromDetailPath(path)
-//       dispatch(getCollection(detailId))
-//     }
-//   }
-// }
-
 export const showHome = history => {
   return dispatch => {
     dispatch(collectionUpdateFilters())
     history.push('/')
-    dispatch(collectionClearResults())
+    dispatch(collectionClearResults()) // TODO clear granule results here also
   }
 }
