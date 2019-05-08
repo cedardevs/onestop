@@ -9,6 +9,8 @@ import spock.lang.Unroll
 @Unroll
 class MetadataManagementServiceTest extends Specification {
 
+  Version testVersion = Version.V_6_1_2
+
   ElasticsearchConfig esConfig = new ElasticsearchConfig(
           'search_collection',
           'staging_collection',
@@ -23,10 +25,11 @@ class MetadataManagementServiceTest extends Specification {
           10,
           null,
           2,
-          5
+          5,
+          testVersion
   )
   RestClient mockRestClient = Mock(RestClient)
-  ElasticsearchService elasticsearchService = new ElasticsearchService(mockRestClient, Version.V_6_1_2, esConfig)
+  ElasticsearchService elasticsearchService = new ElasticsearchService(mockRestClient, testVersion, esConfig)
   MetadataManagementService metadataManagementService = new MetadataManagementService(elasticsearchService)
 
   def setup() {

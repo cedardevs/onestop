@@ -142,12 +142,9 @@ class ElasticsearchService {
   }
 
   void putPipeline(String pipelineName) {
-    def cl = Thread.currentThread().contextClassLoader
-    def jsonFileName = pipelineName + 'Definition.json'
-    def pipelineJson = cl.getResourceAsStream(jsonFileName).text
+    String pipelineJson = esConfig.jsonPipeline(pipelineName)
     String pipelineEndpoint = "_ingest/pipeline/${pipelineName}"
     performRequest('PUT', pipelineEndpoint, pipelineJson)
-
     log.debug("Put pipeline [${pipelineName}]")
   }
 

@@ -1,10 +1,12 @@
 package org.cedar.onestop.api.metadata.service
 
+import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.schemas.avro.psi.ParsedRecord
+import org.elasticsearch.Version
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -165,7 +167,7 @@ class MetadataManagementService {
         ]
       }
     }
-    
+
     String bulkRequestBody = bulkRequest.toString()
     if (bulkRequestBody) { // Don't send a request if there is nothing to send
       Map bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
@@ -176,7 +178,18 @@ class MetadataManagementService {
         Map resultRecordMeta = resultRecord.meta as Map
         resultRecord.id = index._id
         resultRecordMeta.status = index.status
-        resultRecordMeta.created = index.created
+
+        // ES6+ changed the item structure in a batch response
+        // `index.result` <string> (e.g. 'created') exists in both versions,
+        // but `index.created` <bool> is no longer there (presumably because it's redundant,
+        // especially with the `index.status` <int> (e.g. 201)
+        if(esConfig.version.onOrAfter(Version.V_6_0_0)) {
+          resultRecordMeta.created = index.result == "created"
+        }
+        else {
+          resultRecordMeta.created = index.created
+        }
+
         if (result.error) {
           resultRecordMeta.error = result.error
         }

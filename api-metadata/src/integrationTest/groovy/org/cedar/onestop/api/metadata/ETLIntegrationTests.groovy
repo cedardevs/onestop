@@ -8,21 +8,25 @@ import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.Version
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static org.cedar.onestop.elastic.common.DocumentUtil.*
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
+@ActiveProfiles(["integration"])
 @SpringBootTest(
         classes = [
                 Application,
+                ElasticsearchConfig,
                 ElasticsearchTestConfig,
                 SpringSecurityDisabled,
                 SpringSecurityConfig,
@@ -35,24 +39,25 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class ETLIntegrationTests extends Specification {
 
   @Autowired
-  @Qualifier("elasticsearchRestClient")
+  @Qualifier("restClient")
   RestClient restClient
 
+  @Autowired
   private ElasticsearchService elasticsearchService
-  private MetadataManagementService metadataIndexService
+
+  @Autowired
   private ETLService etlService
 
   @Autowired
-  ETLIntegrationTests(ElasticsearchService elasticsearchService, MetadataManagementService metadataIndexService, ETLService etlService) {
-    this.elasticsearchService = elasticsearchService
-    this.metadataIndexService = metadataIndexService
-    this.etlService = etlService
-  }
+  private MetadataManagementService metadataIndexService
+
+  // this is simply used as a convenience/consistency as opposed to typing `elasticsearchService.esConfig.*`
+  ElasticsearchConfig esConfig
 
   void setup() {
-//    elasticsearchService = new ElasticsearchService(restClient, Version.V_6_1_2, esConfig)
-//    metadataIndexService = new MetadataManagementService(elasticsearchService)
-//    etlService = new ETLService(elasticsearchService, metadataIndexService)
+    this.esConfig = elasticsearchService.esConfig
+    this.metadataIndexService = metadataIndexService
+    this.etlService = etlService
 
     // the "Script compilation circuit breaker" limits the number of inline script compilations within a period of time
     if(elasticsearchService.version.onOrAfter(Version.V_6_0_0)) {
@@ -319,14 +324,10 @@ class ETLIntegrationTests extends Specification {
     def endpoint = "$collectionIndex,$granuleIndex${flatGranuleIndex ? ",$flatGranuleIndex" : ''}/_search"
     def request = [version: true]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
-
-    JsonBuilder jsonResponseBuilder = new JsonBuilder(response)
-    log.info(":::documentsByType::jsonResponseBuilder.toPrettyString()" + jsonResponseBuilder.toPrettyString())
-
     return getDocuments(response).groupBy({esConfig.typeFromIndex(getIndex(it))})
   }
 
-  private Map indexedDocumentVersions(String alias) {
+  private Map<String, Integer> indexedDocumentVersions(String alias) {
     def endpoint = "${alias}/_search"
     def request = [
         version: true,

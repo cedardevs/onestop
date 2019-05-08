@@ -15,6 +15,7 @@ import org.elasticsearch.client.RestClientBuilder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Profile
 
 @Slf4j
@@ -36,7 +37,8 @@ class DefaultApplicationConfig {
   @Value('${elasticsearch.rw.pass:}')
   String rwPassword
 
-  @Bean
+  @Bean(name = 'elasticsearchVersion')
+  @DependsOn('restClient')
   Version elasticsearchVersion(RestClient restClient) throws IOException {
     Response response = restClient.performRequest("GET", "/")
     Map content = new JsonSlurper().parse(response.entity.content) as Map
@@ -48,7 +50,7 @@ class DefaultApplicationConfig {
   }
 
   @Profile("!integration")
-  @Bean(destroyMethod = 'close')
+  @Bean(name = 'restClient', destroyMethod = 'close')
   RestClient restClient() {
     def hosts = []
     elasticHost.each { host ->
@@ -78,7 +80,6 @@ class DefaultApplicationConfig {
             return httpClientBuilder
           }
         }).build()
-
     return restClient
   }
 }

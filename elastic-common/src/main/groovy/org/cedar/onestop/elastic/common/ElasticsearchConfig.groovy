@@ -1,6 +1,7 @@
 package org.cedar.onestop.elastic.common
 
 import groovy.util.logging.Slf4j
+import org.elasticsearch.Version
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.env.Environment
@@ -13,28 +14,43 @@ class ElasticsearchConfig {
     @Autowired
     private Environment environment
 
-    String PREFIX
+    // index aliases
     String COLLECTION_SEARCH_INDEX_ALIAS
     String COLLECTION_STAGING_INDEX_ALIAS
     String GRANULE_SEARCH_INDEX_ALIAS
     String GRANULE_STAGING_INDEX_ALIAS
     String FLAT_GRANULE_SEARCH_INDEX_ALIAS
     String SITEMAP_INDEX_ALIAS
+
+    // index/alias prefix
+    String PREFIX
+
+    // pipeline names
     String COLLECTION_PIPELINE
     String GRANULE_PIPELINE
+
+    // type (e.g. 'doc')
     String TYPE
+
+    //
     Integer MAX_TASKS
     Integer REQUESTS_PER_SECOND
+
+    // sitemap configs
     Integer SITEMAP_SCROLL_SIZE
     Integer SITEMAP_COLLECTIONS_PER_SUBMAP
+
+    // Elasticsearch Version
+    Version version
 
     static final String TYPE_COLLECTION = "collection"
     static final String TYPE_GRANULE = "granule"
     static final String TYPE_FLATTENED_GRANULE = "flattenedGranule"
     static final String TYPE_SITEMAP = "sitemap"
 
+    private Map<String, String> jsonPipelines = [:]
     private Map<String, String> jsonMappings = [:]
-    private Map<String, String> typeMappings = [:]
+    private Map<String, String> typesByAlias = [:]
 
     @Autowired
     ElasticsearchConfig(
@@ -50,22 +66,32 @@ class ElasticsearchConfig {
                     String FLAT_GRANULE_SEARCH_INDEX_ALIAS,
             @Value('${elasticsearch.index.sitemap.name}')
                     String SITEMAP_INDEX_ALIAS,
+
             @Value('${elasticsearch.index.prefix:}')
                     String PREFIX,
+
             @Value('${elasticsearch.index.search.collection.pipeline-name}')
                     String COLLECTION_PIPELINE,
             @Value('${elasticsearch.index.search.granule.pipeline-name}')
                     String GRANULE_PIPELINE,
+
             @Value('${elasticsearch.index.universal-type}')
                     String TYPE,
+
             @Value('${elasticsearch.max-tasks}')
                     Integer MAX_TASKS,
             @Value('${elasticsearch.requests-per-second:}')
                     Integer REQUESTS_PER_SECOND,
-            @Value('${etl.sitemap.scroll-size}')
+
+            // optional: feature toggled by 'sitemap' profile, default: empty
+            @Value('${etl.sitemap.scroll-size:}')
                     Integer SITEMAP_SCROLL_SIZE,
-            @Value('${etl.sitemap.collections-per-submap}')
-                    Integer SITEMAP_COLLECTIONS_PER_SUBMAP
+            // optional: feature toggled by 'sitemap' profile, default: empty
+            @Value('${etl.sitemap.collections-per-submap:}')
+                    Integer SITEMAP_COLLECTIONS_PER_SUBMAP,
+
+            // Elasticsearch Version
+            Version version
     ) {
         this.COLLECTION_SEARCH_INDEX_ALIAS = PREFIX + COLLECTION_SEARCH_INDEX_ALIAS
         this.COLLECTION_STAGING_INDEX_ALIAS = PREFIX + COLLECTION_STAGING_INDEX_ALIAS
@@ -82,23 +108,47 @@ class ElasticsearchConfig {
         this.SITEMAP_SCROLL_SIZE = SITEMAP_SCROLL_SIZE
         this.SITEMAP_COLLECTIONS_PER_SUBMAP = SITEMAP_COLLECTIONS_PER_SUBMAP
 
+        this.version = version
+
+        //
+        this.jsonPipelines[this.COLLECTION_PIPELINE] = jsonFromFile("pipelines/${this.COLLECTION_PIPELINE}Definition.json")
+        this.jsonPipelines[this.GRANULE_PIPELINE] = jsonFromFile("pipelines/${this.GRANULE_PIPELINE}Definition.json")
+
         // Elasticsearch alias names are configurable, and this allows a central mapping between
         // the alias names configured (including the prefix) and the JSON mappings
         // https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
-        this.jsonMappings[this.COLLECTION_SEARCH_INDEX_ALIAS] = jsonFromFile("search_collectionIndex.json")
-        this.jsonMappings[this.COLLECTION_STAGING_INDEX_ALIAS] = jsonFromFile("staging_collectionIndex.json")
-        this.jsonMappings[this.GRANULE_SEARCH_INDEX_ALIAS] = jsonFromFile("search_granuleIndex.json")
-        this.jsonMappings[this.GRANULE_STAGING_INDEX_ALIAS] = jsonFromFile("staging_granuleIndex.json")
-        this.jsonMappings[this.FLAT_GRANULE_SEARCH_INDEX_ALIAS] = jsonFromFile("search_flattened_granuleIndex.json")
-        this.jsonMappings[this.SITEMAP_INDEX_ALIAS] = jsonFromFile("sitemapIndex.json")
+        if(version.onOrAfter(Version.V_6_0_0)) {
+            log.debug("::: version.onOrAfter(Version.V_6_0_0) TRUE : " + version.toString())
+            // [_all] is deprecated in 6.0+ and will be removed in 7.0.
+            // -> It is now disabled by default because it requires extra CPU cycles and disk space
+            // https://www.elastic.co/guide/en/elasticsearch/reference/6.4/mapping-all-field.html
+            this.jsonMappings[this.COLLECTION_SEARCH_INDEX_ALIAS] = jsonFromFile("mappings/ES6/search_collectionIndex.json")
+            this.jsonMappings[this.COLLECTION_STAGING_INDEX_ALIAS] = jsonFromFile("mappings/ES6/staging_collectionIndex.json")
+            this.jsonMappings[this.GRANULE_SEARCH_INDEX_ALIAS] = jsonFromFile("mappings/ES6/search_granuleIndex.json")
+            this.jsonMappings[this.GRANULE_STAGING_INDEX_ALIAS] = jsonFromFile("mappings/ES6/staging_granuleIndex.json")
+            this.jsonMappings[this.FLAT_GRANULE_SEARCH_INDEX_ALIAS] = jsonFromFile("mappings/ES6/search_flattened_granuleIndex.json")
+            this.jsonMappings[this.SITEMAP_INDEX_ALIAS] = jsonFromFile("mappings/ES6/sitemapIndex.json")
+        }
+        else {
+            log.debug("::: else FALSE : " + version.toString())
+
+            // ES 5 did not disable [_all] by default and so the mappings to support < 6.0 explicitly disable it
+            // https://www.elastic.co/guide/en/elasticsearch/reference/5.6/mapping-all-field.html
+            this.jsonMappings[this.COLLECTION_SEARCH_INDEX_ALIAS] = jsonFromFile("mappings/ES5/search_collectionIndex.json")
+            this.jsonMappings[this.COLLECTION_STAGING_INDEX_ALIAS] = jsonFromFile("mappings/ES5/staging_collectionIndex.json")
+            this.jsonMappings[this.GRANULE_SEARCH_INDEX_ALIAS] = jsonFromFile("mappings/ES5/search_granuleIndex.json")
+            this.jsonMappings[this.GRANULE_STAGING_INDEX_ALIAS] = jsonFromFile("mappings/ES5/staging_granuleIndex.json")
+            this.jsonMappings[this.FLAT_GRANULE_SEARCH_INDEX_ALIAS] = jsonFromFile("mappings/ES5/search_flattened_granuleIndex.json")
+            this.jsonMappings[this.SITEMAP_INDEX_ALIAS] = jsonFromFile("mappings/ES5/sitemapIndex.json")
+        }
 
         //
-        this.typeMappings[this.COLLECTION_SEARCH_INDEX_ALIAS] = TYPE_COLLECTION
-        this.typeMappings[this.COLLECTION_STAGING_INDEX_ALIAS] = TYPE_COLLECTION
-        this.typeMappings[this.GRANULE_SEARCH_INDEX_ALIAS] = TYPE_GRANULE
-        this.typeMappings[this.GRANULE_STAGING_INDEX_ALIAS] = TYPE_GRANULE
-        this.typeMappings[this.FLAT_GRANULE_SEARCH_INDEX_ALIAS] = TYPE_FLATTENED_GRANULE
-        this.typeMappings[this.SITEMAP_INDEX_ALIAS] = TYPE_SITEMAP
+        this.typesByAlias[this.COLLECTION_SEARCH_INDEX_ALIAS] = TYPE_COLLECTION
+        this.typesByAlias[this.COLLECTION_STAGING_INDEX_ALIAS] = TYPE_COLLECTION
+        this.typesByAlias[this.GRANULE_SEARCH_INDEX_ALIAS] = TYPE_GRANULE
+        this.typesByAlias[this.GRANULE_STAGING_INDEX_ALIAS] = TYPE_GRANULE
+        this.typesByAlias[this.FLAT_GRANULE_SEARCH_INDEX_ALIAS] = TYPE_FLATTENED_GRANULE
+        this.typesByAlias[this.SITEMAP_INDEX_ALIAS] = TYPE_SITEMAP
     }
 
     static String jsonFromFile(String filename) {
@@ -111,8 +161,13 @@ class ElasticsearchConfig {
         return null
     }
 
+    String jsonPipeline(String pipeline) {
+        // retrieve JSON pipeline for pipeline name
+        return this.jsonPipelines[pipeline]
+    }
+
     String jsonMapping(String alias) {
-        // retrieve mapping for index alias as JSON string
+        // retrieve JSON mapping for index alias
         return this.jsonMappings[alias]
     }
 
@@ -131,7 +186,7 @@ class ElasticsearchConfig {
 
     String typeFromAlias(String alias) {
         // retrieve type for index alias
-        return this.typeMappings[alias]
+        return this.typesByAlias[alias]
     }
 
     Boolean sitemapEnabled() {

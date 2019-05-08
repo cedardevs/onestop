@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.metadata
 
+import groovy.json.JsonBuilder
 import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityConfig
 import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled
 import org.cedar.onestop.api.metadata.service.ETLService
@@ -25,6 +26,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(
         classes = [
                 Application,
+                ElasticsearchConfig,
                 ElasticsearchTestConfig,
                 SpringSecurityDisabled,
                 SpringSecurityConfig,
@@ -36,21 +38,22 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class SitemapETLIntegrationTests extends Specification {
 
   @Autowired
-  private ElasticsearchService elasticsearchService
+  @Qualifier("restClient")
+  RestClient restClient
 
   @Autowired
-  private MetadataManagementService metadataIndexService
+  private ElasticsearchService elasticsearchService
 
   @Autowired
   private ETLService etlService
 
   @Autowired
-  private SitemapETLService sitemapEtlService
+  private MetadataManagementService metadataIndexService
 
   @Autowired
-  @Qualifier("elasticsearchRestClient")
-  RestClient restClient
+  private SitemapETLService sitemapEtlService
 
+  // this is simply used as a convenience/consistency as opposed to typing `elasticsearchService.esConfig.*`
   ElasticsearchConfig esConfig
 
   void setup() {
@@ -105,6 +108,7 @@ class SitemapETLIntegrationTests extends Specification {
     refreshIndices()
 
     then:
+
     Map indexed = searchSitemap()
     List<Map> data = indexed.data as List<Map>
     data.size() == 2
@@ -144,23 +148,34 @@ class SitemapETLIntegrationTests extends Specification {
     def endpoint = "${collectionIndex},${granuleIndex}${flatGranuleIndex ? ",$flatGranuleIndex" : ''}/_search"
     def request = [version: true]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
-    return getHits(response).groupBy({ esConfig.typeFromIndex(getIndex(it as Map)) })
+    return getDocuments(response).groupBy({ esConfig.typeFromIndex(getIndex(it as Map)) })
+  }
+
+  // TODO: remove this function
+  private Map searchCollection() {
+    def requestBody = [
+            _source: ["lastUpdatedDate",]
+    ]
+    String searchEndpoint = "${esConfig.COLLECTION_SEARCH_INDEX_ALIAS}/_search"
+    def searchCollectionResponse = elasticsearchService.performRequest('GET', searchEndpoint, requestBody)
+
+    return searchCollectionResponse
   }
 
   private Map searchSitemap() {
     def requestBody = [
       _source: ["lastUpdatedDate",]
     ]
-    String searchEndpoint = "${esConfig.SITEMAP_INDEX_ALIAS}/_search"
-    def searchResponse = elasticsearchService.performRequest('GET', searchEndpoint, requestBody )
+    String searchSitemapEndpoint = "${esConfig.SITEMAP_INDEX_ALIAS}/_search"
+    def searchSitemapResponse = elasticsearchService.performRequest('GET', searchSitemapEndpoint, requestBody )
 
     def result = [
-      data: getDocuments(searchResponse).collect {
+      data: getDocuments(searchSitemapResponse).collect {
         [id: getId(it), type: esConfig.TYPE, attributes: getSource(it)]
       },
       meta: [
-          took : getTook(searchResponse),
-          total: getHitsTotal(searchResponse)
+          took : getTook(searchSitemapResponse),
+          total: getHitsTotal(searchSitemapResponse)
       ]
     ]
     return result

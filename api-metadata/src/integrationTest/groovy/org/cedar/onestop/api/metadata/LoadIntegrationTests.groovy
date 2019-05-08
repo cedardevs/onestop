@@ -4,6 +4,7 @@ import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityConfig
 import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,6 +28,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(
         classes = [
                 Application,
+                ElasticsearchConfig,
                 ElasticsearchTestConfig,
                 SpringSecurityDisabled,
                 SpringSecurityConfig,
@@ -55,7 +57,7 @@ class LoadIntegrationTests extends Specification {
   private String contextPath
 
   @Autowired
-  @Qualifier("elasticsearchRestClient")
+  @Qualifier("restClient")
   RestClient restClient
 
   @Autowired

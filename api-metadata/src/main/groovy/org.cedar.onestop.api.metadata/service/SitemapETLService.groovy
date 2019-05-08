@@ -100,7 +100,8 @@ class SitemapETLService {
     int collectionsTotal = getHitsTotal(collectionResponse)
     List<Map> collectionDocuments = getDocuments(collectionResponse)
     List<String> collectionIds = collectionDocuments.collect { getId(it) }
-    int currentCount = collectionDocuments.size()
+    int collectionCount = collectionDocuments.size()
+    int currentCount = collectionCount
     lastSubcollection.addAll(collectionIds)
 
     while(currentCount < collectionsTotal) {
@@ -109,7 +110,7 @@ class SitemapETLService {
       scrollId = getScrollId(scrollResponse)
       List<String> scrollCollectionIds = scrollDocuments.collect { getId(it) }
 
-      currentCount += currentCount
+      currentCount += collectionCount
       if(lastSubcollection.size() < esConfig.SITEMAP_COLLECTIONS_PER_SUBMAP) {
         lastSubcollection.addAll(scrollCollectionIds)
       } else {

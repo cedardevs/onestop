@@ -61,8 +61,8 @@ class DocumentUtil {
         return document._index
     }
 
-    static String getVersion(Map document) {
-        return document._version
+    static int getVersion(Map document) {
+        return document._version as int
     }
 
     static Map getSource(Map document) {

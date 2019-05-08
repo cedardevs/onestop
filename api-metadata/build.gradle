@@ -155,6 +155,9 @@ sourceSets {
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
   }
+  main {
+    resources.srcDir file("${project(':elastic-common').projectDir}")
+  }
 //  main {
 //    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
 //  }
