@@ -7,9 +7,8 @@ import Button from '../../common/input/Button'
 import FilterHeading from '../FilterHeading'
 
 import GranuleTimeFilterContainer from './GranuleTimeFilterContainer'
-// TODO: replace these with granule specific redux containers for new granule filtering
 import GranuleFacetFilterContainer from './GranuleFacetFilterContainer'
-// import CollectionMapFilterContainer from './spatial/CollectionMapFilterContainer'
+import GranuleMapFilterContainer from './GranuleMapFilterContainer'
 
 import mapFilterIcon from '../../../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../../../img/font-awesome/white/svg/calendar.svg'
@@ -86,9 +85,7 @@ class GranuleFilters extends React.Component {
       {
         name: 'location',
         heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
-        // TODO: replace w/new granule specific container
-        // content: <CollectionMapFilterContainer isOpen={this.state.location} />,
-        content: 'put granule map filter here',
+      content: <GranuleMapFilterContainer isOpen={this.state.location} />
       },
       {
         name: 'time',
@@ -98,7 +95,7 @@ class GranuleFilters extends React.Component {
       {
         name: 'keywords',
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
-        content: <GranuleFacetFilterContainer/>
+        content: <GranuleFacetFilterContainer marginNest={'1em'}/>
       },
     ]
   }

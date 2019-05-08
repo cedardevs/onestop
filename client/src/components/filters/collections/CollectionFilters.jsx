@@ -95,10 +95,7 @@ class CollectionFilters extends React.Component {
         name: 'keywords',
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
         content: (
-          <CollectionFacetFilterContainer
-            submit={this.props.submit}
-            marginNest={'1em'}
-          />
+          <CollectionFacetFilterContainer marginNest={'1em'} />
         ),
       },
     ]

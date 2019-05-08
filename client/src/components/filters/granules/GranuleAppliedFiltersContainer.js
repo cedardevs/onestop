@@ -1,10 +1,10 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import {
-  // collectionToggleExcludeGlobal,
+  granuleToggleExcludeGlobal,
   granuleToggleFacet,
   granuleUpdateDateRange,
-  // collectionRemoveGeometry,
+  granuleRemoveGeometry,
 } from '../../../actions/search/GranuleFilterActions'
 import {
   triggerGranuleSearch,
@@ -32,9 +32,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    // toggleExcludeGlobal: () => {
-    //   dispatch(collectionToggleExcludeGlobal())
-    // },
+    toggleExcludeGlobal: () => {
+      dispatch(granuleToggleExcludeGlobal())
+    },
     toggleFacet: (category, facetName, selected) =>
       dispatch(granuleToggleFacet(category, facetName, selected)),
     submit: () => {
@@ -43,12 +43,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     updateDateRange: (startDate, endDate) =>
       dispatch(granuleUpdateDateRange(startDate, endDate)),
-    // removeGeometry: () => dispatch(collectionRemoveGeometry()),
+    removeGeometry: () => dispatch(granuleRemoveGeometry()),
   }
 }
 
-const CollectionAppliedFiltersContainer = withRouter(
+const GranuleAppliedFiltersContainer = withRouter(
   connect(mapStateToProps, mapDispatchToProps)(AppliedFilters)
 )
 
-export default CollectionAppliedFiltersContainer
+export default GranuleAppliedFiltersContainer

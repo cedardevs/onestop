@@ -3,15 +3,15 @@ import {
   GRANULE_UPDATE_FILTERS,
   // GRANULE_REMOVE_FILTERS,
   // GRANULE_UPDATE_QUERY_TEXT,
-  // GRANULE_UPDATE_GEOMETRY,
-  // GRANULE_REMOVE_GEOMETRY,
+  GRANULE_UPDATE_GEOMETRY,
+  GRANULE_REMOVE_GEOMETRY,
   GRANULE_UPDATE_DATE_RANGE,
   GRANULE_REMOVE_DATE_RANGE,
   // GRANULE_TOGGLE_SELECTED_ID,
   // GRANULE_CLEAR_SELECTED_IDS,
   GRANULE_TOGGLE_FACET,
   // GRANULE_CLEAR_FACETS,
-  // GRANULE_TOGGLE_EXCLUDE_GLOBAL,
+  GRANULE_TOGGLE_EXCLUDE_GLOBAL,
 } from '../../actions/search/GranuleFilterActions'
 
 export const initialState = Immutable({
@@ -44,11 +44,11 @@ export const granuleFilter = (state = initialState, action) => {
     // case GRANULE_UPDATE_QUERY_TEXT:
     //   return Immutable.set(state, 'queryText', action.queryText)
     //
-    // case GRANULE_UPDATE_GEOMETRY:
-    //   return Immutable.set(state, 'geoJSON', action.geoJSON)
-    //
-    // case GRANULE_REMOVE_GEOMETRY:
-    //   return Immutable.set(state, 'geoJSON', initialState.geoJSON)
+    case GRANULE_UPDATE_GEOMETRY:
+      return Immutable.set(state, 'geoJSON', action.geoJSON)
+
+    case GRANULE_REMOVE_GEOMETRY:
+      return Immutable.set(state, 'geoJSON', initialState.geoJSON)
 
     case GRANULE_UPDATE_DATE_RANGE:
       return Immutable.merge(state, {
@@ -77,8 +77,8 @@ export const granuleFilter = (state = initialState, action) => {
     // case GRANULE_CLEAR_FACETS:
     //   return Immutable.set(state, 'selectedFacets', initialState.selectedFacets)
     //
-    // case GRANULE_TOGGLE_EXCLUDE_GLOBAL:
-    //   return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
+    case GRANULE_TOGGLE_EXCLUDE_GLOBAL:
+      return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
 
     default:
       return state

@@ -26,20 +26,20 @@ export const granuleUpdateFilters = filters => {
 //   }
 // }
 //
-// // Granule Location Filter Actions
-// export const GRANULE_UPDATE_GEOMETRY = 'GRANULE_UPDATE_GEOMETRY'
-// export const granuleUpdateGeometry = geoJSON => {
-//   return {
-//     type: GRANULE_UPDATE_GEOMETRY,
-//     geoJSON: geoJSON,
-//   }
-// }
-// export const GRANULE_REMOVE_GEOMETRY = 'GRANULE_REMOVE_GEOMETRY'
-// export const granuleRemoveGeometry = () => {
-//   return {
-//     type: GRANULE_REMOVE_GEOMETRY,
-//   }
-// }
+// Granule Location Filter Actions
+export const GRANULE_UPDATE_GEOMETRY = 'GRANULE_UPDATE_GEOMETRY'
+export const granuleUpdateGeometry = geoJSON => {
+  return {
+    type: GRANULE_UPDATE_GEOMETRY,
+    geoJSON: geoJSON,
+  }
+}
+export const GRANULE_REMOVE_GEOMETRY = 'GRANULE_REMOVE_GEOMETRY'
+export const granuleRemoveGeometry = () => {
+  return {
+    type: GRANULE_REMOVE_GEOMETRY,
+  }
+}
 
 // Granule Date Filter Actions
 export const GRANULE_UPDATE_DATE_RANGE = 'GRANULE_UPDATE_DATE_RANGE'
@@ -97,11 +97,11 @@ export const granuleToggleFacet = (category, facetName, selected) => {
 //   }
 // }
 //
-// // Granule Exclude Global (Geometry) Results Filter
-// export const GRANULE_TOGGLE_EXCLUDE_GLOBAL =
-//   'GRANULE_TOGGLE_EXCLUDE_GLOBAL'
-// export const granuleToggleExcludeGlobal = () => {
-//   return {
-//     type: GRANULE_TOGGLE_EXCLUDE_GLOBAL,
-//   }
-// }
+// Granule Exclude Global (Geometry) Results Filter
+export const GRANULE_TOGGLE_EXCLUDE_GLOBAL =
+  'GRANULE_TOGGLE_EXCLUDE_GLOBAL'
+export const granuleToggleExcludeGlobal = () => {
+  return {
+    type: GRANULE_TOGGLE_EXCLUDE_GLOBAL,
+  }
+}

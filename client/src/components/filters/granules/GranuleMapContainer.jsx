@@ -1,17 +1,33 @@
 import {connect} from 'react-redux'
 import Map from '../spatial/Map'
+import {
+  granuleUpdateGeometry,
+  granuleRemoveGeometry,
+} from '../../../actions/search/GranuleFilterActions'
+import {
+  triggerGranuleSearch,
+  showGranules,
+} from '../../../actions/search/GranuleSearchActions'
 
 import {withRouter} from 'react-router'
 
-// TODO: make new actions/reducers related to granules
-// use CollectionMapContainer as reference point
-
 const mapStateToProps = state => {
-  return {}
+  const {geoJSON} = state.search.granuleFilter
+  return {
+    geoJsonSelection: geoJSON,
+    showMap: state.layout.showMap,
+  }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-  return {}
+  return {
+    handleNewGeometry: geoJSON => dispatch(granuleUpdateGeometry(geoJSON)),
+    removeGeometry: () => dispatch(granuleRemoveGeometry()),
+    submit: () => {
+      dispatch(triggerGranuleSearch(true))
+      dispatch(showGranules(ownProps.history, ownProps.match.params.id))
+    },
+  }
 }
 
 const GranuleMapContainer = withRouter(
