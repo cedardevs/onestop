@@ -66,9 +66,6 @@ export const collectionResult = (state = initialState, action) => {
         collectionsPageOffset: initialState.collectionsPageOffset,
       })
 
-    // case COLLECTION_UPDATE_TOTAL:
-    //   return Immutable.set(state, 'totalCollections', action.totalCollections)
-
     case COLLECTION_INCREMENT_RESULTS_OFFSET:
       return Immutable.set(
         state,

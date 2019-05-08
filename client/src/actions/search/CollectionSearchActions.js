@@ -8,10 +8,6 @@ import {
   collectionSearchComplete,
   collectionSearchError,
 } from './CollectionRequestActions'
-// TODO for these that are not used - can the actions be removed entirely or are they in use elsewhere?
-// import {
-//   collectionUpdateTotal,
-// } from './CollectionResultActions'
 
 // TODO const newCollectionSearch = () => {return triggerCollectionSearch(true)}
 // TODO const triggerCollectionSearchWithoutFacets = () => {return triggerCollectionSearch(false, false)}
