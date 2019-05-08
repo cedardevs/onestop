@@ -8,7 +8,7 @@ import {
 } from '../../../actions/search/CollectionFilterActions'
 import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
 import {
-  triggerSearch,
+  triggerCollectionSearch,
   showCollections,
 } from '../../../actions/search/CollectionSearchActions'
 import AppliedFilters from '../AppliedFilters'
@@ -40,7 +40,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(collectionToggleFacet(category, facetName, selected)),
     submit: () => {
       dispatch(collectionClearResults())
-      dispatch(triggerSearch())
+      dispatch(triggerCollectionSearch())
       dispatch(showCollections(ownProps.history))
     },
     updateDateRange: (startDate, endDate) =>

@@ -4,7 +4,7 @@ import FacetFilter from '../facet/FacetFilter'
 import {collectionToggleFacet} from '../../../actions/search/CollectionFilterActions'
 import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
 import {
-  triggerSearch,
+  triggerCollectionSearch,
   showCollections,
 } from '../../../actions/search/CollectionSearchActions'
 import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
@@ -25,7 +25,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     submit: () => {
       dispatch(collectionClearResults())
-      dispatch(triggerSearch())
+      dispatch(triggerCollectionSearch())
       dispatch(showCollections(ownProps.history))
     },
   }

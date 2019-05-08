@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import Landing from './Landing'
 import {
-  triggerSearch,
+  triggerCollectionSearch,
   showCollections,
 } from '../../actions/search/CollectionSearchActions'
 import {collectionClearFacets} from '../../actions/search/CollectionFilterActions'
@@ -17,7 +17,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
       dispatch(collectionClearFacets())
-      dispatch(triggerSearch())
+      dispatch(triggerCollectionSearch())
       dispatch(showCollections(ownProps.history))
     },
   }

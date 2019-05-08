@@ -7,7 +7,7 @@ import {
 } from '../../../actions/search/CollectionFilterActions'
 import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
 import {
-  triggerSearch,
+  triggerCollectionSearch,
   showCollections,
 } from '../../../actions/search/CollectionSearchActions'
 
@@ -29,7 +29,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     submit: () => {
       dispatch(collectionClearResults())
-      dispatch(triggerSearch())
+      dispatch(triggerCollectionSearch())
       dispatch(showCollections(ownProps.history))
     },
   }

@@ -8,7 +8,7 @@ import {
   collectionUpdateFilters,
 } from '../../../actions/search/CollectionFilterActions'
 import {
-  triggerSearch,
+  triggerCollectionSearch,
   showCollections,
 } from '../../../actions/search/CollectionSearchActions'
 
@@ -23,7 +23,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     submit: () => {
       dispatch(collectionRemoveFilters())
       dispatch(collectionClearResults())
-      dispatch(triggerSearch())
+      dispatch(triggerCollectionSearch())
       dispatch(showCollections(ownProps.history))
     },
     collectionUpdateQueryText: text =>

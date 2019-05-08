@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import NotFound from './NotFound'
 import {
-  triggerSearch,
+  triggerCollectionSearch,
   showCollections,
 } from '../../actions/search/CollectionSearchActions'
 import {
@@ -18,7 +18,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
       dispatch(collectionClearFacets())
-      dispatch(triggerSearch())
+      dispatch(triggerCollectionSearch())
       dispatch(showCollections(ownProps.history))
     },
     collectionUpdateQueryText: text => {

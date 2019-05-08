@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import {
-  triggerSearch,
+  triggerCollectionSearch,
   showDetails,
 } from '../../../actions/search/CollectionSearchActions'
 import {collectionIncrementResultsOffset} from '../../../actions/search/CollectionResultActions'
@@ -30,7 +30,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     fetchMoreResults: () => {
       dispatch(collectionIncrementResultsOffset())
-      dispatch(triggerSearch(false))
+      dispatch(triggerCollectionSearch(false))
     },
   }
 }

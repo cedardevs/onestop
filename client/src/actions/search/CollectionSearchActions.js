@@ -57,7 +57,7 @@ import {
 import {fetchConfig} from '../ConfigActions'
 import {fetchCounts, fetchInfo} from './InfoActions'
 
-export const triggerSearch = (retrieveFacets = true) => {
+export const triggerCollectionSearch = (retrieveFacets = true) => {
   // TODO rename to collection something something
   const bodyBuilder = state => {
     const body = assembleSearchRequest(state, false, retrieveFacets)
@@ -147,7 +147,7 @@ export const loadCollections = newQueryString => {
       dispatch(collectionClearDetailGranulesResult())
       dispatch(collectionClearSelectedIds())
       dispatch(collectionUpdateFilters(searchFromQuery))
-      dispatch(triggerSearch())
+      dispatch(triggerCollectionSearch())
     }
   }
 }
