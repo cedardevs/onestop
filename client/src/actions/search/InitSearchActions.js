@@ -10,7 +10,8 @@ import {
   collectionToggleSelectedId,
   collectionUpdateFilters,
 } from './CollectionFilterActions'
-import {getCollection, triggerCollectionSearch} from './CollectionSearchActions'
+import {getCollection} from '../get/CollectionGetDetailActions'
+import {triggerCollectionSearch} from './CollectionSearchActions'
 import {
   collectionClearResults,
   collectionClearDetailGranulesResult, // TODO make sure this still works!

@@ -1,12 +1,13 @@
 export const COLLECTION_GET_DETAIL_START = 'COLLECTION_GET_DETAIL_START' // formerly COLLECTION_DETAIL_REQUEST
-export const collectionGetDetailStart = (id) => ({
+export const collectionGetDetailStart = id => ({
   type: COLLECTION_GET_DETAIL_START,
   id: id,
 })
 
 export const COLLECTION_GET_DETAIL_COMPLETE = 'COLLECTION_GET_DETAIL_COMPLETE' // formerly COLLECTION_DETAIL_SUCCESS
 export const collectionGetDetailComplete = (
-  data, metadata
+  data,
+  metadata
   // clearPreviousResults,
   // total,
   // items,

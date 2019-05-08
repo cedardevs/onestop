@@ -1,24 +1,23 @@
 import _ from 'lodash'
-import {buildSearchAction, buildGetAction} from './SearchActions'
+import {buildSearchAction} from './SearchActions'
 import {showErrors} from '../ErrorActions'
 
 import {assembleSearchRequest, encodeQueryString} from '../../utils/queryUtils'
-import {collectionGetDetailStart,collectionGetDetailComplete, collectionGetDetailError} from '../get/CollectionDetailRequestActions'
 import {
   collectionSearchStart,
   collectionSearchComplete,
   collectionSearchError,
 } from './CollectionRequestActions'
-import {
-  collectionClearFacets,
-  collectionClearSelectedIds,
-  collectionToggleSelectedId,
-  collectionUpdateFilters,
-} from './CollectionFilterActions'
-import {
-  collectionMetadataReceived,
-  collectionUpdateTotal,
-} from './CollectionResultActions'
+// import { // TODO none of these are used - can the actions be removed entirely or are they in use elsewhere?
+//   collectionClearFacets,
+//   collectionClearSelectedIds,
+//   collectionToggleSelectedId,
+//   collectionUpdateFilters,
+// } from './CollectionFilterActions'
+// import {
+//   collectionMetadataReceived,
+//   collectionUpdateTotal,
+// } from './CollectionResultActions'
 
 export const triggerCollectionSearch = (
   clearPreviousResults = false,
@@ -37,12 +36,11 @@ export const triggerCollectionSearch = (
     return body
   }
   const prefetchHandler = dispatch => {
-    // dispatch(showLoading())
-    // dispatch(collectionSearchRequest())
     dispatch(collectionSearchStart())
   }
   const successHandler = (dispatch, payload) => {
     const result = _.reduce(
+      // TODO is this the right place to do the reduce? or in the ... reducer...
       payload.data,
       (map, resource) => {
         return map.set(
@@ -53,12 +51,6 @@ export const triggerCollectionSearch = (
       new Map()
     )
 
-    // if (retrieveFacets) {
-    //   dispatch(collectionMetadataReceived(payload.meta))
-    // }
-    // dispatch(collectionUpdateTotal(payload.meta.total))
-    // dispatch(collectionSearchSuccess(result))
-    // dispatch(hideLoading())
     dispatch(
       collectionSearchComplete(
         clearPreviousResults,
@@ -69,11 +61,6 @@ export const triggerCollectionSearch = (
     )
   }
   const errorHandler = (dispatch, e) => {
-    // dispatch(hideLoading())
-    // dispatch(showErrors(e.errors || e))
-    // dispatch(collectionClearFacets())
-    // dispatch(collectionSearchSuccess(new Map()))
-
     // dispatch(showErrors(e.errors || e)) // TODO show errors
     dispatch(collectionSearchError(e.errors || e))
   }
@@ -81,32 +68,6 @@ export const triggerCollectionSearch = (
   return buildSearchAction(
     'collection',
     bodyBuilder,
-    prefetchHandler,
-    successHandler,
-    errorHandler
-  )
-}
-
-export const getCollection = collectionId => {
-  const prefetchHandler = dispatch => {
-    // dispatch(showLoading())
-    dispatch(collectionGetDetailStart(collectionId)) // TODO
-  }
-
-  const successHandler = (dispatch, payload) => {
-    dispatch(collectionGetDetailComplete(payload.data[0], payload.meta))
-    dispatch(hideLoading())
-  }
-
-  const errorHandler = (dispatch, e) => {
-    // dispatch(hideLoading())
-    dispatch(showErrors(e.errors || e))
-    dispatch(collectionGetDetailError(e.errors || e)) // TODO
-  }
-
-  return buildGetAction(
-    'collection',
-    collectionId,
     prefetchHandler,
     successHandler,
     errorHandler
@@ -124,19 +85,5 @@ export const showCollections = history => {
       }
       history.push(locationDescriptor)
     }
-  }
-}
-
-export const showDetails = (history, id) => {
-  if (!id) {
-    return
-  }
-  return (dispatch, getState) => {
-    const query = encodeQueryString(getState())
-    const locationDescriptor = {
-      pathname: `/collections/details/${id}`,
-      search: _.isEmpty(query) ? null : `?${query}`,
-    }
-    history.push(locationDescriptor)
   }
 }
