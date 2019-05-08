@@ -2,26 +2,72 @@ package org.cedar.psi.manager.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.cedar.schemas.avro.psi.ErrorEvent;
-import org.cedar.schemas.avro.psi.ParsedRecord;
-import org.cedar.schemas.avro.psi.Publishing;
-import org.cedar.schemas.avro.psi.RecordType;
+import org.cedar.schemas.avro.psi.*;
 import org.cedar.schemas.parse.ISOParser;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class RecordParser {
   private static final Logger log = LoggerFactory.getLogger(RecordParser.class);
 
+
+  public static ParsedRecord parse(Object key, AggregatedInput value) {
+    if (value.getDeleted()) {
+      return null;
+    }
+
+    var errors = value.getErrors();
+    if (errors != null && errors.size() > 0) {
+      return null;
+    }
+
+    var builder = ParsedRecord.newBuilder()
+        .setType(value.getType())
+        .setFileInformation(value.getFileInformation())
+        .setFileLocations(value.getFileLocations())
+        .setPublishing(value.getPublishing())
+        .setRelationships(value.getRelationships());
+
+    if (value.getRawXml() != null) {
+      try {
+        builder.setDiscovery(ISOParser.parseXMLMetadataToDiscovery(value.getRawXml()));
+      }
+      catch (Exception e) {
+        var error = ErrorEvent.newBuilder()
+            .setTitle("Unable to parse malformed rawXml")
+            .setDetail(ExceptionUtils.getRootCauseMessage(e).trim())
+            .build();
+        log.error("{}: {}", error.getTitle(), error.getDetail());
+        builder.setErrors(Arrays.asList(error));
+      }
+    }
+
+    return builder.build();
+  }
+
+  // TODO - this needs be MUCH more flexible
+  public static ParsedRecord parse(Object key, String inputStr, RecordType type) {
+    try {
+      var map = new ObjectMapper().readValue(inputStr, LinkedHashMap.class);
+      return parse(map, type);
+    }
+    catch (Exception e) {
+      log.error("Exception while reading json string for key" + key.toString(), e);
+      return null;
+    }
+  }
+
   public static ParsedRecord parse(Map msgMap, RecordType type) {
     try {
       var contentType = extractString(msgMap, "contentType");
       var content = extractString(msgMap, "content");
-      var method = extractString(msgMap, "method");
-      if (method != null && method.equals("DELETE")) {
+      var deleted = msgMap.get("deleted");
+      if (deleted instanceof Boolean && (Boolean) deleted) {
         // if the input is a deletion then tombstone the parsed info
         return null;
       }

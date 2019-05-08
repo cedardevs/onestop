@@ -9,19 +9,18 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
 import org.cedar.psi.common.constants.StreamsApps;
-import org.cedar.psi.common.serde.JsonSerdes;
 import org.cedar.psi.manager.config.ManagerConfig;
 import org.cedar.psi.manager.util.RecordParser;
 import org.cedar.psi.manager.util.RoutingUtils;
 import org.cedar.schemas.analyze.Analyzers;
-import org.cedar.schemas.avro.psi.Input;
+import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.RecordType;
 import org.cedar.schemas.avro.util.AvroUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Properties;
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -48,26 +47,42 @@ public class StreamManager {
     });
 
     return builder.build();
-  };
+  }
+
+  ;
 
   static StreamsBuilder addTopologyForType(StreamsBuilder builder, RecordType type) {
-    var inputStream = builder.<String, Input>stream(inputChangelogTopics(StreamsApps.REGISTRY_ID, type));
-    var fromExtractorsStream = builder.<String, Map<String, Object>>stream(fromExtractorTopic(type), Consumed.with(Serdes.String(), JsonSerdes.Map()));
+    var inputStream = builder.<String, AggregatedInput>stream(inputChangelogTopics(StreamsApps.REGISTRY_ID, type));
 
     inputStream
+        .filterNot(RoutingUtils::hasErrors)
         .filter(RoutingUtils::requiresExtraction)
-        .mapValues((v) -> v.getContent())
+        .mapValues((v) -> AvroUtils.avroToMap(v))
+        .mapValues(StreamManager::toJsonOrNull)
+        .filterNot(RoutingUtils::isNull)
         .to(toExtractorTopic(type), Produced.with(Serdes.String(), Serdes.String()));
 
+    var fromExtractorsStream = builder.<String, String>stream(fromExtractorTopic(type), Consumed.with(Serdes.String(), Serdes.String()))
+        .mapValues((k, v) -> RecordParser.parse(k, v, type));
+
     inputStream
-        .filterNot(RoutingUtils::requiresExtraction)
-        .mapValues(it -> AvroUtils.avroToMap(it))
+        .filterNot(RoutingUtils::hasErrors)
+        .mapValues(RecordParser::parse)
         .merge(fromExtractorsStream)
-        .mapValues(it -> RecordParser.parse(it, type))
         .mapValues(Analyzers::addAnalysis)
         .to(parsedTopic(type));
 
     return builder;
+  }
+
+  static String toJsonOrNull(Object o) {
+    try {
+      return new ObjectMapper().writeValueAsString(o);
+    }
+    catch (Exception e) {
+      log.error("Exception while serializing " + o.getClass() + " to json", e);
+      return null;
+    }
   }
 
   static Properties streamsConfig(String appId, ManagerConfig config) {

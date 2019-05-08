@@ -1,6 +1,6 @@
 package org.cedar.psi.manager.util;
 
-import org.cedar.schemas.avro.psi.Input;
+import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.RecordType;
 
 import java.util.List;
@@ -13,8 +13,16 @@ public class RoutingUtils {
   public static final Map<RecordType, List<String>> extractableInputSources = Map.of(
       RecordType.granule, List.of("common-ingest"));
 
-  public static boolean requiresExtraction(String key, Input value) {
-    return extractableInputSources.get(value.getType()).contains(value.getSource());
+  public static boolean requiresExtraction(String key, AggregatedInput value) {
+    return extractableInputSources.get(value.getType()).contains(value.getInitialSource());
   };
+
+  public static boolean hasErrors(String key, AggregatedInput value) {
+    return value.getErrors() != null && value.getErrors().size() > 0;
+  }
+
+  public static boolean isNull(String key, Object value) {
+    return value == null;
+  }
 
 }
