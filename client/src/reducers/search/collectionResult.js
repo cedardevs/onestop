@@ -30,7 +30,6 @@ const collectionResults = (state, collections, action) => {
 
 export const collectionResult = (state = initialState, action) => {
   switch (action.type) {
-
     // Result Effects from 'CollectionRequestActions'
     case COLLECTION_SEARCH_COMPLETE:
       let newCollections = {}

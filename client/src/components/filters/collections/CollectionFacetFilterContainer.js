@@ -4,10 +4,9 @@ import FacetFilter from '../facet/FacetFilter'
 import {collectionToggleFacet} from '../../../actions/search/CollectionFilterActions'
 import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
 import {
-  triggerCollectionSearch,
+  asyncNewCollectionSearch,
   showCollections,
 } from '../../../actions/search/CollectionSearchActions'
-import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
 
 const mapStateToProps = state => {
   return {
@@ -24,8 +23,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(collectionToggleFacet(category, facetName, selected))
     },
     submit: () => {
-      dispatch(collectionClearResults())
-      dispatch(triggerCollectionSearch())
+      dispatch(asyncNewCollectionSearch())
       dispatch(showCollections(ownProps.history))
     },
   }

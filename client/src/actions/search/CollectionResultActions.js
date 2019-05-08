@@ -1,9 +1,7 @@
-export const COLLECTION_CLEAR_RESULTS = 'COLLECTION_CLEAR_RESULTS'
-export const collectionClearResults = () => ({type: COLLECTION_CLEAR_RESULTS})
-
 export const COLLECTION_INCREMENT_RESULTS_OFFSET =
   'COLLECTION_INCREMENT_RESULTS_OFFSET'
 export const collectionIncrementResultsOffset = () => ({
+  // TODO rename nextPage
   type: COLLECTION_INCREMENT_RESULTS_OFFSET,
 })
 

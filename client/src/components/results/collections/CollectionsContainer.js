@@ -1,7 +1,7 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 
-import {triggerCollectionSearch} from '../../../actions/search/CollectionSearchActions'
+import {asyncMoreCollectionResults} from '../../../actions/search/CollectionSearchActions'
 import {showDetails} from '../../../actions/get/CollectionGetDetailActions'
 import {collectionIncrementResultsOffset} from '../../../actions/search/CollectionResultActions'
 import Collections from './Collections'
@@ -29,7 +29,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     fetchMoreResults: () => {
       dispatch(collectionIncrementResultsOffset())
-      dispatch(triggerCollectionSearch(false, false))
+      dispatch(asyncMoreCollectionResults())
     },
   }
 }

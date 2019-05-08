@@ -9,14 +9,19 @@ import {
   collectionSearchError,
 } from './CollectionRequestActions'
 
-// TODO const newCollectionSearch = () => {return triggerCollectionSearch(true)}
-// TODO const triggerCollectionSearchWithoutFacets = () => {return triggerCollectionSearch(false, false)}
+export const asyncNewCollectionSearch = () => {
+  // TODO reset page offset to 0
+  return triggerCollectionSearch(true, true)
+}
+export const asyncMoreCollectionResults = () => {
+  // TODO move collectionIncrementResultsOffset into this
+  return triggerCollectionSearch(false, false)
+}
 
-export const triggerCollectionSearch = (
+const triggerCollectionSearch = (
   clearPreviousResults = false,
   retrieveFacets = true
 ) => {
-  // TODO rename to collection something something
   const bodyBuilder = state => {
     const body = assembleSearchRequest(state, false, retrieveFacets)
     const inFlight =

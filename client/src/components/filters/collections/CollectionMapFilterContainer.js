@@ -6,9 +6,8 @@ import {
   collectionRemoveGeometry,
 } from '../../../actions/search/CollectionFilterActions'
 import {toggleMap} from '../../../actions/LayoutActions'
-import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
 import {
-  triggerCollectionSearch,
+  asyncNewCollectionSearch,
   showCollections,
 } from '../../../actions/search/CollectionSearchActions'
 
@@ -28,8 +27,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(collectionToggleExcludeGlobal())
     },
     submit: () => {
-      dispatch(collectionClearResults())
-      dispatch(triggerCollectionSearch())
+      dispatch(asyncNewCollectionSearch())
       dispatch(showCollections(ownProps.history))
     },
     toggleMap: () => {

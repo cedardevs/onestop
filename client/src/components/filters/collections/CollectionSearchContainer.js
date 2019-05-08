@@ -1,11 +1,9 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import CollectionSearch from './CollectionSearch'
+import {collectionUpdateQueryText} from '../../../actions/search/CollectionFilterActions'
 import {
-  collectionUpdateQueryText,
-} from '../../../actions/search/CollectionFilterActions'
-import {
-  triggerCollectionSearch,
+  asyncNewCollectionSearch,
   showCollections,
 } from '../../../actions/search/CollectionSearchActions'
 
@@ -18,7 +16,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
-      dispatch(triggerCollectionSearch(true))
+      dispatch(asyncNewCollectionSearch())
       dispatch(showCollections(ownProps.history))
     },
     collectionUpdateQueryText: text =>

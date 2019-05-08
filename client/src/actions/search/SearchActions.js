@@ -1,8 +1,6 @@
 import {apiPath} from '../../utils/urlUtils'
 import {checkForErrors} from '../../utils/responseUtils'
 
-import {collectionClearResults} from './CollectionResultActions'
-
 // TODO rename this file to FetchHelper or something?
 
 export const buildSearchAction = (
@@ -107,6 +105,5 @@ export const showHome = history => {
   return dispatch => {
     // dispatch(collectionUpdateFilters()) // TODO reset filter state, results, etc (if needed) - note though that these are cleared when a new search is triggered regardless, so it's probably not important
     history.push('/')
-    dispatch(collectionClearResults()) // TODO clear granule results here also
   }
 }

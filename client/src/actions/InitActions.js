@@ -7,9 +7,8 @@ import {granuleUpdateFilters} from './search/GranuleFilterActions'
 import {triggerGranuleSearch} from './search/GranuleSearchActions'
 import {collectionUpdateFilters} from './search/CollectionFilterActions'
 import {getCollection} from './get/CollectionGetDetailActions'
-import {triggerCollectionSearch} from './search/CollectionSearchActions'
+import {asyncNewCollectionSearch} from './search/CollectionSearchActions'
 import {
-  collectionClearResults,
   collectionClearDetailGranulesResult, // TODO make sure this still works!
 } from './search/CollectionResultActions'
 import {buildSitemapAction} from './search/SearchActions'
@@ -41,11 +40,10 @@ export const loadCollections = newQueryString => {
     const searchFromQuery = decodeQueryString(newQueryString)
     const searchFromState = _.get(getState(), 'search.collectionFilter')
     if (!_.isEqual(searchFromQuery, searchFromState)) {
-      dispatch(collectionClearResults())
       dispatch(collectionClearDetailGranulesResult())
       // dispatch(collectionClearSelectedIds()) // TODO this implies that selectedIds is being overloaded in some way, or is too tied to a particular workflow...
       dispatch(collectionUpdateFilters(searchFromQuery))
-      dispatch(triggerCollectionSearch())
+      dispatch(asyncNewCollectionSearch())
     }
   }
 }

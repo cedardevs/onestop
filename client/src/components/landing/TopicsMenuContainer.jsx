@@ -4,14 +4,14 @@ import TopicsMenu from './TopicsMenu'
 import {} from '../../actions/search/CollectionResultActions'
 import {collectionUpdateQueryText} from '../../actions/search/CollectionFilterActions'
 import {
-  triggerCollectionSearch,
+  asyncNewCollectionSearch,
   showCollections,
 } from '../../actions/search/CollectionSearchActions'
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
-      dispatch(triggerCollectionSearch(true))
+      dispatch(asyncNewCollectionSearch())
       dispatch(showCollections(ownProps.history))
     },
     collectionUpdateQueryText: text => {
