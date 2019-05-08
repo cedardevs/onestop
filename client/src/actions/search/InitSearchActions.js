@@ -1,13 +1,20 @@
 import {decodeQueryString} from '../../utils/queryUtils'
-import {getCollectionIdFromGranuleListPath} from '../../utils/urlUtils'
+import {
+  getCollectionIdFromDetailPath,
+  getCollectionIdFromGranuleListPath,
+} from '../../utils/urlUtils'
 import {granuleUpdateFilters} from './GranuleFilterActions'
 import {triggerGranuleSearch} from './GranuleSearchActions'
 import {
   collectionClearSelectedIds,
   collectionToggleSelectedId,
+  collectionUpdateFilters,
 } from './CollectionFilterActions'
-import {getCollection} from './CollectionSearchActions'
-import {collectionClearDetailGranulesResult} from './CollectionResultActions'
+import {getCollection, triggerCollectionSearch} from './CollectionSearchActions'
+import {
+  collectionClearResults,
+  collectionClearDetailGranulesResult, // TODO make sure this still works!
+} from './CollectionResultActions'
 
 export const loadGranulesList = (path, newQueryString) => {
   return (dispatch, getState) => {
@@ -24,6 +31,32 @@ export const loadGranulesList = (path, newQueryString) => {
       dispatch(collectionClearDetailGranulesResult())
       dispatch(granuleUpdateFilters(searchFromQuery))
       dispatch(triggerGranuleSearch())
+    }
+  }
+}
+
+export const loadCollections = newQueryString => {
+  return (dispatch, getState) => {
+    if (newQueryString.indexOf('?') === 0) {
+      newQueryString = newQueryString.slice(1)
+    }
+    const searchFromQuery = decodeQueryString(newQueryString)
+    const searchFromState = _.get(getState(), 'search.collectionFilter')
+    if (!_.isEqual(searchFromQuery, searchFromState)) {
+      dispatch(collectionClearResults())
+      dispatch(collectionClearDetailGranulesResult())
+      dispatch(collectionClearSelectedIds())
+      dispatch(collectionUpdateFilters(searchFromQuery))
+      dispatch(triggerCollectionSearch())
+    }
+  }
+}
+
+export const loadDetails = path => {
+  return (dispatch, getState) => {
+    if (!getState().search.collectionRequest.collectionDetailRequestInFlight) {
+      const detailId = getCollectionIdFromDetailPath(path)
+      dispatch(getCollection(detailId))
     }
   }
 }

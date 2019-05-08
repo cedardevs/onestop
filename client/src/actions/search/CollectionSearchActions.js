@@ -135,23 +135,6 @@ export const getCollection = collectionId => {
   )
 }
 
-export const loadCollections = newQueryString => {
-  return (dispatch, getState) => {
-    if (newQueryString.indexOf('?') === 0) {
-      newQueryString = newQueryString.slice(1)
-    }
-    const searchFromQuery = decodeQueryString(newQueryString)
-    const searchFromState = _.get(getState(), 'search.collectionFilter')
-    if (!_.isEqual(searchFromQuery, searchFromState)) {
-      dispatch(collectionClearResults())
-      dispatch(collectionClearDetailGranulesResult())
-      dispatch(collectionClearSelectedIds())
-      dispatch(collectionUpdateFilters(searchFromQuery))
-      dispatch(triggerCollectionSearch())
-    }
-  }
-}
-
 export const showCollections = history => {
   return (dispatch, getState) => {
     dispatch(collectionClearSelectedIds())
@@ -166,20 +149,6 @@ export const showCollections = history => {
   }
 }
 
-// export const showGranulesList = (history, id) => { // TODO replace with showGranules from GranuleSearchActions? need to decombobulate the extra layer of state though...
-//   if (!id) {
-//     return
-//   }
-//   return (dispatch, getState) => {
-//     const query = encodeQueryString(getState())
-//     const locationDescriptor = {
-//       pathname: `/collections/granules/${id}`,
-//       search: `?${query}`,
-//     }
-//     history.push(locationDescriptor)
-//   }
-// }
-
 export const showDetails = (history, id) => {
   if (!id) {
     return
@@ -191,14 +160,5 @@ export const showDetails = (history, id) => {
       search: _.isEmpty(query) ? null : `?${query}`,
     }
     history.push(locationDescriptor)
-  }
-}
-
-export const loadDetails = path => {
-  return (dispatch, getState) => {
-    if (!getState().search.collectionRequest.collectionDetailRequestInFlight) {
-      const detailId = getCollectionIdFromDetailPath(path)
-      dispatch(getCollection(detailId))
-    }
   }
 }
