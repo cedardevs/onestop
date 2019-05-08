@@ -3,11 +3,8 @@ import {buildSearchAction, buildGetAction} from './SearchActions'
 import {showErrors} from '../ErrorActions'
 
 import {assembleSearchRequest, encodeQueryString} from '../../utils/queryUtils'
+import {collectionGetDetailStart,collectionGetDetailComplete, collectionGetDetailError} from '../get/CollectionDetailRequestActions'
 import {
-  collectionDetailRequest,
-  collectionDetailSuccess,
-  // collectionSearchRequest,
-  // collectionSearchSuccess,
   collectionSearchStart,
   collectionSearchComplete,
   collectionSearchError,
@@ -93,18 +90,18 @@ export const triggerCollectionSearch = (
 export const getCollection = collectionId => {
   const prefetchHandler = dispatch => {
     // dispatch(showLoading())
-    dispatch(collectionDetailRequest(collectionId)) // TODO
+    dispatch(collectionGetDetailStart(collectionId)) // TODO
   }
 
   const successHandler = (dispatch, payload) => {
-    dispatch(collectionDetailSuccess(payload.data[0], payload.meta))
+    dispatch(collectionGetDetailComplete(payload.data[0], payload.meta))
     dispatch(hideLoading())
   }
 
   const errorHandler = (dispatch, e) => {
     // dispatch(hideLoading())
     dispatch(showErrors(e.errors || e))
-    dispatch(collectionDetailSuccess(null)) // TODO
+    dispatch(collectionGetDetailError(e.errors || e)) // TODO
   }
 
   return buildGetAction(

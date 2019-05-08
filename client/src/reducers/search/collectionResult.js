@@ -80,6 +80,8 @@ export const collectionResult = (state = initialState, action) => {
     //   let allCollections = state.collections.merge(newCollections)
     //   return Immutable.set(state, 'collections', allCollections)
 
+    case COLLECTION_DETAIL_ERROR:
+      return Immutable.set(state, 'collectionDetail', null) // TODO also set errors like with other new error actions
     case COLLECTION_DETAIL_SUCCESS:
       return Immutable.set(state, 'collectionDetail', action.result)
 
