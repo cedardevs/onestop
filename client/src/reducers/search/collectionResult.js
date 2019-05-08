@@ -17,15 +17,16 @@ export const initialState = Immutable({
   collections: {},
   facets: {},
   totalCollections: 0,
+  loadedCollections: 0, // TODO rename to loadedCount or numberLoaded or something?
   collectionsPageOffset: 0,
-  totalGranules: 0,
+  totalGranules: 0, // TODO when is this still used??
   pageSize: 20,
 })
 
 const collectionResults = (state, collections, action) => {
   // TODO rename this, it's vague
   return Immutable.merge(state, {
-    // loadedCollections: (granules && Object.keys(granules).length) || 0, // TODO
+    loadedCollections: (collections && Object.keys(collections).length) || 0,
     collections: collections,
     totalCollections: action.total,
     facets: action.metadata ? action.metadata.facets : initialState.facets,
@@ -57,7 +58,7 @@ export const collectionResult = (state = initialState, action) => {
 
     case COLLECTION_SEARCH_ERROR:
       return Immutable.merge(state, {
-        // loadedCollections: initialState.loadedCollections, //TODO
+        loadedCollections: initialState.loadedCollections,
         collections: initialState.collections,
         totalCollections: initialState.totalCollections,
         facets: initialState.facets,

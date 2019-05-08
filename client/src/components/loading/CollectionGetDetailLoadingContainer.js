@@ -6,16 +6,12 @@ import {withRouter} from 'react-router'
 const mapStateToProps = state => {
   const {
     loading,
-  } = state.search.collectionRequest.collectionSearchRequestInFlight
-  const {
-    collections,
-    totalCollections,
-    loadedCollections,
-  } = state.search.collectionResult
+  } = state.search.collectionDetailRequest.collectionDetailRequestInFlight
+  const {collectionDetail} = state.search.collectionDetailResult
 
   const text = loading
-    ? 'Searching for files...'
-    : `Loaded ${loadedCollections} of ${totalCollections} files.`
+    ? 'Loading Collection...'
+    : `Loaded ${collectionDetail.id}.` // TODO is id the right param???
   const loadingId = `loading-id::${loading}`
 
   return {
@@ -25,8 +21,8 @@ const mapStateToProps = state => {
   }
 }
 
-const CollectionSearchLoadingContainer = withRouter(
+const CollectionGetDetailLoadingContainer = withRouter(
   connect(mapStateToProps)(LoadingBar)
 )
 
-export default CollectionSearchLoadingContainer
+export default CollectionGetDetailLoadingContainer

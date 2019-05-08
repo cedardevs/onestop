@@ -10,13 +10,14 @@ const mapStateToProps = state => {
   const {
     collections,
     totalCollections,
+    loadedCollections,
     pageSize,
   } = state.search.collectionResult
   return {
     loading: state.search.loading ? 1 : 0,
     results: collections,
     totalHits: totalCollections,
-    returnedHits: (collections && Object.keys(collections).length) || 0,
+    returnedHits: loadedCollections,
     pageSize,
   }
 }

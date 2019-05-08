@@ -17,7 +17,7 @@ import Help from '../help/Help'
 import AboutContainer from '../about/AboutContainer'
 import CartContainer from '../cart/CartContainer'
 
-import LoadingBarContainer from '../loading/LoadingBarContainer'
+import CollectionGetDetailLoadingContainer from '../loading/CollectionGetDetailLoadingContainer'
 import GranuleSearchLoadingContainer from '../loading/GranuleSearchLoadingContainer'
 import CollectionSearchLoadingContainer from '../loading/CollectionSearchLoadingContainer'
 
@@ -93,8 +93,7 @@ export default class Root extends React.Component {
           <Route path={ROUTE.details.path}>
             {/*TODO parameterize this path!*/}
             <div>
-              <LoadingBarContainer />{' '}
-              {/* TODO replace this with something more specific for details */}
+              <CollectionGetDetailLoadingContainer />
               <DetailContainer />
             </div>
           </Route>
