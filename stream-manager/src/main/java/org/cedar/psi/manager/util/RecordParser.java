@@ -2,11 +2,11 @@ package org.cedar.psi.manager.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.cedar.psi.common.util.ISOParser;
 import org.cedar.schemas.avro.psi.ErrorEvent;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.Publishing;
 import org.cedar.schemas.avro.psi.RecordType;
+import org.cedar.schemas.parse.ISOParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
