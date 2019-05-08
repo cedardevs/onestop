@@ -1,40 +1,19 @@
+import _ from 'lodash'
 import {
   buildSearchAction,
   buildGetAction,
   showLoading,
   hideLoading,
 } from './SearchActions'
+import {showErrors} from '../ErrorActions'
+
+import {assembleSearchRequest, encodeQueryString} from '../../utils/queryUtils'
 import {
-  assembleSearchRequest,
-  assembleGranuleSearchRequest,
-  decodeQueryString,
-  encodeQueryString,
-} from '../../utils/queryUtils'
-import {
-  // collectionDetailGranulesRequest,
-  // collectionDetailGranulesSuccess,
   collectionDetailRequest,
   collectionDetailSuccess,
   collectionSearchRequest,
   collectionSearchSuccess,
 } from './CollectionRequestActions'
-
-import {
-  granuleSearchRequest,
-  granuleSearchSuccess,
-  granuleSearchStart,
-  granuleSearchComplete,
-  granuleSearchError,
-} from './GranuleRequestActions'
-import {triggerGranuleSearch} from './GranuleSearchActions'
-import {
-  // collectionClearFacets,
-  // collectionClearSelectedIds,
-  // collectionToggleSelectedId,
-  granuleUpdateFilters,
-} from './GranuleFilterActions'
-import _ from 'lodash'
-import {showErrors} from '../ErrorActions'
 import {
   collectionClearFacets,
   collectionClearSelectedIds,
@@ -42,20 +21,9 @@ import {
   collectionUpdateFilters,
 } from './CollectionFilterActions'
 import {
-  apiPath,
-  getCollectionIdFromDetailPath,
-  getCollectionIdFromGranuleListPath,
-} from '../../utils/urlUtils'
-import {checkForErrors} from '../../utils/responseUtils'
-import {
-  collectionClearDetailGranulesResult,
-  collectionClearResults,
   collectionMetadataReceived,
-  // collectionUpdateDetailGranulesTotal,
   collectionUpdateTotal,
 } from './CollectionResultActions'
-import {fetchConfig} from '../ConfigActions'
-import {fetchCounts, fetchInfo} from './InfoActions'
 
 export const triggerCollectionSearch = (retrieveFacets = true) => {
   // TODO rename to collection something something
