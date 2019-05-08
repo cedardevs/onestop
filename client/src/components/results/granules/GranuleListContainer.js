@@ -37,7 +37,7 @@ const mapDispatchToProps = dispatch => {
   return {
     fetchMoreResults: () => {
       dispatch(granuleIncrementResultsOffset())
-      dispatch(triggerGranuleSearch(false))
+      dispatch(triggerGranuleSearch(false, false)) // TODO ???
     },
     selectGranule: (item, itemId) => {
       insertGranule(itemId, item)

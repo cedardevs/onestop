@@ -4,21 +4,6 @@ import {checkForErrors} from '../../utils/responseUtils'
 import {collectionClearResults} from './CollectionResultActions'
 import {collectionUpdateFilters} from './CollectionFilterActions'
 
-// synchronous actions
-export const LOADING_SHOW = 'LOADING_SHOW'
-export const showLoading = () => {
-  return {
-    type: LOADING_SHOW,
-  }
-}
-
-export const LOADING_HIDE = 'LOADING_HIDE'
-export const hideLoading = () => {
-  return {
-    type: LOADING_HIDE,
-  }
-}
-
 export const buildSearchAction = (
   endpointName,
   bodyBuilder,

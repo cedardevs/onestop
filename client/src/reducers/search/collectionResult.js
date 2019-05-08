@@ -4,11 +4,15 @@ import {
   COLLECTION_REMOVE_FILTERS,
 } from '../../actions/search/CollectionFilterActions'
 import {
-  COLLECTION_SEARCH_SUCCESS,
+  // COLLECTION_SEARCH_SUCCESS,
   COLLECTION_DETAIL_SUCCESS,
+  COLLECTION_SEARCH_COMPLETE,
+  COLLECTION_SEARCH_ERROR,
+  COLLECTION_DETAIL_COMPLETE,
+  COLLECTION_DETAIL_ERROR,
 } from '../../actions/search/CollectionRequestActions'
 import {
-  COLLECTION_UPDATE_TOTAL,
+  // COLLECTION_UPDATE_TOTAL,
   COLLECTION_INCREMENT_RESULTS_OFFSET,
   COLLECTION_CLEAR_RESULTS,
   COLLECTION_INCREMENT_DETAIL_GRANULES_RESULT_OFFSET,
@@ -27,6 +31,16 @@ export const initialState = Immutable({
   collectionDetail: null,
 })
 
+const collectionResults = (state, collections, action) => {
+  // TODO rename this, it's vague
+  return Immutable.merge(state, {
+    // loadedCollections: (granules && Object.keys(granules).length) || 0, // TODO
+    collections: collections,
+    totalCollections: action.total,
+    facets: action.metadata ? action.metadata.facets : initialState.facets,
+  })
+}
+
 export const collectionResult = (state = initialState, action) => {
   switch (action.type) {
     // Result Effects from 'CollectionFilterActions'
@@ -37,13 +51,34 @@ export const collectionResult = (state = initialState, action) => {
       return Immutable.set(state, 'facets', initialState.facets)
 
     // Result Effects from 'CollectionRequestActions'
-    case COLLECTION_SEARCH_SUCCESS:
-      let newCollections = {}
-      action.items.forEach((val, key) => {
-        newCollections[key] = val
-      })
+    case COLLECTION_SEARCH_COMPLETE:
+      let newCollections = action.items.reduce(
+        (existing, next) => existing.set(next.id, next.attributes),
+        initialState.collections
+      )
+      if (action.clearPreviousResults) {
+        return collectionResults(state, newCollections, action)
+      }
+
       let allCollections = state.collections.merge(newCollections)
-      return Immutable.set(state, 'collections', allCollections)
+
+      return collectionResults(state, allCollections, action)
+
+    case COLLECTION_SEARCH_ERROR:
+      return Immutable.merge(state, {
+        // loadedCollections: initialState.loadedCollections, //TODO
+        collections: initialState.collections,
+        totalCollections: initialState.totalCollections,
+        facets: initialState.facets,
+      })
+
+    // case COLLECTION_SEARCH_SUCCESS:
+    //   let newCollections = {}
+    //   action.items.forEach((val, key) => {
+    //     newCollections[key] = val
+    //   })
+    //   let allCollections = state.collections.merge(newCollections)
+    //   return Immutable.set(state, 'collections', allCollections)
 
     case COLLECTION_DETAIL_SUCCESS:
       return Immutable.set(state, 'collectionDetail', action.result)
@@ -56,18 +91,18 @@ export const collectionResult = (state = initialState, action) => {
         collectionsPageOffset: initialState.collectionsPageOffset,
       })
 
-    case COLLECTION_UPDATE_TOTAL:
-      return Immutable.set(state, 'totalCollections', action.totalCollections)
+    // case COLLECTION_UPDATE_TOTAL:
+    //   return Immutable.set(state, 'totalCollections', action.totalCollections)
 
     case COLLECTION_CLEAR_DETAIL_GRANULES_RESULT:
       return Immutable.merge(state, {
         totalGranules: initialState.totalGranules,
       })
 
-    case COLLECTION_UPDATE_DETAIL_GRANULES_TOTAL:
+    case COLLECTION_UPDATE_DETAIL_GRANULES_TOTAL: // TODO when used?
       return Immutable.set(state, 'totalGranules', action.totalGranules)
 
-    case COLLECTION_METADATA_RECEIVED:
+    case COLLECTION_METADATA_RECEIVED: // TODO nuke this?
       return Immutable.set(state, 'facets', action.metadata.facets)
 
     case COLLECTION_INCREMENT_RESULTS_OFFSET:

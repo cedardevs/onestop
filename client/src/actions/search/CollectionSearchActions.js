@@ -1,18 +1,16 @@
 import _ from 'lodash'
-import {
-  buildSearchAction,
-  buildGetAction,
-  showLoading,
-  hideLoading,
-} from './SearchActions'
+import {buildSearchAction, buildGetAction} from './SearchActions'
 import {showErrors} from '../ErrorActions'
 
 import {assembleSearchRequest, encodeQueryString} from '../../utils/queryUtils'
 import {
   collectionDetailRequest,
   collectionDetailSuccess,
-  collectionSearchRequest,
-  collectionSearchSuccess,
+  // collectionSearchRequest,
+  // collectionSearchSuccess,
+  collectionSearchStart,
+  collectionSearchComplete,
+  collectionSearchError,
 } from './CollectionRequestActions'
 import {
   collectionClearFacets,
@@ -25,7 +23,10 @@ import {
   collectionUpdateTotal,
 } from './CollectionResultActions'
 
-export const triggerCollectionSearch = (retrieveFacets = true) => {
+export const triggerCollectionSearch = (
+  clearPreviousResults = false,
+  retrieveFacets = true
+) => {
   // TODO rename to collection something something
   const bodyBuilder = state => {
     const body = assembleSearchRequest(state, false, retrieveFacets)
@@ -39,8 +40,9 @@ export const triggerCollectionSearch = (retrieveFacets = true) => {
     return body
   }
   const prefetchHandler = dispatch => {
-    dispatch(showLoading())
-    dispatch(collectionSearchRequest())
+    // dispatch(showLoading())
+    // dispatch(collectionSearchRequest())
+    dispatch(collectionSearchStart())
   }
   const successHandler = (dispatch, payload) => {
     const result = _.reduce(
@@ -54,18 +56,29 @@ export const triggerCollectionSearch = (retrieveFacets = true) => {
       new Map()
     )
 
-    if (retrieveFacets) {
-      dispatch(collectionMetadataReceived(payload.meta))
-    }
-    dispatch(collectionUpdateTotal(payload.meta.total))
-    dispatch(collectionSearchSuccess(result))
-    dispatch(hideLoading())
+    // if (retrieveFacets) {
+    //   dispatch(collectionMetadataReceived(payload.meta))
+    // }
+    // dispatch(collectionUpdateTotal(payload.meta.total))
+    // dispatch(collectionSearchSuccess(result))
+    // dispatch(hideLoading())
+    dispatch(
+      collectionSearchComplete(
+        clearPreviousResults,
+        payload.meta.total,
+        result,
+        retrieveFacets ? payload.meta : null
+      )
+    )
   }
   const errorHandler = (dispatch, e) => {
-    dispatch(hideLoading())
-    dispatch(showErrors(e.errors || e))
-    dispatch(collectionClearFacets())
-    dispatch(collectionSearchSuccess(new Map()))
+    // dispatch(hideLoading())
+    // dispatch(showErrors(e.errors || e))
+    // dispatch(collectionClearFacets())
+    // dispatch(collectionSearchSuccess(new Map()))
+
+    // dispatch(showErrors(e.errors || e)) // TODO show errors
+    dispatch(collectionSearchError(e.errors || e))
   }
 
   return buildSearchAction(
@@ -79,8 +92,8 @@ export const triggerCollectionSearch = (retrieveFacets = true) => {
 
 export const getCollection = collectionId => {
   const prefetchHandler = dispatch => {
-    dispatch(showLoading())
-    dispatch(collectionDetailRequest(collectionId))
+    // dispatch(showLoading())
+    dispatch(collectionDetailRequest(collectionId)) // TODO
   }
 
   const successHandler = (dispatch, payload) => {
@@ -89,9 +102,9 @@ export const getCollection = collectionId => {
   }
 
   const errorHandler = (dispatch, e) => {
-    dispatch(hideLoading())
+    // dispatch(hideLoading())
     dispatch(showErrors(e.errors || e))
-    dispatch(collectionDetailSuccess(null))
+    dispatch(collectionDetailSuccess(null)) // TODO
   }
 
   return buildGetAction(

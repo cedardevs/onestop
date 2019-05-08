@@ -30,7 +30,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     fetchMoreResults: () => {
       dispatch(collectionIncrementResultsOffset())
-      dispatch(triggerCollectionSearch(false))
+      dispatch(triggerCollectionSearch(false, false))
     },
   }
 }
