@@ -7,7 +7,6 @@ import {
 import {
   COLLECTION_INCREMENT_RESULTS_OFFSET,
   COLLECTION_CLEAR_RESULTS,
-  COLLECTION_METADATA_RECEIVED,
 } from '../../actions/search/CollectionResultActions'
 
 export const initialState = Immutable({
@@ -69,9 +68,6 @@ export const collectionResult = (state = initialState, action) => {
 
     // case COLLECTION_UPDATE_TOTAL:
     //   return Immutable.set(state, 'totalCollections', action.totalCollections)
-
-    case COLLECTION_METADATA_RECEIVED: // TODO nuke this?
-      return Immutable.set(state, 'facets', action.metadata.facets)
 
     case COLLECTION_INCREMENT_RESULTS_OFFSET:
       return Immutable.set(

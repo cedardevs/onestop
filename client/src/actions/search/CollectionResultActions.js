@@ -32,9 +32,3 @@ export const collectionUpdateDetailGranulesTotal = totalGranules => ({
   type: COLLECTION_UPDATE_DETAIL_GRANULES_TOTAL,
   totalGranules: totalGranules,
 })
-
-export const COLLECTION_METADATA_RECEIVED = 'COLLECTION_METADATA_RECEIVED'
-export const collectionMetadataReceived = metadata => ({
-  type: COLLECTION_METADATA_RECEIVED,
-  metadata,
-})

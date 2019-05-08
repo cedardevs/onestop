@@ -8,10 +8,8 @@ import {
   collectionSearchComplete,
   collectionSearchError,
 } from './CollectionRequestActions'
-import // TODO for these that are not used - can the actions be removed entirely or are they in use elsewhere?
-'./CollectionFilterActions'
+// TODO for these that are not used - can the actions be removed entirely or are they in use elsewhere?
 // import {
-//   collectionMetadataReceived,
 //   collectionUpdateTotal,
 // } from './CollectionResultActions'
 
