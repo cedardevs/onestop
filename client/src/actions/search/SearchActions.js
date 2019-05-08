@@ -1,9 +1,6 @@
 import {apiPath} from '../../utils/urlUtils'
 import {checkForErrors} from '../../utils/responseUtils'
 
-import {fetchConfig} from '../ConfigActions'
-import {fetchCounts, fetchInfo} from './InfoActions'
-
 import {collectionClearResults} from './CollectionResultActions'
 import {collectionUpdateFilters} from './CollectionFilterActions'
 
@@ -102,11 +99,7 @@ export const buildGetAction = (
   }
 }
 
-export const getSitemap = () => {
-  return buildSitemapAction()
-}
-
-const buildSitemapAction = () => {
+export const buildSitemapAction = () => {
   return dispatch => {
     const endpoint = apiPath() + '/sitemap.xml'
     const fetchParams = {
@@ -121,15 +114,8 @@ const buildSitemapAction = () => {
   }
 }
 
-export const initialize = () => {
-  return dispatch => {
-    dispatch(fetchConfig())
-    dispatch(fetchInfo())
-    dispatch(fetchCounts())
-  }
-}
-
 export const showHome = history => {
+  // TODO move this to ???
   return dispatch => {
     dispatch(collectionUpdateFilters())
     history.push('/')

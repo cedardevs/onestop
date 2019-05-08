@@ -15,6 +15,9 @@ import {
   collectionClearResults,
   collectionClearDetailGranulesResult, // TODO make sure this still works!
 } from './CollectionResultActions'
+import {buildSitemapAction} from './SearchActions'
+import {fetchConfig} from '../ConfigActions'
+import {fetchCounts, fetchInfo} from './InfoActions'
 
 export const loadGranulesList = (path, newQueryString) => {
   return (dispatch, getState) => {
@@ -59,4 +62,16 @@ export const loadDetails = path => {
       dispatch(getCollection(detailId))
     }
   }
+}
+
+export const initialize = () => {
+  return dispatch => {
+    dispatch(fetchConfig())
+    dispatch(fetchInfo())
+    dispatch(fetchCounts())
+  }
+}
+
+export const getSitemap = () => {
+  return buildSitemapAction()
 }

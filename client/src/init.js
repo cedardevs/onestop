@@ -1,8 +1,9 @@
 import store from './store'
 import watch from 'redux-watch'
 import {isDetailPage, isGranuleListPage, isSitemap} from './utils/urlUtils'
-import {initialize, getSitemap} from './actions/search/SearchActions'
 import {
+  getSitemap,
+  initialize,
   loadCollections,
   loadDetails,
   loadGranulesList,
