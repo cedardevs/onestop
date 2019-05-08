@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {buildGetAction} from './SearchActions'
+import {buildGetAction} from '../search/SearchActions'
 import {showErrors} from '../ErrorActions'
 
 import {encodeQueryString} from '../../utils/queryUtils'
@@ -7,18 +7,20 @@ import {
   collectionGetDetailStart,
   collectionGetDetailComplete,
   collectionGetDetailError,
-} from '../get/CollectionDetailRequestActions'
+} from './CollectionDetailRequestActions'
 
 export const getCollection = collectionId => {
   // TODO used only by initSearchActions???
   const prefetchHandler = dispatch => {
     // dispatch(showLoading())
+    console.log('dispatching get detail start with ', collectionId)
     dispatch(collectionGetDetailStart(collectionId)) // TODO
   }
 
   const successHandler = (dispatch, payload) => {
+    console.log('hooray, get detail success', payload)
     dispatch(collectionGetDetailComplete(payload.data[0], payload.meta))
-    dispatch(hideLoading())
+    // dispatch(hideLoading())
   }
 
   const errorHandler = (dispatch, e) => {

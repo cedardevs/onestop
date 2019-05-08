@@ -10,6 +10,10 @@ import user from './reducers/user'
 import collectionFilter from './reducers/search/collectionFilter'
 import collectionRequest from './reducers/search/collectionRequest'
 import collectionResult from './reducers/search/collectionResult'
+
+import collectionDetailRequest from './reducers/search/collectionDetailRequest'
+import collectionDetailResult from './reducers/search/collectionDetailResult'
+
 import granuleFilter from './reducers/search/granuleFilter'
 import granuleRequest from './reducers/search/granuleRequest'
 import granuleResult from './reducers/search/granuleResult'
@@ -22,6 +26,8 @@ const search = combineReducers({
   collectionFilter,
   collectionRequest,
   collectionResult,
+  collectionDetailRequest,
+  collectionDetailResult,
   granuleFilter,
   granuleRequest,
   granuleResult,

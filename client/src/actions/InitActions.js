@@ -1,24 +1,24 @@
-import {decodeQueryString} from '../../utils/queryUtils'
+import {decodeQueryString} from '../utils/queryUtils'
 import {
   getCollectionIdFromDetailPath,
   getCollectionIdFromGranuleListPath,
-} from '../../utils/urlUtils'
-import {granuleUpdateFilters} from './GranuleFilterActions'
-import {triggerGranuleSearch} from './GranuleSearchActions'
+} from '../utils/urlUtils'
+import {granuleUpdateFilters} from './search/GranuleFilterActions'
+import {triggerGranuleSearch} from './search/GranuleSearchActions'
 import {
   collectionClearSelectedIds,
   collectionToggleSelectedId,
   collectionUpdateFilters,
-} from './CollectionFilterActions'
-import {getCollection} from '../get/CollectionGetDetailActions'
-import {triggerCollectionSearch} from './CollectionSearchActions'
+} from './search/CollectionFilterActions'
+import {getCollection} from './get/CollectionGetDetailActions'
+import {triggerCollectionSearch} from './search/CollectionSearchActions'
 import {
   collectionClearResults,
   collectionClearDetailGranulesResult, // TODO make sure this still works!
-} from './CollectionResultActions'
-import {buildSitemapAction} from './SearchActions'
-import {fetchConfig} from '../ConfigActions'
-import {fetchCounts, fetchInfo} from './InfoActions'
+} from './search/CollectionResultActions'
+import {buildSitemapAction} from './search/SearchActions'
+import {fetchConfig} from './ConfigActions'
+import {fetchCounts, fetchInfo} from './search/InfoActions'
 
 export const loadGranulesList = (path, newQueryString) => {
   return (dispatch, getState) => {
@@ -57,6 +57,7 @@ export const loadCollections = newQueryString => {
 }
 
 export const loadDetails = path => {
+  console.log("it should load details now...", path)
   return (dispatch, getState) => {
     if (
       !getState().search.collectionDetailRequest.collectionDetailRequestInFlight

@@ -16,7 +16,7 @@ export const collectionGetDetailComplete = (
   type: COLLECTION_GET_DETAIL_COMPLETE,
   result: {
     collection: data,
-    totalCollectionCount: metadata.totalCollections,
+    totalCollectionCount: metadata.totalCollections, // TODO what even *is* this?
   },
   // clearPreviousResults: clearPreviousResults,
   // total: total,
