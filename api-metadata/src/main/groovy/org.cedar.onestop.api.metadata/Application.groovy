@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableScheduling
 // note: no @SpringApplication annotation here
 // see "Reference:" link in `DatabaseConfig`
-@Import(DatabaseConfig)
+@Import(DatasourceConfig.class)
 class Application extends SpringBootServletInitializer {
 
   @Override
@@ -20,7 +20,7 @@ class Application extends SpringBootServletInitializer {
   }
 
   static void main(String[] args) {
-    SpringApplication.run(Application, args)
+    SpringApplication.run(Application.class, args)
   }
 
 }
