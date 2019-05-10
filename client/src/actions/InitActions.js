@@ -33,6 +33,7 @@ export const loadGranulesList = (path, newQueryString) => {
 }
 
 export const loadCollections = newQueryString => {
+  console.log('load collection search from', newQueryString)
   return (dispatch, getState) => {
     if (newQueryString.indexOf('?') === 0) {
       newQueryString = newQueryString.slice(1)

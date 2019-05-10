@@ -9,6 +9,12 @@ export const collectionUpdateFilters = filters => {
     filters: filters,
   }
 }
+export const COLLECTION_CLEAR_FILTERS = 'COLLECTION_CLEAR_FILTERS'
+export const collectionClearFilters = () => {
+  return {
+    type: COLLECTION_CLEAR_FILTERS,
+  }
+}
 
 // Collection Query Text Actions
 export const COLLECTION_UPDATE_QUERY_TEXT = 'COLLECTION_UPDATE_QUERY_TEXT'

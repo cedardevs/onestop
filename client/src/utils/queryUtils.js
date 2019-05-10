@@ -58,6 +58,7 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
       ? collectionResult.granulesPageOffset
       : collectionResult.collectionsPageOffset) || 0
   const pageSize = collectionResult.pageSize || 20
+  console.log('assembling with page', collectionResult.collectionsPageOffset)
   const page = assemblePagination(pageSize, pageOffset)
 
   // collection search, assembled for search API / elasticsearch

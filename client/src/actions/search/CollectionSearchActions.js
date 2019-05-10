@@ -14,7 +14,6 @@ export const asyncNewCollectionSearch = () => {
   return triggerCollectionSearch(true, true)
 }
 export const asyncMoreCollectionResults = () => {
-  // TODO move collectionIncrementResultsOffset into this
   return triggerCollectionSearch(false, false)
 }
 
@@ -22,19 +21,26 @@ const triggerCollectionSearch = (
   clearPreviousResults = false,
   retrieveFacets = true
 ) => {
-  const bodyBuilder = state => {
-    const body = assembleSearchRequest(state, false, retrieveFacets)
+
+  const validRequestCheck = (state) => {
     const inFlight =
       state.search.collectionRequest.collectionSearchRequestInFlight
+      return !inFlight
+  }
+  const prefetchHandler = dispatch => {
+    dispatch(collectionSearchStart(clearPreviousResults))
+  }
+  const bodyBuilder = state => {
+    console.log('building...')
+    const body = assembleSearchRequest(state, false, retrieveFacets)
+    console.log('to get', body)
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
-    if (inFlight || !(hasQueries || hasFilters)) {
+    if (!(hasQueries || hasFilters)) {
+      console.log('invalid queries/filters - skipping body')
       return undefined
     }
     return body
-  }
-  const prefetchHandler = dispatch => {
-    dispatch(collectionSearchStart())
   }
   const successHandler = (dispatch, payload) => {
     const result = _.reduce(
@@ -66,8 +72,9 @@ const triggerCollectionSearch = (
 
   return buildSearchAction(
     'collection',
-    bodyBuilder,
+    validRequestCheck,
     prefetchHandler,
+    bodyBuilder,
     successHandler,
     errorHandler
   )

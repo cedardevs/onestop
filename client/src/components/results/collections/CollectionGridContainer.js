@@ -1,7 +1,6 @@
 import {connect} from 'react-redux'
 import {asyncMoreCollectionResults} from '../../../actions/search/CollectionSearchActions'
 import {showDetails} from '../../../actions/get/CollectionGetDetailActions'
-import {collectionIncrementResultsOffset} from '../../../actions/search/CollectionResultActions'
 import CollectionGrid from './CollectionGrid' // TODO this doesn't even exist?
 
 import {withRouter} from 'react-router'
@@ -28,7 +27,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(showDetails(ownProps.history, id))
     },
     fetchMoreResults: () => {
-      dispatch(collectionIncrementResultsOffset())
       dispatch(asyncMoreCollectionResults())
     },
   }

@@ -1,9 +1,3 @@
-export const COLLECTION_INCREMENT_RESULTS_OFFSET =
-  'COLLECTION_INCREMENT_RESULTS_OFFSET'
-export const collectionIncrementResultsOffset = () => ({
-  // TODO rename nextPage
-  type: COLLECTION_INCREMENT_RESULTS_OFFSET,
-})
 
 // TODO figure out where these detail specific things are used, and what for???
 export const COLLECTION_CLEAR_DETAIL_GRANULES_RESULT =
@@ -24,3 +18,6 @@ export const collectionUpdateDetailGranulesTotal = totalGranules => ({
   type: COLLECTION_UPDATE_DETAIL_GRANULES_TOTAL,
   totalGranules: totalGranules,
 })
+
+// export const COLLECTION_CLEAR_RESULTS = 'COLLECTION_CLEAR_RESULTS'
+// export const collectionClearResults = () => ({type: COLLECTION_CLEAR_RESULTS})

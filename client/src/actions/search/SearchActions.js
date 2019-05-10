@@ -5,21 +5,30 @@ import {checkForErrors} from '../../utils/responseUtils'
 
 export const buildSearchAction = (
   endpointName,
-  bodyBuilder,
+  validRequestCheck,
   prefetchHandler,
+  bodyBuilder,
   successHandler,
   errorHandler
 ) => {
   return (dispatch, getState) => {
-    let state = getState()
+    // let state = getState()
 
-    const body = bodyBuilder(state)
+    if(!validRequestCheck(getState())) {
+      console.log('search request not valid')
+      return Promise.resolve()
+    }
+    prefetchHandler(dispatch) // TODO does moving this above bodyBuilder break anything?
+
+
+    const body = bodyBuilder(getState()) // prefetchHandler may change state, particularly if pagination is involved
     if (!body) {
       // cannot or should not fetch
       return Promise.resolve()
     }
+    console.log('body', body)
 
-    prefetchHandler(dispatch)
+    // prefetchHandler(dispatch)
 
     const endpoint = apiPath() + '/search/' + endpointName
 

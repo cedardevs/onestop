@@ -3,7 +3,6 @@ import {withRouter} from 'react-router'
 
 import {asyncMoreCollectionResults} from '../../../actions/search/CollectionSearchActions'
 import {showDetails} from '../../../actions/get/CollectionGetDetailActions'
-import {collectionIncrementResultsOffset} from '../../../actions/search/CollectionResultActions'
 import Collections from './Collections'
 
 const mapStateToProps = state => {
@@ -28,7 +27,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(showDetails(ownProps.history, id))
     },
     fetchMoreResults: () => {
-      dispatch(collectionIncrementResultsOffset())
       dispatch(asyncMoreCollectionResults())
     },
   }

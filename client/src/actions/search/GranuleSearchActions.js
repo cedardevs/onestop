@@ -14,20 +14,27 @@ export const triggerGranuleSearch = (
   clearPreviousResults = false,
   retrieveFacets = true
 ) => {
+
+    const validRequestCheck = (state) => {
+      const inFlight =
+        state.search.granuleRequest.granuleSearchRequestInFlight
+        return !inFlight
+    }
+  const prefetchHandler = dispatch => {
+    dispatch(granuleSearchStart()) // TODO add params?
+  }
+
   const bodyBuilder = state => {
     const body = assembleGranuleSearchRequest(state, false, retrieveFacets)
-    const inFlight = state.search.granuleRequest.granuleSearchRequestInFlight
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     let selectedCollections = state.search.collectionFilter.selectedIds
-    if (inFlight || !selectedCollections || !(hasQueries || hasFilters)) {
+    if ( !selectedCollections || !(hasQueries || hasFilters)) {
       return undefined
     }
     return body
   }
-  const prefetchHandler = dispatch => {
-    dispatch(granuleSearchStart()) // TODO add params?
-  }
+
   const successHandler = (dispatch, payload) => {
     dispatch(
       granuleSearchComplete(
@@ -45,8 +52,9 @@ export const triggerGranuleSearch = (
 
   return buildSearchAction(
     'granule',
-    bodyBuilder,
+    validRequestCheck,
     prefetchHandler,
+    bodyBuilder,
     successHandler,
     errorHandler
   )
