@@ -43,10 +43,9 @@ const styleHeroText = {
 }
 
 class Landing extends React.Component {
-  constructor(props) {
-    super(props)
-    this.submit = props.submit
-  }
+  // constructor(props) {
+  //   super(props)
+  // }
 
   render() {
     return (

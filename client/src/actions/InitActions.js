@@ -31,15 +31,11 @@ export const loadGranulesList = (history, path, newQueryString) => {
       // dispatch(collectionClearDetailGranulesResult())
       dispatch(granuleUpdateFilters(searchFromQuery))
       dispatch(asyncNewGranuleSearch(history, detailId))
-      console.log(
-        'inside loadGranulesList. does showGranules do anything bad here?'
-      )
-      // dispatch(showGranules(history, detailId))
     }
   }
 }
 
-export const loadCollections = newQueryString => {
+export const loadCollections = (history, newQueryString) => {
   return (dispatch, getState) => {
     if (newQueryString.indexOf('?') === 0) {
       newQueryString = newQueryString.slice(1)
@@ -50,7 +46,7 @@ export const loadCollections = newQueryString => {
       // dispatch(collectionClearDetailGranulesResult())
       // dispatch(collectionClearSelectedIds()) // TODO this implies that selectedIds is being overloaded in some way, or is too tied to a particular workflow...
       dispatch(collectionUpdateFilters(searchFromQuery))
-      dispatch(asyncNewCollectionSearch())
+      dispatch(asyncNewCollectionSearch(history))
     }
   }
 }

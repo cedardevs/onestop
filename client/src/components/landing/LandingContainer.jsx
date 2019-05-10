@@ -1,7 +1,6 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import Landing from './Landing'
-import {showCollections} from '../../actions/search/CollectionSearchActions'
 
 const mapStateToProps = state => {
   return {
@@ -11,10 +10,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    submit: () => {
-      dispatch(asyncNewCollectionSearch())
-      dispatch(showCollections(ownProps.history))
-    },
+    // TODO test landing after removing this!
   }
 }
 

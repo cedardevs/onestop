@@ -3,10 +3,7 @@ import {withRouter} from 'react-router'
 import FacetFilter from '../facet/FacetFilter'
 import {collectionToggleFacet} from '../../../actions/search/CollectionFilterActions'
 import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
-import {
-  asyncNewCollectionSearch,
-  showCollections,
-} from '../../../actions/search/CollectionSearchActions'
+import {asyncNewCollectionSearch} from '../../../actions/search/CollectionSearchActions'
 
 const mapStateToProps = state => {
   return {
@@ -23,8 +20,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(collectionToggleFacet(category, facetName, selected))
     },
     submit: () => {
-      dispatch(asyncNewCollectionSearch())
-      dispatch(showCollections(ownProps.history))
+      dispatch(asyncNewCollectionSearch(ownProps.history))
     },
   }
 }

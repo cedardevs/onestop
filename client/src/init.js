@@ -21,7 +21,7 @@ const loadFromUrl = (path, newQueryString) => {
     store.dispatch(loadGranulesList(history, path, newQueryString))
   }
   else {
-    store.dispatch(loadCollections(newQueryString))
+    store.dispatch(loadCollections(history, newQueryString))
   }
 }
 

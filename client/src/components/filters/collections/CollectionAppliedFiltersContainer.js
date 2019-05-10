@@ -6,10 +6,7 @@ import {
   collectionUpdateDateRange,
   collectionRemoveGeometry,
 } from '../../../actions/search/CollectionFilterActions'
-import {
-  asyncNewCollectionSearch,
-  showCollections,
-} from '../../../actions/search/CollectionSearchActions'
+import {asyncNewCollectionSearch} from '../../../actions/search/CollectionSearchActions'
 import AppliedFilters from '../AppliedFilters'
 
 const mapStateToProps = state => {
@@ -38,8 +35,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     toggleFacet: (category, facetName, selected) =>
       dispatch(collectionToggleFacet(category, facetName, selected)),
     submit: () => {
-      dispatch(asyncNewCollectionSearch())
-      dispatch(showCollections(ownProps.history))
+      dispatch(asyncNewCollectionSearch(ownProps.history))
     },
     updateDateRange: (startDate, endDate) =>
       dispatch(collectionUpdateDateRange(startDate, endDate)),

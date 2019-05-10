@@ -5,10 +5,7 @@ import {
   collectionUpdateQueryText,
   collectionClearFilters,
 } from '../../../actions/search/CollectionFilterActions'
-import {
-  asyncNewCollectionSearch,
-  showCollections,
-} from '../../../actions/search/CollectionSearchActions'
+import {asyncNewCollectionSearch} from '../../../actions/search/CollectionSearchActions'
 
 const mapStateToProps = state => {
   return {
@@ -20,8 +17,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
       dispatch(collectionClearFilters())
-      dispatch(asyncNewCollectionSearch())
-      dispatch(showCollections(ownProps.history))
+      dispatch(asyncNewCollectionSearch(ownProps.history))
     },
     collectionUpdateQueryText: text =>
       dispatch(collectionUpdateQueryText(text)),

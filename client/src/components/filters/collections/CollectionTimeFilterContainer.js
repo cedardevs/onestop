@@ -5,10 +5,7 @@ import {
   collectionRemoveDateRange,
   collectionUpdateDateRange,
 } from '../../../actions/search/CollectionFilterActions'
-import {
-  asyncNewCollectionSearch,
-  showCollections,
-} from '../../../actions/search/CollectionSearchActions'
+import {asyncNewCollectionSearch} from '../../../actions/search/CollectionSearchActions'
 
 const mapStateToProps = state => {
   const {startDateTime, endDateTime} = state.search.collectionFilter
@@ -27,8 +24,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(collectionRemoveDateRange())
     },
     submit: () => {
-      dispatch(asyncNewCollectionSearch())
-      dispatch(showCollections(ownProps.history))
+      dispatch(asyncNewCollectionSearch(ownProps.history))
     },
   }
 }

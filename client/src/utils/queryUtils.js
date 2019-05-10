@@ -12,7 +12,9 @@ export const assembleCollectionSearchRequestString = (
   granules,
   retrieveFacets
 ) => {
-  if (granules) {return JSON.stringify(assembleGranuleSearchRequest(state, retrieveFacets)}
+  if (granules) {
+    return JSON.stringify(assembleGranuleSearchRequest(state, retrieveFacets))
+  }
   return JSON.stringify(assembleCollectionSearchRequest(state, retrieveFacets))
 }
 

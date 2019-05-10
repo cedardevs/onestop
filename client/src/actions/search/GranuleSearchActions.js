@@ -13,7 +13,7 @@ import {
 } from './GranuleRequestActions'
 
 /*
-  Since granule results always use the same section of the redux store, a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other.
+  Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
 */
 
 export const asyncNewGranuleSearch = (history, id) => {
@@ -73,7 +73,8 @@ const buildNewGranuleSearch = (history, id) => {
   )
 }
 
-const buildMoreResultsSearch = ( ) => { // fetch the next page of granules granule search *for granules within a single collection*
+const buildMoreResultsSearch = () => {
+  // fetch the next page of granules granule search *for granules within a single collection*
   const prefetchHandler = dispatch => {
     dispatch(granuleMoreResultsRequested())
   }
