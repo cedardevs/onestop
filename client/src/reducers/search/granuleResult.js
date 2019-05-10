@@ -3,7 +3,8 @@ import Immutable from 'seamless-immutable'
 // // GRANULE_REMOVE_FILTERS,
 // '../../actions/search/GranuleFilterActions'
 import {
-  GRANULE_SEARCH_START,
+  GRANULE_NEW_SEARCH_START,
+  GRANULE_PAGE_SEARCH_START,
   GRANULE_SEARCH_COMPLETE,
   GRANULE_SEARCH_ERROR,
 } from '../../actions/search/GranuleRequestActions'
@@ -50,22 +51,18 @@ export const granuleResult = (state = initialState, action) => {
     //     granulesPageOffset: initialState.granulesPageOffset,
     //   })
 
-    case GRANULE_SEARCH_START:
-      if (action.clearPreviousResults) {
+    case GRANULE_NEW_SEARCH_START:
         return Immutable.set(
           state,
           'granulesPageOffset',
           initialState.granulesPageOffset
         )
-      }
-      if (action.incrementPageOffset) {
-        // this is just the inverse of clearPreviousResults boolean, but is named for clarity here... which might make this logic more confusing, but what else do you name this variable? it's newSearch vs newPage... (maybe those are two separate prefetch actions instead?)
+    case GRANULE_PAGE_SEARCH_START:
         return Immutable.set(
           state,
           'granulesPageOffset',
           state.granulesPageOffset + state.pageSize
         )
-      }
     case GRANULE_SEARCH_COMPLETE:
       let newGranules = action.items.reduce(
         (existing, next) => existing.set(next.id, next.attributes),

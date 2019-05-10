@@ -1,8 +1,11 @@
-export const GRANULE_SEARCH_START = 'GRANULE_SEARCH_START'
-export const granuleSearchStart = clearPreviousResults => ({
-  type: GRANULE_SEARCH_START,
-  clearPreviousResults: clearPreviousResults,
-  incrementPageOffset: !clearPreviousResults,
+
+export const GRANULE_NEW_SEARCH_START = 'GRANULE_NEW_SEARCH_START'
+export const granuleNewSearchStart = () => ({
+  type: GRANULE_NEW_SEARCH_START,
+})
+export const GRANULE_PAGE_SEARCH_START = 'GRANULE_PAGE_SEARCH_START' // TODO this is horribly named!
+export const granulePageSearchStart = () => ({
+  type: GRANULE_PAGE_SEARCH_START,
 })
 
 export const GRANULE_SEARCH_COMPLETE = 'GRANULE_SEARCH_COMPLETE'
