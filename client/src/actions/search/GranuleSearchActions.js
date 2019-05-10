@@ -39,7 +39,7 @@ const errorHandler = (dispatch, e) => {
 const buildNewGranuleSearch = (history, id) => {
   // new granule search *for granules within a single collection*
   const prefetchHandler = dispatch => {
-    dispatch(granuleNewSearchRequested()) // TODO add the id as a param and set the selected id?
+    dispatch(granuleNewSearchRequested(id))
     dispatch(updateURLAndNavigateToGranuleRoute(history, id))
   }
 
@@ -47,7 +47,7 @@ const buildNewGranuleSearch = (history, id) => {
     const body = assembleGranuleSearchRequest(state, true) // TODO clean up these args...
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
-    let selectedCollections = state.search.collectionFilter.selectedIds
+    let selectedCollections = state.search.granuleFilter.selectedIds
     // TODO combine selectedCollections and id - in newSearch case, it knows the id from other contexts and/or should set it explicitly in the prefetch handler instead...
     if (!selectedCollections || !(hasQueries || hasFilters)) {
       return undefined
@@ -85,7 +85,7 @@ const buildMoreResultsSearch = () => {
     const body = assembleGranuleSearchRequest(state, false) // TODO clean up these args...
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
-    let selectedCollections = state.search.collectionFilter.selectedIds
+    let selectedCollections = state.search.granuleFilter.selectedIds
     // TODO combine selectedCollections and id - in newSearch case, it knows the id from other contexts and/or should set it explicitly in the prefetch handler instead...
     if (!selectedCollections || !(hasQueries || hasFilters)) {
       // TODO returning an undefined body exits buildSearchAction early. It should resolve as an error or *something* - otherwise inFlight won't be reset! This is a consequence of moving the prefetch before this step. That also means that the bodyBuilder isn't really the right place to verify certain things are set...

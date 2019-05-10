@@ -14,6 +14,8 @@ import {
   GRANULE_TOGGLE_EXCLUDE_GLOBAL,
 } from '../../actions/search/GranuleFilterActions'
 
+import {GRANULE_NEW_SEARCH_REQUESTED} from '../../actions/search/GranuleRequestActions'
+
 export const initialState = Immutable({
   queryText: '',
   geoJSON: null,
@@ -27,8 +29,10 @@ export const initialState = Immutable({
 export const granuleFilter = (state = initialState, action) => {
   switch (action.type) {
     case GRANULE_UPDATE_FILTERS:
-      return Immutable.merge(initialState, action.filters || {})
+      return Immutable.merge(initialState, action.filters || {}) // TODO what does this do with selectedId??
 
+    case GRANULE_NEW_SEARCH_REQUESTED: // TODO add selectedId to this action
+      return Immutable.merge(state, {selectedIds: [ action.id ]})
     // case GRANULE_REMOVE_FILTERS:
     //   return Immutable.merge(state, {
     //     // this action is triggered by 'queryText' searches to ensure a fresh filter;

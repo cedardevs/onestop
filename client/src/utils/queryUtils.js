@@ -33,7 +33,7 @@ export const assembleGranuleSearchRequest = (state, retrieveFacets) => {
     assembleGeometryFilters(granuleFilter),
     assembleTemporalFilters(granuleFilter),
     assembleAdditionalFilters(granuleFilter),
-    assembleSelectedCollectionsFilters(collectionFilter) // TODO once I move selectedIds to granuleFilter instead, the assemble search request functions should be generic, except for which state gets passed in!
+    assembleSelectedCollectionsFilters(granuleFilter) // TODO once I move selectedIds to granuleFilter instead, the assemble search request functions should be generic, except for which state gets passed in!
   )
 
   filters = _.flatten(_.compact(filters))

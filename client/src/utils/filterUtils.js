@@ -1,21 +1,21 @@
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 
-export const toggleSelectedId = (selectedIds, value, idx = 0) => {
-  // TODO please say we can get rid of this kind of logic...
-  // base case: reached the end of the selectedIds list without encountering the value, so we add (select) it
-  if (idx === selectedIds.length) {
-    return selectedIds.concat([ value ])
-  }
-  else if (selectedIds[idx] === value) {
-    // found an already selected ID matching the value, so we can remove (unselect) it
-    return selectedIds.slice(0, idx).concat(selectedIds.slice(idx + 1))
-  }
-  else {
-    // recurse through selectedIds until base case is met
-    return toggleSelectedId(selectedIds, value, idx + 1)
-  }
-}
+// export const toggleSelectedId = (selectedIds, value, idx = 0) => {
+//   // TODO please say we can get rid of this kind of logic...
+//   // base case: reached the end of the selectedIds list without encountering the value, so we add (select) it
+//   if (idx === selectedIds.length) {
+//     return selectedIds.concat([ value ])
+//   }
+//   else if (selectedIds[idx] === value) {
+//     // found an already selected ID matching the value, so we can remove (unselect) it
+//     return selectedIds.slice(0, idx).concat(selectedIds.slice(idx + 1))
+//   }
+//   else {
+//     // recurse through selectedIds until base case is met
+//     return toggleSelectedId(selectedIds, value, idx + 1)
+//   }
+// }
 
 export const updateSelectedFacets = (
   selectedFacets,

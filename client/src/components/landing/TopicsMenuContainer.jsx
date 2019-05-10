@@ -1,7 +1,6 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import TopicsMenu from './TopicsMenu'
-import {} from '../../actions/search/CollectionResultActions'
 import {collectionUpdateQueryText} from '../../actions/search/CollectionFilterActions'
 import {asyncNewCollectionSearch} from '../../actions/search/CollectionSearchActions'
 

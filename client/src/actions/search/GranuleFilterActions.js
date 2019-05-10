@@ -49,22 +49,6 @@ export const granuleRemoveDateRange = () => {
   }
 }
 
-// Selected Granule IDs Filter Actions
-// export const GRANULE_TOGGLE_SELECTED_ID = 'GRANULE_TOGGLE_SELECTED_ID'
-// export const granuleToggleSelectedId = granuleId => {
-//   return {
-//     type: GRANULE_TOGGLE_SELECTED_ID,
-//     granuleId: granuleId,
-//   }
-// }
-//
-// export const GRANULE_CLEAR_SELECTED_IDS = 'GRANULE_CLEAR_SELECTED_IDS'
-// export const granuleClearSelectedIds = () => {
-//   return {
-//     type: GRANULE_CLEAR_SELECTED_IDS,
-//   }
-// }
-//
 // // Granule Keyword Filter Actions
 export const GRANULE_TOGGLE_FACET = 'GRANULE_TOGGLE_FACET' // TODO rename, it's not toggle facet (singular) so much as setFacets
 export const granuleToggleFacet = (category, facetName, selected) => {

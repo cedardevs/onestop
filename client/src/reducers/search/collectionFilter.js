@@ -12,7 +12,6 @@ import {
 } from '../../actions/search/CollectionFilterActions'
 // import {COLLECTION_SEARCH_COMPLETE} from '../../actions/search/CollectionRequestActions'
 import {COLLECTION_GET_DETAIL_START} from '../../actions/get/CollectionDetailRequestActions'
-// import {toggleSelectedId} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
   queryText: '',
@@ -20,7 +19,7 @@ export const initialState = Immutable({
   startDateTime: null,
   endDateTime: null,
   selectedFacets: {},
-  selectedIds: [],
+  selectedIds: [], // with the current searches, this is unlikely to ever be updated, but is included for ease of consistently generating search filters. // TODO consider just making the util handle an unset field here instead!
   excludeGlobal: null,
 })
 
@@ -50,8 +49,9 @@ export const collectionFilter = (state = initialState, action) => {
         endDateTime: initialState.endDateTime,
       })
 
-    case COLLECTION_GET_DETAIL_START: // This suggests that selectedIds belongs elsewhere - is it part of collectionDetailResult? granuleRequest? tangled and nebulous
-      return Immutable.set(state, 'selectedIds', [ action.id ])
+    // case COLLECTION_GET_DETAIL_START: // This suggests that selectedIds belongs elsewhere - is it part of collectionDetailResult? granuleRequest? tangled and nebulous
+    //   return Immutable.set(state, 'selectedIds', [ action.id ]) // TODO in what cases does the details use the selected Ids in the state to do the GET? or is it setting it here for convenience?
+    // TODO - also: is there anywhere in the components that use selectedIds? I haven't seen one so far...
 
     case COLLECTION_TOGGLE_FACET:
       return Immutable.set(state, 'selectedFacets', action.selectedFacets)

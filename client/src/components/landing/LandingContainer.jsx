@@ -9,9 +9,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    // TODO test landing after removing this!
-  }
+  return {}
 }
 
 const LandingContainer = withRouter(
