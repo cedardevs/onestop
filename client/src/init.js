@@ -8,6 +8,7 @@ import {
   loadDetails,
   loadGranulesList,
 } from './actions/InitActions'
+import history from './history'
 
 const loadFromUrl = (path, newQueryString) => {
   if (isSitemap(path)) {
@@ -17,7 +18,7 @@ const loadFromUrl = (path, newQueryString) => {
     store.dispatch(loadDetails(path))
   }
   else if (isGranuleListPage(path)) {
-    store.dispatch(loadGranulesList(path, newQueryString))
+    store.dispatch(loadGranulesList(history, path, newQueryString))
   }
   else {
     store.dispatch(loadCollections(newQueryString))

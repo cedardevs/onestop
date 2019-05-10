@@ -25,7 +25,7 @@ export const assembleGranuleSearchRequest = (
   const collectionFilter = search.collectionFilter || {}
   const granuleResult = search.granuleResult || {}
   const pageOffset = granuleResult.granulesPageOffset || 0
-  const pageSize = granuleResult.pageSize || 20
+  const pageSize = granuleResult.pageSize || 20 // TODO replace all these pageSize 20's with a util const?
   const page = assemblePagination(pageSize, pageOffset)
   // granule search, assembled for search API / elasticsearch
   let queries = [] //assembleQueries(granuleFilter)

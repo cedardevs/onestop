@@ -8,7 +8,6 @@ import {
 } from '../../../actions/search/GranuleFilterActions'
 import {
   asyncNewGranuleSearch,
-  showGranules,
 } from '../../../actions/search/GranuleSearchActions'
 import AppliedFilters from '../AppliedFilters'
 
@@ -38,8 +37,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     toggleFacet: (category, facetName, selected) =>
       dispatch(granuleToggleFacet(category, facetName, selected)),
     submit: () => {
-      dispatch(asyncNewGranuleSearch())
-      dispatch(showGranules(ownProps.history, ownProps.match.params.id))
+      dispatch(asyncNewGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
     updateDateRange: (startDate, endDate) =>
       dispatch(granuleUpdateDateRange(startDate, endDate)),

@@ -10,14 +10,15 @@ import {
   granuleSearchError,
 } from './GranuleRequestActions'
 
-export const asyncNewGranuleSearch = () => {
-  return triggerGranuleSearch(true, true)
+export const asyncNewGranuleSearch = (history, id) => { // TODO rename to indicate that it updates the URL as well? - this is *not* just a background request - make a new action if we need that!!
+  return triggerGranuleSearch(history, id, true, true)
 }
 export const asyncMoreGranuleResults = () => {
-  return triggerGranuleSearch(false, false)
+  return triggerGranuleSearch(null, null, false, false) // TODO
 }
 
-const triggerGranuleSearch = (
+const triggerGranuleSearch = ( // trigger granule search *for granules within a single collection*
+  history, id,
   clearPreviousResults = false,
   retrieveFacets = true
 ) => {
@@ -34,6 +35,7 @@ const triggerGranuleSearch = (
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     let selectedCollections = state.search.collectionFilter.selectedIds
+    // TODO combine selectedCollections and id
     if (!selectedCollections || !(hasQueries || hasFilters)) {
       return undefined
     }
@@ -49,6 +51,8 @@ const triggerGranuleSearch = (
         retrieveFacets ? payload.meta : null
       )
     )
+    if (history) {
+    dispatch(showGranules(history, id))}
   }
   const errorHandler = (dispatch, e) => {
     // dispatch(showErrors(e.errors || e)) // TODO show errors
@@ -65,7 +69,7 @@ const triggerGranuleSearch = (
   )
 }
 
-export const showGranules = (history, id) => {
+const showGranules = (history, id) => {
   // TODO rename these functions to update URL ?
   if (!id) {
     return

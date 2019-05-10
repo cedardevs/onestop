@@ -6,7 +6,6 @@ import {
 } from '../../../actions/search/GranuleFilterActions'
 import {
   asyncNewGranuleSearch,
-  showGranules,
 } from '../../../actions/search/GranuleSearchActions'
 
 import {withRouter} from 'react-router'
@@ -24,8 +23,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleNewGeometry: geoJSON => dispatch(granuleUpdateGeometry(geoJSON)),
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
     submit: () => {
-      dispatch(asyncNewGranuleSearch())
-      dispatch(showGranules(ownProps.history, ownProps.match.params.id))
+      dispatch(asyncNewGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
   }
 }

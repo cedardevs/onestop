@@ -1,7 +1,7 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import Detail from './Detail'
-import {asyncNewGranuleSearch, showGranules} from '../../../actions/search/GranuleSearchActions'
+import {asyncNewGranuleSearch} from '../../../actions/search/GranuleSearchActions'
 
 const mapStateToProps = state => {
   const focusedItem = state.search.collectionDetailResult.collectionDetail
@@ -17,8 +17,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     navigateToGranules: id => {
-      dispatch(asyncNewGranuleSearch())
-      dispatch(showGranules(ownProps.history, id))
+      dispatch(asyncNewGranuleSearch(ownProps.history, id))
     },
   }
 }

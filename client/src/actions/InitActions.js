@@ -4,9 +4,9 @@ import {
   getCollectionIdFromGranuleListPath,
 } from '../utils/urlUtils'
 import {granuleUpdateFilters} from './search/GranuleFilterActions'
-import {asyncNewGranuleSearch} from './search/GranuleSearchActions'
+import {asyncNewGranuleSearch, showGranules} from './search/GranuleSearchActions'
 import {collectionUpdateFilters} from './search/CollectionFilterActions'
-import {getCollection} from './get/CollectionGetDetailActions'
+import {getCollection} from './get/CollectionGetDetailActions' // TODO rename that action to async.... as wells
 import {asyncNewCollectionSearch} from './search/CollectionSearchActions'
 // import {
 //   collectionClearDetailGranulesResult, // TODO make sure this still works!
@@ -15,7 +15,7 @@ import {buildSitemapAction} from './fetch/SearchActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchCounts, fetchInfo} from './fetch/InfoActions'
 
-export const loadGranulesList = (path, newQueryString) => {
+export const loadGranulesList = (history, path, newQueryString) => {
   return (dispatch, getState) => {
     if (newQueryString.indexOf('?') === 0) {
       newQueryString = newQueryString.slice(1)
@@ -27,7 +27,9 @@ export const loadGranulesList = (path, newQueryString) => {
       dispatch(getCollection(detailId)) // TODO is this still really needed? And if so, why?
       // dispatch(collectionClearDetailGranulesResult())
       dispatch(granuleUpdateFilters(searchFromQuery))
-      dispatch(asyncNewGranuleSearch())
+      dispatch(asyncNewGranuleSearch(history, detailId))
+      console.log('inside loadGranulesList. does showGranules do anything bad here?')
+      // dispatch(showGranules(history, detailId))
     }
   }
 }
