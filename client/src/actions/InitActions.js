@@ -24,7 +24,7 @@ export const loadGranulesList = (path, newQueryString) => {
     const searchFromState = _.get(getState(), 'search.granuleFilter')
     if (!_.isEqual(searchFromQuery, searchFromState)) {
       const detailId = getCollectionIdFromGranuleListPath(path)
-      dispatch(getCollection(detailId))
+      dispatch(getCollection(detailId)) // TODO is this still really needed? And if so, why?
       // dispatch(collectionClearDetailGranulesResult())
       dispatch(granuleUpdateFilters(searchFromQuery))
       dispatch(asyncNewGranuleSearch())

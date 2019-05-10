@@ -38,6 +38,7 @@ export default class GranulesSummary extends React.Component {
 
     const linkText = `Show ${totalGranuleCount} matching files`
 
+    // TODO 508 this should probably be a link, not a button
     const granulesSummary = (
       <div style={styleGranuleSummary}>
         <Button
