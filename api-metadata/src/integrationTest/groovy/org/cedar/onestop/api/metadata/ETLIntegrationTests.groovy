@@ -1,6 +1,5 @@
 package org.cedar.onestop.api.metadata
 
-import groovy.json.JsonBuilder
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityConfig
 import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled

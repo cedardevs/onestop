@@ -93,10 +93,10 @@ subprojects {
           jacocoTestReport {
             executionData fileTree(projectDir).include("build/jacoco/*.exec")
             reports {
-              xml.enabled true
-              xml.destination "${buildDir}/reports/jacoco/report.xml"
-              html.enabled true
-              html.destination "${buildDir}/reports/jacoco/html"
+              xml.enabled = true
+              xml.destination = "${buildDir}/reports/jacoco/report.xml"
+              html.enabled = true
+              html.destination = "${buildDir}/reports/jacoco/html"
             }
           }
 
@@ -111,14 +111,15 @@ subprojects {
 }
 
 import java.time.*
-import java.util.function.Consumer
 
 gradle.taskGraph.beforeTask { Task task ->
   task.ext.setProperty("startTime", Instant.now())
 }
 
 gradle.taskGraph.afterTask { Task task, TaskState state ->
-  println task.name + " took " + Duration.between(task.ext.startTime, Instant.now()).toSeconds() + " seconds"
+  Instant then = task.ext.startTime as Instant
+  Instant now = Instant.now()
+  println task.name + " took " + Duration.between(then, now).toSeconds() + " seconds"
 }
 
 task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
