@@ -1,8 +1,10 @@
 import Immutable from 'seamless-immutable'
+// import _ from 'lodash'
 import {
   COLLECTION_NEW_SEARCH_REQUESTED,
   COLLECTION_MORE_RESULTS_REQUESTED,
-  COLLECTION_SEARCH_COMPLETE,
+  COLLECTION_NEW_SEARCH_RESULTS_RECIEVED,
+  COLLECTION_MORE_RESULTS_RECIEVED,
   COLLECTION_SEARCH_ERROR,
 } from '../../actions/search/CollectionRequestActions'
 // import {
@@ -15,17 +17,49 @@ export const initialState = Immutable({
   totalCollections: 0,
   loadedCollections: 0, // TODO rename to loadedCount or numberLoaded or something?
   collectionsPageOffset: 0, // TODO This would make more logical sense on request, probably...
-  totalGranules: 0, // TODO when is this still used??
+  // totalGranules: 0, // TODO when is this still used??
   pageSize: 20, // TODO when is this changed? make sure granule page size can be changed, if needed?
 })
 
-const collectionResults = (state, collections, action) => {
-  // TODO rename this, it's vague
+const getCollectionsFromAction = action => {
+  /* TODO make sure all of this stuff ... is the same as the reduce used below
+  const result = _.reduce(
+    action.items,
+    (map, resource) => {
+      return map.set(
+        resource.id,
+        _.assign({type: resource.type}, resource.attributes)
+      )
+    },
+    new Map()
+  )
+  let newCollections = {}
+    result.forEach((val, key) => {
+      newCollections[key] = val
+    })
+    */
+
+  return action.items.reduce(
+    (existing, next) => existing.set(next.id, next.attributes),
+    initialState.collections
+  )
+}
+
+const newSearchResultsRecieved = (state, total, collections, facets) => {
   return Immutable.merge(state, {
     loadedCollections: (collections && Object.keys(collections).length) || 0,
     collections: collections,
-    totalCollections: action.total,
-    facets: action.metadata ? action.metadata.facets : initialState.facets,
+    totalCollections: total,
+    facets: facets,
+  })
+}
+
+const moreResultsRecieved = (state, newCollections) => {
+  let collections = state.collections.merge(newCollections)
+
+  return Immutable.merge(state, {
+    loadedCollections: (collections && Object.keys(collections).length) || 0,
+    collections: collections,
   })
 }
 
@@ -39,19 +73,16 @@ export const collectionResult = (state = initialState, action) => {
     //     collectionsPageOffset: initialState.collectionsPageOffset,
     //   })
 
-    // Result Effects from 'CollectionRequestActions'
-    case COLLECTION_SEARCH_COMPLETE:
-      let newCollections = {}
-      action.items.forEach((val, key) => {
-        newCollections[key] = val
-      })
-      if (action.clearPreviousResults) {
-        return collectionResults(state, newCollections, action)
-      }
+    case COLLECTION_NEW_SEARCH_RESULTS_RECIEVED:
+      return newSearchResultsRecieved(
+        state,
+        action.total,
+        getCollectionsFromAction(action),
+        action.metadata.facets
+      )
 
-      let allCollections = state.collections.merge(newCollections)
-
-      return collectionResults(state, allCollections, action)
+    case COLLECTION_MORE_RESULTS_RECIEVED:
+      return moreResultsRecieved(state, getCollectionsFromAction(action))
 
     case COLLECTION_SEARCH_ERROR:
       return Immutable.merge(state, {

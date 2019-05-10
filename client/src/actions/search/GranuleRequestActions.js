@@ -18,9 +18,8 @@ export const granuleNewSearchResultsRecieved = (total, items, metadata) => ({
 })
 
 export const GRANULE_MORE_RESULTS_RECIEVED = 'GRANULE_MORE_RESULTS_RECIEVED'
-export const granuleMoreResultsRecieved = (total, items) => ({
+export const granuleMoreResultsRecieved = items => ({
   type: GRANULE_MORE_RESULTS_RECIEVED,
-  // TODO - I think the total is always unchanged, so no need to update it
   items: items,
 })
 

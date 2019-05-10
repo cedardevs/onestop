@@ -10,7 +10,7 @@ import {
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
   COLLECTION_CLEAR_FILTERS,
 } from '../../actions/search/CollectionFilterActions'
-import {COLLECTION_SEARCH_COMPLETE} from '../../actions/search/CollectionRequestActions'
+// import {COLLECTION_SEARCH_COMPLETE} from '../../actions/search/CollectionRequestActions'
 import {COLLECTION_GET_DETAIL_START} from '../../actions/get/CollectionDetailRequestActions'
 // import {toggleSelectedId} from '../../utils/filterUtils'
 

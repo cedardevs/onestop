@@ -9,7 +9,8 @@ import {
 import {
   collectionNewSearchRequested,
   collectionMoreResultsRequested,
-  collectionSearchComplete,
+  collectionNewSearchResultsRecieved,
+  collectionMoreResultsRecieved,
   collectionSearchError,
 } from './CollectionRequestActions'
 
@@ -55,6 +56,7 @@ const buildNewCollectionSearch = history => {
     return body
   }
 
+  /*
   const successHandler = (dispatch, payload) => {
     const result = _.reduce(
       // TODO is this the right place to do the reduce? or in the ... reducer...
@@ -70,6 +72,16 @@ const buildNewCollectionSearch = history => {
 
     dispatch(
       collectionSearchComplete(true, payload.meta.total, result, payload.meta)
+    )
+  }
+*/
+  const successHandler = (dispatch, payload) => {
+    dispatch(
+      collectionNewSearchResultsRecieved(
+        payload.meta.total,
+        payload.data,
+        payload.meta
+      )
     )
   }
 
@@ -100,27 +112,30 @@ const triggerCollectionSearch = (
     }
     return body
   }
+  // const successHandler = (dispatch, payload) => {
+  //   const result = _.reduce(
+  //     // TODO is this the right place to do the reduce? or in the ... reducer...
+  //     payload.data,
+  //     (map, resource) => {
+  //       return map.set(
+  //         resource.id,
+  //         _.assign({type: resource.type}, resource.attributes)
+  //       )
+  //     },
+  //     new Map()
+  //   )
+  //
+  //   dispatch(
+  //     collectionSearchComplete(
+  //       clearPreviousResults,
+  //       payload.meta.total,
+  //       result,
+  //       retrieveFacets ? payload.meta : null
+  //     )
+  //   )
+  // }
   const successHandler = (dispatch, payload) => {
-    const result = _.reduce(
-      // TODO is this the right place to do the reduce? or in the ... reducer...
-      payload.data,
-      (map, resource) => {
-        return map.set(
-          resource.id,
-          _.assign({type: resource.type}, resource.attributes)
-        )
-      },
-      new Map()
-    )
-
-    dispatch(
-      collectionSearchComplete(
-        clearPreviousResults,
-        payload.meta.total,
-        result,
-        retrieveFacets ? payload.meta : null
-      )
-    )
+    dispatch(collectionMoreResultsRecieved(payload.data))
   }
 
   return buildSearchAction(

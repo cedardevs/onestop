@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {buildSearchAction} from '../fetch/SearchActions'
 import {
   assembleGranuleSearchRequest,
@@ -53,6 +54,7 @@ const buildNewGranuleSearch = (history, id) => {
     }
     return body
   }
+
   const successHandler = (dispatch, payload) => {
     dispatch(
       granuleNewSearchResultsRecieved(
@@ -95,7 +97,7 @@ const buildMoreResultsSearch = () => {
   }
 
   const successHandler = (dispatch, payload) => {
-    dispatch(granuleMoreResultsRecieved(payload.meta.total, payload.data))
+    dispatch(granuleMoreResultsRecieved(payload.data))
   }
 
   return buildSearchAction(
