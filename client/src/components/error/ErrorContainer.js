@@ -3,7 +3,7 @@ import {withRouter} from 'react-router'
 import {goBack} from 'connected-react-router'
 import Error from './Error'
 import {clearErrors} from '../../actions/ErrorActions'
-import {showHome} from '../../actions/search/SearchActions'
+import {showHome} from '../../actions/fetch/SearchActions'
 
 const mapStateToProps = state => {
   return {

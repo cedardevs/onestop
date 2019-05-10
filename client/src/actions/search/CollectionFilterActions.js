@@ -1,4 +1,3 @@
-// synchronous actions
 import {updateSelectedFacets} from '../../utils/filterUtils'
 
 // Collection High-Level Filter Actions

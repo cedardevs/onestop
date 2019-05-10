@@ -1,3 +1,4 @@
+import 'isomorphic-fetch'
 import {apiPath} from '../../utils/urlUtils'
 import {checkForErrors} from '../../utils/responseUtils'
 

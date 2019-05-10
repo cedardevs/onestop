@@ -11,9 +11,9 @@ import {asyncNewCollectionSearch} from './search/CollectionSearchActions'
 // import {
 //   collectionClearDetailGranulesResult, // TODO make sure this still works!
 // } from './search/CollectionResultActions'
-import {buildSitemapAction} from './search/SearchActions'
+import {buildSitemapAction} from './fetch/SearchActions'
 import {fetchConfig} from './ConfigActions'
-import {fetchCounts, fetchInfo} from './search/InfoActions'
+import {fetchCounts, fetchInfo} from './fetch/InfoActions'
 
 export const loadGranulesList = (path, newQueryString) => {
   return (dispatch, getState) => {

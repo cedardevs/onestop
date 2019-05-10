@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {buildGetAction} from '../search/SearchActions'
+import {buildGetAction} from '../fetch/SearchActions'
 import {showErrors} from '../ErrorActions'
 
 import {encodeQueryString} from '../../utils/queryUtils'

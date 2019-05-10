@@ -1,4 +1,4 @@
-import {buildSearchAction} from './SearchActions'
+import {buildSearchAction} from '../fetch/SearchActions'
 import {
   assembleGranuleSearchRequest,
   encodeQueryString,

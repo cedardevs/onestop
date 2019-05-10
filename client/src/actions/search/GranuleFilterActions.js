@@ -1,4 +1,3 @@
-// synchronous actions
 import {updateSelectedFacets} from '../../utils/filterUtils'
 
 // Granule High-Level Filter Actions
@@ -9,13 +8,6 @@ export const granuleUpdateFilters = filters => {
     filters: filters,
   }
 }
-//
-// export const GRANULE_REMOVE_FILTERS = 'GRANULE_REMOVE_FILTERS'
-// export const granuleRemoveFilters = () => {
-//   return {
-//     type: GRANULE_REMOVE_FILTERS,
-//   }
-// }
 //
 // // Granule Query Text Actions
 // export const GRANULE_UPDATE_QUERY_TEXT = 'GRANULE_UPDATE_QUERY_TEXT'
