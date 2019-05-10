@@ -21,57 +21,44 @@ export const assembleCollectionSearchRequestString = (
 export const assembleGranuleSearchRequest = (state, retrieveFacets) => {
   const search = state.search || {}
   const granuleFilter = search.granuleFilter || {}
-  const collectionFilter = search.collectionFilter || {}
   const granuleResult = search.granuleResult || {}
   const pageOffset = granuleResult.granulesPageOffset || 0
   const pageSize = granuleResult.pageSize || 20 // TODO replace all these pageSize 20's with a util const?
-  const page = assemblePagination(pageSize, pageOffset)
-  // granule search, assembled for search API / elasticsearch
-  let queries = [] //assembleQueries(granuleFilter)
-  let filters = _.concat(
-    assembleFacetFilters(granuleFilter),
-    assembleGeometryFilters(granuleFilter),
-    assembleTemporalFilters(granuleFilter),
-    assembleAdditionalFilters(granuleFilter),
-    assembleSelectedCollectionsFilters(granuleFilter) // TODO once I move selectedIds to granuleFilter instead, the assemble search request functions should be generic, except for which state gets passed in!
-  )
-
-  filters = _.flatten(_.compact(filters))
 
   return {
-    queries: queries,
-    filters: filters,
+    queries: [],
+    filters: assembleFilters(granuleFilter),
     facets: retrieveFacets,
-    page: page,
+    page: assemblePagination(pageSize, pageOffset),
   }
 }
 
 export const assembleCollectionSearchRequest = (state, retrieveFacets) => {
-  // TODO rename to include collection in name
   const search = state.search || {}
   const collectionFilter = search.collectionFilter || {}
   const collectionResult = search.collectionResult || {}
   const pageOffset = collectionResult.collectionsPageOffset || 0
   const pageSize = collectionResult.pageSize || 20
-  const page = assemblePagination(pageSize, pageOffset)
 
-  // collection search, assembled for search API / elasticsearch
-  let queries = assembleQueries(collectionFilter)
+  return {
+    queries: assembleQueries(collectionFilter),
+    filters: assembleFilters(collectionFilter),
+    facets: retrieveFacets,
+    page: assemblePagination(pageSize, pageOffset),
+  }
+}
+
+const assembleFilters = filter => {
   let filters = _.concat(
-    assembleFacetFilters(collectionFilter),
-    assembleGeometryFilters(collectionFilter),
-    assembleTemporalFilters(collectionFilter),
-    assembleAdditionalFilters(collectionFilter)
+    assembleFacetFilters(filter),
+    assembleGeometryFilters(filter),
+    assembleTemporalFilters(filter),
+    assembleAdditionalFilters(filter),
+    assembleSelectedCollectionsFilters(filter)
   )
 
   filters = _.flatten(_.compact(filters))
-
-  return {
-    queries: queries,
-    filters: filters,
-    facets: retrieveFacets,
-    page: page,
-  }
+  return filters
 }
 
 const assembleQueries = ({queryText}) => {
@@ -112,7 +99,7 @@ const assembleAdditionalFilters = ({excludeGlobal}) => {
 }
 
 const assembleSelectedCollectionsFilters = ({selectedIds}) => {
-  if (selectedIds.length > 0) {
+  if (selectedIds && selectedIds.length > 0) {
     return {type: 'collection', values: selectedIds}
   }
 }
