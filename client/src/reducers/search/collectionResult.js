@@ -1,8 +1,6 @@
 import Immutable from 'seamless-immutable'
 // import _ from 'lodash'
 import {
-  COLLECTION_NEW_SEARCH_REQUESTED,
-  COLLECTION_MORE_RESULTS_REQUESTED,
   COLLECTION_NEW_SEARCH_RESULTS_RECIEVED,
   COLLECTION_MORE_RESULTS_RECIEVED,
   COLLECTION_SEARCH_ERROR,
@@ -16,9 +14,6 @@ export const initialState = Immutable({
   facets: {},
   totalCollections: 0,
   loadedCollections: 0, // TODO rename to loadedCount or numberLoaded or something?
-  collectionsPageOffset: 0, // TODO This would make more logical sense on request, probably...
-  // totalGranules: 0, // TODO when is this still used??
-  pageSize: 20, // TODO when is this changed? make sure granule page size can be changed, if needed?
 })
 
 const getCollectionsFromAction = action => {
@@ -70,7 +65,6 @@ export const collectionResult = (state = initialState, action) => {
     //     collections: initialState.collections,
     //     totalCollections: initialState.totalCollections,
     //     loadedCollections: initialState.loadedCollections,
-    //     collectionsPageOffset: initialState.collectionsPageOffset,
     //   })
 
     case COLLECTION_NEW_SEARCH_RESULTS_RECIEVED:
@@ -91,20 +85,6 @@ export const collectionResult = (state = initialState, action) => {
         totalCollections: initialState.totalCollections,
         facets: initialState.facets,
       })
-
-    case COLLECTION_NEW_SEARCH_REQUESTED:
-      return Immutable.set(
-        state,
-        'collectionsPageOffset',
-        initialState.collectionsPageOffset
-      )
-
-    case COLLECTION_MORE_RESULTS_REQUESTED:
-      return Immutable.set(
-        state,
-        'collectionsPageOffset',
-        state.collectionsPageOffset + state.pageSize
-      )
 
     default:
       return state

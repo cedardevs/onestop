@@ -7,6 +7,8 @@ import {
   convertGeoJsonToBboxString,
 } from './geoUtils'
 
+export const PAGE_SIZE = 20
+
 export const assembleCollectionSearchRequestString = (
   state,
   granules,
@@ -22,14 +24,12 @@ export const assembleGranuleSearchRequest = (state, retrieveFacets) => {
   const search = state.search || {}
   const granuleFilter = search.granuleFilter || {}
   const granuleResult = search.granuleResult || {}
-  const pageOffset = granuleResult.granulesPageOffset || 0
-  const pageSize = granuleResult.pageSize || 20 // TODO replace all these pageSize 20's with a util const?
 
   return {
     queries: [],
     filters: assembleFilters(granuleFilter),
     facets: retrieveFacets,
-    page: assemblePagination(pageSize, pageOffset),
+    page: assemblePagination(granuleFilter),
   }
 }
 
@@ -37,14 +37,12 @@ export const assembleCollectionSearchRequest = (state, retrieveFacets) => {
   const search = state.search || {}
   const collectionFilter = search.collectionFilter || {}
   const collectionResult = search.collectionResult || {}
-  const pageOffset = collectionResult.collectionsPageOffset || 0
-  const pageSize = collectionResult.pageSize || 20
 
   return {
     queries: assembleQueries(collectionFilter),
     filters: assembleFilters(collectionFilter),
     facets: retrieveFacets,
-    page: assemblePagination(pageSize, pageOffset),
+    page: assemblePagination(collectionFilter),
   }
 }
 
@@ -104,8 +102,8 @@ const assembleSelectedCollectionsFilters = ({selectedIds}) => {
   }
 }
 
-const assemblePagination = (max, offset) => {
-  return {max: max, offset: offset}
+const assemblePagination = ({pageOffset}) => {
+  return {max: PAGE_SIZE, offset: pageOffset}
 }
 
 export const encodeQueryString = (

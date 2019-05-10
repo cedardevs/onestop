@@ -24,8 +24,6 @@ export const loadGranulesList = (history, path, newQueryString) => {
     const searchFromState = _.get(getState(), 'search.granuleFilter')
     if (!_.isEqual(searchFromQuery, searchFromState)) {
       const detailId = getCollectionIdFromGranuleListPath(path)
-      dispatch(getCollection(detailId)) // TODO is this still really needed? And if so, why?
-      // dispatch(collectionClearDetailGranulesResult())
       dispatch(granuleUpdateFilters(searchFromQuery))
       dispatch(asyncNewGranuleSearch(history, detailId)) // this updates the URL and push to that page, but in this context we are already there and no changes will be made by that particular step
     }

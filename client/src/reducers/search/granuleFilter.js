@@ -7,14 +7,15 @@ import {
   GRANULE_REMOVE_GEOMETRY,
   GRANULE_UPDATE_DATE_RANGE,
   GRANULE_REMOVE_DATE_RANGE,
-  // GRANULE_TOGGLE_SELECTED_ID,
-  // GRANULE_CLEAR_SELECTED_IDS,
   GRANULE_TOGGLE_FACET,
   // GRANULE_CLEAR_FACETS,
   GRANULE_TOGGLE_EXCLUDE_GLOBAL,
 } from '../../actions/search/GranuleFilterActions'
-
-import {GRANULE_NEW_SEARCH_REQUESTED} from '../../actions/search/GranuleRequestActions'
+import {
+  GRANULE_NEW_SEARCH_REQUESTED,
+  GRANULE_MORE_RESULTS_REQUESTED,
+} from '../../actions/search/GranuleRequestActions'
+import {PAGE_SIZE} from '../../utils/queryUtils'
 
 export const initialState = Immutable({
   queryText: '',
@@ -24,6 +25,7 @@ export const initialState = Immutable({
   selectedFacets: {},
   selectedIds: [],
   excludeGlobal: null,
+  pageOffset: 0,
 })
 
 export const granuleFilter = (state = initialState, action) => {
@@ -31,8 +33,15 @@ export const granuleFilter = (state = initialState, action) => {
     case GRANULE_UPDATE_FILTERS:
       return Immutable.merge(initialState, action.filters || {}) // TODO what does this do with selectedId??
 
-    case GRANULE_NEW_SEARCH_REQUESTED: // TODO add selectedId to this action
-      return Immutable.merge(state, {selectedIds: [ action.id ]})
+    case GRANULE_NEW_SEARCH_REQUESTED:
+      return Immutable.merge(state, {
+        pageOffset: initialState.pageOffset,
+        selectedIds: [ action.id ],
+      })
+
+    case GRANULE_MORE_RESULTS_REQUESTED:
+      return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)
+
     // case GRANULE_REMOVE_FILTERS:
     //   return Immutable.merge(state, {
     //     // this action is triggered by 'queryText' searches to ensure a fresh filter;

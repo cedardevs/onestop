@@ -10,6 +10,11 @@ import {
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
   COLLECTION_CLEAR_FILTERS,
 } from '../../actions/search/CollectionFilterActions'
+import {
+  COLLECTION_NEW_SEARCH_REQUESTED,
+  COLLECTION_MORE_RESULTS_REQUESTED,
+} from '../../actions/search/CollectionRequestActions'
+import {PAGE_SIZE} from '../../utils/queryUtils'
 
 export const initialState = Immutable({
   queryText: '',
@@ -18,6 +23,7 @@ export const initialState = Immutable({
   endDateTime: null,
   selectedFacets: {},
   excludeGlobal: null,
+  pageOffset: 0,
 })
 
 export const collectionFilter = (state = initialState, action) => {
@@ -77,6 +83,12 @@ export const collectionFilter = (state = initialState, action) => {
         selectedFacets: initialState.selectedFacets,
         excludeGlobal: initialState.excludeGlobal,
       })
+
+    case COLLECTION_NEW_SEARCH_REQUESTED:
+      return Immutable.set(state, 'pageOffset', initialState.pageOffset)
+
+    case COLLECTION_MORE_RESULTS_REQUESTED:
+      return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)
 
     default:
       return state

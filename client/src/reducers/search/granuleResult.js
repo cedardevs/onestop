@@ -3,8 +3,6 @@ import Immutable from 'seamless-immutable'
 // // GRANULE_REMOVE_FILTERS,
 // '../../actions/search/GranuleFilterActions'
 import {
-  GRANULE_NEW_SEARCH_REQUESTED,
-  GRANULE_MORE_RESULTS_REQUESTED,
   GRANULE_NEW_SEARCH_RESULTS_RECIEVED,
   GRANULE_MORE_RESULTS_RECIEVED,
   GRANULE_SEARCH_ERROR,
@@ -15,8 +13,6 @@ export const initialState = Immutable({
   facets: {},
   totalGranules: 0,
   loadedGranules: 0,
-  granulesPageOffset: 0, // TODO move to request
-  pageSize: 20,
 })
 
 const getGranulesFromAction = action => {
@@ -52,20 +48,6 @@ export const granuleResult = (state = initialState, action) => {
     //
     // case GRANULE_REMOVE_FILTERS:
     //   return Immutable.set(state, 'facets', initialState.facets)
-
-    case GRANULE_NEW_SEARCH_REQUESTED:
-      return Immutable.set(
-        state,
-        'granulesPageOffset',
-        initialState.granulesPageOffset
-      )
-
-    case GRANULE_MORE_RESULTS_REQUESTED:
-      return Immutable.set(
-        state,
-        'granulesPageOffset',
-        state.granulesPageOffset + state.pageSize
-      )
 
     case GRANULE_NEW_SEARCH_RESULTS_RECIEVED:
       return newSearchResultsRecieved(
