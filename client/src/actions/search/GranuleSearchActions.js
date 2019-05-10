@@ -5,9 +5,10 @@ import {
 } from '../../utils/queryUtils'
 import {showErrors} from '../ErrorActions'
 import {
-  granuleNewSearchStart,
-  granulePageSearchStart,
-  granuleSearchComplete,
+  granuleNewSearchRequested,
+  granuleMoreResultsRequested,
+  granuleNewSearchResultsRecieved,
+  granuleMoreResultsRecieved,
   granuleSearchError,
 } from './GranuleRequestActions'
 
@@ -39,16 +40,6 @@ const validRequestCheck = state => {
 //   return body
 // }
 
-// const successHandler = (dispatch, payload) => {
-//   dispatch(
-//     granuleSearchComplete(
-//       clearPreviousResults,
-//       payload.meta.total,
-//       payload.data,
-//       retrieveFacets ? payload.meta : null
-//     )
-//   )
-// }
 
 const errorHandler = (dispatch, e) => {
   // dispatch(showErrors(e.errors || e)) // TODO show errors
@@ -58,7 +49,7 @@ const errorHandler = (dispatch, e) => {
 const buildNewGranuleSearch = (history, id) => {
   // new granule search *for granules within a single collection*
   const prefetchHandler = dispatch => {
-    dispatch(granuleNewSearchStart()) // TODO add the id as a param and set the selected id? 
+    dispatch(granuleNewSearchRequested()) // TODO add the id as a param and set the selected id?
     dispatch(updateURLAndNavigateToGranuleRoute(history, id))
   }
 
@@ -75,8 +66,7 @@ const buildNewGranuleSearch = (history, id) => {
   }
   const successHandler = (dispatch, payload) => {
     dispatch(
-      granuleSearchComplete(
-        true,
+      granuleNewSearchResultsRecieved(
         payload.meta.total,
         payload.data,
         payload.meta
@@ -101,7 +91,7 @@ const triggerGranuleSearch = ( // trigger granule search *for granules within a 
   retrieveFacets = true
 ) => {
   const prefetchHandler = dispatch => {
-    dispatch(granulePageSearchStart())
+    dispatch(granuleMoreResultsRequested())
   }
   const bodyBuilder = state => {
     const body = assembleGranuleSearchRequest(state, false, false) // TODO clean up these args...
@@ -116,11 +106,9 @@ const triggerGranuleSearch = ( // trigger granule search *for granules within a 
   }
   const successHandler = (dispatch, payload) => {
     dispatch(
-      granuleSearchComplete(
-        false,
+      granuleMoreResultsRecieved(
         payload.meta.total,
         payload.data,
-        null
       )
     )
   }
