@@ -2,7 +2,7 @@ import _ from 'lodash'
 import {buildSearchAction} from '../fetch/SearchActions'
 import {showErrors} from '../ErrorActions'
 
-import {assembleSearchRequest, encodeQueryString} from '../../utils/queryUtils'
+import {assembleCollectionSearchRequest, encodeQueryString} from '../../utils/queryUtils'
 import {
   collectionSearchStart,
   collectionSearchComplete,
@@ -29,7 +29,7 @@ const triggerCollectionSearch = (
     dispatch(collectionSearchStart(clearPreviousResults))
   }
   const bodyBuilder = state => {
-    const body = assembleSearchRequest(state, false, retrieveFacets)
+    const body = assembleCollectionSearchRequest(state, retrieveFacets)
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     if (!(hasQueries || hasFilters)) {

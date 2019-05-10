@@ -7,19 +7,16 @@ import {
   convertGeoJsonToBboxString,
 } from './geoUtils'
 
-export const assembleSearchRequestString = (
+export const assembleCollectionSearchRequestString = (
   state,
   granules,
   retrieveFacets
 ) => {
-  return JSON.stringify(assembleSearchRequest(state, granules, retrieveFacets))
+  if (granules) {return JSON.stringify(assembleGranuleSearchRequest(state, retrieveFacets)}
+  return JSON.stringify(assembleCollectionSearchRequest(state, retrieveFacets))
 }
 
-export const assembleGranuleSearchRequest = (
-  state,
-  granules,
-  retrieveFacets
-) => {
+export const assembleGranuleSearchRequest = (state, retrieveFacets) => {
   const search = state.search || {}
   const granuleFilter = search.granuleFilter || {}
   const collectionFilter = search.collectionFilter || {}
@@ -34,7 +31,7 @@ export const assembleGranuleSearchRequest = (
     assembleGeometryFilters(granuleFilter),
     assembleTemporalFilters(granuleFilter),
     assembleAdditionalFilters(granuleFilter),
-    assembleSelectedCollectionsFilters(collectionFilter)
+    assembleSelectedCollectionsFilters(collectionFilter) // TODO once I move selectedIds to granuleFilter instead, the assemble search request functions should be generic, except for which state gets passed in!
   )
 
   filters = _.flatten(_.compact(filters))
@@ -47,15 +44,12 @@ export const assembleGranuleSearchRequest = (
   }
 }
 
-export const assembleSearchRequest = (state, granules, retrieveFacets) => {
+export const assembleCollectionSearchRequest = (state, retrieveFacets) => {
   // TODO rename to include collection in name
   const search = state.search || {}
   const collectionFilter = search.collectionFilter || {}
   const collectionResult = search.collectionResult || {}
-  const pageOffset =
-    (granules
-      ? collectionResult.granulesPageOffset
-      : collectionResult.collectionsPageOffset) || 0
+  const pageOffset = collectionResult.collectionsPageOffset || 0
   const pageSize = collectionResult.pageSize || 20
   const page = assemblePagination(pageSize, pageOffset)
 
@@ -68,11 +62,6 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
     assembleAdditionalFilters(collectionFilter)
   )
 
-  // change which filters are applied and drop query text for granules (until #445 allows changing filters applied to granules directly)
-  if (granules) {
-    filters = _.concat(assembleSelectedCollectionsFilters(collectionFilter))
-    queries = []
-  }
   filters = _.flatten(_.compact(filters))
 
   return {

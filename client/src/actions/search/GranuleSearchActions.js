@@ -21,25 +21,14 @@ export const asyncNewGranuleSearch = (history, id) => {
   return buildNewGranuleSearch(history, id)
 }
 export const asyncMoreGranuleResults = () => {
-  return triggerGranuleSearch(null, null, false, false) // TODO
+  // note that this function does *not* make any changes to the URL - including push the user to the granule view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
+  return buildMoreResultsSearch()
 }
 
 const validRequestCheck = state => {
   const inFlight = state.search.granuleRequest.granuleSearchRequestInFlight
   return !inFlight
 }
-
-// const bodyBuilder = state => {
-//   const body = assembleGranuleSearchRequest(state, false, retrieveFacets)
-//   const hasQueries = body && body.queries && body.queries.length > 0
-//   const hasFilters = body && body.filters && body.filters.length > 0
-//   let selectedCollections = state.search.collectionFilter.selectedIds
-//   // TODO combine selectedCollections and id - in newSearch case, it knows the id from other contexts and/or should set it explicitly in the prefetch handler instead...
-//   if (!selectedCollections || !(hasQueries || hasFilters)) {
-//     return undefined
-//   }
-//   return body
-// }
 
 const errorHandler = (dispatch, e) => {
   // dispatch(showErrors(e.errors || e)) // TODO show errors
@@ -54,7 +43,7 @@ const buildNewGranuleSearch = (history, id) => {
   }
 
   const bodyBuilder = state => {
-    const body = assembleGranuleSearchRequest(state, false, true) // TODO clean up these args...
+    const body = assembleGranuleSearchRequest(state, true) // TODO clean up these args...
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     let selectedCollections = state.search.collectionFilter.selectedIds
@@ -84,27 +73,26 @@ const buildNewGranuleSearch = (history, id) => {
   )
 }
 
-const triggerGranuleSearch = (
-  // trigger granule search *for granules within a single collection*
-  history,
-  id,
-  clearPreviousResults = false, // TODO done with this arg now!
-  retrieveFacets = true
-) => {
+const buildMoreResultsSearch = ( ) => { // fetch the next page of granules granule search *for granules within a single collection*
   const prefetchHandler = dispatch => {
     dispatch(granuleMoreResultsRequested())
   }
+
   const bodyBuilder = state => {
-    const body = assembleGranuleSearchRequest(state, false, false) // TODO clean up these args...
+    const body = assembleGranuleSearchRequest(state, false) // TODO clean up these args...
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     let selectedCollections = state.search.collectionFilter.selectedIds
     // TODO combine selectedCollections and id - in newSearch case, it knows the id from other contexts and/or should set it explicitly in the prefetch handler instead...
     if (!selectedCollections || !(hasQueries || hasFilters)) {
+      // TODO returning an undefined body exits buildSearchAction early. It should resolve as an error or *something* - otherwise inFlight won't be reset! This is a consequence of moving the prefetch before this step. That also means that the bodyBuilder isn't really the right place to verify certain things are set...
+      // Which leads to the question: under what conditions would it not have the correct queries and filters to make a sensible request? Only case I can think of is manually entering something weird in the URL.
+      // but TLDR; instead of returning undefined throw an error?
       return undefined
     }
     return body
   }
+
   const successHandler = (dispatch, payload) => {
     dispatch(granuleMoreResultsRecieved(payload.meta.total, payload.data))
   }
