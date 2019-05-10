@@ -15,7 +15,7 @@ import {
 import GranuleList from './GranuleList'
 
 import {withRouter} from 'react-router'
-import {triggerGranuleSearch} from '../../../actions/search/GranuleSearchActions'
+import {asyncMoreGranuleResults} from '../../../actions/search/GranuleSearchActions'
 
 const mapStateToProps = state => {
   const {granules, totalGranules, loadedGranules} = state.search.granuleResult
@@ -36,8 +36,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     fetchMoreResults: () => {
-      dispatch(granuleIncrementResultsOffset())
-      dispatch(triggerGranuleSearch(false, false)) // TODO ???
+      dispatch(asyncMoreGranuleResults())
     },
     selectGranule: (item, itemId) => {
       insertGranule(itemId, item)

@@ -6,7 +6,7 @@ import {
   granuleUpdateDateRange,
 } from '../../../actions/search/GranuleFilterActions'
 import {
-  triggerGranuleSearch,
+  asyncNewGranuleSearch,
   showGranules,
 } from '../../../actions/search/GranuleSearchActions'
 
@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(granuleRemoveDateRange())
     },
     submit: () => {
-      dispatch(triggerGranuleSearch(true))
+      dispatch(asyncNewGranuleSearch())
       dispatch(showGranules(ownProps.history, ownProps.match.params.id))
     },
   }

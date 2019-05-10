@@ -27,7 +27,6 @@ export const assembleGranuleSearchRequest = (
   const pageOffset = granuleResult.granulesPageOffset || 0
   const pageSize = granuleResult.pageSize || 20
   const page = assemblePagination(pageSize, pageOffset)
-
   // granule search, assembled for search API / elasticsearch
   let queries = [] //assembleQueries(granuleFilter)
   let filters = _.concat(
@@ -58,7 +57,6 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
       ? collectionResult.granulesPageOffset
       : collectionResult.collectionsPageOffset) || 0
   const pageSize = collectionResult.pageSize || 20
-  console.log('assembling with page', collectionResult.collectionsPageOffset)
   const page = assemblePagination(pageSize, pageOffset)
 
   // collection search, assembled for search API / elasticsearch

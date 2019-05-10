@@ -4,13 +4,13 @@ import {
   getCollectionIdFromGranuleListPath,
 } from '../utils/urlUtils'
 import {granuleUpdateFilters} from './search/GranuleFilterActions'
-import {triggerGranuleSearch} from './search/GranuleSearchActions'
+import {asyncNewGranuleSearch} from './search/GranuleSearchActions'
 import {collectionUpdateFilters} from './search/CollectionFilterActions'
 import {getCollection} from './get/CollectionGetDetailActions'
 import {asyncNewCollectionSearch} from './search/CollectionSearchActions'
-import {
-  collectionClearDetailGranulesResult, // TODO make sure this still works!
-} from './search/CollectionResultActions'
+// import {
+//   collectionClearDetailGranulesResult, // TODO make sure this still works!
+// } from './search/CollectionResultActions'
 import {buildSitemapAction} from './search/SearchActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchCounts, fetchInfo} from './search/InfoActions'
@@ -25,15 +25,14 @@ export const loadGranulesList = (path, newQueryString) => {
     if (!_.isEqual(searchFromQuery, searchFromState)) {
       const detailId = getCollectionIdFromGranuleListPath(path)
       dispatch(getCollection(detailId))
-      dispatch(collectionClearDetailGranulesResult())
+      // dispatch(collectionClearDetailGranulesResult())
       dispatch(granuleUpdateFilters(searchFromQuery))
-      dispatch(triggerGranuleSearch())
+      dispatch(asyncNewGranuleSearch())
     }
   }
 }
 
 export const loadCollections = newQueryString => {
-  console.log('load collection search from', newQueryString)
   return (dispatch, getState) => {
     if (newQueryString.indexOf('?') === 0) {
       newQueryString = newQueryString.slice(1)
@@ -41,7 +40,7 @@ export const loadCollections = newQueryString => {
     const searchFromQuery = decodeQueryString(newQueryString)
     const searchFromState = _.get(getState(), 'search.collectionFilter')
     if (!_.isEqual(searchFromQuery, searchFromState)) {
-      dispatch(collectionClearDetailGranulesResult())
+      // dispatch(collectionClearDetailGranulesResult())
       // dispatch(collectionClearSelectedIds()) // TODO this implies that selectedIds is being overloaded in some way, or is too tied to a particular workflow...
       dispatch(collectionUpdateFilters(searchFromQuery))
       dispatch(asyncNewCollectionSearch())
@@ -50,7 +49,6 @@ export const loadCollections = newQueryString => {
 }
 
 export const loadDetails = path => {
-  console.log('it should load details now...', path)
   return (dispatch, getState) => {
     if (
       !getState().search.collectionDetailRequest.collectionDetailRequestInFlight

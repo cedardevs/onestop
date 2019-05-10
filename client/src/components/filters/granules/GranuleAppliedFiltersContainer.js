@@ -7,7 +7,7 @@ import {
   granuleRemoveGeometry,
 } from '../../../actions/search/GranuleFilterActions'
 import {
-  triggerGranuleSearch,
+  asyncNewGranuleSearch,
   showGranules,
 } from '../../../actions/search/GranuleSearchActions'
 import AppliedFilters from '../AppliedFilters'
@@ -38,7 +38,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     toggleFacet: (category, facetName, selected) =>
       dispatch(granuleToggleFacet(category, facetName, selected)),
     submit: () => {
-      dispatch(triggerGranuleSearch(true))
+      dispatch(asyncNewGranuleSearch())
       dispatch(showGranules(ownProps.history, ownProps.match.params.id))
     },
     updateDateRange: (startDate, endDate) =>

@@ -10,7 +10,6 @@ import {
 } from './CollectionRequestActions'
 
 export const asyncNewCollectionSearch = () => {
-  // TODO reset page offset to 0
   return triggerCollectionSearch(true, true)
 }
 export const asyncMoreCollectionResults = () => {
@@ -31,13 +30,10 @@ const triggerCollectionSearch = (
     dispatch(collectionSearchStart(clearPreviousResults))
   }
   const bodyBuilder = state => {
-    console.log('building...')
     const body = assembleSearchRequest(state, false, retrieveFacets)
-    console.log('to get', body)
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     if (!(hasQueries || hasFilters)) {
-      console.log('invalid queries/filters - skipping body')
       return undefined
     }
     return body

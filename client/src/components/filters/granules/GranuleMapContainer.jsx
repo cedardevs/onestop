@@ -5,7 +5,7 @@ import {
   granuleRemoveGeometry,
 } from '../../../actions/search/GranuleFilterActions'
 import {
-  triggerGranuleSearch,
+  asyncNewGranuleSearch,
   showGranules,
 } from '../../../actions/search/GranuleSearchActions'
 
@@ -24,7 +24,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleNewGeometry: geoJSON => dispatch(granuleUpdateGeometry(geoJSON)),
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
     submit: () => {
-      dispatch(triggerGranuleSearch(true))
+      dispatch(asyncNewGranuleSearch())
       dispatch(showGranules(ownProps.history, ownProps.match.params.id))
     },
   }

@@ -69,7 +69,6 @@ export const collectionResult = (state = initialState, action) => {
         )
       }
       if (action.incrementPageOffset) { // this is just the inverse of clearPreviousResults boolean, but is named for clarity here... which might make this logic more confusing, but what else do you name this variable? it's newSearch vs newPage... (maybe those are two separate prefetch actions instead?)
-      console.log('state should have page offset as ',state.collectionsPageOffset + state.pageSize)
         return Immutable.set(
           state,
           'collectionsPageOffset',

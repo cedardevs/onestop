@@ -15,7 +15,6 @@ export const buildSearchAction = (
     // let state = getState()
 
     if(!validRequestCheck(getState())) {
-      console.log('search request not valid')
       return Promise.resolve()
     }
     prefetchHandler(dispatch) // TODO does moving this above bodyBuilder break anything?
@@ -26,9 +25,6 @@ export const buildSearchAction = (
       // cannot or should not fetch
       return Promise.resolve()
     }
-    console.log('body', body)
-
-    // prefetchHandler(dispatch)
 
     const endpoint = apiPath() + '/search/' + endpointName
 

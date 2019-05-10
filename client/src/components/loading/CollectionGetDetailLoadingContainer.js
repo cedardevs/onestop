@@ -9,7 +9,6 @@ const mapStateToProps = state => {
   } = state.search.collectionDetailRequest.collectionDetailRequestInFlight
   const {collectionDetail} = state.search.collectionDetailResult
   // const collectionId = collectionDetail.collection.id // TODO why isn't this set yet when collectionDetailRequestInFlight false? - oh because it defaults to false before a load is ever triggered
-  console.log(collectionDetail)
   const text = loading
     ? `Loading collection with id ${loading}` // the id sneakily lives in this boolean for some reason
     : `Completed collection load.` // TODO put collection id

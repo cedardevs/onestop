@@ -9,11 +9,6 @@
 // export const GRANULE_CLEAR_RESULTS = 'GRANULE_CLEAR_RESULTS'
 // export const granuleClearResults = () => ({type: GRANULE_CLEAR_RESULTS})
 
-// export const GRANULE_INCREMENT_RESULTS_OFFSET =
-//   'GRANULE_INCREMENT_RESULTS_OFFSET'
-// export const granuleIncrementResultsOffset = () => ({
-//   type: GRANULE_INCREMENT_RESULTS_OFFSET,
-// })
 //
 // export const GRANULE_CLEAR_DETAIL_GRANULES_RESULT =
 //   'GRANULE_CLEAR_DETAIL_GRANULES_RESULT'

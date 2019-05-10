@@ -4,7 +4,7 @@ import FacetFilter from '../facet/FacetFilter'
 import {granuleToggleFacet} from '../../../actions/search/GranuleFilterActions'
 import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
 import {
-  triggerGranuleSearch,
+  asyncNewGranuleSearch,
   showGranules,
 } from '../../../actions/search/GranuleSearchActions'
 
@@ -23,7 +23,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(granuleToggleFacet(category, facetName, selected))
     },
     submit: () => {
-      dispatch(triggerGranuleSearch(true))
+      dispatch(asyncNewGranuleSearch())
       dispatch(showGranules(ownProps.history, ownProps.match.params.id))
     },
   }

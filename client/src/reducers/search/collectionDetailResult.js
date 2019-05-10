@@ -4,9 +4,7 @@ import {
   COLLECTION_GET_DETAIL_ERROR,
 } from '../../actions/get/CollectionDetailRequestActions'
 import {
-  // COLLECTION_INCREMENT_DETAIL_GRANULES_RESULT_OFFSET, // TODO nuke this action entirely - it make no sense!
   COLLECTION_CLEAR_DETAIL_GRANULES_RESULT, // TODO leaving these for the moment, because you can get total granules on a collection as aggregate data instead of the direct granule query, I think...
-  COLLECTION_UPDATE_DETAIL_GRANULES_TOTAL,
 } from '../../actions/search/CollectionResultActions'
 
 export const initialState = Immutable({

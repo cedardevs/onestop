@@ -12,19 +12,14 @@ import {
 export const getCollection = collectionId => {
   // TODO used only by initSearchActions???
   const prefetchHandler = dispatch => {
-    // dispatch(showLoading())
-    console.log('dispatching get detail start with ', collectionId)
-    dispatch(collectionGetDetailStart(collectionId)) // TODO
+    dispatch(collectionGetDetailStart(collectionId))
   }
 
   const successHandler = (dispatch, payload) => {
-    console.log('hooray, get detail success', payload)
     dispatch(collectionGetDetailComplete(payload.data[0], payload.meta))
-    // dispatch(hideLoading())
   }
 
   const errorHandler = (dispatch, e) => {
-    // dispatch(hideLoading()) // TODO
     // dispatch(showErrors(e.errors || e)) // TODO
     dispatch(collectionGetDetailError(e.errors || e)) // TODO
   }

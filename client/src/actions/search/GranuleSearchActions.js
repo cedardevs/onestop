@@ -10,7 +10,15 @@ import {
   granuleSearchError,
 } from './GranuleRequestActions'
 
-export const triggerGranuleSearch = (
+
+export const asyncNewGranuleSearch = () => {
+  return triggerGranuleSearch(true, true)
+}
+export const asyncMoreGranuleResults = () => {
+  return triggerGranuleSearch(false, false)
+}
+
+const triggerGranuleSearch = (
   clearPreviousResults = false,
   retrieveFacets = true
 ) => {
@@ -21,7 +29,7 @@ export const triggerGranuleSearch = (
         return !inFlight
     }
   const prefetchHandler = dispatch => {
-    dispatch(granuleSearchStart()) // TODO add params?
+    dispatch(granuleSearchStart(clearPreviousResults))
   }
 
   const bodyBuilder = state => {
