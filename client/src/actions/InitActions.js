@@ -4,7 +4,10 @@ import {
   getCollectionIdFromGranuleListPath,
 } from '../utils/urlUtils'
 import {granuleUpdateFilters} from './search/GranuleFilterActions'
-import {asyncNewGranuleSearch, showGranules} from './search/GranuleSearchActions'
+import {
+  asyncNewGranuleSearch,
+  showGranules,
+} from './search/GranuleSearchActions'
 import {collectionUpdateFilters} from './search/CollectionFilterActions'
 import {getCollection} from './get/CollectionGetDetailActions' // TODO rename that action to async.... as wells
 import {asyncNewCollectionSearch} from './search/CollectionSearchActions'
@@ -28,7 +31,9 @@ export const loadGranulesList = (history, path, newQueryString) => {
       // dispatch(collectionClearDetailGranulesResult())
       dispatch(granuleUpdateFilters(searchFromQuery))
       dispatch(asyncNewGranuleSearch(history, detailId))
-      console.log('inside loadGranulesList. does showGranules do anything bad here?')
+      console.log(
+        'inside loadGranulesList. does showGranules do anything bad here?'
+      )
       // dispatch(showGranules(history, detailId))
     }
   }

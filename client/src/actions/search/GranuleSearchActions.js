@@ -16,7 +16,8 @@ import {
   Since granule results always use the same section of the redux store, a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other.
 */
 
-export const asyncNewGranuleSearch = (history, id) => { // TODO rename to indicate that it updates the URL as well? - this is *not* just a background request - make a new action if we need that!!
+export const asyncNewGranuleSearch = (history, id) => {
+  // TODO rename to indicate that it updates the URL as well? - this is *not* just a background request - make a new action if we need that!!
   return buildNewGranuleSearch(history, id)
 }
 export const asyncMoreGranuleResults = () => {
@@ -39,7 +40,6 @@ const validRequestCheck = state => {
 //   }
 //   return body
 // }
-
 
 const errorHandler = (dispatch, e) => {
   // dispatch(showErrors(e.errors || e)) // TODO show errors
@@ -84,9 +84,10 @@ const buildNewGranuleSearch = (history, id) => {
   )
 }
 
-
-const triggerGranuleSearch = ( // trigger granule search *for granules within a single collection*
-  history, id,
+const triggerGranuleSearch = (
+  // trigger granule search *for granules within a single collection*
+  history,
+  id,
   clearPreviousResults = false, // TODO done with this arg now!
   retrieveFacets = true
 ) => {
@@ -105,12 +106,7 @@ const triggerGranuleSearch = ( // trigger granule search *for granules within a 
     return body
   }
   const successHandler = (dispatch, payload) => {
-    dispatch(
-      granuleMoreResultsRecieved(
-        payload.meta.total,
-        payload.data,
-      )
-    )
+    dispatch(granuleMoreResultsRecieved(payload.meta.total, payload.data))
   }
 
   return buildSearchAction(
@@ -123,7 +119,8 @@ const triggerGranuleSearch = ( // trigger granule search *for granules within a 
   )
 }
 
-const updateURLAndNavigateToGranuleRoute = (history, id) => { // formerly showGranules - TODO rename the other comparable functions
+const updateURLAndNavigateToGranuleRoute = (history, id) => {
+  // formerly showGranules - TODO rename the other comparable functions
   if (!id) {
     return
   }

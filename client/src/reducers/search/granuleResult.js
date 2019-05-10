@@ -19,7 +19,7 @@ export const initialState = Immutable({
   pageSize: 20,
 })
 
-const getGranulesFromAction = (action) => {
+const getGranulesFromAction = action => {
   return action.items.reduce(
     (existing, next) => existing.set(next.id, next.attributes),
     initialState.granules
@@ -27,13 +27,12 @@ const getGranulesFromAction = (action) => {
 }
 
 const newSearchResultsRecieved = (state, total, granules, facets) => {
-    return Immutable.merge(state, {
-      loadedGranules: (granules && Object.keys(granules).length) || 0,
-      granules: granules,
-      totalGranules: total,
-      facets: facets
-    }
-  )
+  return Immutable.merge(state, {
+    loadedGranules: (granules && Object.keys(granules).length) || 0,
+    granules: granules,
+    totalGranules: total,
+    facets: facets,
+  })
 }
 
 const moreResultsRecieved = (state, newGranules) => {
@@ -55,24 +54,29 @@ export const granuleResult = (state = initialState, action) => {
     //   return Immutable.set(state, 'facets', initialState.facets)
 
     case GRANULE_NEW_SEARCH_REQUESTED:
-        return Immutable.set(
-          state,
-          'granulesPageOffset',
-          initialState.granulesPageOffset
-        )
+      return Immutable.set(
+        state,
+        'granulesPageOffset',
+        initialState.granulesPageOffset
+      )
 
     case GRANULE_MORE_RESULTS_REQUESTED:
-        return Immutable.set(
-          state,
-          'granulesPageOffset',
-          state.granulesPageOffset + state.pageSize
-        )
+      return Immutable.set(
+        state,
+        'granulesPageOffset',
+        state.granulesPageOffset + state.pageSize
+      )
 
     case GRANULE_NEW_SEARCH_RESULTS_RECIEVED:
-      return newSearchResultsRecieved(state, action.total, getGranulesFromAction(action), action.metadata.facets)
+      return newSearchResultsRecieved(
+        state,
+        action.total,
+        getGranulesFromAction(action),
+        action.metadata.facets
+      )
 
     case GRANULE_MORE_RESULTS_RECIEVED:
-      eturn moreResultsRecieved(state, getGranulesFromAction(action))
+      return moreResultsRecieved(state, getGranulesFromAction(action))
 
     case GRANULE_SEARCH_ERROR:
       return Immutable.merge(state, {

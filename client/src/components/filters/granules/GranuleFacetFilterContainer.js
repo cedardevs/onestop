@@ -3,9 +3,7 @@ import {withRouter} from 'react-router'
 import FacetFilter from '../facet/FacetFilter'
 import {granuleToggleFacet} from '../../../actions/search/GranuleFilterActions'
 import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
-import {
-  asyncNewGranuleSearch,
-} from '../../../actions/search/GranuleSearchActions'
+import {asyncNewGranuleSearch} from '../../../actions/search/GranuleSearchActions'
 
 const mapStateToProps = state => {
   return {
@@ -22,7 +20,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(granuleToggleFacet(category, facetName, selected))
     },
     submit: () => {
-      dispatch(asyncNewGranuleSearch(ownProps.history, ownProps.match.params.id))
+      dispatch(
+        asyncNewGranuleSearch(ownProps.history, ownProps.match.params.id)
+      )
     },
   }
 }
