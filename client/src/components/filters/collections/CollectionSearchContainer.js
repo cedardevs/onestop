@@ -1,7 +1,10 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import CollectionSearch from './CollectionSearch'
-import {collectionUpdateQueryText, collectionClearFilters} from '../../../actions/search/CollectionFilterActions'
+import {
+  collectionUpdateQueryText,
+  collectionClearFilters,
+} from '../../../actions/search/CollectionFilterActions'
 import {
   asyncNewCollectionSearch,
   showCollections,

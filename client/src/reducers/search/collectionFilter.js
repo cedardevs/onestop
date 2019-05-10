@@ -75,7 +75,7 @@ export const collectionFilter = (state = initialState, action) => {
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
 
     case COLLECTION_CLEAR_FILTERS:
-    return Immutable.merge(state, {
+      return Immutable.merge(state, {
         // this action is triggered by 'queryText' searches to ensure a fresh filter;
         // consequently, we do not reset 'queryText' back to its initial state
         geoJSON: initialState.geoJSON,

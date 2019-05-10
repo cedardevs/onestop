@@ -61,14 +61,15 @@ export const collectionResult = (state = initialState, action) => {
       })
 
     case COLLECTION_SEARCH_START:
-      if(action.clearPreviousResults) {
+      if (action.clearPreviousResults) {
         return Immutable.set(
           state,
           'collectionsPageOffset',
           initialState.collectionsPageOffset
         )
       }
-      if (action.incrementPageOffset) { // this is just the inverse of clearPreviousResults boolean, but is named for clarity here... which might make this logic more confusing, but what else do you name this variable? it's newSearch vs newPage... (maybe those are two separate prefetch actions instead?)
+      if (action.incrementPageOffset) {
+        // this is just the inverse of clearPreviousResults boolean, but is named for clarity here... which might make this logic more confusing, but what else do you name this variable? it's newSearch vs newPage... (maybe those are two separate prefetch actions instead?)
         return Immutable.set(
           state,
           'collectionsPageOffset',

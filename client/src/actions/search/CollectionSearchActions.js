@@ -20,11 +20,10 @@ const triggerCollectionSearch = (
   clearPreviousResults = false,
   retrieveFacets = true
 ) => {
-
-  const validRequestCheck = (state) => {
+  const validRequestCheck = state => {
     const inFlight =
       state.search.collectionRequest.collectionSearchRequestInFlight
-      return !inFlight
+    return !inFlight
   }
   const prefetchHandler = dispatch => {
     dispatch(collectionSearchStart(clearPreviousResults))

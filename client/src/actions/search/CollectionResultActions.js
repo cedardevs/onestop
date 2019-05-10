@@ -1,4 +1,3 @@
-
 // TODO figure out where these detail specific things are used, and what for???
 // export const COLLECTION_CLEAR_DETAIL_GRANULES_RESULT =
 //   'COLLECTION_CLEAR_DETAIL_GRANULES_RESULT'

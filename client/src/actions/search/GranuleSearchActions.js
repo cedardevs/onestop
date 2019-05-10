@@ -10,7 +10,6 @@ import {
   granuleSearchError,
 } from './GranuleRequestActions'
 
-
 export const asyncNewGranuleSearch = () => {
   return triggerGranuleSearch(true, true)
 }
@@ -22,12 +21,10 @@ const triggerGranuleSearch = (
   clearPreviousResults = false,
   retrieveFacets = true
 ) => {
-
-    const validRequestCheck = (state) => {
-      const inFlight =
-        state.search.granuleRequest.granuleSearchRequestInFlight
-        return !inFlight
-    }
+  const validRequestCheck = state => {
+    const inFlight = state.search.granuleRequest.granuleSearchRequestInFlight
+    return !inFlight
+  }
   const prefetchHandler = dispatch => {
     dispatch(granuleSearchStart(clearPreviousResults))
   }
@@ -37,7 +34,7 @@ const triggerGranuleSearch = (
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     let selectedCollections = state.search.collectionFilter.selectedIds
-    if ( !selectedCollections || !(hasQueries || hasFilters)) {
+    if (!selectedCollections || !(hasQueries || hasFilters)) {
       return undefined
     }
     return body

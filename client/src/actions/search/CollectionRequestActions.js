@@ -1,5 +1,5 @@
 export const COLLECTION_SEARCH_START = 'COLLECTION_SEARCH_START'
-export const collectionSearchStart = (clearPreviousResults) => ({
+export const collectionSearchStart = clearPreviousResults => ({
   type: COLLECTION_SEARCH_START,
   clearPreviousResults: clearPreviousResults,
   incrementPageOffset: !clearPreviousResults,
