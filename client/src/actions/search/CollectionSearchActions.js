@@ -56,25 +56,6 @@ const buildNewCollectionSearch = history => {
     return body
   }
 
-  /*
-  const successHandler = (dispatch, payload) => {
-    const result = _.reduce(
-      // TODO is this the right place to do the reduce? or in the ... reducer...
-      payload.data,
-      (map, resource) => {
-        return map.set(
-          resource.id,
-          _.assign({type: resource.type}, resource.attributes)
-        )
-      },
-      new Map()
-    )
-
-    dispatch(
-      collectionSearchComplete(true, payload.meta.total, result, payload.meta)
-    )
-  }
-*/
   const successHandler = (dispatch, payload) => {
     dispatch(
       collectionNewSearchResultsRecieved(
@@ -95,16 +76,12 @@ const buildNewCollectionSearch = history => {
   )
 }
 
-const triggerCollectionSearch = (
-  // TODO change to buildMoreResultsSearch
-  clearPreviousResults = false,
-  retrieveFacets = true
-) => {
+const buildMoreResultsSearch = () => {
   const prefetchHandler = dispatch => {
     dispatch(collectionMoreResultsRequested())
   }
   const bodyBuilder = state => {
-    const body = assembleCollectionSearchRequest(state, retrieveFacets)
+    const body = assembleCollectionSearchRequest(state, true)
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     if (!(hasQueries || hasFilters)) {
@@ -112,28 +89,7 @@ const triggerCollectionSearch = (
     }
     return body
   }
-  // const successHandler = (dispatch, payload) => {
-  //   const result = _.reduce(
-  //     // TODO is this the right place to do the reduce? or in the ... reducer...
-  //     payload.data,
-  //     (map, resource) => {
-  //       return map.set(
-  //         resource.id,
-  //         _.assign({type: resource.type}, resource.attributes)
-  //       )
-  //     },
-  //     new Map()
-  //   )
-  //
-  //   dispatch(
-  //     collectionSearchComplete(
-  //       clearPreviousResults,
-  //       payload.meta.total,
-  //       result,
-  //       retrieveFacets ? payload.meta : null
-  //     )
-  //   )
-  // }
+
   const successHandler = (dispatch, payload) => {
     dispatch(collectionMoreResultsRecieved(payload.data))
   }
