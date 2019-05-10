@@ -1,6 +1,5 @@
 plugins {
   id "io.forgo.keystoreplugin" version "1.0"
-  id 'idea'
 }
 
 apply plugin: 'war'
@@ -168,15 +167,8 @@ sourceSets {
   integrationTest {
     compileClasspath += sourceSets.main.output + sourceSets.test.output
     runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+    groovy.srcDir file('src/integrationTest/groovy')
     resources.srcDir file('src/integrationTest/resources')
-  }
-}
-
-// https://stackoverflow.com/questions/42064377/mark-gradle-source-folder-as-test-source-in-intellij#answer-45791867
-idea {
-  module {
-    sourceDirs -= file('src/integrationTest/groovy')
-    testSourceDirs += file('src/integrationTest/groovy')
   }
 }
 
