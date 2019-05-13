@@ -16,7 +16,7 @@ export const collectionDetailResult = (state = initialState, action) => {
     case COLLECTION_GET_DETAIL_COMPLETE:
       return Immutable.merge(state, {
         collection: action.collection,
-        totalGranuleCount: 35, //action.totalGranuleCount,
+        totalGranuleCount: action.totalGranuleCount,
       })
 
     default:

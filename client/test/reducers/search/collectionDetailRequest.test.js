@@ -17,6 +17,7 @@ describe('The collection detail request reducer', function(){
     expect(result).toEqual({
       collectionDetailRequestInFlight: false,
       requestedID: null,
+      errorMessage: '',
     })
   })
 
@@ -29,6 +30,19 @@ describe('The collection detail request reducer', function(){
       )
       expect(result.collectionDetailRequestInFlight).toBeTruthy()
       expect(result.requestedID).toBe('uuid')
+      expect(result.errorMessage).toBe('')
+    })
+    it('when starting a new get-by-id asdf', function(){
+      const initial = Immutable({
+        errorMessage: 'error from previous GET request',
+      })
+      const result = collectionDetailRequest(
+        initial,
+        collectionGetDetailStart('uuid')
+      )
+      expect(result.collectionDetailRequestInFlight).toBeTruthy()
+      expect(result.requestedID).toBe('uuid')
+      expect(result.errorMessage).toBe('')
     })
 
     it('when detail request completes', function(){
@@ -42,13 +56,17 @@ describe('The collection detail request reducer', function(){
     })
 
     it('when request errors', function(){
-      const initial = Immutable({collectionDetailRequestInFlight: true})
+      const initial = Immutable({
+        collectionDetailRequestInFlight: true,
+        requestedID: '123',
+      })
       const result = collectionDetailRequest(
         initial,
-        collectionGetDetailError()
+        collectionGetDetailError('Cause of Error: test case')
       )
       expect(result.collectionDetailRequestInFlight).toBeFalsy()
-      expect(result.requestedID).toBeNull()
+      expect(result.requestedID).toBe('123')
+      expect(result.errorMessage).toBe('Cause of Error: test case')
     })
   })
 })
