@@ -84,20 +84,18 @@ describe('The collectionResult reducer', function(){
       loadedCollections: 1,
     })
 
-    const metadata = {
-      facets: {
-        science: {
-          Oceans: {
-            count: 5,
-          },
-          'Oceans > Ocean Temperature': {
-            count: 5,
-          },
-          'Oceans > Ocean Temperature > Sea Surface Temperature': {
-            count: 5,
-          },
-          dataResolution: {},
+    const facets = {
+      science: {
+        Oceans: {
+          count: 5,
         },
+        'Oceans > Ocean Temperature': {
+          count: 5,
+        },
+        'Oceans > Ocean Temperature > Sea Surface Temperature': {
+          count: 5,
+        },
+        dataResolution: {},
       },
     }
 
@@ -109,14 +107,14 @@ describe('The collectionResult reducer', function(){
           {id: 'B', attributes: {title: 'title B'}},
           {id: 'C', attributes: {title: 'title C'}},
         ],
-        metadata
-      ) //totalCount, items, metadata
+        facets
+      )
     )
     expect(result.collections).toEqual({
       B: {title: 'title B'},
       C: {title: 'title C'},
     })
-    expect(result.facets).toEqual(metadata.facets)
+    expect(result.facets).toEqual(facets)
     expect(result.totalCollectionCount).toBe(30)
     expect(result.loadedCollectionCount).toBe(2)
   })

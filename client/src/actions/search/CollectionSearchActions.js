@@ -61,7 +61,7 @@ const buildNewCollectionSearch = history => {
       collectionNewSearchResultsRecieved(
         payload.meta.total,
         payload.data,
-        payload.meta
+        payload.meta.facets
       )
     )
   }

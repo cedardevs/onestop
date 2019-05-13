@@ -57,7 +57,7 @@ export const collectionResult = (state = initialState, action) => {
         state,
         action.total,
         getCollectionsFromAction(action),
-        action.metadata.facets
+        action.facets
       )
 
     case COLLECTION_MORE_RESULTS_RECIEVED:

@@ -11,10 +11,10 @@ export const collectionMoreResultsRequested = () => ({
 
 export const COLLECTION_NEW_SEARCH_RESULTS_RECIEVED =
   'COLLECTION_NEW_SEARCH_RESULTS_RECIEVED'
-export const collectionNewSearchResultsRecieved = (total, items, metadata) => ({
+export const collectionNewSearchResultsRecieved = (total, items, facets) => ({
   type: COLLECTION_NEW_SEARCH_RESULTS_RECIEVED,
   total: total,
-  metadata: metadata, // TODO be more specific, not just generic metadata! makes it easier to test and follow code logic!
+  facets: facets,
   items: items,
 })
 

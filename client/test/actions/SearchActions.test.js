@@ -232,9 +232,7 @@ describe('The search action', () => {
     ]
 
     await store.dispatch(
-      CollectionRequestActions.collectionNewSearchResultsRecieved(2, items, {
-        facets: {},
-      })
+      CollectionRequestActions.collectionNewSearchResultsRecieved(2, items, {})
     )
     const collectionsAfter = store.getState().search.collectionResult
       .collections
