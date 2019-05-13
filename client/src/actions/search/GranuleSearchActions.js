@@ -60,7 +60,7 @@ const buildNewGranuleSearch = (history, id) => {
       granuleNewSearchResultsRecieved(
         payload.meta.total,
         payload.data,
-        payload.meta
+        payload.meta.facets
       )
     )
   }

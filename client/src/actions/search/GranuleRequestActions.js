@@ -12,10 +12,10 @@ export const granuleMoreResultsRequested = () => ({
 
 export const GRANULE_NEW_SEARCH_RESULTS_RECIEVED =
   'GRANULE_NEW_SEARCH_RESULTS_RECIEVED'
-export const granuleNewSearchResultsRecieved = (total, items, metadata) => ({
+export const granuleNewSearchResultsRecieved = (total, items, facets) => ({
   type: GRANULE_NEW_SEARCH_RESULTS_RECIEVED,
   total: total,
-  metadata: metadata,
+  facets: facets,
   items: items,
 })
 

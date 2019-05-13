@@ -81,8 +81,7 @@ describe('The granuleResult reducer', function(){
       loadedGranuleCount: 1,
     })
 
-    const metadata = {
-      facets: {
+      const facets = {
         science: {
           Oceans: {
             count: 5,
@@ -95,7 +94,6 @@ describe('The granuleResult reducer', function(){
           },
           dataResolution: {},
         },
-      },
     }
 
     const result = granuleResult(
@@ -106,14 +104,14 @@ describe('The granuleResult reducer', function(){
           {id: 'B', attributes: {title: 'title B'}},
           {id: 'C', attributes: {title: 'title C'}},
         ],
-        metadata
+        facets
       )
     )
     expect(result.granules).toEqual({
       B: {title: 'title B'},
       C: {title: 'title C'},
     })
-    expect(result.facets).toEqual(metadata.facets)
+    expect(result.facets).toEqual(facets)
     expect(result.totalGranuleCount).toBe(30)
     expect(result.loadedGranuleCount).toBe(2)
   })

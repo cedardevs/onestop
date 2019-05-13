@@ -54,7 +54,7 @@ export const granuleResult = (state = initialState, action) => {
         state,
         action.total,
         getGranulesFromAction(action),
-        action.metadata.facets
+        action.facets
       )
 
     case GRANULE_MORE_RESULTS_RECIEVED:
