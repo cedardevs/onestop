@@ -23,7 +23,7 @@ export const PAGE_SIZE = 20
 export const assembleGranuleSearchRequest = (state, retrieveFacets) => {
   const search = state.search || {}
   const granuleFilter = search.granuleFilter || {}
-  const granuleResult = search.granuleResult || {}
+  // const granuleResult = search.granuleResult || {}
 
   return {
     queries: [],
@@ -36,7 +36,7 @@ export const assembleGranuleSearchRequest = (state, retrieveFacets) => {
 export const assembleCollectionSearchRequest = (state, retrieveFacets) => {
   const search = state.search || {}
   const collectionFilter = search.collectionFilter || {}
-  const collectionResult = search.collectionResult || {}
+  // const collectionResult = search.collectionResult || {}
 
   return {
     queries: assembleQueries(collectionFilter),

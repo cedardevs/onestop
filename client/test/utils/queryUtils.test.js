@@ -6,18 +6,17 @@ describe('The queryUtils', function(){
   describe('assembles collection requests', function(){
     collectionTestCases().forEach(function(testCase){
       it(`with ${testCase.name}`, function(){
-        const objectResult = queryUtils.assembleSearchRequest(
+        const objectResult = queryUtils.assembleCollectionSearchRequest(
           testCase.inputState,
-          false,
           true
         )
-        const stringResult = queryUtils.assembleSearchRequestString(
-          testCase.inputState,
-          false,
-          true
-        )
+        // const stringResult = queryUtils.assembleSearchRequestString(
+        //   testCase.inputState,
+        //   false,
+        //   true
+        // )
         expect(objectResult).toEqual(testCase.expectedResult)
-        expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
+        // expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
       })
     })
   })
@@ -25,40 +24,44 @@ describe('The queryUtils', function(){
   describe('assembles granule requests', function(){
     granuleTestCases().forEach(function(testCase){
       it(`with ${testCase.name}`, function(){
-        const objectResult = queryUtils.assembleSearchRequest(
+        const objectResult = queryUtils.assembleGranuleSearchRequest(
           testCase.inputState,
-          true,
           false
         )
-        const stringResult = queryUtils.assembleSearchRequestString(
-          testCase.inputState,
-          true,
-          false
-        )
+        // const stringResult = queryUtils.assembleSearchRequestString(
+        //   testCase.inputState,
+        //   true,
+        //   false
+        // )
         expect(objectResult).toEqual(testCase.expectedResult)
-        expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
+        // expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
       })
     })
   })
 
-  it(`encodes & decodes a queryString accurately`, function(){
+  describe(`a queryString`, function(){
     queryTestCases().forEach(testCase => {
-      const tempState = {search: {collectionFilter: testCase.state}}
-      const encodedString = queryUtils.encodeQueryString(tempState)
-      expect(encodedString).toBe(testCase.string)
-      const decodedString = queryUtils.decodeQueryString(encodedString)
-      expect(decodedString).toEqual(testCase.state)
+      it(`encodes accurately with ${testCase.name}`, function(){
+        const tempState = {search: {collectionFilter: testCase.state}}
+        const encodedString = queryUtils.encodeQueryString(tempState)
+        expect(encodedString).toBe(testCase.string)
+      })
+
+      it(`decodes accurately with ${testCase.name}`, function(){
+        const decodedString = queryUtils.decodeQueryString(testCase.string)
+        expect(decodedString).toEqual(testCase.state)
+      })
     })
   })
 })
 
 function collectionTestCases(){
   return [
-    {
+    /*{
       name: 'defaults',
-      inputState: {},
+      inputState: {}, // TODO this is not a real initial state anyway... in a real case where we have bad input, this util should throw an error because paging is a min requirement...
       expectedResult: {
-        queries: [],
+        queries: [], // this is also an unrealistic example because there are lots of places prior to this preventing no query...
         filters: [],
         facets: true,
         page: {
@@ -66,13 +69,14 @@ function collectionTestCases(){
           offset: 0,
         },
       },
-    },
+    },*/
     {
       name: 'a text search',
       inputState: {
         search: {
           collectionFilter: {
             queryText: 'test text',
+            pageOffset: 0,
           },
         },
       },
@@ -98,6 +102,7 @@ function collectionTestCases(){
           collectionFilter: {
             startDateTime: '2017-01-01',
             endDateTime: '2017-01-20',
+            pageOffset: 0,
           },
         },
       },
@@ -139,6 +144,7 @@ function collectionTestCases(){
                 description: 'Valid test GeoJSON',
               },
             },
+            pageOffset: 0,
           },
         },
       },
@@ -176,6 +182,7 @@ function collectionTestCases(){
             selectedFacets: {
               science: [ 'Atmosphere' ],
             },
+            pageOffset: 0,
           },
         },
       },
@@ -223,6 +230,7 @@ function collectionTestCases(){
             selectedFacets: {
               science: [ 'Atmosphere' ],
             },
+            pageOffset: 0,
           },
         },
       },
@@ -268,11 +276,11 @@ function collectionTestCases(){
       },
     },
     {
-      name: 'more results requested',
+      name: 'more results requested', // TODO more results WITH filters?
       inputState: {
         search: {
-          collectionResult: {
-            collectionsPageOffset: 20,
+          collectionFilter: {
+            pageOffset: 20,
           },
         },
       },
@@ -295,8 +303,9 @@ function granuleTestCases(){
       name: 'one collection',
       inputState: {
         search: {
-          collectionFilter: {
+          granuleFilter: {
             selectedIds: [ 'ABC123' ],
+            pageOffset: 0,
           },
         },
       },
@@ -319,8 +328,9 @@ function granuleTestCases(){
       name: 'two collections',
       inputState: {
         search: {
-          collectionFilter: {
+          granuleFilter: {
             selectedIds: [ 'ABC123', 'XYZ789' ],
+            pageOffset: 0,
           },
         },
       },
@@ -343,9 +353,10 @@ function granuleTestCases(){
       name: 'two collections and a text query',
       inputState: {
         search: {
-          collectionFilter: {
+          granuleFilter: {
             queryText: 'test',
             selectedIds: [ 'ABC123', 'XYZ789' ],
+            pageOffset: 0,
           },
         },
       },
@@ -368,11 +379,9 @@ function granuleTestCases(){
       name: 'more results requested',
       inputState: {
         search: {
-          collectionFilter: {
-            selectedIds: [],
-          },
-          collectionResult: {
-            granulesPageOffset: 20,
+          granuleFilter: {
+            selectedIds: [], // TODO this isn't realistic for how we request more results
+            pageOffset: 20,
           },
         },
       },
@@ -392,40 +401,47 @@ function granuleTestCases(){
 function queryTestCases(){
   return [
     {
+      name: 'empty string - initial state',
       string: '',
       state: initialState,
     },
     {
+      name: 'text query filter',
       string: 'q=ocean',
       state: Immutable.merge(initialState, {
         queryText: 'ocean',
       }),
     },
     {
+      name: 'start date filter',
       string: 's=2010-01-01T00%3A00%3A00Z',
       state: Immutable.merge(initialState, {
         startDateTime: '2010-01-01T00:00:00Z',
       }),
     },
     {
+      name: 'end date filter',
       string: 'e=2010-01-01T00%3A00%3A00Z',
       state: Immutable.merge(initialState, {
         endDateTime: '2010-01-01T00:00:00Z',
       }),
     },
     {
+      name: 'selected ids filter',
       string: 'i=ABC,with%20a%20space',
       state: Immutable.merge(initialState, {
         selectedIds: [ 'ABC', 'with a space' ],
       }),
     },
     {
+      name: 'exclude global filter',
       string: 'eg=1',
       state: Immutable.merge(initialState, {
         excludeGlobal: true,
       }),
     },
     {
+      name: 'selected facets filter',
       string:
         'f=science:Oceans,Oceans%20%3E%20Sea%20Surface%20Temperature;platforms:DEM%20%3E%20Digital%20Elevation%20Model',
       state: Immutable.merge(initialState, {
@@ -436,6 +452,7 @@ function queryTestCases(){
       }),
     },
     {
+      name: 'geometry filter',
       string: 'g=-83.9531,29.234,-70.5938,38.5527',
       state: Immutable.merge(initialState, {
         geoJSON: {
@@ -457,8 +474,9 @@ function queryTestCases(){
       }),
     },
     {
+      name: 'all types of filters',
       string:
-        'q=ocean&g=-83,29,-70,38&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&i=ABC&eg=1',
+        'q=ocean&g=-83,29,-70,38&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&eg=1&i=ABC',
       state: Immutable.merge(initialState, {
         queryText: 'ocean',
         startDateTime: '2010-01-01T00:00:00Z',
