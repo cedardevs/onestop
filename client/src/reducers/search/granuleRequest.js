@@ -9,19 +9,27 @@ import {
 
 export const initialState = Immutable({
   granuleSearchRequestInFlight: false,
-  // TODO maybe put error message here?
+  errorMessage: '',
 })
 
 export const granuleRequest = (state = initialState, action) => {
   switch (action.type) {
     case GRANULE_NEW_SEARCH_REQUESTED:
     case GRANULE_MORE_RESULTS_REQUESTED:
-      return Immutable.set(state, 'granuleSearchRequestInFlight', true)
+      return Immutable.merge(state, {
+        granuleSearchRequestInFlight: true,
+        errorMessage: '',
+      })
 
     case GRANULE_NEW_SEARCH_RESULTS_RECIEVED:
     case GRANULE_MORE_RESULTS_RECIEVED:
-    case GRANULE_SEARCH_ERROR:
       return Immutable.set(state, 'granuleSearchRequestInFlight', false)
+
+    case GRANULE_SEARCH_ERROR:
+      return Immutable.merge(state, {
+        granuleSearchRequestInFlight: false,
+        errorMessage: action.errors,
+      })
 
     default:
       return state

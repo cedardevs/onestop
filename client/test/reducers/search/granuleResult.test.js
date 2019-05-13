@@ -81,19 +81,19 @@ describe('The granuleResult reducer', function(){
       loadedGranuleCount: 1,
     })
 
-      const facets = {
-        science: {
-          Oceans: {
-            count: 5,
-          },
-          'Oceans > Ocean Temperature': {
-            count: 5,
-          },
-          'Oceans > Ocean Temperature > Sea Surface Temperature': {
-            count: 5,
-          },
-          dataResolution: {},
+    const facets = {
+      science: {
+        Oceans: {
+          count: 5,
         },
+        'Oceans > Ocean Temperature': {
+          count: 5,
+        },
+        'Oceans > Ocean Temperature > Sea Surface Temperature': {
+          count: 5,
+        },
+        dataResolution: {},
+      },
     }
 
     const result = granuleResult(

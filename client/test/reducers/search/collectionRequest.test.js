@@ -16,43 +16,62 @@ describe('The collection request reducer', function(){
     const initialAction = {type: 'init'}
     const result = collectionRequest(initialState, initialAction)
 
-    expect(result).toEqual({collectionSearchRequestInFlight: false})
+    expect(result).toEqual({
+      collectionSearchRequestInFlight: false,
+      errorMessage: '',
+    })
   })
 
-  describe('updates in-flight value', function(){
-    it('when starting a new search', function(){
-      const initial = Immutable({collectionSearchRequestInFlight: false})
-      const result = collectionRequest(initial, collectionNewSearchRequested())
-      expect(result.collectionSearchRequestInFlight).toBeTruthy()
-    })
-    it('when starting a new page request', function(){
-      const initial = Immutable({collectionSearchRequestInFlight: false})
-      const result = collectionRequest(
-        initial,
-        collectionMoreResultsRequested()
-      )
-      expect(result.collectionSearchRequestInFlight).toBeTruthy()
-    })
+  it('new search marks inFlight', function(){
+    const initial = Immutable({collectionSearchRequestInFlight: false})
+    const result = collectionRequest(initial, collectionNewSearchRequested())
+    expect(result.collectionSearchRequestInFlight).toBeTruthy()
+  })
 
-    it('when new search completes', function(){
-      const initial = Immutable({collectionSearchRequestInFlight: true})
-      const result = collectionRequest(
-        initial,
-        collectionNewSearchResultsRecieved()
-      )
-      expect(result.collectionSearchRequestInFlight).toBeFalsy()
-    })
+  it('next page marks inFlight', function(){
+    const initial = Immutable({collectionSearchRequestInFlight: false})
+    const result = collectionRequest(initial, collectionMoreResultsRequested())
+    expect(result.collectionSearchRequestInFlight).toBeTruthy()
+  })
 
-    it('when new page completes', function(){
-      const initial = Immutable({collectionSearchRequestInFlight: true})
-      const result = collectionRequest(initial, collectionMoreResultsRecieved())
-      expect(result.collectionSearchRequestInFlight).toBeFalsy()
+  it('new search resets errorMessage', function(){
+    const initial = Immutable({
+      errorMessage: 'error from previous search request',
     })
+    const result = collectionRequest(initial, collectionNewSearchRequested())
+    expect(result.errorMessage).toBe('')
+  })
 
-    it('when request errors', function(){
-      const initial = Immutable({collectionSearchRequestInFlight: true})
-      const result = collectionRequest(initial, collectionSearchError())
-      expect(result.collectionSearchRequestInFlight).toBeFalsy()
+  it('next page resets errorMessage', function(){
+    const initial = Immutable({
+      errorMessage: 'error from previous search request',
     })
+    const result = collectionRequest(initial, collectionMoreResultsRequested())
+    expect(result.errorMessage).toBe('')
+  })
+
+  it('result from search resets inFlight', function(){
+    const initial = Immutable({collectionSearchRequestInFlight: true})
+    const result = collectionRequest(
+      initial,
+      collectionNewSearchResultsRecieved()
+    )
+    expect(result.collectionSearchRequestInFlight).toBeFalsy()
+  })
+
+  it('result from next page resets inFlight', function(){
+    const initial = Immutable({collectionSearchRequestInFlight: true})
+    const result = collectionRequest(initial, collectionMoreResultsRecieved())
+    expect(result.collectionSearchRequestInFlight).toBeFalsy()
+  })
+
+  it('error resets inFlight, provides errorMessage', function(){
+    const initial = Immutable({collectionSearchRequestInFlight: true})
+    const result = collectionRequest(
+      initial,
+      collectionSearchError('Cause of Error: test case')
+    )
+    expect(result.collectionSearchRequestInFlight).toBeFalsy()
+    expect(result.errorMessage).toBe('Cause of Error: test case')
   })
 })
