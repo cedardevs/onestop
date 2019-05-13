@@ -9,9 +9,12 @@ import {
   collectionRemoveGeometry,
   collectionToggleSelectedId,
   collectionToggleExcludeGlobal,
-  collectionClearSelectedIds,
   COLLECTION_TOGGLE_FACET,
 } from '../../../src/actions/search/CollectionFilterActions'
+import {
+  collectionNewSearchRequested,
+  collectionMoreResultsRequested,
+} from '../../../src/actions/search/CollectionRequestActions'
 
 describe('The search reducer', function(){
   it('has a default state', function(){
@@ -19,13 +22,38 @@ describe('The search reducer', function(){
     const result = collectionFilter(initialState, initialAction)
 
     expect(result).toEqual({
+      pageOffset: 0,
       queryText: '',
       geoJSON: null,
       startDateTime: null,
       endDateTime: null,
       selectedFacets: {},
-      selectedIds: [],
       excludeGlobal: null,
+    })
+  })
+
+  describe('pagination cases', function(){
+    it('increments page offset from initial', function() {
+      const result = collectionFilter(initialState, collectionMoreResultsRequested())
+      expect(result.pageOffset).toEqual(20)
+    })
+
+    it('increments page offset', function () {
+      const pageState = {
+        pageOffset: 40,
+      }
+        const result = collectionFilter(pageState, collectionMoreResultsRequested())
+        expect(result.pageOffset).toEqual(60)
+
+    })
+
+    it('resets page offset', function () {
+      const pageState = {
+        pageOffset: 60,
+      }
+        const result = collectionFilter(pageState, collectionNewSearchRequested())
+        expect(result.pageOffset).toEqual(0)
+
     })
   })
 
@@ -40,13 +68,12 @@ describe('The search reducer', function(){
         startDateTime: '2000-01-01T00:00:00Z',
         endDateTime: '3000-01-01T00:00:00Z',
         selectedFacets: {science: [ 'Oceans' ]},
-        selectedIds: [ 'ABCXYZ' ],
         excludeGlobal: true,
       }
 
       const updateAction = collectionUpdateFilters(newSearchParams)
       const result = collectionFilter(initialState, updateAction)
-      expect(result).toEqual(newSearchParams)
+      expect(result).toEqual(Immutable.merge(newSearchParams, {pageOffset: 0}))
     })
 
     it('defaults to initial state for missing fields', function(){
@@ -105,30 +132,31 @@ describe('The search reducer', function(){
     })
   })
 
-  describe('selected collections cases', function(){
-    it('toggles selected collections', function(){
-      const toggleA = collectionToggleSelectedId('A')
-      const toggleB = collectionToggleSelectedId('B')
-      // toggle A --> ['A']
-      const addedAResult = collectionFilter(initialState, toggleA)
-      expect(addedAResult.selectedIds).toEqual([ 'A' ])
-      // toggle B --> ['A', 'B']
-      const addedBResult = collectionFilter(addedAResult, toggleB)
-      expect(addedBResult.selectedIds).toEqual([ 'A', 'B' ])
-      // toggle A --> ['B']
-      const removedAResult = collectionFilter(addedBResult, toggleA)
-      expect(removedAResult.selectedIds).toEqual([ 'B' ])
-    })
-
-    it('can clear existing collection selections', function(){
-      const stateWithCollections = Immutable({selectedIds: [ 'ABC' ]})
-      const result = collectionFilter(
-        stateWithCollections,
-        collectionClearSelectedIds()
-      )
-      expect(result.selectedIds).toEqual([])
-    })
-  })
+  // TODO these might make sense on a granuleFilter.test.js!
+  // describe('selected collections cases', function(){
+  //   it('toggles selected collections', function(){
+  //     const toggleA = collectionToggleSelectedId('A')
+  //     const toggleB = collectionToggleSelectedId('B')
+  //     // toggle A --> ['A']
+  //     const addedAResult = collectionFilter(initialState, toggleA)
+  //     expect(addedAResult.selectedIds).toEqual([ 'A' ])
+  //     // toggle B --> ['A', 'B']
+  //     const addedBResult = collectionFilter(addedAResult, toggleB)
+  //     expect(addedBResult.selectedIds).toEqual([ 'A', 'B' ])
+  //     // toggle A --> ['B']
+  //     const removedAResult = collectionFilter(addedBResult, toggleA)
+  //     expect(removedAResult.selectedIds).toEqual([ 'B' ])
+  //   })
+  //
+  //   it('can clear existing collection selections', function(){
+  //     const stateWithCollections = Immutable({selectedIds: [ 'ABC' ]})
+  //     const result = collectionFilter(
+  //       stateWithCollections,
+  //       collectionClearSelectedIds()
+  //     )
+  //     expect(result.selectedIds).toEqual([])
+  //   })
+  // })
 
   describe('facet cases', function(){
     it('should handle COLLECTION_TOGGLE_FACET w/ facets selected', () => {

@@ -9,16 +9,16 @@ import {
 
 export const PAGE_SIZE = 20
 
-export const assembleCollectionSearchRequestString = (
-  state,
-  granules,
-  retrieveFacets
-) => {
-  if (granules) {
-    return JSON.stringify(assembleGranuleSearchRequest(state, retrieveFacets))
-  }
-  return JSON.stringify(assembleCollectionSearchRequest(state, retrieveFacets))
-}
+// export const assembleCollectionSearchRequestString = (
+//   state,
+//   granules,
+//   retrieveFacets
+// ) => {
+//   if (granules) {
+//     return JSON.stringify(assembleGranuleSearchRequest(state, retrieveFacets))
+//   }
+//   return JSON.stringify(assembleCollectionSearchRequest(state, retrieveFacets))
+// }
 
 export const assembleGranuleSearchRequest = (state, retrieveFacets) => {
   const search = state.search || {}
