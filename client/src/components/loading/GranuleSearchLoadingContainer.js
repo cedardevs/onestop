@@ -5,11 +5,15 @@ import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   const {loading} = state.search.granuleRequest.granuleSearchRequestInFlight
-  const {granules, totalGranules, loadedGranules} = state.search.granuleResult
+  const {
+    granules,
+    totalGranuleCount,
+    loadedGranuleCount,
+  } = state.search.granuleResult
 
   const text = loading
     ? 'Searching for files...'
-    : `Loaded ${loadedGranules} of ${totalGranules} files.`
+    : `Loaded ${loadedGranuleCount} of ${totalGranuleCount} files.`
   const loadingId = `loading-id::${loading}`
 
   return {

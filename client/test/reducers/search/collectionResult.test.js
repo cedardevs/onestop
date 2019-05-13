@@ -17,8 +17,8 @@ describe('The collectionResult reducer', function(){
     expect(result).toEqual({
       collections: {},
       facets: {},
-      totalCollections: 0,
-      loadedCollections: 0,
+      totalCollectionCount: 0,
+      loadedCollectionCount: 0,
     })
   })
 
@@ -32,8 +32,8 @@ describe('The collectionResult reducer', function(){
           },
         },
       },
-      totalCollections: 1,
-      loadedCollections: 1,
+      totalCollectionCount: 1,
+      loadedCollectionCount: 1,
     })
     const result = collectionResult(
       stateWithCollections,
@@ -41,15 +41,15 @@ describe('The collectionResult reducer', function(){
     )
     expect(result.collections).toEqual({})
     expect(result.facets).toEqual({})
-    expect(result.totalCollections).toBe(0)
-    expect(result.loadedCollections).toBe(0)
+    expect(result.totalCollectionCount).toBe(0)
+    expect(result.loadedCollectionCount).toBe(0)
   })
 
   it('can update collections on recieving more results', function(){
     const resultsPage1LoadedState = Immutable({
       collections: {A: {title: 'title A'}},
-      totalCollections: 3,
-      loadedCollections: 1,
+      totalCollectionCount: 3,
+      loadedCollectionCount: 1,
       facets: {},
     })
 
@@ -66,8 +66,8 @@ describe('The collectionResult reducer', function(){
       B: {title: 'title B'},
       C: {title: 'title C'},
     })
-    expect(result.totalCollections).toBe(3)
-    expect(result.loadedCollections).toBe(3)
+    expect(result.totalCollectionCount).toBe(3)
+    expect(result.loadedCollectionCount).toBe(3)
   })
 
   it('can reset existing collection state on new search', function(){
@@ -117,8 +117,8 @@ describe('The collectionResult reducer', function(){
       C: {title: 'title C'},
     })
     expect(result.facets).toEqual(metadata.facets)
-    expect(result.totalCollections).toBe(30)
-    expect(result.loadedCollections).toBe(2)
+    expect(result.totalCollectionCount).toBe(30)
+    expect(result.loadedCollectionCount).toBe(2)
   })
 
   // it('merges received granules into the map of granules', function(){

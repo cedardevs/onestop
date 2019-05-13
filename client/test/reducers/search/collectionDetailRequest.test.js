@@ -31,7 +31,7 @@ describe('The collection detail request reducer', function(){
       const initial = Immutable({collectionDetailRequestInFlight: true})
       const result = collectionDetailRequest(
         initial,
-        collectionGetDetailComplete({id: 'ABC'}, {totalGranules: 3})
+        collectionGetDetailComplete({id: 'ABC'}, {totalGranuleCount: 3})
       )
       expect(result.collectionDetailRequestInFlight).toBeFalsy()
     })

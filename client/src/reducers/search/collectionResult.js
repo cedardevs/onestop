@@ -12,8 +12,8 @@ import {
 export const initialState = Immutable({
   collections: {},
   facets: {},
-  totalCollections: 0,
-  loadedCollections: 0, // TODO rename to loadedCount or numberLoaded or something?
+  totalCollectionCount: 0,
+  loadedCollectionCount: 0,
 })
 
 const getCollectionsFromAction = action => {
@@ -42,9 +42,10 @@ const getCollectionsFromAction = action => {
 
 const newSearchResultsRecieved = (state, total, collections, facets) => {
   return Immutable.merge(state, {
-    loadedCollections: (collections && Object.keys(collections).length) || 0,
+    loadedCollectionCount:
+      (collections && Object.keys(collections).length) || 0,
     collections: collections,
-    totalCollections: total,
+    totalCollectionCount: total,
     facets: facets,
   })
 }
@@ -63,8 +64,8 @@ export const collectionResult = (state = initialState, action) => {
     // case COLLECTION_CLEAR_RESULTS: // TODO full reset, facets and all? if not why not?
     //   return Immutable.merge(state, {
     //     collections: initialState.collections,
-    //     totalCollections: initialState.totalCollections,
-    //     loadedCollections: initialState.loadedCollections,
+    //     totalCollectionCount: initialState.totalCollectionCount,
+    //     loadedCollectionCount: initialState.loadedCollectionCount,
     //   })
 
     case COLLECTION_NEW_SEARCH_RESULTS_RECIEVED:
@@ -80,9 +81,9 @@ export const collectionResult = (state = initialState, action) => {
 
     case COLLECTION_SEARCH_ERROR:
       return Immutable.merge(state, {
-        loadedCollections: initialState.loadedCollections,
+        loadedCollectionCount: initialState.loadedCollectionCount,
         collections: initialState.collections,
-        totalCollections: initialState.totalCollections,
+        totalCollectionCount: initialState.totalCollectionCount,
         facets: initialState.facets,
       })
 

@@ -9,13 +9,13 @@ const mapStateToProps = state => {
   } = state.search.collectionRequest.collectionSearchRequestInFlight
   const {
     collections,
-    totalCollections,
-    loadedCollections,
+    totalCollectionCount,
+    loadedCollectionCount,
   } = state.search.collectionResult
 
   const text = loading
     ? 'Searching for files...'
-    : `Loaded ${loadedCollections} of ${totalCollections} files.`
+    : `Loaded ${loadedCollectionCount} of ${totalCollectionCount} files.`
   const loadingId = `loading-id::${loading}`
 
   return {

@@ -8,15 +8,15 @@ import {withRouter} from 'react-router'
 const mapStateToProps = state => {
   const {
     collections,
-    totalCollections,
-    loadedCollections,
+    totalCollectionCount,
+    loadedCollectionCount,
     pageSize,
   } = state.search.collectionResult
   return {
     loading: state.search.loading ? 1 : 0,
     results: collections,
-    totalHits: totalCollections,
-    returnedHits: loadedCollections,
+    totalHits: totalCollectionCount,
+    returnedHits: loadedCollectionCount,
     pageSize,
   }
 }

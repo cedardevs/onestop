@@ -17,8 +17,8 @@ describe('The granuleResult reducer', function(){
     expect(result).toEqual({
       granules: {},
       facets: {},
-      totalGranules: 0,
-      loadedGranules: 0,
+      totalGranuleCount: 0,
+      loadedGranuleCount: 0,
     })
   })
 
@@ -32,21 +32,21 @@ describe('The granuleResult reducer', function(){
           },
         },
       },
-      totalGranules: 1,
-      loadedGranules: 1,
+      totalGranuleCount: 1,
+      loadedGranuleCount: 1,
     })
     const result = granuleResult(stateWithGranules, granuleSearchError())
     expect(result.granules).toEqual({})
     expect(result.facets).toEqual({})
-    expect(result.totalGranules).toBe(0)
-    expect(result.loadedGranules).toBe(0)
+    expect(result.totalGranuleCount).toBe(0)
+    expect(result.loadedGranuleCount).toBe(0)
   })
 
   it('can update granules on recieving more results', function(){
     const resultsPage1LoadedState = Immutable({
       granules: {A: {title: 'title A'}},
-      totalGranules: 3,
-      loadedGranules: 1,
+      totalGranuleCount: 3,
+      loadedGranuleCount: 1,
       facets: {},
     })
 
@@ -63,8 +63,8 @@ describe('The granuleResult reducer', function(){
       B: {title: 'title B'},
       C: {title: 'title C'},
     })
-    expect(result.totalGranules).toBe(3)
-    expect(result.loadedGranules).toBe(3)
+    expect(result.totalGranuleCount).toBe(3)
+    expect(result.loadedGranuleCount).toBe(3)
   })
 
   it('can reset existing granule state on new search', function(){
@@ -77,8 +77,8 @@ describe('The granuleResult reducer', function(){
           },
         },
       },
-      totalGranules: 1,
-      loadedGranules: 1,
+      totalGranuleCount: 1,
+      loadedGranuleCount: 1,
     })
 
     const metadata = {
@@ -114,7 +114,7 @@ describe('The granuleResult reducer', function(){
       C: {title: 'title C'},
     })
     expect(result.facets).toEqual(metadata.facets)
-    expect(result.totalGranules).toBe(30)
-    expect(result.loadedGranules).toBe(2)
+    expect(result.totalGranuleCount).toBe(30)
+    expect(result.loadedGranuleCount).toBe(2)
   })
 })

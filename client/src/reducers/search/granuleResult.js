@@ -11,8 +11,8 @@ import {
 export const initialState = Immutable({
   granules: {},
   facets: {},
-  totalGranules: 0,
-  loadedGranules: 0,
+  totalGranuleCount: 0,
+  loadedGranuleCount: 0,
 })
 
 const getGranulesFromAction = action => {
@@ -24,9 +24,9 @@ const getGranulesFromAction = action => {
 
 const newSearchResultsRecieved = (state, total, granules, facets) => {
   return Immutable.merge(state, {
-    loadedGranules: (granules && Object.keys(granules).length) || 0,
+    loadedGranuleCount: (granules && Object.keys(granules).length) || 0,
     granules: granules,
-    totalGranules: total,
+    totalGranuleCount: total,
     facets: facets,
   })
 }
@@ -35,7 +35,7 @@ const moreResultsRecieved = (state, newGranules) => {
   let granules = state.granules.merge(newGranules)
 
   return Immutable.merge(state, {
-    loadedGranules: (granules && Object.keys(granules).length) || 0,
+    loadedGranuleCount: (granules && Object.keys(granules).length) || 0,
     granules: granules,
   })
 }
@@ -62,9 +62,9 @@ export const granuleResult = (state = initialState, action) => {
 
     case GRANULE_SEARCH_ERROR:
       return Immutable.merge(state, {
-        loadedGranules: initialState.loadedGranules,
+        loadedGranuleCount: initialState.loadedGranuleCount,
         granules: initialState.granules,
-        totalGranules: initialState.totalGranules,
+        totalGranuleCount: initialState.totalGranuleCount,
         facets: initialState.facets,
       })
 

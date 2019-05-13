@@ -18,15 +18,19 @@ import {withRouter} from 'react-router'
 import {asyncMoreGranuleResults} from '../../../actions/search/GranuleSearchActions'
 
 const mapStateToProps = state => {
-  const {granules, totalGranules, loadedGranules} = state.search.granuleResult
+  const {
+    granules,
+    totalGranuleCount,
+    loadedGranuleCount,
+  } = state.search.granuleResult
   const focusedItem = state.search.collectionDetailResult.collectionDetail
   return {
     collectionTitle: focusedItem
       ? focusedItem.collection.attributes.title
       : null,
     results: granules,
-    totalHits: totalGranules,
-    returnedHits: loadedGranules,
+    totalHits: totalGranuleCount,
+    returnedHits: loadedGranuleCount,
     loading: state.search.loading ? 1 : 0, // TODO gets passed to ListView
     selectedGranules: getSelectedGranulesFromStorage(state),
     featuresEnabled: state.config.featuresEnabled,
