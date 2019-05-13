@@ -107,7 +107,10 @@ const buildMoreResultsSearch = () => {
 const updateURLAndNavigateToCollectionRoute = history => {
   // was showCollections
   return (dispatch, getState) => {
-    const query = encodeQueryString(getState())
+    const state = getState()
+    const query = encodeQueryString(
+      (state && state.search && state.search.collectionFilter) || {}
+    )
     if (!_.isEmpty(query)) {
       const locationDescriptor = {
         pathname: '/collections',

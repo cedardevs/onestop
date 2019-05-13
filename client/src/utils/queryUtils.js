@@ -106,14 +106,8 @@ const assemblePagination = ({pageOffset}) => {
   return {max: PAGE_SIZE, offset: pageOffset}
 }
 
-export const encodeQueryString = (
-  state,
-  filterStateName = 'collectionFilter'
-) => {
-  // TODO change default assumptions and make filterStateName explicitly required in all calls later
-  const searchParams =
-    (state && state.search && state.search[filterStateName]) || {}
-  const queryParams = _.map(searchParams, (v, k) => {
+export const encodeQueryString = searchParamsState => {
+  const queryParams = _.map(searchParamsState, (v, k) => {
     const codec = _.find(codecs, c => c.longKey === k)
     const encode = codec && (v === true || !_.isEmpty(v))
     return encode ? `${codec.shortKey}=${codec.encode(v)}` : null

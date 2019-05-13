@@ -42,8 +42,7 @@ describe('The queryUtils', function(){
   describe(`a queryString`, function(){
     queryTestCases().forEach(testCase => {
       it(`encodes accurately with ${testCase.name}`, function(){
-        const tempState = {search: {collectionFilter: testCase.state}}
-        const encodedString = queryUtils.encodeQueryString(tempState)
+        const encodedString = queryUtils.encodeQueryString(testCase.state)
         expect(encodedString).toBe(testCase.string)
       })
 

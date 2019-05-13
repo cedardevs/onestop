@@ -116,7 +116,10 @@ const updateURLAndNavigateToGranuleRoute = (history, id) => {
     return
   }
   return (dispatch, getState) => {
-    const query = encodeQueryString(getState(), 'granuleFilter') //TODO put the id in there too? - TODO and pull the getState() inputs back as parameters so 'granuleFilter' is not needed?
+    const state = getState()
+    const query = encodeQueryString(
+      (state && state.search && state.search.granuleFilter) || {}
+    ) //TODO put the id in there too?
     const locationDescriptor = {
       pathname: `/collections/granules/${id}`, // TODO get this path from urlUtils.ROUTE?
       search: !_.isEmpty(query) ? `?${query}` : '',

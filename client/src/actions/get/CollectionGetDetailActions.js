@@ -38,7 +38,10 @@ export const showDetails = (history, id) => {
     return
   }
   return (dispatch, getState) => {
-    const query = encodeQueryString(getState())
+    const state = getState()
+    const query = encodeQueryString(
+      (state && state.search && state.search.collectionFilter) || {}
+    )
     const locationDescriptor = {
       pathname: `/collections/details/${id}`,
       search: _.isEmpty(query) ? null : `?${query}`,
