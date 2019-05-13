@@ -7,10 +7,10 @@ import {
   COLLECTION_UPDATE_DATE_RANGE,
   COLLECTION_TOGGLE_FACET,
 } from '../../src/actions/search/CollectionFilterActions'
-import {
-  COLLECTION_METADATA_RECEIVED,
-  collectionMetadataReceived,
-} from '../../src/actions/search/CollectionResultActions'
+// import {
+//   COLLECTION_METADATA_RECEIVED,
+//   collectionMetadataReceived,
+// } from '../../src/actions/search/CollectionResultActions'
 // import {COLLECTION_CLEAR_FACETS} from '../../src/actions/search/CollectionFilterActions'
 // import {collectionClearFacets} from '../../src/actions/search/CollectionFilterActions'
 
