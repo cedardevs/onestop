@@ -7,18 +7,17 @@ import {
 
 export const initialState = Immutable({
   collectionDetailRequestInFlight: false,
+  requestedID: null,
 })
 
 export const collectionDetailRequest = (state = initialState, action) => {
   switch (action.type) {
     case COLLECTION_GET_DETAIL_START:
-      return Immutable.set(state, 'collectionDetailRequestInFlight', action.id)
+      return Immutable.merge(state, {collectionDetailRequestInFlight: true, requestedID: action.id})
 
     case COLLECTION_GET_DETAIL_COMPLETE:
-      return Immutable.set(state, 'collectionDetailRequestInFlight', false)
-
     case COLLECTION_GET_DETAIL_ERROR:
-      return Immutable.set(state, 'collectionDetailRequestInFlight', false)
+      return Immutable.merge(state, {collectionDetailRequestInFlight: false, requestedID: null})
 
     default:
       return state

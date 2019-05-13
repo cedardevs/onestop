@@ -14,7 +14,7 @@ describe('The collection detail request reducer', function(){
     const initialAction = {type: 'init'}
     const result = collectionDetailRequest(initialState, initialAction)
 
-    expect(result).toEqual({collectionDetailRequestInFlight: false})
+    expect(result).toEqual({collectionDetailRequestInFlight: false, requestedID: null})
   })
 
   describe('updates in-flight value', function(){
@@ -22,9 +22,10 @@ describe('The collection detail request reducer', function(){
       const initial = Immutable({collectionDetailRequestInFlight: false})
       const result = collectionDetailRequest(
         initial,
-        collectionGetDetailStart('id')
+        collectionGetDetailStart('uuid')
       )
       expect(result.collectionDetailRequestInFlight).toBeTruthy()
+      expect(result.requestedID).toBe('uuid')
     })
 
     it('when detail request completes', function(){
@@ -34,6 +35,7 @@ describe('The collection detail request reducer', function(){
         collectionGetDetailComplete({id: 'ABC'}, {totalGranuleCount: 3})
       )
       expect(result.collectionDetailRequestInFlight).toBeFalsy()
+      expect(result.requestedID).toBeNull()
     })
 
     it('when request errors', function(){
@@ -43,6 +45,7 @@ describe('The collection detail request reducer', function(){
         collectionGetDetailError()
       )
       expect(result.collectionDetailRequestInFlight).toBeFalsy()
+      expect(result.requestedID).toBeNull()
     })
   })
 })

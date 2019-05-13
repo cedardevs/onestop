@@ -55,21 +55,6 @@ export const collectionFilter = (state = initialState, action) => {
     case COLLECTION_TOGGLE_FACET:
       return Immutable.set(state, 'selectedFacets', action.selectedFacets)
 
-    // case COLLECTION_SEARCH_COMPLETE:
-    //   if (action.clearPreviousResults) {
-    //     console.log('clear previous results, reseting collection filters!!')
-    //     // reset the selected facets when there's a new search!
-    // TODO this also happens at the wrong time
-    //     return Immutable.set(
-    //       state,
-    //       'selectedFacets',
-    //       initialState.selectedFacets
-    //     )
-    //     // return initialState
-    //   }
-    //   console.log('search complete, should be no changes')
-    //   return state
-
     case COLLECTION_TOGGLE_EXCLUDE_GLOBAL:
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
 

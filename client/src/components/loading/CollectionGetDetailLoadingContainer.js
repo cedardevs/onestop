@@ -5,17 +5,16 @@ import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   const {
-    loading,
-  } = state.search.collectionDetailRequest.collectionDetailRequestInFlight
+    collectionDetailRequestInFlight, requestedID,
+  } = state.search.collectionDetailRequest
   const {collectionDetail} = state.search.collectionDetailResult
-  // const collectionId = collectionDetail.collection.id // TODO why isn't this set yet when collectionDetailRequestInFlight false? - oh because it defaults to false before a load is ever triggered
-  const text = loading
-    ? `Loading collection with id ${loading}` // the id sneakily lives in this boolean for some reason
+  const text = collectionDetailRequestInFlight
+    ? `Loading collection with id ${requestedID}` // the id sneakily lives in this boolean for some reason
     : `Completed collection load.` // TODO put collection id
-  const loadingId = `loading-id::${loading}`
+  const loadingId = `loading-id::${requestedID}`
 
   return {
-    loading: loading ? 1 : 0,
+    loading: collectionDetailRequestInFlight ? 1 : 0,
     loadingText: text,
     loadingAlertId: loadingId,
   }

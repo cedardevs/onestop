@@ -13,16 +13,15 @@ export const buildSearchAction = (
   errorHandler
 ) => {
   return (dispatch, getState) => {
-    // let state = getState()
-
     if (!validRequestCheck(getState())) {
       return Promise.resolve()
     }
-    prefetchHandler(dispatch) // TODO does moving this above bodyBuilder break anything?
+
+    prefetchHandler(dispatch)
 
     const body = bodyBuilder(getState()) // prefetchHandler may change state, particularly if pagination is involved
     if (!body) {
-      // cannot or should not fetch
+      // cannot or should not fetch TODO throw somethign to reset inFlight!!!
       return Promise.resolve()
     }
 

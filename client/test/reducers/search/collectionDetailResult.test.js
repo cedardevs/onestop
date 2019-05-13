@@ -40,7 +40,7 @@ describe('The collectionDetailResult reducer', function(){
 
     const result = collectionDetailResult(
       initialState,
-      collectionGetDetailComplete(data, {totalGranuleCount: 30})
+      collectionGetDetailComplete(data, {totalGranules: 30})
     )
     expect(result.collectionDetail).toEqual({
       collection: data,
@@ -60,7 +60,7 @@ describe('The collectionDetailResult reducer', function(){
     })
     const result = collectionDetailResult(
       stateWithLoadedCollection,
-      collectionGetDetailComplete(data, {totalGranuleCount: 0})
+      collectionGetDetailComplete(data, {totalGranules: 0})
     )
     expect(result.collectionDetail).toEqual({
       collection: data,

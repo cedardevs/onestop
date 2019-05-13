@@ -17,23 +17,6 @@ export const initialState = Immutable({
 })
 
 const getCollectionsFromAction = action => {
-  /* TODO make sure all of this stuff ... is the same as the reduce used below
-  const result = _.reduce(
-    action.items,
-    (map, resource) => {
-      return map.set(
-        resource.id,
-        _.assign({type: resource.type}, resource.attributes)
-      )
-    },
-    new Map()
-  )
-  let newCollections = {}
-    result.forEach((val, key) => {
-      newCollections[key] = val
-    })
-    */
-
   return action.items.reduce(
     (existing, next) => existing.set(next.id, next.attributes),
     initialState.collections
@@ -54,7 +37,7 @@ const moreResultsRecieved = (state, newCollections) => {
   let collections = state.collections.merge(newCollections)
 
   return Immutable.merge(state, {
-    loadedCollections: (collections && Object.keys(collections).length) || 0,
+    loadedCollectionCount: (collections && Object.keys(collections).length) || 0,
     collections: collections,
   })
 }
