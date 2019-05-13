@@ -4,57 +4,55 @@ import {
   initialState,
 } from '../../../src/reducers/search/collectionRequest'
 import {
-  collectionSearchRequest,
-  collectionSearchSuccess,
-  collectionDetailGranulesRequest,
-  collectionDetailGranulesSuccess,
+  collectionNewSearchRequested,
+  collectionMoreResultsRequested,
+  collectionNewSearchResultsRecieved,
+  collectionMoreResultsRecieved,
+  collectionSearchError,
 } from '../../../src/actions/search/CollectionRequestActions'
 
-describe('The request reducer', function(){
+describe('The collection request reducer', function(){
   it('has a default state', function(){
     const initialAction = {type: 'init'}
     const result = collectionRequest(initialState, initialAction)
 
-    expect(result.collectionSearchRequestInFlight).toBe(false)
-    expect(result.collectionDetailGranulesRequestInFlight).toBe(false)
+    expect(result).toEqual({collectionSearchRequestInFlight: false})
   })
 
-  describe('marks collectionSearchRequestInFlight', function(){
-    it('true when retrieving collections', function(){
+  describe('updates in-flight value', function(){
+    it('when starting a new search', function(){
       const initial = Immutable({collectionSearchRequestInFlight: false})
-      const result = collectionRequest(initial, collectionSearchRequest())
-      expect(result.collectionSearchRequestInFlight).toBe(true)
+      const result = collectionRequest(initial, collectionNewSearchRequested())
+      expect(result.collectionSearchRequestInFlight).toBeTruthy()
+    })
+    it('when starting a new page request', function(){
+      const initial = Immutable({collectionSearchRequestInFlight: false})
+      const result = collectionRequest(
+        initial,
+        collectionMoreResultsRequested()
+      )
+      expect(result.collectionSearchRequestInFlight).toBeTruthy()
     })
 
-    it('false when receiving collections', function(){
+    it('when new search completes', function(){
       const initial = Immutable({collectionSearchRequestInFlight: true})
       const result = collectionRequest(
         initial,
-        collectionSearchSuccess([ {id: 'A'} ])
+        collectionNewSearchResultsRecieved()
       )
-      expect(result.collectionSearchRequestInFlight).toBe(false)
-    })
-  })
-
-  describe('marks collectionDetailGranulesRequestInFlight', function(){
-    it('true when retrieving granules', function(){
-      const initial = Immutable({
-        collectionDetailGranulesRequestInFlight: false,
-      })
-      const result = collectionRequest(
-        initial,
-        collectionDetailGranulesRequest()
-      )
-      expect(result.collectionDetailGranulesRequestInFlight).toBe(true)
+      expect(result.collectionSearchRequestInFlight).toBeFalsy()
     })
 
-    it('false when receiving granules', function(){
-      const initial = Immutable({collectionDetailGranulesRequestInFlight: true})
-      const result = collectionRequest(
-        initial,
-        collectionDetailGranulesSuccess([ {id: 'A'} ])
-      )
-      expect(result.collectionDetailGranulesRequestInFlight).toBe(false)
+    it('when new page completes', function(){
+      const initial = Immutable({collectionSearchRequestInFlight: true})
+      const result = collectionRequest(initial, collectionMoreResultsRecieved())
+      expect(result.collectionSearchRequestInFlight).toBeFalsy()
+    })
+
+    it('when request errors', function(){
+      const initial = Immutable({collectionSearchRequestInFlight: true})
+      const result = collectionRequest(initial, collectionSearchError())
+      expect(result.collectionSearchRequestInFlight).toBeFalsy()
     })
   })
 })
