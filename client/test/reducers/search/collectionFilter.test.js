@@ -7,7 +7,6 @@ import {
   collectionUpdateFilters,
   collectionUpdateGeometry,
   collectionRemoveGeometry,
-  collectionToggleSelectedId,
   collectionToggleExcludeGlobal,
   COLLECTION_TOGGLE_FACET,
 } from '../../../src/actions/search/CollectionFilterActions'
@@ -16,7 +15,7 @@ import {
   collectionMoreResultsRequested,
 } from '../../../src/actions/search/CollectionRequestActions'
 
-describe('The search reducer', function(){
+describe('The collection filter reducer', function(){
   it('has a default state', function(){
     const initialAction = {type: 'init'}
     const result = collectionFilter(initialState, initialAction)
@@ -33,27 +32,31 @@ describe('The search reducer', function(){
   })
 
   describe('pagination cases', function(){
-    it('increments page offset from initial', function() {
-      const result = collectionFilter(initialState, collectionMoreResultsRequested())
+    it('increments page offset from initial', function(){
+      const result = collectionFilter(
+        initialState,
+        collectionMoreResultsRequested()
+      )
       expect(result.pageOffset).toEqual(20)
     })
 
-    it('increments page offset', function () {
+    it('increments page offset', function(){
       const pageState = {
         pageOffset: 40,
       }
-        const result = collectionFilter(pageState, collectionMoreResultsRequested())
-        expect(result.pageOffset).toEqual(60)
-
+      const result = collectionFilter(
+        pageState,
+        collectionMoreResultsRequested()
+      )
+      expect(result.pageOffset).toEqual(60)
     })
 
-    it('resets page offset', function () {
+    it('resets page offset', function(){
       const pageState = {
         pageOffset: 60,
       }
-        const result = collectionFilter(pageState, collectionNewSearchRequested())
-        expect(result.pageOffset).toEqual(0)
-
+      const result = collectionFilter(pageState, collectionNewSearchRequested())
+      expect(result.pageOffset).toEqual(0)
     })
   })
 
@@ -131,32 +134,6 @@ describe('The search reducer', function(){
       expect(result.geoJSON).toBeNull()
     })
   })
-
-  // TODO these might make sense on a granuleFilter.test.js!
-  // describe('selected collections cases', function(){
-  //   it('toggles selected collections', function(){
-  //     const toggleA = collectionToggleSelectedId('A')
-  //     const toggleB = collectionToggleSelectedId('B')
-  //     // toggle A --> ['A']
-  //     const addedAResult = collectionFilter(initialState, toggleA)
-  //     expect(addedAResult.selectedIds).toEqual([ 'A' ])
-  //     // toggle B --> ['A', 'B']
-  //     const addedBResult = collectionFilter(addedAResult, toggleB)
-  //     expect(addedBResult.selectedIds).toEqual([ 'A', 'B' ])
-  //     // toggle A --> ['B']
-  //     const removedAResult = collectionFilter(addedBResult, toggleA)
-  //     expect(removedAResult.selectedIds).toEqual([ 'B' ])
-  //   })
-  //
-  //   it('can clear existing collection selections', function(){
-  //     const stateWithCollections = Immutable({selectedIds: [ 'ABC' ]})
-  //     const result = collectionFilter(
-  //       stateWithCollections,
-  //       collectionClearSelectedIds()
-  //     )
-  //     expect(result.selectedIds).toEqual([])
-  //   })
-  // })
 
   describe('facet cases', function(){
     it('should handle COLLECTION_TOGGLE_FACET w/ facets selected', () => {
