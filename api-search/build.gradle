@@ -165,21 +165,21 @@ war {
   dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
   enabled = true
   // TODO disabled dynamic project-based name for #827, plan to re-enable in #828
-  // baseName = "${rootProject.name}-${project.name}"
-  baseName = "onestop-search"
+  // archiveBaseName.set("${rootProject.name}-${project.name}")
+  archiveBaseName.set("onestop-search")
   finalizedBy bootWar
 }
 
 bootWar {
   excludeDevtools = true
-  classifier = 'all'
+  archiveClassifier.set("all")
   launchScript()
   onlyIf { !tasks.getByName('war').state.upToDate }
 }
 
 task sourceJar(type: Jar) {
-  classifier "sources"
-  baseName = "${rootProject.name}-${project.name}"
+  archiveClassifier.set("sources")
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   from "${projectDir}/src"
 }
 

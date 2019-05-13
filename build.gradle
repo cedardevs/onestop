@@ -8,10 +8,9 @@ buildscript {
     }
   }
   dependencies {
-    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.9.5"
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
-    classpath 'org.owasp:dependency-check-gradle:5.0.0-M2'
+    classpath 'org.owasp:dependency-check-gradle:5.0.0-M3.1'
     classpath "gradle.plugin.org.cedar:dockerplugin:1.0.3"
   }
 }
@@ -19,7 +18,7 @@ buildscript {
 plugins {
   id 'com.gradle.build-scan' version '2.2.1'
   id "com.jfrog.bintray" version "1.8.0"
-  id "com.jfrog.artifactory" version "4.7.0"
+  id "com.jfrog.artifactory" version "4.9.6"
   id "io.spring.dependency-management" version "1.0.6.RELEASE"
   id "jacoco"
 }
