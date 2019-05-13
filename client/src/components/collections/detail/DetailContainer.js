@@ -4,11 +4,14 @@ import Detail from './Detail'
 import {asyncNewGranuleSearch} from '../../../actions/search/GranuleSearchActions'
 
 const mapStateToProps = state => {
-  const focusedItem = state.search.collectionDetailResult.collectionDetail
+  const focusedItem = state.search.collectionDetailResult.collection
+  const totalGranuleCount =
+    state.search.collectionDetailResult.totalGranuleCount
+
   return {
-    id: focusedItem ? focusedItem.collection.id : null,
-    item: focusedItem ? focusedItem.collection.attributes : null,
-    totalGranuleCount: focusedItem ? focusedItem.totalGranuleCount : null,
+    id: focusedItem ? focusedItem.id : null,
+    item: focusedItem ? focusedItem.attributes : null,
+    totalGranuleCount: focusedItem ? totalGranuleCount : null,
     loading:
       state.search.collectionDetailRequest.collectionDetailRequestInFlight,
   }

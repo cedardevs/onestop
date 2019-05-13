@@ -16,7 +16,9 @@ export const getCollection = collectionId => {
   }
 
   const successHandler = (dispatch, payload) => {
-    dispatch(collectionGetDetailComplete(payload.data[0], payload.meta))
+    dispatch(
+      collectionGetDetailComplete(payload.data[0], payload.meta.totalGranules)
+    )
   }
 
   const errorHandler = (dispatch, e) => {

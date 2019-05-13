@@ -37,7 +37,8 @@ const moreResultsRecieved = (state, newCollections) => {
   let collections = state.collections.merge(newCollections)
 
   return Immutable.merge(state, {
-    loadedCollectionCount: (collections && Object.keys(collections).length) || 0,
+    loadedCollectionCount:
+      (collections && Object.keys(collections).length) || 0,
     collections: collections,
   })
 }

@@ -14,13 +14,14 @@ describe('The collectionDetailResult reducer', function(){
     const result = collectionDetailResult(initialState, initialAction)
 
     expect(result).toEqual({
-      collectionDetail: null,
+      collection: null,
+      totalGranuleCount: 0,
     })
   })
 
   it('can reset existing collection state on error', function(){
     const stateWithLoadedCollection = Immutable({
-      collectionDetail: {
+      collection: {
         title: 'A collection',
       },
     })
@@ -28,9 +29,7 @@ describe('The collectionDetailResult reducer', function(){
       stateWithLoadedCollection,
       collectionGetDetailError()
     )
-    expect(result).toEqual({
-      collectionDetail: null,
-    })
+    expect(result).toEqual(initialState)
   })
 
   it('sets the collection response when GET returns', function(){
@@ -40,9 +39,9 @@ describe('The collectionDetailResult reducer', function(){
 
     const result = collectionDetailResult(
       initialState,
-      collectionGetDetailComplete(data, {totalGranules: 30})
+      collectionGetDetailComplete(data, 30)
     )
-    expect(result.collectionDetail).toEqual({
+    expect(result).toEqual({
       collection: data,
       totalGranuleCount: 30,
     })
@@ -50,7 +49,7 @@ describe('The collectionDetailResult reducer', function(){
 
   it('can override existing collection state on new GET response', function(){
     const stateWithLoadedCollection = Immutable({
-      collectionDetail: {
+      collection: {
         title: 'A collection',
         description: 'This one has a description',
       },
@@ -60,9 +59,9 @@ describe('The collectionDetailResult reducer', function(){
     })
     const result = collectionDetailResult(
       stateWithLoadedCollection,
-      collectionGetDetailComplete(data, {totalGranules: 0})
+      collectionGetDetailComplete(data, 0)
     )
-    expect(result.collectionDetail).toEqual({
+    expect(result).toEqual({
       collection: data,
       totalGranuleCount: 0,
     })

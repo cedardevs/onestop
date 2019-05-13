@@ -5,9 +5,9 @@ import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   const {
-    collectionDetailRequestInFlight, requestedID,
+    collectionDetailRequestInFlight,
+    requestedID,
   } = state.search.collectionDetailRequest
-  const {collectionDetail} = state.search.collectionDetailResult
   const text = collectionDetailRequestInFlight
     ? `Loading collection with id ${requestedID}` // the id sneakily lives in this boolean for some reason
     : `Completed collection load.` // TODO put collection id

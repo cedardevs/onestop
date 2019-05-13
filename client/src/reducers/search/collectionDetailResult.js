@@ -5,15 +5,19 @@ import {
 } from '../../actions/get/CollectionDetailRequestActions'
 
 export const initialState = Immutable({
-  collectionDetail: null,
+  collection: null,
+  totalGranuleCount: 0,
 })
 
 export const collectionDetailResult = (state = initialState, action) => {
   switch (action.type) {
     case COLLECTION_GET_DETAIL_ERROR:
-      return Immutable.set(state, 'collectionDetail', null) // TODO also set errors like with other new error actions
+      return Immutable.merge(state, initialState) // TODO also set errors like with other new error actions
     case COLLECTION_GET_DETAIL_COMPLETE:
-      return Immutable.set(state, 'collectionDetail', action.result)
+      return Immutable.merge(state, {
+        collection: action.collection,
+        totalGranuleCount: 35, //action.totalGranuleCount,
+      })
 
     default:
       return state
