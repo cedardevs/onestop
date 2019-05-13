@@ -8,7 +8,7 @@ import {
 } from '../../actions/search/CollectionRequestActions'
 
 export const initialState = Immutable({
-  collectionSearchRequestInFlight: false, // TODO rename to shorten these variables?
+  inFlight: false,
   errorMessage: '',
 })
 
@@ -17,17 +17,17 @@ export const collectionRequest = (state = initialState, action) => {
     case COLLECTION_NEW_SEARCH_REQUESTED:
     case COLLECTION_MORE_RESULTS_REQUESTED:
       return Immutable.merge(state, {
-        collectionSearchRequestInFlight: true,
+        inFlight: true,
         errorMessage: '',
       })
 
     case COLLECTION_NEW_SEARCH_RESULTS_RECIEVED:
     case COLLECTION_MORE_RESULTS_RECIEVED:
-      return Immutable.set(state, 'collectionSearchRequestInFlight', false)
+      return Immutable.set(state, 'inFlight', false)
 
     case COLLECTION_SEARCH_ERROR:
       return Immutable.merge(state, {
-        collectionSearchRequestInFlight: false,
+        inFlight: false,
         errorMessage: action.errors,
       })
 

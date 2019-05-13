@@ -15,19 +15,19 @@ describe('The collection detail request reducer', function(){
     const result = collectionDetailRequest(initialState, initialAction)
 
     expect(result).toEqual({
-      collectionDetailRequestInFlight: false,
+      inFlight: false,
       requestedID: null,
       errorMessage: '',
     })
   })
 
   it('new GET marks inFlight, requestedID', function(){
-    const initial = Immutable({collectionDetailRequestInFlight: false})
+    const initial = Immutable({inFlight: false})
     const result = collectionDetailRequest(
       initial,
       collectionGetDetailStart('uuid')
     )
-    expect(result.collectionDetailRequestInFlight).toBeTruthy()
+    expect(result.inFlight).toBeTruthy()
     expect(result.requestedID).toBe('uuid')
   })
 
@@ -43,25 +43,25 @@ describe('The collection detail request reducer', function(){
   })
 
   it('result from GET resets inFlight, requestedID', function(){
-    const initial = Immutable({collectionDetailRequestInFlight: true})
+    const initial = Immutable({inFlight: true})
     const result = collectionDetailRequest(
       initial,
       collectionGetDetailComplete({id: 'ABC'}, 3)
     )
-    expect(result.collectionDetailRequestInFlight).toBeFalsy()
+    expect(result.inFlight).toBeFalsy()
     expect(result.requestedID).toBeNull()
   })
 
   it('error resets inFlight, provides requestedID and errorMessage', function(){
     const initial = Immutable({
-      collectionDetailRequestInFlight: true,
+      inFlight: true,
       requestedID: '123',
     })
     const result = collectionDetailRequest(
       initial,
       collectionGetDetailError('Cause of Error: test case')
     )
-    expect(result.collectionDetailRequestInFlight).toBeFalsy()
+    expect(result.inFlight).toBeFalsy()
     expect(result.requestedID).toBe('123')
     expect(result.errorMessage).toBe('Cause of Error: test case')
   })

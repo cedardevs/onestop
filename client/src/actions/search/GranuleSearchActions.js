@@ -27,7 +27,7 @@ export const asyncMoreGranuleResults = () => {
 }
 
 const validRequestCheck = state => {
-  const inFlight = state.search.granuleRequest.granuleSearchRequestInFlight
+  const inFlight = state.search.granuleRequest.inFlight
   return !inFlight
 }
 

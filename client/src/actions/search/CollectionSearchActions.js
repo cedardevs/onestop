@@ -28,8 +28,7 @@ export const asyncMoreCollectionResults = () => {
 }
 
 const validRequestCheck = state => {
-  const inFlight =
-    state.search.collectionRequest.collectionSearchRequestInFlight
+  const inFlight = state.search.collectionRequest.inFlight
   return !inFlight
 }
 

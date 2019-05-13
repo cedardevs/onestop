@@ -17,21 +17,21 @@ describe('The collection request reducer', function(){
     const result = collectionRequest(initialState, initialAction)
 
     expect(result).toEqual({
-      collectionSearchRequestInFlight: false,
+      inFlight: false,
       errorMessage: '',
     })
   })
 
   it('new search marks inFlight', function(){
-    const initial = Immutable({collectionSearchRequestInFlight: false})
+    const initial = Immutable({inFlight: false})
     const result = collectionRequest(initial, collectionNewSearchRequested())
-    expect(result.collectionSearchRequestInFlight).toBeTruthy()
+    expect(result.inFlight).toBeTruthy()
   })
 
   it('next page marks inFlight', function(){
-    const initial = Immutable({collectionSearchRequestInFlight: false})
+    const initial = Immutable({inFlight: false})
     const result = collectionRequest(initial, collectionMoreResultsRequested())
-    expect(result.collectionSearchRequestInFlight).toBeTruthy()
+    expect(result.inFlight).toBeTruthy()
   })
 
   it('new search resets errorMessage', function(){
@@ -51,27 +51,27 @@ describe('The collection request reducer', function(){
   })
 
   it('result from search resets inFlight', function(){
-    const initial = Immutable({collectionSearchRequestInFlight: true})
+    const initial = Immutable({inFlight: true})
     const result = collectionRequest(
       initial,
       collectionNewSearchResultsRecieved()
     )
-    expect(result.collectionSearchRequestInFlight).toBeFalsy()
+    expect(result.inFlight).toBeFalsy()
   })
 
   it('result from next page resets inFlight', function(){
-    const initial = Immutable({collectionSearchRequestInFlight: true})
+    const initial = Immutable({inFlight: true})
     const result = collectionRequest(initial, collectionMoreResultsRecieved())
-    expect(result.collectionSearchRequestInFlight).toBeFalsy()
+    expect(result.inFlight).toBeFalsy()
   })
 
   it('error resets inFlight, provides errorMessage', function(){
-    const initial = Immutable({collectionSearchRequestInFlight: true})
+    const initial = Immutable({inFlight: true})
     const result = collectionRequest(
       initial,
       collectionSearchError('Cause of Error: test case')
     )
-    expect(result.collectionSearchRequestInFlight).toBeFalsy()
+    expect(result.inFlight).toBeFalsy()
     expect(result.errorMessage).toBe('Cause of Error: test case')
   })
 })

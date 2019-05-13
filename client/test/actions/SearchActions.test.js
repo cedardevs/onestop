@@ -156,7 +156,7 @@ describe('The search action', () => {
       CollectionFilterActions.collectionUpdateQueryText('alaska')
     )
 
-    // the `collectionSearchRequest` action is what triggers the `collectionSearchRequestInFlight` to true
+    // the `collectionSearchRequest` action is what triggers the `inFlight` to true
     // we want to artificially set this after we set a valid query so that we can ensure no results come back
     // in other words, the fetch mocked above should never trigger when we know another search is running
     await store.dispatch(
@@ -190,21 +190,21 @@ describe('The search action', () => {
     expect(queryTextAfter).toBe(newQueryText)
   })
 
-  it('collectionSearchRequest sets collectionSearchRequestInFlight', async () => {
+  it('collectionSearchRequest sets inFlight', async () => {
     // TODO how does this meaningfully differ from the reducer tests?
     const collectionInFlightBefore =
-      stateBefore.search.collectionRequest.collectionSearchRequestInFlight
+      stateBefore.search.collectionRequest.inFlight
 
     await store.dispatch(
       CollectionRequestActions.collectionNewSearchRequested()
     )
     const collectionInFlightAfter = store.getState().search.collectionRequest
-      .collectionSearchRequestInFlight
+      .inFlight
     expect(collectionInFlightBefore).not.toBeTruthy()
     expect(collectionInFlightAfter).toBeTruthy()
   })
 
-  it('collectionSearchSuccess sets result items and resets collectionSearchRequestInFlight to false', async () => {
+  it('collectionSearchSuccess sets result items and resets inFlight to false', async () => {
     // TODO how does this meaningfully differ from the reducer tests?
     const collectionsBefore = stateBefore.search.collectionResult.collections
 
@@ -237,7 +237,7 @@ describe('The search action', () => {
     const collectionsAfter = store.getState().search.collectionResult
       .collections
     const collectionInFlightAfter = store.getState().search.collectionRequest
-      .collectionSearchRequestInFlight
+      .inFlight
 
     const expectedCollectionKeys = [ 'data1', 'data2' ]
     const actualCollectionsKeys = Object.keys(collectionsAfter)

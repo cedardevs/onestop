@@ -4,7 +4,7 @@ import LoadingBar from './LoadingBar'
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {loading} = state.search.granuleRequest.granuleSearchRequestInFlight
+  const {loading} = state.search.granuleRequest.inFlight
   const {
     granules,
     totalGranuleCount,

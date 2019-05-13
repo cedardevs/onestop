@@ -12,8 +12,7 @@ const mapStateToProps = state => {
     id: focusedItem ? focusedItem.id : null,
     item: focusedItem ? focusedItem.attributes : null,
     totalGranuleCount: focusedItem ? totalGranuleCount : null,
-    loading:
-      state.search.collectionDetailRequest.collectionDetailRequestInFlight,
+    loading: state.search.collectionDetailRequest.inFlight,
   }
 }
 

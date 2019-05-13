@@ -4,17 +4,14 @@ import LoadingBar from './LoadingBar'
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {
-    collectionDetailRequestInFlight,
-    requestedID,
-  } = state.search.collectionDetailRequest
-  const text = collectionDetailRequestInFlight
+  const {inFlight, requestedID} = state.search.collectionDetailRequest
+  const text = inFlight
     ? `Loading collection with id ${requestedID}` // the id sneakily lives in this boolean for some reason
     : `Completed collection load.` // TODO put collection id
   const loadingId = `loading-id::${requestedID}`
 
   return {
-    loading: collectionDetailRequestInFlight ? 1 : 0,
+    loading: inFlight ? 1 : 0,
     loadingText: text,
     loadingAlertId: loadingId,
   }

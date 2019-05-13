@@ -46,9 +46,7 @@ export const loadCollections = (history, newQueryString) => {
 
 export const loadDetails = path => {
   return (dispatch, getState) => {
-    if (
-      !getState().search.collectionDetailRequest.collectionDetailRequestInFlight
-    ) {
+    if (!getState().search.collectionDetailRequest.inFlight) {
       const detailId = getCollectionIdFromDetailPath(path)
       dispatch(getCollection(detailId))
     }

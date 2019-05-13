@@ -6,7 +6,7 @@ import {
 } from '../../actions/get/CollectionDetailRequestActions'
 
 export const initialState = Immutable({
-  collectionDetailRequestInFlight: false,
+  inFlight: false,
   requestedID: null, // TODO change to empty string if this causes any issues in the loading message container thing
   errorMessage: '',
 })
@@ -15,20 +15,20 @@ export const collectionDetailRequest = (state = initialState, action) => {
   switch (action.type) {
     case COLLECTION_GET_DETAIL_START:
       return Immutable.merge(state, {
-        collectionDetailRequestInFlight: true,
+        inFlight: true,
         requestedID: action.id,
         errorMessage: '',
       })
 
     case COLLECTION_GET_DETAIL_COMPLETE:
       return Immutable.merge(state, {
-        collectionDetailRequestInFlight: false,
+        inFlight: false,
         requestedID: null,
       })
 
     case COLLECTION_GET_DETAIL_ERROR:
       return Immutable.merge(state, {
-        collectionDetailRequestInFlight: false,
+        inFlight: false,
         errorMessage: action.errors, // TODO change components to use this, when appropriate
       })
 

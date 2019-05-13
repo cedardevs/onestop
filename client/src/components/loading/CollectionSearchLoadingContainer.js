@@ -4,9 +4,7 @@ import LoadingBar from './LoadingBar'
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {
-    loading,
-  } = state.search.collectionRequest.collectionSearchRequestInFlight
+  const {loading} = state.search.collectionRequest.inFlight
   const {
     collections,
     totalCollectionCount,

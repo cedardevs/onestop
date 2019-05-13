@@ -8,7 +8,7 @@ import {
 } from '../../actions/search/GranuleRequestActions'
 
 export const initialState = Immutable({
-  granuleSearchRequestInFlight: false,
+  inFlight: false,
   errorMessage: '',
 })
 
@@ -17,17 +17,17 @@ export const granuleRequest = (state = initialState, action) => {
     case GRANULE_NEW_SEARCH_REQUESTED:
     case GRANULE_MORE_RESULTS_REQUESTED:
       return Immutable.merge(state, {
-        granuleSearchRequestInFlight: true,
+        inFlight: true,
         errorMessage: '',
       })
 
     case GRANULE_NEW_SEARCH_RESULTS_RECIEVED:
     case GRANULE_MORE_RESULTS_RECIEVED:
-      return Immutable.set(state, 'granuleSearchRequestInFlight', false)
+      return Immutable.set(state, 'inFlight', false)
 
     case GRANULE_SEARCH_ERROR:
       return Immutable.merge(state, {
-        granuleSearchRequestInFlight: false,
+        inFlight: false,
         errorMessage: action.errors,
       })
 
