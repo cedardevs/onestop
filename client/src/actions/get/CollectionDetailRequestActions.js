@@ -16,7 +16,8 @@ export const collectionGetDetailComplete = (
   type: COLLECTION_GET_DETAIL_COMPLETE,
   result: {
     collection: data,
-    totalGranuleCount: metadata.totalGranules,
+    // TODO we're not even *using* totalGranuleCount - and we either want to or should remove it! - actually we probably are using it, but there's not a unique spot in the state to make it clear. So fix the reducer to be less vague
+    totalGranuleCount: metadata.totalGranules, // TODO requests like this with cause weird errors if metadata is not defined as an input - need more error handling or is it ok?
   },
   // clearPreviousResults: clearPreviousResults,
   // total: total,
