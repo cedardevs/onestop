@@ -14,7 +14,7 @@ export const COLLECTION_NEW_SEARCH_RESULTS_RECIEVED =
 export const collectionNewSearchResultsRecieved = (total, items, metadata) => ({
   type: COLLECTION_NEW_SEARCH_RESULTS_RECIEVED,
   total: total,
-  metadata: metadata,
+  metadata: metadata, // TODO be more specific, not just generic metadata! makes it easier to test and follow code logic!
   items: items,
 })
 
