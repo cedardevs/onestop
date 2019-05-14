@@ -32,7 +32,7 @@ class LoadKafkaMsgServiceTest extends Specification {
     consumerService.listen([inputRecord])
 
     then:
-    1 * mockMetadataService.loadParsedMetadata([[id: inputKey, parsedRecord: inputValue]])
+    1 * mockMetadataService.loadParsedRecords([[id: inputKey, parsedRecord: inputValue]])
   }
 
   def "ignores invalid metadata record" () {
@@ -45,7 +45,7 @@ class LoadKafkaMsgServiceTest extends Specification {
     consumerService.listen([inputRecord])
 
     then:
-    0 * mockMetadataService.loadParsedMetadata(_)
+    0 * mockMetadataService.loadParsedRecords(_)
   }
 
   def "filters out invalid metadata records" () {
@@ -61,7 +61,7 @@ class LoadKafkaMsgServiceTest extends Specification {
     consumerService.listen([validRecord, invalidRecord])
 
     then:
-    1 * mockMetadataService.loadParsedMetadata({ it.size() == 1 && it[0].parsedRecord == validRecord.value() })
+    1 * mockMetadataService.loadParsedRecords({ it.size() == 1 && it[0].parsedRecord == validRecord.value() })
   }
 
 }

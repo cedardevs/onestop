@@ -259,6 +259,6 @@ class InventoryManagerToOneStopUtilTest extends Specification {
         .build()
 
     expect:
-    !InventoryManagerToOneStopUtil.validateMessage('dummy id', record)
+    !InventoryManagerToOneStopUtil.validateMessage('dummy id', record)?.valid
   }
 }

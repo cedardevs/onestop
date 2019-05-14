@@ -142,7 +142,8 @@ class LoadIntegrationTests extends IntegrationTest {
     doc1Id != doc2Id
 
     step3Result.statusCode == HttpStatus.BAD_REQUEST
-    step3Result.body.errors[0].title.contains('Unable to parse')
+    step3Result.body.errors[0].title.contains('Invalid record')
+    step3Result.body.errors[0].detail.contains('Missing identifier')
   }
 
   def 'does not allow a record with malformed temporal bounding to be loaded'() {
@@ -151,8 +152,10 @@ class LoadIntegrationTests extends IntegrationTest {
 
     then:
     badDateResult.statusCode == HttpStatus.BAD_REQUEST
-    badDateResult.body.errors[0].title.contains('malformed data')
-    badDateResult.body.errors[0].detail.contains('DateTimeParseException')
+
+    badDateResult.body.errors[0].title.contains('Invalid record')
+    badDateResult.body.errors[0].detail.contains('Invalid beginDate')
+    badDateResult.body.errors[0].detail.contains('Invalid endDate')
   }
 
   def 'retrieve a metadata record by elasticsearch id'() {

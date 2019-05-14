@@ -4,6 +4,13 @@ import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.parse.ISOParser
+import org.cedar.schemas.avro.psi.Discovery
+import org.cedar.schemas.avro.psi.Analysis
+import org.cedar.schemas.avro.util.AvroUtils
+import org.cedar.schemas.avro.psi.RecordType
+import org.cedar.schemas.analyze.Analyzers
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -35,7 +42,10 @@ class MetadataManagementService {
   
   @Value('${elasticsearch.index.prefix:}')
   String PREFIX
-  
+
+  @Value('${migrationMode:false}')
+  boolean MIGRATION_MODE
+
   private ElasticsearchService esService
   
   @Autowired
@@ -60,95 +70,159 @@ class MetadataManagementService {
    * @return
    */
 
-  Map loadParsedMetadata(List<Map> payload) {
-    esService.ensureStagingIndices()
-    esService.ensurePipelines()
-    esService.refreshAllIndices()
-    def bulkRequest = new StringBuilder()
-    def loadedIndices = []
-    def results = []
-    
-    payload.eachWithIndex { record, i ->
-      String id = record.id
-      ParsedRecord avroRecord = record.parsedRecord
-  
-      try {
-        def source = InventoryManagerToOneStopUtil.reformatMessageForSearch(avroRecord)
-        def type = source.parentIdentifier ? 'granule' : 'collection'
-        source.stagedDate = System.currentTimeMillis()
-        def result = [
-            id        : id,
-            type      : type,
-            attributes: source,
-        ]
-      
-        def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
-        def bulkCommand = [index: [_index: index, _type: TYPE, _id: id]]
-        bulkRequest << JsonOutput.toJson(bulkCommand)
-        bulkRequest << '\n'
-        bulkRequest << JsonOutput.toJson(source)
-        bulkRequest << '\n'
-        results << result
-        loadedIndices << i
-        
-      } catch (Exception e) {
-        log.error("Load request failed: ${e}", e)
-      }
+  public Map loadMetadata(String document) {
+    List<String> documentArray = [document]
+    def result = loadXMLdocuments(documentArray).data[0]
+    if (result?.meta?.error) {
+      return [errors: [result.meta.error]]
+    } else {
+      return [data: result]
     }
-  
-    String bulkRequestBody = bulkRequest.toString()
-    if (bulkRequestBody) { // Don't send a request if there is nothing to send
-      def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
-      log.debug("bulkResponse: ${bulkResponse} loadedIndices: ${loadedIndices} ")
-    }
-    
-    return [data: results]
   }
-  
-  public Map loadMetadata(Object[] documents) {
+
+//  Map loadMetadata(String document) {
+//    List<String> documentArray = [document]
+//    Map result = loadXMLdocuments(documentArray).data[0]
+//    return aggregateResult(result)
+//  }
+//
+//  Map loadMultipartFiles(MultipartFile[] documents) {
+//    Map result = loadXMLdocuments(documents as List).data[0]
+//    return aggregateResult(result)
+//  }
+
+//  Map aggregateResult(Map result){
+//    if (result?.meta?.error) {
+//      return [errors: [result.meta.error]]
+//    } else {
+//      return [data: result]
+//    }
+//  }
+
+  Map loadXMLdocuments(List documents){
+    List<Map<String, ?>> parsedRecords = []
+    List results = []
+    documents.each { document ->
+      String fileName = null
+      String xml = null
+      if (document instanceof MultipartFile) {
+        fileName = document.originalFilename
+        xml = document.inputStream.text
+      } else {
+        xml = document as String
+      }
+      Map result = [
+          meta      : [
+              filename: fileName,
+          ]
+      ]
+      Map parseResult = xmlToParsedRecord(xml)
+      if(parseResult?.parsedRecord){
+        Map validationResult = InventoryManagerToOneStopUtil.validateMessage(fileName, parseResult.parsedRecord)
+        if(!validationResult?.title){
+          log.info("Validation success: $fileName is valid")
+          parsedRecords << [filename:fileName, parsedRecord: parseResult.parsedRecord as ParsedRecord]
+        }else{
+          log.warn("Validation failed: $fileName is invalid. Cause: ${validationResult.details} ")
+          validationResult.status = HttpStatus.BAD_REQUEST.value()
+          result.meta.error = validationResult
+          results << result
+        }
+      }else {
+        String title = "${parseResult?.error?.title ?: 'Parse error'}"
+        String parseErrorDetails = "${parseResult?.error?.detail ?: "Unable to generate a ParsedRecord from xml "}"
+        result.meta = [error: [title: title, detail: parseErrorDetails, status: HttpStatus.BAD_REQUEST.value()]]
+        log.info(parseErrorDetails)
+        results << result
+      }
+    }
+    return [data: results + loadParsedRecords(parsedRecords).data]
+  }
+
+  Map xmlToParsedRecord(String xmlDoc){
+    Map result = [:]
+    def parsedRecordBuilder = ParsedRecord.newBuilder()
+    try {
+      Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(xmlDoc)
+      log.info("Analyzing record: $discovery")
+      Analysis analysis = Analyzers.analyze(discovery)
+      Map source = AvroUtils.avroToMap(discovery, true)
+      RecordType type = source.parentIdentifier ? RecordType.granule : RecordType.collection
+      parsedRecordBuilder.setType(type)
+      parsedRecordBuilder.setDiscovery(discovery)
+      parsedRecordBuilder.setAnalysis(analysis)
+      ParsedRecord parsedRecord = parsedRecordBuilder.build()
+      result.parsedRecord = parsedRecord
+    }
+    catch (SAXException e) {
+      result.error = [
+          status: HttpStatus.BAD_REQUEST.value(),
+          title : 'Load request failed due to malformed XML.',
+          detail: ExceptionUtils.getRootCauseMessage(e)
+      ]
+    }
+    catch (Exception e) {
+      result.error = [
+          status: HttpStatus.BAD_REQUEST.value(),
+          title : 'Load request failed due to malformed data.',
+          detail: ExceptionUtils.getRootCauseMessage(e)
+      ]
+    }
+    return result
+  }
+
+  Map loadParsedRecords(List<Map<String, ?>> parsedRecords){
     esService.ensureStagingIndices()
     esService.ensurePipelines()
     esService.refreshAllIndices()
     def results = []
     def bulkRequest = new StringBuilder()
     def loadedIndices = []
-    
-    documents.eachWithIndex { document, i ->
-      def filename
-      if (document instanceof MultipartFile) {
-        filename = document.originalFilename
-        document = document.inputStream.text
-      } else {
-        filename = null
-        document = document as String
-      }
-      try {
-        def source = MetadataParser.parseXMLMetadataToMap(document)
-        def type = source.parentIdentifier ? 'granule' : 'collection'
-        def fileId = source.fileIdentifier as String
-        def doi = source.doi as String
 
-        def result = [
+    parsedRecords.eachWithIndex { record, i ->
+      String id = record?.id ?: null
+      String filename = record?.filename ?: null
+      log.info("Processing record with id: $id, filename: $filename")
+      ParsedRecord avroRecord = record.parsedRecord
+
+      try {
+        Map source = InventoryManagerToOneStopUtil.reformatMessageForSearch(avroRecord)
+        String type = source.parentIdentifier ? 'granule' : 'collection'
+        String fileId = source.fileIdentifier as String
+        String doi = source.doi as String
+
+        Map result = [
             type      : type,
             attributes: source,
             meta      : [
+                id : id,
                 filename: filename,
+                fileId: fileId,
+                doi: doi
             ]
         ]
 
-        if(!fileId && !doi){ //do not allow records without an id
+        log.info("Record with identifiers: ${result.meta}")
+        log.info("Record with type: ${result.type}")
+
+        if(!fileId && !doi){ //do not allow records without a fileId or doi
+          //redundant for records from PSI because they go through InventoryManagerToOneStopUtil.validateMessage()
           result.meta.error = [
               status: HttpStatus.BAD_REQUEST.value(),
               title : 'Unable to parse FileIdentifier or DOI from document; metadata not loaded.',
               detail: "Please confirm the document contains valid identifiers."
           ]
-        }else{ //check for existing records
-          source.stagedDate = System.currentTimeMillis()
-          def existingRecord = findMetadata(fileId, doi, true)
-          def existingIds = existingRecord.data*.id
-          def esId = existingIds?.size() == 1 ? existingIds[0] : null
-          result.id = esId as String
-          if (existingIds?.size() > 1) { //if we matched more than one file, there is a conflict
+          log.info("Failing record with neither a DOI nor fileIdentifier: ${result.meta}")
+          results.add(result)
+          return
+        }
+
+        Map existingRecord = findMetadata(fileId, doi, true)
+        List<String> existingIds = existingRecord.data*.id
+
+        log.info("Records with matching identifiers: ${existingIds}")
+
+        if (existingIds?.size() > 1) { //if we matched more than one file, there is a conflict
             result.meta.error = [
                 status: HttpStatus.CONFLICT.value(),
                 title : 'Ambiguous metadata records in existence; metadata not loaded.',
@@ -156,36 +230,33 @@ class MetadataManagementService {
                     "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
                     "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
             ]
-          }else{
-            source.stagedDate = System.currentTimeMillis() //only set stagedDate if the data was staged
-            result.attributes = source //update return payload
-            def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
-            def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
-            bulkRequest << JsonOutput.toJson(bulkCommand)
-            bulkRequest << '\n'
-            bulkRequest << JsonOutput.toJson(source)
-            bulkRequest << '\n'
-            loadedIndices << i
-          }
+          results << result
+          return
         }
+        String esId = id ?: null
+        if(existingIds?.size() == 1){ //this is an update
+          String existingId = existingIds[0]
+          esId = getUpdateId(existingId, id)
+          log.info("Updating document with ID: $esId")
+        }else{
+          log.info("Creating new staging document")
+        }
+
+        source.stagedDate = System.currentTimeMillis()
+        result.id = esId as String
+        def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
+        def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
+        bulkRequest << JsonOutput.toJson(bulkCommand)
+        bulkRequest << '\n'
+        bulkRequest << JsonOutput.toJson(source)
+        bulkRequest << '\n'
+        loadedIndices << i
+
         results << result
-      }
-      catch (SAXException e) {
-        results << [
-            meta: [
-                filename: filename,
-                error   : [
-                    status: HttpStatus.BAD_REQUEST.value(),
-                    title : 'Load request failed due to malformed XML.',
-                    detail: ExceptionUtils.getRootCauseMessage(e)
-                ]
-            ]
-        ]
       }
       catch (Exception e) {
         results << [
             meta: [
-                filename: filename,
                 error   : [
                     status: HttpStatus.BAD_REQUEST.value(),
                     title : 'Load request failed due to malformed data.',
@@ -195,7 +266,7 @@ class MetadataManagementService {
         ]
       }
     }
-    
+
     String bulkRequestBody = bulkRequest.toString()
     if (bulkRequestBody) { // Don't send a request if there is nothing to send
       def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
@@ -209,20 +280,38 @@ class MetadataManagementService {
         }
       }
     }
-    
+    log.info("Update results: ${results}")
     return [data: results]
   }
-  
-  public Map loadMetadata(String document) {
-    String[] documentArray = [document]
-    def result = loadMetadata(documentArray).data[0]
-    if (result.meta.error) {
-      return [errors: [result.meta.error]]
-    } else {
-      return [data: result]
+
+  String getUpdateId(String existingId, String incomingId){
+    String esId = null
+    if(MIGRATION_MODE){
+      if(incomingId){ // Only records from PSI have id set, this is a re-key
+        if(incomingId != existingId){//re-key only once
+          deleteMetadata(existingId, true)
+        }else{esId = incomingId} //update this record from PSI
+      }else{ //normal update via web API
+        esId = existingId
+      }
+    }else{
+      if(incomingId){ // Only records from PSI have id set
+        if(incomingId != existingId){//re-key only once
+          log.warn "Received record with conflicting identifiers. Message with id $incomingId " +
+              "contains the same identifiers as an exsiting record - $existingId. " +
+              "Record not inserted or updated. Turn on migration mode to re-key this record."
+        }else{
+          log.info("Updating record with PSI ID")
+          esId = incomingId
+        }
+      }else{
+        log.info("Updating record with old ID")
+        esId = existingId //normal update via web API
+      }
     }
+    return esId
   }
-  
+
   public Map getMetadata(String esId, boolean idsOnly = false) {
     esService.refreshAllIndices()
     def resultsData = []

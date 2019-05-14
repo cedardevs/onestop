@@ -12,56 +12,58 @@ import static org.cedar.schemas.avro.psi.ValidDescriptor.*
 @Slf4j
 class InventoryManagerToOneStopUtil {
 
-  static Boolean validateMessage(String id, ParsedRecord messageMap) {
+  static Map validateMessage(String id, ParsedRecord messageMap) {
     def discovery = messageMap?.discovery
     def analysis = messageMap?.analysis
     def titles = analysis?.titles
     def identification = analysis?.identification
     def temporal = analysis?.temporalBounding
 
-    def failures = []
+    def failure = [title: 'Invalid record']
+    List<String> details = []
 
     // Validate record
     if (discovery == null) {
-      failures.add("Missing discovery metadata")
+      details << "Missing discovery metadata"
     }
     if (analysis == null) {
-      failures.add("Missing analysis")
+      details << "Missing analysis metadata"
     }
     if (titles == null) {
-      failures.add("Missing title analysis")
+      details << "Missing title analysis"
     }
     if (identification == null) {
-      failures.add("Missing identification analysis")
+      details << "Missing identification analysis"
     }
     if (temporal == null) {
-      failures.add("Missing temporal analysis")
+      details << "Missing temporal analysis"
     }
-    if (identification && !identification?.fileIdentifierExists) {
-      failures.add('Missing fileIdentifier')
+    if (identification && (!identification?.fileIdentifierExists && !identification?.doiExists)) {
+      details << "Missing identifier - record contains neither a fileIdentifier nor a DOI"
     }
     if (titles && !titles.titleExists) {
-      failures.add('Missing title')
+      details << "Missing title"
     }
     if (discovery && identification && discovery.hierarchyLevelName == 'granule' && !identification.parentIdentifierExists) {
-      failures.add('Mismatch between metadata type and identifiers detected')
+      details << "Mismatch between metadata type and identifiers detected"
     }
     if (temporal && temporal.beginDescriptor == INVALID) {
-      failures.add('Invalid beginDate')
+      details << "Invalid beginDate"
     }
     if (temporal && temporal.endDescriptor == INVALID) {
-      failures.add('Invalid endDate')
+      details << "Invalid endDate"
     }
     if (temporal && temporal.beginDescriptor != UNDEFINED && temporal.endDescriptor != UNDEFINED && temporal.instantDescriptor == INVALID) {
-      failures.add('Invalid instant-only date')
+      details << "Invalid instant-only date"
     }
-
-    if (failures) {
-      log.info("INVALID RECORD [ $id ]. VALIDATION FAILURES: [ ${failures.join(', ')} ]")
-      return false
+    if (details.size() > 0 ) {
+      log.info("INVALID RECORD [ $id ]. VALIDATION FAILURES:  $details ")
+      failure.detail = details.join(', ')
+      failure.valid = false
+      return failure
     }
     else {
-      return true
+      return [valid: true]
     }
   }
 

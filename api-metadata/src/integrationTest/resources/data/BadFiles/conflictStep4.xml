@@ -3,6 +3,9 @@
   <gmd:fileIdentifier>
     <gco:CharacterString>CONFLICT_TEST_FID_2</gco:CharacterString>
   </gmd:fileIdentifier>
+  <gmd:parentIdentifier>
+    <gco:CharacterString>gov.super.important:PARENT-ID</gco:CharacterString>
+  </gmd:parentIdentifier>
   <gmd:language>
     <gco:CharacterString>eng; USA</gco:CharacterString>
   </gmd:language>
