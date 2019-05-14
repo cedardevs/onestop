@@ -70,7 +70,7 @@ class MetadataManagementService {
    * @return
    */
 
-  public Map loadMetadata(String document) {
+  Map loadMetadata(String document) {
     List<String> documentArray = [document]
     def result = loadXMLdocuments(documentArray).data[0]
     if (result?.meta?.error) {
@@ -80,24 +80,14 @@ class MetadataManagementService {
     }
   }
 
-//  Map loadMetadata(String document) {
-//    List<String> documentArray = [document]
-//    Map result = loadXMLdocuments(documentArray).data[0]
-//    return aggregateResult(result)
-//  }
-//
-//  Map loadMultipartFiles(MultipartFile[] documents) {
-//    Map result = loadXMLdocuments(documents as List).data[0]
-//    return aggregateResult(result)
-//  }
-
-//  Map aggregateResult(Map result){
-//    if (result?.meta?.error) {
-//      return [errors: [result.meta.error]]
-//    } else {
-//      return [data: result]
-//    }
-//  }
+  Map loadMetadata(Object[] documents){
+    def result = loadXMLdocuments(documents as List).data[0]
+    if (result?.meta?.error) {
+      return [errors: [result.meta.error]]
+    } else {
+      return [data: result]
+    }
+  }
 
   Map loadXMLdocuments(List documents){
     List<Map<String, ?>> parsedRecords = []
@@ -205,18 +195,6 @@ class MetadataManagementService {
         log.info("Record with identifiers: ${result.meta}")
         log.info("Record with type: ${result.type}")
 
-        if(!fileId && !doi){ //do not allow records without a fileId or doi
-          //redundant for records from PSI because they go through InventoryManagerToOneStopUtil.validateMessage()
-          result.meta.error = [
-              status: HttpStatus.BAD_REQUEST.value(),
-              title : 'Unable to parse FileIdentifier or DOI from document; metadata not loaded.',
-              detail: "Please confirm the document contains valid identifiers."
-          ]
-          log.info("Failing record with neither a DOI nor fileIdentifier: ${result.meta}")
-          results.add(result)
-          return
-        }
-
         Map existingRecord = findMetadata(fileId, doi, true)
         List<String> existingIds = existingRecord.data*.id
 
@@ -233,10 +211,10 @@ class MetadataManagementService {
           results << result
           return
         }
+
         String esId = id ?: null
         if(existingIds?.size() == 1){ //this is an update
-          String existingId = existingIds[0]
-          esId = getUpdateId(existingId, id)
+          esId = getUpdateId(existingIds[0], id)
           log.info("Updating document with ID: $esId")
         }else{
           log.info("Creating new staging document")
