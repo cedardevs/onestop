@@ -17,11 +17,6 @@ import {
   Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
 */
 
-export const submitGranuleSearchNextPage = () => {
-  // note that this function does *not* make any changes to the URL - including push the user to the granule view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
-  return buildMoreResultsSearch()
-}
-
 const validRequestCheck = state => {
   const inFlight = state.search.granuleRequest.inFlight
   return !inFlight

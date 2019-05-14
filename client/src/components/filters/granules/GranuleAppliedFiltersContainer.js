@@ -35,9 +35,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     toggleFacet: (category, facetName, selected) =>
       dispatch(granuleToggleFacet(category, facetName, selected)),
     submit: () => {
-      dispatch(
-        submitGranuleSearch(ownProps.history, ownProps.match.params.id)
-      )
+      dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
     updateDateRange: (startDate, endDate) =>
       dispatch(granuleUpdateDateRange(startDate, endDate)),

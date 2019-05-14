@@ -9,10 +9,10 @@ import {
   collectionGetDetailError,
 } from './CollectionDetailStateActions'
 
-export const getCollection = collectionId => {
-  // TODO used only by initSearchActions???
+export const submitCollectionDetail = (history, collectionId) => {
   const prefetchHandler = dispatch => {
     dispatch(collectionGetDetailStart(collectionId))
+    dispatch(updateURLAndNavigateToCollectionDetailRoute(history, id))
   }
 
   const successHandler = (dispatch, payload) => {
@@ -35,7 +35,7 @@ export const getCollection = collectionId => {
   )
 }
 
-export const showDetails = (history, id) => {
+const updateURLAndNavigateToCollectionDetailRoute = (history, id) => {
   if (!id) {
     return
   }

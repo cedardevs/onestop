@@ -21,9 +21,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleNewGeometry: geoJSON => dispatch(granuleUpdateGeometry(geoJSON)),
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
     submit: () => {
-      dispatch(
-        submitGranuleSearch(ownProps.history, ownProps.match.params.id)
-      )
+      dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
   }
 }

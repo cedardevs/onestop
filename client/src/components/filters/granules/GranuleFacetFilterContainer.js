@@ -20,9 +20,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(granuleToggleFacet(category, facetName, selected))
     },
     submit: () => {
-      dispatch(
-        submitGranuleSearch(ownProps.history, ownProps.match.params.id)
-      )
+      dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
   }
 }

@@ -44,11 +44,12 @@ export const loadCollections = (history, newQueryString) => {
   }
 }
 
-export const loadDetails = path => {
+export const loadDetails = (history, path) => {
   return (dispatch, getState) => {
     if (!getState().search.collectionDetailRequest.inFlight) {
+      // TODO migrate this to inside the builder like with the search actions!
       const detailId = getCollectionIdFromDetailPath(path)
-      dispatch(getCollection(detailId))
+      dispatch(submitCollectionDetail(history, detailId))
     }
   }
 }

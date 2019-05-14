@@ -24,9 +24,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(granuleRemoveDateRange())
     },
     submit: () => {
-      dispatch(
-        submitGranuleSearch(ownProps.history, ownProps.match.params.id)
-      )
+      dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
   }
 }
