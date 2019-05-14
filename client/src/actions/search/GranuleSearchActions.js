@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {buildSearchAction} from '../fetch/SearchActions'
+import {buildSearchAction} from '../fetch/BuildAsyncActions'
 import {
   assembleGranuleSearchRequest,
   encodeQueryString,

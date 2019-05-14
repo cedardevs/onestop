@@ -2,17 +2,17 @@ import store from './store'
 import watch from 'redux-watch'
 import {isDetailPage, isGranuleListPage, isSitemap} from './utils/urlUtils'
 import {
-  getSitemap,
   initialize,
   loadCollections,
   loadDetails,
   loadGranulesList,
 } from './actions/InitActions'
+import {fetchSitemap} from './actions/fetch/FetchActions'
 import history from './history'
 
 const loadFromUrl = (path, newQueryString) => {
   if (isSitemap(path)) {
-    store.dispatch(getSitemap())
+    store.dispatch(fetchSitemap())
   }
   else if (isDetailPage(path)) {
     store.dispatch(loadDetails(path))

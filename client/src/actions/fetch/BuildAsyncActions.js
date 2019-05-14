@@ -19,7 +19,7 @@ export const buildSearchAction = (
 
     prefetchHandler(dispatch)
 
-    const body = bodyBuilder(getState()) // prefetchHandler may change state, particularly if pagination is involved
+    const body = bodyBuilder(getState()) // call getState again, since prefetchHandler may change state, particularly if pagination is involved
     if (!body) {
       // cannot or should not fetch TODO throw somethign to reset inFlight!!!
       return Promise.resolve()
@@ -85,29 +85,5 @@ export const buildGetAction = (
           .then(errorJson => errorHandler(dispatch, errorJson))
       )
       .catch(jsError => errorHandler(dispatch, jsError))
-  }
-}
-
-export const buildSitemapAction = () => {
-  // TODO this is less a builder than a fetchSitemap
-  return dispatch => {
-    const endpoint = apiPath() + '/sitemap.xml'
-    const fetchParams = {
-      method: 'GET',
-    }
-    return (
-      fetch(endpoint, fetchParams)
-        .then(response => checkForErrors(response))
-        // TODO: can we leverage dispatch here to use router like we are elsewhere instead of window.location.href?
-        .then(response => (window.location.href = response.url))
-    )
-  }
-}
-
-export const showHome = history => {
-  // TODO move this to ???
-  return dispatch => {
-    // dispatch(collectionUpdateFilters()) // TODO reset filter state, results, etc (if needed) - note though that these are cleared when a new search is triggered regardless, so it's probably not important
-    history.push('/')
   }
 }
