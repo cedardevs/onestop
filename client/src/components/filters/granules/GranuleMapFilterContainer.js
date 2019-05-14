@@ -4,9 +4,9 @@ import {
   granuleToggleExcludeGlobal,
   granuleUpdateGeometry,
   granuleRemoveGeometry,
-} from '../../../actions/search/GranuleFilterActions'
+} from '../../../actions/routing/GranuleSearchStateActions'
 import {toggleMap} from '../../../actions/LayoutActions'
-import {asyncNewGranuleSearch} from '../../../actions/search/GranuleSearchActions'
+import {asyncNewGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 import {withRouter} from 'react-router'
 

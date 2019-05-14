@@ -2,7 +2,7 @@ import Immutable from 'seamless-immutable'
 import {CLEAR_ERRORS, SET_ERRORS} from '../actions/ErrorActions'
 
 import {COLLECTION_SEARCH_ERROR} from '../actions/routing/CollectionSearchStateActions'
-import {GRANULE_SEARCH_ERROR} from '../actions/search/GranuleRequestActions'
+import {GRANULE_SEARCH_ERROR} from '../actions/routing/GranuleSearchStateActions'
 import {COLLECTION_GET_DETAIL_ERROR} from '../actions/routing/CollectionDetailStateActions'
 
 export const initialState = Immutable(new Set())

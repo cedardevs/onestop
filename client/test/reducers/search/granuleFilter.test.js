@@ -9,11 +9,11 @@ import {
   granuleRemoveGeometry,
   granuleToggleExcludeGlobal,
   GRANULE_TOGGLE_FACET,
-} from '../../../src/actions/search/GranuleFilterActions'
+} from '../../../src/actions/routing/GranuleSearchStateActions'
 import {
   granuleNewSearchRequested,
   granuleMoreResultsRequested,
-} from '../../../src/actions/search/GranuleRequestActions'
+} from '../../../src/actions/routing/GranuleSearchStateActions'
 
 describe('The granule filter reducer', function(){
   it('has a default state', function(){

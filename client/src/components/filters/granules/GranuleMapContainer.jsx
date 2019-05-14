@@ -3,8 +3,8 @@ import Map from '../spatial/Map'
 import {
   granuleUpdateGeometry,
   granuleRemoveGeometry,
-} from '../../../actions/search/GranuleFilterActions'
-import {asyncNewGranuleSearch} from '../../../actions/search/GranuleSearchActions'
+} from '../../../actions/routing/GranuleSearchStateActions'
+import {asyncNewGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 import {withRouter} from 'react-router'
 

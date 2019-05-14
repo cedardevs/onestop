@@ -1,7 +1,7 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import Detail from './Detail'
-import {asyncNewGranuleSearch} from '../../../actions/search/GranuleSearchActions'
+import {asyncNewGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
   const focusedItem = state.search.collectionDetailResult.collection

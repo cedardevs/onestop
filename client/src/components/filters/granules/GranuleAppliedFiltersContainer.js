@@ -5,8 +5,8 @@ import {
   granuleToggleFacet,
   granuleUpdateDateRange,
   granuleRemoveGeometry,
-} from '../../../actions/search/GranuleFilterActions'
-import {asyncNewGranuleSearch} from '../../../actions/search/GranuleSearchActions'
+} from '../../../actions/routing/GranuleSearchStateActions'
+import {asyncNewGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 import AppliedFilters from '../AppliedFilters'
 
 const mapStateToProps = state => {

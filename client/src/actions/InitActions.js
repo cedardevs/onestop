@@ -3,11 +3,11 @@ import {
   getCollectionIdFromDetailPath,
   getCollectionIdFromGranuleListPath,
 } from '../utils/urlUtils'
-import {granuleUpdateFilters} from './search/GranuleFilterActions'
+import {granuleUpdateFilters} from './routing/GranuleSearchStateActions'
 import {
   asyncNewGranuleSearch,
   showGranules,
-} from './search/GranuleSearchActions'
+} from './routing/GranuleSearchRouteActions'
 import {collectionUpdateFilters} from './routing/CollectionSearchStateActions'
 import {getCollection} from './routing/CollectionDetailRouteActions' // TODO rename that action to async.... as wells
 import {asyncNewCollectionSearch} from './routing/CollectionSearchRouteActions'

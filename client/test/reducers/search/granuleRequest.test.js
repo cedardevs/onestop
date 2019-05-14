@@ -9,7 +9,7 @@ import {
   granuleNewSearchResultsRecieved,
   granuleMoreResultsRecieved,
   granuleSearchError,
-} from '../../../src/actions/search/GranuleRequestActions'
+} from '../../../src/actions/routing/GranuleSearchStateActions'
 
 describe('The request reducer', function(){
   it('has a default state', function(){

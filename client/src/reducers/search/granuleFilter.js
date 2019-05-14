@@ -10,11 +10,9 @@ import {
   GRANULE_TOGGLE_FACET,
   // GRANULE_CLEAR_FACETS,
   GRANULE_TOGGLE_EXCLUDE_GLOBAL,
-} from '../../actions/search/GranuleFilterActions'
-import {
   GRANULE_NEW_SEARCH_REQUESTED,
   GRANULE_MORE_RESULTS_REQUESTED,
-} from '../../actions/search/GranuleRequestActions'
+} from '../../actions/routing/GranuleSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 
 export const initialState = Immutable({

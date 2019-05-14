@@ -5,7 +5,7 @@ import {
   GRANULE_NEW_SEARCH_RESULTS_RECIEVED,
   GRANULE_MORE_RESULTS_RECIEVED,
   GRANULE_SEARCH_ERROR,
-} from '../../actions/search/GranuleRequestActions'
+} from '../../actions/routing/GranuleSearchStateActions'
 
 export const initialState = Immutable({
   inFlight: false,

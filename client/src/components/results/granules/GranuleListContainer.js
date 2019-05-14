@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {granuleIncrementResultsOffset} from '../../../actions/search/GranuleRequestActions'
+import {granuleIncrementResultsOffset} from '../../../actions/routing/GranuleSearchStateActions'
 import {
   insertSelectedGranule,
   insertMultipleSelectedGranules,
@@ -15,7 +15,7 @@ import {
 import GranuleList from './GranuleList'
 
 import {withRouter} from 'react-router'
-import {asyncMoreGranuleResults} from '../../../actions/search/GranuleSearchActions'
+import {asyncMoreGranuleResults} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
   const {

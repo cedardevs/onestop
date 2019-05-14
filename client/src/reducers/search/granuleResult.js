@@ -1,12 +1,12 @@
 import Immutable from 'seamless-immutable'
 // import // GRANULE_CLEAR_FACETS,
 // // GRANULE_REMOVE_FILTERS,
-// '../../actions/search/GranuleFilterActions'
+// '../../actions/routing/GranuleSearchStateActions'
 import {
   GRANULE_NEW_SEARCH_RESULTS_RECIEVED,
   GRANULE_MORE_RESULTS_RECIEVED,
   GRANULE_SEARCH_ERROR,
-} from '../../actions/search/GranuleRequestActions'
+} from '../../actions/routing/GranuleSearchStateActions'
 
 export const initialState = Immutable({
   granules: {},
@@ -42,7 +42,7 @@ const moreResultsRecieved = (state, newGranules) => {
 
 export const granuleResult = (state = initialState, action) => {
   switch (action.type) {
-    // Result Effects from 'GranuleFilterActions'
+    // Result Effects from 'GranuleSearchStateActions'
     // case GRANULE_CLEAR_FACETS:
     //   return Immutable.set(state, 'facets', initialState.facets)
     //
