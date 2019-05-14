@@ -1,7 +1,7 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import NotFound from './NotFound'
-import {asyncNewCollectionSearch} from '../../actions/routing/CollectionSearchRouteActions'
+import {submitCollectionSearch} from '../../actions/routing/CollectionSearchRouteActions'
 import {collectionUpdateQueryText} from '../../actions/routing/CollectionSearchStateActions'
 
 const mapStateToProps = state => {
@@ -11,7 +11,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
-      dispatch(asyncNewCollectionSearch(ownProps.history))
+      dispatch(submitCollectionSearch(ownProps.history))
     },
     collectionUpdateQueryText: text => {
       dispatch(collectionUpdateQueryText(text))

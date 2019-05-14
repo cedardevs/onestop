@@ -1,7 +1,7 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 
-import {asyncMoreCollectionResults} from '../../../actions/routing/CollectionSearchRouteActions'
+import {submitCollectionSearchNextPage} from '../../../actions/routing/CollectionSearchRouteActions'
 import {showDetails} from '../../../actions/routing/CollectionDetailRouteActions'
 import Collections from './Collections'
 
@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(showDetails(ownProps.history, id))
     },
     fetchMoreResults: () => {
-      dispatch(asyncMoreCollectionResults())
+      dispatch(submitCollectionSearchNextPage())
     },
   }
 }

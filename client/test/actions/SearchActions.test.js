@@ -77,7 +77,7 @@ describe('The search action', () => {
 
     // trigger search
     await store.dispatch(
-      CollectionSearchActions.asyncNewCollectionSearch(mockHistory)
+      CollectionSearchActions.submitCollectionSearch(mockHistory)
     )
 
     const actualCollections = store.getState().search.collectionResult
@@ -113,7 +113,7 @@ describe('The search action', () => {
 
     // trigger search
     await store.dispatch(
-      CollectionSearchActions.asyncNewCollectionSearch(mockHistory)
+      CollectionSearchActions.submitCollectionSearch(mockHistory)
     )
 
     const actualCollections = store.getState().search.collectionResult
@@ -139,7 +139,7 @@ describe('The search action', () => {
 
     // trigger search
     await store.dispatch(
-      CollectionSearchActions.asyncNewCollectionSearch(mockHistory)
+      CollectionSearchActions.submitCollectionSearch(mockHistory)
     )
 
     const actualErrors = store.getState().errors
@@ -165,9 +165,7 @@ describe('The search action', () => {
     )
 
     // trigger search
-    store.dispatch(
-      CollectionSearchActions.asyncNewCollectionSearch(mockHistory)
-    )
+    store.dispatch(CollectionSearchActions.submitCollectionSearch(mockHistory))
 
     const actualCollections = store.getState().search.collectionResult
       .collections

@@ -10,7 +10,7 @@ import {
 } from './routing/GranuleSearchRouteActions'
 import {collectionUpdateFilters} from './routing/CollectionSearchStateActions'
 import {getCollection} from './routing/CollectionDetailRouteActions' // TODO rename that action to async.... as wells
-import {asyncNewCollectionSearch} from './routing/CollectionSearchRouteActions'
+import {submitCollectionSearch} from './routing/CollectionSearchRouteActions'
 import {fetchSitemap} from './fetch/FetchActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchCounts, fetchInfo} from './fetch/InfoActions'
@@ -39,7 +39,7 @@ export const loadCollections = (history, newQueryString) => {
     const searchFromState = _.get(getState(), 'search.collectionFilter')
     if (!_.isEqual(searchFromQuery, searchFromState)) {
       dispatch(collectionUpdateFilters(searchFromQuery))
-      dispatch(asyncNewCollectionSearch(history)) // this updates the URL and push to that page, but in this context we are already there and no changes will be made by that particular step
+      dispatch(submitCollectionSearch(history)) // this updates the URL and push to that page, but in this context we are already there and no changes will be made by that particular step
     }
   }
 }

@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {asyncMoreCollectionResults} from '../../../actions/routing/CollectionSearchRouteActions'
+import {submitCollectionSearchNextPage} from '../../../actions/routing/CollectionSearchRouteActions'
 import {showDetails} from '../../../actions/routing/CollectionDetailRouteActions'
 import CollectionGrid from './CollectionGrid' // TODO this doesn't even exist?
 
@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(showDetails(ownProps.history, id))
     },
     fetchMoreResults: () => {
-      dispatch(asyncMoreCollectionResults())
+      dispatch(submitCollectionSearchNextPage())
     },
   }
 }

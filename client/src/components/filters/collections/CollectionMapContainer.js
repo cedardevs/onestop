@@ -4,7 +4,7 @@ import {
   collectionUpdateGeometry,
   collectionRemoveGeometry,
 } from '../../../actions/routing/CollectionSearchStateActions'
-import {asyncNewCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
+import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 import {withRouter} from 'react-router'
 
@@ -21,7 +21,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleNewGeometry: geoJSON => dispatch(collectionUpdateGeometry(geoJSON)),
     removeGeometry: () => dispatch(collectionRemoveGeometry()),
     submit: () => {
-      dispatch(asyncNewCollectionSearch(ownProps.history))
+      dispatch(submitCollectionSearch(ownProps.history))
     },
   }
 }
