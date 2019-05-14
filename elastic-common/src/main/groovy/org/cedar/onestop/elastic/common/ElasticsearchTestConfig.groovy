@@ -29,25 +29,4 @@ class ElasticsearchTestConfig {
         RestClient restClient = container.restClient
         return restClient
     }
-
-//    @Bean(name = 'elasticsearchConfig')
-//    ElasticsearchConfig elasticsearchConfig() {
-//        return new ElasticsearchConfig(
-//                'search_collection',
-//                'staging_collection',
-//                'search_granule',
-//                'staging_granule',
-//                'search_flattened_granule',
-//                'sitemap',
-//                'prefix-',
-//                'collection_pipeline',
-//                'granule_pipeline',
-//                'doc',
-//                10,
-//                null,
-//                2,
-//                5
-//        )
-//    }
-
 }

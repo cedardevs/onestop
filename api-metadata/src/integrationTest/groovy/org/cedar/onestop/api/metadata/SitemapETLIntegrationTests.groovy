@@ -1,12 +1,9 @@
 package org.cedar.onestop.api.metadata
 
-import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityConfig
-import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled
 import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.service.SitemapETLService
-import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
@@ -17,19 +14,18 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 import spock.lang.Unroll
-import static org.cedar.onestop.elastic.common.DocumentUtil.*
 
+import static org.cedar.onestop.elastic.common.DocumentUtil.*
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @ActiveProfiles(["integration", "sitemap"])
 @SpringBootTest(
         classes = [
-                Application,
-                ElasticsearchConfig,
-                ElasticsearchTestConfig,
-                SpringSecurityDisabled,
-                SpringSecurityConfig,
-                IdentityProviderConfig
+            Application,
+
+            // provides:
+            // - `RestClient` 'restClient' bean via test containers
+            ElasticsearchTestConfig,
         ],
         webEnvironment = RANDOM_PORT
 )
@@ -63,8 +59,8 @@ class SitemapETLIntegrationTests extends Specification {
 
   def 'updating sitemap with collections'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/DEM/1.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/DEM/1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -92,13 +88,13 @@ class SitemapETLIntegrationTests extends Specification {
 
   def 'sitemap with multiple submaps'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/DEM/1.xml')
-    insertMetadataFromPath('data/DEM/2.xml')
-    insertMetadataFromPath('data/DEM/3.xml')
-    insertMetadataFromPath('data/GHRSST/1.xml')
-    insertMetadataFromPath('data/GHRSST/2.xml')
-    insertMetadataFromPath('data/GHRSST/3.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/DEM/1.xml')
+    insertMetadataFromPath('test/data/DEM/2.xml')
+    insertMetadataFromPath('test/data/DEM/3.xml')
+    insertMetadataFromPath('test/data/GHRSST/1.xml')
+    insertMetadataFromPath('test/data/GHRSST/2.xml')
+    insertMetadataFromPath('test/data/GHRSST/3.xml')
 
     when:
     etlService.updateSearchIndices()

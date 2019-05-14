@@ -1,10 +1,6 @@
 package org.cedar.onestop.api.metadata
 
-import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityConfig
-import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
-import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
-import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,12 +23,11 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles(["integration"])
 @SpringBootTest(
         classes = [
-                Application,
-                ElasticsearchConfig,
-                ElasticsearchTestConfig,
-                SpringSecurityDisabled,
-                SpringSecurityConfig,
-                IdentityProviderConfig
+            Application,
+
+            // provides:
+            // - `RestClient` 'restClient' bean via test containers
+            ElasticsearchTestConfig,
         ],
         webEnvironment = RANDOM_PORT
 )
@@ -63,8 +58,8 @@ class LoadIntegrationTests extends Specification {
   @Autowired
   ElasticsearchService elasticsearchService
 
-  private collectionPath = "data/COOPS/C1.xml"
-  private granulePath = "data/COOPS/G1.xml"
+  private collectionPath = "test/data/COOPS/C1.xml"
+  private granulePath = "test/data/COOPS/G1.xml"
 
   RestTemplate restTemplate
   String metadataURI

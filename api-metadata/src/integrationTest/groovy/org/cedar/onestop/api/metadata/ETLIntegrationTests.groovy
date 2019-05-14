@@ -1,12 +1,9 @@
 package org.cedar.onestop.api.metadata
 
 import groovy.util.logging.Slf4j
-import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityConfig
-import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled
 import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
-import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.Version
@@ -23,15 +20,14 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @ActiveProfiles(["integration"])
 @SpringBootTest(
-        classes = [
-                Application,
-                ElasticsearchConfig,
-                ElasticsearchTestConfig,
-                SpringSecurityDisabled,
-                SpringSecurityConfig,
-                IdentityProviderConfig
-        ],
-        webEnvironment = RANDOM_PORT
+    classes = [
+        Application,
+
+        // provides:
+        // - `RestClient` 'restClient' bean via test containers
+        ElasticsearchTestConfig,
+    ],
+    webEnvironment = RANDOM_PORT
 )
 @Unroll
 @Slf4j
@@ -59,13 +55,12 @@ class ETLIntegrationTests extends Specification {
     this.etlService = etlService
 
     // the "Script compilation circuit breaker" limits the number of inline script compilations within a period of time
-    if(elasticsearchService.version.onOrAfter(Version.V_6_0_0)) {
+    if (elasticsearchService.version.onOrAfter(Version.V_6_0_0)) {
       // 'max_compilation_rate' (default: 75/5m, meaning 75 every 5 minutes)
       // https://www.elastic.co/guide/en/elasticsearch/reference/6.7/circuit-breaker.html#script-compilation-circuit-breaker
       log.info("Using \'script.max_compilation_rate\' because Elasticsearch version is >= 6.0")
       elasticsearchService.performRequest("PUT", "_cluster/settings", ['transient': ['script.max_compilations_rate': '200/1m']])
-    }
-    else {
+    } else {
       // 'max_compilations_per_minute' (default: 15)
       // deprecation warning in 5.6.0 to be replaced in 6.0 with 'max_compilations_rate'
       // https://www.elastic.co/guide/en/elasticsearch/reference/5.6/circuit-breaker.html#script-compilation-circuit-breaker
@@ -85,12 +80,14 @@ class ETLIntegrationTests extends Specification {
     noExceptionThrown()
 
     and:
-    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({it.size() == 0})
+    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
+      it.size() == 0
+    })
   }
 
   def 'updating a new collection indexes only a collection'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -108,7 +105,7 @@ class ETLIntegrationTests extends Specification {
 
   def 'updating an orphan granule indexes nothing'() {
     setup:
-    insertMetadataFromPath('data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/COOPS/G1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -121,8 +118,8 @@ class ETLIntegrationTests extends Specification {
 
   def 'updating a collection and granule indexes a collection, a granule, and a flattened granule'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/COOPS/G1.xml')
 
     when:
     etlService.updateSearchIndices() // runs the ETLs
@@ -132,14 +129,14 @@ class ETLIntegrationTests extends Specification {
     def flatGranuleVersions = indexedFlatGranuleVersions().keySet()
 
     then:
-    collectionVersions  == ['gov.noaa.nodc:NDBC-COOPS'] as Set
-    granuleVersions     == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
+    collectionVersions == ['gov.noaa.nodc:NDBC-COOPS'] as Set
+    granuleVersions == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
     flatGranuleVersions == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
   }
 
   def 'updating twice does nothing the second time'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -156,13 +153,13 @@ class ETLIntegrationTests extends Specification {
 
   def 'touching a granule and updating reindexes only that granule'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/COOPS/G1.xml')
-    insertMetadataFromPath('data/COOPS/G2.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/COOPS/G2.xml')
     etlService.updateSearchIndices()
 
     when: 'touch one of the granules'
-    insertMetadataFromPath('data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/COOPS/G1.xml')
     etlService.updateSearchIndices()
 
     then: 'only that granule is reindexed'
@@ -175,14 +172,14 @@ class ETLIntegrationTests extends Specification {
 
   def 'touching a collection and updating reindexes only that collection but re-flattens all granules'() {
     setup:
-    insertMetadataFromPath('data/GHRSST/1.xml')
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/COOPS/G1.xml')
-    insertMetadataFromPath('data/COOPS/G2.xml')
+    insertMetadataFromPath('test/data/GHRSST/1.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/COOPS/G2.xml')
     etlService.updateSearchIndices()
 
     when: 'Touch the collection'
-    insertMetadataFromPath('data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
     etlService.updateSearchIndices()
 
     then: 'Only the collection is reindexed, not the granules'
@@ -207,24 +204,28 @@ class ETLIntegrationTests extends Specification {
     noExceptionThrown()
 
     and:
-    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({it.size() == 0})
+    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
+      it.size() == 0
+    })
   }
 
   def 'rebuilding with an orphan granule indexes nothing'() {
     setup:
-    insertMetadataFromPath('data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/COOPS/G1.xml')
 
     when:
     etlService.rebuildSearchIndices()
 
     then:
-    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({it.size() == 0})
+    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
+      it.size() == 0
+    })
   }
 
   def 'rebuilding with a collection and granule indexes a collection, a granule, and a flattened granule'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/COOPS/G1.xml')
 
     when:
     etlService.rebuildSearchIndices()
@@ -270,14 +271,14 @@ class ETLIntegrationTests extends Specification {
 
   def 'rebuilding with an updated collection builds a whole new index'() {
     setup:
-    insertMetadataFromPath('data/GHRSST/1.xml')
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/COOPS/G1.xml')
-    insertMetadataFromPath('data/COOPS/G2.xml')
+    insertMetadataFromPath('test/data/GHRSST/1.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/COOPS/G2.xml')
     etlService.rebuildSearchIndices()
 
     when: 'touch the collection'
-    insertMetadataFromPath('data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/COOPS/C1.xml')
     etlService.rebuildSearchIndices()
     def indexed = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
     List<Map> indexedCollections = indexed[esConfig.TYPE_COLLECTION] as List<Map>
@@ -286,11 +287,11 @@ class ETLIntegrationTests extends Specification {
 
     then: 'everything has a fresh version in a new index'
     indexedCollections.size() == 2
-    indexedCollections.every({it._version == 1})
+    indexedCollections.every({ it._version == 1 })
     indexedGranules.size() == 2
-    indexedGranules.every({it._version == 1})
+    indexedGranules.every({ it._version == 1 })
     indexedFlatGranules.size() == 2
-    indexedFlatGranules.every({it._version == 1})
+    indexedFlatGranules.every({ it._version == 1 })
   }
 
 
@@ -319,11 +320,13 @@ class ETLIntegrationTests extends Specification {
 
   private Map documentsByType(String collectionIndex, String granuleIndex, String flatGranuleIndex = null) {
     elasticsearchService.refresh(collectionIndex, granuleIndex)
-    if(flatGranuleIndex) { elasticsearchService.refresh(flatGranuleIndex) }
+    if (flatGranuleIndex) {
+      elasticsearchService.refresh(flatGranuleIndex)
+    }
     def endpoint = "$collectionIndex,$granuleIndex${flatGranuleIndex ? ",$flatGranuleIndex" : ''}/_search"
     def request = [version: true]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
-    return getDocuments(response).groupBy({esConfig.typeFromIndex(getIndex(it))})
+    return getDocuments(response).groupBy({ esConfig.typeFromIndex(getIndex(it)) })
   }
 
   private Map<String, Integer> indexedDocumentVersions(String alias) {

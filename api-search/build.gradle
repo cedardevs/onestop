@@ -1,6 +1,6 @@
 plugins {
   // https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
-  id "io.forgo.keystoreplugin" version "1.0"
+  id "io.forgo.keystoreplugin" version "1.1"
   id 'war'
   id 'groovy'
   id 'org.springframework.boot' // version declared in top-level buildscript

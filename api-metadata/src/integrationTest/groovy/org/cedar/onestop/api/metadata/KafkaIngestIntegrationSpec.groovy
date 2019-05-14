@@ -9,7 +9,6 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
-import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.util.AvroUtils
@@ -39,10 +38,12 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles(["integration", "kafka-ingest"])
 @SpringBootTest(
         classes = [
-                Application,
-                ElasticsearchConfig,
-                ElasticsearchTestConfig,
-                KafkaConsumerConfig
+            Application,
+            KafkaConsumerConfig,
+
+            // provides:
+            // - `RestClient` 'restClient' bean via test containers
+            ElasticsearchTestConfig,
         ],
         webEnvironment = RANDOM_PORT
 )
@@ -79,7 +80,7 @@ class KafkaIngestIntegrationSpec extends Specification {
   @Autowired
   MetadataManagementService metadataManagementService
 
-  String collectionPath = "data/COOPS/C1.xml"
+  String collectionPath = "test/data/COOPS/C1.xml"
 
   RestTemplate restTemplate
   String baseUrl
