@@ -9,7 +9,7 @@ import {
   showGranules,
 } from './routing/GranuleSearchRouteActions'
 import {collectionUpdateFilters} from './routing/CollectionSearchStateActions'
-import {getCollection} from './routing/CollectionDetailRouteActions' // TODO rename that action to async.... as wells
+import {submitCollectionDetail} from './routing/CollectionDetailRouteActions'
 import {submitCollectionSearch} from './routing/CollectionSearchRouteActions'
 import {fetchSitemap} from './fetch/FetchActions'
 import {fetchConfig} from './ConfigActions'
@@ -46,11 +46,8 @@ export const loadCollections = (history, newQueryString) => {
 
 export const loadDetails = (history, path) => {
   return (dispatch, getState) => {
-    if (!getState().search.collectionDetailRequest.inFlight) {
-      // TODO migrate this to inside the builder like with the search actions!
-      const detailId = getCollectionIdFromDetailPath(path)
-      dispatch(submitCollectionDetail(history, detailId))
-    }
+    const detailId = getCollectionIdFromDetailPath(path)
+    dispatch(submitCollectionDetail(history, detailId))
   }
 }
 

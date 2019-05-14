@@ -2,8 +2,6 @@ import 'isomorphic-fetch'
 import {apiPath} from '../../utils/urlUtils'
 import {checkForErrors} from '../../utils/responseUtils'
 
-// TODO rename this file to FetchHelper or something?
-
 export const buildSearchAction = (
   endpointName,
   validRequestCheck,
@@ -58,14 +56,18 @@ export const buildSearchAction = (
 }
 
 export const buildGetAction = (
-  // TODO add Async to the name here?
   endpointName,
   id,
+  validRequestCheck,
   prefetchHandler,
   successHandler,
   errorHandler
 ) => {
-  return dispatch => {
+  return (dispatch, getState) => {
+    if (!validRequestCheck(getState())) {
+      return Promise.resolve()
+    }
+
     prefetchHandler(dispatch)
     const endpoint = apiPath() + '/' + endpointName + '/' + id
     const fetchParams = {

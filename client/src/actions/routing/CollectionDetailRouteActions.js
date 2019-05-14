@@ -10,9 +10,14 @@ import {
 } from './CollectionDetailStateActions'
 
 export const submitCollectionDetail = (history, collectionId) => {
+  const validRequestCheck = state => {
+    const inFlight = state.search.collectionDetailRequest.inFlight
+    return !inFlight
+  }
+
   const prefetchHandler = dispatch => {
     dispatch(collectionGetDetailStart(collectionId))
-    dispatch(updateURLAndNavigateToCollectionDetailRoute(history, id))
+    dispatch(updateURLAndNavigateToCollectionDetailRoute(history, collectionId))
   }
 
   const successHandler = (dispatch, payload) => {
@@ -29,6 +34,7 @@ export const submitCollectionDetail = (history, collectionId) => {
   return buildGetAction(
     'collection',
     collectionId,
+    validRequestCheck,
     prefetchHandler,
     successHandler,
     errorHandler
