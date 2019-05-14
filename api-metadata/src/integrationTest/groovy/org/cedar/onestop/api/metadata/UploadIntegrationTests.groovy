@@ -18,7 +18,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.ModelAndView
-import spock.lang.Ignore
 
 @ActiveProfiles(["integration", "manual-upload"])
 class UploadIntegrationTests extends IntegrationTest {
@@ -74,7 +73,6 @@ class UploadIntegrationTests extends IntegrationTest {
         elasticsearchService.ensurePipelines()
     }
 
-    @Ignore
     def 'upload multi part form data results in redirect'() {
         when:
         def multiRequest = buildMultiLoadRequest(collectionPath, granulePath)
