@@ -4,19 +4,13 @@ import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.cedar.schemas.avro.psi.ParsedRecord
-import org.cedar.schemas.parse.ISOParser
-import org.cedar.schemas.avro.psi.Discovery
-import org.cedar.schemas.avro.psi.Analysis
-import org.cedar.schemas.avro.util.AvroUtils
-import org.cedar.schemas.avro.psi.RecordType
-import org.cedar.schemas.analyze.Analyzers
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import org.xml.sax.SAXException
+
 
 @Slf4j
 @Service
@@ -106,11 +100,12 @@ class MetadataManagementService {
               filename: fileName,
           ]
       ]
-      Map parseResult = xmlToParsedRecord(xml)
+      log.info("Loading XML document $fileName")
+      Map parseResult = InventoryManagerToOneStopUtil.xmlToParsedRecord(xml)
       if(parseResult?.parsedRecord){
         Map validationResult = InventoryManagerToOneStopUtil.validateMessage(fileName, parseResult.parsedRecord)
         if(!validationResult?.title){
-          log.info("Validation success: $fileName is valid")
+          log.debug("Validation success: $fileName is valid")
           parsedRecords << [filename:fileName, parsedRecord: parseResult.parsedRecord as ParsedRecord]
         }else{
           log.warn("Validation failed: $fileName is invalid. Cause: ${validationResult.details} ")
@@ -122,43 +117,11 @@ class MetadataManagementService {
         String title = "${parseResult?.error?.title ?: 'Parse error'}"
         String parseErrorDetails = "${parseResult?.error?.detail ?: "Unable to generate a ParsedRecord from xml "}"
         result.meta = [error: [title: title, detail: parseErrorDetails, status: HttpStatus.BAD_REQUEST.value()]]
-        log.info(parseErrorDetails)
+        log.warn(parseErrorDetails)
         results << result
       }
     }
     return [data: results + loadParsedRecords(parsedRecords).data]
-  }
-
-  Map xmlToParsedRecord(String xmlDoc){
-    Map result = [:]
-    def parsedRecordBuilder = ParsedRecord.newBuilder()
-    try {
-      Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(xmlDoc)
-      log.info("Analyzing record: $discovery")
-      Analysis analysis = Analyzers.analyze(discovery)
-      Map source = AvroUtils.avroToMap(discovery, true)
-      RecordType type = source.parentIdentifier ? RecordType.granule : RecordType.collection
-      parsedRecordBuilder.setType(type)
-      parsedRecordBuilder.setDiscovery(discovery)
-      parsedRecordBuilder.setAnalysis(analysis)
-      ParsedRecord parsedRecord = parsedRecordBuilder.build()
-      result.parsedRecord = parsedRecord
-    }
-    catch (SAXException e) {
-      result.error = [
-          status: HttpStatus.BAD_REQUEST.value(),
-          title : 'Load request failed due to malformed XML.',
-          detail: ExceptionUtils.getRootCauseMessage(e)
-      ]
-    }
-    catch (Exception e) {
-      result.error = [
-          status: HttpStatus.BAD_REQUEST.value(),
-          title : 'Load request failed due to malformed data.',
-          detail: ExceptionUtils.getRootCauseMessage(e)
-      ]
-    }
-    return result
   }
 
   Map loadParsedRecords(List<Map<String, ?>> parsedRecords){
@@ -172,42 +135,44 @@ class MetadataManagementService {
     parsedRecords.eachWithIndex { record, i ->
       String id = record?.id ?: null
       String filename = record?.filename ?: null
-      log.info("Processing record with id: $id, filename: $filename")
       ParsedRecord avroRecord = record.parsedRecord
 
       try {
+        log.debug("Reformating record for search with [id: $id, filename: $filename]")
         Map source = InventoryManagerToOneStopUtil.reformatMessageForSearch(avroRecord)
         String type = source.parentIdentifier ? 'granule' : 'collection'
         String fileId = source.fileIdentifier as String
         String doi = source.doi as String
 
         Map result = [
-            type      : type,
-            attributes: source,
-            meta      : [
-                id : id,
-                filename: filename,
-                fileId: fileId,
-                doi: doi
-            ]
+          type      : type,
+          attributes: source,
+          meta      : [
+              id : id,
+              filename: filename,
+              fileId: fileId,
+              doi: doi
+          ]
         ]
 
-        log.info("Record with identifiers: ${result.meta}")
-        log.info("Record with type: ${result.type}")
+        log.info("Loading ${result.type} record with identifiers: ${result.meta}")
 
         Map existingRecord = findMetadata(fileId, doi, true)
         List<String> existingIds = existingRecord.data*.id
 
-        log.info("Records with matching identifiers: ${existingIds}")
+        log.debug("Records with matching identifiers: ${existingIds}")
 
         if (existingIds?.size() > 1) { //if we matched more than one file, there is a conflict
-            result.meta.error = [
-                status: HttpStatus.CONFLICT.value(),
-                title : 'Ambiguous metadata records in existence; metadata not loaded.',
-                detail: "The identifiers in this document match more than one existing document. " +
-                    "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
-                    "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
-            ]
+          String title = 'Ambiguous metadata records in existence; metadata not loaded.'
+          String detail = "The identifiers in this document match more than one existing document. " +
+              "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
+              "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
+          log.warn("Failed to load $type due to conflict with identifiers: ${result.meta}")
+          result.meta.error = [
+              status: HttpStatus.CONFLICT.value(),
+              title : title,
+              detail: detail
+          ]
           results << result
           return
         }
@@ -215,7 +180,7 @@ class MetadataManagementService {
         String esId = id ?: null
         if(existingIds?.size() == 1){ //this is an update
           esId = getUpdateId(existingIds[0], id)
-          log.info("Updating document with ID: $esId")
+          log.info("Updating ${type} document with ID: $esId")
         }else{
           log.info("Creating new staging document")
         }
@@ -265,10 +230,13 @@ class MetadataManagementService {
   String getUpdateId(String existingId, String incomingId){
     String esId = null
     if(MIGRATION_MODE){
+      log.info("Migration mode is active")
       if(incomingId){ // Only records from PSI have id set, this is a re-key
         if(incomingId != existingId){//re-key only once
+          log.info("Re-keying record from $existingId to $incomingId")
           deleteMetadata(existingId, true)
-        }else{esId = incomingId} //update this record from PSI
+        }
+        esId = incomingId //update this record from PSI
       }else{ //normal update via web API
         esId = existingId
       }

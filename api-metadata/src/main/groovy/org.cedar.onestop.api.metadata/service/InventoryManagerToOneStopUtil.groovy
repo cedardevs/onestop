@@ -1,9 +1,13 @@
 package org.cedar.onestop.api.metadata.service
 
 import groovy.util.logging.Slf4j
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.commons.text.WordUtils
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
+import org.cedar.schemas.analyze.Analyzers
+import org.cedar.schemas.parse.ISOParser
+import org.xml.sax.SAXException
 
 import java.time.temporal.ChronoUnit
 
@@ -65,6 +69,37 @@ class InventoryManagerToOneStopUtil {
     else {
       return [valid: true]
     }
+  }
+
+  static Map xmlToParsedRecord(String xmlDoc){
+    Map result = [:]
+    def parsedRecordBuilder = ParsedRecord.newBuilder()
+    try {
+      log.debug('Parsing XML for discovery metadata')
+      Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(xmlDoc)
+      log.debug('Analyzing discovery metadata')
+      Analysis analysis = Analyzers.analyze(discovery)
+      Map source = AvroUtils.avroToMap(discovery, true)
+      RecordType type = source.parentIdentifier ? RecordType.granule : RecordType.collection
+      parsedRecordBuilder.setType(type)
+      parsedRecordBuilder.setDiscovery(discovery)
+      parsedRecordBuilder.setAnalysis(analysis)
+      ParsedRecord parsedRecord = parsedRecordBuilder.build()
+      result.parsedRecord = parsedRecord
+    }
+    catch (SAXException e) {
+      result.error = [
+          title : 'Load request failed due to malformed XML.',
+          detail: ExceptionUtils.getRootCauseMessage(e)
+      ]
+    }
+    catch (Exception e) {
+      result.error = [
+          title : 'Load request failed due to malformed data.',
+          detail: ExceptionUtils.getRootCauseMessage(e)
+      ]
+    }
+    return result
   }
 
   static Map reformatMessageForSearch(ParsedRecord record) {
