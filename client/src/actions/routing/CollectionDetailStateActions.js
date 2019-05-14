@@ -1,5 +1,6 @@
 export const COLLECTION_GET_DETAIL_START = 'COLLECTION_GET_DETAIL_START'
-export const collectionGetDetailStart = id => ({ // TODO rename these to be consistent with Search State Actions!
+export const collectionGetDetailStart = id => ({
+  // TODO rename these to be consistent with Search State Actions!
   type: COLLECTION_GET_DETAIL_START,
   id: id,
 })

@@ -1,7 +1,6 @@
 import 'isomorphic-fetch'
 import {apiPath} from '../../utils/urlUtils'
 
-
 export const fetchSitemap = () => {
   return dispatch => {
     const endpoint = apiPath() + '/sitemap.xml'
