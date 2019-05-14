@@ -11,7 +11,7 @@ import {
 import {collectionUpdateFilters} from './routing/CollectionSearchStateActions'
 import {getCollection} from './routing/CollectionDetailRouteActions' // TODO rename that action to async.... as wells
 import {asyncNewCollectionSearch} from './routing/CollectionSearchRouteActions'
-import {buildSitemapAction} from './fetch/SearchActions'
+import {fetchSitemap} from './fetch/FetchActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchCounts, fetchInfo} from './fetch/InfoActions'
 
@@ -62,5 +62,5 @@ export const initialize = () => {
 }
 
 export const getSitemap = () => {
-  return buildSitemapAction()
+  return fetchSitemap()
 }

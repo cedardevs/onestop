@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import Header from './Header'
-import {showHome} from '../../actions/NavigationActions'
+import {showHome} from '../../actions//routing/HomeRouteActions'
 import {withRouter} from 'react-router'
 import {logoutUser} from '../../actions/UserActions'
 import {FEATURE_CART} from '../../utils/featureUtils'

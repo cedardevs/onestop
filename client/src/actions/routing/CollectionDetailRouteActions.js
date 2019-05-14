@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {buildGetAction} from '../fetch/BuildAsyncActions'
+import {buildGetAction} from './AsyncHelpers'
 import {showErrors} from '../ErrorActions'
 
 import {encodeQueryString} from '../../utils/queryUtils'
