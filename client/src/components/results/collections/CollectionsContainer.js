@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 
 import {asyncMoreCollectionResults} from '../../../actions/search/CollectionSearchActions'
-import {showDetails} from '../../../actions/get/CollectionGetDetailActions'
+import {showDetails} from '../../../actions/routing/CollectionDetailRouteActions'
 import Collections from './Collections'
 
 const mapStateToProps = state => {

@@ -3,7 +3,7 @@ import {CLEAR_ERRORS, SET_ERRORS} from '../actions/ErrorActions'
 
 import {COLLECTION_SEARCH_ERROR} from '../actions/search/CollectionRequestActions'
 import {GRANULE_SEARCH_ERROR} from '../actions/search/GranuleRequestActions'
-import {COLLECTION_GET_DETAIL_ERROR} from '../actions/get/CollectionDetailRequestActions'
+import {COLLECTION_GET_DETAIL_ERROR} from '../actions/routing/CollectionDetailStateActions'
 
 export const initialState = Immutable(new Set())
 

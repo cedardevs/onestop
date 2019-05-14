@@ -2,7 +2,7 @@ import Immutable from 'seamless-immutable'
 import {
   COLLECTION_GET_DETAIL_COMPLETE,
   COLLECTION_GET_DETAIL_ERROR,
-} from '../../actions/get/CollectionDetailRequestActions'
+} from '../../actions/routing/CollectionDetailStateActions'
 
 export const initialState = Immutable({
   collection: null,

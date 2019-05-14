@@ -7,7 +7,7 @@ import {
   collectionGetDetailStart,
   collectionGetDetailComplete,
   collectionGetDetailError,
-} from '../../../src/actions/get/CollectionDetailRequestActions'
+} from '../../../src/actions/routing/CollectionDetailStateActions'
 
 describe('The collection detail request reducer', function(){
   it('has a default state', function(){

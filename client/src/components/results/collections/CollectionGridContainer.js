@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import {asyncMoreCollectionResults} from '../../../actions/search/CollectionSearchActions'
-import {showDetails} from '../../../actions/get/CollectionGetDetailActions'
+import {showDetails} from '../../../actions/routing/CollectionDetailRouteActions'
 import CollectionGrid from './CollectionGrid' // TODO this doesn't even exist?
 
 import {withRouter} from 'react-router'

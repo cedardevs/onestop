@@ -3,7 +3,7 @@ import {
   COLLECTION_GET_DETAIL_START,
   COLLECTION_GET_DETAIL_COMPLETE,
   COLLECTION_GET_DETAIL_ERROR,
-} from '../../actions/get/CollectionDetailRequestActions'
+} from '../../actions/routing/CollectionDetailStateActions'
 
 export const initialState = Immutable({
   inFlight: false,

@@ -9,7 +9,7 @@ import {
   showGranules,
 } from './search/GranuleSearchActions'
 import {collectionUpdateFilters} from './search/CollectionFilterActions'
-import {getCollection} from './get/CollectionGetDetailActions' // TODO rename that action to async.... as wells
+import {getCollection} from './routing/CollectionDetailRouteActions' // TODO rename that action to async.... as wells
 import {asyncNewCollectionSearch} from './search/CollectionSearchActions'
 import {buildSitemapAction} from './fetch/SearchActions'
 import {fetchConfig} from './ConfigActions'
