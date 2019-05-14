@@ -6,7 +6,7 @@ import {
   granuleUpdateDateRange,
   granuleRemoveGeometry,
 } from '../../../actions/routing/GranuleSearchStateActions'
-import {asyncNewGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
+import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 import AppliedFilters from '../AppliedFilters'
 
 const mapStateToProps = state => {
@@ -36,7 +36,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(granuleToggleFacet(category, facetName, selected)),
     submit: () => {
       dispatch(
-        asyncNewGranuleSearch(ownProps.history, ownProps.match.params.id)
+        submitGranuleSearch(ownProps.history, ownProps.match.params.id)
       )
     },
     updateDateRange: (startDate, endDate) =>

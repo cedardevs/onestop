@@ -5,7 +5,7 @@ import {
   granuleRemoveDateRange,
   granuleUpdateDateRange,
 } from '../../../actions/routing/GranuleSearchStateActions'
-import {asyncNewGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
+import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
   const {startDateTime, endDateTime} = state.search.granuleFilter
@@ -25,7 +25,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     submit: () => {
       dispatch(
-        asyncNewGranuleSearch(ownProps.history, ownProps.match.params.id)
+        submitGranuleSearch(ownProps.history, ownProps.match.params.id)
       )
     },
   }

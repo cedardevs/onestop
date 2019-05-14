@@ -15,7 +15,7 @@ import {
 import GranuleList from './GranuleList'
 
 import {withRouter} from 'react-router'
-import {asyncMoreGranuleResults} from '../../../actions/routing/GranuleSearchRouteActions'
+import {submitGranuleSearchNextPage} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
   const {
@@ -38,7 +38,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     fetchMoreResults: () => {
-      dispatch(asyncMoreGranuleResults())
+      dispatch(submitGranuleSearchNextPage())
     },
     selectGranule: (item, itemId) => {
       insertGranule(itemId, item)

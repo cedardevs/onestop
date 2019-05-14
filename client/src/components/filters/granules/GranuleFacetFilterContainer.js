@@ -3,7 +3,7 @@ import {withRouter} from 'react-router'
 import FacetFilter from '../facet/FacetFilter'
 import {granuleToggleFacet} from '../../../actions/routing/GranuleSearchStateActions'
 import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
-import {asyncNewGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
+import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
   return {
@@ -21,7 +21,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     submit: () => {
       dispatch(
-        asyncNewGranuleSearch(ownProps.history, ownProps.match.params.id)
+        submitGranuleSearch(ownProps.history, ownProps.match.params.id)
       )
     },
   }

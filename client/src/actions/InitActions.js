@@ -5,7 +5,7 @@ import {
 } from '../utils/urlUtils'
 import {granuleUpdateFilters} from './routing/GranuleSearchStateActions'
 import {
-  asyncNewGranuleSearch,
+  submitGranuleSearch,
   showGranules,
 } from './routing/GranuleSearchRouteActions'
 import {collectionUpdateFilters} from './routing/CollectionSearchStateActions'
@@ -25,7 +25,7 @@ export const loadGranulesList = (history, path, newQueryString) => {
     if (!_.isEqual(searchFromQuery, searchFromState)) {
       const detailId = getCollectionIdFromGranuleListPath(path)
       dispatch(granuleUpdateFilters(searchFromQuery))
-      dispatch(asyncNewGranuleSearch(history, detailId)) // this updates the URL and push to that page, but in this context we are already there and no changes will be made by that particular step
+      dispatch(submitGranuleSearch(history, detailId)) // this updates the URL and push to that page, but in this context we are already there and no changes will be made by that particular step
     }
   }
 }

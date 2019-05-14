@@ -6,7 +6,7 @@ import {
   granuleRemoveGeometry,
 } from '../../../actions/routing/GranuleSearchStateActions'
 import {toggleMap} from '../../../actions/LayoutActions'
-import {asyncNewGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
+import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 import {withRouter} from 'react-router'
 
@@ -25,7 +25,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     submit: () => {
       dispatch(
-        asyncNewGranuleSearch(ownProps.history, ownProps.match.params.id)
+        submitGranuleSearch(ownProps.history, ownProps.match.params.id)
       )
     },
     toggleMap: () => {

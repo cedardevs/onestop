@@ -17,11 +17,7 @@ import {
   Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
 */
 
-export const asyncNewGranuleSearch = (history, id) => {
-  // TODO rename to indicate that it updates the URL as well? - this is *not* just a background request - make a new action if we need that!!
-  return buildNewGranuleSearch(history, id)
-}
-export const asyncMoreGranuleResults = () => {
+export const submitGranuleSearchNextPage = () => {
   // note that this function does *not* make any changes to the URL - including push the user to the granule view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
   return buildMoreResultsSearch()
 }
@@ -36,8 +32,10 @@ const errorHandler = (dispatch, e) => {
   dispatch(granuleSearchError(e.errors || e))
 }
 
-const buildNewGranuleSearch = (history, id) => {
+export const submitGranuleSearch = (history, id) => {
   // new granule search *for granules within a single collection*
+  // TODO rename to indicate that it updates the URL as well? - this is *not* just a background request - make a new action if we need that!!
+
   const prefetchHandler = dispatch => {
     dispatch(granuleNewSearchRequested(id))
     dispatch(updateURLAndNavigateToGranuleRoute(history, id))
@@ -75,7 +73,8 @@ const buildNewGranuleSearch = (history, id) => {
   )
 }
 
-const buildMoreResultsSearch = () => {
+export const submitGranuleSearchNextPage = () => {
+  // note that this function does *not* make any changes to the URL - including push the user to the granule view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
   // fetch the next page of granules granule search *for granules within a single collection*
   const prefetchHandler = dispatch => {
     dispatch(granuleMoreResultsRequested())
