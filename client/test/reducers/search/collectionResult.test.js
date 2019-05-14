@@ -7,7 +7,7 @@ import {
   collectionNewSearchResultsRecieved,
   collectionMoreResultsRecieved,
   collectionSearchError,
-} from '../../../src/actions/search/CollectionRequestActions'
+} from '../../../src/actions/routing/CollectionSearchStateActions'
 
 describe('The collectionResult reducer', function(){
   it('has a default state', function(){

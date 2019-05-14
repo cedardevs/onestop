@@ -4,9 +4,9 @@ import {
   collectionToggleExcludeGlobal,
   collectionUpdateGeometry,
   collectionRemoveGeometry,
-} from '../../../actions/search/CollectionFilterActions'
+} from '../../../actions/routing/CollectionSearchStateActions'
 import {toggleMap} from '../../../actions/LayoutActions'
-import {asyncNewCollectionSearch} from '../../../actions/search/CollectionSearchActions'
+import {asyncNewCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 import {withRouter} from 'react-router'
 

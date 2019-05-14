@@ -1,7 +1,7 @@
 import {connect} from 'react-redux'
 import FeaturedDatasets from './FeaturedDatasets'
-import {collectionUpdateQueryText} from '../../actions/search/CollectionFilterActions'
-import {asyncNewCollectionSearch} from '../../actions/search/CollectionSearchActions'
+import {collectionUpdateQueryText} from '../../actions/routing/CollectionSearchStateActions'
+import {asyncNewCollectionSearch} from '../../actions/routing/CollectionSearchRouteActions'
 
 import {withRouter} from 'react-router'
 

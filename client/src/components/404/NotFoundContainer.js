@@ -1,8 +1,8 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import NotFound from './NotFound'
-import {asyncNewCollectionSearch} from '../../actions/search/CollectionSearchActions'
-import {collectionUpdateQueryText} from '../../actions/search/CollectionFilterActions'
+import {asyncNewCollectionSearch} from '../../actions/routing/CollectionSearchRouteActions'
+import {collectionUpdateQueryText} from '../../actions/routing/CollectionSearchStateActions'
 
 const mapStateToProps = state => {
   return {}

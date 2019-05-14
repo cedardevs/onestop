@@ -1,10 +1,10 @@
 // import configureMockStore from 'redux-mock-store'
 // import thunk from 'redux-thunk'
 // import reducer from '../../src/reducer'
-// import * as CollectionFilterActions from '../../src/actions/search/CollectionFilterActions'
+// import * as CollectionFilterActions from '../../src/actions/routing/CollectionSearchStateActions'
 // import {
 //   COLLECTION_TOGGLE_FACET,
-// } from '../../src/actions/search/CollectionFilterActions'
+// } from '../../src/actions/routing/CollectionSearchStateActions'
 //
 // describe('The search params actions', function(){
 //

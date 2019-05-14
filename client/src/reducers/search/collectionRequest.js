@@ -5,7 +5,7 @@ import {
   COLLECTION_NEW_SEARCH_RESULTS_RECIEVED,
   COLLECTION_MORE_RESULTS_RECIEVED,
   COLLECTION_SEARCH_ERROR,
-} from '../../actions/search/CollectionRequestActions'
+} from '../../actions/routing/CollectionSearchStateActions'
 
 export const initialState = Immutable({
   inFlight: false,

@@ -3,8 +3,8 @@ import Map from '../spatial/Map'
 import {
   collectionUpdateGeometry,
   collectionRemoveGeometry,
-} from '../../../actions/search/CollectionFilterActions'
-import {asyncNewCollectionSearch} from '../../../actions/search/CollectionSearchActions'
+} from '../../../actions/routing/CollectionSearchStateActions'
+import {asyncNewCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 import {withRouter} from 'react-router'
 

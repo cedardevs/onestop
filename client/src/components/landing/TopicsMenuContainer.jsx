@@ -1,8 +1,8 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import TopicsMenu from './TopicsMenu'
-import {collectionUpdateQueryText} from '../../actions/search/CollectionFilterActions'
-import {asyncNewCollectionSearch} from '../../actions/search/CollectionSearchActions'
+import {collectionUpdateQueryText} from '../../actions/routing/CollectionSearchStateActions'
+import {asyncNewCollectionSearch} from '../../actions/routing/CollectionSearchRouteActions'
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {

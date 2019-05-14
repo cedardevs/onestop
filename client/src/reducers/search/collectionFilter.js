@@ -9,11 +9,9 @@ import {
   COLLECTION_TOGGLE_FACET,
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
   COLLECTION_CLEAR_FILTERS,
-} from '../../actions/search/CollectionFilterActions'
-import {
   COLLECTION_NEW_SEARCH_REQUESTED,
   COLLECTION_MORE_RESULTS_REQUESTED,
-} from '../../actions/search/CollectionRequestActions'
+} from '../../actions/routing/CollectionSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 
 export const initialState = Immutable({

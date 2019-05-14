@@ -1,9 +1,9 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import FacetFilter from '../facet/FacetFilter'
-import {collectionToggleFacet} from '../../../actions/search/CollectionFilterActions'
+import {collectionToggleFacet} from '../../../actions/routing/CollectionSearchStateActions'
 import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
-import {asyncNewCollectionSearch} from '../../../actions/search/CollectionSearchActions'
+import {asyncNewCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 const mapStateToProps = state => {
   return {

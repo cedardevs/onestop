@@ -4,7 +4,7 @@ import {
   COLLECTION_NEW_SEARCH_RESULTS_RECIEVED,
   COLLECTION_MORE_RESULTS_RECIEVED,
   COLLECTION_SEARCH_ERROR,
-} from '../../actions/search/CollectionRequestActions'
+} from '../../actions/routing/CollectionSearchStateActions'
 // import {
 //   COLLECTION_CLEAR_RESULTS,
 // } from '../../actions/search/CollectionResultActions'

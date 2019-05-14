@@ -4,8 +4,8 @@ import CollectionSearch from './CollectionSearch'
 import {
   collectionUpdateQueryText,
   collectionClearFilters,
-} from '../../../actions/search/CollectionFilterActions'
-import {asyncNewCollectionSearch} from '../../../actions/search/CollectionSearchActions'
+} from '../../../actions/routing/CollectionSearchStateActions'
+import {asyncNewCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 const mapStateToProps = state => {
   return {

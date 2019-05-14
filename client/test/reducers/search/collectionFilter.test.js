@@ -9,11 +9,9 @@ import {
   collectionRemoveGeometry,
   collectionToggleExcludeGlobal,
   COLLECTION_TOGGLE_FACET,
-} from '../../../src/actions/search/CollectionFilterActions'
-import {
   collectionNewSearchRequested,
   collectionMoreResultsRequested,
-} from '../../../src/actions/search/CollectionRequestActions'
+} from '../../../src/actions/routing/CollectionSearchStateActions'
 
 describe('The collection filter reducer', function(){
   it('has a default state', function(){

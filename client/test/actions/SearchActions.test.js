@@ -11,10 +11,11 @@ import {
   mockSearchCollectionErrorResponse,
 } from '../mocks/mockSearchCollection'
 
-import * as CollectionFilterActions from '../../src/actions/search/CollectionFilterActions'
-import * as CollectionRequestActions from '../../src/actions/search/CollectionRequestActions'
+// TODO collapse the two CollectionSearchStateActions ...
+import * as CollectionFilterActions from '../../src/actions/routing/CollectionSearchStateActions'
+import * as CollectionRequestActions from '../../src/actions/routing/CollectionSearchStateActions'
 // import * as SearchActions from '../../src/actions/search/SearchActions'
-import * as CollectionSearchActions from '../../src/actions/search/CollectionSearchActions'
+import * as CollectionSearchActions from '../../src/actions/routing/CollectionSearchRouteActions'
 
 import {RESET_STORE} from '../../src/reducer'
 import {mockSearchGranuleResponse} from '../mocks/mockSearchGranule'

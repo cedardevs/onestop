@@ -5,8 +5,8 @@ import {
   collectionToggleFacet,
   collectionUpdateDateRange,
   collectionRemoveGeometry,
-} from '../../../actions/search/CollectionFilterActions'
-import {asyncNewCollectionSearch} from '../../../actions/search/CollectionSearchActions'
+} from '../../../actions/routing/CollectionSearchStateActions'
+import {asyncNewCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 import AppliedFilters from '../AppliedFilters'
 
 const mapStateToProps = state => {

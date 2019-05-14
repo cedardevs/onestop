@@ -4,8 +4,8 @@ import TimeFilter from '../time/TimeFilter'
 import {
   collectionRemoveDateRange,
   collectionUpdateDateRange,
-} from '../../../actions/search/CollectionFilterActions'
-import {asyncNewCollectionSearch} from '../../../actions/search/CollectionSearchActions'
+} from '../../../actions/routing/CollectionSearchStateActions'
+import {asyncNewCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 const mapStateToProps = state => {
   const {startDateTime, endDateTime} = state.search.collectionFilter

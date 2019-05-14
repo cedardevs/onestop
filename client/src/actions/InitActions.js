@@ -8,9 +8,9 @@ import {
   asyncNewGranuleSearch,
   showGranules,
 } from './search/GranuleSearchActions'
-import {collectionUpdateFilters} from './search/CollectionFilterActions'
+import {collectionUpdateFilters} from './routing/CollectionSearchStateActions'
 import {getCollection} from './routing/CollectionDetailRouteActions' // TODO rename that action to async.... as wells
-import {asyncNewCollectionSearch} from './search/CollectionSearchActions'
+import {asyncNewCollectionSearch} from './routing/CollectionSearchRouteActions'
 import {buildSitemapAction} from './fetch/SearchActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchCounts, fetchInfo} from './fetch/InfoActions'
