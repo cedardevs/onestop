@@ -29,11 +29,14 @@ configurations {
 
 dependencies {
   // Kafka dependencies for connecting with PSI
-  compile('com.github.cedardevs:schemas:0.1.2')
+  compile('com.github.cedardevs.schemas:schemas-core:master-SNAPSHOT')
+  compile('com.github.cedardevs.schemas:schemas-parse:master-SNAPSHOT')
+  compile('com.github.cedardevs.schemas:schemas-analyze:master-SNAPSHOT')
   compile("io.confluent:kafka-streams-avro-serde:5.1.0")
   compile("org.apache.kafka:kafka-clients:2.1.1")
   compile("org.springframework.kafka:spring-kafka:2.2.5.RELEASE")
-  testCompile("com.github.cedardevs:schemas:0.1.2:test")
+
+  testCompile("com.github.cedardevs.schemas:schemas-core:master-SNAPSHOT:test")
   testCompile("io.confluent:kafka-schema-registry:5.1.0")
   testCompile("io.confluent:kafka-schema-registry:5.1.0:tests")
   testCompile("org.apache.kafka:kafka_2.11:2.1.1")
