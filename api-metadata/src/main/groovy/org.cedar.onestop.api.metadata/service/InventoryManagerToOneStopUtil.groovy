@@ -122,7 +122,13 @@ class InventoryManagerToOneStopUtil {
 
     // drop fields
     discoveryMap.remove("responsibleParties")
-    discoveryMap.services = [] // FIXME this needs to be in place until we can use ES6 ignore_missing flags
+//    discoveryMap.services = [] // FIXME this needs to be in place until we can use ES6 ignore_missing flags
+    discoveryMap.services = discoveryMap.services.collect{
+      [
+        title: it.title,
+        links: it.operations.sort()
+      ]
+    }
     return discoveryMap
   }
 
