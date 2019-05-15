@@ -1,8 +1,8 @@
 import Immutable from 'seamless-immutable'
 // import _ from 'lodash'
 import {
-  COLLECTION_NEW_SEARCH_RESULTS_RECIEVED,
-  COLLECTION_MORE_RESULTS_RECIEVED,
+  COLLECTION_NEW_SEARCH_RESULTS_RECEIVED,
+  COLLECTION_MORE_RESULTS_RECEIVED,
   COLLECTION_SEARCH_ERROR,
 } from '../../actions/routing/CollectionSearchStateActions'
 
@@ -20,7 +20,7 @@ const getCollectionsFromAction = action => {
   )
 }
 
-const newSearchResultsRecieved = (state, total, collections, facets) => {
+const newSearchResultsReceived = (state, total, collections, facets) => {
   return Immutable.merge(state, {
     loadedCollectionCount:
       (collections && Object.keys(collections).length) || 0,
@@ -30,7 +30,7 @@ const newSearchResultsRecieved = (state, total, collections, facets) => {
   })
 }
 
-const moreResultsRecieved = (state, newCollections) => {
+const moreResultsReceived = (state, newCollections) => {
   let collections = state.collections.merge(newCollections)
 
   return Immutable.merge(state, {
@@ -42,16 +42,16 @@ const moreResultsRecieved = (state, newCollections) => {
 
 export const collectionResult = (state = initialState, action) => {
   switch (action.type) {
-    case COLLECTION_NEW_SEARCH_RESULTS_RECIEVED:
-      return newSearchResultsRecieved(
+    case COLLECTION_NEW_SEARCH_RESULTS_RECEIVED:
+      return newSearchResultsReceived(
         state,
         action.total,
         getCollectionsFromAction(action),
         action.facets
       )
 
-    case COLLECTION_MORE_RESULTS_RECIEVED:
-      return moreResultsRecieved(state, getCollectionsFromAction(action))
+    case COLLECTION_MORE_RESULTS_RECEIVED:
+      return moreResultsReceived(state, getCollectionsFromAction(action))
 
     case COLLECTION_SEARCH_ERROR:
       return Immutable.merge(state, {

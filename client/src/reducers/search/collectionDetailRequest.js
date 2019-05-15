@@ -1,7 +1,7 @@
 import Immutable from 'seamless-immutable'
 import {
   COLLECTION_DETAIL_REQUESTED,
-  COLLECTION_DETAIL_RECIEVED,
+  COLLECTION_DETAIL_RECEIVED,
   COLLECTION_DETAIL_ERROR,
 } from '../../actions/routing/CollectionDetailStateActions'
 
@@ -20,7 +20,7 @@ export const collectionDetailRequest = (state = initialState, action) => {
         errorMessage: '',
       })
 
-    case COLLECTION_DETAIL_RECIEVED:
+    case COLLECTION_DETAIL_RECEIVED:
       return Immutable.merge(state, {
         inFlight: false,
         requestedID: null,

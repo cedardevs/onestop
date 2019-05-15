@@ -4,8 +4,9 @@ import {
   initialState,
 } from '../../../src/reducers/search/granuleResult'
 import {
-  granuleNewSearchResultsRecieved,
-  granuleMoreResultsRecieved,
+  granuleNewSearchResultsReceived,
+  granuleMoreResultsReceived,
+  granuleMatchingCountReceived,
   granuleSearchError,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 
@@ -52,7 +53,7 @@ describe('The granuleResult reducer', function(){
 
     const result = granuleResult(
       resultsPage1LoadedState,
-      granuleMoreResultsRecieved([
+      granuleMoreResultsReceived([
         {id: 'B', attributes: {title: 'title B'}},
         {id: 'C', attributes: {title: 'title C'}},
       ])
@@ -98,7 +99,7 @@ describe('The granuleResult reducer', function(){
 
     const result = granuleResult(
       stateWithGranules,
-      granuleNewSearchResultsRecieved(
+      granuleNewSearchResultsReceived(
         30,
         [
           {id: 'B', attributes: {title: 'title B'}},
@@ -114,5 +115,44 @@ describe('The granuleResult reducer', function(){
     expect(result.facets).toEqual(facets)
     expect(result.totalGranuleCount).toBe(30)
     expect(result.loadedGranuleCount).toBe(2)
+  })
+
+  it('can reset existing granule state on count', function(){
+    const stateWithGranules = Immutable({
+      granules: {A: {title: 'title A'}},
+      facets: {
+        science: {
+          Oceans: {
+            count: 5,
+          },
+        },
+      },
+      totalGranuleCount: 1,
+      loadedGranuleCount: 1,
+    })
+
+    const facets = {
+      science: {
+        Oceans: {
+          count: 5,
+        },
+        'Oceans > Ocean Temperature': {
+          count: 5,
+        },
+        'Oceans > Ocean Temperature > Sea Surface Temperature': {
+          count: 5,
+        },
+        dataResolution: {},
+      },
+    }
+
+    const result = granuleResult(
+      stateWithGranules,
+      granuleMatchingCountReceived(42)
+    )
+    expect(result.granules).toEqual({})
+    expect(result.facets).toEqual({})
+    expect(result.totalGranuleCount).toBe(42)
+    expect(result.loadedGranuleCount).toBe(0)
   })
 })

@@ -2,8 +2,10 @@ import Immutable from 'seamless-immutable'
 import {
   GRANULE_NEW_SEARCH_REQUESTED,
   GRANULE_MORE_RESULTS_REQUESTED,
-  GRANULE_NEW_SEARCH_RESULTS_RECIEVED,
-  GRANULE_MORE_RESULTS_RECIEVED,
+  GRANULE_MATCHING_COUNT_REQUESTED,
+  GRANULE_NEW_SEARCH_RESULTS_RECEIVED,
+  GRANULE_MORE_RESULTS_RECEIVED,
+  GRANULE_MATCHING_COUNT_RECEIVED,
   GRANULE_SEARCH_ERROR,
 } from '../../actions/routing/GranuleSearchStateActions'
 
@@ -14,6 +16,7 @@ export const initialState = Immutable({
 
 export const granuleRequest = (state = initialState, action) => {
   switch (action.type) {
+    case GRANULE_MATCHING_COUNT_REQUESTED:
     case GRANULE_NEW_SEARCH_REQUESTED:
     case GRANULE_MORE_RESULTS_REQUESTED:
       return Immutable.merge(state, {
@@ -21,8 +24,9 @@ export const granuleRequest = (state = initialState, action) => {
         errorMessage: '',
       })
 
-    case GRANULE_NEW_SEARCH_RESULTS_RECIEVED:
-    case GRANULE_MORE_RESULTS_RECIEVED:
+    case GRANULE_MATCHING_COUNT_RECEIVED:
+    case GRANULE_NEW_SEARCH_RESULTS_RECEIVED:
+    case GRANULE_MORE_RESULTS_RECEIVED:
       return Immutable.set(state, 'inFlight', false)
 
     case GRANULE_SEARCH_ERROR:

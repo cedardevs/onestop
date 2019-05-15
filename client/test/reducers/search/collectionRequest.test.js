@@ -6,8 +6,8 @@ import {
 import {
   collectionNewSearchRequested,
   collectionMoreResultsRequested,
-  collectionNewSearchResultsRecieved,
-  collectionMoreResultsRecieved,
+  collectionNewSearchResultsReceived,
+  collectionMoreResultsReceived,
   collectionSearchError,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
@@ -54,14 +54,14 @@ describe('The collection request reducer', function(){
     const initial = Immutable({inFlight: true})
     const result = collectionRequest(
       initial,
-      collectionNewSearchResultsRecieved()
+      collectionNewSearchResultsReceived()
     )
     expect(result.inFlight).toBeFalsy()
   })
 
   it('result from next page resets inFlight', function(){
     const initial = Immutable({inFlight: true})
-    const result = collectionRequest(initial, collectionMoreResultsRecieved())
+    const result = collectionRequest(initial, collectionMoreResultsReceived())
     expect(result.inFlight).toBeFalsy()
   })
 

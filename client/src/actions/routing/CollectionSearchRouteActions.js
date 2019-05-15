@@ -9,8 +9,8 @@ import {
 import {
   collectionNewSearchRequested,
   collectionMoreResultsRequested,
-  collectionNewSearchResultsRecieved,
-  collectionMoreResultsRecieved,
+  collectionNewSearchResultsReceived,
+  collectionMoreResultsReceived,
   collectionSearchError,
 } from './CollectionSearchStateActions'
 
@@ -44,7 +44,7 @@ export const submitCollectionSearch = history => {
 
   const successHandler = (dispatch, payload) => {
     dispatch(
-      collectionNewSearchResultsRecieved(
+      collectionNewSearchResultsReceived(
         payload.meta.total,
         payload.data,
         payload.meta.facets
@@ -80,7 +80,7 @@ export const submitCollectionSearchNextPage = () => {
   }
 
   const successHandler = (dispatch, payload) => {
-    dispatch(collectionMoreResultsRecieved(payload.data))
+    dispatch(collectionMoreResultsReceived(payload.data))
   }
 
   return buildSearchAction(

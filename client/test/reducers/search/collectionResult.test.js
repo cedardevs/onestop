@@ -4,8 +4,8 @@ import {
   initialState,
 } from '../../../src/reducers/search/collectionResult'
 import {
-  collectionNewSearchResultsRecieved,
-  collectionMoreResultsRecieved,
+  collectionNewSearchResultsReceived,
+  collectionMoreResultsReceived,
   collectionSearchError,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
@@ -55,7 +55,7 @@ describe('The collectionResult reducer', function(){
 
     const result = collectionResult(
       resultsPage1LoadedState,
-      collectionMoreResultsRecieved([
+      collectionMoreResultsReceived([
         {id: 'B', attributes: {title: 'title B'}},
         {id: 'C', attributes: {title: 'title C'}},
       ])
@@ -101,7 +101,7 @@ describe('The collectionResult reducer', function(){
 
     const result = collectionResult(
       stateWithCollections,
-      collectionNewSearchResultsRecieved(
+      collectionNewSearchResultsReceived(
         30,
         [
           {id: 'B', attributes: {title: 'title B'}},

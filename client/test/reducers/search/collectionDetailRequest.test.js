@@ -5,7 +5,7 @@ import {
 } from '../../../src/reducers/search/collectionDetailRequest'
 import {
   collectionDetailRequested,
-  collectionDetailRecieved,
+  collectionDetailReceived,
   collectionDetailError,
 } from '../../../src/actions/routing/CollectionDetailStateActions'
 
@@ -46,7 +46,7 @@ describe('The collection detail request reducer', function(){
     const initial = Immutable({inFlight: true})
     const result = collectionDetailRequest(
       initial,
-      collectionDetailRecieved({id: 'ABC'}, 3)
+      collectionDetailReceived({id: 'ABC'}, 3)
     )
     expect(result.inFlight).toBeFalsy()
     expect(result.requestedID).toBeNull()

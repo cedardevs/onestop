@@ -6,10 +6,12 @@ import {
 } from '../../utils/queryUtils'
 import {showErrors} from '../ErrorActions'
 import {
+  granuleMatchingCountRequested,
   granuleNewSearchRequested,
   granuleMoreResultsRequested,
-  granuleNewSearchResultsRecieved,
-  granuleMoreResultsRecieved,
+  granuleMatchingCountReceived,
+  granuleNewSearchResultsReceived,
+  granuleMoreResultsReceived,
   granuleSearchError,
 } from './GranuleSearchStateActions'
 
@@ -25,6 +27,40 @@ const validRequestCheck = state => {
 const errorHandler = (dispatch, e) => {
   // dispatch(showErrors(e.errors || e)) // TODO show errors
   dispatch(granuleSearchError(e.errors || e))
+}
+
+export const submitGranuleMatchingCount = (history, id) => {
+  // granule count request *for granules within a single collection*
+  // this does not change the URL, and is reasonable for a background request
+
+  const prefetchHandler = dispatch => {
+    dispatch(granuleMatchingCountRequested(id))
+  }
+
+  const bodyBuilder = state => {
+    const body = assembleGranuleSearchRequest(state, false, 0)
+    const hasQueries = body && body.queries && body.queries.length > 0
+    const hasFilters = body && body.filters && body.filters.length > 0
+    let selectedCollections = state.search.granuleFilter.selectedIds
+    // TODO combine selectedCollections and id - in newSearch case, it knows the id from other contexts and/or should set it explicitly in the prefetch handler instead...
+    if (!selectedCollections || !(hasQueries || hasFilters)) {
+      return undefined
+    }
+    return body
+  }
+
+  const successHandler = (dispatch, payload) => {
+    dispatch(granuleMatchingCountReceived(payload.meta.total))
+  }
+
+  return buildSearchAction(
+    'granule',
+    validRequestCheck,
+    prefetchHandler,
+    bodyBuilder,
+    successHandler,
+    errorHandler
+  )
 }
 
 export const submitGranuleSearch = (history, id) => {
@@ -50,7 +86,7 @@ export const submitGranuleSearch = (history, id) => {
 
   const successHandler = (dispatch, payload) => {
     dispatch(
-      granuleNewSearchResultsRecieved(
+      granuleNewSearchResultsReceived(
         payload.meta.total,
         payload.data,
         payload.meta.facets
@@ -88,7 +124,7 @@ export const submitGranuleSearchNextPage = () => {
   }
 
   const successHandler = (dispatch, payload) => {
-    dispatch(granuleMoreResultsRecieved(payload.data))
+    dispatch(granuleMoreResultsReceived(payload.data))
   }
 
   return buildSearchAction(

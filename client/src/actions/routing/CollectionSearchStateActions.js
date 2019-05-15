@@ -9,19 +9,19 @@ export const collectionMoreResultsRequested = () => ({
   type: COLLECTION_MORE_RESULTS_REQUESTED,
 })
 
-export const COLLECTION_NEW_SEARCH_RESULTS_RECIEVED =
-  'COLLECTION_NEW_SEARCH_RESULTS_RECIEVED'
-export const collectionNewSearchResultsRecieved = (total, items, facets) => ({
-  type: COLLECTION_NEW_SEARCH_RESULTS_RECIEVED,
+export const COLLECTION_NEW_SEARCH_RESULTS_RECEIVED =
+  'COLLECTION_NEW_SEARCH_RESULTS_RECEIVED'
+export const collectionNewSearchResultsReceived = (total, items, facets) => ({
+  type: COLLECTION_NEW_SEARCH_RESULTS_RECEIVED,
   total: total,
   facets: facets,
   items: items,
 })
 
-export const COLLECTION_MORE_RESULTS_RECIEVED =
-  'COLLECTION_MORE_RESULTS_RECIEVED'
-export const collectionMoreResultsRecieved = items => ({
-  type: COLLECTION_MORE_RESULTS_RECIEVED,
+export const COLLECTION_MORE_RESULTS_RECEIVED =
+  'COLLECTION_MORE_RESULTS_RECEIVED'
+export const collectionMoreResultsReceived = items => ({
+  type: COLLECTION_MORE_RESULTS_RECEIVED,
   items: items,
 })
 

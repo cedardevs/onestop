@@ -13,6 +13,7 @@ import {
 import {
   granuleNewSearchRequested,
   granuleMoreResultsRequested,
+  granuleMatchingCountRequested,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 
 describe('The granule filter reducer', function(){
@@ -45,12 +46,22 @@ describe('The granule filter reducer', function(){
       expect(result.pageOffset).toEqual(60)
     })
 
-    it('resets page offset', function(){
-      const pageState = {
-        pageOffset: 60,
-      }
-      const result = granuleFilter(pageState, granuleNewSearchRequested())
-      expect(result.pageOffset).toEqual(0)
+    describe('page offset reset when', function(){
+      it('new search', function(){
+        const pageState = {
+          pageOffset: 60,
+        }
+        const result = granuleFilter(pageState, granuleNewSearchRequested())
+        expect(result.pageOffset).toEqual(0)
+      })
+
+      it('count requested', function(){
+        const pageState = {
+          pageOffset: 60,
+        }
+        const result = granuleFilter(pageState, granuleMatchingCountRequested())
+        expect(result.pageOffset).toEqual(0)
+      })
     })
   })
 
@@ -169,19 +180,38 @@ describe('The granule filter reducer', function(){
   })
 
   describe('selected granules cases', function(){
-    it('sets selected collection id from initial state', function(){
-      const selectCollectionA = granuleNewSearchRequested('A')
+    describe('new search', function(){
+      it('sets selected collection id from initial state', function(){
+        const selectCollectionA = granuleNewSearchRequested('A')
 
-      const result = granuleFilter(initialState, selectCollectionA)
-      expect(result.selectedIds).toEqual([ 'A' ])
+        const result = granuleFilter(initialState, selectCollectionA)
+        expect(result.selectedIds).toEqual([ 'A' ])
+      })
+
+      it('updates selected collection id', function(){
+        const selectCollectionB = granuleNewSearchRequested('B')
+        const stateWithSelectedId = Immutable({selectedIds: [ 'A' ]})
+
+        const result = granuleFilter(stateWithSelectedId, selectCollectionB)
+        expect(result.selectedIds).toEqual([ 'B' ])
+      })
     })
 
-    it('updates selected collection id', function(){
-      const selectCollectionB = granuleNewSearchRequested('B')
-      const stateWithSelectedId = Immutable({selectedIds: [ 'A' ]})
+    describe('count granules', function(){
+      it('sets selected collection id from initial state', function(){
+        const selectCollectionA = granuleMatchingCountRequested('A')
 
-      const result = granuleFilter(stateWithSelectedId, selectCollectionB)
-      expect(result.selectedIds).toEqual([ 'B' ])
+        const result = granuleFilter(initialState, selectCollectionA)
+        expect(result.selectedIds).toEqual([ 'A' ])
+      })
+
+      it('updates selected collection id', function(){
+        const selectCollectionB = granuleMatchingCountRequested('B')
+        const stateWithSelectedId = Immutable({selectedIds: [ 'A' ]})
+
+        const result = granuleFilter(stateWithSelectedId, selectCollectionB)
+        expect(result.selectedIds).toEqual([ 'B' ])
+      })
     })
 
     // it('can clear existing granule selections', function(){

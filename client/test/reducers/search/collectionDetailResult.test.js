@@ -4,7 +4,7 @@ import {
   initialState,
 } from '../../../src/reducers/search/collectionDetailResult'
 import {
-  collectionDetailRecieved,
+  collectionDetailReceived,
   collectionDetailError,
 } from '../../../src/actions/routing/CollectionDetailStateActions'
 
@@ -39,7 +39,7 @@ describe('The collectionDetailResult reducer', function(){
 
     const result = collectionDetailResult(
       initialState,
-      collectionDetailRecieved(data, 30)
+      collectionDetailReceived(data, 30)
     )
     expect(result).toEqual({
       collection: data,
@@ -59,7 +59,7 @@ describe('The collectionDetailResult reducer', function(){
     })
     const result = collectionDetailResult(
       stateWithLoadedCollection,
-      collectionDetailRecieved(data, 0)
+      collectionDetailReceived(data, 0)
     )
     expect(result).toEqual({
       collection: data,

@@ -20,26 +20,39 @@ export const PAGE_SIZE = 20
 //   return JSON.stringify(assembleCollectionSearchRequest(state, retrieveFacets))
 // }
 
-export const assembleGranuleSearchRequest = (state, retrieveFacets) => {
+export const assembleGranuleSearchRequest = (
+  state,
+  retrieveFacets,
+  maxPageSize
+) => {
   const search = state.search || {}
   const granuleFilter = search.granuleFilter || {}
 
-  return assembleSearchRequest(granuleFilter, retrieveFacets)
+  return assembleSearchRequest(granuleFilter, retrieveFacets, maxPageSize)
 }
 
-export const assembleCollectionSearchRequest = (state, retrieveFacets) => {
+export const assembleCollectionSearchRequest = (
+  state,
+  retrieveFacets,
+  maxPageSize
+) => {
   const search = state.search || {}
   const collectionFilter = search.collectionFilter || {}
 
-  return assembleSearchRequest(collectionFilter, retrieveFacets)
+  return assembleSearchRequest(collectionFilter, retrieveFacets, maxPageSize)
 }
 
-const assembleSearchRequest = (filter, retrieveFacets) => {
+const assembleSearchRequest = (
+  filter,
+  retrieveFacets,
+  maxPageSize = PAGE_SIZE
+) => {
+  // TODO is there any reason retrieveFacets shouldn't be on the state as well? I guess there's no UI part that would need it, and we don't ever need to keep track of it to decide what to change...
   return {
     queries: assembleQueries(filter),
     filters: assembleFilters(filter),
     facets: retrieveFacets,
-    page: assemblePagination(filter),
+    page: assemblePagination(filter, maxPageSize),
   }
 }
 
@@ -99,8 +112,8 @@ const assembleSelectedCollectionsFilters = ({selectedIds}) => {
   }
 }
 
-const assemblePagination = ({pageOffset}) => {
-  return {max: PAGE_SIZE, offset: pageOffset}
+const assemblePagination = ({pageOffset}, maxPageSize) => {
+  return {max: maxPageSize, offset: pageOffset}
 }
 
 export const encodeQueryString = searchParamsState => {

@@ -9,7 +9,7 @@ import {
 import {
   // used to set up pre-test conditions
   collectionNewSearchRequested,
-  collectionNewSearchResultsRecieved,
+  collectionNewSearchResultsReceived,
   collectionUpdateQueryText,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
@@ -176,7 +176,7 @@ describe('collection search actions', function(){
     it('success path', async () => {
       // set up the 'first page' results
       store.dispatch(
-        collectionNewSearchResultsRecieved(
+        collectionNewSearchResultsReceived(
           10,
           [
             {

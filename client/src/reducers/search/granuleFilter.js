@@ -12,6 +12,7 @@ import {
   GRANULE_TOGGLE_EXCLUDE_GLOBAL,
   GRANULE_NEW_SEARCH_REQUESTED,
   GRANULE_MORE_RESULTS_REQUESTED,
+  GRANULE_MATCHING_COUNT_REQUESTED,
 } from '../../actions/routing/GranuleSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
@@ -50,6 +51,7 @@ export const granuleFilter = (state = initialState, action) => {
     case GRANULE_UPDATE_FILTERS:
       return updateFilters(action.filters || {}) // TODO rename this to 'reset' something? - since it goes based on changes to initialState, not existing state?
 
+    case GRANULE_MATCHING_COUNT_REQUESTED:
     case GRANULE_NEW_SEARCH_REQUESTED:
       return Immutable.merge(state, {
         pageOffset: initialState.pageOffset,

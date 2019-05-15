@@ -3,8 +3,9 @@ import Immutable from 'seamless-immutable'
 // // GRANULE_REMOVE_FILTERS,
 // '../../actions/routing/GranuleSearchStateActions'
 import {
-  GRANULE_NEW_SEARCH_RESULTS_RECIEVED,
-  GRANULE_MORE_RESULTS_RECIEVED,
+  GRANULE_NEW_SEARCH_RESULTS_RECEIVED,
+  GRANULE_MORE_RESULTS_RECEIVED,
+  GRANULE_MATCHING_COUNT_RECEIVED,
   GRANULE_SEARCH_ERROR,
 } from '../../actions/routing/GranuleSearchStateActions'
 
@@ -22,7 +23,7 @@ const getGranulesFromAction = action => {
   )
 }
 
-const newSearchResultsRecieved = (state, total, granules, facets) => {
+const newSearchResultsReceived = (state, total, granules, facets) => {
   return Immutable.merge(state, {
     loadedGranuleCount: (granules && Object.keys(granules).length) || 0,
     granules: granules,
@@ -31,7 +32,7 @@ const newSearchResultsRecieved = (state, total, granules, facets) => {
   })
 }
 
-const moreResultsRecieved = (state, newGranules) => {
+const moreResultsReceived = (state, newGranules) => {
   let granules = state.granules.merge(newGranules)
 
   return Immutable.merge(state, {
@@ -49,16 +50,21 @@ export const granuleResult = (state = initialState, action) => {
     // case GRANULE_REMOVE_FILTERS:
     //   return Immutable.set(state, 'facets', initialState.facets)
 
-    case GRANULE_NEW_SEARCH_RESULTS_RECIEVED:
-      return newSearchResultsRecieved(
+    case GRANULE_NEW_SEARCH_RESULTS_RECEIVED:
+      return newSearchResultsReceived(
         state,
         action.total,
         getGranulesFromAction(action),
         action.facets
       )
 
-    case GRANULE_MORE_RESULTS_RECIEVED:
-      return moreResultsRecieved(state, getGranulesFromAction(action))
+    case GRANULE_MATCHING_COUNT_RECEIVED:
+      return Immutable.merge(initialState, {
+        totalGranuleCount: action.total,
+      })
+
+    case GRANULE_MORE_RESULTS_RECEIVED:
+      return moreResultsReceived(state, getGranulesFromAction(action))
 
     case GRANULE_SEARCH_ERROR:
       return Immutable.merge(state, {

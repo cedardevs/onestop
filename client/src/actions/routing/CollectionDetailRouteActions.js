@@ -5,7 +5,7 @@ import {showErrors} from '../ErrorActions'
 import {encodeQueryString} from '../../utils/queryUtils'
 import {
   collectionDetailRequested,
-  collectionDetailRecieved,
+  collectionDetailReceived,
   collectionDetailError,
 } from './CollectionDetailStateActions'
 import {granuleUpdateFilters} from './GranuleSearchStateActions'
@@ -23,7 +23,7 @@ export const submitCollectionDetail = (history, collectionId) => {
 
   const successHandler = (dispatch, payload) => {
     dispatch(
-      collectionDetailRecieved(payload.data[0], payload.meta.totalGranules)
+      collectionDetailReceived(payload.data[0], payload.meta.totalGranules)
     )
   }
 

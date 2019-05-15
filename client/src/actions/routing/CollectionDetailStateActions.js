@@ -4,9 +4,9 @@ export const collectionDetailRequested = id => ({
   id: id,
 })
 
-export const COLLECTION_DETAIL_RECIEVED = 'COLLECTION_DETAIL_RECIEVED'
-export const collectionDetailRecieved = (data, granuleCount) => ({
-  type: COLLECTION_DETAIL_RECIEVED,
+export const COLLECTION_DETAIL_RECEIVED = 'COLLECTION_DETAIL_RECEIVED'
+export const collectionDetailReceived = (data, granuleCount) => ({
+  type: COLLECTION_DETAIL_RECEIVED,
   collection: data,
   totalGranuleCount: granuleCount,
 })

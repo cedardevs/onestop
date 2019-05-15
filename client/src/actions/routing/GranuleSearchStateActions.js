@@ -5,23 +5,37 @@ export const granuleNewSearchRequested = collectionId => ({
   id: collectionId,
 })
 
+export const GRANULE_MATCHING_COUNT_REQUESTED =
+  'GRANULE_MATCHING_COUNT_REQUESTED'
+export const granuleMatchingCountRequested = collectionId => ({
+  // this indicates a granule search within a single collection
+  type: GRANULE_MATCHING_COUNT_REQUESTED,
+  id: collectionId,
+})
+
 export const GRANULE_MORE_RESULTS_REQUESTED = 'GRANULE_MORE_RESULTS_REQUESTED'
 export const granuleMoreResultsRequested = () => ({
   type: GRANULE_MORE_RESULTS_REQUESTED,
 })
 
-export const GRANULE_NEW_SEARCH_RESULTS_RECIEVED =
-  'GRANULE_NEW_SEARCH_RESULTS_RECIEVED'
-export const granuleNewSearchResultsRecieved = (total, items, facets) => ({
-  type: GRANULE_NEW_SEARCH_RESULTS_RECIEVED,
+export const GRANULE_MATCHING_COUNT_RECEIVED = 'GRANULE_MATCHING_COUNT_RECEIVED'
+export const granuleMatchingCountReceived = total => ({
+  type: GRANULE_MATCHING_COUNT_RECEIVED,
+  total: total,
+})
+
+export const GRANULE_NEW_SEARCH_RESULTS_RECEIVED =
+  'GRANULE_NEW_SEARCH_RESULTS_RECEIVED'
+export const granuleNewSearchResultsReceived = (total, items, facets) => ({
+  type: GRANULE_NEW_SEARCH_RESULTS_RECEIVED,
   total: total,
   facets: facets,
   items: items,
 })
 
-export const GRANULE_MORE_RESULTS_RECIEVED = 'GRANULE_MORE_RESULTS_RECIEVED'
-export const granuleMoreResultsRecieved = items => ({
-  type: GRANULE_MORE_RESULTS_RECIEVED,
+export const GRANULE_MORE_RESULTS_RECEIVED = 'GRANULE_MORE_RESULTS_RECEIVED'
+export const granuleMoreResultsReceived = items => ({
+  type: GRANULE_MORE_RESULTS_RECEIVED,
   items: items,
 })
 
