@@ -44,10 +44,16 @@ export const loadCollections = (history, newQueryString) => {
   }
 }
 
-export const loadDetails = (history, path) => {
+export const loadDetails = (history, path, newQueryString) => {
   return (dispatch, getState) => {
     const detailId = getCollectionIdFromDetailPath(path)
     dispatch(submitCollectionDetail(history, detailId))
+
+    const searchFromQuery = decodeQueryString(newQueryString)
+    const searchFromState = _.get(getState(), 'search.granuleFilter')
+    if (!_.isEqual(searchFromQuery, searchFromState)) {
+      dispatch(granuleUpdateFilters(searchFromQuery))
+    }
   }
 }
 

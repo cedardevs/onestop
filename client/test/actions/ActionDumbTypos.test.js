@@ -3,7 +3,11 @@ import store from '../../src/store' // create Redux store with appropriate middl
 import {submitCollectionDetail} from '../../src/actions/routing/CollectionDetailRouteActions'
 import {submitCollectionSearch} from '../../src/actions/routing/CollectionSearchRouteActions'
 import {submitGranuleSearch} from '../../src/actions/routing/GranuleSearchRouteActions'
-import {loadDetails} from '../../src/actions/InitActions'
+import {
+  loadCollections,
+  loadDetails,
+  loadGranulesList,
+} from '../../src/actions/InitActions'
 
 const mockHistoryPush = input => {} // don't care, just don't want it to puke
 const mockHistory = {
@@ -21,8 +25,20 @@ describe('actions execute without dumb typos', function(){
   it('submitGranuleSearch', function(){
     store.dispatch(submitGranuleSearch(mockHistory, 'uuid-ABC'))
   })
+  it('loadCollections', function(){
+    // introduced to catch when import name changed for a function this depends on
+    store.dispatch(loadCollections(mockHistory, '?q=test'))
+  })
   it('loadDetails', function(){
     // introduced to catch when import name changed for a function this depends on
-    store.dispatch(loadDetails(mockHistory, '/collections/details/uuid-ABC'))
+    store.dispatch(
+      loadDetails(mockHistory, '/collections/details/uuid-ABC', '?q=test')
+    )
+  })
+  it('loadGranulesList', function(){
+    // introduced to catch when import name changed for a function this depends on
+    store.dispatch(
+      loadGranulesList(mockHistory, '/collections/granules/uuid-ABC', '?q=test')
+    )
   })
 })

@@ -8,6 +8,7 @@ import {
   collectionDetailRecieved,
   collectionDetailError,
 } from './CollectionDetailStateActions'
+import {granuleUpdateFilters} from './GranuleSearchStateActions'
 
 export const submitCollectionDetail = (history, collectionId) => {
   const validRequestCheck = state => {
