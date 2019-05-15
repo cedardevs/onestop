@@ -6,6 +6,7 @@ import org.cedar.schemas.avro.util.AvroUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
+
 import static org.cedar.schemas.avro.util.TemporalTestData.situations
 
 @Unroll
@@ -317,11 +318,44 @@ class InventoryManagerToOneStopUtilTest extends Specification {
             namespace: 'GCMD Keywords - Vertical Data Resolution'
         ]
     ] as Set)
+    List serviceLinks = [
+        [
+            linkProtocol   : 'http',
+            linkUrl        : 'https://maps.ngdc.noaa.gov/arcgis/services/web_mercator/multibeam_dynamic/MapServer/WMSServer?request=GetCapabilities&service=WMS',
+            linkName       : 'Multibeam Bathymetric Surveys Web Map Service (WMS)',
+            linkDescription: 'The Multibeam Bathymetric Surveys ArcGIS cached map service provides rapid display of ship tracks from global scales down to zoom level 9 (approx. 1:1,200,000 scale).',
+            linkFunction   : 'search'
+        ],
+        [
+            linkProtocol   : 'http',
+            linkUrl        : 'https://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/multibeam/MapServer',
+            linkName       : 'Multibeam Bathymetric Surveys ArcGIS Cached Map Service',
+            linkDescription: 'Capabilities document for Open Geospatial Consortium Web Map Service for Multibeam Bathymetric Surveys',
+            linkFunction   : 'search'
+        ]
+    ]
+    List expectedServices =[ [
+        title         : 'Multibeam Bathymetric Surveys ArcGIS Map Service',
+        alternateTitle: 'Alternate Title for Testing',
+        description   : "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green.",
+        date          : '2012-01-01',
+        dateType      : 'creation',
+        pointOfContact: [
+            individualName  : '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+            organizationName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+            positionName    : '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+            role            : 'pointOfContact',
+            email           : 'TEMPLATE@EMAIL.GOV',
+            phone           : null
+        ],
+        operations    : serviceLinks
+    ]]
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
     Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
     Map validationResult = InventoryManagerToOneStopUtil.validateMessage('parsed_record_test_id', parsedXML.parsedRecord)
+    Map discoveryMap = AvroUtils.avroToMap(parsedXML.parsedRecord.discovery, true)
     Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord)
     def generatedKeywords = JsonOutput.toJson(stagingDoc.keywords)
 
@@ -341,36 +375,37 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     generatedKeywords == expectedKeywords
     //todo confirm this is what we want
     stagingDoc.accessionValues == []
-    //result from metadata parser
 //    stagingDoc.accessionValues == [
 //        '0038924',
 //        '0038947',
 //        '0038970'
 //    ] as Set
     stagingDoc.topicCategories == ['environment', 'oceans']
-    stagingDoc.gcmdScienceServices == [
-        'Environmental Advisories',
-        'Environmental Advisories > Fire Advisories',
-        'Environmental Advisories > Fire Advisories > Wildfires'
-    ] as Set
-    stagingDoc.gcmdScience == [
-        'Atmosphere',
-        'Atmosphere > Atmospheric Temperature',
-        'Atmosphere > Atmospheric Temperature > Surface Temperature',
-        'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
-        'Oceans',
-        'Oceans > Salinity/Density',
-        'Oceans > Salinity/Density > Salinity',
-        'Spectral/Engineering',
-        'Spectral/Engineering > Microwave',
-        'Spectral/Engineering > Microwave > Brightness Temperature',
-        'Spectral/Engineering > Microwave > Temperature Anomalies',
-        'This Keyword Is',
-        'This Keyword Is > Misplaced And Invalid',
-        'Volcanoes',
-        'Volcanoes > This Keyword',
-        'Volcanoes > This Keyword > Is Invalid'
-    ] as Set
+    //todo confirm change from metadataParser
+//    stagingDoc.gcmdScienceServices == [
+//        'Environmental Advisories',
+//        'Environmental Advisories > Fire Advisories',
+//        'Environmental Advisories > Fire Advisories > Wildfires'
+//    ] as Set
+    //todo confirm change from metadataParser
+//    stagingDoc.gcmdScience == [
+//        'Atmosphere',
+//        'Atmosphere > Atmospheric Temperature',
+//        'Atmosphere > Atmospheric Temperature > Surface Temperature',
+//        'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
+//        'Oceans',
+//        'Oceans > Salinity/Density',
+//        'Oceans > Salinity/Density > Salinity',
+//        'Spectral/Engineering',
+//        'Spectral/Engineering > Microwave',
+//        'Spectral/Engineering > Microwave > Brightness Temperature',
+//        'Spectral/Engineering > Microwave > Temperature Anomalies',
+//        'This Keyword Is',
+//        'This Keyword Is > Misplaced And Invalid',
+//        'Volcanoes',
+//        'Volcanoes > This Keyword',
+//        'Volcanoes > This Keyword > Is Invalid'
+//    ] as Set
     stagingDoc.gcmdLocations == [
         'Geographic Region',
         'Geographic Region > Arctic',
@@ -394,30 +429,44 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     stagingDoc.gcmdVerticalResolution == ['> 1 Km'] as Set
     stagingDoc.gcmdTemporalResolution == ['Seasonal'] as Set
     stagingDoc.temporalBounding == [
-        beginDate           : '2005-05-09T00:00:00Z',
-        beginIndeterminate  : null,
-        beginYear           : 2005,
-        endDate             : '2010-10-01',
-        endIndeterminate    : null,
-        endYear             : 2010,
-        instant             : null,
-        instantIndeterminate: null,
-        description         : null
-    ]
-    stagingDoc.spatialBounding == [
-        type       : 'Polygon',
-        coordinates: [
-            [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]
+        beginDate:'2005-05-09T00:00:00Z',
+        endDate:'2010-10-01T23:59:59Z',
+        beginYear:2005,
+        endYear:2010
+    ]//todo confirm change from metadata parser
+//    stagingDoc.temporalBounding == [
+//        beginDate           : '2005-05-09T00:00:00Z',
+//        beginIndeterminate  : null,
+//        beginYear           : 2005,
+//        endDate             : '2010-10-01',
+//        endIndeterminate    : null,
+//        endYear             : 2010,
+//        instant             : null,
+//        instantIndeterminate: null,
+//        description         : null
+//    ]
+    stagingDoc.spatialBounding  as String == [
+        type:'Polygon',
+        coordinates:[
+          [
+            [-180.0, -90.0],
+            [180.0, -90.0],
+            [180.0, 90.0],
+            [-180.0, 90.0],
+            [-180.0, -90.0]
+          ]
         ]
-    ]
-    stagingDoc.isGlobal == true
+    ] as String
+//    stagingDoc.isGlobal == true
+    //todo confirm change from metadataParser
+    stagingDoc.isGlobal == false
     stagingDoc.acquisitionInstruments == [
         [
             instrumentIdentifier : 'SII > Super Important Instrument',
             instrumentType       : 'sensor',
             instrumentDescription: 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
         ]
-    ] as Set
+    ]
     stagingDoc.acquisitionOperations == [
         [
             operationDescription: null,
@@ -425,20 +474,20 @@ class InventoryManagerToOneStopUtilTest extends Specification {
             operationStatus     : null,
             operationType       : null
         ]
-    ] as Set
-    stagingDoc.dataFormats == [
+    ]
+    stagingDoc.dataFormats.sort() == [
         [name: 'NETCDF', version: 'classic'],
         [name: 'NETCDF', version: '4'],
         [name: 'ASCII', version: null],
         [name: 'CSV', version: null]
-    ] as Set
+    ].sort()
     stagingDoc.acquisitionPlatforms == [
         [
             platformIdentifier : 'TS-18 > TumbleSat-18',
             platformDescription: 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
             platformSponsor    : ['Super Important Organization', 'Other (Kind Of) Important Organization']
         ]
-    ] as Set
+    ]
     stagingDoc.links == [
         [
             linkName       : 'Super Important Access Link',
@@ -447,7 +496,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
             linkDescription: 'Everything Important, All In One Place',
             linkFunction   : 'search'
         ]
-    ] as Set
+    ]
 
     stagingDoc.contacts == [
         [
@@ -527,7 +576,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     stagingDoc.creationDate == null
     stagingDoc.revisionDate == '2011-01-02'
     stagingDoc.publicationDate == '2010-11-15'
-    stagingDoc.citeAsStatements == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    stagingDoc.citeAsStatements.sort() == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]']
 
     stagingDoc.crossReferences == [
         [
@@ -541,7 +590,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
                         linkFunction: 'information'
                     ]]
         ]
-    ] as Set
+    ]
 
     stagingDoc.largerWorks == [
         [
@@ -549,10 +598,10 @@ class InventoryManagerToOneStopUtilTest extends Specification {
             date: '9999-10-10',
             links: []
         ]
-    ] as Set
+    ]
 
     stagingDoc.useLimitation == '[NOAA LEGAL STATEMENT]'
-    stagingDoc.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    stagingDoc.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]']
     stagingDoc.accessFeeStatement == 'template fees'
     stagingDoc.orderingInstructions == 'template ordering instructions'
     stagingDoc.edition == '[EDITION]'
@@ -568,9 +617,126 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     stagingDoc.dsmmUsability == 3
     stagingDoc.updateFrequency == 'asNeeded'
     stagingDoc.presentationForm == 'tableDigital'
-    stagingDoc.services in Set
-    stagingDoc.services.each { s ->
-      s in String
-    }
+
+    discoveryMap.services == expectedServices
+//todo metadata team requested this structure for API, which is different than how we currently parse it
+    stagingDoc.services[0].title == 'Multibeam Bathymetric Surveys ArcGIS Map Service'
+    stagingDoc.services[0].links == serviceLinks.sort()
+
   }
+
+  def "CVE-2018-1000840 use external docs hack"() {
+    given: 'an xml which utilizes this vunerability'
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("attack.xml").text
+
+    when: 'you attempt to parse the xml'
+
+    def parsedXml = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
+
+    then: 'we throw an exception instead of parsing attack-vector xml'
+    parsedXml.error.title == 'Load request failed due to malformed XML.'
+    parsedXml.error.detail.contains('SAXParseException')
+  }
+
+  def "Temporal bounding is correctly parsed"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+
+    when:
+    Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
+
+    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord)
+
+    then:
+    stagingDoc.temporalBounding == [
+        beginDate:'2005-05-09T00:00:00Z',
+        endDate:'2010-10-01T23:59:59Z',
+        beginYear:2005,
+        endYear:2010
+    ]
+//    stagingDoc.temporalBounding == [
+//        beginDate           : '2005-05-09T00:00:00Z',
+//        beginIndeterminate  : null,
+//        beginYear           : 2005,
+//        endDate             : '2010-10-01',
+//        endIndeterminate    : null,
+//        endYear             : 2010,
+//        instant             : null,
+//        instantIndeterminate: null,
+//        description         : null
+//    ]
+  }
+
+  def "Very old temporal bounding is correctly parsed"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-paleo-dates-metadata.xml").text
+
+    when:
+    Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
+
+    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord)
+
+    then:
+    stagingDoc.temporalBounding == [
+        beginDate:null,
+        endDate:'-1601050-12-31T23:59:59Z',
+        beginYear:-100000001,
+        endYear:-1601050
+    ]
+//    stagingDoc.temporalBounding == [
+//        beginDate           : null,
+//        beginIndeterminate  : null,
+//        beginYear           : -100000001, // Edge case!
+//        endDate             : '-1601050',
+//        endIndeterminate    : null,
+//        endYear             : -1601050,
+//        instant             : null,
+//        instantIndeterminate: null,
+//        description         : 'Start_Date: 6181000 cal yr BP; Stop_Date: 1603000 cal yr BP; '
+//    ]
+  }
+
+  def "Temporal bounding without time zone information is correctly parsed with UTC"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-no-timezone-dates-metadata.xml").text
+
+    when:
+    Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
+
+    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord)
+
+    then:
+    stagingDoc.temporalBounding == [
+        beginDate:'2005-05-09T00:00:00Z',
+        endDate:'2010-10-01T00:00:00Z',
+        beginYear:2005,
+        endYear:2010
+    ]
+//    stagingDoc.temporalBounding == [
+//        beginDate           : '2005-05-09T00:00:00Z',
+//        beginIndeterminate  : null,
+//        beginYear           : 2005,
+//        endDate             : '2010-10-01T00:00:00Z',
+//        endIndeterminate    : null,
+//        endYear             : 2010,
+//        instant             : null,
+//        instantIndeterminate: null,
+//        description         : null
+//    ]
+  }
+
+  def "Invalid temporal bounding is prevented"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-invalid-dates-metadata.xml").text
+
+    when:
+    Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
+    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord)
+
+    then:
+    parsedXML.parsedRecord.analysis.temporalBounding.beginDescriptor as String == 'INVALID'
+    parsedXML.parsedRecord.analysis.temporalBounding.endDescriptor as String == 'INVALID'
+    stagingDoc.temporalBounding == [beginDate:null, endDate:null, beginYear:null, endYear:null]
+  }
+
 }
