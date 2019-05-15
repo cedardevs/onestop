@@ -43,7 +43,7 @@ export const buildSearchAction = (
       .catch(ajaxError => {
         // TODO how to handle when ajaxError doesn't have response.json()...????
         if (ajaxError.response) {
-          return ajaxError.response
+          ajaxError.response
             .json()
             .then(errorJson => errorHandler(dispatch, errorJson))
         }
@@ -81,11 +81,17 @@ export const buildGetAction = (
       .then(response => checkForErrors(response))
       .then(responseChecked => responseChecked.json())
       .then(json => successHandler(dispatch, json))
-      .catch(ajaxError =>
-        ajaxError.response
-          .json()
-          .then(errorJson => errorHandler(dispatch, errorJson))
-      )
+      .catch(ajaxError => {
+        // TODO how to handle when ajaxError doesn't have response.json()...????
+        if (ajaxError.response) {
+          ajaxError.response
+            .json()
+            .then(errorJson => errorHandler(dispatch, errorJson))
+        }
+        //return error
+        errorHandler(dispatch, ajaxError)
+        // : ajaxError
+      })
       .catch(jsError => errorHandler(dispatch, jsError))
   }
 }

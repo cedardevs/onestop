@@ -1,12 +1,11 @@
-import Immutable from 'seamless-immutable'
+import store from '../../src/store' // create Redux store with appropriate middleware
+
 import {submitCollectionDetail} from '../../src/actions/routing/CollectionDetailRouteActions'
 import {submitCollectionSearch} from '../../src/actions/routing/CollectionSearchRouteActions'
 import {submitGranuleSearch} from '../../src/actions/routing/GranuleSearchRouteActions'
 import {loadDetails} from '../../src/actions/InitActions'
 
-import store from '../../src/store' // create Redux store with appropriate middleware
-
-const mockHistoryPush = () => {} // don't care, just don't want it to puke
+const mockHistoryPush = input => {} // don't care, just don't want it to puke
 const mockHistory = {
   push: mockHistoryPush,
 }
