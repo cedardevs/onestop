@@ -30,6 +30,7 @@ dependencies {
   implementation "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
 
   implementation "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
+  implementation "org.elasticsearch.client:transport:${project.esVersion}"
   implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
   implementation 'org.springframework.boot:spring-boot-devtools'
@@ -45,6 +46,7 @@ dependencies {
   implementation 'com.github.java-json-tools:json-schema-validator:2.2.8'
   implementation 'org.apache.commons:commons-lang3:3.7'
   implementation 'org.apache.lucene:lucene-expressions:7.2.1'
+  implementation 'javax.xml.bind:jaxb-api:2.3.1' // Java 9/10 deprecates, 11 removes javax.xml.bind.DatatypeConverter
 
   // version to override another library's dependency to solve a CVE:
   implementation 'com.google.guava:guava:27.0.1-jre'

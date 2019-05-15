@@ -87,7 +87,7 @@ class ETLIntegrationTests extends Specification {
 
   def 'updating a new collection indexes only a collection'() {
     setup:
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -105,7 +105,7 @@ class ETLIntegrationTests extends Specification {
 
   def 'updating an orphan granule indexes nothing'() {
     setup:
-    insertMetadataFromPath('test/data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -118,8 +118,8 @@ class ETLIntegrationTests extends Specification {
 
   def 'updating a collection and granule indexes a collection, a granule, and a flattened granule'() {
     setup:
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
-    insertMetadataFromPath('test/data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
 
     when:
     etlService.updateSearchIndices() // runs the ETLs
@@ -136,7 +136,7 @@ class ETLIntegrationTests extends Specification {
 
   def 'updating twice does nothing the second time'() {
     setup:
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -153,13 +153,13 @@ class ETLIntegrationTests extends Specification {
 
   def 'touching a granule and updating reindexes only that granule'() {
     setup:
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
-    insertMetadataFromPath('test/data/COOPS/G1.xml')
-    insertMetadataFromPath('test/data/COOPS/G2.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G2.xml')
     etlService.updateSearchIndices()
 
     when: 'touch one of the granules'
-    insertMetadataFromPath('test/data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
     etlService.updateSearchIndices()
 
     then: 'only that granule is reindexed'
@@ -172,14 +172,14 @@ class ETLIntegrationTests extends Specification {
 
   def 'touching a collection and updating reindexes only that collection but re-flattens all granules'() {
     setup:
-    insertMetadataFromPath('test/data/GHRSST/1.xml')
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
-    insertMetadataFromPath('test/data/COOPS/G1.xml')
-    insertMetadataFromPath('test/data/COOPS/G2.xml')
+    insertMetadataFromPath('test/data/xml/GHRSST/1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G2.xml')
     etlService.updateSearchIndices()
 
     when: 'Touch the collection'
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
     etlService.updateSearchIndices()
 
     then: 'Only the collection is reindexed, not the granules'
@@ -211,7 +211,7 @@ class ETLIntegrationTests extends Specification {
 
   def 'rebuilding with an orphan granule indexes nothing'() {
     setup:
-    insertMetadataFromPath('test/data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
 
     when:
     etlService.rebuildSearchIndices()
@@ -224,8 +224,8 @@ class ETLIntegrationTests extends Specification {
 
   def 'rebuilding with a collection and granule indexes a collection, a granule, and a flattened granule'() {
     setup:
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
-    insertMetadataFromPath('test/data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
 
     when:
     etlService.rebuildSearchIndices()
@@ -271,14 +271,14 @@ class ETLIntegrationTests extends Specification {
 
   def 'rebuilding with an updated collection builds a whole new index'() {
     setup:
-    insertMetadataFromPath('test/data/GHRSST/1.xml')
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
-    insertMetadataFromPath('test/data/COOPS/G1.xml')
-    insertMetadataFromPath('test/data/COOPS/G2.xml')
+    insertMetadataFromPath('test/data/xml/GHRSST/1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G2.xml')
     etlService.rebuildSearchIndices()
 
     when: 'touch the collection'
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
     etlService.rebuildSearchIndices()
     def indexed = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
     List<Map> indexedCollections = indexed[esConfig.TYPE_COLLECTION] as List<Map>

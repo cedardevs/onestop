@@ -6,6 +6,7 @@ import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.elasticsearch.Version
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,9 +22,18 @@ class ElasticsearchService {
 
   private RestClient restClient
   ElasticsearchConfig esConfig
+  Version version
 
   @Autowired
-  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
+  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestClient restClient, Version version, ElasticsearchConfig elasticsearchConfig) {
+
+    this.version = version
+    log.info("Elasticsearch found with version: ${this.version.toString()}" )
+    boolean supported = version.onOrAfter(Version.V_5_6_0)
+    if(!supported) {
+      throw new RuntimeException("Search API does not support version ${version.toString()} of Elasticsearch")
+    }
+
     this.searchRequestParserService = searchRequestParserService
     this.restClient = restClient
     this.esConfig = elasticsearchConfig

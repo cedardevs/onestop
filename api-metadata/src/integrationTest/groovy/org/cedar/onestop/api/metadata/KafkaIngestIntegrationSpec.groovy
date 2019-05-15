@@ -80,7 +80,7 @@ class KafkaIngestIntegrationSpec extends Specification {
   @Autowired
   MetadataManagementService metadataManagementService
 
-  String collectionPath = "test/data/COOPS/C1.xml"
+  String collectionPath = "test/data/xml/COOPS/C1.xml"
 
   RestTemplate restTemplate
   String baseUrl

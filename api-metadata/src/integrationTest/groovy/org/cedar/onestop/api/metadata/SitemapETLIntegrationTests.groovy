@@ -59,8 +59,8 @@ class SitemapETLIntegrationTests extends Specification {
 
   def 'updating sitemap with collections'() {
     setup:
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
-    insertMetadataFromPath('test/data/DEM/1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/DEM/1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -88,13 +88,13 @@ class SitemapETLIntegrationTests extends Specification {
 
   def 'sitemap with multiple submaps'() {
     setup:
-    insertMetadataFromPath('test/data/COOPS/C1.xml')
-    insertMetadataFromPath('test/data/DEM/1.xml')
-    insertMetadataFromPath('test/data/DEM/2.xml')
-    insertMetadataFromPath('test/data/DEM/3.xml')
-    insertMetadataFromPath('test/data/GHRSST/1.xml')
-    insertMetadataFromPath('test/data/GHRSST/2.xml')
-    insertMetadataFromPath('test/data/GHRSST/3.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/DEM/1.xml')
+    insertMetadataFromPath('test/data/xml/DEM/2.xml')
+    insertMetadataFromPath('test/data/xml/DEM/3.xml')
+    insertMetadataFromPath('test/data/xml/GHRSST/1.xml')
+    insertMetadataFromPath('test/data/xml/GHRSST/2.xml')
+    insertMetadataFromPath('test/data/xml/GHRSST/3.xml')
 
     when:
     etlService.updateSearchIndices()

@@ -26,11 +26,11 @@ class TrendingSearchService {
       this.blacklistConfig = blacklistConfig
   }
 
-  public Map topRecentSearchTerms(int numResults, int numDays) {
+  Map topRecentSearchTerms(int numResults, int numDays) {
     return recentTermCounts(numResults, numDays, SEARCH_TERM)
   }
 
-  public Map topRecentCollections(int numResults, int numDays) {
+  Map topRecentCollections(int numResults, int numDays) {
     return recentTermCounts(numResults, numDays, COLLECTION_TERM)
   }
 

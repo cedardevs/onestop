@@ -63,8 +63,8 @@ class UploadIntegrationTests extends Specification {
     @Autowired
     ElasticsearchService elasticsearchService
 
-    private collectionPath = "test/data/COOPS/C1.xml"
-    private granulePath = "test/data/COOPS/G1.xml"
+    private collectionPath = "test/data/xml/COOPS/C1.xml"
+    private granulePath = "test/data/xml/COOPS/G1.xml"
 
     RestTemplate restTemplate
     String metadataFormURI

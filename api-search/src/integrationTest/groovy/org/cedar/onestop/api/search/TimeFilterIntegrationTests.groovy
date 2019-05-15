@@ -1,18 +1,46 @@
 package org.cedar.onestop.api.search
 
 import org.cedar.onestop.api.search.service.ElasticsearchService
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import spock.lang.Specification
 import spock.lang.Unroll
 
-class TimeFilterIntegrationTests extends IntegrationTest {
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+
+@ActiveProfiles(["integration"])
+@SpringBootTest(
+    classes = [
+        Application,
+
+        // provides:
+        // - `RestClient` 'restClient' bean via test containers
+        ElasticsearchTestConfig,
+    ],
+    webEnvironment = RANDOM_PORT
+)
+@Unroll
+class TimeFilterIntegrationTests extends Specification {
 
   private final String DATES_INDEX = 'time_filter'
+
+  @Autowired
+  @Qualifier("restClient")
+  RestClient restClient
+
+  @Autowired
+  ElasticsearchConfig esConfig
 
   @Autowired
   ElasticsearchService esService
 
   void setup() {
-    refreshAndLoadGenericTestIndex(DATES_INDEX)
+    TestUtil.refreshAndLoadGenericTestIndex(DATES_INDEX, restClient)
   }
 
   def 'Datetime filter q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {

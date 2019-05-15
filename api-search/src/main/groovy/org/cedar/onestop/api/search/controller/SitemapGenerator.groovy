@@ -5,7 +5,7 @@ import java.time.Instant
 class SitemapGenerator {
 
 
-  public static String makeSitemap(String baseUrl, def sitemapData) {
+  static String makeSitemap(String baseUrl, def sitemapData) {
     def data = sitemapData.collect({site -> """
     <sitemap>
       <loc>${baseUrl}/sitemap/${site.id}.txt</loc>
@@ -21,7 +21,7 @@ class SitemapGenerator {
       """
   }
 
-  public static String makeSiteSubmap(String baseUrl, def submapData) {
+  static String makeSiteSubmap(String baseUrl, def submapData) {
     return submapData[0].attributes.content.collect({collectionId -> "${baseUrl}/collections/details/${collectionId}"}).join('\n')
   }
 
