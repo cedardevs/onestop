@@ -381,31 +381,6 @@ class InventoryManagerToOneStopUtilTest extends Specification {
 //        '0038970'
 //    ] as Set
     stagingDoc.topicCategories == ['environment', 'oceans']
-    //todo confirm change from metadataParser
-//    stagingDoc.gcmdScienceServices == [
-//        'Environmental Advisories',
-//        'Environmental Advisories > Fire Advisories',
-//        'Environmental Advisories > Fire Advisories > Wildfires'
-//    ] as Set
-    //todo confirm change from metadataParser
-//    stagingDoc.gcmdScience == [
-//        'Atmosphere',
-//        'Atmosphere > Atmospheric Temperature',
-//        'Atmosphere > Atmospheric Temperature > Surface Temperature',
-//        'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
-//        'Oceans',
-//        'Oceans > Salinity/Density',
-//        'Oceans > Salinity/Density > Salinity',
-//        'Spectral/Engineering',
-//        'Spectral/Engineering > Microwave',
-//        'Spectral/Engineering > Microwave > Brightness Temperature',
-//        'Spectral/Engineering > Microwave > Temperature Anomalies',
-//        'This Keyword Is',
-//        'This Keyword Is > Misplaced And Invalid',
-//        'Volcanoes',
-//        'Volcanoes > This Keyword',
-//        'Volcanoes > This Keyword > Is Invalid'
-//    ] as Set
     stagingDoc.gcmdLocations == [
         'Geographic Region',
         'Geographic Region > Arctic',
@@ -433,18 +408,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
         endDate:'2010-10-01T23:59:59Z',
         beginYear:2005,
         endYear:2010
-    ]//todo confirm change from metadata parser
-//    stagingDoc.temporalBounding == [
-//        beginDate           : '2005-05-09T00:00:00Z',
-//        beginIndeterminate  : null,
-//        beginYear           : 2005,
-//        endDate             : '2010-10-01',
-//        endIndeterminate    : null,
-//        endYear             : 2010,
-//        instant             : null,
-//        instantIndeterminate: null,
-//        description         : null
-//    ]
+    ]
     stagingDoc.spatialBounding  as String == [
         type:'Polygon',
         coordinates:[
@@ -654,17 +618,6 @@ class InventoryManagerToOneStopUtilTest extends Specification {
         beginYear:2005,
         endYear:2010
     ]
-//    stagingDoc.temporalBounding == [
-//        beginDate           : '2005-05-09T00:00:00Z',
-//        beginIndeterminate  : null,
-//        beginYear           : 2005,
-//        endDate             : '2010-10-01',
-//        endIndeterminate    : null,
-//        endYear             : 2010,
-//        instant             : null,
-//        instantIndeterminate: null,
-//        description         : null
-//    ]
   }
 
   def "Very old temporal bounding is correctly parsed"() {
@@ -683,17 +636,6 @@ class InventoryManagerToOneStopUtilTest extends Specification {
         beginYear:-100000001,
         endYear:-1601050
     ]
-//    stagingDoc.temporalBounding == [
-//        beginDate           : null,
-//        beginIndeterminate  : null,
-//        beginYear           : -100000001, // Edge case!
-//        endDate             : '-1601050',
-//        endIndeterminate    : null,
-//        endYear             : -1601050,
-//        instant             : null,
-//        instantIndeterminate: null,
-//        description         : 'Start_Date: 6181000 cal yr BP; Stop_Date: 1603000 cal yr BP; '
-//    ]
   }
 
   def "Temporal bounding without time zone information is correctly parsed with UTC"() {
@@ -712,17 +654,6 @@ class InventoryManagerToOneStopUtilTest extends Specification {
         beginYear:2005,
         endYear:2010
     ]
-//    stagingDoc.temporalBounding == [
-//        beginDate           : '2005-05-09T00:00:00Z',
-//        beginIndeterminate  : null,
-//        beginYear           : 2005,
-//        endDate             : '2010-10-01T00:00:00Z',
-//        endIndeterminate    : null,
-//        endYear             : 2010,
-//        instant             : null,
-//        instantIndeterminate: null,
-//        description         : null
-//    ]
   }
 
   def "Invalid temporal bounding is prevented"() {
