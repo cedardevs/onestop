@@ -3,7 +3,7 @@ import {RESET_STORE} from '../../../src/reducer'
 import fetchMock from 'fetch-mock'
 
 import {submitCollectionDetail} from '../../../src/actions/routing/CollectionDetailRouteActions'
-import {collectionGetDetailStart} from '../../../src/actions/routing/CollectionDetailStateActions'
+import {collectionDetailRequested} from '../../../src/actions/routing/CollectionDetailStateActions'
 
 let history_input = {}
 
@@ -29,7 +29,7 @@ describe('collection detail action', function(){
 
   it('stops request if something already in flight', function(){
     //setup send something into flight first
-    store.dispatch(collectionGetDetailStart('uuid-XYZ'))
+    store.dispatch(collectionDetailRequested('uuid-XYZ'))
     expect(
       store.getState().search.collectionDetailRequest.inFlight
     ).toBeTruthy()

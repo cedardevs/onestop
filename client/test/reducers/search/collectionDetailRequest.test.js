@@ -4,9 +4,9 @@ import {
   initialState,
 } from '../../../src/reducers/search/collectionDetailRequest'
 import {
-  collectionGetDetailStart,
-  collectionGetDetailComplete,
-  collectionGetDetailError,
+  collectionDetailRequested,
+  collectionDetailRecieved,
+  collectionDetailError,
 } from '../../../src/actions/routing/CollectionDetailStateActions'
 
 describe('The collection detail request reducer', function(){
@@ -25,7 +25,7 @@ describe('The collection detail request reducer', function(){
     const initial = Immutable({inFlight: false})
     const result = collectionDetailRequest(
       initial,
-      collectionGetDetailStart('uuid')
+      collectionDetailRequested('uuid')
     )
     expect(result.inFlight).toBeTruthy()
     expect(result.requestedID).toBe('uuid')
@@ -37,7 +37,7 @@ describe('The collection detail request reducer', function(){
     })
     const result = collectionDetailRequest(
       initial,
-      collectionGetDetailStart('uuid')
+      collectionDetailRequested('uuid')
     )
     expect(result.errorMessage).toBe('')
   })
@@ -46,7 +46,7 @@ describe('The collection detail request reducer', function(){
     const initial = Immutable({inFlight: true})
     const result = collectionDetailRequest(
       initial,
-      collectionGetDetailComplete({id: 'ABC'}, 3)
+      collectionDetailRecieved({id: 'ABC'}, 3)
     )
     expect(result.inFlight).toBeFalsy()
     expect(result.requestedID).toBeNull()
@@ -59,7 +59,7 @@ describe('The collection detail request reducer', function(){
     })
     const result = collectionDetailRequest(
       initial,
-      collectionGetDetailError('Cause of Error: test case')
+      collectionDetailError('Cause of Error: test case')
     )
     expect(result.inFlight).toBeFalsy()
     expect(result.requestedID).toBe('123')

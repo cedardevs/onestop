@@ -1,8 +1,8 @@
 import Immutable from 'seamless-immutable'
 import {
-  COLLECTION_GET_DETAIL_START,
-  COLLECTION_GET_DETAIL_COMPLETE,
-  COLLECTION_GET_DETAIL_ERROR,
+  COLLECTION_DETAIL_REQUESTED,
+  COLLECTION_DETAIL_RECIEVED,
+  COLLECTION_DETAIL_ERROR,
 } from '../../actions/routing/CollectionDetailStateActions'
 
 export const initialState = Immutable({
@@ -13,20 +13,20 @@ export const initialState = Immutable({
 
 export const collectionDetailRequest = (state = initialState, action) => {
   switch (action.type) {
-    case COLLECTION_GET_DETAIL_START:
+    case COLLECTION_DETAIL_REQUESTED:
       return Immutable.merge(state, {
         inFlight: true,
         requestedID: action.id,
         errorMessage: '',
       })
 
-    case COLLECTION_GET_DETAIL_COMPLETE:
+    case COLLECTION_DETAIL_RECIEVED:
       return Immutable.merge(state, {
         inFlight: false,
         requestedID: null,
       })
 
-    case COLLECTION_GET_DETAIL_ERROR:
+    case COLLECTION_DETAIL_ERROR:
       return Immutable.merge(state, {
         inFlight: false,
         errorMessage: action.errors, // TODO change components to use this, when appropriate

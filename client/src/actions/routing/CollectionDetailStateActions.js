@@ -1,19 +1,18 @@
-export const COLLECTION_GET_DETAIL_START = 'COLLECTION_GET_DETAIL_START'
-export const collectionGetDetailStart = id => ({
-  // TODO rename these to be consistent with Search State Actions!
-  type: COLLECTION_GET_DETAIL_START,
+export const COLLECTION_DETAIL_REQUESTED = 'COLLECTION_DETAIL_REQUESTED'
+export const collectionDetailRequested = id => ({
+  type: COLLECTION_DETAIL_REQUESTED,
   id: id,
 })
 
-export const COLLECTION_GET_DETAIL_COMPLETE = 'COLLECTION_GET_DETAIL_COMPLETE'
-export const collectionGetDetailComplete = (data, granuleCount) => ({
-  type: COLLECTION_GET_DETAIL_COMPLETE,
+export const COLLECTION_DETAIL_RECIEVED = 'COLLECTION_DETAIL_RECIEVED'
+export const collectionDetailRecieved = (data, granuleCount) => ({
+  type: COLLECTION_DETAIL_RECIEVED,
   collection: data,
   totalGranuleCount: granuleCount,
 })
 
-export const COLLECTION_GET_DETAIL_ERROR = 'COLLECTION_GET_DETAIL_ERROR'
-export const collectionGetDetailError = errors => ({
-  type: COLLECTION_GET_DETAIL_ERROR,
+export const COLLECTION_DETAIL_ERROR = 'COLLECTION_DETAIL_ERROR'
+export const collectionDetailError = errors => ({
+  type: COLLECTION_DETAIL_ERROR,
   errors,
 })

@@ -26,7 +26,7 @@ const errorHandler = (dispatch, e) => {
 }
 
 export const submitCollectionSearch = history => {
-  // TODO rename to indicate that it updates the URL as well? - this is *not* just a background request - make a new action if we need that!!
+  // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
   const prefetchHandler = dispatch => {
     dispatch(collectionNewSearchRequested())
     dispatch(updateURLAndNavigateToCollectionRoute(history))

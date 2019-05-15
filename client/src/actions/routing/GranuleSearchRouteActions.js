@@ -29,7 +29,7 @@ const errorHandler = (dispatch, e) => {
 
 export const submitGranuleSearch = (history, id) => {
   // new granule search *for granules within a single collection*
-  // note: this updates the URL as well, it is not intended to be just a background search
+  // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
 
   const prefetchHandler = dispatch => {
     dispatch(granuleNewSearchRequested(id))

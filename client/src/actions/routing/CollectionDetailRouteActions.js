@@ -4,9 +4,9 @@ import {showErrors} from '../ErrorActions'
 
 import {encodeQueryString} from '../../utils/queryUtils'
 import {
-  collectionGetDetailStart,
-  collectionGetDetailComplete,
-  collectionGetDetailError,
+  collectionDetailRequested,
+  collectionDetailRecieved,
+  collectionDetailError,
 } from './CollectionDetailStateActions'
 
 export const submitCollectionDetail = (history, collectionId) => {
@@ -16,19 +16,19 @@ export const submitCollectionDetail = (history, collectionId) => {
   }
 
   const prefetchHandler = dispatch => {
-    dispatch(collectionGetDetailStart(collectionId))
+    dispatch(collectionDetailRequested(collectionId))
     dispatch(updateURLAndNavigateToCollectionDetailRoute(history, collectionId))
   }
 
   const successHandler = (dispatch, payload) => {
     dispatch(
-      collectionGetDetailComplete(payload.data[0], payload.meta.totalGranules)
+      collectionDetailRecieved(payload.data[0], payload.meta.totalGranules)
     )
   }
 
   const errorHandler = (dispatch, e) => {
     // dispatch(showErrors(e.errors || e)) // TODO
-    dispatch(collectionGetDetailError(e.errors || e)) // TODO
+    dispatch(collectionDetailError(e.errors || e)) // TODO
   }
 
   return buildGetAction(
