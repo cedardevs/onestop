@@ -1,10 +1,6 @@
-# Important ES Note
+# Search API Time Filter Integration Tests
 
-- bulkData.txt must end in a blank line, or the bulk load will skip the last result.
-- For all queries, the full response is requested so we have access to all time fields.
-- Max result limit is explicitly declared (page object in query) since more than the default of 10 can be returned since our test data set is fairly large.
-
-# Test cases:
+## Test cases:
 
 The ids of the test cases are indicative of what the result is intended to test.
 
@@ -13,7 +9,7 @@ The ids of the test cases are indicative of what the result is intended to test.
 
 For simplicity, datetime records do not also have beginYear and endYear set, so that those test cases don't pollute year filter tests. In real records, if it has a beginDate, the beginYear will match (e.g. 2000-01-01 will also have a beginYear of 2000)
 
-# Structure of query and results chosen:
+## Structure of query and results chosen:
 
 Given:
 A number line with A,B,C,D,E,F,G,H,I (in order). (Specifically these are: 1980, 1990, 1995, 1998, 2000, 2005, 2012, 2013, 2017)
