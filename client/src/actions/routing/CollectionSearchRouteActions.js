@@ -68,6 +68,7 @@ export const submitCollectionSearchNextPage = () => {
   const prefetchHandler = dispatch => {
     dispatch(collectionMoreResultsRequested())
   }
+
   const bodyBuilder = state => {
     const body = assembleCollectionSearchRequest(state, true)
     const hasQueries = body && body.queries && body.queries.length > 0
