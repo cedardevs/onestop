@@ -5,9 +5,6 @@ import {
   COLLECTION_MORE_RESULTS_RECIEVED,
   COLLECTION_SEARCH_ERROR,
 } from '../../actions/routing/CollectionSearchStateActions'
-// import {
-//   COLLECTION_CLEAR_RESULTS,
-// } from '../../actions/search/CollectionResultActions'
 
 export const initialState = Immutable({
   collections: {},
@@ -45,13 +42,6 @@ const moreResultsRecieved = (state, newCollections) => {
 
 export const collectionResult = (state = initialState, action) => {
   switch (action.type) {
-    // case COLLECTION_CLEAR_RESULTS: // TODO full reset, facets and all? if not why not?
-    //   return Immutable.merge(state, {
-    //     collections: initialState.collections,
-    //     totalCollectionCount: initialState.totalCollectionCount,
-    //     loadedCollectionCount: initialState.loadedCollectionCount,
-    //   })
-
     case COLLECTION_NEW_SEARCH_RESULTS_RECIEVED:
       return newSearchResultsRecieved(
         state,

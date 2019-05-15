@@ -14,6 +14,7 @@ import {
   GRANULE_MORE_RESULTS_REQUESTED,
 } from '../../actions/routing/GranuleSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
+import {updateSelectedFacets} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
   queryText: '',
@@ -83,7 +84,15 @@ export const granuleFilter = (state = initialState, action) => {
     //   return Immutable.set(state, 'selectedIds', initialState.selectedIds)
 
     case GRANULE_TOGGLE_FACET:
-      return Immutable.set(state, 'selectedFacets', action.selectedFacets)
+      const {selectedFacets} = state
+      const newSelectedFacets = updateSelectedFacets(
+        selectedFacets,
+        action.category,
+        action.facetName,
+        action.selected
+      )
+
+      return Immutable.set(state, 'selectedFacets', newSelectedFacets)
     //
     // case GRANULE_CLEAR_FACETS:
     //   return Immutable.set(state, 'selectedFacets', initialState.selectedFacets)

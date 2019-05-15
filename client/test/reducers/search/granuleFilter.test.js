@@ -8,7 +8,7 @@ import {
   granuleUpdateGeometry,
   granuleRemoveGeometry,
   granuleToggleExcludeGlobal,
-  GRANULE_TOGGLE_FACET,
+  granuleToggleFacet,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 import {
   granuleNewSearchRequested,
@@ -178,29 +178,33 @@ describe('The granule filter reducer', function(){
   })
 
   describe('facet cases', function(){
-    it('should handle GRANULE_TOGGLE_FACET w/ facets selected', () => {
-      const selectedFacets = {
-        science: [ 'Oceans', 'Oceans > Ocean Temperature' ],
-        instruments: [
-          'Earth Remote Sensing Instruments > Passive Remote Sensing > Spectrometers/Radiometers > Imaging Spectrometers/Radiometers > AVHRR-3 > Advanced Very High Resolution Radiometer-3',
-        ],
-      }
-      const modFacetsAction = {
-        type: GRANULE_TOGGLE_FACET,
-        selectedFacets: selectedFacets,
+    it('should handle toggle a facet on', () => {
+      const initialStateWithFacets = {
+        selectedFacets: {
+          science: [ 'Oceans' ],
+        },
       }
 
-      const reducerResp = granuleFilter(initialState, modFacetsAction)
-      expect(reducerResp.selectedFacets).toEqual(selectedFacets)
+      const result = granuleFilter(
+        initialStateWithFacets,
+        granuleToggleFacet('science', 'Oceans > Ocean Temperature', true)
+      )
+      expect(result.selectedFacets).toEqual({
+        science: [ 'Oceans', 'Oceans > Ocean Temperature' ],
+      })
     })
 
-    it('should handle GRANULE_TOGGLE_FACET w/ no facets selected', () => {
-      const actionWithNoFacets = {
-        type: GRANULE_TOGGLE_FACET,
-        selectedFacets: {},
+    it('should handle toggle a facet off', () => {
+      const initialStateWithFacets = {
+        selectedFacets: {science: [ 'Oceans', 'Oceans > Ocean Temperature' ]},
       }
-      const reducerResp = granuleFilter(initialState, actionWithNoFacets)
-      expect(reducerResp.selectedFacets).toEqual({})
+      const result = granuleFilter(
+        initialStateWithFacets,
+        granuleToggleFacet('science', 'Oceans > Ocean Temperature', false)
+      )
+      expect(result.selectedFacets).toEqual({
+        science: [ 'Oceans' ],
+      })
     })
   })
 

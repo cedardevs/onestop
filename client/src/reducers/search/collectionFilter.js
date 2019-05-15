@@ -13,6 +13,7 @@ import {
   COLLECTION_MORE_RESULTS_REQUESTED,
 } from '../../actions/routing/CollectionSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
+import {updateSelectedFacets} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
   queryText: '',
@@ -51,7 +52,15 @@ export const collectionFilter = (state = initialState, action) => {
       })
 
     case COLLECTION_TOGGLE_FACET:
-      return Immutable.set(state, 'selectedFacets', action.selectedFacets)
+      const {selectedFacets} = state
+      const newSelectedFacets = updateSelectedFacets(
+        selectedFacets,
+        action.category,
+        action.facetName,
+        action.selected
+      )
+
+      return Immutable.set(state, 'selectedFacets', newSelectedFacets)
 
     case COLLECTION_TOGGLE_EXCLUDE_GLOBAL:
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)

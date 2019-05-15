@@ -1,5 +1,3 @@
-import {updateSelectedFacets} from '../../utils/filterUtils'
-
 export const GRANULE_NEW_SEARCH_REQUESTED = 'GRANULE_NEW_SEARCH_REQUESTED'
 export const granuleNewSearchRequested = collectionId => ({
   // this indicates a granule search within a single collection
@@ -78,20 +76,13 @@ export const granuleRemoveDateRange = () => {
   }
 }
 
-export const GRANULE_TOGGLE_FACET = 'GRANULE_TOGGLE_FACET' // TODO rename, it's not toggle facet (singular) so much as setFacets
+export const GRANULE_TOGGLE_FACET = 'GRANULE_TOGGLE_FACET' // TODO rename, it's basically set (singular) facet to (selected)
 export const granuleToggleFacet = (category, facetName, selected) => {
-  return (dispatch, getState) => {
-    const {selectedFacets} = getState().search.granuleFilter
-    const newSelectedFacets = updateSelectedFacets(
-      selectedFacets,
-      category,
-      facetName,
-      selected
-    )
-    dispatch({
-      type: GRANULE_TOGGLE_FACET,
-      selectedFacets: newSelectedFacets,
-    })
+  return {
+    type: GRANULE_TOGGLE_FACET,
+    category: category,
+    facetName: facetName,
+    selected: selected,
   }
 }
 // export const GRANULE_CLEAR_FACETS = 'GRANULE_CLEAR_FACETS'

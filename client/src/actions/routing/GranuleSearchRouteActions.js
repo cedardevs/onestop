@@ -29,7 +29,7 @@ const errorHandler = (dispatch, e) => {
 
 export const submitGranuleSearch = (history, id) => {
   // new granule search *for granules within a single collection*
-  // TODO rename to indicate that it updates the URL as well? - this is *not* just a background request - make a new action if we need that!!
+  // note: this updates the URL as well, it is not intended to be just a background search
 
   const prefetchHandler = dispatch => {
     dispatch(granuleNewSearchRequested(id))
@@ -37,7 +37,7 @@ export const submitGranuleSearch = (history, id) => {
   }
 
   const bodyBuilder = state => {
-    const body = assembleGranuleSearchRequest(state, true) // TODO clean up these args...
+    const body = assembleGranuleSearchRequest(state, true)
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     let selectedCollections = state.search.granuleFilter.selectedIds
@@ -76,15 +76,12 @@ export const submitGranuleSearchNextPage = () => {
   }
 
   const bodyBuilder = state => {
-    const body = assembleGranuleSearchRequest(state, false) // TODO clean up these args...
+    const body = assembleGranuleSearchRequest(state, false)
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
     let selectedCollections = state.search.granuleFilter.selectedIds
     // TODO combine selectedCollections and id - in newSearch case, it knows the id from other contexts and/or should set it explicitly in the prefetch handler instead...
     if (!selectedCollections || !(hasQueries || hasFilters)) {
-      // TODO returning an undefined body exits buildSearchAction early. It should resolve as an error or *something* - otherwise inFlight won't be reset! This is a consequence of moving the prefetch before this step. That also means that the bodyBuilder isn't really the right place to verify certain things are set...
-      // Which leads to the question: under what conditions would it not have the correct queries and filters to make a sensible request? Only case I can think of is manually entering something weird in the URL.
-      // but TLDR; instead of returning undefined throw an error?
       return undefined
     }
     return body

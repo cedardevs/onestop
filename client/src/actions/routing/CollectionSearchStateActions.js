@@ -1,5 +1,3 @@
-import {updateSelectedFacets} from '../../utils/filterUtils'
-
 export const COLLECTION_NEW_SEARCH_REQUESTED = 'COLLECTION_NEW_SEARCH_REQUESTED'
 export const collectionNewSearchRequested = () => ({
   type: COLLECTION_NEW_SEARCH_REQUESTED,
@@ -86,19 +84,11 @@ export const collectionRemoveDateRange = () => {
 
 export const COLLECTION_TOGGLE_FACET = 'COLLECTION_TOGGLE_FACET'
 export const collectionToggleFacet = (category, facetName, selected) => {
-  return (dispatch, getState) => {
-    const {selectedFacets} = getState().search.collectionFilter
-    // TODO should this logic be done in the reducer instead?
-    const newSelectedFacets = updateSelectedFacets(
-      selectedFacets,
-      category,
-      facetName,
-      selected
-    )
-    dispatch({
-      type: COLLECTION_TOGGLE_FACET,
-      selectedFacets: newSelectedFacets,
-    })
+  return {
+    type: COLLECTION_TOGGLE_FACET,
+    category: category,
+    facetName: facetName,
+    selected: selected,
   }
 }
 

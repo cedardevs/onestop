@@ -8,7 +8,7 @@ import {
   collectionUpdateGeometry,
   collectionRemoveGeometry,
   collectionToggleExcludeGlobal,
-  COLLECTION_TOGGLE_FACET,
+  collectionToggleFacet,
   collectionNewSearchRequested,
   collectionMoreResultsRequested,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
@@ -134,59 +134,63 @@ describe('The collection filter reducer', function(){
   })
 
   describe('facet cases', function(){
-    it('should handle COLLECTION_TOGGLE_FACET w/ facets selected', () => {
-      const selectedFacets = {
-        science: [ 'Oceans', 'Oceans > Ocean Temperature' ],
-        instruments: [
-          'Earth Remote Sensing Instruments > Passive Remote Sensing > Spectrometers/Radiometers > Imaging Spectrometers/Radiometers > AVHRR-3 > Advanced Very High Resolution Radiometer-3',
-        ],
-      }
-      const modFacetsAction = {
-        type: COLLECTION_TOGGLE_FACET,
-        selectedFacets: selectedFacets,
+    it('should handle toggle a facet on', () => {
+      const initialStateWithFacets = {
+        selectedFacets: {
+          science: [ 'Oceans' ],
+        },
       }
 
-      const reducerResp = collectionFilter(initialState, modFacetsAction)
-      expect(reducerResp.selectedFacets).toEqual(selectedFacets)
+      const result = collectionFilter(
+        initialStateWithFacets,
+        collectionToggleFacet('science', 'Oceans > Ocean Temperature', true)
+      )
+      expect(result.selectedFacets).toEqual({
+        science: [ 'Oceans', 'Oceans > Ocean Temperature' ],
+      })
     })
 
-    it('should handle COLLECTION_TOGGLE_FACET w/ no facets selected', () => {
-      const actionWithNoFacets = {
-        type: COLLECTION_TOGGLE_FACET,
-        selectedFacets: {},
+    it('should handle toggle a facet off', () => {
+      const initialStateWithFacets = {
+        selectedFacets: {science: [ 'Oceans', 'Oceans > Ocean Temperature' ]},
       }
-      const reducerResp = collectionFilter(initialState, actionWithNoFacets)
-      expect(reducerResp.selectedFacets).toEqual({})
+      const result = collectionFilter(
+        initialStateWithFacets,
+        collectionToggleFacet('science', 'Oceans > Ocean Temperature', false)
+      )
+      expect(result.selectedFacets).toEqual({
+        science: [ 'Oceans' ],
+      })
     })
   })
 
   describe('toggleGlobal', function(){
     it('should handle COLLECTION_TOGGLE_EXCLUDE_GLOBAL starting at null', () => {
-      const reducerResp = collectionFilter(
+      const result = collectionFilter(
         initialState,
         collectionToggleExcludeGlobal()
       )
-      expect(reducerResp.excludeGlobal).toBeTruthy()
+      expect(result.excludeGlobal).toBeTruthy()
     })
     it('should handle COLLECTION_TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at true', () => {
       const globalExcludedState = {
         excludeGlobal: true,
       }
-      const reducerResp = collectionFilter(
+      const result = collectionFilter(
         globalExcludedState,
         collectionToggleExcludeGlobal()
       )
-      expect(reducerResp.excludeGlobal).toBeFalsy()
+      expect(result.excludeGlobal).toBeFalsy()
     })
     it('should handle COLLECTION_TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at false', () => {
       const globalExcludedState = {
         excludeGlobal: false,
       }
-      const reducerResp = collectionFilter(
+      const result = collectionFilter(
         globalExcludedState,
         collectionToggleExcludeGlobal()
       )
-      expect(reducerResp.excludeGlobal).toBeTruthy()
+      expect(result.excludeGlobal).toBeTruthy()
     })
   })
 })
