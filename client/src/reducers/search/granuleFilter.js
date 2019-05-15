@@ -29,7 +29,7 @@ export const initialState = Immutable({
 export const granuleFilter = (state = initialState, action) => {
   switch (action.type) {
     case GRANULE_UPDATE_FILTERS:
-      return Immutable.merge(initialState, action.filters || {}) // TODO what does this do with selectedId??
+      return Immutable.merge(initialState, action.filters || {})
 
     case GRANULE_NEW_SEARCH_REQUESTED:
       return Immutable.merge(state, {

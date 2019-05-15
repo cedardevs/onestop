@@ -24,7 +24,7 @@ export const loadGranulesList = (history, path, newQueryString) => {
     const searchFromState = _.get(getState(), 'search.granuleFilter')
     if (!_.isEqual(searchFromQuery, searchFromState)) {
       const detailId = getCollectionIdFromGranuleListPath(path)
-      dispatch(granuleUpdateFilters(searchFromQuery))
+      dispatch(granuleUpdateFilters(searchFromQuery)) // this is fine as long as that includes the selectedId(s)
       dispatch(submitGranuleSearch(history, detailId)) // this updates the URL and push to that page, but in this context we are already there and no changes will be made by that particular step
     }
   }

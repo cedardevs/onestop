@@ -97,6 +97,25 @@ describe('The granule filter reducer', function(){
         granuleFilter(initialState, granuleUpdateFilters(undefined))
       ).toEqual(initialState)
     })
+
+    it('replaces selectedIds', function(){
+      const stateWithSelectedIds = {selectedIds: [ 'abc', '123' ]}
+      const result = granuleFilter(
+        stateWithSelectedIds,
+        granuleUpdateFilters({queryText: 'new'})
+      )
+      expect(result.queryText).toEqual('new')
+      expect(result.selectedIds).toEqual([])
+    })
+
+    it('resets selectedIds', function(){
+      const stateWithSelectedIds = {selectedIds: [ 'abc', '123' ]}
+      const result = granuleFilter(
+        stateWithSelectedIds,
+        granuleUpdateFilters(null)
+      )
+      expect(result.selectedIds).toEqual([])
+    })
   })
 
   describe('geometry cases', function(){
