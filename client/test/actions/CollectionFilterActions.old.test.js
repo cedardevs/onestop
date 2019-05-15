@@ -5,7 +5,7 @@
 // import {
 //   COLLECTION_TOGGLE_FACET,
 // } from '../../src/actions/routing/CollectionSearchStateActions'
-//
+// TODO revitalize this inside reducer collectionFilter, once that logic in the action is moved to the reducer where it belongs
 // describe('The search params actions', function(){
 //
 //   describe('for facets', function(){

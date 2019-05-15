@@ -19,8 +19,8 @@ export const buildSearchAction = (
 
     const body = bodyBuilder(getState()) // call getState again, since prefetchHandler may change state, particularly if pagination is involved
     if (!body) {
-      // cannot or should not fetch TODO throw somethign to reset inFlight!!!
-      return Promise.resolve()
+      errorHandler(dispatch, 'Invalid Request')
+      return
     }
 
     const endpoint = apiPath() + '/search/' + endpointName

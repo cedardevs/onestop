@@ -59,13 +59,13 @@ describe('collection detail action', function(){
       id: 'uuid-ABC',
       mockedResponse: 'yes',
     }
-    const mockHappyPayload = {
+    const mockPayload = {
       data: [ mockCollection ],
       meta: {
         totalGranules: 13,
       },
     }
-    fetchMock.get(`path:${BASE_URL}/collection/uuid-ABC`, mockHappyPayload)
+    fetchMock.get(`path:${BASE_URL}/collection/uuid-ABC`, mockPayload)
 
     await store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC'))
     expect(history_input).toEqual({
@@ -84,17 +84,9 @@ describe('collection detail action', function(){
   })
 
   it('failure path', async () => {
-    const mockPayload = {
-      status: 404,
-      statusText: 'test: 404 failure',
-    }
     fetchMock.get(`path:${BASE_URL}/collection/uuid-ABC`, 404)
 
     await store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC'))
-    expect(history_input).toEqual({
-      pathname: '/collections/details/uuid-ABC',
-      search: null,
-    })
     const {
       collectionDetailRequest,
       collectionDetailResult,
