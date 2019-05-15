@@ -23,26 +23,23 @@ export const PAGE_SIZE = 20
 export const assembleGranuleSearchRequest = (state, retrieveFacets) => {
   const search = state.search || {}
   const granuleFilter = search.granuleFilter || {}
-  // const granuleResult = search.granuleResult || {}
 
-  return {
-    queries: [],
-    filters: assembleFilters(granuleFilter),
-    facets: retrieveFacets,
-    page: assemblePagination(granuleFilter),
-  }
+  return assembleSearchRequest(granuleFilter, retrieveFacets)
 }
 
 export const assembleCollectionSearchRequest = (state, retrieveFacets) => {
   const search = state.search || {}
   const collectionFilter = search.collectionFilter || {}
-  // const collectionResult = search.collectionResult || {}
 
+  return assembleSearchRequest(collectionFilter, retrieveFacets)
+}
+
+const assembleSearchRequest = (filter, retrieveFacets) => {
   return {
-    queries: assembleQueries(collectionFilter),
-    filters: assembleFilters(collectionFilter),
+    queries: assembleQueries(filter),
+    filters: assembleFilters(filter),
     facets: retrieveFacets,
-    page: assemblePagination(collectionFilter),
+    page: assemblePagination(filter),
   }
 }
 

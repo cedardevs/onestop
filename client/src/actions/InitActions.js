@@ -53,6 +53,7 @@ export const loadDetails = (history, path, newQueryString) => {
     const searchFromState = _.get(getState(), 'search.granuleFilter')
     if (!_.isEqual(searchFromQuery, searchFromState)) {
       dispatch(granuleUpdateFilters(searchFromQuery))
+      // TODO update collection query text to initial - to clear header search filter!
     }
   }
 }

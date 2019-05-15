@@ -17,7 +17,7 @@ import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
-  queryText: '',
+  // queryText: '', Not currently a valid param for granule searchs!
   geoJSON: null,
   startDateTime: null,
   endDateTime: null,
@@ -27,10 +27,28 @@ export const initialState = Immutable({
   pageOffset: 0,
 })
 
+const updateFilters = ({
+  geoJSON,
+  startDateTime,
+  endDateTime,
+  selectedFacets,
+  selectedIds,
+  excludeGlobal,
+}) => {
+  return Immutable.merge(initialState, {
+    geoJSON: geoJSON || initialState.geoJSON,
+    startDateTime: startDateTime || initialState.startDateTime,
+    endDateTime: endDateTime || initialState.endDateTime,
+    selectedFacets: selectedFacets || initialState.selectedFacets,
+    selectedIds: selectedIds || initialState.selectedIds,
+    excludeGlobal: excludeGlobal || initialState.excludeGlobal,
+  })
+}
+
 export const granuleFilter = (state = initialState, action) => {
   switch (action.type) {
     case GRANULE_UPDATE_FILTERS:
-      return Immutable.merge(initialState, action.filters || {})
+      return updateFilters(action.filters || {}) // TODO rename this to 'reset' something? - since it goes based on changes to initialState, not existing state?
 
     case GRANULE_NEW_SEARCH_REQUESTED:
       return Immutable.merge(state, {

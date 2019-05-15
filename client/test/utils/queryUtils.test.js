@@ -360,7 +360,12 @@ function granuleTestCases(){
         },
       },
       expectedResult: {
-        queries: [],
+        queries: [
+          {
+            type: 'queryText',
+            value: 'test',
+          },
+        ],
         filters: [
           {
             type: 'collection',

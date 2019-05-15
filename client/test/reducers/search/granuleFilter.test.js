@@ -22,7 +22,6 @@ describe('The granule filter reducer', function(){
 
     expect(result).toEqual({
       pageOffset: 0,
-      queryText: '',
       geoJSON: null,
       startDateTime: null,
       endDateTime: null,
@@ -67,23 +66,41 @@ describe('The granule filter reducer', function(){
         endDateTime: '3000-01-01T00:00:00Z',
         selectedFacets: {science: [ 'Oceans' ]},
         excludeGlobal: true,
-      }
+        pageOffset: 33,
+      } // TODO maybe just change this test to call it with the actual URL string, since that's more what it's used for?
 
-      const updateAction = granuleUpdateFilters(newSearchParams)
-      const result = granuleFilter(initialState, updateAction)
-      expect(result).toEqual(
-        Immutable.merge(newSearchParams, {selectedIds: [], pageOffset: 0})
+      const result = granuleFilter(
+        initialState,
+        granuleUpdateFilters(newSearchParams)
       )
+      // expect(result).toEqual(
+      //   Immutable.merge(newSearchParams, {selectedIds: [], pageOffset: 0})
+      // )
+      expect(result.selectedIds).toEqual([]) // not changed because no new value provided
+      expect(result.pageOffset).toEqual(0) // not set by update filter!
+      expect(result.queryText).toBeUndefined() // not set by update filter!
+      expect(result.geoJSON).toEqual(newSearchParams.geoJSON)
+      expect(result.startDateTime).toEqual('2000-01-01T00:00:00Z')
+      expect(result.endDateTime).toEqual('3000-01-01T00:00:00Z')
+      expect(result.selectedFacets).toEqual(newSearchParams.selectedFacets)
+      expect(result.excludeGlobal).toBeTruthy()
     })
 
     it('defaults to initial state for missing fields', function(){
       const newSearchParams = {
-        queryText: 'new',
+        endDateTime: '3000-01-01T00:00:00Z',
       }
 
       const updateAction = granuleUpdateFilters(newSearchParams)
       const result = granuleFilter(initialState, updateAction)
-      expect(result).toEqual(Immutable.merge(initialState, newSearchParams))
+
+      expect(result.pageOffset).toEqual(initialState.pageOffset)
+      expect(result.geoJSON).toEqual(initialState.geoJSON)
+      expect(result.startDateTime).toEqual(initialState.startDateTime)
+      expect(result.endDateTime).toEqual('3000-01-01T00:00:00Z')
+      expect(result.selectedFacets).toEqual(initialState.selectedFacets)
+      expect(result.selectedIds).toEqual(initialState.selectedIds)
+      expect(result.excludeGlobal).toEqual(initialState.excludeGlobal)
     })
 
     it('works for empty or undefined params', function(){
@@ -102,9 +119,9 @@ describe('The granule filter reducer', function(){
       const stateWithSelectedIds = {selectedIds: [ 'abc', '123' ]}
       const result = granuleFilter(
         stateWithSelectedIds,
-        granuleUpdateFilters({queryText: 'new'})
+        granuleUpdateFilters({endDateTime: '3000-01-01T00:00:00Z'})
       )
-      expect(result.queryText).toEqual('new')
+      expect(result.endDateTime).toEqual('3000-01-01T00:00:00Z')
       expect(result.selectedIds).toEqual([])
     })
 
