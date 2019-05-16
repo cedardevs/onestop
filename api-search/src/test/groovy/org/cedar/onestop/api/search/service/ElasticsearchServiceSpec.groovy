@@ -9,13 +9,25 @@ import org.elasticsearch.client.RestClient
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import groovy.json.JsonSlurper
 @Unroll
 class ElasticsearchServiceSpec extends Specification {
 
+  private slurper = new JsonSlurper()
   def mockRestClient = Mock(RestClient)
   def searchConfig = new SearchConfig()
   def searchRequestParserService = new SearchRequestParserService(searchConfig)
   def elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient)
+
+  def "preservse page max 0 offset 0 into request" () {
+    // post processing on the request was altering the results after addPagination
+    when:
+    def queryResult = elasticsearchService.buildRequestBody([page:[max: 0, offset:0]])
+
+    then:
+    queryResult.size == 0
+    queryResult.from == 0
+  }
 
   def 'executes a search'() {
     def testIndex = 'test_index'

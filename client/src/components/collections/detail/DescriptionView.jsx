@@ -102,7 +102,13 @@ export default class DescriptionView extends React.Component {
   }
 
   render() {
-    const {item, itemUuid, totalGranuleCount, navigateToGranules} = this.props
+    const {
+      item,
+      itemUuid,
+      totalGranuleCount,
+      totalGranuleFilteredCount,
+      navigateToGranules,
+    } = this.props
 
     // thumbnail might be undefined or an empty string, so check for both
     const thumbnail =
@@ -121,6 +127,7 @@ export default class DescriptionView extends React.Component {
         <GranulesSummary
           key="granule-summary-section"
           totalGranuleCount={totalGranuleCount}
+          totalGranuleFilteredCount={totalGranuleFilteredCount}
           navigateToGranules={navigateToGranules}
         />
       </div>

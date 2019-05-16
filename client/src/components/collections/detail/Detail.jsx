@@ -112,6 +112,7 @@ class Detail extends React.Component {
       item,
       loading,
       totalGranuleCount,
+      totalGranuleFilteredCount,
       navigateToGranules,
     } = this.props
 
@@ -192,6 +193,7 @@ class Detail extends React.Component {
             item={item}
             itemUuid={id}
             totalGranuleCount={totalGranuleCount}
+            totalGranuleFilteredCount={totalGranuleFilteredCount}
             navigateToGranules={() => navigateToGranules(id)}
           />
           <Tabs

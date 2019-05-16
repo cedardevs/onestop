@@ -33,6 +33,8 @@ export const submitGranuleMatchingCount = (history, id) => {
   // granule count request *for granules within a single collection*
   // this does not change the URL, and is reasonable for a background request
 
+  // TODO is this really a granule route action, or a collection detail action!!?
+
   const prefetchHandler = dispatch => {
     dispatch(granuleMatchingCountRequested(id))
   }

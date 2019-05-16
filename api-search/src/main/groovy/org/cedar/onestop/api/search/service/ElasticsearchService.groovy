@@ -178,8 +178,7 @@ class ElasticsearchService {
     return parseResponse(response)
   }
 
-  Map searchFromRequest(Map params, String index) {
-    // TODO: does this parse step need to change based on new different endpoints?
+  Map buildRequestBody(Map params) {
     def query = searchRequestParserService.parseSearchQuery(params)
     def getFacets = params.facets as boolean
 
@@ -194,6 +193,12 @@ class ElasticsearchService {
       requestBody = addPagination(requestBody, params.page as Map)
     }
     requestBody = pruneEmptyElements(requestBody)
+    return requestBody
+  }
+
+  Map searchFromRequest(Map params, String index) {
+    // TODO: does this parse step need to change based on new different endpoints?
+    def requestBody = buildRequestBody(params)
 
     Map searchResponse = queryElasticsearch(requestBody, index)
     def result = [
@@ -318,7 +323,7 @@ class ElasticsearchService {
   }
 
   private Map pruneEmptyElements(Map requestBody) {
-    def prunedRequest = requestBody.collectEntries { k, v -> [k, v instanceof Map ? pruneEmptyElements(v) : v]}.findAll { k, v -> v }
+    def prunedRequest = requestBody.collectEntries { k, v -> [k, v instanceof Map ? pruneEmptyElements(v) : v]}.findAll { k, v -> v != null }
     return prunedRequest
   }
 

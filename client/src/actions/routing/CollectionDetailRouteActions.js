@@ -48,7 +48,7 @@ const updateURLAndNavigateToCollectionDetailRoute = (history, id) => {
   }
   return (dispatch, getState) => {
     const state = getState()
-    const query = encodeQueryString(
+    const query = encodeQueryString( // THIS RIGHT HERE - tied to collectionFilter but also sometimes granuleFilter....
       (state && state.search && state.search.collectionFilter) || {}
     )
     const locationDescriptor = {

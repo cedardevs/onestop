@@ -7,11 +7,13 @@ const mapStateToProps = state => {
   const focusedItem = state.search.collectionDetailResult.collection
   const totalGranuleCount =
     state.search.collectionDetailResult.totalGranuleCount
+  const totalGranuleFilteredCount = state.search.granuleResult.totalGranuleCount
 
   return {
     id: focusedItem ? focusedItem.id : null,
     item: focusedItem ? focusedItem.attributes : null,
     totalGranuleCount: focusedItem ? totalGranuleCount : null,
+    totalGranuleFilteredCount: focusedItem ? totalGranuleFilteredCount : null,
     loading: state.search.collectionDetailRequest.inFlight,
   }
 }

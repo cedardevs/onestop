@@ -28,7 +28,11 @@ const styleLinkHover = {
 
 export default class GranulesSummary extends React.Component {
   render() {
-    const {totalGranuleCount, navigateToGranules} = this.props
+    const {
+      totalGranuleCount,
+      totalGranuleFilteredCount,
+      navigateToGranules,
+    } = this.props
 
     const noGranulesSummary = (
       <div style={styleGranuleSummary}>
@@ -36,7 +40,10 @@ export default class GranulesSummary extends React.Component {
       </div>
     )
 
-    const linkText = `Show ${totalGranuleCount} matching files`
+    const linkText =
+      totalGranuleFilteredCount == totalGranuleCount
+        ? `Show all ${totalGranuleCount} files in collection`
+        : `Show ${totalGranuleFilteredCount}  matching files of ${totalGranuleCount} in collection`
 
     // TODO 508 this should probably be a link, not a button
     const granulesSummary = (

@@ -47,7 +47,6 @@ const assembleSearchRequest = (
   retrieveFacets,
   maxPageSize = PAGE_SIZE
 ) => {
-  // TODO is there any reason retrieveFacets shouldn't be on the state as well? I guess there's no UI part that would need it, and we don't ever need to keep track of it to decide what to change...
   return {
     queries: assembleQueries(filter),
     filters: assembleFilters(filter),

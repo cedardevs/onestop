@@ -6,7 +6,7 @@ import {
 import {granuleUpdateFilters} from './routing/GranuleSearchStateActions'
 import {
   submitGranuleSearch,
-  showGranules,
+  submitGranuleMatchingCount,
 } from './routing/GranuleSearchRouteActions'
 import {collectionUpdateFilters} from './routing/CollectionSearchStateActions'
 import {submitCollectionDetail} from './routing/CollectionDetailRouteActions'
@@ -55,6 +55,7 @@ export const loadDetails = (history, path, newQueryString) => {
       dispatch(granuleUpdateFilters(searchFromQuery))
       // TODO update collection query text to initial - to clear header search filter!
     }
+    dispatch(submitGranuleMatchingCount(history, detailId))
   }
 }
 
