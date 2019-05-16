@@ -20,7 +20,7 @@ class MetadataManagementService {
 
   private ElasticsearchService esService
   private ElasticsearchConfig esConfig
-  
+
   @Autowired
   MetadataManagementService(ElasticsearchService esService) {
     this.esService = esService
@@ -66,7 +66,7 @@ class MetadataManagementService {
             attributes: source,
         ]
       
-        def index = type == 'collection' ? esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.GRANULE_STAGING_INDEX_ALIAS
+        def index = type == ElasticsearchConfig.TYPE_COLLECTION ? esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.GRANULE_STAGING_INDEX_ALIAS
         def bulkCommand = [index: [_index: index, _type: esConfig.TYPE, _id: id]]
         bulkRequest << JsonOutput.toJson(bulkCommand)
         bulkRequest << '\n'
@@ -111,34 +111,46 @@ class MetadataManagementService {
         def type = source.parentIdentifier ? ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
         def fileId = source.fileIdentifier as String
         def doi = source.doi as String
-        source.stagedDate = System.currentTimeMillis()
-        def existingRecord = findMetadata(fileId, doi, true)
-        def existingIds = existingRecord.data*.id
-        def esId = existingIds?.size() == 1 ? existingIds[0] : null
-        Map result = [
-            id        : esId,
+
+        def result = [
             type      : type,
             attributes: source,
             meta      : [
                 filename: filename,
             ]
         ]
-        if (existingIds?.size() > 1) {
-          Map meta = result.get('meta', [:]) as Map
-          meta.error = [
-                  status: HttpStatus.CONFLICT.value(),
-                  title : 'Ambiguous metadata records in existence; metadata not loaded.',
-                  detail: "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
-                          "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
+
+        if (!fileId && !doi) { //do not allow records without an id
+          result.meta.error = [
+              status: HttpStatus.BAD_REQUEST.value(),
+              title : 'Unable to parse FileIdentifier or DOI from document; metadata not loaded.',
+              detail: "Please confirm the document contains valid identifiers."
           ]
-        } else {
-          def index = type == 'collection' ? esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.GRANULE_STAGING_INDEX_ALIAS
-          def bulkCommand = [index: [_index: index, _type: esConfig.TYPE, _id: esId]]
-          bulkRequest << JsonOutput.toJson(bulkCommand)
-          bulkRequest << '\n'
-          bulkRequest << JsonOutput.toJson(source)
-          bulkRequest << '\n'
-          loadedIndices << i
+        } else { //check for existing records
+          source.stagedDate = System.currentTimeMillis()
+          def existingRecord = findMetadata(fileId, doi, true)
+          def existingIds = existingRecord.data*.id
+          def esId = existingIds?.size() == 1 ? existingIds[0] : null
+          result.id = esId as String
+          if (existingIds?.size() > 1) { //if we matched more than one file, there is a conflict
+            result.meta.error = [
+                status: HttpStatus.CONFLICT.value(),
+                title : 'Ambiguous metadata records in existence; metadata not loaded.',
+                detail: "The identifiers in this document match more than one existing document. " +
+                    "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
+                    "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
+            ]
+          } else {
+            source.stagedDate = System.currentTimeMillis() //only set stagedDate if the data was staged
+            result.attributes = source //update return payload
+            def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
+            def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
+            bulkRequest << JsonOutput.toJson(bulkCommand)
+            bulkRequest << '\n'
+            bulkRequest << JsonOutput.toJson(source)
+            bulkRequest << '\n'
+            loadedIndices << i
+          }
         }
         results << result
       }

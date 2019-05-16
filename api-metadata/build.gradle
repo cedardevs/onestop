@@ -23,10 +23,6 @@ repositories {
   maven { url "https://jitpack.io" }
 }
 
-//configurations {
-//  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
-//}
-
 dependencies {
   implementation(project(':elastic-common'))
 
@@ -90,6 +86,11 @@ dependencies {
   implementation 'com.google.guava:guava:27.0.1-jre'
   implementation 'commons-collections:commons-collections:3.2.2'
 
+  // fix CVE-2019-0232, CVE-2019-0232 by forcing a higher version of the tomcat websocket dependency
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.19'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.19'
+
+
   runtime 'org.springframework.boot:spring-boot-devtools'
 
   providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
@@ -134,7 +135,7 @@ keystore {
 
 
 ext {
-  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
+  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all.war")
 }
 
 war {
@@ -147,7 +148,6 @@ war {
 
 bootWar {
   excludeDevtools = true
-
   archiveClassifier.set("all")
   launchScript()
   onlyIf { !tasks.getByName('war').state.upToDate }
@@ -185,7 +185,6 @@ task integrationTest(type: Test) {
   reports.html.destination = file("${buildDir}/reports/integrationTests")
 }
 check.dependsOn -= integrationTest
-
 
 task sourceJar(type: Jar) {
   archiveClassifier.set("sources")

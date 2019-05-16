@@ -48,7 +48,7 @@ task tarResults(type: Tar) {
     from "${buildDir}/dist"
     archiveBaseName.set("onestop-client")
     archiveExtension.set("tar.gz")
-    version = project.version
+    version = '' //project.version
     setCompression(Compression.GZIP)
     destinationDirectory = file("${buildDir}/libs")
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
-import {SvgIcon, cloud, video_camera} from '../common/SvgIcon'
+import {SvgIcon, cloud, video_camera} from '../components/common/SvgIcon'
 import {fontFamilySansSerif} from './styleUtils'
 
 export const styleProtocolListItem = {

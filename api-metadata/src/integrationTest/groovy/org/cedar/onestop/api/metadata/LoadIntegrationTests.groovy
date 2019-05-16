@@ -144,6 +144,26 @@ class LoadIntegrationTests extends Specification {
     step4Result.body.errors[0].detail.contains(doc2Id)
   }
 
+  def 'record with no ids fails'() {
+    String fileWoIds = 'data/BadFiles/noIdExample.xml'
+
+    when: 'we load 2 valid docs to create the potential for a false conflict'
+    def step1Result = restTemplate.exchange(buildLoadRequest('data/BadFiles/conflictStep1.xml'), Map)
+    def step2Result = restTemplate.exchange(buildLoadRequest('data/BadFiles/conflictStep2.xml'), Map)
+    def doc1Id = step1Result.body.data.id
+    def doc2Id = step2Result.body.data.id
+
+    and: 'one with no ids and refresh'
+    def step3Result = restTemplate.exchange(buildLoadRequest(fileWoIds), Map)
+    refreshIndices()
+
+    then: 'doc1 and 2 are unique records, doc3 fails no id'
+    doc1Id != doc2Id
+
+    step3Result.statusCode == HttpStatus.BAD_REQUEST
+    step3Result.body.errors[0].title.contains('Unable to parse')
+  }
+
   def 'does not allow a record with malformed temporal bounding to be loaded'() {
     when:
     def badDateResult = restTemplate.exchange(buildLoadRequest('data/BadFiles/test-iso-invalid-dates-metadata.xml'), Map)
