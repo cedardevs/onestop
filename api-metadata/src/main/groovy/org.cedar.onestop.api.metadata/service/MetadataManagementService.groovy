@@ -223,14 +223,14 @@ class MetadataManagementService {
         }
       }
     }
-    log.info("Update results: ${results}")
+    log.debug("Update results: ${results}")
     return [data: results]
   }
 
   String getUpdateId(String existingId, String incomingId){
     String esId = null
     if(MIGRATION_MODE){
-      log.info("Migration mode is active")
+      log.debug("Migration mode is active")
       if(incomingId){ // Only records from PSI have id set, this is a re-key
         if(incomingId != existingId){//re-key only once
           log.info("Re-keying record from $existingId to $incomingId")
