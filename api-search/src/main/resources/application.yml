@@ -31,7 +31,6 @@ elasticsearch:
   host: localhost
   port: 9200
   index:
-    universal-type: doc
     sitemap:
       name: sitemap
     search:

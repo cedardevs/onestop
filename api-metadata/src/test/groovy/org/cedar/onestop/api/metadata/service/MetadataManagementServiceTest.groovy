@@ -21,7 +21,6 @@ class MetadataManagementServiceTest extends Specification {
           'prefix-',
           'collection_pipeline',
           'granule_pipeline',
-          'doc',
           10,
           null,
           2,

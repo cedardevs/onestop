@@ -83,10 +83,6 @@ class ElasticsearchConfig {
       // default: granule_pipeline
       @Value('${elasticsearch.index.search.granule.pipeline-name:granule_pipeline}')
           String GRANULE_PIPELINE,
-      // default: doc
-      @Value('${elasticsearch.index.universal-type:doc}')
-          String TYPE,
-
       // default: 10
       @Value('${elasticsearch.max-tasks:10}')
           Integer MAX_TASKS,
@@ -113,7 +109,8 @@ class ElasticsearchConfig {
     this.PREFIX = PREFIX
     this.COLLECTION_PIPELINE = COLLECTION_PIPELINE
     this.GRANULE_PIPELINE = GRANULE_PIPELINE
-    this.TYPE = TYPE
+    // type is no longer configurable and based entirely on the migration path from ES5 to ES6+
+    this.TYPE = version.onOrAfter(Version.V_6_0_0) ? '_doc' : 'doc'
     this.MAX_TASKS = MAX_TASKS
     this.REQUESTS_PER_SECOND = REQUESTS_PER_SECOND
     this.SITEMAP_SCROLL_SIZE = SITEMAP_SCROLL_SIZE
@@ -121,15 +118,21 @@ class ElasticsearchConfig {
 
     this.version = version
 
-    //
-    this.jsonPipelines[this.COLLECTION_PIPELINE] = textFromFile("pipelines/${this.COLLECTION_PIPELINE}Definition.json")
-    this.jsonPipelines[this.GRANULE_PIPELINE] = textFromFile("pipelines/${this.GRANULE_PIPELINE}Definition.json")
+    // Associate pipeline names directly to their JSON definitions as strings as a memoization
+    if (version.onOrAfter(Version.V_6_0_0)) {
+      // ES6+ can make use of more efficient pipeline definitions (e.g. - removing array of fields, etc.)
+      this.jsonPipelines[this.COLLECTION_PIPELINE] = textFromFile("pipelines/${this.COLLECTION_PIPELINE}_ES5-6_Definition.json")
+      this.jsonPipelines[this.GRANULE_PIPELINE] = textFromFile("pipelines/${this.GRANULE_PIPELINE}_ES5-6_Definition.json")
+    } else {
+      this.jsonPipelines[this.COLLECTION_PIPELINE] = textFromFile("pipelines/${this.COLLECTION_PIPELINE}Definition.json")
+      this.jsonPipelines[this.GRANULE_PIPELINE] = textFromFile("pipelines/${this.GRANULE_PIPELINE}Definition.json")
+    }
 
     // Elasticsearch alias names are configurable, and this allows a central mapping between
     // the alias names configured (including the prefix) and the JSON mappings
     // https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
     if (version.onOrAfter(Version.V_6_0_0)) {
-      log.debug("::: version.onOrAfter(Version.V_6_0_0) TRUE : " + version.toString())
+      log.debug("Elasticsearch version ${version.toString()} found. Using mappings without `_all`.")
       // [_all] is deprecated in 6.0+ and will be removed in 7.0.
       // -> It is now disabled by default because it requires extra CPU cycles and disk space
       // https://www.elastic.co/guide/en/elasticsearch/reference/6.4/mapping-all-field.html
@@ -140,8 +143,7 @@ class ElasticsearchConfig {
       this.jsonMappings[this.FLAT_GRANULE_SEARCH_INDEX_ALIAS] = textFromFile("mappings/ES6/search_flattened_granuleIndex.json")
       this.jsonMappings[this.SITEMAP_INDEX_ALIAS] = textFromFile("mappings/ES6/sitemapIndex.json")
     } else {
-      log.debug("::: else FALSE : " + version.toString())
-
+      log.debug("Elasticsearch version ${version.toString()} found. Using mappings with `_all` disabled.")
       // ES 5 did not disable [_all] by default and so the mappings to support < 6.0 explicitly disable it
       // https://www.elastic.co/guide/en/elasticsearch/reference/5.6/mapping-all-field.html
       this.jsonMappings[this.COLLECTION_SEARCH_INDEX_ALIAS] = textFromFile("mappings/ES5/search_collectionIndex.json")
@@ -152,7 +154,7 @@ class ElasticsearchConfig {
       this.jsonMappings[this.SITEMAP_INDEX_ALIAS] = textFromFile("mappings/ES5/sitemapIndex.json")
     }
 
-    //
+    // Associate index aliases directly to their type identifiers for consistency
     this.typesByAlias[this.COLLECTION_SEARCH_INDEX_ALIAS] = TYPE_COLLECTION
     this.typesByAlias[this.COLLECTION_STAGING_INDEX_ALIAS] = TYPE_COLLECTION
     this.typesByAlias[this.GRANULE_SEARCH_INDEX_ALIAS] = TYPE_GRANULE
