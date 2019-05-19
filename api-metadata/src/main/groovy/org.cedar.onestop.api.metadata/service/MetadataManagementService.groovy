@@ -121,10 +121,10 @@ class MetadataManagementService {
         results << result
       }
     }
-    return [data: results + loadParsedRecords(parsedRecords).data]
+    return [data: results + loadParsedRecords(parsedRecords)]
   }
 
-  Map loadParsedRecords(List<Map<String, ?>> parsedRecords){
+  List loadParsedRecords(List<Map<String, ?>> parsedRecords){
     esService.ensureStagingIndices()
     esService.ensurePipelines()
     esService.refreshAllIndices()
@@ -179,11 +179,20 @@ class MetadataManagementService {
 
         String esId = id ?: null
         if(existingIds?.size() == 1){ //this is an update
-          esId = getUpdateId(existingIds[0], id)
+          String existingId = existingIds[0]
+          esId = id ?: existingId //PSI is the source of truth, use the ID it gave us
           log.info("Updating ${type} document with ID: $esId")
+          if(esId != existingId){ //the record from PSI was already in the index by another ID, this is the re-key
+            log.warn ("Message with id [$id] contains the same identifiers as an exsiting record [$existingId]. " +
+                "Re-keying record from $existingId to $id")
+            Map deleteResult = deleteMetadata(existingId, true) //todo more error handling / returning info to user
+          }else{
+            log.info("Updating ${type} document with ID: $esId")
+          }
         }else{
           log.info("Creating new staging document")
         }
+
 
         source.stagedDate = System.currentTimeMillis()
         result.id = esId as String
@@ -224,38 +233,7 @@ class MetadataManagementService {
       }
     }
     log.debug("Update results: ${results}")
-    return [data: results]
-  }
-
-  String getUpdateId(String existingId, String incomingId){
-    String esId = null
-    if(MIGRATION_MODE){
-      log.debug("Migration mode is active")
-      if(incomingId){ // Only records from PSI have id set, this is a re-key
-        if(incomingId != existingId){//re-key only once
-          log.info("Re-keying record from $existingId to $incomingId")
-          deleteMetadata(existingId, true)
-        }
-        esId = incomingId //update this record from PSI
-      }else{ //normal update via web API
-        esId = existingId
-      }
-    }else{
-      if(incomingId){ // Only records from PSI have id set
-        if(incomingId != existingId){//re-key only once
-          log.warn "Received record with conflicting identifiers. Message with id $incomingId " +
-              "contains the same identifiers as an exsiting record - $existingId. " +
-              "Record not inserted or updated. Turn on migration mode to re-key this record."
-        }else{
-          log.info("Updating record with PSI ID")
-          esId = incomingId
-        }
-      }else{
-        log.info("Updating record with old ID")
-        esId = existingId //normal update via web API
-      }
-    }
-    return esId
+    return results
   }
 
   public Map getMetadata(String esId, boolean idsOnly = false) {
