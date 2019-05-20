@@ -1,15 +1,19 @@
 package org.cedar.onestop.api.metadata
 
 import org.springframework.boot.SpringApplication
-import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Import
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.EnableScheduling
 
 @EnableAsync
 @EnableScheduling
-@SpringBootApplication
+// note: no @SpringApplication annotation here
+// see "Reference:" link in `DatabaseConfig`
+@Import(DatasourceConfig.class)
+@ComponentScan(["org.cedar.onestop.api.metadata", "org.cedar.onestop.elastic.common"])
 class Application extends SpringBootServletInitializer {
 
   @Override
@@ -17,7 +21,7 @@ class Application extends SpringBootServletInitializer {
     return builder.sources(Application)
   }
 
-  public static void main(String[] args) {
+  static void main(String[] args) {
     SpringApplication.run(Application.class, args)
   }
 

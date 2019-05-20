@@ -1,0 +1,16 @@
+{
+  "mappings": {
+    "doc": {
+      "dynamic": "strict",
+      "properties": {
+        "content": {
+          "type": "text"
+        },
+        "lastUpdatedDate": {
+          "type": "date",
+          "format": "epoch_millis"
+        }
+      }
+    }
+  }
+}

@@ -4,66 +4,63 @@ import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.service.SitemapETLService
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
+import spock.lang.Specification
+import spock.lang.Unroll
+
+import static org.cedar.onestop.elastic.common.DocumentUtil.*
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @ActiveProfiles(["integration", "sitemap"])
-class SitemapETLIntegrationTests extends IntegrationTest {
+@SpringBootTest(
+        classes = [
+            Application,
+
+            // provides:
+            // - `RestClient` 'restClient' bean via test containers
+            ElasticsearchTestConfig,
+        ],
+        webEnvironment = RANDOM_PORT
+)
+@Unroll
+class SitemapETLIntegrationTests extends Specification {
+
+  @Autowired
+  @Qualifier("restClient")
+  RestClient restClient
 
   @Autowired
   private ElasticsearchService elasticsearchService
 
   @Autowired
-  private MetadataManagementService metadataIndexService
+  private ETLService etlService
 
   @Autowired
-  private ETLService etlService
+  private MetadataManagementService metadataIndexService
 
   @Autowired
   private SitemapETLService sitemapEtlService
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-  String COLLECTION_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.collection.name}')
-  String COLLECTION_STAGING_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
-  String GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
-  String GRANULE_STAGING_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
-  private String FLAT_GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
-  String SITEMAP_INDEX
-
-  @Value('${elasticsearch.index.prefix:}')
-  String PREFIX
-
-  @Value('${elasticsearch.index.universal-type}')
-  private String TYPE
-
-  private final String COLLECTION_TYPE = 'collection'
-
-  @Autowired
-  @Qualifier("elasticsearchRestClient")
-  RestClient restClient
+  // this is simply used as a convenience/consistency as opposed to typing `elasticsearchService.esConfig.*`
+  ElasticsearchConfig esConfig
 
   void setup() {
+    esConfig = elasticsearchService.esConfig
     elasticsearchService.dropSearchIndices()
     elasticsearchService.dropStagingIndices()
   }
 
   def 'updating sitemap with collections'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/DEM/1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/DEM/1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -72,29 +69,32 @@ class SitemapETLIntegrationTests extends IntegrationTest {
     refreshIndices()
 
     then:
-    def indexedCols = documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
-    def collections = indexedCols[COLLECTION_TYPE]
-    collections.size == 2
-    def indexed = searchSitemap()
-    indexed.data.size == 1
-    def sitemap = getById(SITEMAP_INDEX, indexed.data[0].id)
-    sitemap.data[0].attributes.content.size == 2
+    Map indexedByType = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+    List<Map> collections = indexedByType[ElasticsearchConfig.TYPE_COLLECTION] as List<Map>
+    collections.size() == 2
+    Map indexed = searchSitemap()
+    List<Map> data = indexed.data as List<Map>
+    data.size() == 1
+    Map sitemap = getById(esConfig.SITEMAP_INDEX_ALIAS, data[0].id as String)
+    Map sitemapAttributes = sitemap.data[0].attributes as Map
+
+    Set<String> sitemapCollectionIds = sitemapAttributes.content as Set
+    sitemapCollectionIds.size() == 2
 
     and:
-    def collectionIds = collections.collect({data -> data._id}) as Set
-    def sitemapCollectionIds = sitemap.data[0].attributes.content as Set
+    Set<String> collectionIds = collections.collect({ getId(it) }) as Set
     sitemapCollectionIds == collectionIds
   }
 
   def 'sitemap with multiple submaps'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/DEM/1.xml')
-    insertMetadataFromPath('data/DEM/2.xml')
-    insertMetadataFromPath('data/DEM/3.xml')
-    insertMetadataFromPath('data/GHRSST/1.xml')
-    insertMetadataFromPath('data/GHRSST/2.xml')
-    insertMetadataFromPath('data/GHRSST/3.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/DEM/1.xml')
+    insertMetadataFromPath('test/data/xml/DEM/2.xml')
+    insertMetadataFromPath('test/data/xml/DEM/3.xml')
+    insertMetadataFromPath('test/data/xml/GHRSST/1.xml')
+    insertMetadataFromPath('test/data/xml/GHRSST/2.xml')
+    insertMetadataFromPath('test/data/xml/GHRSST/3.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -103,17 +103,25 @@ class SitemapETLIntegrationTests extends IntegrationTest {
     refreshIndices()
 
     then:
-    def indexed = searchSitemap()
-    indexed.data.size == 2
-    def submap1 = getById(SITEMAP_INDEX, indexed.data[0].id)
-    def submap2 = getById(SITEMAP_INDEX, indexed.data[1].id)
+
+    Map indexed = searchSitemap()
+    List<Map> data = indexed.data as List<Map>
+    data.size() == 2
+    def submap1 = getById(esConfig.SITEMAP_INDEX_ALIAS, data[0].id as String)
+    def submap2 = getById(esConfig.SITEMAP_INDEX_ALIAS, data[1].id as String)
+
+    Map submap1Attributes = submap1.data[0].attributes as Map
+    Map submap2Attributes = submap2.data[0].attributes as Map
+
+    Set<String> submapIds1 = submap1Attributes.content as Set
+    Set<String> submapIds2 = submap2Attributes.content as Set
 
     and:
-    def submapSizes = ([submap1.data[0].attributes.content.size] as Set) + ([submap2.data[0].attributes.content.size] as Set)
+    Set submapSizes = [submapIds1.size(), submapIds2.size()]
     submapSizes == [6,1] as Set
 
     and:
-    def submapIds = (submap1.data[0].attributes.content as Set) + (submap2.data[0].attributes.content as Set)
+    Set submapIds = submapIds1 + submapIds2
     submapIds.size() == 7
   }
 
@@ -126,46 +134,58 @@ class SitemapETLIntegrationTests extends IntegrationTest {
 
   private void insertMetadata(String document) {
     metadataIndexService.loadMetadata(document)
-    elasticsearchService.refresh(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX)
+    elasticsearchService.refresh(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
   }
 
   private Map documentsByType(String collectionIndex, String granuleIndex, String flatGranuleIndex = null) {
     elasticsearchService.refresh(collectionIndex, granuleIndex)
     if(flatGranuleIndex) { elasticsearchService.refresh(flatGranuleIndex) }
-    def endpoint = "$collectionIndex,$granuleIndex${flatGranuleIndex ? ",$flatGranuleIndex" : ''}/_search"
+    def endpoint = "${collectionIndex},${granuleIndex}${flatGranuleIndex ? ",$flatGranuleIndex" : ''}/_search"
     def request = [version: true]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
-    return response.hits.hits.groupBy({metadataIndexService.determineType(it._index)})
+    return getDocuments(response).groupBy({ esConfig.typeFromIndex(getIndex(it as Map)) })
+  }
+
+  // TODO: remove this function
+  private Map searchCollection() {
+    def requestBody = [
+            _source: ["lastUpdatedDate",]
+    ]
+    String searchEndpoint = "${esConfig.COLLECTION_SEARCH_INDEX_ALIAS}/_search"
+    def searchCollectionResponse = elasticsearchService.performRequest('GET', searchEndpoint, requestBody)
+
+    return searchCollectionResponse
   }
 
   private Map searchSitemap() {
     def requestBody = [
       _source: ["lastUpdatedDate",]
     ]
-    String searchEndpoint = "${SITEMAP_INDEX}/_search"
-    def searchResponse = elasticsearchService.performRequest('GET', searchEndpoint, requestBody )
+    String searchSitemapEndpoint = "${esConfig.SITEMAP_INDEX_ALIAS}/_search"
+    def searchSitemapResponse = elasticsearchService.performRequest('GET', searchSitemapEndpoint, requestBody )
 
     def result = [
-      data: searchResponse.hits.hits.collect {
-        [id: it._id, type: TYPE, attributes: it._source]
+      data: getDocuments(searchSitemapResponse).collect {
+        [id: getId(it), type: esConfig.TYPE, attributes: getSource(it)]
       },
       meta: [
-          took : searchResponse.took,
-          total: searchResponse.hits.total
+          took : getTook(searchSitemapResponse),
+          total: getHitsTotal(searchSitemapResponse)
       ]
     ]
     return result
   }
 
-  private Map getById(String index, String id) {
-    String endpoint = "/${PREFIX}${index}/${TYPE}/${id}"
+  private Map getById(String alias, String id) {
+    String endpoint = "/${alias}/${esConfig.TYPE}/${id}"
     def response = elasticsearchService.performRequest('GET', endpoint)
+    String type = esConfig.typeFromAlias(alias)
     if (response.found) {
       return [
           data: [[
-                     id        : response._id,
-                     type      : TYPE,
-                     attributes: response._source
+                     id        : getId(response),
+                     type      : esConfig.TYPE,
+                     attributes: getSource(response)
                  ]]
       ]
     }
@@ -173,7 +193,7 @@ class SitemapETLIntegrationTests extends IntegrationTest {
       return [
           status: HttpStatus.NOT_FOUND.value(),
           title : 'No such document',
-          detail: "Record type $type with Elasticsearch ID [ ${id} ] does not exist."
+          detail: "Record type ${type} with Elasticsearch ID [ ${id} ] does not exist."
       ]
     }
   }

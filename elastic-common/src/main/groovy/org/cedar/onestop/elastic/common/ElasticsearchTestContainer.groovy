@@ -1,4 +1,4 @@
-package org.cedar.onestop.api.search
+package org.cedar.onestop.elastic.common
 
 import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient

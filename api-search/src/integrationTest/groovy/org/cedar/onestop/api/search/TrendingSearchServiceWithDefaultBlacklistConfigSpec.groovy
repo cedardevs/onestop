@@ -1,13 +1,15 @@
-package org.cedar.onestop.api.search.service
+package org.cedar.onestop.api.search
 
 import groovy.json.JsonOutput
-import spock.lang.Specification
-import spock.lang.Unroll
-import org.springframework.test.context.ActiveProfiles
+import org.cedar.onestop.api.search.service.TrendingBlacklistConfig
+import org.cedar.onestop.api.search.service.TrendingSearchService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import spock.lang.Specification
+import spock.lang.Unroll
 
-@ActiveProfiles(["test", "unit-test"])
+@ActiveProfiles(["integration", "test", "unit-test"])
 @SpringBootTest
 class TrendingSearchServiceWithDefaultBlacklistConfigSpec extends Specification {
 

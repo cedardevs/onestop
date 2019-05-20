@@ -10,13 +10,13 @@ repositories {
 }
 
 dependencies {
-  testCompile "org.codehaus.groovy:groovy:${project.groovyVersion}"
-  testCompile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
-  testCompile "org.spockframework:spock-spring:${project.spockVersion}"
-  testCompile "org.spockframework:spock-core:${project.spockVersion}"
-  testCompile 'org.springframework.boot:spring-boot-starter-test'
-  testCompile 'org.springframework.boot:spring-boot-starter-web'
-  testCompile "org.testcontainers:testcontainers:${project.testContainersVersion}"
+  testImplementation "org.codehaus.groovy:groovy:${project.groovyVersion}"
+  testImplementation "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
+  testImplementation "org.spockframework:spock-spring:${project.spockVersion}"
+  testImplementation "org.spockframework:spock-core:${project.spockVersion}"
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation 'org.springframework.boot:spring-boot-starter-web'
+  testImplementation "org.testcontainers:testcontainers:${project.testContainersVersion}"
 }
 
 test {

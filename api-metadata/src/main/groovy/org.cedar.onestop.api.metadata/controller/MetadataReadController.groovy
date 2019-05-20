@@ -27,6 +27,7 @@ class MetadataReadController {
 
   @RequestMapping(path = '/metadata/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveJson(@PathVariable String id, HttpServletResponse response) {
+    log.debug("::retrieveJson::/metadata/{id}")
     def result = metadataService.getMetadata(id)
     if (result.data) {
       response.status = HttpStatus.OK.value()

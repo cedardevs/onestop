@@ -8,6 +8,7 @@ import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.parse.ISOParser
 import org.xml.sax.SAXException
+import org.elasticsearch.Version
 
 import java.time.temporal.ChronoUnit
 
@@ -102,13 +103,13 @@ class InventoryManagerToOneStopUtil {
     return result
   }
 
-  static Map reformatMessageForSearch(ParsedRecord record) {
+  static Map reformatMessageForSearch(ParsedRecord record, Version version) {
     Discovery discovery = record.discovery
     Analysis analysis = record.analysis
 
     Map discoveryMap = AvroUtils.avroToMap(discovery, true)
 
-    // create gcmdkeywords
+    // create GCMD keywords
     Map gcmdKeywords = createGcmdKeyword(discovery)
     discoveryMap.putAll(gcmdKeywords)
 
@@ -122,13 +123,22 @@ class InventoryManagerToOneStopUtil {
 
     // drop fields
     discoveryMap.remove("responsibleParties")
-//    discoveryMap.services = [] // FIXME this needs to be in place until we can use ES6 ignore_missing flags
-    discoveryMap.services = discoveryMap.services.collect{
-      [
-        title: it.title,
-        links: it.operations.sort()
-      ]
+
+
+    if(version.onOrAfter(Version.V_6_0_0)) {
+      discoveryMap.services = discoveryMap.services.collect{
+        [
+            title: it.title,
+            links: it.operations.sort()
+        ]
+      }
     }
+    else {
+      // this needs to be in place until we can use ES6 ignore_missing flags
+      discoveryMap.services = []
+    }
+
+
     return discoveryMap
   }
 

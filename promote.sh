@@ -48,4 +48,4 @@ updateAndCommit() {
 tag="v$releaseAsVersion"
 updateAndCommit $releaseAsVersion
 git tag "$tag"; git push origin "$tag"
-updateAndCommit $incrementToVersion
+#updateAndCommit $incrementToVersion

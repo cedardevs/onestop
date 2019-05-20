@@ -1,55 +1,73 @@
 package org.cedar.onestop.api.metadata
 
+import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
+import org.elasticsearch.Version
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import spock.lang.Specification
+import spock.lang.Unroll
 
-class ETLIntegrationTests extends IntegrationTest {
+import static org.cedar.onestop.elastic.common.DocumentUtil.*
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+
+@ActiveProfiles(["integration"])
+@SpringBootTest(
+    classes = [
+        Application,
+
+        // provides:
+        // - `RestClient` 'restClient' bean via test containers
+        ElasticsearchTestConfig,
+    ],
+    webEnvironment = RANDOM_PORT
+)
+@Unroll
+@Slf4j
+class ETLIntegrationTests extends Specification {
+
+  @Autowired
+  @Qualifier("restClient")
+  RestClient restClient
 
   @Autowired
   private ElasticsearchService elasticsearchService
 
   @Autowired
-  private MetadataManagementService metadataIndexService
-
-  @Autowired
   private ETLService etlService
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-  String COLLECTION_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.collection.name}')
-  String COLLECTION_STAGING_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
-  String GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
-  String GRANULE_STAGING_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
-  private String FLAT_GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}')
-  String PREFIX
-
-  @Value('${elasticsearch.index.universal-type}')
-  private String TYPE
-
-  private final String COLLECTION_TYPE = 'collection'
-  private final String GRANULE_TYPE = 'granule'
-  private final String FLAT_GRANULE_TYPE = 'flattenedGranule'
-
   @Autowired
-  @Qualifier("elasticsearchRestClient")
-  RestClient restClient
+  private MetadataManagementService metadataIndexService
+
+  // this is simply used as a convenience/consistency as opposed to typing `elasticsearchService.esConfig.*`
+  ElasticsearchConfig esConfig
 
   void setup() {
-    elasticsearchService.performRequest("PUT", "_cluster/settings", ['transient': ['script.max_compilations_per_minute': 200]])
+    this.esConfig = elasticsearchService.esConfig
+    this.metadataIndexService = metadataIndexService
+    this.etlService = etlService
+
+    // the "Script compilation circuit breaker" limits the number of inline script compilations within a period of time
+    if (elasticsearchService.version.onOrAfter(Version.V_6_0_0)) {
+      // 'max_compilation_rate' (default: 75/5m, meaning 75 every 5 minutes)
+      // https://www.elastic.co/guide/en/elasticsearch/reference/6.7/circuit-breaker.html#script-compilation-circuit-breaker
+      log.info("Using \'script.max_compilation_rate\' because Elasticsearch version is >= 6.0")
+      elasticsearchService.performRequest("PUT", "_cluster/settings", ['transient': ['script.max_compilations_rate': '200/1m']])
+    } else {
+      // 'max_compilations_per_minute' (default: 15)
+      // deprecation warning in 5.6.0 to be replaced in 6.0 with 'max_compilations_rate'
+      // https://www.elastic.co/guide/en/elasticsearch/reference/5.6/circuit-breaker.html#script-compilation-circuit-breaker
+      log.info("Using \'script.max_compilations_per_minute\' because Elasticsearch version is >= 6.0")
+      elasticsearchService.performRequest("PUT", "_cluster/settings", ['transient': ['script.max_compilations_per_minute': 200]])
+    }
+
     elasticsearchService.dropSearchIndices()
     elasticsearchService.dropStagingIndices()
   }
@@ -62,29 +80,32 @@ class ETLIntegrationTests extends IntegrationTest {
     noExceptionThrown()
 
     and:
-    documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX).every({it.size() == 0})
+    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
+      it.size() == 0
+    })
   }
 
   def 'updating a new collection indexes only a collection'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
 
     when:
     etlService.updateSearchIndices()
 
     then:
-    def indexed = documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
-    def collection = indexed[COLLECTION_TYPE][0]
-    collection._source.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS'
+    def indexed = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+    List<Map> indexedCollections = indexed[esConfig.TYPE_COLLECTION] as List<Map>
+    def collection = indexedCollections.first()
+    getFileIdentifier(collection) == 'gov.noaa.nodc:NDBC-COOPS'
 
     and:
     // No flattened granules were made
-    !indexed[FLAT_GRANULE_TYPE]
+    !indexed[esConfig.TYPE_FLATTENED_GRANULE]
   }
 
   def 'updating an orphan granule indexes nothing'() {
     setup:
-    insertMetadataFromPath('data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -97,8 +118,8 @@ class ETLIntegrationTests extends IntegrationTest {
 
   def 'updating a collection and granule indexes a collection, a granule, and a flattened granule'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
 
     when:
     etlService.updateSearchIndices() // runs the ETLs
@@ -108,14 +129,14 @@ class ETLIntegrationTests extends IntegrationTest {
     def flatGranuleVersions = indexedFlatGranuleVersions().keySet()
 
     then:
-    collectionVersions  == ['gov.noaa.nodc:NDBC-COOPS'] as Set
-    granuleVersions     == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
+    collectionVersions == ['gov.noaa.nodc:NDBC-COOPS'] as Set
+    granuleVersions == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
     flatGranuleVersions == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
   }
 
   def 'updating twice does nothing the second time'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
 
     when:
     etlService.updateSearchIndices()
@@ -132,13 +153,13 @@ class ETLIntegrationTests extends IntegrationTest {
 
   def 'touching a granule and updating reindexes only that granule'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/COOPS/G1.xml')
-    insertMetadataFromPath('data/COOPS/G2.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G2.xml')
     etlService.updateSearchIndices()
 
     when: 'touch one of the granules'
-    insertMetadataFromPath('data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
     etlService.updateSearchIndices()
 
     then: 'only that granule is reindexed'
@@ -151,14 +172,14 @@ class ETLIntegrationTests extends IntegrationTest {
 
   def 'touching a collection and updating reindexes only that collection but re-flattens all granules'() {
     setup:
-    insertMetadataFromPath('data/GHRSST/1.xml')
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/COOPS/G1.xml')
-    insertMetadataFromPath('data/COOPS/G2.xml')
+    insertMetadataFromPath('test/data/xml/GHRSST/1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G2.xml')
     etlService.updateSearchIndices()
 
     when: 'Touch the collection'
-    insertMetadataFromPath('data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
     etlService.updateSearchIndices()
 
     then: 'Only the collection is reindexed, not the granules'
@@ -183,80 +204,94 @@ class ETLIntegrationTests extends IntegrationTest {
     noExceptionThrown()
 
     and:
-    documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX).every({it.size() == 0})
+    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
+      it.size() == 0
+    })
   }
 
   def 'rebuilding with an orphan granule indexes nothing'() {
     setup:
-    insertMetadataFromPath('data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
 
     when:
     etlService.rebuildSearchIndices()
 
     then:
-    documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX).every({it.size() == 0})
+    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
+      it.size() == 0
+    })
   }
 
   def 'rebuilding with a collection and granule indexes a collection, a granule, and a flattened granule'() {
     setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
 
     when:
     etlService.rebuildSearchIndices()
-    def staged = documentsByType(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX)
-    def indexed = documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
+    Map staged = documentsByType(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
+    List<Map> stagedCollections = staged[esConfig.TYPE_COLLECTION] as List<Map>
+    List<Map> stagedGranules = staged[esConfig.TYPE_GRANULE] as List<Map>
+
+    Map indexed = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+    List<Map> indexedCollections = indexed[esConfig.TYPE_COLLECTION] as List<Map>
+    List<Map> indexedGranules = indexed[esConfig.TYPE_GRANULE] as List<Map>
+    List<Map> indexedFlatGranules = indexed[esConfig.TYPE_FLATTENED_GRANULE] as List<Map>
+
 
     then: // one collection and one granule are indexed; one flattened granule is generated
-    indexed[COLLECTION_TYPE].size() == 1
-    indexed[GRANULE_TYPE].size() == 1
-    indexed[FLAT_GRANULE_TYPE].size() == 1
+    indexedCollections.size() == 1
+    indexedGranules.size() == 1
+    indexedFlatGranules.size() == 1
 
-    def indexedCollection = indexed[COLLECTION_TYPE][0]
-    def indexedGranule = indexed[GRANULE_TYPE][0]
-    def flatGranule = indexed[FLAT_GRANULE_TYPE][0]
-    def stagedCollection = staged[COLLECTION_TYPE][0]
-    def stagedGranule = staged[GRANULE_TYPE][0]
+    def indexedCollection = indexedCollections.first()
+    def indexedGranule = indexedGranules.first()
+    def flatGranule = indexedFlatGranules.first()
+    def stagedCollection = stagedCollections.first()
+    def stagedGranule = stagedGranules.first()
 
     and: // the collection is the same as staging
-    indexedCollection._id == stagedCollection._id
-    indexedCollection._source.fileIdentifier == stagedCollection._source.fileIdentifier
-    indexedCollection._source.doi == stagedCollection._source.doi
+    getId(indexedCollection) == getId(stagedCollection)
+    getFileIdentifier(indexedCollection) == getFileIdentifier(stagedCollection)
+    getDOI(indexedCollection) == getDOI(stagedCollection)
 
     and: // the granule is the same as staging
-    indexedGranule._id == stagedGranule._id
-    indexedGranule._source.fileIdentifier == stagedGranule._source.fileIdentifier
-    indexedGranule._source.parentIdentifier == stagedGranule._source.parentIdentifier
+    getId(indexedGranule) == getId(stagedGranule)
+    getFileIdentifier(indexedGranule) == getFileIdentifier(stagedGranule)
+    getParentIdentifier(indexedGranule) == getParentIdentifier(stagedGranule)
 
     and: // the granule is connected to the collection
-    indexedGranule._source.internalParentIdentifier == indexedCollection._id
+    getInternalParentIdentifier(indexedGranule) == getId(indexedCollection)
 
     and: // the flattened granule has granule and collection data
-    flatGranule._id == indexedGranule._id
-    flatGranule._source.internalParentIdentifier == indexedCollection._id
-    flatGranule._source.doi == indexedCollection._source.doi
+    getId(flatGranule) == getId(indexedGranule)
+    getInternalParentIdentifier(flatGranule) == getId(indexedCollection)
+    getDOI(flatGranule) == getDOI(indexedCollection)
   }
 
   def 'rebuilding with an updated collection builds a whole new index'() {
     setup:
-    insertMetadataFromPath('data/GHRSST/1.xml')
-    insertMetadataFromPath('data/COOPS/C1.xml')
-    insertMetadataFromPath('data/COOPS/G1.xml')
-    insertMetadataFromPath('data/COOPS/G2.xml')
+    insertMetadataFromPath('test/data/xml/GHRSST/1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/G2.xml')
     etlService.rebuildSearchIndices()
 
     when: 'touch the collection'
-    insertMetadataFromPath('data/COOPS/C1.xml')
+    insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
     etlService.rebuildSearchIndices()
-    def indexed = documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
+    def indexed = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+    List<Map> indexedCollections = indexed[esConfig.TYPE_COLLECTION] as List<Map>
+    List<Map> indexedGranules = indexed[esConfig.TYPE_GRANULE] as List<Map>
+    List<Map> indexedFlatGranules = indexed[esConfig.TYPE_FLATTENED_GRANULE] as List<Map>
 
     then: 'everything has a fresh version in a new index'
-    indexed[COLLECTION_TYPE].size() == 2
-    indexed[COLLECTION_TYPE].every({it._version == 1})
-    indexed[GRANULE_TYPE].size() == 2
-    indexed[GRANULE_TYPE].every({it._version == 1})
-    indexed[FLAT_GRANULE_TYPE].size() == 2
-    indexed[FLAT_GRANULE_TYPE].every({it._version == 1})
+    indexedCollections.size() == 2
+    indexedCollections.every({ it._version == 1 })
+    indexedGranules.size() == 2
+    indexedGranules.every({ it._version == 1 })
+    indexedFlatGranules.size() == 2
+    indexedFlatGranules.every({ it._version == 1 })
   }
 
 
@@ -268,38 +303,40 @@ class ETLIntegrationTests extends IntegrationTest {
 
   private void insertMetadata(String document) {
     metadataIndexService.loadMetadata(document)
-    elasticsearchService.refresh(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX)
+    elasticsearchService.refresh(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
   }
 
   private Map indexedCollectionVersions() {
-    indexedItemVersions(COLLECTION_SEARCH_INDEX)
+    indexedDocumentVersions(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
   }
 
   private Map indexedGranuleVersions() {
-    indexedItemVersions(GRANULE_SEARCH_INDEX)
+    indexedDocumentVersions(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
   }
 
   private Map indexedFlatGranuleVersions() {
-    indexedItemVersions(FLAT_GRANULE_SEARCH_INDEX)
+    indexedDocumentVersions(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
   }
 
   private Map documentsByType(String collectionIndex, String granuleIndex, String flatGranuleIndex = null) {
     elasticsearchService.refresh(collectionIndex, granuleIndex)
-    if(flatGranuleIndex) { elasticsearchService.refresh(flatGranuleIndex) }
+    if (flatGranuleIndex) {
+      elasticsearchService.refresh(flatGranuleIndex)
+    }
     def endpoint = "$collectionIndex,$granuleIndex${flatGranuleIndex ? ",$flatGranuleIndex" : ''}/_search"
     def request = [version: true]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
-    return response.hits.hits.groupBy({metadataIndexService.determineType(it._index)})
+    return getDocuments(response).groupBy({ esConfig.typeFromIndex(getIndex(it)) })
   }
 
-  private Map indexedItemVersions(String index) {
-    def endpoint = "$index/_search"
+  private Map<String, Integer> indexedDocumentVersions(String alias) {
+    def endpoint = "${alias}/_search"
     def request = [
         version: true,
         _source: 'fileIdentifier'
     ]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
-    return response.hits.hits.collectEntries { [(it._source.fileIdentifier): it._version] }
+    return getDocuments(response).collectEntries { [(getFileIdentifier(it)): getVersion(it)] }
   }
 
 }

@@ -3,36 +3,11 @@ package org.cedar.onestop.api.search
 import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import spock.lang.Specification
-import spock.lang.Unroll
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-
-@ActiveProfiles("integration")
-@SpringBootTest(classes = [Application, IntegrationTestConfig], webEnvironment = RANDOM_PORT)
-@Unroll
-class IntegrationTest extends Specification {
-
-  @Autowired
-  RestClient restClient
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-  String COLLECTION_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
-  String GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
-  String FLATTENED_GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.universal-type}')
-  String TYPE
+class TestUtil {
 
   static final Map testData = [
       'DEM': [
@@ -84,68 +59,65 @@ class IntegrationTest extends Specification {
       ]
   ]
 
-  void refreshAndLoadGenericTestIndex(String index) {
-        // See /docs/development/integration-tests/README.md for more information about bulk data file and their structure
-
+  static void refreshAndLoadGenericTestIndex(String index, RestClient restClient) {
     Response response = restClient.performRequest('DELETE', '_all')
     println("DELETE _all: ${response}")
 
-    def cl = ClassLoader.systemClassLoader
-    def genericIndexJson = cl.getResourceAsStream("generic/${index}/index.json").text
-    def genericIndexMapping = new NStringEntity(genericIndexJson, ContentType.APPLICATION_JSON)
-    def bulkRequests = cl.getResourceAsStream("generic/${index}/bulkData.txt").text
-    def bulkRequestBody = new NStringEntity(bulkRequests, ContentType.APPLICATION_JSON)
+    String genericIndexJson = ElasticsearchConfig.textFromFile("test/data/generic/${index}/index.json")
+    NStringEntity genericIndexMapping = new NStringEntity(genericIndexJson, ContentType.APPLICATION_JSON)
 
-    def newIndexResponse = restClient.performRequest('PUT', index, Collections.EMPTY_MAP, genericIndexMapping)
+    String bulkRequests = ElasticsearchConfig.textFromFile("test/data/generic/${index}/bulkData.txt")
+    NStringEntity bulkRequestBody = new NStringEntity(bulkRequests, ContentType.APPLICATION_JSON)
+
+    Response newIndexResponse = restClient.performRequest('PUT', index, Collections.EMPTY_MAP, genericIndexMapping)
     println("PUT new $index index: ${newIndexResponse}")
 
-    def dataLoadResponse = restClient.performRequest('POST', '_bulk', Collections.EMPTY_MAP, bulkRequestBody)
-    println("POST bulk data load to $index: $dataLoadResponse")
+    Response dataLoadResponse = restClient.performRequest('POST', '_bulk', Collections.EMPTY_MAP, bulkRequestBody)
+    println("POST bulk data load to ${index}: ${dataLoadResponse}")
 
     restClient.performRequest('POST', '_refresh')
   }
 
-  void refreshAndLoadSearchIndices() {
+  static void refreshAndLoadSearchIndices(RestClient restClient, ElasticsearchConfig esConfig) {
     Response response = restClient.performRequest('DELETE', '_all')
     println("DELETE _all: ${response}")
 
-    def cl = ClassLoader.systemClassLoader
-    def searchCollectionIndexJson = cl.getResourceAsStream('search_collectionIndex.json').text
+    def searchCollectionIndexJson = esConfig.jsonMapping(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
     def collectionIndexSettings = new NStringEntity(searchCollectionIndexJson, ContentType.APPLICATION_JSON)
-    def searchGranuleIndexJson = cl.getResourceAsStream('search_granuleIndex.json').text
+    def searchGranuleIndexJson = esConfig.jsonMapping(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
     def granuleIndexSettings = new NStringEntity(searchGranuleIndexJson, ContentType.APPLICATION_JSON)
-    def searchFlattenedGranuleIndexJson = cl.getResourceAsStream('search_flattened_granuleIndex.json').text
+    def searchFlattenedGranuleIndexJson = esConfig.jsonMapping(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
     def flattenedGranuleIndexSettings = new NStringEntity(searchFlattenedGranuleIndexJson, ContentType.APPLICATION_JSON)
 
-    response = restClient.performRequest('PUT', COLLECTION_SEARCH_INDEX, Collections.EMPTY_MAP, collectionIndexSettings)
+    response = restClient.performRequest('PUT', esConfig.COLLECTION_SEARCH_INDEX_ALIAS, Collections.EMPTY_MAP, collectionIndexSettings)
     println("PUT new collection index: ${response}")
 
-    response = restClient.performRequest('PUT', GRANULE_SEARCH_INDEX, Collections.EMPTY_MAP, granuleIndexSettings)
+    response = restClient.performRequest('PUT', esConfig.GRANULE_SEARCH_INDEX_ALIAS, Collections.EMPTY_MAP, granuleIndexSettings)
     println("PUT new granule index: ${response}")
 
-    response = restClient.performRequest('PUT', FLATTENED_GRANULE_SEARCH_INDEX, Collections.EMPTY_MAP, flattenedGranuleIndexSettings)
+    response = restClient.performRequest('PUT', esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS, Collections.EMPTY_MAP, flattenedGranuleIndexSettings)
     println("PUT new flattened-granule index: ${response}")
 
     testData.each{ name, dataset ->
       dataset.each { collection, collectionData ->
-        def metadata = cl.getResourceAsStream("data/${name}/${collection}.json").text
+        def metadata = ElasticsearchConfig.textFromFile("test/data/json/${name}/${collection}.json")
         def id = collectionData.id
-        def collectionEndpoint = "/$COLLECTION_SEARCH_INDEX/$TYPE/$id"
+        def collectionEndpoint = "/${esConfig.COLLECTION_SEARCH_INDEX_ALIAS}/${esConfig.TYPE}/${id}"
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
         response = restClient.performRequest('PUT', collectionEndpoint, Collections.EMPTY_MAP, record)
         println("PUT new collection: ${response}")
 
         collectionData.granules.each { granule, granuleData ->
-          metadata = cl.getResourceAsStream("data/${name}/${granule}.json").text
-          def granuleEndpoint = "/$GRANULE_SEARCH_INDEX/$TYPE/$granuleData.id"
+          metadata = ElasticsearchConfig.textFromFile("test/data/json/${name}/${granule}.json")
+          def granuleEndpoint = "/${esConfig.GRANULE_SEARCH_INDEX_ALIAS}/${esConfig.TYPE}/${granuleData.id}"
           record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
           response = restClient.performRequest('PUT', granuleEndpoint, Collections.EMPTY_MAP, record)
           println("PUT new granule: ${response}")
         }
 
         collectionData.flattenedGranules.each { flattenedGranule, flattenedGranuleData ->
-          metadata = cl.getResourceAsStream("data/${name}/${flattenedGranule}.json").text
-          def flattenedGranuleEndpoint = "/$FLATTENED_GRANULE_SEARCH_INDEX/$TYPE/$flattenedGranuleData.id"
+          metadata = ElasticsearchConfig.textFromFile("test/data/json/${name}/${flattenedGranule}.json")
+          def flattenedGranuleEndpoint = "/${esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS}/${esConfig.TYPE}/${flattenedGranuleData.id}"
           record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
           response = restClient.performRequest('PUT', flattenedGranuleEndpoint, Collections.EMPTY_MAP, record)
           println("PUT new flattened granule: ${response}")

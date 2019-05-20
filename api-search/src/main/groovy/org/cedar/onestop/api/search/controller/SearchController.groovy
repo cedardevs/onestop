@@ -29,7 +29,7 @@ class SearchController {
   private ElasticsearchService elasticsearchService
 
   @Autowired
-  public SearchController(ElasticsearchService elasticsearchService, UiConfig uiConfig) {
+  SearchController(ElasticsearchService elasticsearchService, UiConfig uiConfig) {
     this.elasticsearchService = elasticsearchService
     this.uiConfig = uiConfig
   }

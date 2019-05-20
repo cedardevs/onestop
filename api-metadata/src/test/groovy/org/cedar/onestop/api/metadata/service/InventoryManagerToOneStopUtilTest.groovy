@@ -3,6 +3,7 @@ package org.cedar.onestop.api.metadata.service
 import groovy.json.JsonOutput
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
+import org.elasticsearch.Version
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -210,9 +211,13 @@ class InventoryManagerToOneStopUtilTest extends Specification {
 
   def "new record is ready for onestop"() {
     when:
-    def result = InventoryManagerToOneStopUtil.reformatMessageForSearch(inputRecord)
+
+    // TODO: test both ES6+ and ES5- ?
+    def result = InventoryManagerToOneStopUtil.reformatMessageForSearch(inputRecord, Version.V_6_1_2)
 
     then:
+
+    // TODO: conditional based on ES6+ and ES5-?
     result.services == []
     result.accessionValues == []
 

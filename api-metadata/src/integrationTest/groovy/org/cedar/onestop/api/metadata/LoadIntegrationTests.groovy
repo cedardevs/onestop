@@ -1,19 +1,38 @@
 package org.cedar.onestop.api.metadata
 
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
+import spock.lang.Specification
+import spock.lang.Unroll
 
-class LoadIntegrationTests extends IntegrationTest {
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+
+@ActiveProfiles(["integration"])
+@SpringBootTest(
+        classes = [
+            Application,
+
+            // provides:
+            // - `RestClient` 'restClient' bean via test containers
+            ElasticsearchTestConfig,
+        ],
+        webEnvironment = RANDOM_PORT
+)
+@Unroll
+class LoadIntegrationTests extends Specification {
 
   /**
    * These tests cover:
@@ -33,14 +52,14 @@ class LoadIntegrationTests extends IntegrationTest {
   private String contextPath
 
   @Autowired
-  @Qualifier("elasticsearchRestClient")
+  @Qualifier("restClient")
   RestClient restClient
 
   @Autowired
   ElasticsearchService elasticsearchService
 
-  private collectionPath = "data/COOPS/C1.xml"
-  private granulePath = "data/COOPS/G1.xml"
+  private collectionPath = "test/data/xml/COOPS/C1.xml"
+  private granulePath = "test/data/xml/COOPS/G1.xml"
 
   RestTemplate restTemplate
   String metadataURI

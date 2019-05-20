@@ -46,11 +46,11 @@ task tarResults(type: Tar) {
     dependsOn 'compile'
 
     from "${buildDir}/dist"
-    baseName = 'onestop-client'
-    version = ''//project.version
-    compression = 'gzip'
-    extension = 'tar.gz'
-    destinationDir = file("${buildDir}/libs")
+    archiveBaseName.set("onestop-client")
+    archiveExtension.set("tar.gz")
+    version = '' //project.version
+    setCompression(Compression.GZIP)
+    destinationDirectory = file("${buildDir}/libs")
 }
 
 assemble.dependsOn 'tarResults'
@@ -84,17 +84,14 @@ check {
 }
 
 build {
-    dependsOn 'assemble', 'check'
+    dependsOn 'assemble', 'check', 'sourceJar'
 }
 
 task sourceJar(type: Jar) {
-  classifier "sources"
-
-  baseName = "${rootProject.name}-${project.name}"
+  archiveClassifier.set("sources")
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   from "${projectDir}/src"
 }
-
-build.dependsOn sourceJar
 
 publishing {
     publications {

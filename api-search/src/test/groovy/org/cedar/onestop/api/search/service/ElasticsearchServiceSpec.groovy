@@ -4,6 +4,8 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.http.StatusLine
 import org.apache.http.nio.entity.NStringEntity
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.elasticsearch.Version
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import spock.lang.Specification
@@ -15,7 +17,9 @@ class ElasticsearchServiceSpec extends Specification {
   def mockRestClient = Mock(RestClient)
   def searchConfig = new SearchConfig()
   def searchRequestParserService = new SearchRequestParserService(searchConfig)
-  def elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient)
+  def mockVersion = Version.V_6_1_2
+  def mockElasticsearchConfig = Mock(ElasticsearchConfig)
+  def elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient, mockVersion, mockElasticsearchConfig)
 
   def 'executes a search'() {
     def testIndex = 'test_index'

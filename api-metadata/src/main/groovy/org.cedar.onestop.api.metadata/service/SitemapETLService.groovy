@@ -2,50 +2,35 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import static org.cedar.onestop.elastic.common.DocumentUtil.*
 
 @Slf4j
 @Profile("sitemap")
 @Service
 class SitemapETLService {
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-  private String COLLECTION_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
-  private String SITEMAP_INDEX
-
-  @Value('${elasticsearch.index.universal-type}')
-  String TYPE
-
-  @Value('${etl.sitemap.scroll-size}')
-  Integer SITEMAP_SCROLL_SIZE
-
-  @Value('${etl.sitemap.collections-per-submap}')
-  Integer SITEMAP_COLLECTIONS_PER_SUBMAP
-
-  @Value('${elasticsearch.max-tasks}')
-  private Integer MAX_TASKS
-
   private ElasticsearchService elasticsearchService
+  private ElasticsearchConfig esConfig
 
   @Autowired
   SitemapETLService(ElasticsearchService elasticsearchService) {
     this.elasticsearchService = elasticsearchService
+    this.esConfig = elasticsearchService.esConfig
   }
 
   @Async
-  public void rebuildSearchIndicesAsync() {
+  void rebuildSearchIndicesAsync() {
     rebuildSearchIndices()
   }
 
   @Async
-  public void updateSearchIndicesAsync() {
+  void updateSearchIndicesAsync() {
     updateSitemap()
   }
 
@@ -55,46 +40,44 @@ class SitemapETLService {
    * 3) Move the search alias to point to the new index
    * 4) Drop the old search index
    */
-  public void rebuildSearchIndices() {
+  void rebuildSearchIndices() {
     log.info "Starting sitemap indices rebuilding process"
     def start = System.currentTimeMillis()
     elasticsearchService.ensureIndices()
     elasticsearchService.ensurePipelines()
-    def newSitemapIndex = elasticsearchService.create(SITEMAP_INDEX)
+    def newSitemapIndex = elasticsearchService.createIndex(esConfig.SITEMAP_INDEX_ALIAS)
 
     try {
-      def sitemapResult = runSitemapEtl(newCollectionSearchIndex, newSitemapIndex)
+      def sitemapResult = runSitemapEtl(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, newSitemapIndex)
       elasticsearchService.refresh(newSitemapIndex)
-      elasticsearchService.moveAliasToIndex(SITEMAP_INDEX, newSitemapIndex, true)
+      elasticsearchService.moveAliasToIndex(esConfig.SITEMAP_INDEX_ALIAS, newSitemapIndex, true)
       def end = System.currentTimeMillis()
       log.info "Indexed ${sitemapResult.updated + sitemapResult.created} of ${sitemapResult.total} sitemap in ${(end - start) / 1000}s"
     }
     catch (Exception e) {
       log.error "Sitemap reindexing failed because of: " + ExceptionUtils.getRootCauseMessage(e)
       log.error "Root cause stack trace: \n" + ExceptionUtils.getRootCauseStackTrace(e)
-      elasticsearchService.drop(newSitemapIndex)
+      elasticsearchService.dropIndex(newSitemapIndex)
     }
   }
 
   @Scheduled(initialDelayString='${etl.sitemap.delay.initial}', fixedDelayString = '${etl.sitemap.delay.fixed}')
-  public void updateSitemap() {
+  void updateSitemap() {
     log.info("starting sitemap update process")
     def start = System.currentTimeMillis()
-    def newSitemapIndex =  elasticsearchService.create(SITEMAP_INDEX)
-    def sitemapResult = runSitemapEtl(COLLECTION_SEARCH_INDEX, newSitemapIndex)
-    elasticsearchService.moveAliasToIndex(SITEMAP_INDEX, newSitemapIndex, true)
+    def newSitemapIndex =  elasticsearchService.createIndex(esConfig.SITEMAP_INDEX_ALIAS)
+    def sitemapResult = runSitemapEtl(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, newSitemapIndex)
+    elasticsearchService.moveAliasToIndex(esConfig.SITEMAP_INDEX_ALIAS, newSitemapIndex, true)
     def end = System.currentTimeMillis()
     log.info "Sitemap updated with ${sitemapResult.updated} and created ${sitemapResult.created} in ${(end-start) / 1000}s"
   }
 
-  private Map runSitemapEtl(String collectionIndex, String destination ) {
+  private Map runSitemapEtl(String collectionIndex, String destination) {
     elasticsearchService.ensureSearchIndices()
     elasticsearchService.refresh(collectionIndex, destination)
 
-    def collections = []
-    def lastSubcollection = []
-    def collectionsTotal
-    def currentCount
+    List<List<String>> collections = []
+    List<String> lastSubcollection = []
 
     def nextScrollRequest = { String scroll_id ->
       def requestBody = [
@@ -107,28 +90,33 @@ class SitemapETLService {
     def collectionIdRequestBody = [
       _source: false,
       sort: "_doc", // Non-scoring query, so this will be most efficient ordering
-      size: SITEMAP_SCROLL_SIZE
+      size: esConfig.SITEMAP_SCROLL_SIZE
       ]
 
     def collectionResponse = elasticsearchService.performRequest('POST', "${collectionIndex}/_search?scroll=1m", collectionIdRequestBody)
 
-    def scrollId = collectionResponse._scroll_id
+    String scrollId = getScrollId(collectionResponse)
 
-    collectionsTotal = collectionResponse.hits.total
-    currentCount = collectionResponse.hits.hits*._id.size()
-    lastSubcollection.addAll(collectionResponse.hits.hits*._id)
+    int collectionsTotal = getHitsTotal(collectionResponse)
+    List<Map> collectionDocuments = getDocuments(collectionResponse)
+    List<String> collectionIds = collectionDocuments.collect { getId(it) }
+    int collectionCount = collectionDocuments.size()
+    int currentCount = collectionCount
+    lastSubcollection.addAll(collectionIds)
 
     while(currentCount < collectionsTotal) {
-      def scrollResponse = nextScrollRequest(scrollId)
-      scrollId = scrollResponse._scroll_id
+      Map scrollResponse = nextScrollRequest(scrollId)
+      List<Map> scrollDocuments = getDocuments(scrollResponse)
+      scrollId = getScrollId(scrollResponse)
+      List<String> scrollCollectionIds = scrollDocuments.collect { getId(it) }
 
-      currentCount += collectionResponse.hits.hits*._id.size()
-      if(lastSubcollection.size() < SITEMAP_COLLECTIONS_PER_SUBMAP) {
-        lastSubcollection.addAll(scrollResponse.hits.hits*._id)
+      currentCount += collectionCount
+      if(lastSubcollection.size() < esConfig.SITEMAP_COLLECTIONS_PER_SUBMAP) {
+        lastSubcollection.addAll(scrollCollectionIds)
       } else {
         collections.add(lastSubcollection)
         lastSubcollection = []
-        lastSubcollection.addAll(scrollResponse.hits.hits*._id)
+        lastSubcollection.addAll(scrollCollectionIds)
       }
     }
     if(lastSubcollection.size() > 0) {
@@ -137,43 +125,43 @@ class SitemapETLService {
 
     elasticsearchService.performRequest('DELETE', "_search/scroll/${scrollId}")
 
-    def tasksInFlight = []
-    def countSitemappedThings = [
+    List<String> tasksInFlight = []
+    Map countSitemappedThings = [
         total: 0,
         updated: 0,
         created: 0
    ]
 
     collections.each { subcollection ->
-      while(tasksInFlight.size() == MAX_TASKS) {
+      while(tasksInFlight.size() == esConfig.MAX_TASKS) {
         tasksInFlight.removeAll { taskId ->
-          def status = checkTask(taskId)
+          def status = elasticsearchService.checkTask(taskId)
           if(status.completed) {
             countSitemappedThings.total += status.totalDocs
             countSitemappedThings.updated += status.updated
             countSitemappedThings.created += status.created
-            deleteTask(taskId)
+            elasticsearchService.deleteTask(taskId)
           }
           return status.completed
         }
         sleep(1000)
       }
 
-      def task = etlSitemapTask(collectionIndex, destination, subcollection)
+      def task = etlSitemapTask(destination, subcollection)
       if (task) {
         tasksInFlight << task
       }
     }
 
-    while(tasksInFlight.size() >0) {
+    while(tasksInFlight.size() > 0) {
       tasksInFlight.removeAll { taskId ->
-        def status = checkTask(taskId)
+        def status = elasticsearchService.checkTask(taskId)
         if(status.completed) {
 
           countSitemappedThings.total += status.totalDocs
           countSitemappedThings.updated += status.updated
           countSitemappedThings.created += status.created
-          deleteTask(taskId)
+          elasticsearchService.deleteTask(taskId)
         }
         return status.completed
       }
@@ -183,10 +171,9 @@ class SitemapETLService {
     return countSitemappedThings
   }
 
-  private String etlSitemapTask(String collectionIndex, String dest, def collections) {
-    log.info "etl sitemap task: ${collections}"
-
-     String endpoint = "${dest}/${TYPE}/"
+  private String etlSitemapTask(String dest, List<String> collections) {
+    log.info "ETL sitemap task: ${collections}"
+     String endpoint = "${dest}/${esConfig.TYPE}/"
      def body = [
        lastUpdatedDate: System.currentTimeMillis(),
        content: collections
@@ -194,26 +181,6 @@ class SitemapETLService {
     def taskId = elasticsearchService.performRequest('POST', endpoint, body).task
     log.debug("Task [ ${taskId} ] started for indexing of flattened granules")
     return taskId
-  }
-
-  // TODO refactor out common helpers
-  private boolean deleteTask(String taskId) {
-    def result = elasticsearchService.performRequest('DELETE', ".tasks/task/${taskId}")
-    log.debug("Deleted task [ ${taskId} ]: ${result.found}")
-    return result.found
-  }
-
-  private Map checkTask(String taskId) {
-    def result = elasticsearchService.performRequest('GET', "_tasks/${taskId}")
-    def completed = result.completed
-    return [
-        completed: completed,
-        totalDocs: result.task.status.total,
-        updated: result.task.status.updated,
-        created: result.task.status.created,
-        took: completed ? result.response.took : null,
-        failures: completed ? result.response.failures : []
-    ]
   }
 
 }

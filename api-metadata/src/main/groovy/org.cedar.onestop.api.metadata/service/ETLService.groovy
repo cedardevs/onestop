@@ -2,63 +2,35 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import static org.cedar.onestop.elastic.common.DocumentUtil.*
 
 @Slf4j
 @Service
 class ETLService {
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-  private String COLLECTION_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.collection.name}')
-  private String COLLECTION_STAGING_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
-  private String GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
-  private String GRANULE_STAGING_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
-  private String FLAT_GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.universal-type}')
-  String TYPE
-
-  @Value('${elasticsearch.index.search.collection.pipeline-name}')
-  private String COLLECTION_PIPELINE
-
-  @Value('${elasticsearch.index.search.granule.pipeline-name}')
-  private String GRANULE_PIPELINE
-
-  @Value('${elasticsearch.max-tasks}')
-  private Integer MAX_TASKS
-
-  @Value('${elasticsearch.requests-per-second:}')
-  private Integer REQUESTS_PER_SECOND
-
-
   private ElasticsearchService elasticsearchService
   private MetadataManagementService metadataManagementService
+  private ElasticsearchConfig esConfig
 
   @Autowired
   ETLService(ElasticsearchService elasticsearchService, MetadataManagementService metadataManagementService) {
     this.elasticsearchService = elasticsearchService
     this.metadataManagementService = metadataManagementService
+    this.esConfig = elasticsearchService.esConfig
   }
 
   @Async
-  public void rebuildSearchIndicesAsync() {
+  void rebuildSearchIndicesAsync() {
     rebuildSearchIndices()
   }
 
   @Async
-  public void updateSearchIndicesAsync() {
+  void updateSearchIndicesAsync() {
     updateSearchIndices()
   }
 
@@ -68,23 +40,23 @@ class ETLService {
    * 3) Move the search alias to point to the new index
    * 4) Drop the old search index
    */
-  public void rebuildSearchIndices() {
+  void rebuildSearchIndices() {
     log.info "Starting search indices rebuilding process"
     def start = System.currentTimeMillis()
     elasticsearchService.ensureIndices()
     elasticsearchService.ensurePipelines()
-    elasticsearchService.refresh(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX)
-    def newCollectionSearchIndex = elasticsearchService.create(COLLECTION_SEARCH_INDEX)
-    def newGranuleSearchIndex = elasticsearchService.create(GRANULE_SEARCH_INDEX)
-    def newFlatGranuleSearchIndex = elasticsearchService.create(FLAT_GRANULE_SEARCH_INDEX)
+    elasticsearchService.refresh(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
+    def newCollectionSearchIndex = elasticsearchService.createIndex(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+    def newGranuleSearchIndex = elasticsearchService.createIndex(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
+    def newFlatGranuleSearchIndex = elasticsearchService.createIndex(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
 
     try {
-      def etlResult = runETL(COLLECTION_STAGING_INDEX, newCollectionSearchIndex, GRANULE_STAGING_INDEX, newGranuleSearchIndex)
+      def etlResult = runETL(esConfig.COLLECTION_STAGING_INDEX_ALIAS, newCollectionSearchIndex, esConfig.GRANULE_STAGING_INDEX_ALIAS, newGranuleSearchIndex)
       def flattenResult = runFlatteningETL(newCollectionSearchIndex, newGranuleSearchIndex, newFlatGranuleSearchIndex)
       elasticsearchService.refresh(newCollectionSearchIndex, newGranuleSearchIndex, newFlatGranuleSearchIndex)
-      elasticsearchService.moveAliasToIndex(COLLECTION_SEARCH_INDEX, newCollectionSearchIndex, true)
-      elasticsearchService.moveAliasToIndex(GRANULE_SEARCH_INDEX, newGranuleSearchIndex, true)
-      elasticsearchService.moveAliasToIndex(FLAT_GRANULE_SEARCH_INDEX, newFlatGranuleSearchIndex, true)
+      elasticsearchService.moveAliasToIndex(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, newCollectionSearchIndex, true)
+      elasticsearchService.moveAliasToIndex(esConfig.GRANULE_SEARCH_INDEX_ALIAS, newGranuleSearchIndex, true)
+      elasticsearchService.moveAliasToIndex(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS, newFlatGranuleSearchIndex, true)
       def end = System.currentTimeMillis()
       log.info "Indexed ${etlResult.updatedCollections + etlResult.createdCollections} of ${etlResult.totalCollectionsInRequest} requested collections, " +
           "${etlResult.updatedGranules + etlResult.createdGranules} of ${etlResult.totalGranulesInRequest} requested granules, and flattened " +
@@ -93,18 +65,18 @@ class ETLService {
     catch (Exception e) {
       log.error "Search reindexing failed because of: " + ExceptionUtils.getRootCauseMessage(e)
       log.error "Root cause stack trace: \n" + ExceptionUtils.getRootCauseStackTrace(e)
-      elasticsearchService.drop(newCollectionSearchIndex)
-      elasticsearchService.drop(newGranuleSearchIndex)
-      elasticsearchService.drop(newFlatGranuleSearchIndex)
+      elasticsearchService.dropIndex(newCollectionSearchIndex)
+      elasticsearchService.dropIndex(newGranuleSearchIndex)
+      elasticsearchService.dropIndex(newFlatGranuleSearchIndex)
     }
   }
 
   @Scheduled(initialDelay = 60000L, fixedDelay = 600000L) // 1 minute after startup then every 10 minutes after previous run ends
-  public void updateSearchIndices() {
+  void updateSearchIndices() {
     // Update collections & granules
     log.info("Starting search indices update process")
     def start = System.currentTimeMillis()
-    def etlResult =  runETL(COLLECTION_STAGING_INDEX, COLLECTION_SEARCH_INDEX, GRANULE_STAGING_INDEX, GRANULE_SEARCH_INDEX)
+    def etlResult =  runETL(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS)
     def end = System.currentTimeMillis()
     log.info "Reindexed ${etlResult.updatedCollections + etlResult.createdCollections} of ${etlResult.totalCollectionsInRequest} requested collections and " +
         "${etlResult.updatedGranules + etlResult.createdGranules} of ${etlResult.totalGranulesInRequest} requested granules in ${(end - start) / 1000}s"
@@ -112,7 +84,7 @@ class ETLService {
     // Update flattened granules
     log.info("Starting flattened granules search index update process")
     start = System.currentTimeMillis()
-    def flatResult = runFlatteningETL(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
+    def flatResult = runFlatteningETL(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
     end = System.currentTimeMillis()
     log.info "Updated ${flatResult.updated} and created ${flatResult.created} flattened granules in ${(end - start) / 1000}s"
   }
@@ -153,8 +125,9 @@ class ETLService {
             ]
         ]
     ]
-    def parentIdsResponse = elasticsearchService.performRequest('GET', "$GRANULE_STAGING_INDEX/_search", findParentIdsQuery)
-    def parentIds = parentIdsResponse.aggregations?.collections?.buckets*.key
+    def parentIdsResponse = elasticsearchService.performRequest('GET', "${esConfig.GRANULE_STAGING_INDEX_ALIAS}/_search", findParentIdsQuery)
+    List<Map> collectionBuckets = getCollectionBuckets(parentIdsResponse)
+    List<String> parentIds = collectionBuckets.collect { it.key as String }
 
     def countGranules = [
         total: 0,
@@ -163,24 +136,25 @@ class ETLService {
     ]
     def granuleTasksInFlight = []
     parentIds.each { parentId ->
-      def internalIdResponse = metadataManagementService.findMetadata(parentId, parentId, true)
+      Map internalIdResponse = metadataManagementService.findMetadata(parentId as String, parentId as String, true)
+      List<Map> internalIdData = internalIdResponse.data as List<Map>
       // Only push to Search granules which can be definitively linked to a single, existing collection
-      if(internalIdResponse.data && internalIdResponse.data.size() == 1 && internalIdResponse.data[0].type == 'collection') {
-        while(granuleTasksInFlight.size() == MAX_TASKS) {
+      if(internalIdData && internalIdData.size() == 1 && internalIdData[0].type == ElasticsearchConfig.TYPE_COLLECTION) {
+        while(granuleTasksInFlight.size() == esConfig.MAX_TASKS) {
           granuleTasksInFlight.removeAll { taskId ->
-            def status = checkTask(taskId)
+            def status = elasticsearchService.checkTask(taskId as String)
             if(status.completed) {
               countGranules.total += status.totalDocs
               countGranules.updated += status.updated
               countGranules.created += status.created
-              deleteTask(taskId)
+              elasticsearchService.deleteTask(taskId as String)
             }
             return status.completed
           }
           sleep(1000)
         }
 
-        def granuleTask = etlGranules(sourceGranule, destGranule, parentId, internalIdResponse.data[0].id, maxGranuleStagedDate)
+        def granuleTask = etlGranules(sourceGranule, destGranule, parentId as String, internalIdData[0].id, maxGranuleStagedDate)
         granuleTasksInFlight << granuleTask
       }
     }
@@ -188,27 +162,27 @@ class ETLService {
     // Wait for any remaining tasks to complete
     while(granuleTasksInFlight.size() > 0) {
       granuleTasksInFlight.removeAll { taskId ->
-         def status = checkTask(taskId)
+         def status = elasticsearchService.checkTask(taskId as String)
          if(status.completed) {
           countGranules.total += status.totalDocs
           countGranules.updated += status.updated
           countGranules.created += status.created
-          deleteTask(taskId)
+          elasticsearchService.deleteTask(taskId as String)
         }
         return status.completed
       }
       sleep(1000)
     }
 
-    def collectionTaskStatus = checkTask(collectionTask)
+    def collectionTaskStatus = elasticsearchService.checkTask(collectionTask)
     while(!collectionTaskStatus.completed) {
       // Polling until the task completes
       sleep(1000)
-      collectionTaskStatus = checkTask(collectionTask)
+      collectionTaskStatus = elasticsearchService.checkTask(collectionTask)
     }
-    deleteTask(collectionTask)
+    elasticsearchService.deleteTask(collectionTask)
 
-    elasticsearchService.refresh(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX, COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX)
+    elasticsearchService.refresh(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS, esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS)
     return [
         totalCollectionsInRequest: collectionTaskStatus.totalDocs,
         updatedCollections: collectionTaskStatus.updated,
@@ -259,7 +233,7 @@ class ETLService {
     wholeCollections = collectionResponse.hits.hits*._id
 
     while (wholeCollections.size() < wholeCollectionsTotal) {
-      def scrollResponse = nextScrollRequest(scrollId)
+      def scrollResponse = nextScrollRequest(scrollId as String)
       scrollId = scrollResponse._scroll_id
       wholeCollections.addAll(scrollResponse.hits.hits*._id)
     }
@@ -274,7 +248,8 @@ class ETLService {
         ]
     ]
     if(wholeCollections) {
-      boolQuery.must_not = [terms: [internalParentIdentifier: wholeCollections]]
+        boolQuery << [must_not: [terms: [internalParentIdentifier: wholeCollections]]]
+
     }
     def strayCollectionIdRequestBody = [
         size: 0,
@@ -302,42 +277,42 @@ class ETLService {
     ]
 
     wholeCollections.each { id ->
-      while(tasksInFlight.size() == MAX_TASKS) {
+      while(tasksInFlight.size() == esConfig.MAX_TASKS) {
         tasksInFlight.removeAll { taskId ->
-          def status = checkTask(taskId)
+          def status = elasticsearchService.checkTask(taskId as String)
           if(status.completed) {
             countFlatGranules.total += status.totalDocs
             countFlatGranules.updated += status.updated
             countFlatGranules.created += status.created
-            deleteTask(taskId)
+            elasticsearchService.deleteTask(taskId as String)
           }
           return status.completed
         }
         sleep(1000)
       }
 
-      def flattenTask = etlFlattenedGranules(collectionIndex, source, destination, id) // Flattening ALL granules (collection has changed)
+      def flattenTask = etlFlattenedGranules(collectionIndex, source, destination, id as String) // Flattening ALL granules (collection has changed)
       if(flattenTask) { // Could be null if collection wasn't found in the search index for some reason
         tasksInFlight << flattenTask
       }
     }
 
     strayGranuleCollections.each { id ->
-      while(tasksInFlight.size() == MAX_TASKS) {
+      while(tasksInFlight.size() == esConfig.MAX_TASKS) {
         tasksInFlight.removeAll { taskId ->
-          def status = checkTask(taskId)
+          def status = elasticsearchService.checkTask(taskId as String)
           if(status.completed) {
             countFlatGranules.total += status.totalDocs
             countFlatGranules.updated += status.updated
             countFlatGranules.created += status.created
-            deleteTask(taskId)
+            elasticsearchService.deleteTask(taskId as String)
           }
           return status.completed
         }
         sleep(1000)
       }
 
-      def flattenTask = etlFlattenedGranules(collectionIndex, source, destination, id, maxFlatGranulesStagedDate) // Only flatten new/updated granules
+      def flattenTask = etlFlattenedGranules(collectionIndex, source, destination, id as String, maxFlatGranulesStagedDate) // Only flatten new/updated granules
       if(flattenTask) { // Could be null if collection wasn't found in the search index for some reason
         tasksInFlight << flattenTask
       }
@@ -346,12 +321,12 @@ class ETLService {
     // Wait for any remaining tasks to complete
     while(tasksInFlight.size() > 0) {
       tasksInFlight.removeAll { taskId ->
-        def status = checkTask(taskId)
+        def status = elasticsearchService.checkTask(taskId as String)
         if(status.completed) {
           countFlatGranules.total += status.totalDocs
           countFlatGranules.updated += status.updated
           countFlatGranules.created += status.created
-          deleteTask(taskId)
+          elasticsearchService.deleteTask(taskId as String)
         }
         return status.completed
       }
@@ -384,11 +359,11 @@ class ETLService {
         ],
         dest: [
             index: destIndex,
-            pipeline: COLLECTION_PIPELINE
+            pipeline: esConfig.COLLECTION_PIPELINE
         ]
     ]
 
-    def endpoint = "_reindex?wait_for_completion=false${REQUESTS_PER_SECOND ? ";requests_per_second=${REQUESTS_PER_SECOND}" : ""}"
+    def endpoint = "_reindex?wait_for_completion=false${esConfig.REQUESTS_PER_SECOND ? ";requests_per_second=${esConfig.REQUESTS_PER_SECOND}" : ""}"
     def taskId = elasticsearchService.performRequest('POST', endpoint, reindexBody).task
     log.debug("Task [ ${taskId} ] started for indexing of collections")
     return taskId
@@ -421,7 +396,7 @@ class ETLService {
         ],
         dest: [
             index: destIndex,
-            pipeline: GRANULE_PIPELINE
+            pipeline: esConfig.GRANULE_PIPELINE
         ],
         script: [
             lang: "painless",
@@ -430,7 +405,7 @@ class ETLService {
         ]
     ]
 
-    def endpoint = "_reindex?wait_for_completion=false${REQUESTS_PER_SECOND ? ";requests_per_second=${REQUESTS_PER_SECOND}" : ""}"
+    def endpoint = "_reindex?wait_for_completion=false${esConfig.REQUESTS_PER_SECOND ? ";requests_per_second=${esConfig.REQUESTS_PER_SECOND}" : ""}"
     def taskId = elasticsearchService.performRequest('POST', endpoint, reindexBody).task
     log.debug("Task [ ${taskId} ] started for indexing of granules")
     return taskId
@@ -439,7 +414,7 @@ class ETLService {
   private String etlFlattenedGranules(String collectionIndex, String source, String dest, String internalParentIdentifier, Long stagedAfter = 0) {
     log.debug("Starting flattened-granule indexing of collection [ ${internalParentIdentifier} ]")
 
-    String collectionEndpoint = "${collectionIndex}/${TYPE}/${internalParentIdentifier}"
+    String collectionEndpoint = "${collectionIndex}/${esConfig.TYPE}/${internalParentIdentifier}"
     def collectionResponse = elasticsearchService.performRequest('GET', collectionEndpoint)
     def collectionBody
     if(collectionResponse.found) {
@@ -488,7 +463,7 @@ class ETLService {
           ]
       ]
 
-      String endpoint = "_reindex?wait_for_completion=false${REQUESTS_PER_SECOND ? ";requests_per_second=${REQUESTS_PER_SECOND}" : ""}"
+      String endpoint = "_reindex?wait_for_completion=false${esConfig.REQUESTS_PER_SECOND ? ";requests_per_second=${esConfig.REQUESTS_PER_SECOND}" : ""}"
       def taskId = elasticsearchService.performRequest('POST', endpoint, reindexBody).task
       log.debug("Task [ ${taskId} ] started for indexing of flattened granules")
       return taskId
@@ -516,29 +491,8 @@ class ETLService {
             ]
         ]
     ]
-    def response = elasticsearchService.performRequest('GET', endpoint, body)
-    return response.hits.total == 0 ? 0 : response.aggregations.maxStagedDate.value
-  }
-
-  private boolean deleteTask(String taskId) {
-    def result = elasticsearchService.performRequest('DELETE', ".tasks/task/${taskId}")
-    log.debug("Deleted task [ ${taskId} ]: ${result.found}")
-    return result.found
-  }
-
-  private Map checkTask(String taskId) {
-    def result = elasticsearchService.performRequest('GET', "_tasks/${taskId}")
-    def completed = result.completed
-
-
-    return [
-        completed: completed,
-        totalDocs: result.task.status.total,
-        updated: result.task.status.updated,
-        created: result.task.status.created,
-        took: completed ? result.response.took : null,
-        failures: completed ? result.response.failures : []
-    ]
+    Map response = elasticsearchService.performRequest('GET', endpoint, body)
+    return getHitsTotal(response) == 0 ? 0 : getMaxStagedDateValue(response)
   }
 
 }

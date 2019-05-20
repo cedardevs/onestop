@@ -1,0 +1,33 @@
+plugins {
+    id 'groovy'
+    id 'org.springframework.boot' // version declared in top-level buildscript
+    id 'io.spring.dependency-management'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.codehaus.groovy:groovy-all:2.3.11'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    implementation group: 'org.springframework', name: 'spring-context'
+    implementation "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
+    implementation "org.elasticsearch.client:transport:${project.esVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation "org.testcontainers:testcontainers:${project.testContainersVersion}"
+    implementation "org.testcontainers:elasticsearch:${project.testContainersVersion}"
+}
+
+// needed to share as local project dependency
+// https://stackoverflow.com/questions/54486199/multi-module-gradle-project-migrate-from-spring-boot-1-5-to-2-1#answer-54618449
+jar {
+    enabled = true
+}
+
+bootJar {
+    enabled = false
+}
