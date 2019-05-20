@@ -39,6 +39,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(
         classes = [
             Application,
+            DefaultApplicationConfig,
             KafkaConsumerConfig,
 
             // provides:

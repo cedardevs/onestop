@@ -22,6 +22,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(
         classes = [
             Application,
+            DefaultApplicationConfig,
 
             // provides:
             // - `RestClient` 'restClient' bean via test containers

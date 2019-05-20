@@ -119,8 +119,8 @@ class ElasticsearchConfig {
     this.version = version
 
     // Associate pipeline names directly to their JSON definitions as strings as a memoization
-    if (version.onOrAfter(Version.V_6_0_0)) {
-      // ES6+ can make use of more efficient pipeline definitions (e.g. - removing array of fields, etc.)
+    if (version.onOrAfter(Version.V_6_4_0)) {
+      // ES6.4+ can make use of more efficient pipeline definitions (e.g. - removing array of fields, etc.)
       this.jsonPipelines[this.COLLECTION_PIPELINE] = textFromFile("pipelines/${this.COLLECTION_PIPELINE}_ES5-6_Definition.json")
       this.jsonPipelines[this.GRANULE_PIPELINE] = textFromFile("pipelines/${this.GRANULE_PIPELINE}_ES5-6_Definition.json")
     } else {
