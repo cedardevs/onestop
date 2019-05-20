@@ -193,7 +193,6 @@ class MetadataManagementService {
           log.info("Creating new staging document")
         }
 
-
         source.stagedDate = System.currentTimeMillis()
         result.id = esId as String
         def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
