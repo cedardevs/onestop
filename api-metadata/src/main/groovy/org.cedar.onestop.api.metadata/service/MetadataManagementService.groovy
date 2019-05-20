@@ -119,7 +119,7 @@ class MetadataManagementService {
 
       try {
         log.debug("Reformating record for search with [id: $id, filename: $filename]")
-        Map source = InventoryManagerToOneStopUtil.reformatMessageForSearch(avroRecord)
+        Map source = InventoryManagerToOneStopUtil.reformatMessageForSearch(avroRecord, esService.version)
         def type = source.parentIdentifier ? ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
         String fileId = source.fileIdentifier as String
         String doi = source.doi as String
@@ -175,7 +175,7 @@ class MetadataManagementService {
 
         source.stagedDate = System.currentTimeMillis()
         result.id = esId as String
-        def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
+        def index = type == ElasticsearchConfig.TYPE_COLLECTION ? esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.GRANULE_STAGING_INDEX_ALIAS
         def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
         bulkRequest << JsonOutput.toJson(bulkCommand)
         bulkRequest << '\n'

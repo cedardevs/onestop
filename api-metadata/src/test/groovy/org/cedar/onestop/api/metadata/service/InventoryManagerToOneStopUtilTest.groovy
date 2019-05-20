@@ -361,7 +361,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
     Map validationResult = InventoryManagerToOneStopUtil.validateMessage('parsed_record_test_id', parsedXML.parsedRecord)
     Map discoveryMap = AvroUtils.avroToMap(parsedXML.parsedRecord.discovery, true)
-    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord)
+    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
     def generatedKeywords = JsonOutput.toJson(stagingDoc.keywords)
 
     then:
@@ -614,7 +614,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     when:
     Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
 
-    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord)
+    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
 
     then:
     stagingDoc.temporalBounding == [
@@ -632,7 +632,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     when:
     Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
 
-    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord)
+    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
 
     then:
     stagingDoc.temporalBounding == [
@@ -650,7 +650,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     when:
     Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
 
-    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord)
+    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
 
     then:
     stagingDoc.temporalBounding == [
@@ -667,7 +667,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
 
     when:
     Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
-    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord)
+    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
 
     then:
     parsedXML.parsedRecord.analysis.temporalBounding.beginDescriptor as String == 'INVALID'
