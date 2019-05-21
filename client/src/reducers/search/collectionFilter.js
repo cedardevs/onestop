@@ -7,7 +7,6 @@ import {
   COLLECTION_REMOVE_DATE_RANGE,
   COLLECTION_TOGGLE_FACET,
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
-  COLLECTION_CLEAR_FILTERS,
   COLLECTION_NEW_SEARCH_REQUESTED,
   COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED,
   COLLECTION_MORE_RESULTS_REQUESTED,
@@ -61,17 +60,6 @@ export const collectionFilter = (state = initialState, action) => {
 
     case COLLECTION_TOGGLE_EXCLUDE_GLOBAL:
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
-
-    case COLLECTION_CLEAR_FILTERS:
-      return Immutable.merge(state, {
-        // this action is triggered by 'queryText' searches to ensure a fresh filter;
-        // consequently, we do not reset 'queryText' back to its initial state
-        geoJSON: initialState.geoJSON,
-        startDateTime: initialState.startDateTime,
-        endDateTime: initialState.endDateTime,
-        selectedFacets: initialState.selectedFacets,
-        excludeGlobal: initialState.excludeGlobal,
-      })
 
     case COLLECTION_NEW_SEARCH_REQUESTED:
       return Immutable.merge(state, {pageOffset: initialState.pageOffset})
