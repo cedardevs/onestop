@@ -118,6 +118,33 @@ describe('The granule filter reducer', function(){
       expect(result.excludeGlobal).toEqual(initialState.excludeGlobal)
     })
 
+    it('resets existing params to default', function(){
+      const initialWithParams = {
+        geoJSON: {
+          type: 'Point',
+          geometry: {type: 'Point', coordinates: [ 0, 0 ]},
+        },
+        startDateTime: '2000-01-01T00:00:00Z',
+        endDateTime: '3000-01-01T00:00:00Z',
+        selectedFacets: {science: [ 'Oceans' ]},
+        excludeGlobal: false,
+      }
+      const newSearchParams = {
+        excludeGlobal: true,
+      }
+
+      const updateAction = granuleNewSearchResetFiltersRequested(
+        'parent-uuid',
+        newSearchParams
+      )
+      const result = granuleFilter(initialWithParams, updateAction)
+      expect(result.startDateTime).toBeNull()
+      expect(result.endDateTime).toBeNull()
+      expect(result.geoJSON).toBeNull()
+      expect(result.selectedFacets).toEqual({})
+      expect(result.excludeGlobal).toBeTruthy()
+    })
+
     // it('works for empty or undefined params', function(){ // TODO it should not work, maybe even throw and exception, honestly
     //   expect(granuleFilter(initialState, granuleNewSearchResetFiltersRequested('parent-uuid',{}))).toEqual(
     //     initialState
