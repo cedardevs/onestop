@@ -17,7 +17,7 @@ const mockHistory = {
 describe('actions execute without dumb typos', function(){
   it('submitCollectionDetail', function(){
     // introduced to catch when parameter `collectionId` is referenced as `id` within the function
-    store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC'))
+    store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC', {}))
   })
   it('submitCollectionSearch', function(){
     store.dispatch(submitCollectionSearch(mockHistory))

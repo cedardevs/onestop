@@ -2,6 +2,7 @@ import Immutable from 'seamless-immutable'
 import {
   COLLECTION_NEW_SEARCH_REQUESTED,
   COLLECTION_MORE_RESULTS_REQUESTED,
+  COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED,
   COLLECTION_NEW_SEARCH_RESULTS_RECEIVED,
   COLLECTION_MORE_RESULTS_RECEIVED,
   COLLECTION_SEARCH_ERROR,
@@ -15,6 +16,7 @@ export const initialState = Immutable({
 export const collectionRequest = (state = initialState, action) => {
   switch (action.type) {
     case COLLECTION_NEW_SEARCH_REQUESTED:
+    case COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED:
     case COLLECTION_MORE_RESULTS_REQUESTED:
       return Immutable.merge(state, {
         inFlight: true,

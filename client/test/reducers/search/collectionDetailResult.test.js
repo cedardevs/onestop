@@ -6,6 +6,7 @@ import {
 import {
   collectionDetailReceived,
   collectionDetailError,
+  granuleMatchingCountReceived,
 } from '../../../src/actions/routing/CollectionDetailStateActions'
 
 describe('The collectionDetailResult reducer', function(){
@@ -16,6 +17,7 @@ describe('The collectionDetailResult reducer', function(){
     expect(result).toEqual({
       collection: null,
       totalGranuleCount: 0,
+      filteredGranuleCount: 0,
     })
   })
 
@@ -41,10 +43,16 @@ describe('The collectionDetailResult reducer', function(){
       initialState,
       collectionDetailReceived(data, 30)
     )
-    expect(result).toEqual({
-      collection: data,
-      totalGranuleCount: 30,
-    })
+    expect(result.collection).toEqual(data)
+    expect(result.totalGranuleCount).toEqual(30)
+  })
+
+  it('sets the filtered count when background task returns', function(){
+    const result = collectionDetailResult(
+      initialState,
+      granuleMatchingCountReceived(13)
+    )
+    expect(result.filteredGranuleCount).toEqual(13)
   })
 
   it('can override existing collection state on new GET response', function(){

@@ -1,6 +1,5 @@
 import Immutable from 'seamless-immutable'
 import {
-  GRANULE_UPDATE_FILTERS,
   // GRANULE_REMOVE_FILTERS,
   // GRANULE_UPDATE_QUERY_TEXT,
   GRANULE_UPDATE_GEOMETRY,
@@ -11,8 +10,9 @@ import {
   // GRANULE_CLEAR_FACETS,
   GRANULE_TOGGLE_EXCLUDE_GLOBAL,
   GRANULE_NEW_SEARCH_REQUESTED,
+  GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED,
   GRANULE_MORE_RESULTS_REQUESTED,
-  GRANULE_MATCHING_COUNT_REQUESTED,
+  // GRANULE_MATCHING_COUNT_REQUESTED,
 } from '../../actions/routing/GranuleSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
@@ -48,15 +48,25 @@ const updateFilters = ({
 
 export const granuleFilter = (state = initialState, action) => {
   switch (action.type) {
-    case GRANULE_UPDATE_FILTERS:
-      return updateFilters(action.filters || {}) // TODO rename this to 'reset' something? - since it goes based on changes to initialState, not existing state?
-
-    case GRANULE_MATCHING_COUNT_REQUESTED:
+    // case GRANULE_MATCHING_COUNT_REQUESTED:
     case GRANULE_NEW_SEARCH_REQUESTED:
       return Immutable.merge(state, {
         pageOffset: initialState.pageOffset,
         selectedIds: [ action.id ],
       })
+
+    case GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED:
+      // return Immutable.merge(state, [action.filters, {pageOffset: initialState.pageOffset,
+      // selectedIds: [ action.id ],}])
+      return updateFilters(
+        Immutable.merge(initialState, [
+          action.filters,
+          {
+            pageOffset: initialState.pageOffset,
+            selectedIds: [ action.id ],
+          },
+        ])
+      ) // TODO this is now an even gnarlier, hard to understand action. Basically merge inital state + all the input  / side effects together, then run thru updateFilters function to remove state which doesn't exist (queryText)
 
     case GRANULE_MORE_RESULTS_REQUESTED:
       return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)

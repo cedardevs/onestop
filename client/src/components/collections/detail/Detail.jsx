@@ -107,14 +107,7 @@ class Detail extends React.Component {
   }
 
   render() {
-    const {
-      id,
-      item,
-      loading,
-      totalGranuleCount,
-      totalGranuleFilteredCount,
-      navigateToGranules,
-    } = this.props
+    const {id, item, loading} = this.props
 
     if (loading) {
       return (
@@ -189,13 +182,7 @@ class Detail extends React.Component {
           >
             <div style={styleHeadingSpanApplied}>{item.title}</div>
           </h1>
-          <DescriptionView
-            item={item}
-            itemUuid={id}
-            totalGranuleCount={totalGranuleCount}
-            totalGranuleFilteredCount={totalGranuleFilteredCount}
-            navigateToGranules={() => navigateToGranules(id)}
-          />
+          <DescriptionView item={item} itemUuid={id} />
           <Tabs
             style={{display: 'flex'}}
             styleContent={styleContent}

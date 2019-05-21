@@ -4,12 +4,12 @@ import {
   initialState,
 } from '../../../src/reducers/search/collectionFilter'
 import {
-  collectionUpdateFilters,
   collectionUpdateGeometry,
   collectionRemoveGeometry,
   collectionToggleExcludeGlobal,
   collectionToggleFacet,
   collectionNewSearchRequested,
+  collectionNewSearchResetFiltersRequested,
   collectionMoreResultsRequested,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
@@ -56,9 +56,20 @@ describe('The collection filter reducer', function(){
       const result = collectionFilter(pageState, collectionNewSearchRequested())
       expect(result.pageOffset).toEqual(0)
     })
+
+    it('resets page offset (reset filter version)', function(){
+      const pageState = {
+        pageOffset: 60,
+      }
+      const result = collectionFilter(
+        pageState,
+        collectionNewSearchResetFiltersRequested({})
+      )
+      expect(result.pageOffset).toEqual(0)
+    })
   })
 
-  describe('collectionUpdateFilters cases', function(){
+  describe('collectionNewSearchRequested cases', function(){
     it('updates all search params', function(){
       const newSearchParams = {
         queryText: 'new',
@@ -72,7 +83,9 @@ describe('The collection filter reducer', function(){
         excludeGlobal: true,
       }
 
-      const updateAction = collectionUpdateFilters(newSearchParams)
+      const updateAction = collectionNewSearchResetFiltersRequested(
+        newSearchParams
+      )
       const result = collectionFilter(initialState, updateAction)
       expect(result).toEqual(Immutable.merge(newSearchParams, {pageOffset: 0}))
     })
@@ -82,20 +95,59 @@ describe('The collection filter reducer', function(){
         queryText: 'new',
       }
 
-      const updateAction = collectionUpdateFilters(newSearchParams)
+      const updateAction = collectionNewSearchResetFiltersRequested(
+        newSearchParams
+      )
       const result = collectionFilter(initialState, updateAction)
       expect(result).toEqual(Immutable.merge(initialState, newSearchParams))
     })
 
+    it('resets existing params to default', function(){
+      const initialWithParams = {
+        queryText: 'old',
+        geoJSON: {
+          type: 'Point',
+          geometry: {type: 'Point', coordinates: [ 0, 0 ]},
+        },
+        startDateTime: '2000-01-01T00:00:00Z',
+        endDateTime: '3000-01-01T00:00:00Z',
+        selectedFacets: {science: [ 'Oceans' ]},
+        excludeGlobal: true,
+      }
+      const newSearchParams = {
+        queryText: 'new',
+      }
+
+      const updateAction = collectionNewSearchResetFiltersRequested(
+        newSearchParams
+      )
+      const result = collectionFilter(initialWithParams, updateAction)
+      expect(result.queryText).toEqual('new')
+      expect(result.startDateTime).toBeNull()
+      expect(result.endDateTime).toBeNull()
+      expect(result.geoJSON).toBeNull()
+      expect(result.selectedFacets).toEqual({})
+      expect(result.excludeGlobal).toBeFalsy()
+    })
+
     it('works for empty or undefined params', function(){
       expect(
-        collectionFilter(initialState, collectionUpdateFilters({}))
+        collectionFilter(
+          initialState,
+          collectionNewSearchResetFiltersRequested({})
+        )
       ).toEqual(initialState)
       expect(
-        collectionFilter(initialState, collectionUpdateFilters(null))
+        collectionFilter(
+          initialState,
+          collectionNewSearchResetFiltersRequested(null)
+        )
       ).toEqual(initialState)
       expect(
-        collectionFilter(initialState, collectionUpdateFilters(undefined))
+        collectionFilter(
+          initialState,
+          collectionNewSearchResetFiltersRequested(undefined)
+        )
       ).toEqual(initialState)
     })
   })

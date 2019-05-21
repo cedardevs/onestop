@@ -4,13 +4,16 @@ import fetchMock from 'fetch-mock'
 
 import {
   submitCollectionSearch,
+  submitCollectionSearchWithFilter,
+  submitCollectionSearchWithQueryText,
   submitCollectionSearchNextPage,
 } from '../../../src/actions/routing/CollectionSearchRouteActions'
 import {
   // used to set up pre-test conditions
-  collectionNewSearchRequested,
+  collectionNewSearchRequested, // TODO these might be easier to clean up a little the resetFilters version
   collectionNewSearchResultsReceived,
   collectionUpdateQueryText,
+  collectionUpdateDateRange,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
 let history_input = {}
@@ -77,6 +80,58 @@ describe('collection search actions', function(){
 
   afterEach(() => {
     fetchMock.reset()
+  })
+
+  describe('new search with query', function(){
+    it('resets the previous filters', function(){
+      // set up a time filter in addition to the queryText
+      store.dispatch(collectionUpdateDateRange('2017', '2018'))
+      expect(store.getState().search.collectionFilter.startDateTime).toEqual(
+        '2017'
+      )
+      expect(store.getState().search.collectionFilter.endDateTime).toEqual(
+        '2018'
+      )
+      expect(store.getState().search.collectionFilter.queryText).toEqual('demo')
+
+      // then start a request
+      store.dispatch(submitCollectionSearchWithQueryText(mockHistory, 'hello'))
+      const collectionFilter = store.getState().search.collectionFilter
+      expect(collectionFilter.startDateTime).toBeNull()
+      expect(collectionFilter.endDateTime).toBeNull()
+      expect(collectionFilter.queryText).toEqual('hello')
+      expect(history_input).toEqual({
+        pathname: '/collections',
+        search: '?q=hello',
+      })
+    })
+  })
+
+  describe('new search with filters', function(){
+    it('resets the previous filters', function(){
+      // set up a time filter in addition to the queryText
+      store.dispatch(collectionUpdateDateRange('2017', '2018'))
+      expect(store.getState().search.collectionFilter.startDateTime).toEqual(
+        '2017'
+      )
+      expect(store.getState().search.collectionFilter.endDateTime).toEqual(
+        '2018'
+      )
+      expect(store.getState().search.collectionFilter.queryText).toEqual('demo')
+
+      // then start a request
+      store.dispatch(
+        submitCollectionSearchWithFilter(mockHistory, {startDateTime: '1998'})
+      )
+      const collectionFilter = store.getState().search.collectionFilter
+      expect(collectionFilter.startDateTime).toEqual('1998')
+      expect(collectionFilter.endDateTime).toBeNull()
+      expect(collectionFilter.queryText).toEqual('')
+      expect(history_input).toEqual({
+        pathname: '/collections',
+        search: '?s=1998',
+      })
+    })
   })
 
   describe('new search', function(){

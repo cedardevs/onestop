@@ -5,7 +5,6 @@ import Immutable from 'seamless-immutable'
 import {
   GRANULE_NEW_SEARCH_RESULTS_RECEIVED,
   GRANULE_MORE_RESULTS_RECEIVED,
-  GRANULE_MATCHING_COUNT_RECEIVED,
   GRANULE_SEARCH_ERROR,
 } from '../../actions/routing/GranuleSearchStateActions'
 
@@ -57,11 +56,6 @@ export const granuleResult = (state = initialState, action) => {
         getGranulesFromAction(action),
         action.facets
       )
-
-    case GRANULE_MATCHING_COUNT_RECEIVED:
-      return Immutable.merge(initialState, {
-        totalGranuleCount: action.total,
-      })
 
     case GRANULE_MORE_RESULTS_RECEIVED:
       return moreResultsReceived(state, getGranulesFromAction(action))

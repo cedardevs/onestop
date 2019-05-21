@@ -1,7 +1,6 @@
 import {connect} from 'react-redux'
 import FeaturedDatasets from './FeaturedDatasets'
-import {collectionUpdateQueryText} from '../../actions/routing/CollectionSearchStateActions'
-import {submitCollectionSearch} from '../../actions/routing/CollectionSearchRouteActions'
+import {submitCollectionSearchWithQueryText} from '../../actions/routing/CollectionSearchRouteActions'
 
 import {withRouter} from 'react-router'
 
@@ -13,11 +12,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    submit: () => {
-      dispatch(submitCollectionSearch(ownProps.history))
+    submit: text => {
+      dispatch(submitCollectionSearchWithQueryText(ownProps.history, text))
     },
-    collectionUpdateQueryText: text =>
-      dispatch(collectionUpdateQueryText(text)),
   }
 }
 

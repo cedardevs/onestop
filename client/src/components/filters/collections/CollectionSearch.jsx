@@ -131,7 +131,7 @@ class CollectionSearch extends React.Component {
     }
     else {
       this.setState({warning: ''})
-      this.props.submit()
+      this.props.submit(trimmedQuery)
     }
   }
 

@@ -4,7 +4,6 @@ import {
   initialState,
 } from '../../../src/reducers/search/granuleFilter'
 import {
-  granuleUpdateFilters,
   granuleUpdateGeometry,
   granuleRemoveGeometry,
   granuleToggleExcludeGlobal,
@@ -12,8 +11,9 @@ import {
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 import {
   granuleNewSearchRequested,
+  granuleNewSearchResetFiltersRequested,
   granuleMoreResultsRequested,
-  granuleMatchingCountRequested,
+  // granuleMatchingCountRequested,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 
 describe('The granule filter reducer', function(){
@@ -54,18 +54,28 @@ describe('The granule filter reducer', function(){
         const result = granuleFilter(pageState, granuleNewSearchRequested())
         expect(result.pageOffset).toEqual(0)
       })
-
-      it('count requested', function(){
+      it('new search (reset filters version)', function(){
         const pageState = {
           pageOffset: 60,
         }
-        const result = granuleFilter(pageState, granuleMatchingCountRequested())
+        const result = granuleFilter(
+          pageState,
+          granuleNewSearchResetFiltersRequested({})
+        )
         expect(result.pageOffset).toEqual(0)
       })
+
+      // it('count requested', function(){
+      //   const pageState = {
+      //     pageOffset: 60,
+      //   }
+      //   const result = granuleFilter(pageState, granuleMatchingCountRequested())
+      //   expect(result.pageOffset).toEqual(0)
+      // })
     })
   })
 
-  describe('granuleUpdateFilters cases', function(){
+  describe('updating filter (search with reset filters) cases', function(){
     it('updates all search params', function(){
       const newSearchParams = {
         queryText: 'new',
@@ -82,14 +92,14 @@ describe('The granule filter reducer', function(){
 
       const result = granuleFilter(
         initialState,
-        granuleUpdateFilters(newSearchParams)
+        granuleNewSearchResetFiltersRequested('parent-uuid', newSearchParams)
       )
       // expect(result).toEqual(
       //   Immutable.merge(newSearchParams, {selectedIds: [], pageOffset: 0})
       // )
-      expect(result.selectedIds).toEqual([]) // not changed because no new value provided
+      expect(result.selectedIds).toEqual([ 'parent-uuid' ]) // changed by action, not params
       expect(result.pageOffset).toEqual(0) // not set by update filter!
-      expect(result.queryText).toBeUndefined() // not set by update filter!
+      expect(result.queryText).toBeUndefined() // not set by update filter! (not allowed)
       expect(result.geoJSON).toEqual(newSearchParams.geoJSON)
       expect(result.startDateTime).toEqual('2000-01-01T00:00:00Z')
       expect(result.endDateTime).toEqual('3000-01-01T00:00:00Z')
@@ -102,7 +112,10 @@ describe('The granule filter reducer', function(){
         endDateTime: '3000-01-01T00:00:00Z',
       }
 
-      const updateAction = granuleUpdateFilters(newSearchParams)
+      const updateAction = granuleNewSearchResetFiltersRequested(
+        'parent-uuid',
+        newSearchParams
+      )
       const result = granuleFilter(initialState, updateAction)
 
       expect(result.pageOffset).toEqual(initialState.pageOffset)
@@ -110,39 +123,41 @@ describe('The granule filter reducer', function(){
       expect(result.startDateTime).toEqual(initialState.startDateTime)
       expect(result.endDateTime).toEqual('3000-01-01T00:00:00Z')
       expect(result.selectedFacets).toEqual(initialState.selectedFacets)
-      expect(result.selectedIds).toEqual(initialState.selectedIds)
+      expect(result.selectedIds).toEqual([ 'parent-uuid' ]) // changed by action, not params
       expect(result.excludeGlobal).toEqual(initialState.excludeGlobal)
     })
 
-    it('works for empty or undefined params', function(){
-      expect(granuleFilter(initialState, granuleUpdateFilters({}))).toEqual(
-        initialState
-      )
-      expect(granuleFilter(initialState, granuleUpdateFilters(null))).toEqual(
-        initialState
-      )
-      expect(
-        granuleFilter(initialState, granuleUpdateFilters(undefined))
-      ).toEqual(initialState)
-    })
+    // it('works for empty or undefined params', function(){ // TODO it should not work, maybe even throw and exception, honestly
+    //   expect(granuleFilter(initialState, granuleNewSearchResetFiltersRequested('parent-uuid',{}))).toEqual(
+    //     initialState
+    //   )
+    //   expect(granuleFilter(initialState, granuleNewSearchResetFiltersRequested('parent-uuid',null))).toEqual(
+    //     initialState
+    //   )
+    //   expect(
+    //     granuleFilter(initialState, granuleNewSearchResetFiltersRequested('parent-uuid',undefined))
+    //   ).toEqual(initialState)
+    // })
 
     it('replaces selectedIds', function(){
       const stateWithSelectedIds = {selectedIds: [ 'abc', '123' ]}
       const result = granuleFilter(
         stateWithSelectedIds,
-        granuleUpdateFilters({endDateTime: '3000-01-01T00:00:00Z'})
+        granuleNewSearchResetFiltersRequested('parent-uuid', {
+          endDateTime: '3000-01-01T00:00:00Z',
+        })
       )
       expect(result.endDateTime).toEqual('3000-01-01T00:00:00Z')
-      expect(result.selectedIds).toEqual([])
+      expect(result.selectedIds).toEqual([ 'parent-uuid' ])
     })
 
     it('resets selectedIds', function(){
       const stateWithSelectedIds = {selectedIds: [ 'abc', '123' ]}
       const result = granuleFilter(
         stateWithSelectedIds,
-        granuleUpdateFilters(null)
+        granuleNewSearchResetFiltersRequested('parent-uuid', null)
       )
-      expect(result.selectedIds).toEqual([])
+      expect(result.selectedIds).toEqual([ 'parent-uuid' ])
     })
   })
 
@@ -195,24 +210,39 @@ describe('The granule filter reducer', function(){
         const result = granuleFilter(stateWithSelectedId, selectCollectionB)
         expect(result.selectedIds).toEqual([ 'B' ])
       })
-    })
 
-    describe('count granules', function(){
-      it('sets selected collection id from initial state', function(){
-        const selectCollectionA = granuleMatchingCountRequested('A')
+      it('sets selected collection id from initial state (reset filter version)', function(){
+        const selectCollectionA = granuleNewSearchResetFiltersRequested('A', {})
 
         const result = granuleFilter(initialState, selectCollectionA)
         expect(result.selectedIds).toEqual([ 'A' ])
       })
 
-      it('updates selected collection id', function(){
-        const selectCollectionB = granuleMatchingCountRequested('B')
+      it('updates selected collection id (reset filter version)', function(){
+        const selectCollectionB = granuleNewSearchResetFiltersRequested('B', {})
         const stateWithSelectedId = Immutable({selectedIds: [ 'A' ]})
 
         const result = granuleFilter(stateWithSelectedId, selectCollectionB)
         expect(result.selectedIds).toEqual([ 'B' ])
       })
     })
+
+    // describe('count granules', function(){
+    //   it('sets selected collection id from initial state', function(){
+    //     const selectCollectionA = granuleMatchingCountRequested('A')
+    //
+    //     const result = granuleFilter(initialState, selectCollectionA)
+    //     expect(result.selectedIds).toEqual([ 'A' ])
+    //   })
+    //
+    //   it('updates selected collection id', function(){
+    //     const selectCollectionB = granuleMatchingCountRequested('B')
+    //     const stateWithSelectedId = Immutable({selectedIds: [ 'A' ]})
+    //
+    //     const result = granuleFilter(stateWithSelectedId, selectCollectionB)
+    //     expect(result.selectedIds).toEqual([ 'B' ])
+    //   })
+    // })
 
     // it('can clear existing granule selections', function(){
     //   const stateWithSelectedId = Immutable({selectedIds: [ 'ABC' ]})

@@ -11,6 +11,7 @@ import collectionFilter from './reducers/search/collectionFilter'
 import collectionRequest from './reducers/search/collectionRequest'
 import collectionResult from './reducers/search/collectionResult'
 
+import collectionDetailFilter from './reducers/search/collectionDetailFilter'
 import collectionDetailRequest from './reducers/search/collectionDetailRequest'
 import collectionDetailResult from './reducers/search/collectionDetailResult'
 
@@ -25,6 +26,7 @@ const search = combineReducers({
   collectionFilter,
   collectionRequest,
   collectionResult,
+  collectionDetailFilter,
   collectionDetailRequest,
   collectionDetailResult,
   granuleFilter,

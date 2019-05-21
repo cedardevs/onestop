@@ -1,24 +1,35 @@
 import _ from 'lodash'
-import {buildGetAction} from './AsyncHelpers'
+import {buildGetAction, buildSearchAction} from './AsyncHelpers'
 import {showErrors} from '../ErrorActions'
 
-import {encodeQueryString} from '../../utils/queryUtils'
+import {assembleSearchRequest, encodeQueryString} from '../../utils/queryUtils'
 import {
   collectionDetailRequested,
   collectionDetailReceived,
   collectionDetailError,
+  granuleMatchingCountRequested,
+  granuleMatchingCountReceived,
+  granuleMatchingCountError,
 } from './CollectionDetailStateActions'
-import {granuleUpdateFilters} from './GranuleSearchStateActions'
 
-export const submitCollectionDetail = (history, collectionId) => {
+const granuleFilterState = state => {
+  return (state && state.search && state.search.collectionDetailFilter) || {}
+}
+
+export const submitCollectionDetail = (history, id, filterState) => {
   const validRequestCheck = state => {
-    const inFlight = state.search.collectionDetailRequest.inFlight
+    const inFlight =
+      state.search.collectionDetailRequest.inFlight ||
+      state.search.collectionDetailRequest.backgroundInFlight
     return !inFlight
   }
 
   const prefetchHandler = dispatch => {
-    dispatch(collectionDetailRequested(collectionId))
-    dispatch(updateURLAndNavigateToCollectionDetailRoute(history, collectionId))
+    dispatch(collectionDetailRequested(id, filterState))
+    dispatch(
+      updateURLAndNavigateToCollectionDetailRoute(history, id, filterState)
+    )
+    dispatch(submitBackgroundFilteredGranuleCount()) // gets the state from redux, since collectionDetailRequested updates selectedIds
   }
 
   const successHandler = (dispatch, payload) => {
@@ -34,7 +45,7 @@ export const submitCollectionDetail = (history, collectionId) => {
 
   return buildGetAction(
     'collection',
-    collectionId,
+    id,
     validRequestCheck,
     prefetchHandler,
     successHandler,
@@ -42,15 +53,52 @@ export const submitCollectionDetail = (history, collectionId) => {
   )
 }
 
-const updateURLAndNavigateToCollectionDetailRoute = (history, id) => {
+export const submitBackgroundFilteredGranuleCount = () => {
+  const prefetchHandler = dispatch => {
+    dispatch(granuleMatchingCountRequested())
+  }
+
+  const bodyBuilder = state => {
+    // TODO make the 0 page size a param of the other granuleBodyBuilder and reuse, so they won't be accidentally different?
+    const filterState = granuleFilterState(state)
+    const body = assembleSearchRequest(filterState, false, 0)
+    const hasQueries = body && body.queries && body.queries.length > 0
+    const hasFilters = body && body.filters && body.filters.length > 0
+    if (!(hasQueries || hasFilters)) {
+      return undefined
+    }
+    return body
+  }
+
+  const successHandler = (dispatch, payload) => {
+    dispatch(granuleMatchingCountReceived(payload.meta.total))
+  }
+
+  const errorHandler = (dispatch, e) => {
+    // dispatch(showErrors(e.errors || e)) // TODO
+    dispatch(granuleMatchingCountError(e.errors || e)) // TODO
+  }
+
+  return buildSearchAction(
+    'granule',
+    () => true, // valid backgroundInFlight checked by submitCollectionDetail
+    prefetchHandler,
+    bodyBuilder,
+    successHandler,
+    errorHandler
+  )
+}
+
+const updateURLAndNavigateToCollectionDetailRoute = (
+  history,
+  id,
+  filterState
+) => {
   if (!id) {
     return
   }
-  return (dispatch, getState) => {
-    const state = getState()
-    const query = encodeQueryString( // THIS RIGHT HERE - tied to collectionFilter but also sometimes granuleFilter....
-      (state && state.search && state.search.collectionFilter) || {}
-    )
+  return dispatch => {
+    const query = encodeQueryString(filterState)
     const locationDescriptor = {
       pathname: `/collections/details/${id}`,
       search: _.isEmpty(query) ? null : `?${query}`,

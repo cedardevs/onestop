@@ -1,7 +1,7 @@
 import React from 'react'
 import {processUrl} from '../../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
-import GranulesSummary from './GranulesSummary'
+import GranulesSummaryContainer from './GranulesSummaryContainer'
 import Expandable from '../../common/ui/Expandable'
 import DetailGrid from './DetailGrid'
 import {fontFamilySerif} from '../../../utils/styleUtils'
@@ -102,13 +102,7 @@ export default class DescriptionView extends React.Component {
   }
 
   render() {
-    const {
-      item,
-      itemUuid,
-      totalGranuleCount,
-      totalGranuleFilteredCount,
-      navigateToGranules,
-    } = this.props
+    const {item, itemUuid} = this.props
 
     // thumbnail might be undefined or an empty string, so check for both
     const thumbnail =
@@ -124,12 +118,7 @@ export default class DescriptionView extends React.Component {
 
     const filesContent = (
       <div style={styleContentPadding}>
-        <GranulesSummary
-          key="granule-summary-section"
-          totalGranuleCount={totalGranuleCount}
-          totalGranuleFilteredCount={totalGranuleFilteredCount}
-          navigateToGranules={navigateToGranules}
-        />
+        <GranulesSummaryContainer key="granule-summary-section" />
       </div>
     )
 

@@ -15,7 +15,7 @@ export const buildSearchAction = (
       return Promise.resolve()
     }
 
-    prefetchHandler(dispatch)
+    prefetchHandler(dispatch, getState())
 
     const body = bodyBuilder(getState()) // call getState again, since prefetchHandler may change state, particularly if pagination is involved
     if (!body) {

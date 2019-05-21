@@ -18,13 +18,17 @@ const styleShowMoreFocus = {
 }
 
 export default class Collections extends React.Component {
+  itemSelect = key => {
+    const {selectCollection, collectionDetailFilter} = this.props
+    selectCollection(key, collectionDetailFilter)
+  }
+
   render() {
     const {
       loading,
       results,
       returnedHits,
       totalHits,
-      selectCollection,
       fetchMoreResults,
     } = this.props
 
@@ -51,7 +55,7 @@ export default class Collections extends React.Component {
           resultsMessage={'Search Results'}
           shown={returnedHits}
           total={totalHits}
-          onItemSelect={selectCollection}
+          onItemSelect={this.itemSelect}
           ListItemComponent={null}
           GridItemComponent={CollectionCard}
           propsForItem={item => {

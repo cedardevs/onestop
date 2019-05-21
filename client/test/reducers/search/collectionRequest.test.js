@@ -5,6 +5,7 @@ import {
 } from '../../../src/reducers/search/collectionRequest'
 import {
   collectionNewSearchRequested,
+  collectionNewSearchResetFiltersRequested,
   collectionMoreResultsRequested,
   collectionNewSearchResultsReceived,
   collectionMoreResultsReceived,
@@ -26,6 +27,16 @@ describe('The collection request reducer', function(){
     const initial = Immutable({inFlight: false})
     const result = collectionRequest(initial, collectionNewSearchRequested())
     expect(result.inFlight).toBeTruthy()
+  })
+
+  it('new search marks inFlight, resets error message', function(){
+    const initial = Immutable({inFlight: false})
+    const result = collectionRequest(
+      initial,
+      collectionNewSearchResetFiltersRequested({})
+    )
+    expect(result.inFlight).toBeTruthy()
+    expect(result.errorMessage).toBe('')
   })
 
   it('next page marks inFlight', function(){

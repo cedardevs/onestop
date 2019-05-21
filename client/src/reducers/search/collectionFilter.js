@@ -1,6 +1,5 @@
 import Immutable from 'seamless-immutable'
 import {
-  COLLECTION_UPDATE_FILTERS,
   COLLECTION_UPDATE_QUERY_TEXT,
   COLLECTION_UPDATE_GEOMETRY,
   COLLECTION_REMOVE_GEOMETRY,
@@ -10,6 +9,7 @@ import {
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
   COLLECTION_CLEAR_FILTERS,
   COLLECTION_NEW_SEARCH_REQUESTED,
+  COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED,
   COLLECTION_MORE_RESULTS_REQUESTED,
 } from '../../actions/routing/CollectionSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
@@ -27,9 +27,6 @@ export const initialState = Immutable({
 
 export const collectionFilter = (state = initialState, action) => {
   switch (action.type) {
-    case COLLECTION_UPDATE_FILTERS:
-      return Immutable.merge(initialState, action.filters || {})
-
     case COLLECTION_UPDATE_QUERY_TEXT:
       return Immutable.set(state, 'queryText', action.queryText)
 
@@ -77,7 +74,13 @@ export const collectionFilter = (state = initialState, action) => {
       })
 
     case COLLECTION_NEW_SEARCH_REQUESTED:
-      return Immutable.set(state, 'pageOffset', initialState.pageOffset)
+      return Immutable.merge(state, {pageOffset: initialState.pageOffset})
+
+    case COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED:
+      return Immutable.merge(initialState, [
+        action.filters,
+        {pageOffset: initialState.pageOffset},
+      ])
 
     case COLLECTION_MORE_RESULTS_REQUESTED:
       return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)

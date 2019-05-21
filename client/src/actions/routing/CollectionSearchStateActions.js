@@ -3,6 +3,13 @@ export const collectionNewSearchRequested = () => ({
   type: COLLECTION_NEW_SEARCH_REQUESTED,
 })
 
+export const COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED =
+  'COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED'
+export const collectionNewSearchResetFiltersRequested = filters => ({
+  type: COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED,
+  filters: filters,
+})
+
 export const COLLECTION_MORE_RESULTS_REQUESTED =
   'COLLECTION_MORE_RESULTS_REQUESTED'
 export const collectionMoreResultsRequested = () => ({
@@ -31,13 +38,6 @@ export const collectionSearchError = errors => ({
   errors,
 })
 
-export const COLLECTION_UPDATE_FILTERS = 'COLLECTION_UPDATE_FILTERS' // TODO rename setFiltersFromURL or something
-export const collectionUpdateFilters = filters => {
-  return {
-    type: COLLECTION_UPDATE_FILTERS,
-    filters: filters,
-  }
-}
 export const COLLECTION_CLEAR_FILTERS = 'COLLECTION_CLEAR_FILTERS'
 export const collectionClearFilters = () => {
   return {

@@ -99,7 +99,7 @@ describe('granule search actions', function(){
       store.dispatch(submitGranuleSearch(mockHistory, 'parent-uuid'))
       expect(history_input).toEqual({
         pathname: '/collections/granules/parent-uuid',
-        search: '?i=parent-uuid',
+        search: '',
       })
       expect(store.getState().search.granuleRequest.inFlight).toBeTruthy()
     })
@@ -113,7 +113,7 @@ describe('granule search actions', function(){
       await store.dispatch(submitGranuleSearch(mockHistory, 'parent-uuid'))
       expect(history_input).toEqual({
         pathname: '/collections/granules/parent-uuid',
-        search: '?i=parent-uuid',
+        search: '',
       })
       const {granuleRequest, granuleResult} = store.getState().search
 
@@ -268,74 +268,74 @@ describe('granule search actions', function(){
     // })
   })
 
-  describe('count only', function(){
-    it('stops request if something already in flight', function(){
-      //setup send something into flight first
-      store.dispatch(granuleNewSearchRequested('other-uuid'))
-      expect(store.getState().search.granuleRequest.inFlight).toBeTruthy()
-
-      // then try to start a request
-      store.dispatch(submitGranuleMatchingCount(mockHistory, 'parent-uuid'))
-      expect(store.getState().search.granuleResult.totalGranuleCount).toEqual(0)
-    })
-
-    it('executes prefetch actions', function(){
-      expect(store.getState().search.granuleRequest.inFlight).toBeFalsy()
-      store.dispatch(submitGranuleMatchingCount(mockHistory, 'parent-uuid'))
-      expect(history_input).toEqual({}) // it does not do history.push
-      expect(store.getState().search.granuleRequest.inFlight).toBeTruthy()
-      expect(store.getState().search.granuleFilter.selectedIds).toEqual([
-        'parent-uuid',
-      ])
-    })
-
-    it('success path', async () => {
-      fetchMock.post(
-        (url, opts) => url == `${BASE_URL}/search/granule`,
-        mockPayloadCount
-      )
-
-      await store.dispatch(
-        submitGranuleMatchingCount(mockHistory, 'parent-uuid')
-      )
-      const {granuleRequest, granuleResult} = store.getState().search
-
-      expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
-      expect(granuleRequest.errorMessage).toEqual('')
-      expect(granuleResult.granules).toEqual({})
-      expect(granuleResult.facets).toEqual({})
-      expect(granuleResult.totalGranuleCount).toEqual(13)
-      expect(granuleResult.loadedGranuleCount).toEqual(0)
-    })
-
-    it('failure path', async () => {
-      fetchMock.post((url, opts) => url == `${BASE_URL}/search/granule`, 500)
-
-      await store.dispatch(
-        submitGranuleMatchingCount(mockHistory, 'parent-uuid')
-      )
-      const {granuleRequest, granuleResult} = store.getState().search
-      expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
-      expect(granuleRequest.errorMessage).toEqual(
-        new Error('Internal Server Error')
-      )
-      expect(granuleResult.granules).toEqual({})
-      expect(granuleResult.totalGranuleCount).toEqual(0)
-    })
-
-    // it('no query or filters provided is no-op', async () => { TODO
-    //   store.dispatch(granuleUpdateQueryText(''))
-    //   fetchMock.post(
-    //     (url, opts) => url == `${BASE_URL}/search/granule`,
-    //     mockPayload
-    //   )
-    //
-    //   await store.dispatch(submitGranuleMatchingCount(mockHistory, 'parent-uuid'))
-    //   expect(history_input).toEqual({}) // The history push step skips things when no query/filter provided (as it should)
-    //   const {granuleRequest, granuleResult} = store.getState().search
-    //
-    //   expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
-    //   expect(granuleRequest.errorMessage).toEqual('Invalid Request')
-    // })
-  })
+  // describe('count only', function(){
+  //   it('stops request if something already in flight', function(){
+  //     //setup send something into flight first
+  //     store.dispatch(granuleNewSearchRequested('other-uuid'))
+  //     expect(store.getState().search.granuleRequest.inFlight).toBeTruthy()
+  //
+  //     // then try to start a request
+  //     store.dispatch(submitGranuleMatchingCount(mockHistory, 'parent-uuid'))
+  //     expect(store.getState().search.granuleResult.totalGranuleCount).toEqual(0)
+  //   })
+  //
+  //   it('executes prefetch actions', function(){
+  //     expect(store.getState().search.granuleRequest.inFlight).toBeFalsy()
+  //     store.dispatch(submitGranuleMatchingCount(mockHistory, 'parent-uuid'))
+  //     expect(history_input).toEqual({}) // it does not do history.push
+  //     expect(store.getState().search.granuleRequest.inFlight).toBeTruthy()
+  //     expect(store.getState().search.granuleFilter.selectedIds).toEqual([
+  //       'parent-uuid',
+  //     ])
+  //   })
+  //
+  //   it('success path', async () => {
+  //     fetchMock.post(
+  //       (url, opts) => url == `${BASE_URL}/search/granule`,
+  //       mockPayloadCount
+  //     )
+  //
+  //     await store.dispatch(
+  //       submitGranuleMatchingCount(mockHistory, 'parent-uuid')
+  //     )
+  //     const {granuleRequest, granuleResult} = store.getState().search
+  //
+  //     expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+  //     expect(granuleRequest.errorMessage).toEqual('')
+  //     expect(granuleResult.granules).toEqual({})
+  //     expect(granuleResult.facets).toEqual({})
+  //     expect(granuleResult.totalGranuleCount).toEqual(13)
+  //     expect(granuleResult.loadedGranuleCount).toEqual(0)
+  //   })
+  //
+  //   it('failure path', async () => {
+  //     fetchMock.post((url, opts) => url == `${BASE_URL}/search/granule`, 500)
+  //
+  //     await store.dispatch(
+  //       submitGranuleMatchingCount(mockHistory, 'parent-uuid')
+  //     )
+  //     const {granuleRequest, granuleResult} = store.getState().search
+  //     expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+  //     expect(granuleRequest.errorMessage).toEqual(
+  //       new Error('Internal Server Error')
+  //     )
+  //     expect(granuleResult.granules).toEqual({})
+  //     expect(granuleResult.totalGranuleCount).toEqual(0)
+  //   })
+  //
+  //   // it('no query or filters provided is no-op', async () => { TODO
+  //   //   store.dispatch(granuleUpdateQueryText(''))
+  //   //   fetchMock.post(
+  //   //     (url, opts) => url == `${BASE_URL}/search/granule`,
+  //   //     mockPayload
+  //   //   )
+  //   //
+  //   //   await store.dispatch(submitGranuleMatchingCount(mockHistory, 'parent-uuid'))
+  //   //   expect(history_input).toEqual({}) // The history push step skips things when no query/filter provided (as it should)
+  //   //   const {granuleRequest, granuleResult} = store.getState().search
+  //   //
+  //   //   expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+  //   //   expect(granuleRequest.errorMessage).toEqual('Invalid Request')
+  //   // })
+  // })
 })

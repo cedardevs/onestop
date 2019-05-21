@@ -3,57 +3,56 @@ import * as queryUtils from '../../src/utils/queryUtils'
 import {initialState} from '../../src/reducers/search/collectionFilter'
 
 describe('The queryUtils', function(){
-  // describe('assembles collection requests', function(){
-  //   collectionTestCases().forEach(function(testCase){
-  //     it(`with ${testCase.name}`, function(){
-  //       const objectResult = queryUtils.assembleCollectionSearchRequest(
-  //         testCase.inputState,
-  //         true
-  //       )
-  //       // const stringResult = queryUtils.assembleSearchRequestString(
-  //       //   testCase.inputState,
-  //       //   false,
-  //       //   true
-  //       // )
-  //       expect(objectResult).toEqual(testCase.expectedResult)
-  //       // expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
-  //     })
-  //   })
-  // })
-
-  // describe('assembles granule requests', function(){
-  //
-  // // TODO do the query test cases cover Next Page completely? I didn't actually look
-  //
-  //   granuleTestCases().forEach(function(testCase){
-  //     it(`with ${testCase.name}`, function(){
-  //       const objectResult = queryUtils.assembleGranuleSearchRequest(
-  //         testCase.inputState,
-  //         false
-  //       )
-  //       // const stringResult = queryUtils.assembleSearchRequestString(
-  //       //   testCase.inputState,
-  //       //   true,
-  //       //   false
-  //       // )
-  //       expect(objectResult).toEqual(testCase.expectedResult)
-  //       // expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
-  //     })
-  //   })
-  // })
-
-  describe('assembles granule count requests', function(){
-    granuleCountTestCases().forEach(function(testCase){
+  describe('assembles collection requests', function(){
+    collectionTestCases().forEach(function(testCase){
       it(`with ${testCase.name}`, function(){
-        const objectResult = queryUtils.assembleGranuleSearchRequest(
+        const objectResult = queryUtils.assembleSearchRequest(
           testCase.inputState,
-          false,
-          0
+          true
         )
+        // const stringResult = queryUtils.assembleSearchRequestString(
+        //   testCase.inputState,
+        //   false,
+        //   true
+        // )
         expect(objectResult).toEqual(testCase.expectedResult)
+        // expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
       })
     })
   })
+
+  describe('assembles granule requests', function(){
+    // TODO do the query test cases cover Next Page completely? I didn't actually look
+
+    granuleTestCases().forEach(function(testCase){
+      it(`with ${testCase.name}`, function(){
+        const objectResult = queryUtils.assembleSearchRequest(
+          testCase.inputState,
+          false
+        )
+        // const stringResult = queryUtils.assembleSearchRequestString(
+        //   testCase.inputState,
+        //   true,
+        //   false
+        // )
+        expect(objectResult).toEqual(testCase.expectedResult)
+        // expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
+      })
+    })
+  })
+
+  // describe('assembles granule count requests', function(){
+  //   granuleCountTestCases().forEach(function(testCase){
+  //     it(`with ${testCase.name}`, function(){
+  //       const objectResult = queryUtils.assembleSearchRequest(
+  //         testCase.inputState,
+  //         false,
+  //         0
+  //       )
+  //       expect(objectResult).toEqual(testCase.expectedResult)
+  //     })
+  //   })
+  // })
 
   // describe(`a queryString`, function(){
   //   queryTestCases().forEach(testCase => {
@@ -88,12 +87,12 @@ function collectionTestCases(){
     {
       name: 'a text search',
       inputState: {
-        search: {
-          collectionFilter: {
-            queryText: 'test text',
-            pageOffset: 0,
-          },
-        },
+        // search: {
+        //   collectionFilter: {
+        queryText: 'test text',
+        pageOffset: 0,
+        //   },
+        // },
       },
       expectedResult: {
         queries: [
@@ -113,13 +112,13 @@ function collectionTestCases(){
     {
       name: 'a temporal search',
       inputState: {
-        search: {
-          collectionFilter: {
-            startDateTime: '2017-01-01',
-            endDateTime: '2017-01-20',
-            pageOffset: 0,
-          },
-        },
+        // search: {
+        //   collectionFilter: {
+        startDateTime: '2017-01-01',
+        endDateTime: '2017-01-20',
+        pageOffset: 0,
+        //   },
+        // },
       },
       expectedResult: {
         queries: [],
@@ -140,28 +139,28 @@ function collectionTestCases(){
     {
       name: 'a spatial search',
       inputState: {
-        search: {
-          collectionFilter: {
-            geoJSON: {
-              geometry: {
-                type: 'Polygon',
-                coordinates: [
-                  [
-                    [ 100.0, 0.0 ],
-                    [ 101.0, 0.0 ],
-                    [ 101.0, 1.0 ],
-                    [ 100.0, 1.0 ],
-                    [ 100.0, 0.0 ],
-                  ],
-                ],
-              },
-              properties: {
-                description: 'Valid test GeoJSON',
-              },
-            },
-            pageOffset: 0,
+        // search: {
+        //   collectionFilter: {
+        geoJSON: {
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ 100.0, 0.0 ],
+                [ 101.0, 0.0 ],
+                [ 101.0, 1.0 ],
+                [ 100.0, 1.0 ],
+                [ 100.0, 0.0 ],
+              ],
+            ],
+          },
+          properties: {
+            description: 'Valid test GeoJSON',
           },
         },
+        pageOffset: 0,
+        //   },
+        // },
       },
       expectedResult: {
         queries: [],
@@ -192,14 +191,14 @@ function collectionTestCases(){
     {
       name: 'a facet search',
       inputState: {
-        search: {
-          collectionFilter: {
-            selectedFacets: {
-              science: [ 'Atmosphere' ],
-            },
-            pageOffset: 0,
-          },
+        //   search: {
+        // collectionFilter: {
+        selectedFacets: {
+          science: [ 'Atmosphere' ],
         },
+        pageOffset: 0,
+        //   },
+        // },
       },
       expectedResult: {
         queries: [],
@@ -220,35 +219,35 @@ function collectionTestCases(){
     {
       name: 'all filters applied',
       inputState: {
-        search: {
-          collectionFilter: {
-            geoJSON: {
-              geometry: {
-                type: 'Polygon',
-                coordinates: [
-                  [
-                    [ 100.0, 0.0 ],
-                    [ 101.0, 0.0 ],
-                    [ 101.0, 1.0 ],
-                    [ 100.0, 1.0 ],
-                    [ 100.0, 0.0 ],
-                  ],
-                ],
-              },
-              properties: {
-                description: 'Valid test GeoJSON',
-              },
-            },
-            startDateTime: '2017-01-01',
-            endDateTime: '2017-01-20',
-            queryText: 'test text',
-            selectedFacets: {
-              science: [ 'Atmosphere' ],
-            },
-            pageOffset: 0,
+        // search: {
+        //   collectionFilter: {
+        geoJSON: {
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ 100.0, 0.0 ],
+                [ 101.0, 0.0 ],
+                [ 101.0, 1.0 ],
+                [ 100.0, 1.0 ],
+                [ 100.0, 0.0 ],
+              ],
+            ],
+          },
+          properties: {
+            description: 'Valid test GeoJSON',
           },
         },
+        startDateTime: '2017-01-01',
+        endDateTime: '2017-01-20',
+        queryText: 'test text',
+        selectedFacets: {
+          science: [ 'Atmosphere' ],
+        },
+        pageOffset: 0,
       },
+      //   },
+      // },
       expectedResult: {
         queries: [
           {
@@ -293,11 +292,11 @@ function collectionTestCases(){
     {
       name: 'more results requested', // TODO more results WITH filters?
       inputState: {
-        search: {
-          collectionFilter: {
-            pageOffset: 20,
-          },
-        },
+        // search: {
+        //   collectionFilter: {
+        pageOffset: 20,
+        //   },
+        // },
       },
       expectedResult: {
         queries: [],
@@ -317,12 +316,12 @@ function granuleTestCases(){
     {
       name: 'one collection',
       inputState: {
-        search: {
-          granuleFilter: {
-            selectedIds: [ 'ABC123' ],
-            pageOffset: 0,
-          },
-        },
+        // search: {
+        //   granuleFilter: {
+        selectedIds: [ 'ABC123' ],
+        pageOffset: 0,
+        //   },
+        // },
       },
       expectedResult: {
         queries: [],
@@ -342,12 +341,12 @@ function granuleTestCases(){
     {
       name: 'two collections',
       inputState: {
-        search: {
-          granuleFilter: {
-            selectedIds: [ 'ABC123', 'XYZ789' ],
-            pageOffset: 0,
-          },
-        },
+        // search: {
+        //   granuleFilter: {
+        selectedIds: [ 'ABC123', 'XYZ789' ],
+        pageOffset: 0,
+        //   },
+        // },
       },
       expectedResult: {
         queries: [],
@@ -367,13 +366,13 @@ function granuleTestCases(){
     {
       name: 'two collections and a text query',
       inputState: {
-        search: {
-          granuleFilter: {
-            queryText: 'test',
-            selectedIds: [ 'ABC123', 'XYZ789' ],
-            pageOffset: 0,
-          },
-        },
+        // search: {
+        //   granuleFilter: {
+        queryText: 'test',
+        selectedIds: [ 'ABC123', 'XYZ789' ],
+        pageOffset: 0,
+        //   },
+        // },
       },
       expectedResult: {
         queries: [
@@ -398,12 +397,12 @@ function granuleTestCases(){
     {
       name: 'more results requested',
       inputState: {
-        search: {
-          granuleFilter: {
-            selectedIds: [], // TODO this isn't realistic for how we request more results
-            pageOffset: 20,
-          },
-        },
+        // search: {
+        //   granuleFilter: {
+        selectedIds: [], // TODO this isn't realistic for how we request more results
+        pageOffset: 20,
+        //   },
+        // },
       },
       expectedResult: {
         queries: [],

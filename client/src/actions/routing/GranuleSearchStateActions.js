@@ -5,23 +5,21 @@ export const granuleNewSearchRequested = collectionId => ({
   id: collectionId,
 })
 
-export const GRANULE_MATCHING_COUNT_REQUESTED =
-  'GRANULE_MATCHING_COUNT_REQUESTED'
-export const granuleMatchingCountRequested = collectionId => ({
+export const GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED =
+  'GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED'
+export const granuleNewSearchResetFiltersRequested = (
+  collectionId,
+  filters
+) => ({
   // this indicates a granule search within a single collection
-  type: GRANULE_MATCHING_COUNT_REQUESTED,
+  type: GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED,
   id: collectionId,
+  filters: filters,
 })
 
 export const GRANULE_MORE_RESULTS_REQUESTED = 'GRANULE_MORE_RESULTS_REQUESTED'
 export const granuleMoreResultsRequested = () => ({
   type: GRANULE_MORE_RESULTS_REQUESTED,
-})
-
-export const GRANULE_MATCHING_COUNT_RECEIVED = 'GRANULE_MATCHING_COUNT_RECEIVED'
-export const granuleMatchingCountReceived = total => ({
-  type: GRANULE_MATCHING_COUNT_RECEIVED,
-  total: total,
 })
 
 export const GRANULE_NEW_SEARCH_RESULTS_RECEIVED =
@@ -45,13 +43,6 @@ export const granuleSearchError = errors => ({
   errors,
 })
 
-export const GRANULE_UPDATE_FILTERS = 'GRANULE_UPDATE_FILTERS'
-export const granuleUpdateFilters = filters => {
-  return {
-    type: GRANULE_UPDATE_FILTERS,
-    filters: filters,
-  }
-}
 //
 // export const GRANULE_UPDATE_QUERY_TEXT = 'GRANULE_UPDATE_QUERY_TEXT'
 // export const granuleUpdateQueryText = queryText => {

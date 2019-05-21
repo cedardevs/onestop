@@ -35,8 +35,8 @@ describe('init action', function(){
       )
     )
 
-    expect(store.getState().search.granuleFilter.startDateTime).toEqual(
-      '2017-01-01T00:00:00Z'
-    )
+    expect(
+      store.getState().search.collectionDetailFilter.startDateTime
+    ).toEqual('2017-01-01T00:00:00Z')
   })
 })

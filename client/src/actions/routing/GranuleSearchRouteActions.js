@@ -1,15 +1,11 @@
 import _ from 'lodash'
 import {buildSearchAction} from './AsyncHelpers'
-import {
-  assembleGranuleSearchRequest,
-  encodeQueryString,
-} from '../../utils/queryUtils'
+import {assembleSearchRequest, encodeQueryString} from '../../utils/queryUtils'
 import {showErrors} from '../ErrorActions'
 import {
-  granuleMatchingCountRequested,
   granuleNewSearchRequested,
+  granuleNewSearchResetFiltersRequested,
   granuleMoreResultsRequested,
-  granuleMatchingCountReceived,
   granuleNewSearchResultsReceived,
   granuleMoreResultsReceived,
   granuleSearchError,
@@ -29,30 +25,51 @@ const errorHandler = (dispatch, e) => {
   dispatch(granuleSearchError(e.errors || e))
 }
 
-export const submitGranuleMatchingCount = (history, id) => {
-  // granule count request *for granules within a single collection*
-  // this does not change the URL, and is reasonable for a background request
+const granuleFilterState = state => {
+  return (state && state.search && state.search.granuleFilter) || {}
+}
 
-  // TODO is this really a granule route action, or a collection detail action!!?
+const newSearchSuccessHandler = (dispatch, payload) => {
+  dispatch(
+    granuleNewSearchResultsReceived(
+      payload.meta.total,
+      payload.data,
+      payload.meta.facets
+    )
+  )
+}
+
+const granuleBodyBuilder = (filterState, requestFacets) => {
+  // TODO did it work to pull collectionId check out?
+  const body = assembleSearchRequest(filterState, requestFacets)
+  const hasQueries = body && body.queries && body.queries.length > 0
+  const hasFilters = body && body.filters && body.filters.length > 0
+  if (!(hasQueries || hasFilters)) {
+    return undefined
+  }
+  return body
+}
+
+export const submitGranuleSearchWithFilter = (
+  history,
+  collectionId,
+  filterState
+) => {
+  // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
+
+  if (!collectionId) {
+    return
+  } // TODO test this!
 
   const prefetchHandler = dispatch => {
-    dispatch(granuleMatchingCountRequested(id))
+    dispatch(granuleNewSearchResetFiltersRequested(collectionId, filterState))
+    dispatch(
+      updateURLAndNavigateToGranuleRoute(history, collectionId, filterState)
+    )
   }
 
-  const bodyBuilder = state => {
-    const body = assembleGranuleSearchRequest(state, false, 0)
-    const hasQueries = body && body.queries && body.queries.length > 0
-    const hasFilters = body && body.filters && body.filters.length > 0
-    let selectedCollections = state.search.granuleFilter.selectedIds
-    // TODO combine selectedCollections and id - in newSearch case, it knows the id from other contexts and/or should set it explicitly in the prefetch handler instead...
-    if (!selectedCollections || !(hasQueries || hasFilters)) {
-      return undefined
-    }
-    return body
-  }
-
-  const successHandler = (dispatch, payload) => {
-    dispatch(granuleMatchingCountReceived(payload.meta.total))
+  const bodyBuilder = () => {
+    return granuleBodyBuilder(filterState, true)
   }
 
   return buildSearchAction(
@@ -60,40 +77,30 @@ export const submitGranuleMatchingCount = (history, id) => {
     validRequestCheck,
     prefetchHandler,
     bodyBuilder,
-    successHandler,
+    newSearchSuccessHandler,
     errorHandler
   )
 }
 
-export const submitGranuleSearch = (history, id) => {
+export const submitGranuleSearch = (history, collectionId) => {
   // new granule search *for granules within a single collection*
   // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
 
-  const prefetchHandler = dispatch => {
-    dispatch(granuleNewSearchRequested(id))
-    dispatch(updateURLAndNavigateToGranuleRoute(history, id))
+  if (!collectionId) {
+    return
+  } // TODO test this!
+
+  const prefetchHandler = (dispatch, state) => {
+    const filterState = granuleFilterState(state)
+    dispatch(granuleNewSearchRequested(collectionId))
+    dispatch(
+      updateURLAndNavigateToGranuleRoute(history, collectionId, filterState)
+    )
   }
 
   const bodyBuilder = state => {
-    const body = assembleGranuleSearchRequest(state, true)
-    const hasQueries = body && body.queries && body.queries.length > 0
-    const hasFilters = body && body.filters && body.filters.length > 0
-    let selectedCollections = state.search.granuleFilter.selectedIds
-    // TODO combine selectedCollections and id - in newSearch case, it knows the id from other contexts and/or should set it explicitly in the prefetch handler instead...
-    if (!selectedCollections || !(hasQueries || hasFilters)) {
-      return undefined
-    }
-    return body
-  }
-
-  const successHandler = (dispatch, payload) => {
-    dispatch(
-      granuleNewSearchResultsReceived(
-        payload.meta.total,
-        payload.data,
-        payload.meta.facets
-      )
-    )
+    const filterState = granuleFilterState(state)
+    return granuleBodyBuilder(filterState, true)
   }
 
   return buildSearchAction(
@@ -101,7 +108,7 @@ export const submitGranuleSearch = (history, id) => {
     validRequestCheck,
     prefetchHandler,
     bodyBuilder,
-    successHandler,
+    newSearchSuccessHandler,
     errorHandler
   )
 }
@@ -114,15 +121,12 @@ export const submitGranuleSearchNextPage = () => {
   }
 
   const bodyBuilder = state => {
-    const body = assembleGranuleSearchRequest(state, false)
-    const hasQueries = body && body.queries && body.queries.length > 0
-    const hasFilters = body && body.filters && body.filters.length > 0
-    let selectedCollections = state.search.granuleFilter.selectedIds
-    // TODO combine selectedCollections and id - in newSearch case, it knows the id from other contexts and/or should set it explicitly in the prefetch handler instead...
-    if (!selectedCollections || !(hasQueries || hasFilters)) {
-      return undefined
-    }
-    return body
+    const filterState = granuleFilterState(state)
+    if (!filterState.selectedIds || filterState.selectedIds.length == 0) {
+      return null
+    } // TODO test me
+
+    return granuleBodyBuilder(filterState, false)
   }
 
   const successHandler = (dispatch, payload) => {
@@ -139,18 +143,18 @@ export const submitGranuleSearchNextPage = () => {
   )
 }
 
-const updateURLAndNavigateToGranuleRoute = (history, id) => {
-  // formerly showGranules - TODO rename the other comparable functions
-  if (!id) {
+const updateURLAndNavigateToGranuleRoute = (
+  history,
+  collectionId,
+  filterState
+) => {
+  if (!collectionId) {
     return
   }
-  return (dispatch, getState) => {
-    const state = getState()
-    const query = encodeQueryString(
-      (state && state.search && state.search.granuleFilter) || {}
-    ) //TODO put the id in there too?
+  return dispatch => {
+    const query = encodeQueryString(filterState)
     const locationDescriptor = {
-      pathname: `/collections/granules/${id}`, // TODO get this path from urlUtils.ROUTE?
+      pathname: `/collections/granules/${collectionId}`, // TODO get this path from urlUtils.ROUTE?
       search: !_.isEmpty(query) ? `?${query}` : '',
     }
     history.push(locationDescriptor)

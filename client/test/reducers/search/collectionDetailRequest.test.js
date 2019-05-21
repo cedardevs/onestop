@@ -7,6 +7,9 @@ import {
   collectionDetailRequested,
   collectionDetailReceived,
   collectionDetailError,
+  granuleMatchingCountRequested,
+  granuleMatchingCountReceived,
+  granuleMatchingCountError,
 } from '../../../src/actions/routing/CollectionDetailStateActions'
 
 describe('The collection detail request reducer', function(){
@@ -18,6 +21,8 @@ describe('The collection detail request reducer', function(){
       inFlight: false,
       requestedID: null,
       errorMessage: '',
+      backgroundInFlight: false,
+      backgroundErrorMessage: '',
     })
   })
 
@@ -29,6 +34,19 @@ describe('The collection detail request reducer', function(){
     )
     expect(result.inFlight).toBeTruthy()
     expect(result.requestedID).toBe('uuid')
+  })
+
+  it('background request started marks background inFlight', function(){
+    const initial = Immutable({
+      backgroundInFlight: false,
+      backgroundErrorMessage: 'error from previous call',
+    })
+    const result = collectionDetailRequest(
+      initial,
+      granuleMatchingCountRequested()
+    )
+    expect(result.backgroundInFlight).toBeTruthy()
+    expect(result.backgroundErrorMessage).toBe('')
   })
 
   it('new GET resets errorMessage', function(){
@@ -52,6 +70,15 @@ describe('The collection detail request reducer', function(){
     expect(result.requestedID).toBeNull()
   })
 
+  it('result from backround resets inFlight', function(){
+    const initial = Immutable({backgroundInFlight: true})
+    const result = collectionDetailRequest(
+      initial,
+      granuleMatchingCountReceived(7)
+    )
+    expect(result.backgroundInFlight).toBeFalsy()
+  })
+
   it('error resets inFlight, provides requestedID and errorMessage', function(){
     const initial = Immutable({
       inFlight: true,
@@ -64,5 +91,17 @@ describe('The collection detail request reducer', function(){
     expect(result.inFlight).toBeFalsy()
     expect(result.requestedID).toBe('123')
     expect(result.errorMessage).toBe('Cause of Error: test case')
+  })
+
+  it('error resets background for inFlight, and errorMessage', function(){
+    const initial = Immutable({
+      backgroundInFlight: true,
+    })
+    const result = collectionDetailRequest(
+      initial,
+      granuleMatchingCountError('Cause of Error: test case')
+    )
+    expect(result.backgroundInFlight).toBeFalsy()
+    expect(result.backgroundErrorMessage).toBe('Cause of Error: test case')
   })
 })

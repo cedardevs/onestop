@@ -27,12 +27,18 @@ const styleLinkHover = {
 }
 
 export default class GranulesSummary extends React.Component {
+  clickGranulesLink = () => {
+    const {id, navigateToGranules, filters, loading} = this.props
+    if (loading) {
+      navigateToGranules(id, {})
+    }
+    else {
+      navigateToGranules(id, filters)
+    }
+  }
+
   render() {
-    const {
-      totalGranuleCount,
-      totalGranuleFilteredCount,
-      navigateToGranules,
-    } = this.props
+    const {totalGranuleCount, totalGranuleFilteredCount, loading} = this.props
 
     const noGranulesSummary = (
       <div style={styleGranuleSummary}>
@@ -41,9 +47,9 @@ export default class GranulesSummary extends React.Component {
     )
 
     const linkText =
-      totalGranuleFilteredCount == totalGranuleCount
+      loading || totalGranuleFilteredCount == totalGranuleCount
         ? `Show all ${totalGranuleCount} files in collection`
-        : `Show ${totalGranuleFilteredCount}  matching files of ${totalGranuleCount} in collection`
+        : `Show ${totalGranuleFilteredCount} matching files of ${totalGranuleCount} in collection`
 
     // TODO 508 this should probably be a link, not a button
     const granulesSummary = (
@@ -52,7 +58,7 @@ export default class GranulesSummary extends React.Component {
           style={styleLink}
           styleHover={styleLinkHover}
           styleFocus={styleLinkFocus}
-          onClick={navigateToGranules}
+          onClick={this.clickGranulesLink}
         >
           {linkText}
         </Button>

@@ -17,14 +17,15 @@ const mapStateToProps = state => {
     results: collections,
     totalHits: totalCollectionCount,
     returnedHits: loadedCollectionCount,
+    collectionDetailFilter: state.search.collectionFilter, // just used to submit collection detail correctly
     pageSize,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    selectCollection: id => {
-      dispatch(submitCollectionDetail(ownProps.history, id))
+    selectCollection: (id, filterState) => {
+      dispatch(submitCollectionDetail(ownProps.history, id, filterState))
     },
     fetchMoreResults: () => {
       dispatch(submitCollectionSearchNextPage())

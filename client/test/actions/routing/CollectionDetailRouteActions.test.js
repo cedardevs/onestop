@@ -27,6 +27,17 @@ describe('collection detail action', function(){
     fetchMock.reset()
   })
 
+  const mockCollection = {
+    id: 'uuid-ABC',
+    mockedResponse: 'yes',
+  }
+  const mockPayload = {
+    data: [ mockCollection ],
+    meta: {
+      totalGranules: 13,
+    },
+  }
+
   it('stops request if something already in flight', function(){
     //setup send something into flight first
     store.dispatch(collectionDetailRequested('uuid-XYZ'))
@@ -35,13 +46,13 @@ describe('collection detail action', function(){
     ).toBeTruthy()
 
     // then try to start a request
-    store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC'))
+    store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC', {}))
     expect(history_input).toEqual({})
   })
 
   it('executes prefetch actions', function(){
     expect(store.getState().search.collectionDetailRequest.inFlight).toBeFalsy()
-    store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC'))
+    store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC', {}))
     expect(history_input).toEqual({
       pathname: '/collections/details/uuid-ABC',
       search: null,
@@ -55,19 +66,14 @@ describe('collection detail action', function(){
   })
 
   it('success path', async () => {
-    const mockCollection = {
-      id: 'uuid-ABC',
-      mockedResponse: 'yes',
-    }
-    const mockPayload = {
-      data: [ mockCollection ],
-      meta: {
-        totalGranules: 13,
-      },
-    }
     fetchMock.get(`path:${BASE_URL}/collection/uuid-ABC`, mockPayload)
+    fetchMock.post((url, opts) => url == `${BASE_URL}/search/granule`, {
+      meta: {
+        total: 10,
+      },
+    })
 
-    await store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC'))
+    await store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC', {}))
     expect(history_input).toEqual({
       pathname: '/collections/details/uuid-ABC',
       search: null,
@@ -81,12 +87,19 @@ describe('collection detail action', function(){
     expect(collectionDetailRequest.errorMessage).toEqual('')
     expect(collectionDetailResult.collection).toEqual(mockCollection)
     expect(collectionDetailResult.totalGranuleCount).toEqual(13)
+    expect(collectionDetailRequest.backgroundInFlight).toBeFalsy()
+    expect(collectionDetailRequest.backgroundErrorMessage).toEqual('')
+    expect(collectionDetailResult.filteredGranuleCount).toEqual(10)
   })
 
   it('failure path', async () => {
     fetchMock.get(`path:${BASE_URL}/collection/uuid-ABC`, 404)
-
-    await store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC'))
+    fetchMock.post((url, opts) => url == `${BASE_URL}/search/granule`, {
+      meta: {
+        total: 10,
+      },
+    })
+    await store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC', {}))
     const {
       collectionDetailRequest,
       collectionDetailResult,
@@ -94,6 +107,25 @@ describe('collection detail action', function(){
     expect(collectionDetailRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
     expect(collectionDetailRequest.errorMessage).toEqual(new Error('Not Found'))
     expect(collectionDetailResult.collection).toBeNull()
+  })
+
+  it('failured background request', async () => {
+    fetchMock.get(`path:${BASE_URL}/collection/uuid-ABC`, mockPayload)
+    fetchMock.post((url, opts) => url == `${BASE_URL}/search/granule`, 404)
+    await store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC', {}))
+    const {
+      collectionDetailRequest,
+      collectionDetailResult,
+    } = store.getState().search
+    expect(collectionDetailRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+    expect(collectionDetailRequest.errorMessage).toEqual('')
+    expect(collectionDetailResult.collection).toEqual(mockCollection)
+    expect(collectionDetailResult.totalGranuleCount).toEqual(13)
+    expect(collectionDetailRequest.backgroundInFlight).toBeFalsy()
+    expect(collectionDetailResult.filteredGranuleCount).toEqual(0)
+    expect(collectionDetailRequest.backgroundErrorMessage).toEqual(
+      new Error('Not Found')
+    )
   })
 
   it('cannot handle invalid params', function(){
