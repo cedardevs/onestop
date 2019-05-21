@@ -184,7 +184,7 @@ task integrationTest(type: Test) {
   reports.junitXml.destination = file("${buildDir}/integration-test-results")
   reports.html.destination = file("${buildDir}/reports/integrationTests")
 }
-check.dependsOn -= integrationTest
+check.dependsOn integrationTest
 
 task sourceJar(type: Jar) {
   archiveClassifier.set("sources")
