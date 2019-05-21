@@ -65,9 +65,9 @@ subprojects {
       resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if (details.requested.group == 'com.fasterxml.jackson.core' &&
             details.requested.name == 'jackson-databind' &&
-            details.requested.version < '2.9.8') {
-          details.useVersion '2.9.8'
-          details.because 'Enforce jackson-databind 2.9.8+ to avoid vulnerabilities CVE-2018-19360, CVE-2018-19361, CVE-2018-19362, CVE-2018-1000873'
+            details.requested.version < '2.9.9') {
+          details.useVersion '2.9.9'
+          details.because 'Enforce jackson-databind 2.9.9+ to avoid vulnerabilities CVE-2018-19360, CVE-2018-19361, CVE-2018-19362, CVE-2018-1000873, CVE-2019-12086'
         }
       }
 
