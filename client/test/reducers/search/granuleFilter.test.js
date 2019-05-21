@@ -13,7 +13,6 @@ import {
   granuleNewSearchRequested,
   granuleNewSearchResetFiltersRequested,
   granuleMoreResultsRequested,
-  // granuleMatchingCountRequested,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 
 describe('The granule filter reducer', function(){
@@ -64,14 +63,6 @@ describe('The granule filter reducer', function(){
         )
         expect(result.pageOffset).toEqual(0)
       })
-
-      // it('count requested', function(){
-      //   const pageState = {
-      //     pageOffset: 60,
-      //   }
-      //   const result = granuleFilter(pageState, granuleMatchingCountRequested())
-      //   expect(result.pageOffset).toEqual(0)
-      // })
     })
   })
 
@@ -226,23 +217,6 @@ describe('The granule filter reducer', function(){
         expect(result.selectedIds).toEqual([ 'B' ])
       })
     })
-
-    // describe('count granules', function(){
-    //   it('sets selected collection id from initial state', function(){
-    //     const selectCollectionA = granuleMatchingCountRequested('A')
-    //
-    //     const result = granuleFilter(initialState, selectCollectionA)
-    //     expect(result.selectedIds).toEqual([ 'A' ])
-    //   })
-    //
-    //   it('updates selected collection id', function(){
-    //     const selectCollectionB = granuleMatchingCountRequested('B')
-    //     const stateWithSelectedId = Immutable({selectedIds: [ 'A' ]})
-    //
-    //     const result = granuleFilter(stateWithSelectedId, selectCollectionB)
-    //     expect(result.selectedIds).toEqual([ 'B' ])
-    //   })
-    // })
 
     // it('can clear existing granule selections', function(){
     //   const stateWithSelectedId = Immutable({selectedIds: [ 'ABC' ]})

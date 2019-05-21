@@ -12,10 +12,27 @@ import {
   granuleMatchingCountError,
 } from '../../../src/actions/routing/CollectionDetailStateActions'
 
+// describe('collectionDetailRequest', function() {
+//   testCases.forEach(function(testCase){
+//     it(`with ${testCase.name}`, function(){
+//       const initial = {
+//         inFlight: false,
+//
+//       }
+//       const result = collectionDetailRequest(
+//         initial,
+//         collectionDetailRequested('uuid')
+//       )
+//       expect(result.inFlight).toEqual(testCase.inFlight)
+//       expect(result.requestedID).toEqual(testCase.requestedID)
+//       expect(result.errorMessage).toEqual('')
+//     })
+//   })
+// })
+
 describe('The collection detail request reducer', function(){
   it('has a default state', function(){
-    const initialAction = {type: 'init'}
-    const result = collectionDetailRequest(initialState, initialAction)
+    const result = collectionDetailRequest(initialState, {})
 
     expect(result).toEqual({
       inFlight: false,

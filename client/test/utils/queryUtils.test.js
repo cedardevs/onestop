@@ -41,32 +41,32 @@ describe('The queryUtils', function(){
     })
   })
 
-  // describe('assembles granule count requests', function(){
-  //   granuleCountTestCases().forEach(function(testCase){
-  //     it(`with ${testCase.name}`, function(){
-  //       const objectResult = queryUtils.assembleSearchRequest(
-  //         testCase.inputState,
-  //         false,
-  //         0
-  //       )
-  //       expect(objectResult).toEqual(testCase.expectedResult)
-  //     })
-  //   })
-  // })
+  describe('assembles granule count requests', function(){
+    granuleCountTestCases().forEach(function(testCase){
+      it(`with ${testCase.name}`, function(){
+        const objectResult = queryUtils.assembleSearchRequest(
+          testCase.inputState,
+          false,
+          0
+        )
+        expect(objectResult).toEqual(testCase.expectedResult)
+      })
+    })
+  })
 
-  // describe(`a queryString`, function(){
-  //   queryTestCases().forEach(testCase => {
-  //     it(`encodes accurately with ${testCase.name}`, function(){
-  //       const encodedString = queryUtils.encodeQueryString(testCase.state)
-  //       expect(encodedString).toBe(testCase.string)
-  //     })
-  //
-  //     it(`decodes accurately with ${testCase.name}`, function(){
-  //       const decodedString = queryUtils.decodeQueryString(testCase.string)
-  //       expect(decodedString).toEqual(testCase.state)
-  //     })
-  //   })
-  // })
+  describe(`a queryString`, function(){
+    queryTestCases().forEach(testCase => {
+      it(`encodes accurately with ${testCase.name}`, function(){
+        const encodedString = queryUtils.encodeQueryString(testCase.state)
+        expect(encodedString).toBe(testCase.string)
+      })
+
+      it(`decodes accurately with ${testCase.name}`, function(){
+        const decodedString = queryUtils.decodeQueryString(testCase.string)
+        expect(decodedString).toEqual(testCase.state)
+      })
+    })
+  })
 })
 
 function collectionTestCases(){
@@ -87,12 +87,8 @@ function collectionTestCases(){
     {
       name: 'a text search',
       inputState: {
-        // search: {
-        //   collectionFilter: {
         queryText: 'test text',
         pageOffset: 0,
-        //   },
-        // },
       },
       expectedResult: {
         queries: [
@@ -112,13 +108,9 @@ function collectionTestCases(){
     {
       name: 'a temporal search',
       inputState: {
-        // search: {
-        //   collectionFilter: {
         startDateTime: '2017-01-01',
         endDateTime: '2017-01-20',
         pageOffset: 0,
-        //   },
-        // },
       },
       expectedResult: {
         queries: [],
@@ -139,8 +131,6 @@ function collectionTestCases(){
     {
       name: 'a spatial search',
       inputState: {
-        // search: {
-        //   collectionFilter: {
         geoJSON: {
           geometry: {
             type: 'Polygon',
@@ -159,8 +149,6 @@ function collectionTestCases(){
           },
         },
         pageOffset: 0,
-        //   },
-        // },
       },
       expectedResult: {
         queries: [],
@@ -191,14 +179,10 @@ function collectionTestCases(){
     {
       name: 'a facet search',
       inputState: {
-        //   search: {
-        // collectionFilter: {
         selectedFacets: {
           science: [ 'Atmosphere' ],
         },
         pageOffset: 0,
-        //   },
-        // },
       },
       expectedResult: {
         queries: [],
@@ -219,8 +203,6 @@ function collectionTestCases(){
     {
       name: 'all filters applied',
       inputState: {
-        // search: {
-        //   collectionFilter: {
         geoJSON: {
           geometry: {
             type: 'Polygon',
@@ -246,8 +228,6 @@ function collectionTestCases(){
         },
         pageOffset: 0,
       },
-      //   },
-      // },
       expectedResult: {
         queries: [
           {
@@ -292,11 +272,7 @@ function collectionTestCases(){
     {
       name: 'more results requested', // TODO more results WITH filters?
       inputState: {
-        // search: {
-        //   collectionFilter: {
         pageOffset: 20,
-        //   },
-        // },
       },
       expectedResult: {
         queries: [],
@@ -316,12 +292,8 @@ function granuleTestCases(){
     {
       name: 'one collection',
       inputState: {
-        // search: {
-        //   granuleFilter: {
         selectedIds: [ 'ABC123' ],
         pageOffset: 0,
-        //   },
-        // },
       },
       expectedResult: {
         queries: [],
@@ -341,12 +313,8 @@ function granuleTestCases(){
     {
       name: 'two collections',
       inputState: {
-        // search: {
-        //   granuleFilter: {
         selectedIds: [ 'ABC123', 'XYZ789' ],
         pageOffset: 0,
-        //   },
-        // },
       },
       expectedResult: {
         queries: [],
@@ -366,13 +334,9 @@ function granuleTestCases(){
     {
       name: 'two collections and a text query',
       inputState: {
-        // search: {
-        //   granuleFilter: {
         queryText: 'test',
         selectedIds: [ 'ABC123', 'XYZ789' ],
         pageOffset: 0,
-        //   },
-        // },
       },
       expectedResult: {
         queries: [
@@ -397,12 +361,8 @@ function granuleTestCases(){
     {
       name: 'more results requested',
       inputState: {
-        // search: {
-        //   granuleFilter: {
         selectedIds: [], // TODO this isn't realistic for how we request more results
         pageOffset: 20,
-        //   },
-        // },
       },
       expectedResult: {
         queries: [],
@@ -422,12 +382,8 @@ function granuleCountTestCases(){
     {
       name: 'one collection',
       inputState: {
-        search: {
-          granuleFilter: {
-            selectedIds: [ 'ABC123' ],
-            pageOffset: 0,
-          },
-        },
+        selectedIds: [ 'ABC123' ],
+        pageOffset: 0,
       },
       expectedResult: {
         queries: [],
@@ -447,34 +403,30 @@ function granuleCountTestCases(){
     {
       name: 'collection and filters',
       inputState: {
-        search: {
-          granuleFilter: {
-            selectedIds: [ 'ABC123', 'XYZ789' ],
-            geoJSON: {
-              geometry: {
-                type: 'Polygon',
-                coordinates: [
-                  [
-                    [ 100.0, 0.0 ],
-                    [ 101.0, 0.0 ],
-                    [ 101.0, 1.0 ],
-                    [ 100.0, 1.0 ],
-                    [ 100.0, 0.0 ],
-                  ],
-                ],
-              },
-              properties: {
-                description: 'Valid test GeoJSON',
-              },
-            },
-            startDateTime: '2017-01-01',
-            endDateTime: '2017-01-20',
-            selectedFacets: {
-              science: [ 'Atmosphere' ],
-            },
-            pageOffset: 0,
+        selectedIds: [ 'ABC123', 'XYZ789' ],
+        geoJSON: {
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ 100.0, 0.0 ],
+                [ 101.0, 0.0 ],
+                [ 101.0, 1.0 ],
+                [ 100.0, 1.0 ],
+                [ 100.0, 0.0 ],
+              ],
+            ],
+          },
+          properties: {
+            description: 'Valid test GeoJSON',
           },
         },
+        startDateTime: '2017-01-01',
+        endDateTime: '2017-01-20',
+        selectedFacets: {
+          science: [ 'Atmosphere' ],
+        },
+        pageOffset: 0,
       },
       expectedResult: {
         queries: [],
