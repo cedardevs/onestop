@@ -43,7 +43,12 @@ export const loadDetails = (history, path, newQueryString) => {
   return (dispatch, getState) => {
     const detailId = getCollectionIdFromDetailPath(path)
 
+    if (newQueryString.indexOf('?') === 0) {
+      newQueryString = newQueryString.slice(1)
+    }
     const searchFromQuery = decodeQueryString(newQueryString)
+    console.log('loading details from', newQueryString, searchFromQuery)
+
     const searchFromState = _.get(getState(), 'search.collectionDetailFilter')
     // if (!_.isEqual(searchFromQuery, searchFromState)) { TODO put this check back in somewhere
     //   dispatch(granuleUpdateMatchingFilters(searchFromQuery))

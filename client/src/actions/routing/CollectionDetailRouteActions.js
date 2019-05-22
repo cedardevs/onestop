@@ -11,6 +11,10 @@ import {
   granuleMatchingCountReceived,
   granuleMatchingCountError,
 } from './CollectionDetailStateActions'
+import {
+  initialState,
+  collectionDetailFilter, // TODO needing this here as a helper is probably bad? or at least says something really important about paradigms...
+} from '../../reducers/search/collectionDetailFilter'
 
 const granuleFilterState = state => {
   return (state && state.search && state.search.collectionDetailFilter) || {}
@@ -26,8 +30,17 @@ export const submitCollectionDetail = (history, id, filterState) => {
 
   const prefetchHandler = dispatch => {
     dispatch(collectionDetailRequested(id, filterState))
+    // TODO since ^^^ call modifies the state, we need to somehow grab the updated state before updating the URL, etc.
+    // TODO this might be a problem in collection/granule search too - check!
     dispatch(
-      updateURLAndNavigateToCollectionDetailRoute(history, id, filterState)
+      updateURLAndNavigateToCollectionDetailRoute(
+        history,
+        id,
+        collectionDetailFilter(
+          initialState,
+          collectionDetailRequested(id, filterState)
+        )
+      )
     )
     dispatch(submitBackgroundFilteredGranuleCount()) // gets the state from redux, since collectionDetailRequested updates selectedIds
   }
@@ -99,6 +112,7 @@ const updateURLAndNavigateToCollectionDetailRoute = (
   }
   return dispatch => {
     const query = encodeQueryString(filterState)
+    console.log('detail url', query, filterState)
     const locationDescriptor = {
       pathname: `/collections/details/${id}`,
       search: _.isEmpty(query) ? null : `?${query}`,

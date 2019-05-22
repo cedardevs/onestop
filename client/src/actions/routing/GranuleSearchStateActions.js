@@ -90,13 +90,7 @@ export const granuleToggleFacet = (category, facetName, selected) => {
     selected: selected,
   }
 }
-// export const GRANULE_CLEAR_FACETS = 'GRANULE_CLEAR_FACETS'
-// export const granuleClearFacets = () => {
-//   return {
-//     type: GRANULE_CLEAR_FACETS,
-//   }
-// }
-//
+
 export const GRANULE_TOGGLE_EXCLUDE_GLOBAL = 'GRANULE_TOGGLE_EXCLUDE_GLOBAL'
 export const granuleToggleExcludeGlobal = () => {
   return {

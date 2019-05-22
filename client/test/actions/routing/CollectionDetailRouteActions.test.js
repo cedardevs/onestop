@@ -55,7 +55,7 @@ describe('collection detail action', function(){
     store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC', {}))
     expect(history_input).toEqual({
       pathname: '/collections/details/uuid-ABC',
-      search: null,
+      search: '?i=uuid-ABC',
     })
     expect(
       store.getState().search.collectionDetailRequest.inFlight
@@ -73,10 +73,14 @@ describe('collection detail action', function(){
       },
     })
 
-    await store.dispatch(submitCollectionDetail(mockHistory, 'uuid-ABC', {}))
+    await store.dispatch(
+      submitCollectionDetail(mockHistory, 'uuid-ABC', {
+        startDateTime: '2017-01-01T00:00:00Z',
+      })
+    )
     expect(history_input).toEqual({
       pathname: '/collections/details/uuid-ABC',
-      search: null,
+      search: '?s=2017-01-01T00%3A00%3A00Z&i=uuid-ABC',
     })
     const {
       collectionDetailRequest,

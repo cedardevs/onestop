@@ -18,6 +18,7 @@ import {
 
 const assertParam = (param, result, expected, fallback) => {
   expect(result[param]).toEqual(
+    // if provided, assert that it matches `expected`, otherwise it should match `fallback`
     expected[param] === undefined ? fallback[param] : expected[param]
   )
 }
@@ -103,30 +104,30 @@ describe('The collection filter reducer', function(){
         {
           name: 'resets to initial values with null param',
           initialState: nonInitialState,
-          params: [ null ],
           function: collectionNewSearchResetFiltersRequested,
+          params: [ null ],
           expectedChanges: initialState,
         },
         {
           name: 'resets to initial values with undefined param',
           initialState: nonInitialState,
-          params: [ undefined ],
           function: collectionNewSearchResetFiltersRequested,
+          params: [ undefined ],
           expectedChanges: initialState,
         },
         {
           name: 'resets to initial values with empty map',
           initialState: nonInitialState,
-          params: [ {} ],
           function: collectionNewSearchResetFiltersRequested,
+          params: [ {} ],
           expectedChanges: initialState,
         },
         {
           name:
             'resets to initial values on except where explicitly set (queryText)',
           initialState: nonInitialState,
-          params: [ {queryText: 'new'} ],
           function: collectionNewSearchResetFiltersRequested,
+          params: [ {queryText: 'new'} ],
           expectedChanges: {
             pageOffset: 0,
             queryText: 'new',
@@ -141,6 +142,7 @@ describe('The collection filter reducer', function(){
           name:
             'resets to initial values on except where explicitly set (selectedFacets)',
           initialState: nonInitialState,
+          function: collectionNewSearchResetFiltersRequested,
           params: [
             {
               selectedFacets: {
@@ -148,7 +150,6 @@ describe('The collection filter reducer', function(){
               },
             },
           ],
-          function: collectionNewSearchResetFiltersRequested,
           expectedChanges: {
             pageOffset: 0,
             queryText: '',
@@ -164,6 +165,7 @@ describe('The collection filter reducer', function(){
         {
           name: 'sets multiple values',
           initialState: initialState,
+          function: collectionNewSearchResetFiltersRequested,
           params: [
             {
               queryText: 'new',
@@ -172,7 +174,6 @@ describe('The collection filter reducer', function(){
               },
             },
           ],
-          function: collectionNewSearchResetFiltersRequested,
           expectedChanges: {
             pageOffset: 0,
             queryText: 'new',
@@ -188,6 +189,7 @@ describe('The collection filter reducer', function(){
         {
           name: 'overwrites all values',
           initialState: nonInitialState,
+          function: collectionNewSearchResetFiltersRequested,
           params: [
             {
               queryText: 'new',
@@ -211,7 +213,6 @@ describe('The collection filter reducer', function(){
               excludeGlobal: false,
             },
           ],
-          function: collectionNewSearchResetFiltersRequested,
           expectedChanges: {
             pageOffset: 0,
             queryText: 'new',

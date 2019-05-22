@@ -1,19 +1,9 @@
 import Immutable from 'seamless-immutable'
 import {
-  granuleFilter,
+  collectionDetailFilter,
   initialState,
-} from '../../../src/reducers/search/granuleFilter'
-import {
-  granuleUpdateGeometry,
-  granuleRemoveGeometry,
-  granuleUpdateDateRange,
-  granuleRemoveDateRange,
-  granuleToggleExcludeGlobal,
-  granuleToggleFacet,
-  granuleNewSearchRequested,
-  granuleNewSearchResetFiltersRequested,
-  granuleMoreResultsRequested,
-} from '../../../src/actions/routing/GranuleSearchStateActions'
+} from '../../../src/reducers/search/collectionDetailFilter'
+import {collectionDetailRequested} from '../../../src/actions/routing/CollectionDetailStateActions'
 
 const assertParam = (param, result, expected, fallback) => {
   expect(result[param]).toEqual(
@@ -23,7 +13,6 @@ const assertParam = (param, result, expected, fallback) => {
 }
 
 const assert = (results, values, defaults) => {
-  assertParam('pageOffset', results, values, defaults)
   // assertParam('queryText', results, values, defaults)
   assertParam('geoJSON', results, values, defaults)
   assertParam('startDateTime', results, values, defaults)
@@ -33,10 +22,9 @@ const assert = (results, values, defaults) => {
   assertParam('selectedIds', results, values, defaults)
 }
 
-describe('The granule filter reducer', function(){
+describe('The collection detail filter reducer', function(){
   const nonInitialState = {
     // not a single default value
-    pageOffset: 40,
     queryText: 'demo',
     selectedIds: [ 'abc', '123' ],
     geoJSON: {
@@ -49,7 +37,6 @@ describe('The granule filter reducer', function(){
     excludeGlobal: true,
   }
   const initialStateWithParentUuid = {
-    pageOffset: 0,
     selectedIds: [ 'parent-uuid' ],
     geoJSON: null,
     startDateTime: null,
@@ -59,10 +46,9 @@ describe('The granule filter reducer', function(){
   }
 
   it('has a default state', function(){
-    const result = granuleFilter(initialState, {})
+    const result = collectionDetailFilter(initialState, {})
 
     expect(result).toEqual({
-      pageOffset: 0,
       selectedIds: [],
       geoJSON: null,
       startDateTime: null,
@@ -74,70 +60,40 @@ describe('The granule filter reducer', function(){
 
   const searchActionTestCases = [
     {
-      desc: 'simple new search request action',
+      desc: 'detail request action',
       its: [
         {
           name: 'sets selectedIds',
           initialState: initialState,
-          function: granuleNewSearchRequested,
-          params: [ 'parent-uuid' ],
+          function: collectionDetailRequested,
+          params: [ 'parent-uuid', {} ],
           expectedChanges: {selectedIds: [ 'parent-uuid' ]},
         },
         {
-          name: 'resets only pageOffset and selectedIds',
-          initialState: nonInitialState,
-          function: granuleNewSearchRequested,
-          params: [ 'parent-uuid' ],
-          expectedChanges: {selectedIds: [ 'parent-uuid' ], pageOffset: 0},
-        },
-      ],
-    },
-    {
-      desc: 'next page search request action',
-      its: [
-        {
-          name:
-            'makes no changes to initial state except pagination (increments by 20)',
-          initialState: initialState, // although this is a terrible request, with no filters
-          function: granuleMoreResultsRequested,
-          expectedChanges: {pageOffset: 20},
-        },
-        {
-          name: 'changes only pageOffset (increments by 20)',
-          initialState: nonInitialState,
-          function: granuleMoreResultsRequested,
-          expectedChanges: {pageOffset: 60},
-        },
-      ],
-    },
-    {
-      desc: 'filter resetting new search',
-      its: [
-        {
           name: 'resets to initial values with null param',
           initialState: nonInitialState,
-          function: granuleNewSearchResetFiltersRequested,
+          function: collectionDetailRequested,
           params: [ 'parent-uuid', null ],
           expectedChanges: initialStateWithParentUuid,
         },
         {
           name: 'resets to initial values with undefined param',
           initialState: nonInitialState,
-          function: granuleNewSearchResetFiltersRequested,
+          function: collectionDetailRequested,
           params: [ 'parent-uuid', undefined ],
           expectedChanges: initialStateWithParentUuid,
         },
         {
           name: 'resets to initial values with empty map',
           initialState: nonInitialState,
-          function: granuleNewSearchResetFiltersRequested,
+          function: collectionDetailRequested,
           params: [ 'parent-uuid', {} ],
           expectedChanges: initialStateWithParentUuid,
         },
         {
           name: 'does not pass through queryText',
           initialState: initialState,
-          function: granuleNewSearchResetFiltersRequested,
+          function: collectionDetailRequested,
           params: [ 'parent-uuid', {queryText: 'hello'} ],
           expectedChanges: {
             selectedIds: [ 'parent-uuid' ],
@@ -147,10 +103,9 @@ describe('The granule filter reducer', function(){
           name:
             'resets to initial values on except where explicitly set (startDateTime)',
           initialState: nonInitialState,
-          function: granuleNewSearchResetFiltersRequested,
+          function: collectionDetailRequested,
           params: [ 'parent-uuid', {startDateTime: '2000-01-01T00:00:00Z'} ],
           expectedChanges: {
-            pageOffset: 0,
             selectedIds: [ 'parent-uuid' ],
             geoJSON: null,
             startDateTime: '2000-01-01T00:00:00Z',
@@ -163,7 +118,7 @@ describe('The granule filter reducer', function(){
           name:
             'resets to initial values on except where explicitly set (selectedFacets)',
           initialState: nonInitialState,
-          function: granuleNewSearchResetFiltersRequested,
+          function: collectionDetailRequested,
           params: [
             'parent-uuid',
             {
@@ -173,7 +128,6 @@ describe('The granule filter reducer', function(){
             },
           ],
           expectedChanges: {
-            pageOffset: 0,
             selectedIds: [ 'parent-uuid' ],
             geoJSON: null,
             startDateTime: null,
@@ -187,7 +141,7 @@ describe('The granule filter reducer', function(){
         {
           name: 'sets multiple values',
           initialState: initialState,
-          function: granuleNewSearchResetFiltersRequested,
+          function: collectionDetailRequested,
           params: [
             'parent-uuid',
             {
@@ -198,7 +152,6 @@ describe('The granule filter reducer', function(){
             },
           ],
           expectedChanges: {
-            pageOffset: 0,
             selectedIds: [ 'parent-uuid' ],
             geoJSON: null,
             startDateTime: null,
@@ -212,7 +165,7 @@ describe('The granule filter reducer', function(){
         {
           name: 'overwrites all values',
           initialState: nonInitialState,
-          function: granuleNewSearchResetFiltersRequested,
+          function: collectionDetailRequested,
           params: [
             'parent-uuid',
             {
@@ -237,7 +190,6 @@ describe('The granule filter reducer', function(){
             },
           ],
           expectedChanges: {
-            pageOffset: 0,
             selectedIds: [ 'parent-uuid' ],
             geoJSON: {
               type: 'Polygon',
@@ -268,149 +220,12 @@ describe('The granule filter reducer', function(){
       testBlock.its.forEach(function(testCase){
         it(`${testCase.name}`, function(){
           const args = testCase.params || []
-          const result = granuleFilter(
+          const result = collectionDetailFilter(
             testCase.initialState,
             testCase.function(...args)
           )
           assert(result, testCase.expectedChanges, testCase.initialState)
         })
-      })
-    })
-  })
-
-  describe('individual filter value action', function(){
-    const validGeoJSON = {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [ 100.0, 0.0 ],
-            [ 101.0, 0.0 ],
-            [ 101.0, 1.0 ],
-            [ 100.0, 1.0 ],
-            [ 100.0, 0.0 ],
-          ],
-        ],
-      },
-      properties: {
-        description: 'Valid test GeoJSON',
-      },
-    }
-    const paramActionTestCases = [
-      {
-        name: 'sets start date',
-        initialState: initialState,
-        function: granuleUpdateDateRange,
-        params: [ '2017-01-01T00:00:00Z', null ],
-        expectedChanges: {startDateTime: '2017-01-01T00:00:00Z'},
-      },
-      {
-        name: 'sets end date',
-        initialState: initialState,
-        function: granuleUpdateDateRange,
-        params: [ null, '2017-01-01T00:00:00Z' ],
-        expectedChanges: {endDateTime: '2017-01-01T00:00:00Z'},
-      },
-      {
-        name: 'sets date range',
-        initialState: nonInitialState,
-        function: granuleUpdateDateRange,
-        params: [ '1990-01-01T00:00:00Z', '2017-01-01T00:00:00Z' ],
-        expectedChanges: {
-          startDateTime: '1990-01-01T00:00:00Z',
-          endDateTime: '2017-01-01T00:00:00Z',
-        },
-      },
-      {
-        name: 'unsets date range',
-        initialState: nonInitialState,
-        function: granuleRemoveDateRange,
-        expectedChanges: {startDateTime: null, endDateTime: null},
-      },
-      {
-        name: 'sets geometry',
-        initialState: initialState,
-        function: granuleUpdateGeometry,
-        params: [ validGeoJSON ],
-        expectedChanges: {geoJSON: validGeoJSON},
-      },
-      {
-        name: 'unsets geometry',
-        initialState: nonInitialState,
-        function: granuleRemoveGeometry,
-        expectedChanges: {geoJSON: null},
-      },
-      {
-        name: 'sets facet',
-        initialState: initialState,
-        function: granuleToggleFacet,
-        params: [ 'science', 'Oceans > Ocean Temperature', true ],
-        expectedChanges: {
-          selectedFacets: {science: [ 'Oceans > Ocean Temperature' ]},
-        },
-      },
-      {
-        name: 'sets facet when some exist already',
-        initialState: nonInitialState,
-        function: granuleToggleFacet,
-        params: [ 'science', 'Atmosphere', true ],
-        expectedChanges: {
-          selectedFacets: {
-            science: [ 'Oceans', 'Oceans > Ocean Temperature', 'Atmosphere' ],
-          },
-        },
-      },
-      {
-        name: 'unsets facet',
-        initialState: nonInitialState,
-        function: granuleToggleFacet,
-        params: [ 'science', 'Oceans > Ocean Temperature', false ],
-        expectedChanges: {
-          selectedFacets: {science: [ 'Oceans' ]},
-        },
-      },
-      {
-        name: 'enable exclude global from default',
-        initialState: initialState,
-        function: granuleToggleExcludeGlobal,
-        expectedChanges: {
-          excludeGlobal: true,
-        },
-      },
-      {
-        name: 'disable exclude global',
-        initialState: nonInitialState,
-        function: granuleToggleExcludeGlobal,
-        expectedChanges: {
-          excludeGlobal: false,
-        },
-      },
-      {
-        name: 'enable exclude global from false',
-        initialState: {
-          pageOffset: 0,
-          queryText: '',
-          geoJSON: null,
-          startDateTime: null,
-          endDateTime: null,
-          selectedFacets: {},
-          excludeGlobal: false,
-        },
-        function: granuleToggleExcludeGlobal,
-        expectedChanges: {
-          excludeGlobal: true,
-        },
-      },
-    ]
-    paramActionTestCases.forEach(function(testCase){
-      it(`${testCase.name}`, function(){
-        const args = testCase.params || []
-        const result = granuleFilter(
-          testCase.initialState,
-          testCase.function(...args)
-        )
-        assert(result, testCase.expectedChanges, testCase.initialState)
       })
     })
   })

@@ -1,7 +1,5 @@
 import Immutable from 'seamless-immutable'
-// import // GRANULE_CLEAR_FACETS,
-// // GRANULE_REMOVE_FILTERS,
-// '../../actions/routing/GranuleSearchStateActions'
+
 import {
   GRANULE_NEW_SEARCH_RESULTS_RECEIVED,
   GRANULE_MORE_RESULTS_RECEIVED,

@@ -20,28 +20,6 @@ export const PAGE_SIZE = 20
 //   return JSON.stringify(assembleCollectionSearchRequest(state, retrieveFacets))
 // }
 
-// export const assembleGranuleSearchRequest = (
-//   state,
-//   retrieveFacets,
-//   maxPageSize
-// ) => {
-//   const search = state.search || {}
-//   const granuleFilter = search.granuleFilter || {}
-//
-//   return assembleSearchRequest(granuleFilter, retrieveFacets, maxPageSize)
-// }
-//
-// export const assembleCollectionSearchRequest = (
-//   state,
-//   retrieveFacets,
-//   maxPageSize
-// ) => {
-//   const search = state.search || {}
-//   const collectionFilter = search.collectionFilter || {}
-//
-//   return assembleSearchRequest(collectionFilter, retrieveFacets, maxPageSize)
-// }
-
 export const assembleSearchRequest = (
   filter,
   retrieveFacets,
@@ -111,7 +89,8 @@ const assembleSelectedCollectionsFilters = ({selectedIds}) => {
   }
 }
 
-const assemblePagination = ({pageOffset}, maxPageSize) => {
+const assemblePagination = ({pageOffset = 0}, maxPageSize) => {
+  // TODO tests to verify that
   return {max: maxPageSize, offset: pageOffset}
 }
 
