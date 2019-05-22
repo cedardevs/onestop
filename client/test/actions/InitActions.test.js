@@ -1,23 +1,13 @@
 import store from '../../src/store' // create Redux store with appropriate middleware
 import {RESET_STORE} from '../../src/reducer'
 import fetchMock from 'fetch-mock'
-
+import history from '../../src/history'
 import {loadDetails} from '../../src/actions/InitActions'
-
-let history_input = {}
-
-const mockHistoryPush = input => {
-  history_input = input
-}
-const mockHistory = {
-  push: mockHistoryPush,
-}
 
 describe('init action', function(){
   const BASE_URL = '/-search'
   const resetStore = () => ({type: RESET_STORE})
   beforeEach(async () => {
-    history_input = {}
     // reset store to initial conditions
     await store.dispatch(resetStore())
   })
@@ -29,7 +19,7 @@ describe('init action', function(){
   it('updates granule filters from URL when loading detail page', async () => {
     await store.dispatch(
       loadDetails(
-        mockHistory,
+        history,
         '/collections/details/uuid-ABC',
         '?q=co-ops&s=2017-01-01T00%3A00%3A00Z'
       )
@@ -40,3 +30,7 @@ describe('init action', function(){
     ).toEqual('2017-01-01T00:00:00Z')
   })
 })
+
+// TODO it('do not dispatch a transition to the collections view, just a collectionClearSelectedIds action, when no search params are present', function () {})
+
+// TODO   it('initialize triggers config, version info, total counts, and data loading'...
