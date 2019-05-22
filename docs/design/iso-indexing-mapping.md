@@ -472,5 +472,17 @@ The `dsmmAverage` field is simply the mean average calculation of the numerical 
 ***
 
 ### `services`
-The entire block of XML is ingested and stored as a Base64-encoded string object. Multiple sections results in an array of these strings.
+The top level object of this object is 
 > /gmi:MI_Metadata/gmd:identificationInfo//srv:SV_ServiceIdentification
+Sub-fields in the table below are relative to the above path.
+
+| Sub-Field                         | XPath |
+|-----------------------------------|-------|
+| title                             | .//CI_Citation/gmd:title/gco:CharacterString
+| alternativeTitle                  | .//CI_Citation/gmd:title/gco:CharacterString
+| description                       | ./abstract/gco:CharacterString
+| links.linkName                    | .//srv:SV_OperationMetadata//gmd:CI_OnlineResource/gmd:name/gco:CharacterString[1] |
+| links.linkProtocol                | .//srv:SV_OperationMetadata//gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString[1] |
+| links.linkUrl                     | .//srv:SV_OperationMetadata//gmd:CI_OnlineResource/gmd:linkage/gmd:URL[1] |
+| links.linkDescription             | .//srv:SV_OperationMetadata//gmd:CI_OnlineResource/gmd:description/gco:CharacterString[1] |
+| links.linkFunction                | .//srv:SV_OperationMetadata//gmd:CI_OnlineResource/gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue[1] |
