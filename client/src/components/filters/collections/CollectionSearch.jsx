@@ -13,7 +13,9 @@ const styleSearchWrapper = {
   height: '2.618em',
   justifyContent: 'center',
 }
-
+const styleSearchLabel = {
+    display: 'none',
+}
 const styleWarningCloseIcon = focusingWarningClose => {
   return {outline: focusingWarningClose ? '2px dashed white' : 'none'}
 }
@@ -185,6 +187,9 @@ class CollectionSearch extends React.Component {
     return (
       <section style={searchFieldStyle}>
         <div role="search" style={styleSearchWrapper}>
+          <label id="textSearchInstructions" style={styleSearchLabel}>
+            Perform a free text search against collections.
+          </label>
           <TextSearchField
             onEnterKeyDown={this.validateAndSubmit}
             onChange={collectionUpdateQueryText}
