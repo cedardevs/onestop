@@ -22,6 +22,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(
     classes = [
         Application,
+        DefaultApplicationConfig,
 
         // provides:
         // - `RestClient` 'restClient' bean via test containers
@@ -49,7 +50,14 @@ class ETLIntegrationTests extends Specification {
   // this is simply used as a convenience/consistency as opposed to typing `elasticsearchService.esConfig.*`
   ElasticsearchConfig esConfig
 
+  void separator(String heading) {
+    String sep = String.format("%0" + 42 + "d", 0).replace("0", "-")
+    log.debug("\n\n-- ${heading} ${sep}\n")
+  }
+
   void setup() {
+    separator("SETUP (BEGIN)")
+
     this.esConfig = elasticsearchService.esConfig
     this.metadataIndexService = metadataIndexService
     this.etlService = etlService
@@ -70,6 +78,8 @@ class ETLIntegrationTests extends Specification {
 
     elasticsearchService.dropSearchIndices()
     elasticsearchService.dropStagingIndices()
+
+    separator("SETUP (END)")
   }
 
   def 'update does nothing when staging is empty'() {
@@ -224,11 +234,16 @@ class ETLIntegrationTests extends Specification {
 
   def 'rebuilding with a collection and granule indexes a collection, a granule, and a flattened granule'() {
     setup:
+    separator("INSERT C1.xml")
     insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
+    separator("INSERT G1.xml")
     insertMetadataFromPath('test/data/xml/COOPS/G1.xml')
 
     when:
+    separator("Rebuild search indices")
     etlService.rebuildSearchIndices()
+    separator("Done rebuilding search indices")
+
     Map staged = documentsByType(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
     List<Map> stagedCollections = staged[esConfig.TYPE_COLLECTION] as List<Map>
     List<Map> stagedGranules = staged[esConfig.TYPE_GRANULE] as List<Map>
@@ -319,14 +334,33 @@ class ETLIntegrationTests extends Specification {
   }
 
   private Map documentsByType(String collectionIndex, String granuleIndex, String flatGranuleIndex = null) {
+    log.debug("Getting documents by type...")
+    log.debug("Refreshing collection and granule indices...")
     elasticsearchService.refresh(collectionIndex, granuleIndex)
     if (flatGranuleIndex) {
+      log.debug("Refreshing flattened granule indices...")
       elasticsearchService.refresh(flatGranuleIndex)
     }
-    def endpoint = "$collectionIndex,$granuleIndex${flatGranuleIndex ? ",$flatGranuleIndex" : ''}/_search"
+    log.debug("Searching ${collectionIndex}, ${granuleIndex}${flatGranuleIndex ? ", and ${flatGranuleIndex}" : ''} indices...")
+    def endpoint = "${collectionIndex},${granuleIndex}${flatGranuleIndex ? ",${flatGranuleIndex}" : ''}/_search"
     def request = [version: true]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
-    return getDocuments(response).groupBy({ esConfig.typeFromIndex(getIndex(it)) })
+    Map groupedDocuments =  getDocuments(response).groupBy({ esConfig.typeFromIndex(getIndex(it)) })
+
+    List<Map> collectionDocuments = groupedDocuments[ElasticsearchConfig.TYPE_COLLECTION] ?: []
+    List<Map> granuleDocuments = groupedDocuments[ElasticsearchConfig.TYPE_GRANULE] ?: []
+    List<Map> flattenedGranuleDocuments = groupedDocuments[ElasticsearchConfig.TYPE_FLATTENED_GRANULE] ?: []
+
+    int numCollectionsFound = collectionDocuments.size()
+    int numGranulesFound = granuleDocuments.size()
+    int numFlattenedGranulesFound = flattenedGranuleDocuments.size()
+
+    log.debug("Found ${numCollectionsFound.toString()} collections.")
+    log.debug("Found ${numGranulesFound.toString()} granules.")
+    if(flatGranuleIndex) {
+      log.debug("Found ${numFlattenedGranulesFound.toString()} flattened granules.")
+    }
+    return groupedDocuments
   }
 
   private Map<String, Integer> indexedDocumentVersions(String alias) {

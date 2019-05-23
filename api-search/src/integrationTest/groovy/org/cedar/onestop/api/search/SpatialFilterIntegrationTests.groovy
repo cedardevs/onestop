@@ -28,7 +28,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Unroll
 class SpatialFilterIntegrationTests extends Specification {
 
-  private final String SPATIAL_INDEX = 'spatial_filter'
+  private final String SPATIAL_INDEX_ALIAS = 'spatial_filter'
 
   @Autowired
   @Qualifier("restClient")
@@ -41,7 +41,7 @@ class SpatialFilterIntegrationTests extends Specification {
   ElasticsearchService esService
 
   void setup() {
-    TestUtil.refreshAndLoadGenericTestIndex(SPATIAL_INDEX, restClient)
+    TestUtil.resetLoadAndRefreshGenericTestIndex(SPATIAL_INDEX_ALIAS, restClient, esConfig)
   }
 
   def 'Spatial filter with #relation relation returns correct results'() {
@@ -61,7 +61,7 @@ class SpatialFilterIntegrationTests extends Specification {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, SPATIAL_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, SPATIAL_INDEX_ALIAS)
 
     then:
     def actualMatchingIds = queryResponse.data.collect { it.id }
@@ -91,7 +91,7 @@ class SpatialFilterIntegrationTests extends Specification {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, SPATIAL_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, SPATIAL_INDEX_ALIAS)
 
     then:
     def actualMatchingIds = queryResponse.data.collect { it.id }

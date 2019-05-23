@@ -1,0 +1,15 @@
+{
+  "mappings": {
+    "doc": {
+      "dynamic": "strict",
+      "properties": {
+        "spatialBounding": {
+          "type": "geo_shape"
+        },
+        "isGlobal": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

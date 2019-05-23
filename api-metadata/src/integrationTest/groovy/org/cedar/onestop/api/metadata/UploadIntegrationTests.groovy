@@ -5,6 +5,7 @@ import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.impl.client.LaxRedirectStrategy
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
+import org.cedar.onestop.elastic.common.RequestUtil
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -29,6 +30,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(
         classes = [
             Application,
+            DefaultApplicationConfig,
 
             // provides:
             // - `RestClient` 'restClient' bean via test containers
@@ -96,7 +98,7 @@ class UploadIntegrationTests extends Specification {
         def multiResult = restTemplate.exchange(multiRequest, ModelAndView)
         String redirectPath = multiResult.headers.getLocation().getPath()
 
-        refreshIndices()
+        RequestUtil.refreshAllIndices(restClient)
 
         then: "Request returns 302 redirect to the expected response endpoint"
 
@@ -108,10 +110,6 @@ class UploadIntegrationTests extends Specification {
         def multipartMap = new LinkedMultiValueMap<String, Object>()
         paths.each { multipartMap.add("files", new ClassPathResource(it)) }
         RequestEntity.post(metadataFormURI.toURI()).contentType(MediaType.MULTIPART_FORM_DATA).body(multipartMap)
-    }
-
-    private refreshIndices() {
-        restClient.performRequest('POST', '_refresh')
     }
 
 }

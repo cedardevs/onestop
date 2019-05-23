@@ -9,15 +9,11 @@ import org.elasticsearch.client.Response
 @Slf4j
 class DocumentUtil {
 
-    static Map parseResponse(Response response) {
-        RequestLine requestLine = response.requestLine
+    static Map parseSearchResponse(Response response) {
         int statusCode = response.statusLine.statusCode
-
         Map result = [
-                request: requestLine,
-                statusCode: statusCode ?: 500
+            statusCode: statusCode ?: 500
         ]
-
         try {
             if (response.entity) {
                 HttpEntity entity = response.entity
@@ -27,6 +23,19 @@ class DocumentUtil {
         }
         catch (e) {
             log.warn("Failed to parse Elasticsearch response as JSON", e)
+        }
+        return result
+    }
+
+    static Map parseAdminResponse(Response response) {
+        RequestLine requestLine = response.requestLine
+        int statusCode = response.statusLine.statusCode
+        Map result = [
+            request   : requestLine,
+            statusCode: statusCode
+        ]
+        if (response.entity) {
+            result += new JsonSlurper().parse(response.entity.content) as Map
         }
         return result
     }

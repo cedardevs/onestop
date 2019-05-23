@@ -34,7 +34,7 @@ services:
       - SPRING_PROFILES_ACTIVE=securitydisabled,kafkadisabled
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-6.1.2}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-6.7.1}
     environment:
       - xpack.security.enabled=false
     ports:

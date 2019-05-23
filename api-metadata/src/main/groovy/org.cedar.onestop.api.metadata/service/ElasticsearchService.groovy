@@ -7,6 +7,7 @@ import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.elasticsearch.Version
+import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.ResponseException
 import org.elasticsearch.client.RestClient
@@ -62,6 +63,7 @@ class ElasticsearchService {
     def aliasExists = checkAliasExists(alias)
     if (!aliasExists) {
       def index = createIndex(alias)
+      log.debug("Creating alias `${alias}` for index `${index}`")
       String endPoint = "/${index}/_alias/${alias}"
       performRequest('PUT', endPoint)
     }
@@ -99,11 +101,13 @@ class ElasticsearchService {
   }
 
   void dropStagingIndices() {
+    log.debug("Dropping staging indices...")
     dropAlias(esConfig.COLLECTION_STAGING_INDEX_ALIAS)
     dropAlias(esConfig.GRANULE_STAGING_INDEX_ALIAS)
   }
 
   void dropSearchIndices() {
+    log.debug("Dropping search indices...")
     dropAlias(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
     dropAlias(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
     dropAlias(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
@@ -161,8 +165,11 @@ class ElasticsearchService {
   }
 
   private Boolean checkAliasExists(String alias) {
-    def status = restClient.performRequest('HEAD', alias).statusLine.statusCode
-    return status == 200
+    Request aliasExistsRequest = new Request('HEAD', alias)
+    int status = restClient.performRequest(aliasExistsRequest).statusLine.statusCode
+    Boolean exists = status == 200
+    log.debug("Alias `${alias}` ${exists ? 'exists' : 'does NOT exist'}")
+    return exists
   }
 
   Map performRequest(String method, String endpoint, Map requestBody) {
@@ -170,16 +177,24 @@ class ElasticsearchService {
   }
 
   Map performRequest(String method, String endpoint, String requestBody = null) {
+    String requestBodyOneLiner = requestBody ? requestBody.replace("\r\n", " ").replace("\n", " ") : null
     try {
-      log.debug("Performing Elasticsearch request: ${method} ${endpoint} ${requestBody}")
-      Response response = requestBody ?
-          restClient.performRequest(method, endpoint, Collections.EMPTY_MAP, new NStringEntity(requestBody, ContentType.APPLICATION_JSON)) :
-          restClient.performRequest(method, endpoint)
+      log.debug("Performing Elasticsearch request: ${method} ${endpoint} ${requestBodyOneLiner}")
+
+      Response response
+      if(requestBody) {
+        Request requestWithBody = new Request(method, endpoint)
+        requestWithBody.entity = new NStringEntity(requestBody, ContentType.APPLICATION_JSON)
+        response = restClient.performRequest(requestWithBody)
+      } else {
+        Request requestWithoutBody = new Request(method, endpoint)
+        response = restClient.performRequest(requestWithoutBody)
+      }
       log.debug("Got response: ${response}")
-      return parseResponse(response)
+      return parseAdminResponse(response)
     }
     catch (ResponseException e) {
-      def response = parseResponse(e.response)
+      def response = parseAdminResponse(e.response)
       log.error("Elasticsearch request failed: ${response}")
       return response
     }
@@ -233,6 +248,70 @@ class ElasticsearchService {
         "parent_task_id": "zZnt4tEQSI-4EsaFseceEA:19801870"
       }
     }*/
+
+    // structure of result when running tests and log output
+    /*
+    {
+    "request": {
+        "uri": "_tasks/77gKHxhjS6GJWoeJnB79XQ:254",
+        "method": "GET",
+        "protocolVersion": {
+            "minor": 1,
+            "protocol": "HTTP",
+            "major": 1
+        }
+    },
+    "statusCode": 200,
+    "completed": true,
+    "task": {
+        "node": "77gKHxhjS6GJWoeJnB79XQ",
+        "id": 254,
+        "type": "transport",
+        "action": "indices:data/write/reindex",
+        "status": {
+            "total": 0,
+            "updated": 0,
+            "created": 0,
+            "deleted": 0,
+            "batches": 0,
+            "version_conflicts": 0,
+            "noops": 0,
+            "retries": {
+                "bulk": 0,
+                "search": 0
+            },
+            "throttled_millis": 0,
+            "requests_per_second": -1.0,
+            "throttled_until_millis": 0
+        },
+        "description": "reindex from [staging_collection] to [search_collection-1558471001643]",
+        "start_time_in_millis": 1558471002325,
+        "running_time_in_nanos": 137978600,
+        "cancellable": true
+    },
+    "response": {
+        "took": 69,
+        "timed_out": false,
+        "total": 0,
+        "updated": 0,
+        "created": 0,
+        "deleted": 0,
+        "batches": 0,
+        "version_conflicts": 0,
+        "noops": 0,
+        "retries": {
+            "bulk": 0,
+            "search": 0
+        },
+        "throttled_millis": 0,
+        "requests_per_second": -1.0,
+        "throttled_until_millis": 0,
+        "failures": [
+
+        ]
+    }
+}
+     */
     def completed = result.completed
     Map task = result.task as Map
     Map status = task.status as Map

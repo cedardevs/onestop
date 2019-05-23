@@ -138,6 +138,9 @@ class InventoryManagerToOneStopUtil {
       discoveryMap.services = []
     }
 
+    if(record.type == RecordType.collection) {
+      discoveryMap.remove("parentIdentifier")
+    }
 
     return discoveryMap
   }

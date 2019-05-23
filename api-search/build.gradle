@@ -165,7 +165,7 @@ task integrationTest(type: Test) {
   environment project.envVars as Map<String, ?>
   dependsOn 'generateJsonSchema'
 }
-check.dependsOn -= integrationTest
+check.dependsOn integrationTest
 
 war {
   dependsOn { ['generateOpenApi', 'generateJsonSchema'] }

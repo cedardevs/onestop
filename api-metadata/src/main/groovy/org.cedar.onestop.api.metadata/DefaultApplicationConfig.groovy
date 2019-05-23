@@ -2,6 +2,7 @@ package org.cedar.onestop.api.metadata
 
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
+import org.apache.http.HttpEntity
 import org.apache.http.HttpHost
 import org.apache.http.auth.AuthScope
 import org.apache.http.auth.UsernamePasswordCredentials
@@ -9,6 +10,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
 import org.apache.http.client.config.RequestConfig
 import org.elasticsearch.Version
+import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestClientBuilder
@@ -40,9 +42,14 @@ class DefaultApplicationConfig {
   @Bean(name = 'elasticsearchVersion')
   @DependsOn('restClient')
   Version elasticsearchVersion(RestClient restClient) throws IOException {
-    Response response = restClient.performRequest("GET", "/")
-    Map content = new JsonSlurper().parse(response.entity.content) as Map
-    final Version version = Version.fromString(content?.version?.number)
+    Request versionRequest = new Request('GET', '/')
+    Response versionResponse = restClient.performRequest(versionRequest)
+    HttpEntity responseEntity = versionResponse.entity
+    InputStream responseContent = responseEntity.content
+    Map content = new JsonSlurper().parse(responseContent) as Map
+    Map versionInfo = content.version as Map
+    String versionNumber = versionInfo.number as String
+    final Version version = Version.fromString(versionNumber)
     if(version == null) {
       throw new RuntimeException("Elasticsearch version not found in the response")
     }
