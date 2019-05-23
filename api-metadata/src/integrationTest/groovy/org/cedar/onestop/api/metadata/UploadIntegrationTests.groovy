@@ -98,7 +98,7 @@ class UploadIntegrationTests extends Specification {
         def multiResult = restTemplate.exchange(multiRequest, ModelAndView)
         String redirectPath = multiResult.headers.getLocation().getPath()
 
-        RequestUtil.refreshAllIndices()
+        RequestUtil.refreshAllIndices(restClient)
 
         then: "Request returns 302 redirect to the expected response endpoint"
 

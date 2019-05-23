@@ -68,7 +68,7 @@ class SitemapETLIntegrationTests extends Specification {
     etlService.updateSearchIndices()
     sitemapEtlService.updateSitemap()
 
-    RequestUtil.refreshAllIndices()
+    RequestUtil.refreshAllIndices(restClient)
 
     then:
     Map indexedByType = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
@@ -102,7 +102,7 @@ class SitemapETLIntegrationTests extends Specification {
     etlService.updateSearchIndices()
     sitemapEtlService.updateSitemap()
 
-    RequestUtil.refreshAllIndices()
+    RequestUtil.refreshAllIndices(restClient)
 
     then:
 
