@@ -14,15 +14,6 @@ const styleSearchWrapper = {
   justifyContent: 'center',
 }
 
-const styleSearchLabel = {
-  position: 'absolute',
-  left: '-10000px',
-  top: 'auto',
-  width: '1px',
-  height: '1px',
-  overflow: 'hidden',
-}
-
 const styleWarningCloseIcon = focusingWarningClose => {
   return {outline: focusingWarningClose ? '2px dashed white' : 'none'}
 }
@@ -204,13 +195,6 @@ class CollectionSearch extends React.Component {
             warningPopup={warningPopup}
             instructionalCopy={instructionalCopy}
           />
-          <label
-            id="textSearchInstructions"
-            style={styleSearchLabel}
-            htmlFor="searchButton"
-          >
-            {instructionalCopy}
-          </label>
           {searchButton}
         </div>
       </section>

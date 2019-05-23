@@ -16,6 +16,15 @@ const styleSearchFieldFocused = {
   boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.5)',
 }
 
+const styleTextFieldLabel = {
+  position: 'absolute',
+  left: '-10000px',
+  top: 'auto',
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
+}
+
 const styleTextField = {
   margin: '0.618em',
   border: 'none',
@@ -164,7 +173,15 @@ class TextSearchField extends React.Component {
       <div style={styleSearchFieldMerged}>
         {warningPopup}
 
+        <label
+          id="textSearchInstructions"
+          style={styleTextFieldLabel}
+          htmlFor="searchTextInput"
+        >
+          {instructionalCopy}
+        </label>
         <input
+          id="searchTextInput"
           style={styleTextFieldMerged}
           placeholder={instructionalCopy}
           title={instructionalCopy}
