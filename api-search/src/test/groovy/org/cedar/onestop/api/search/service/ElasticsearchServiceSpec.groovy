@@ -2,10 +2,12 @@ package org.cedar.onestop.api.search.service
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.apache.http.HttpEntity
 import org.apache.http.StatusLine
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.elasticsearch.Version
+import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import spock.lang.Specification
@@ -14,28 +16,45 @@ import spock.lang.Unroll
 @Unroll
 class ElasticsearchServiceSpec extends Specification {
 
-  def mockRestClient = Mock(RestClient)
-  def searchConfig = new SearchConfig()
-  def searchRequestParserService = new SearchRequestParserService(searchConfig)
-  def mockVersion = Version.V_6_1_2
-  def mockElasticsearchConfig = Mock(ElasticsearchConfig)
-  def elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient, mockVersion, mockElasticsearchConfig)
+  String TEST_INDEX = 'test_index'
+  Version testVersion = Version.V_6_1_2
+
+  ElasticsearchConfig esConfig = new ElasticsearchConfig(
+      TEST_INDEX,
+      'staging_collection',
+      'search_granule',
+      'staging_granule',
+      'search_flattened_granule',
+      'sitemap',
+      null,
+      'collection_pipeline',
+      'granule_pipeline',
+      10,
+      null,
+      2,
+      5,
+      testVersion
+  )
+  RestClient mockRestClient = Mock(RestClient)
+  SearchConfig searchConfig = new SearchConfig()
+  SearchRequestParserService searchRequestParserService = new SearchRequestParserService(searchConfig)
+  ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient, testVersion, esConfig)
+
 
   def 'executes a search'() {
-    def testIndex = 'test_index'
-    def searchRequest = [
+    Map searchRequest = [
         queries: [[type: 'queryText', value: 'test']],
         filters: [[type: 'year', beginYear: 1999]],
         page   : [max: 42, offset: 24]
     ]
 
-    def mockResponse = buildMockElasticResponse(200, [
+    Response mockResponse = buildMockElasticResponse(200, [
         hits: [
             total: 1,
             hits: [
                 [
                     _id       : 'ABC',
-                    _index    : testIndex,
+                    _index    : TEST_INDEX,
                     attributes: [
                         title: 'THIS IS A TEST'
                     ]
@@ -45,12 +64,19 @@ class ElasticsearchServiceSpec extends Specification {
         took: 1234,
     ])
 
+
     when:
-    def result = elasticsearchService.searchFromRequest(searchRequest, testIndex)
+    def result = elasticsearchService.searchFromRequest(searchRequest, TEST_INDEX)
 
     then:
-    1 * mockRestClient.performRequest('GET', testIndex + '/_search', [:], { NStringEntity it ->
-      def searchContent = new JsonSlurper().parse(it.content)
+    1 * mockRestClient.performRequest({
+      Request request = it as Request
+      HttpEntity requestEntity = request.entity
+      InputStream requestContent = requestEntity.content
+      Map searchContent = new JsonSlurper().parse(requestContent) as Map
+      assert request.method == 'GET'
+      assert request.endpoint.startsWith(TEST_INDEX)
+      assert request.endpoint.endsWith('_search')
       assert searchContent.size == searchRequest.page.max
       assert searchContent.from == searchRequest.page.offset
       return true
@@ -78,16 +104,12 @@ class ElasticsearchServiceSpec extends Specification {
 
 
   private Response buildMockElasticResponse(int status, Map body) {
-    def mockResponse = Mock(Response)
-    mockResponse.getStatusLine() >> buildMockStatusLine(status)
-    mockResponse.getEntity() >> new NStringEntity(JsonOutput.toJson(body))
+    Response mockResponse = Mock(Response)
+    StatusLine mockStatusLine = Mock(StatusLine)
+    mockResponse.statusLine >> mockStatusLine
+    mockStatusLine.statusCode >> status
+    mockResponse.entity >> new NStringEntity(JsonOutput.toJson(body))
     return mockResponse
-  }
-
-  private StatusLine buildMockStatusLine(int status) {
-    def result = Mock(StatusLine)
-    result.getStatusCode() >> status
-    return result
   }
 
 }

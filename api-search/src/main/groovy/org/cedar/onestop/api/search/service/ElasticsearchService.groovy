@@ -178,11 +178,16 @@ class ElasticsearchService {
   }
 
   Map queryElasticsearch(Map query, String index) {
-    HttpEntity searchQuery = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
+    log.debug("Querying Elasticsearch index: ${index}")
+    String jsonQuery = JsonOutput.toJson(query)
+    log.trace("jsonQuery: ${jsonQuery}")
+    HttpEntity searchQuery = new NStringEntity(jsonQuery, ContentType.APPLICATION_JSON)
     String endpoint = "${index}/_search"
     Request searchRequest = new Request('GET', endpoint)
     searchRequest.entity = searchQuery
+    log.debug("search request: ${searchRequest.toString()}")
     Response searchResponse = restClient.performRequest(searchRequest)
+    log.debug("search response: ${searchResponse.toString()}")
     return parseSearchResponse(searchResponse)
   }
 
