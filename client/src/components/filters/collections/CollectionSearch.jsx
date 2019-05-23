@@ -13,9 +13,16 @@ const styleSearchWrapper = {
   height: '2.618em',
   justifyContent: 'center',
 }
+
 const styleSearchLabel = {
-    display: 'none',
+  position: 'absolute',
+  left: '-10000px',
+  top: 'auto',
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
 }
+
 const styleWarningCloseIcon = focusingWarningClose => {
   return {outline: focusingWarningClose ? '2px dashed white' : 'none'}
 }
@@ -188,9 +195,10 @@ class CollectionSearch extends React.Component {
       <section style={searchFieldStyle}>
         <div role="search" style={styleSearchWrapper}>
           <label id="textSearchInstructions" style={styleSearchLabel}>
-            Perform a free text search against collections.
+            {instructionalCopy}
           </label>
           <TextSearchField
+            id="collectionSearch"
             onEnterKeyDown={this.validateAndSubmit}
             onChange={collectionUpdateQueryText}
             onClear={this.clearQueryString}
@@ -198,6 +206,9 @@ class CollectionSearch extends React.Component {
             warningPopup={warningPopup}
             instructionalCopy={instructionalCopy}
           />
+          <label id="textSearchInstructions" style={styleSearchLabel}>
+            {instructionalCopy}
+          </label>
           {searchButton}
         </div>
       </section>
