@@ -7,6 +7,7 @@ import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.elasticsearch.Version
+import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -57,7 +58,7 @@ class ElasticsearchService {
     if(getCollection.data) {
       // get the total number of granules for this collection id
       String granuleEndpoint = "/${esConfig.GRANULE_SEARCH_INDEX_ALIAS}/_search"
-      HttpEntity granuleRequest = new NStringEntity(JsonOutput.toJson([
+      HttpEntity granuleRequestQuery = new NStringEntity(JsonOutput.toJson([
           query: [
               term: [
                   internalParentIdentifier: id
@@ -65,9 +66,11 @@ class ElasticsearchService {
           ],
           size : 0
       ]), ContentType.APPLICATION_JSON)
-      Map granuleResponse = parseSearchResponse(restClient.performRequest("GET", granuleEndpoint, Collections.EMPTY_MAP, granuleRequest))
-      int totalGranulesForCollection = getHitsTotal(granuleResponse)
-
+      Request granuleRequest = new Request('GET', granuleEndpoint)
+      granuleRequest.entity = granuleRequestQuery
+      Response granuleResponse = restClient.performRequest(granuleRequest)
+      Map parsedGranuleResponse = parseSearchResponse(granuleResponse)
+      int totalGranulesForCollection = getHitsTotal(parsedGranuleResponse)
       getCollection.meta = [
           totalGranules: totalGranulesForCollection
       ]
@@ -90,16 +93,19 @@ class ElasticsearchService {
     ]
     String searchEndpoint = "${esConfig.SITEMAP_INDEX_ALIAS}/_search"
     log.debug("searching for sitemap against endpoint ${searchEndpoint}")
-    def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
-    Map searchResponse = parseSearchResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
+    HttpEntity searchRequestQuery = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    Request searchRequest = new Request('GET', searchEndpoint)
+    searchRequest.entity = searchRequestQuery
+    Response searchResponse = restClient.performRequest(searchRequest)
+    Map parsedSearchResponse = parseSearchResponse(searchResponse)
 
     def result = [
-      data: getDocuments(searchResponse).collect {
+      data: getDocuments(parsedSearchResponse).collect {
         [id: getId(it), type: esConfig.typeFromIndex(getIndex(it)), attributes: getSource(it)]
       },
       meta: [
-          took : getTook(searchResponse),
-          total: getHitsTotal(searchResponse)
+          took : getTook(parsedSearchResponse),
+          total: getHitsTotal(parsedSearchResponse)
       ]
     ]
     return result
@@ -124,20 +130,23 @@ class ElasticsearchService {
 
   Map totalCounts(String alias) {
     String endpoint = "/${alias}/_search"
-    HttpEntity request = new NStringEntity(JsonOutput.toJson([
+    HttpEntity requestQuery = new NStringEntity(JsonOutput.toJson([
         query: [
             match_all: [:]
         ],
         size : 0
     ]), ContentType.APPLICATION_JSON)
-    def response = parseSearchResponse(restClient.performRequest("GET", endpoint, Collections.EMPTY_MAP, request))
+    Request totalCountsRequest = new Request('GET', endpoint)
+    totalCountsRequest.entity = requestQuery
+    Response totalCountsResponse = restClient.performRequest(totalCountsRequest)
+    Map parsedResponse = parseSearchResponse(totalCountsResponse)
 
     return [
         data: [
             [
                 type : "count",
                 id   : esConfig.typeFromAlias(alias),
-                count: getHitsTotal(response)
+                count: getHitsTotal(parsedResponse)
             ]
         ]
     ]
@@ -146,7 +155,9 @@ class ElasticsearchService {
   private Map getById(String alias, String id) {
     String endpoint = "/${alias}/${esConfig.TYPE}/${id}"
     log.debug("Get by ID against endpoint: ${endpoint}")
-    Map collectionDocument = parseSearchResponse(restClient.performRequest('GET', endpoint))
+    Request idRequest = new Request('GET', endpoint)
+    Response idResponse = restClient.performRequest(idRequest)
+    Map collectionDocument = parseSearchResponse(idResponse)
     String type = esConfig.typeFromAlias(alias)
     if (collectionDocument.found) {
       return [
@@ -167,9 +178,12 @@ class ElasticsearchService {
   }
 
   Map queryElasticsearch(Map query, String index) {
-    def searchEntity = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
-    Response response = restClient.performRequest('GET', "${index}/_search", Collections.EMPTY_MAP, searchEntity)
-    return parseSearchResponse(response)
+    HttpEntity searchQuery = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
+    String endpoint = "${index}/_search"
+    Request searchRequest = new Request('GET', endpoint)
+    searchRequest.entity = searchQuery
+    Response searchResponse = restClient.performRequest(searchRequest)
+    return parseSearchResponse(searchResponse)
   }
 
   Map searchFromRequest(Map params, String index) {

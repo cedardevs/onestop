@@ -7,6 +7,7 @@ import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.elasticsearch.Version
+import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.ResponseException
 import org.elasticsearch.client.RestClient
@@ -164,7 +165,8 @@ class ElasticsearchService {
   }
 
   private Boolean checkAliasExists(String alias) {
-    def status = restClient.performRequest('HEAD', alias).statusLine.statusCode
+    Request aliasExistsRequest = new Request('HEAD', alias)
+    int status = restClient.performRequest(aliasExistsRequest).statusLine.statusCode
     Boolean exists = status == 200
     log.debug("Alias `${alias}` ${exists ? 'exists' : 'does NOT exist'}")
     return exists
@@ -178,9 +180,16 @@ class ElasticsearchService {
     String requestBodyOneLiner = requestBody ? requestBody.replace("\r\n", " ").replace("\n", " ") : null
     try {
       log.debug("Performing Elasticsearch request: ${method} ${endpoint} ${requestBodyOneLiner}")
-      Response response = requestBody ?
-          restClient.performRequest(method, endpoint, Collections.EMPTY_MAP, new NStringEntity(requestBody, ContentType.APPLICATION_JSON)) :
-          restClient.performRequest(method, endpoint)
+
+      Response response
+      if(requestBody) {
+        Request requestWithBody = new Request(method, endpoint)
+        requestWithBody.entity = new NStringEntity(requestBody, ContentType.APPLICATION_JSON)
+        response = restClient.performRequest(requestWithBody)
+      } else {
+        Request requestWithoutBody = new Request(method, endpoint)
+        response = restClient.performRequest(requestWithoutBody)
+      }
       log.debug("Got response: ${response}")
       return parseAdminResponse(response)
     }

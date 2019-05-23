@@ -6,6 +6,7 @@ import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.service.SitemapETLService
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
+import org.cedar.onestop.elastic.common.RequestUtil
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -67,7 +68,7 @@ class SitemapETLIntegrationTests extends Specification {
     etlService.updateSearchIndices()
     sitemapEtlService.updateSitemap()
 
-    refreshIndices()
+    RequestUtil.refreshAllIndices()
 
     then:
     Map indexedByType = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
@@ -101,7 +102,7 @@ class SitemapETLIntegrationTests extends Specification {
     etlService.updateSearchIndices()
     sitemapEtlService.updateSitemap()
 
-    refreshIndices()
+    RequestUtil.refreshAllIndices()
 
     then:
 
@@ -197,10 +198,6 @@ class SitemapETLIntegrationTests extends Specification {
           detail: "Record type ${type} with Elasticsearch ID [ ${id} ] does not exist."
       ]
     }
-  }
-
-  private refreshIndices() {
-    restClient.performRequest('POST', '_refresh')
   }
 
 }
