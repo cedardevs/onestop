@@ -27,7 +27,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Unroll
 class TimeFilterIntegrationTests extends Specification {
 
-  private final String DATES_INDEX = 'time_filter'
+  private final String DATES_INDEX_ALIAS = 'time_filter'
 
   @Autowired
   @Qualifier("restClient")
@@ -41,7 +41,7 @@ class TimeFilterIntegrationTests extends Specification {
 
   void setup() {
     // See /docs/development/integration-tests/time-filter.md for more information about the test data used in these tests. It explains the logic behind the test cases chosen, and how they are organized to minimize unrelated test data interactions.
-    TestUtil.refreshAndLoadGenericTestIndex(DATES_INDEX, restClient)
+    TestUtil.resetLoadAndRefreshGenericTestIndex(DATES_INDEX_ALIAS, restClient, esConfig)
   }
 
   def 'Datetime filter q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {
@@ -60,7 +60,7 @@ class TimeFilterIntegrationTests extends Specification {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
@@ -96,7 +96,7 @@ class TimeFilterIntegrationTests extends Specification {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
@@ -133,7 +133,7 @@ class TimeFilterIntegrationTests extends Specification {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
@@ -165,7 +165,7 @@ class TimeFilterIntegrationTests extends Specification {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
@@ -197,7 +197,7 @@ class TimeFilterIntegrationTests extends Specification {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
@@ -230,7 +230,7 @@ class TimeFilterIntegrationTests extends Specification {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:

@@ -65,7 +65,7 @@ class ElasticsearchService {
           ],
           size : 0
       ]), ContentType.APPLICATION_JSON)
-      Map granuleResponse = parseResponse(restClient.performRequest("GET", granuleEndpoint, Collections.EMPTY_MAP, granuleRequest))
+      Map granuleResponse = parseSearchResponse(restClient.performRequest("GET", granuleEndpoint, Collections.EMPTY_MAP, granuleRequest))
       int totalGranulesForCollection = getHitsTotal(granuleResponse)
 
       getCollection.meta = [
@@ -91,7 +91,7 @@ class ElasticsearchService {
     String searchEndpoint = "${esConfig.SITEMAP_INDEX_ALIAS}/_search"
     log.debug("searching for sitemap against endpoint ${searchEndpoint}")
     def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
-    Map searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
+    Map searchResponse = parseSearchResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
 
     def result = [
       data: getDocuments(searchResponse).collect {
@@ -130,7 +130,7 @@ class ElasticsearchService {
         ],
         size : 0
     ]), ContentType.APPLICATION_JSON)
-    def response = parseResponse(restClient.performRequest("GET", endpoint, Collections.EMPTY_MAP, request))
+    def response = parseSearchResponse(restClient.performRequest("GET", endpoint, Collections.EMPTY_MAP, request))
 
     return [
         data: [
@@ -146,7 +146,7 @@ class ElasticsearchService {
   private Map getById(String alias, String id) {
     String endpoint = "/${alias}/${esConfig.TYPE}/${id}"
     log.debug("Get by ID against endpoint: ${endpoint}")
-    Map collectionDocument = parseResponse(restClient.performRequest('GET', endpoint))
+    Map collectionDocument = parseSearchResponse(restClient.performRequest('GET', endpoint))
     String type = esConfig.typeFromAlias(alias)
     if (collectionDocument.found) {
       return [
@@ -169,7 +169,7 @@ class ElasticsearchService {
   Map queryElasticsearch(Map query, String index) {
     def searchEntity = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
     Response response = restClient.performRequest('GET', "${index}/_search", Collections.EMPTY_MAP, searchEntity)
-    return parseResponse(response)
+    return parseSearchResponse(response)
   }
 
   Map searchFromRequest(Map params, String index) {

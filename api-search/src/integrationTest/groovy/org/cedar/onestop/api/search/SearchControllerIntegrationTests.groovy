@@ -52,7 +52,7 @@ class SearchControllerIntegrationTests extends Specification {
   private String baseUri
 
   void setup() {
-    TestUtil.refreshAndLoadSearchIndices(restClient, esConfig)
+    TestUtil.resetLoadAndRefreshSearchIndices(restClient, esConfig)
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
     baseUri = "http://localhost:${port}${contextPath}"

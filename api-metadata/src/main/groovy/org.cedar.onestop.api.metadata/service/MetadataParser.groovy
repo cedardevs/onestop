@@ -44,20 +44,20 @@ class MetadataParser {
 
   static Map parseXMLMetadataToMap(String xml) {
 
-    def metadata = new XmlSlurper().parseText(xml)
+    GPathResult metadata = new XmlSlurper().parseText(xml)
 
     // Parse related data maps from the xml:
-    def citationInfo = parseCitationInfo(metadata)
-    def keywordsMap = parseKeywordsAndTopics(metadata)
-    def acquisitionInfo = parseAcquisitionInfo(metadata)
-    def dsmmMap = parseDSMM(metadata)
-    def spatialMap = parseSpatialInfo(metadata)
-    def responsibleParties = parseDataResponsibleParties(metadata)
-    def services = parseServices(metadata)
-    def miscellaneous = parseMiscellaneous(metadata)
+    Map citationInfo = parseCitationInfo(metadata)
+    Map keywordsMap = parseKeywordsAndTopics(metadata)
+    Map acquisitionInfo = parseAcquisitionInfo(metadata)
+    Map dsmmMap = parseDSMM(metadata)
+    Map spatialMap = parseSpatialInfo(metadata)
+    Map responsibleParties = parseDataResponsibleParties(metadata)
+    Set services = parseServices(metadata)
+    Map miscellaneous = parseMiscellaneous(metadata)
 
     // Build JSON:
-    def json = [
+    Map json = [
         fileIdentifier                  : citationInfo.fileIdentifier,
         parentIdentifier                : citationInfo.parentIdentifier,
         hierarchyLevelName              : citationInfo.hierarchyLevelName,

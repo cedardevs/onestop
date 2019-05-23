@@ -1,12 +1,13 @@
 package org.cedar.onestop.api.search
 
-import org.apache.http.HttpEntity
-import org.apache.http.entity.ContentType
-import org.apache.http.nio.entity.NStringEntity
+import groovy.util.logging.Slf4j
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.elasticsearch.client.Response
+import org.cedar.onestop.elastic.common.FileUtil
+import org.cedar.onestop.elastic.common.RequestUtil
+import org.elasticsearch.Version
 import org.elasticsearch.client.RestClient
 
+@Slf4j
 class TestUtil {
 
   static final Map testData = [
@@ -59,72 +60,85 @@ class TestUtil {
       ]
   ]
 
-  static void refreshAndLoadGenericTestIndex(String index, RestClient restClient) {
-    Response response = restClient.performRequest('DELETE', '_all')
-    println("DELETE _all: ${response}")
+  static void resetLoadAndRefreshGenericTestIndex(String alias, RestClient restClient, ElasticsearchConfig esConfig) {
 
-    String genericIndexJson = ElasticsearchConfig.textFromFile("test/data/generic/${index}/index.json")
-    NStringEntity genericIndexMapping = new NStringEntity(genericIndexJson, ContentType.APPLICATION_JSON)
+    // get the Elasticsearch version
+    Version version = esConfig.version
 
-    String bulkRequests = ElasticsearchConfig.textFromFile("test/data/generic/${index}/bulkData.txt")
-    NStringEntity bulkRequestBody = new NStringEntity(bulkRequests, ContentType.APPLICATION_JSON)
+    // wipe out all the indices
+    RequestUtil.deleteAllIndices(restClient)
 
-    Response newIndexResponse = restClient.performRequest('PUT', index, Collections.EMPTY_MAP, genericIndexMapping)
-    println("PUT new $index index: ${newIndexResponse}")
+    // recreate the generic index alias with its JSON mapping
+    // ------------------------------------------------------
+    // Elasticsearch alias names are configurable, and this allows a central mapping between
+    // the alias names configured (including the prefix) and the JSON mappings
+    // https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
+    String jsonMappingGeneric
+    if (version.onOrAfter(Version.V_6_0_0)) {
+      log.debug("Elasticsearch version ${version.toString()} found. Using mappings without `_all`.")
+      // [_all] is deprecated in 6.0+ and will be removed in 7.0.
+      // -> It is now disabled by default because it requires extra CPU cycles and disk space
+      // https://www.elastic.co/guide/en/elasticsearch/reference/6.4/mapping-all-field.html
+      jsonMappingGeneric = FileUtil.textFromFile("test/data/generic/${alias}/index_ES6.json")
 
-    Response dataLoadResponse = restClient.performRequest('POST', '_bulk', Collections.EMPTY_MAP, bulkRequestBody)
-    println("POST bulk data load to ${index}: ${dataLoadResponse}")
+    } else {
+      log.debug("Elasticsearch version ${version.toString()} found. Using mappings with `_all` disabled.")
+      // ES 5 did not disable [_all] by default and so the mappings to support < 6.0 explicitly disable it
+      // https://www.elastic.co/guide/en/elasticsearch/reference/5.6/mapping-all-field.html
+      jsonMappingGeneric = FileUtil.textFromFile("test/data/generic/${alias}/index.json")
+    }
 
-    restClient.performRequest('POST', '_refresh')
+    RequestUtil.resetIndices(alias, jsonMappingGeneric, restClient)
+
+    // load bulk data into generic index alias
+    String bulkData = FileUtil.textFromFile("test/data/generic/${alias}/bulkData.txt")
+    RequestUtil.bulk(alias, bulkData, restClient)
+
+    // refresh all indices
+    RequestUtil.refreshAllIndices(restClient)
   }
 
-  static void refreshAndLoadSearchIndices(RestClient restClient, ElasticsearchConfig esConfig) {
-    Response response = restClient.performRequest('DELETE', '_all')
-    println("DELETE _all: ${response}")
+  static void resetLoadAndRefreshSearchIndices(RestClient restClient, ElasticsearchConfig esConfig) {
 
-    def searchCollectionIndexJson = esConfig.jsonMapping(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
-    def collectionIndexSettings = new NStringEntity(searchCollectionIndexJson, ContentType.APPLICATION_JSON)
-    def searchGranuleIndexJson = esConfig.jsonMapping(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
-    def granuleIndexSettings = new NStringEntity(searchGranuleIndexJson, ContentType.APPLICATION_JSON)
-    def searchFlattenedGranuleIndexJson = esConfig.jsonMapping(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
-    def flattenedGranuleIndexSettings = new NStringEntity(searchFlattenedGranuleIndexJson, ContentType.APPLICATION_JSON)
+    // wipe out all the indices
+    RequestUtil.deleteAllIndices(restClient)
+    
+    // recreate the indices with their JSON mappings
+    RequestUtil.resetSearchCollectionsIndices(esConfig, restClient)
+    RequestUtil.resetSearchGranulesIndices(esConfig, restClient)
+    RequestUtil.resetSearchFlattenedGranulesIndices(esConfig, restClient)
 
-    response = restClient.performRequest('PUT', esConfig.COLLECTION_SEARCH_INDEX_ALIAS, Collections.EMPTY_MAP, collectionIndexSettings)
-    println("PUT new collection index: ${response}")
-
-    response = restClient.performRequest('PUT', esConfig.GRANULE_SEARCH_INDEX_ALIAS, Collections.EMPTY_MAP, granuleIndexSettings)
-    println("PUT new granule index: ${response}")
-
-    response = restClient.performRequest('PUT', esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS, Collections.EMPTY_MAP, flattenedGranuleIndexSettings)
-    println("PUT new flattened-granule index: ${response}")
-
+    // iterate through test data and load into appropriate indices
     testData.each{ name, dataset ->
+      // each data set contains a map of test collections
       dataset.each { collection, collectionData ->
-        def metadata = ElasticsearchConfig.textFromFile("test/data/json/${name}/${collection}.json")
-        def id = collectionData.id
-        def collectionEndpoint = "/${esConfig.COLLECTION_SEARCH_INDEX_ALIAS}/${esConfig.TYPE}/${id}"
-        HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-        response = restClient.performRequest('PUT', collectionEndpoint, Collections.EMPTY_MAP, record)
-        println("PUT new collection: ${response}")
+        // each test collection has an id and a corresponding JSON found in the shared `elastic-common` resources
+        String collectionId = collectionData.id
+        String collectionMetadata = FileUtil.textFromFile("test/data/json/${name}/${collection}.json")
+        // load the collection record into the collection index
+        RequestUtil.putSearchCollectionMetadataRecord(collectionId, collectionMetadata, esConfig, restClient)
 
+        // each test collection has an array of test granules
         collectionData.granules.each { granule, granuleData ->
-          metadata = ElasticsearchConfig.textFromFile("test/data/json/${name}/${granule}.json")
-          def granuleEndpoint = "/${esConfig.GRANULE_SEARCH_INDEX_ALIAS}/${esConfig.TYPE}/${granuleData.id}"
-          record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-          response = restClient.performRequest('PUT', granuleEndpoint, Collections.EMPTY_MAP, record)
-          println("PUT new granule: ${response}")
+          // if there are any granules, each has an id and corresponding JSON found in the shared `elastic-common` resources
+          String granuleId = granuleData.id
+          String granuleMetadata = FileUtil.textFromFile("test/data/json/${name}/${granule}.json")
+          // load the new granule record into the granule index
+          RequestUtil.putSearchGranuleMetadataRecord(granuleId, granuleMetadata, esConfig, restClient)
         }
 
+        // each test collection has an array of test flattened granules
         collectionData.flattenedGranules.each { flattenedGranule, flattenedGranuleData ->
-          metadata = ElasticsearchConfig.textFromFile("test/data/json/${name}/${flattenedGranule}.json")
-          def flattenedGranuleEndpoint = "/${esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS}/${esConfig.TYPE}/${flattenedGranuleData.id}"
-          record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-          response = restClient.performRequest('PUT', flattenedGranuleEndpoint, Collections.EMPTY_MAP, record)
-          println("PUT new flattened granule: ${response}")
+          // if there are any flattened granules, each has an id and corresponding JSON found in the shared `elastic-common` resources
+          String flattenedGranuleId = flattenedGranuleData.id
+          String flattenedGranuleMetadata = FileUtil.textFromFile("test/data/json/${name}/${flattenedGranule}.json")
+          // load the new flattened granule record into the flattened granule index
+          RequestUtil.putSearchFlattenedGranuleMetadataRecord(flattenedGranuleId, flattenedGranuleMetadata, esConfig, restClient)
         }
       }
     }
 
-    restClient.performRequest('POST', '_refresh')
+    // refresh all indices
+    RequestUtil.refreshAllIndices(restClient)
   }
 }

@@ -90,6 +90,7 @@ class MetadataManagementService {
   }
   
   Map loadMetadata(Object[] documents) {
+    log.debug("Loading ${documents.size()} metadata documents...")
     esService.ensureStagingIndices()
     esService.ensurePipelines()
     esService.refreshAllIndices()
@@ -98,7 +99,7 @@ class MetadataManagementService {
     Set<Integer> loadedIndices = []
     
     documents.eachWithIndex { document, i ->
-      def filename
+      String filename
       if (document instanceof MultipartFile) {
         filename = document.originalFilename
         document = document.inputStream.text
@@ -107,24 +108,25 @@ class MetadataManagementService {
         document = document as String
       }
       try {
-        def source = MetadataParser.parseXMLMetadataToMap(document)
-        def type = source.parentIdentifier ? ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
-        def fileId = source.fileIdentifier as String
-        def doi = source.doi as String
+        Map source = MetadataParser.parseXMLMetadataToMap(document)
+        String type = source.parentIdentifier ? ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
+        String fileId = source.fileIdentifier as String
+        String doi = source.doi as String
 
-        def result = [
+        Map meta = [ filename: filename ]
+
+        Map result = [
             type      : type,
             attributes: source,
-            meta      : [
-                filename: filename,
-            ]
         ]
 
         if (!fileId && !doi) { //do not allow records without an id
-          result.meta.error = [
+          meta << [
+            error: [
               status: HttpStatus.BAD_REQUEST.value(),
               title : 'Unable to parse FileIdentifier or DOI from document; metadata not loaded.',
               detail: "Please confirm the document contains valid identifiers."
+            ]
           ]
         } else { //check for existing records
           source.stagedDate = System.currentTimeMillis()
@@ -133,18 +135,20 @@ class MetadataManagementService {
           def esId = existingIds?.size() == 1 ? existingIds[0] : null
           result.id = esId as String
           if (existingIds?.size() > 1) { //if we matched more than one file, there is a conflict
-            result.meta.error = [
-                status: HttpStatus.CONFLICT.value(),
-                title : 'Ambiguous metadata records in existence; metadata not loaded.',
-                detail: "The identifiers in this document match more than one existing document. " +
-                    "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
-                    "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
+            meta << [
+                error: [
+                  status: HttpStatus.CONFLICT.value(),
+                  title : 'Ambiguous metadata records in existence; metadata not loaded.',
+                  detail: "The identifiers in this document match more than one existing document. " +
+                      "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
+                      "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
+                ]
             ]
           } else {
             source.stagedDate = System.currentTimeMillis() //only set stagedDate if the data was staged
             result.attributes = source //update return payload
-            def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
-            def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
+            def index = type == ElasticsearchConfig.TYPE_COLLECTION ? esConfig.PREFIX + esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.PREFIX + esConfig.GRANULE_STAGING_INDEX_ALIAS
+            def bulkCommand = [index: [_index: index, _type: esConfig.TYPE, _id: esId]]
             bulkRequest << JsonOutput.toJson(bulkCommand)
             bulkRequest << '\n'
             bulkRequest << JsonOutput.toJson(source)
@@ -152,6 +156,7 @@ class MetadataManagementService {
             loadedIndices << i
           }
         }
+        result << [ meta: meta ]
         results << result
       }
       catch (SAXException e) {

@@ -151,6 +151,7 @@ class ETLService {
             }
             return status.completed
           }
+          log.debug("waiting 1 second for granule task to complete")
           sleep(1000)
         }
 
@@ -171,12 +172,14 @@ class ETLService {
         }
         return status.completed
       }
+      log.debug("waiting 1 second for remaining granule task to complete")
       sleep(1000)
     }
 
     def collectionTaskStatus = elasticsearchService.checkTask(collectionTask)
     while(!collectionTaskStatus.completed) {
       // Polling until the task completes
+      log.debug("waiting 1 second for collection task to complete")
       sleep(1000)
       collectionTaskStatus = elasticsearchService.checkTask(collectionTask)
     }
