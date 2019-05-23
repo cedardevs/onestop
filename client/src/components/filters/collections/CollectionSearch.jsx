@@ -152,6 +152,7 @@ class CollectionSearch extends React.Component {
 
     const searchButton = (
       <Button
+        id="searchButton"
         key="searchButton"
         icon={search}
         onClick={this.validateAndSubmit}
@@ -194,9 +195,6 @@ class CollectionSearch extends React.Component {
     return (
       <section style={searchFieldStyle}>
         <div role="search" style={styleSearchWrapper}>
-          <label id="textSearchInstructions" style={styleSearchLabel}>
-            {instructionalCopy}
-          </label>
           <TextSearchField
             id="collectionSearch"
             onEnterKeyDown={this.validateAndSubmit}
@@ -206,7 +204,11 @@ class CollectionSearch extends React.Component {
             warningPopup={warningPopup}
             instructionalCopy={instructionalCopy}
           />
-          <label id="textSearchInstructions" style={styleSearchLabel}>
+          <label
+            id="textSearchInstructions"
+            style={styleSearchLabel}
+            htmlFor="searchButton"
+          >
             {instructionalCopy}
           </label>
           {searchButton}
