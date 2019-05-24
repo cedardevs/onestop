@@ -176,9 +176,8 @@ class MetadataManagementService {
 
         source.stagedDate = System.currentTimeMillis()
         result.id = esId as String
-        def index = type == ElasticsearchConfig.TYPE_COLLECTION ? esConfig.PREFIX +
-            esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.PREFIX + esConfig.GRANULE_STAGING_INDEX_ALIAS
-        def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
+        def index = type == ElasticsearchConfig.TYPE_COLLECTION ? esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.GRANULE_STAGING_INDEX_ALIAS
+        def bulkCommand = [index: [_index: index, _type: esConfig.TYPE, _id: id]]
         bulkRequest << JsonOutput.toJson(bulkCommand)
         bulkRequest << '\n'
         bulkRequest << JsonOutput.toJson(source)
