@@ -499,13 +499,13 @@ function queryTestCases(){
         endDateTime: '2010-01-01T00:00:00Z',
       }),
     },
-    {
-      name: 'selected ids filter',
-      string: 'i=ABC,with%20a%20space',
-      state: Immutable.merge(initialState, {
-        selectedIds: [ 'ABC', 'with a space' ],
-      }),
-    },
+    // {
+    //   name: 'selected ids filter',
+    //   string: 'i=ABC,with%20a%20space',
+    //   state: Immutable.merge(initialState, {
+    //     selectedIds: [ 'ABC', 'with a space' ],
+    //   }),
+    // },
     {
       name: 'exclude global filter',
       string: 'eg=1',
@@ -549,12 +549,12 @@ function queryTestCases(){
     {
       name: 'all types of filters',
       string:
-        'q=ocean&g=-83,29,-70,38&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&eg=1&i=ABC',
+        'q=ocean&g=-83,29,-70,38&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&eg=1',
       state: Immutable.merge(initialState, {
         queryText: 'ocean',
         startDateTime: '2010-01-01T00:00:00Z',
         endDateTime: '2010-01-01T00:00:00Z',
-        selectedIds: [ 'ABC' ],
+        // selectedIds: [ 'ABC' ],
         excludeGlobal: true,
         selectedFacets: {
           platforms: [ 'DEM > Digital Elevation Model' ],

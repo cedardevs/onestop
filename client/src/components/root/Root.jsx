@@ -7,7 +7,7 @@ import DisclaimerContainer from '../disclaimer/DisclaimerContainer'
 import HeaderContainer from '../header/HeaderContainer'
 import FiltersContainer from '../filters/FiltersContainer'
 import FiltersHiddenContainer from '../filters/FiltersHiddenContainer'
-import InteractiveMapContainer from '../filters/spatial/InteractiveMapContainer'
+import InteractiveMap from '../filters/spatial/InteractiveMap'
 import ResultsContainer from '../results/ResultsContainer'
 import ErrorContainer from '../error/ErrorContainer'
 import LandingContainer from '../landing/LandingContainer'
@@ -101,7 +101,7 @@ export default class Root extends React.Component {
           <Route path={ROUTE.granules.path}>
             <div>
               <GranuleSearchLoadingContainer />
-              <InteractiveMapContainer />
+              <InteractiveMap />
               <ResultsContainer />
             </div>
           </Route>
@@ -109,7 +109,7 @@ export default class Root extends React.Component {
           <Route path={ROUTE.collections.path}>
             <div>
               <CollectionSearchLoadingContainer />
-              <InteractiveMapContainer />
+              <InteractiveMap />
               <ResultsContainer />
             </div>
           </Route>

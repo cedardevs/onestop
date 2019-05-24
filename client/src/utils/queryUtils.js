@@ -171,12 +171,12 @@ const codecs = [
       )
     },
   },
-  {
-    longKey: 'selectedIds',
-    shortKey: 'i',
-    encode: ids => _.map(ids, id => encodeURIComponent(id)).join(','),
-    decode: text => _.map(text.split(','), id => decodeURIComponent(id)),
-  },
+  // {
+  //   longKey: 'selectedIds',
+  //   shortKey: 'i',
+  //   encode: ids => _.map(ids, id => encodeURIComponent(id)).join(','),
+  //   decode: text => _.map(text.split(','), id => decodeURIComponent(id)),
+  // },
   {
     longKey: 'excludeGlobal',
     shortKey: 'eg',

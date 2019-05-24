@@ -9,6 +9,7 @@ import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteAc
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
+  console.log('granule map container', state.search.granuleFilter.geoJSON)
   const {geoJSON} = state.search.granuleFilter
   return {
     geoJsonSelection: geoJSON,
