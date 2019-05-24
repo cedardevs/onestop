@@ -105,6 +105,7 @@ class MetadataManagementService {
   }
 
   List loadParsedRecords(List<Map<String, ?>> parsedRecords){
+    log.debug("Loading ${parsedRecords.size()} parsedRecords...")
     esService.ensureStagingIndices()
     esService.ensurePipelines()
     esService.refreshAllIndices()
@@ -175,7 +176,8 @@ class MetadataManagementService {
 
         source.stagedDate = System.currentTimeMillis()
         result.id = esId as String
-        def index = type == ElasticsearchConfig.TYPE_COLLECTION ? esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.GRANULE_STAGING_INDEX_ALIAS
+        def index = type == ElasticsearchConfig.TYPE_COLLECTION ? esConfig.PREFIX +
+            esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.PREFIX + esConfig.GRANULE_STAGING_INDEX_ALIAS
         def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
         bulkRequest << JsonOutput.toJson(bulkCommand)
         bulkRequest << '\n'
