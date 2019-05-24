@@ -265,6 +265,56 @@
         },
         "dsmmAverage": {
           "type": "float"
+        },
+        "services": {
+          "type": "nested",
+          "properties": {
+            "title":{
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "alternateTitle":{
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "description":{
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "links":{
+              "type": "nested",
+              "properties": {
+                "linkName": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkProtocol": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkUrl": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkDescription": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkFunction": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                }
+              }
+            }
+          }
         }
       }
     }

@@ -120,8 +120,7 @@
           "dsmmUsability",
           "dsmmAverage",
           "updateFrequency",
-          "presentationForm",
-          "services"
+          "presentationForm"
         ],
         "ignore_missing": true
       }

@@ -271,11 +271,6 @@
       }
     },
     {
-      "remove": {
-        "field": "services"
-      }
-    },
-    {
       "rename": {
         "field": "keywordValues",
         "target_field": "keywords",
