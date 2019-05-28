@@ -144,6 +144,11 @@ war {
   // TODO disabled dynamic project-based name for #827, plan to re-enable in #828
   // archiveBaseName.set("${rootProject.name}-${project.name}")
   archiveBaseName.set("onestop-metadata")
+  // If the `archiveFileName` has not been explicitly set,
+  // the pattern for the name is:
+  // "${archiveBaseName}-${archiveAppendix}-${archiveVersion}-${archiveClassifier}.${archiveExtension}"
+  archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
+
   finalizedBy bootWar
 }
 

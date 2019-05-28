@@ -1,61 +1,14 @@
-// Apply to sub-projects to enable publishing to bintray
-
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.jfrog.artifactory'
 
 ext {
-  bintrayUser = System.getenv('BINTRAY_USER')
-  bintrayKey = System.getenv('BINTRAY_KEY')
-  buildNumber = System.getenv('CIRCLE_BUILD_NUM')
-  isNotSnapshot = !System.getenv('CIRCLE_BUILD_NUM') || System.getenv('CIRCLE_TAG')?.startsWith('v') as Boolean
+  String circleBuildNumber = System.getenv('CIRCLE_BUILD_NUM')
+  boolean isCircleBuild = circleBuildNumber != null && !circleBuildNumber.trim().isEmpty()
+  boolean isTag = System.getenv('CIRCLE_TAG')?.startsWith('v')
+  isSnapshot = isCircleBuild && !isTag
 }
 
 // if not a release, publish snapshot versions
-if (!isNotSnapshot) {
+if (isSnapshot) {
   version = version += '-SNAPSHOT'
 }
-
-artifactory {
-  contextUrl = 'https://oss.jfrog.org'
-  publish {
-    repository {
-      repoKey = 'oss-snapshot-local'
-      username = bintrayUser
-      password = bintrayKey
-      maven = true
-    }
-    defaults {
-      publications 'main'
-    }
-  }
-  clientConfig.info.setBuildNumber("$buildNumber")
-}
-
-artifactoryPublish {
-  mustRunAfter 'build'
-  dependsOn 'generatePomFileForMainPublication'
-}
-
-publish {
-  dependsOn 'artifactoryPublish'
-  finalizedBy ':publish'
-}
-
-//bintray {
-//  user = System.getenv('BINTRAY_USER')
-//  key = System.getenv('BINTRAY_KEY')
-//
-//  pkg {
-//    userOrg = 'cires-ncei'
-//    repo = 'maven'
-//    name = 'onestop-' + project.name
-//    licenses = ['GPL-v2.0']
-//    vcsUrl = 'https://github.com/cires-ncei/onestop'
-//    version {
-//      name = project.version
-//      released = new Date()
-//    }
-//  }
-//}

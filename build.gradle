@@ -1,6 +1,9 @@
 buildscript {
   ext {
     springBootVersion = '2.1.4.RELEASE'
+    gradleNodePluginVersion = '1.3.1'
+    dependencyCheckGradleVersion = '5.0.0-M3.1'
+    cedarDockerPluginVersion = '1.0.3'
   }
   repositories {
     maven {
@@ -9,35 +12,26 @@ buildscript {
   }
   dependencies {
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-    classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
-    classpath 'org.owasp:dependency-check-gradle:5.0.0-M3.1'
-    classpath "gradle.plugin.org.cedar:dockerplugin:1.0.3"
+    classpath "com.moowork.gradle:gradle-node-plugin:${gradleNodePluginVersion}"
+    classpath "org.owasp:dependency-check-gradle:${dependencyCheckGradleVersion}"
+    classpath "gradle.plugin.org.cedar:dockerplugin:${cedarDockerPluginVersion}"
   }
 }
 
 plugins {
   id 'com.gradle.build-scan' version '2.2.1'
-  id "com.jfrog.bintray" version "1.8.0"
-  id "com.jfrog.artifactory" version "4.9.6"
-  id "io.spring.dependency-management" version "1.0.6.RELEASE"
+  id "io.spring.dependency-management" version '1.0.6.RELEASE'
   id "jacoco"
 }
 
 apply plugin: 'groovy'
 
-ext {
-  esVersion = '6.7.1'
-  // isRelease used by docker plugin as well
-  isRelease = System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean // TODO REMOVE THIS GARBAGE
-}
-
 subprojects {
 
   project.ext {
-    esVersion = "${project.esVersion}"
+    esVersion = '6.7.1'
     spockVersion = '1.2-groovy-2.5'
     testContainersVersion = '1.10.7'
-
     groovyVersion = '2.5.5'
     openSAMLVersion = '3.4.2'
     logbackVersion = '1.2.3'
@@ -98,15 +92,11 @@ subprojects {
               html.destination = "${buildDir}/reports/jacoco/html"
             }
           }
-
           jacocoTestReport.dependsOn test
           check.dependsOn jacocoTestReport
         }
-
       }
-
     }
-
 }
 
 import java.time.*
@@ -139,38 +129,6 @@ subprojects.each {
 buildScan {
   termsOfServiceUrl = 'https://gradle.com/terms-of-service'
   termsOfServiceAgree = 'yes'
-}
-
-task startBackend(type: Exec, description: 'Starts minikube if not already running and sets docker env') {
-  executable = 'bash'
-  workingDir 'kubernetes'
-  args = ['-c', './startMinikube.sh']
-}
-
-task deployBackend(type: Exec, description: 'Deploys Elasticsearch, both APIs, and Kibana on local minikube') {
-  dependsOn "startBackend", ":api-search:build", ":api-metadata:build"
-  executable = 'bash'
-  workingDir 'kubernetes'
-  args = ['-c', './deployBackend.sh']
-}
-
-
-task stopAndCleanBackend(type: Exec, description: 'Deletes all deployments and stops minikube') {
-  workingDir 'kubernetes'
-  executable = 'bash'
-  args = ['-c', "./stopAndCleanBackend.sh"]
-}
-
-task openDashboards(description: 'Opens Kibana and Kubernetes dashboards') {
-  doLast {
-    exec {
-      commandLine 'minikube', 'dashboard'
-    }
-    println "Opening Kibana dashboard in default browser..."
-    exec {
-      commandLine 'open', 'http://localhost:5601/app/kibana#/dev_tools/console?_g=()'
-    }
-  }
 }
 
 class UploadTestDataTask extends DefaultTask {

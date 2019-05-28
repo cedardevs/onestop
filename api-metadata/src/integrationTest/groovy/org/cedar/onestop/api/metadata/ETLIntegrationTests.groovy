@@ -253,7 +253,6 @@ class ETLIntegrationTests extends Specification {
     List<Map> indexedGranules = indexed[esConfig.TYPE_GRANULE] as List<Map>
     List<Map> indexedFlatGranules = indexed[esConfig.TYPE_FLATTENED_GRANULE] as List<Map>
 
-
     then: // one collection and one granule are indexed; one flattened granule is generated
     indexedCollections.size() == 1
     indexedGranules.size() == 1
