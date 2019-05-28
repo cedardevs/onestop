@@ -2,7 +2,12 @@ import _ from 'lodash'
 import {buildSearchAction} from './AsyncHelpers'
 import {showErrors} from '../ErrorActions'
 
-import {assembleSearchRequest, encodeQueryString} from '../../utils/queryUtils'
+import {
+  assembleSearchRequest,
+  encodePathAndQueryString,
+  // decodeQueryString,
+} from '../../utils/queryUtils'
+import {ROUTE, isPathNew} from '../../utils/urlUtils'
 import {
   collectionNewSearchRequested,
   collectionNewSearchResetFiltersRequested,
@@ -132,13 +137,45 @@ export const submitCollectionSearchNextPage = () => {
 
 const updateURLAndNavigateToCollectionRoute = (history, filterState) => {
   return dispatch => {
-    const query = encodeQueryString(filterState)
-    if (!_.isEmpty(query)) {
-      const locationDescriptor = {
-        pathname: '/collections',
-        search: `?${query}`,
-      }
+    const locationDescriptor = encodePathAndQueryString(
+      ROUTE.collections,
+      filterState
+    )
+    if (
+      !_.isEmpty(locationDescriptor.search) &&
+      isPathNew(history.location, locationDescriptor)
+    ) {
       history.push(locationDescriptor)
     }
+
+    // const query = encodeQueryString(filterState)
+    // if (!_.isEmpty(query)) {
+    //   return
+    // }
+    //
+    // let currentURLQueryString = history.location.search
+    // if (currentURLQueryString.indexOf('?') === 0) {
+    //   currentURLQueryString = currentURLQueryString.slice(1)
+    // }
+    // const currentURLQuery = decodeQueryString(currentURLQueryString)
+    // console.log('collection search url', query, filterState)
+    // // if (!_.isEmpty(query)) { // TODO don't push unless path is changed???
+    // if (
+    //   !(
+    //     history.location.path == '/collections' &&
+    //     currentURLQueryString == query
+    //   )
+    // ) {
+    //   const locationDescriptor = {
+    //     pathname: '/collections',
+    //     search: `?${query}`,
+    //   }
+    //   history.push(locationDescriptor)
+    // }
+    // else {
+    //   console.log('skipping collection search route push')
+    // }
+
+    // }
   }
 }

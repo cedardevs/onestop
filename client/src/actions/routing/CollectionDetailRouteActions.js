@@ -2,7 +2,12 @@ import _ from 'lodash'
 import {buildGetAction, buildSearchAction} from './AsyncHelpers'
 import {showErrors} from '../ErrorActions'
 
-import {assembleSearchRequest, encodeQueryString} from '../../utils/queryUtils'
+import {
+  assembleSearchRequest,
+  encodePathAndQueryString,
+  // decodeQueryString,
+} from '../../utils/queryUtils'
+import {ROUTE, isPathNew} from '../../utils/urlUtils'
 import {
   collectionDetailRequested,
   collectionDetailReceived,
@@ -11,10 +16,10 @@ import {
   granuleMatchingCountReceived,
   granuleMatchingCountError,
 } from './CollectionDetailStateActions'
-import {
-  initialState,
-  collectionDetailFilter, // TODO needing this here as a helper is probably bad? or at least says something really important about paradigms...
-} from '../../reducers/search/collectionDetailFilter'
+// import {
+//   initialState,
+//   collectionDetailFilter, // TODO needing this here as a helper is probably bad? or at least says something really important about paradigms...
+// } from '../../reducers/search/collectionDetailFilter'
 
 const granuleFilterState = state => {
   return (state && state.search && state.search.collectionDetailFilter) || {}
@@ -25,21 +30,24 @@ export const submitCollectionDetail = (history, id, filterState) => {
     const inFlight =
       state.search.collectionDetailRequest.inFlight ||
       state.search.collectionDetailRequest.backgroundInFlight
-    return !inFlight
+    // const hasSelectedId = filterState.selectedIds.length > 0
+    return !inFlight // && hasSelectedId
   }
 
   const prefetchHandler = dispatch => {
     dispatch(collectionDetailRequested(id, filterState))
     // TODO since ^^^ call modifies the state, we need to somehow grab the updated state before updating the URL, etc.
     // TODO this might be a problem in collection/granule search too - check!
+    // TODO instead of encodePathAndQueryString in the URL thing, maybe this method should just be doing validRequestCheck, collectionDetailRequested, and then submitting searches the way it does submitBackgroundFilteredGranuleCount - no params needed?
     dispatch(
       updateURLAndNavigateToCollectionDetailRoute(
         history,
         id,
-        collectionDetailFilter(
-          initialState,
-          collectionDetailRequested(id, filterState)
-        )
+        filterState
+        // collectionDetailFilter(
+        //   initialState,
+        //   collectionDetailRequested(id, filterState)
+        // )
       )
     )
     dispatch(submitBackgroundFilteredGranuleCount()) // gets the state from redux, since collectionDetailRequested updates selectedIds
@@ -111,12 +119,43 @@ const updateURLAndNavigateToCollectionDetailRoute = (
     return
   }
   return dispatch => {
-    const query = encodeQueryString(filterState)
-    console.log('detail url', query, filterState)
-    const locationDescriptor = {
-      pathname: `/collections/details/${id}`,
-      search: _.isEmpty(query) ? null : `?${query}`,
+    // const query = encodeQueryString(filterState)
+    // console.log('detail url', query, filterState)
+    // let currentURLQueryString = history.location.search
+    // if (currentURLQueryString.indexOf('?') === 0) {
+    //   currentURLQueryString = currentURLQueryString.slice(1)
+    // }
+    // const currentURLQuery = decodeQueryString(currentURLQueryString)
+    // if (
+    //   !(
+    //     history.location.path == `/collections/details/${id}` &&
+    //     currentURLQueryString == query
+    //   )
+    // ) {
+    //   const locationDescriptor = {
+    //     pathname: `/collections/details/${id}`,
+    //     search: _.isEmpty(query) ? null : `?${query}`,
+    //   }
+    //   history.push(locationDescriptor)
+    // }
+    const locationDescriptor = encodePathAndQueryString(
+      ROUTE.details,
+      filterState,
+      id
+    )
+    if (isPathNew(history.location, locationDescriptor)) {
+      history.push(locationDescriptor)
     }
+  }
+}
+
+/*
+TODO change the above method to:
+=> {
+  if(!id) {return}
+  const locationDescriptor = encodePathAndQueryString(detailRoute, filterState)
+  if(pathToBeUpdatedHasChanged(history.location, locationDescriptor)) {
     history.push(locationDescriptor)
   }
 }
+*/

@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
+import {getIdFromPath} from './urlUtils'
 import {recenterGeometry} from './geoUtils'
 import {initialState} from '../reducers/search/collectionFilter'
 import {
@@ -92,6 +93,26 @@ const assembleSelectedCollectionsFilters = ({selectedIds}) => {
 const assemblePagination = ({pageOffset = 0}, maxPageSize) => {
   // TODO tests to verify that
   return {max: maxPageSize, offset: pageOffset}
+}
+
+export const encodePathAndQueryString = (route, searchParamsState, id) => {
+  const query = encodeQueryString(searchParamsState)
+  return {
+    pathname: route.toLocation(id), //searchParamsState.selectedIds ? searchParamsState.selectedIds[0] : null),
+    search: _.isEmpty(query) ? null : `?${query}`,
+  }
+}
+
+export const decodePathAndQueryString = (path, queryString) => {
+  if (queryString.indexOf('?') === 0) {
+    queryString = queryString.slice(1)
+  }
+  let search = decodeQueryString(queryString)
+  const id = getIdFromPath(path)
+  if (id) {
+    search = Immutable.merge(search, {selectedIds: [ id ]})
+  }
+  return {id: id, filters: search}
 }
 
 export const encodeQueryString = searchParamsState => {

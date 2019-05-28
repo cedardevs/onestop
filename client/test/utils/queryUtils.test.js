@@ -1,6 +1,7 @@
 import Immutable from 'seamless-immutable'
 import * as queryUtils from '../../src/utils/queryUtils'
 import {initialState} from '../../src/reducers/search/collectionFilter'
+import {ROUTE} from '../../src/utils/urlUtils'
 
 describe('The queryUtils', function(){
   describe('assembles collection requests', function(){
@@ -54,7 +55,20 @@ describe('The queryUtils', function(){
     })
   })
 
-  describe(`a queryString`, function(){
+  describe('encodeLocationDescriptor', function(){
+    // TODO rename the util to encodeLocationDescriptor!
+    it('correctly generates location from granules path with a selected id', function(){
+      const result = queryUtils.encodePathAndQueryString(ROUTE.granules, {
+        selectedIds: [ 'ABC' ],
+      })
+      expect(result).toEqual({
+        pathname: '/collections/granules/ABC',
+        search: null,
+      })
+    })
+  })
+
+  describe('a queryString', function(){
     queryTestCases().forEach(testCase => {
       it(`encodes accurately with ${testCase.name}`, function(){
         const encodedString = queryUtils.encodeQueryString(testCase.state)

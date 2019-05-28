@@ -12,6 +12,7 @@ const mockHistoryPush = input => {
 }
 const mockHistory = {
   push: mockHistoryPush,
+  location: {pathname: 'test', search: null},
 }
 
 describe('collection detail action', function(){

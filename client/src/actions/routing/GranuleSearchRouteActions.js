@@ -1,6 +1,11 @@
 import _ from 'lodash'
 import {buildSearchAction} from './AsyncHelpers'
-import {assembleSearchRequest, encodeQueryString} from '../../utils/queryUtils'
+import {
+  assembleSearchRequest,
+  encodePathAndQueryString,
+  // decodeQueryString,
+} from '../../utils/queryUtils'
+import {ROUTE, isPathNew} from '../../utils/urlUtils'
 import {showErrors} from '../ErrorActions'
 import {
   granuleNewSearchRequested,
@@ -152,11 +157,33 @@ const updateURLAndNavigateToGranuleRoute = (
     return
   }
   return dispatch => {
-    const query = encodeQueryString(filterState)
-    const locationDescriptor = {
-      pathname: `/collections/granules/${collectionId}`, // TODO get this path from urlUtils.ROUTE?
-      search: !_.isEmpty(query) ? `?${query}` : '',
+    const locationDescriptor = encodePathAndQueryString(
+      ROUTE.granules,
+      filterState,
+      collectionId
+    )
+    if (isPathNew(history.location, locationDescriptor)) {
+      history.push(locationDescriptor)
     }
-    history.push(locationDescriptor)
+
+    // const query = encodeQueryString(filterState)
+    // let currentURLQueryString = history.location.search
+    // if (currentURLQueryString.indexOf('?') === 0) {
+    //   currentURLQueryString = currentURLQueryString.slice(1)
+    // }
+    // const currentURLQuery = decodeQueryString(currentURLQueryString)
+    // console.log('granule url', query, filterState)
+    // if (
+    //   !(
+    //     history.location.path == `/collections/granules/${collectionId}` &&
+    //     currentURLQueryString == query
+    //   )
+    // ) {
+    //   const locationDescriptor = {
+    //     pathname: `/collections/granules/${collectionId}`, // TODO get this path from urlUtils.ROUTE?
+    //     search: !_.isEmpty(query) ? `?${query}` : '',
+    //   }
+    //   history.push(locationDescriptor)
+    // }
   }
 }

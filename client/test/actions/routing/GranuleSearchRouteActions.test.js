@@ -3,9 +3,9 @@ import {RESET_STORE} from '../../../src/reducer'
 import fetchMock from 'fetch-mock'
 
 import {
-  submitGranuleSearch,
+  submitGranuleSearch, // TODO submit with filter????
   submitGranuleSearchNextPage,
-  submitGranuleMatchingCount,
+  submitGranuleMatchingCount, //updateURLAndNavigateToGranuleRoute
 } from '../../../src/actions/routing/GranuleSearchRouteActions'
 import {
   // used to set up pre-test conditions
@@ -20,8 +20,22 @@ const mockHistoryPush = input => {
 }
 const mockHistory = {
   push: mockHistoryPush,
+  location: {pathname: 'test', search: null},
 }
 
+// describe('wtf', function() {
+//   it('/????', function() {
+//     updateURLAndNavigateToGranuleRoute (
+//       mockHistory,
+//       'collectionId',
+//       {selectedIds: ['collectionId']}
+//     )
+//     expect(history_input).toEqual({
+//       pathname: '/collections/granules/parent-uuid',
+//       search: '',
+//     })
+//   })
+// })
 describe('granule search actions', function(){
   const BASE_URL = '/-search'
   const resetStore = () => ({type: RESET_STORE})
@@ -99,7 +113,7 @@ describe('granule search actions', function(){
       store.dispatch(submitGranuleSearch(mockHistory, 'parent-uuid'))
       expect(history_input).toEqual({
         pathname: '/collections/granules/parent-uuid',
-        search: '',
+        search: null,
       })
       expect(store.getState().search.granuleRequest.inFlight).toBeTruthy()
     })
@@ -113,7 +127,7 @@ describe('granule search actions', function(){
       await store.dispatch(submitGranuleSearch(mockHistory, 'parent-uuid'))
       expect(history_input).toEqual({
         pathname: '/collections/granules/parent-uuid',
-        search: '',
+        search: null,
       })
       const {granuleRequest, granuleResult} = store.getState().search
 

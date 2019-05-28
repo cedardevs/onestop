@@ -61,6 +61,9 @@ export const ROUTE = Object.freeze({
   collections: {
     path: '/collections',
     regex: /\/collections([^/])*$/,
+    toLocation: id => {
+      return '/collections'
+    },
   },
   cart: {
     path: '/cart',
@@ -69,11 +72,17 @@ export const ROUTE = Object.freeze({
   details: {
     path: '/collections/details',
     regex: /\/collections\/details\/([-\w]+)/,
+    toLocation: id => {
+      return `/collections/details/${id}`
+    },
   },
   granules: {
     path: '/collections/granules',
     parameterized: '/collections/granules/:id',
     regex: /\/collections\/granules\/([-\w]+)/,
+    toLocation: id => {
+      return `/collections/granules/${id}`
+    },
   },
   about: {path: '/about', regex: /\/about/},
   help: {path: '/help', regex: /\/help/},
@@ -118,6 +127,17 @@ export const isGranuleListPage = path => {
   return isRoute(path, ROUTE.granules) ? true : false
 }
 
+export const getIdFromPath = path => {
+  if (isDetailPage(path)) {
+    const match = isRoute(path, ROUTE.details)
+    return match && match[1] ? match[1] : null
+  }
+  if (isGranuleListPage(path)) {
+    const match = isRoute(path, ROUTE.granules)
+    return match && match[1] ? match[1] : null
+  }
+}
+
 export const getCollectionIdFromDetailPath = path => {
   if (!isDetailPage(path)) {
     return null
@@ -132,4 +152,11 @@ export const getCollectionIdFromGranuleListPath = path => {
   }
   const match = isRoute(path, ROUTE.granules)
   return match && match[1] ? match[1] : null
+}
+
+export const isPathNew = (oldDescriptor, newDescriptor) => {
+  return !(
+    oldDescriptor.pathname == newDescriptor.pathname &&
+    oldDescriptor.search == newDescriptor.search
+  )
 }

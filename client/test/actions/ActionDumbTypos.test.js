@@ -12,6 +12,7 @@ import {
 const mockHistoryPush = input => {} // don't care, just don't want it to puke
 const mockHistory = {
   push: mockHistoryPush,
+  location: {pathname: 'test', search: null},
 }
 
 describe('actions execute without dumb typos', function(){
