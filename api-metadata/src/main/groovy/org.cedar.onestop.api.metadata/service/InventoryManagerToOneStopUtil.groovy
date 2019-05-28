@@ -46,6 +46,12 @@ class InventoryManagerToOneStopUtil {
     if (identification && (!identification?.fileIdentifierExists && !identification?.doiExists)) {
       details << "Missing identifier - record contains neither a fileIdentifier nor a DOI"
     }
+    if (identification && (!identification?.fileIdentifierExists && !identification?.doiExists)) {
+      details << "Missing identifier - record contains neither a fileIdentifier nor a DOI"
+    }
+    if (messageMap.type == RecordType.collection && (identification && identification?.parentIdentifierExists)) {
+      details << "Invalid record: a collection cannot contain a parentIdentifier"
+    }
     if (titles && !titles.titleExists) {
       details << "Missing title"
     }
@@ -123,7 +129,6 @@ class InventoryManagerToOneStopUtil {
 
     // drop fields
     discoveryMap.remove("responsibleParties")
-
 
     if(version.onOrAfter(Version.V_6_0_0)) {
       discoveryMap.services = discoveryMap.services.collect{
