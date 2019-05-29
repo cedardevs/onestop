@@ -116,12 +116,14 @@ class TestUtil {
         String collectionId = collectionData.id
         String collectionMetadata = FileUtil.textFromFile("test/data/json/${name}/${collection}.json")
         // load the collection record into the collection index
+        log.info("LOADING COLLETION - test/data/json/${name}/${collection}.json")
         RequestUtil.putSearchCollectionMetadataRecord(collectionId, collectionMetadata, esConfig, restClient)
 
         // each test collection has an array of test granules
         collectionData.granules.each { granule, granuleData ->
           // if there are any granules, each has an id and corresponding JSON found in the shared `elastic-common` resources
           String granuleId = granuleData.id
+          log.info("LOADING GRANULE - test/data/json/${name}/${collection}.json")
           String granuleMetadata = FileUtil.textFromFile("test/data/json/${name}/${granule}.json")
           // load the new granule record into the granule index
           RequestUtil.putSearchGranuleMetadataRecord(granuleId, granuleMetadata, esConfig, restClient)
