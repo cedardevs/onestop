@@ -185,7 +185,8 @@
           }
         },
         "spatialBounding": {
-          "type": "geo_shape"
+          "type": "geo_shape",
+          "tree": "geohash"
         },
         "isGlobal": {
           "type": "boolean",
