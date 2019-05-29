@@ -109,19 +109,19 @@ class RequestUtil {
   }
 
   static Response putSearchGranuleMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) {
-    String alias = esConfig.COLLECTION_SEARCH_INDEX_ALIAS
+    String alias = esConfig.GRANULE_SEARCH_INDEX_ALIAS
     String type = esConfig.TYPE
     return putMetadataRecord(alias, type, id, metadata, restClient)
   }
 
   static Response putStagedGranulenMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) {
-    String alias = esConfig.COLLECTION_SEARCH_INDEX_ALIAS
+    String alias = esConfig.GRANULE_STAGEING_INDEX_ALIAS
     String type = esConfig.TYPE
     return putMetadataRecord(alias, type, id, metadata, restClient)
   }
 
   static Response putSearchFlattenedGranuleMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) {
-    String alias = esConfig.COLLECTION_SEARCH_INDEX_ALIAS
+    String alias = esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS
     String type = esConfig.TYPE
     return putMetadataRecord(alias, type, id, metadata, restClient)
   }
