@@ -197,7 +197,6 @@
     {
       "remove": {
         "field": [
-          "parentIdentifier",
           "purpose",
           "status",
           "credit",

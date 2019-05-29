@@ -13,9 +13,6 @@
         "fileIdentifier": {
           "type": "keyword"
         },
-        "parentIdentifier": {
-          "type": "keyword"
-        },
         "doi": {
           "type": "keyword"
         },

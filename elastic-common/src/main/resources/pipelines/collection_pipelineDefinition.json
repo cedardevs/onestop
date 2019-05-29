@@ -196,11 +196,6 @@
     },
     {
       "remove": {
-        "field": "parentIdentifier"
-      }
-    },
-    {
-      "remove": {
         "field": "purpose"
       }
     },
