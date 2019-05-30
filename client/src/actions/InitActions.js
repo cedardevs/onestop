@@ -1,11 +1,6 @@
 import {decodePathAndQueryString} from '../utils/queryUtils'
-// import {
-//   // getCollectionIdFromDetailPath,
-//   getCollectionIdFromGranuleListPath,
-//   ROUTE
-// } from '../utils/urlUtils'
 import {submitGranuleSearchWithFilter} from './routing/GranuleSearchRouteActions'
-import {submitCollectionDetailAndUpdateUrl} from './routing/CollectionDetailRouteActions'
+import {submitCollectionDetail} from './routing/CollectionDetailRouteActions'
 import {submitCollectionSearchWithFilter} from './routing/CollectionSearchRouteActions'
 import {fetchSitemap} from './fetch/FetchActions'
 import {fetchConfig} from './ConfigActions'
@@ -13,17 +8,6 @@ import {fetchCounts, fetchInfo} from './fetch/InfoActions'
 
 export const loadGranulesList = (history, path, newQueryString) => {
   return (dispatch, getState) => {
-    // if (newQueryString.indexOf('?') === 0) {
-    //   newQueryString = newQueryString.slice(1)
-    // }
-    // const searchFromQuery = decodeQueryString(newQueryString)
-    // const searchFromState = _.get(getState(), 'search.granuleFilter')
-    // if (!_.isEqual(searchFromQuery, searchFromState)) {
-    //   const detailId = getCollectionIdFromGranuleListPath(path)
-    //   dispatch(
-    //     submitGranuleSearchWithFilter(history, detailId, searchFromQuery)
-    //   ) // this updates the URL and push to that page, but in this context we are already there and no changes will be made by that particular step
-    // }
     const {id, filters} = decodePathAndQueryString(path, newQueryString)
     if (areFiltersChanged(getState, 'search.granuleFilter', filters)) {
       dispatch(submitGranuleSearchWithFilter(history, id, filters))
@@ -33,14 +17,6 @@ export const loadGranulesList = (history, path, newQueryString) => {
 
 export const loadCollections = (history, newQueryString) => {
   return (dispatch, getState) => {
-    // if (newQueryString.indexOf('?') === 0) {
-    //   newQueryString = newQueryString.slice(1)
-    // }
-    // const searchFromQuery = decodeQueryString(newQueryString)
-    // const searchFromState = _.get(getState(), 'search.collectionFilter')
-    // if (!_.isEqual(searchFromQuery, searchFromState)) {
-    //   dispatch(submitCollectionSearchWithFilter(history, searchFromQuery)) // this updates the URL and push to that page, but in this context we are already there and no changes will be made by that particular step
-    // }
     const {filters} = decodePathAndQueryString('', newQueryString)
     if (areFiltersChanged(getState, 'search.collectionFilter', filters)) {
       dispatch(submitCollectionSearchWithFilter(history, filters))
@@ -48,40 +24,14 @@ export const loadCollections = (history, newQueryString) => {
   }
 }
 
-export const loadDetails = (history, path, newQueryString) => {
-  // TODO remove history from this args
+export const loadDetails = (path, newQueryString) => {
   return (dispatch, getState) => {
-    // const detailId = getCollectionIdFromDetailPath(path)
-    //
-    // if (newQueryString.indexOf('?') === 0) {
-    //   newQueryString = newQueryString.slice(1)
-    // }
-    // const searchFromQuery = decodeQueryString(newQueryString)
-    //
-    // const searchFromState = _.get(getState(), 'search.collectionDetailFilter')
-    // // if (!_.isEqual(searchFromQuery, searchFromState)) { TODO put this check back in somewhere
-    // //   dispatch(granuleUpdateMatchingFilters(searchFromQuery))
-    // //   // TODO update collection query text to initial - to clear header search filter!
-    // // }
-    // if (!_.isEqual(searchFromQuery, searchFromState)) {
-    //
-    //
-    //   dispatch(submitCollectionDetail(history, detailId, searchFromQuery))
-    // }
     const {id, filters} = decodePathAndQueryString(path, newQueryString)
     if (areFiltersChanged(getState, 'search.collectionDetailFilter', filters)) {
-      dispatch(submitCollectionDetailAndUpdateUrl(history, id, filters))
+      dispatch(submitCollectionDetail(id, filters)) // TODO make a no-history version of the other submit functions, or nuke the 'updateUrl' version of this one to make them consistent again...
     }
   }
 }
-/* TODO change the above method to:
-=> {
-  const {id, filters} = decodePathAndQueryString(route.detail, path, newQueryString)
-  if(areFiltersChanged(getState, 'search.collectionDetailFilter', filters)) {
-        dispatch(submitCollectionDetail(history, id, filters))
-  }
-}
-*/
 
 const areFiltersChanged = (getState, filterName, newFilters) => {
   const stateFilters = _.get(getState(), filterName)

@@ -15,7 +15,7 @@ const loadFromUrl = (path, newQueryString) => {
     store.dispatch(fetchSitemap())
   }
   else if (isDetailPage(path)) {
-    store.dispatch(loadDetails(history, path, newQueryString))
+    store.dispatch(loadDetails(path, newQueryString))
   }
   else if (isGranuleListPage(path)) {
     store.dispatch(loadGranulesList(history, path, newQueryString))
