@@ -2,11 +2,7 @@ import _ from 'lodash'
 import {fetchGranuleSearch, fetchCollectionDetail} from './AsyncHelpers'
 import {showErrors} from '../ErrorActions'
 
-import {
-  assembleSearchRequest,
-  encodeLocationDescriptor,
-  // decodeQueryString,
-} from '../../utils/queryUtils'
+import {encodeLocationDescriptor} from '../../utils/queryUtils'
 import {ROUTE, isPathNew} from '../../utils/urlUtils'
 import {
   collectionDetailRequested,
@@ -16,6 +12,7 @@ import {
   granuleMatchingCountReceived,
   granuleMatchingCountError,
 } from './CollectionDetailStateActions'
+import {granuleBodyBuilder} from './GranuleSearchRouteActions'
 
 const getFilterFromState = state => {
   return (state && state.search && state.search.collectionDetailFilter) || {}
@@ -29,26 +26,16 @@ const isRequestInvalid = (id, state) => {
   return inFlight || _.isEmpty(id)
 }
 
-const granuleBodyBuilder = filterState => {
-  // TODO make the 0 page size a param of the other granuleBodyBuilder and reuse, so they won't be accidentally different?
-  const body = assembleSearchRequest(filterState, false, 0)
-  const hasQueries = body && body.queries && body.queries.length > 0
-  const hasFilters = body && body.filters && body.filters.length > 0
-  if (!(hasQueries || hasFilters)) {
-    return undefined
-  }
-  return body
-}
-
 const helper = (dispatch, id, filterState) => {
-  const body = granuleBodyBuilder(filterState)
-  // if (!body) {
-  //   dispatch(errorHandlerAction('Invalid Request')) // TODO this would be a horrible error, since it shouldn't be possible after the id check
-  //   return
-  // }
+  // TODO rename this
+  const body = granuleBodyBuilder(filterState, false, 0)
+  if (!body) {
+    // not covered by tests, since this should never actually occur due to the collectionId being provided, but included to prevent accidentally sending off really unreasonable requests
+    dispatch(granuleMatchingCountError('Invalid Request'))
+    return
+  }
 
-  // TODO I think this version avoids the parallel problem.. but not sure how to test
-  const f1 = fetchCollectionDetail(
+  const detailPromise = fetchCollectionDetail(
     id,
     payload => {
       dispatch(
@@ -60,7 +47,7 @@ const helper = (dispatch, id, filterState) => {
       dispatch(collectionDetailError(e.errors || e)) // TODO
     }
   )
-  const f2 = fetchGranuleSearch(
+  const granuleCountPromise = fetchGranuleSearch(
     body,
     payload => {
       dispatch(granuleMatchingCountReceived(payload.meta.total))
@@ -71,7 +58,8 @@ const helper = (dispatch, id, filterState) => {
     }
   )
 
-  return Promise.all([ f1, f2 ])
+  // TODO test that these requests are fired in parallel
+  return Promise.all([ detailPromise, granuleCountPromise ])
 }
 
 export const submitCollectionDetailAndUpdateUrl = (
@@ -86,30 +74,9 @@ export const submitCollectionDetailAndUpdateUrl = (
 
     dispatch(collectionDetailRequested(id, filterState))
     dispatch(granuleMatchingCountRequested())
-    const updatedFilterState = getFilterFromState(getState()) // use newly updated state from initializeRequestAction
+    const updatedFilterState = getFilterFromState(getState())
     navigateToDetailUrl(history, updatedFilterState)
     return helper(dispatch, id, updatedFilterState)
-    // try{ // TODO change these promises so that they can be fired off in parallel instead of succession
-    //   let detail = await fetchCollectionDetail(id)
-    //   checkForErrors(detail)
-    //   console.log("?", detail.json())
-    //   console.log("??", detail.body)
-    //   dispatch(successHandlerAction(JSON.parse(detail.body)))
-    // } catch(err) {
-    //   console.log('???', err)
-    //   dispatch(errorHandlerAction(err))
-    //   // return
-    // }
-    // // let this one run so that (either way) backgroundInFlight gets correctly reset
-    // try{let granule = await fetchGranuleSearch(body)
-    //   checkForErrors(granule)
-    //   dispatch(granuleSuccessHandlerAction(JSON.parse(granule.body)))
-    // } catch(err) {
-    //   console.log('????????', err)
-    //   dispatch(granuleErrorHandlerAction(err))
-    //   // return
-    // }
-    // dispatch(successHandlerAction(JSON.parse(detail.body), JSON.parse(granule.body)))
   }
 }
 
@@ -121,8 +88,7 @@ export const submitCollectionDetail = (id, filterState) => {
 
     dispatch(collectionDetailRequested(id, filterState))
     dispatch(granuleMatchingCountRequested())
-    const updatedFilterState = getFilterFromState(getState()) // use newly updated state from initializeRequestAction
-
+    const updatedFilterState = getFilterFromState(getState())
     return helper(dispatch, id, updatedFilterState)
   }
 }

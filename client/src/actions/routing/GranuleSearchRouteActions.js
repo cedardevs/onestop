@@ -32,15 +32,51 @@ const isRequestInvalid = (id, state) => {
   return isAlreadyInFlight(state) || _.isEmpty(id)
 }
 
-const granuleBodyBuilder = (filterState, requestFacets) => {
-  // TODO did it work to pull collectionId check out?
-  const body = assembleSearchRequest(filterState, requestFacets)
+export const granuleBodyBuilder = (filterState, requestFacets, pageSize) => {
+  const body = assembleSearchRequest(filterState, requestFacets, pageSize)
   const hasQueries = body && body.queries && body.queries.length > 0
   const hasFilters = body && body.filters && body.filters.length > 0
   if (!(hasQueries || hasFilters)) {
     return undefined
   }
   return body
+}
+
+const newSearchSuccessHandler = dispatch => {
+  return payload => {
+    dispatch(
+      granuleNewSearchResultsReceived(
+        payload.meta.total,
+        payload.data,
+        payload.meta.facets
+      )
+    )
+  }
+}
+
+const pageSuccessHandler = dispatch => {
+  return payload => {
+    dispatch(granuleMoreResultsReceived(payload.data))
+  }
+}
+
+const helper = (dispatch, filterState, requestFacets, successHandler) => {
+  // TODO rename this
+  if (!filterState.selectedIds || filterState.selectedIds.length == 0) {
+    dispatch(granuleSearchError('Invalid Request'))
+    return null
+  }
+
+  const body = granuleBodyBuilder(filterState, requestFacets)
+  if (!body) {
+    // not covered by tests, since this should never actually occur due to the collectionId being provided, but included to prevent accidentally sending off really unreasonable requests
+    dispatch(granuleSearchError('Invalid Request'))
+    return
+  }
+  return fetchGranuleSearch(body, successHandler(dispatch), e => {
+    // dispatch(showErrors(e.errors || e)) // TODO
+    dispatch(granuleSearchError(e.errors || e))
+  })
 }
 
 export const submitGranuleSearchWithFilter = (
@@ -52,30 +88,14 @@ export const submitGranuleSearchWithFilter = (
     // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
 
     if (isRequestInvalid(collectionId, getState())) {
-      return // TODO test this!
+      return
     }
 
     dispatch(granuleNewSearchResetFiltersRequested(collectionId, filterState))
     const updatedFilterState = getFilterFromState(getState())
     navigateToGranuleUrl(history, collectionId, updatedFilterState)
 
-    const body = granuleBodyBuilder(updatedFilterState, true)
-    return fetchGranuleSearch(
-      body,
-      payload => {
-        dispatch(
-          granuleNewSearchResultsReceived(
-            payload.meta.total,
-            payload.data,
-            payload.meta.facets
-          )
-        )
-      },
-      e => {
-        // dispatch(showErrors(e.errors || e)) // TODO
-        dispatch(granuleSearchError(e.errors || e))
-      }
-    )
+    return helper(dispatch, updatedFilterState, true, newSearchSuccessHandler)
   }
 }
 
@@ -92,23 +112,7 @@ export const submitGranuleSearch = (history, collectionId) => {
     const updatedFilterState = getFilterFromState(getState())
     navigateToGranuleUrl(history, collectionId, updatedFilterState)
 
-    const body = granuleBodyBuilder(updatedFilterState, true)
-    return fetchGranuleSearch(
-      body,
-      payload => {
-        dispatch(
-          granuleNewSearchResultsReceived(
-            payload.meta.total,
-            payload.data,
-            payload.meta.facets
-          )
-        )
-      },
-      e => {
-        // dispatch(showErrors(e.errors || e)) // TODO
-        dispatch(granuleSearchError(e.errors || e))
-      }
-    )
+    return helper(dispatch, updatedFilterState, true, newSearchSuccessHandler)
   }
 }
 
@@ -122,25 +126,7 @@ export const submitGranuleSearchNextPage = () => {
 
     dispatch(granuleMoreResultsRequested())
     const updatedFilterState = getFilterFromState(getState())
-
-    if (
-      !updatedFilterState.selectedIds ||
-      updatedFilterState.selectedIds.length == 0
-    ) {
-      return null
-    } // TODO test me
-
-    const body = granuleBodyBuilder(updatedFilterState, false)
-    return fetchGranuleSearch(
-      body,
-      payload => {
-        dispatch(granuleMoreResultsReceived(payload.data))
-      },
-      e => {
-        // dispatch(showErrors(e.errors || e)) // TODO
-        dispatch(granuleSearchError(e.errors || e))
-      }
-    )
+    return helper(dispatch, updatedFilterState, false, pageSuccessHandler)
   }
 }
 
