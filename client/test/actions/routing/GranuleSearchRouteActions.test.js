@@ -3,9 +3,10 @@ import {RESET_STORE} from '../../../src/reducer'
 import fetchMock from 'fetch-mock'
 
 import {
-  submitGranuleSearch, // TODO submit with filter????
+  submitGranuleSearch,
+  submitGranuleSearchWithFilter, // TODO  TEST ME
   submitGranuleSearchNextPage,
-  submitGranuleMatchingCount, //updateURLAndNavigateToGranuleRoute
+  // submitGranuleMatchingCount, //updateURLAndNavigateToGranuleRoute
 } from '../../../src/actions/routing/GranuleSearchRouteActions'
 import {
   // used to set up pre-test conditions

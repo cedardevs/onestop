@@ -56,9 +56,8 @@ describe('The queryUtils', function(){
   })
 
   describe('encodeLocationDescriptor', function(){
-    // TODO rename the util to encodeLocationDescriptor!
     it('correctly generates location from granules path with a selected id', function(){
-      const result = queryUtils.encodePathAndQueryString(ROUTE.granules, {
+      const result = queryUtils.encodeLocationDescriptor(ROUTE.granules, {
         selectedIds: [ 'ABC' ],
       })
       expect(result).toEqual({

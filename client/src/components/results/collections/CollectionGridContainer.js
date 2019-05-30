@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import {submitCollectionSearchNextPage} from '../../../actions/routing/CollectionSearchRouteActions'
-import {submitCollectionDetail} from '../../../actions/routing/CollectionDetailRouteActions'
+import {submitCollectionDetailAndUpdateUrl} from '../../../actions/routing/CollectionDetailRouteActions'
 import CollectionGrid from './CollectionGrid' // TODO this doesn't even exist?
 
 import {withRouter} from 'react-router'
@@ -25,7 +25,9 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     selectCollection: (id, filterState) => {
-      dispatch(submitCollectionDetail(ownProps.history, id, filterState))
+      dispatch(
+        submitCollectionDetailAndUpdateUrl(ownProps.history, id, filterState)
+      )
     },
     fetchMoreResults: () => {
       dispatch(submitCollectionSearchNextPage())

@@ -5,7 +5,7 @@ import {decodePathAndQueryString} from '../utils/queryUtils'
 //   ROUTE
 // } from '../utils/urlUtils'
 import {submitGranuleSearchWithFilter} from './routing/GranuleSearchRouteActions'
-import {submitCollectionDetail} from './routing/CollectionDetailRouteActions'
+import {submitCollectionDetailAndUpdateUrl} from './routing/CollectionDetailRouteActions'
 import {submitCollectionSearchWithFilter} from './routing/CollectionSearchRouteActions'
 import {fetchSitemap} from './fetch/FetchActions'
 import {fetchConfig} from './ConfigActions'
@@ -49,6 +49,7 @@ export const loadCollections = (history, newQueryString) => {
 }
 
 export const loadDetails = (history, path, newQueryString) => {
+  // TODO remove history from this args
   return (dispatch, getState) => {
     // const detailId = getCollectionIdFromDetailPath(path)
     //
@@ -69,7 +70,7 @@ export const loadDetails = (history, path, newQueryString) => {
     // }
     const {id, filters} = decodePathAndQueryString(path, newQueryString)
     if (areFiltersChanged(getState, 'search.collectionDetailFilter', filters)) {
-      dispatch(submitCollectionDetail(history, id, filters))
+      dispatch(submitCollectionDetailAndUpdateUrl(history, id, filters))
     }
   }
 }

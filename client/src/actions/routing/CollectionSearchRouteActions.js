@@ -1,10 +1,10 @@
 import _ from 'lodash'
-import {buildSearchAction} from './AsyncHelpers'
+import {fetchCollectionSearch} from './AsyncHelpers'
 import {showErrors} from '../ErrorActions'
 
 import {
   assembleSearchRequest,
-  encodePathAndQueryString,
+  encodeLocationDescriptor,
   // decodeQueryString,
 } from '../../utils/queryUtils'
 import {ROUTE, isPathNew} from '../../utils/urlUtils'
@@ -22,19 +22,20 @@ import {
   initialState,
 } from '../../reducers/search/collectionFilter'
 
-const validRequestCheck = state => {
-  const inFlight = state.search.collectionRequest.inFlight
-  return !inFlight
-}
-
-const errorHandler = (dispatch, e) => {
-  // dispatch(showErrors(e.errors || e)) // TODO show errors
-  dispatch(collectionSearchError(e.errors || e))
-}
-
-const collectionFilterState = state => {
+const getFilterFromState = state => {
   return (state && state.search && state.search.collectionFilter) || {}
 }
+
+const isRequestInvalid = state => {
+  const inFlight = state.search.collectionRequest.inFlight
+  return inFlight
+}
+
+// const errorHandler = (dispatch, e) => {
+//   // dispatch(showErrors(e.errors || e)) // TODO show errors
+//   dispatch(collectionSearchError(e.errors || e))
+// }
+//
 
 const collectionBodyBuilder = (filterState, requestFacets) => {
   const body = assembleSearchRequest(filterState, requestFacets)
@@ -46,20 +47,20 @@ const collectionBodyBuilder = (filterState, requestFacets) => {
   return body
 }
 
-const newSearchSuccessHandler = (dispatch, payload) => {
-  dispatch(
-    collectionNewSearchResultsReceived(
-      payload.meta.total,
-      payload.data,
-      payload.meta.facets
-    )
-  )
-}
+// const newSearchSuccessHandler = (dispatch, payload) => {
+//   dispatch(
+//     collectionNewSearchResultsReceived(
+//       payload.meta.total,
+//       payload.data,
+//       payload.meta.facets
+//     )
+//   )
+// }
 
 export const submitCollectionSearchWithQueryText = (history, queryText) => {
   const filterState = collectionFilter(
     initialState,
-    collectionUpdateQueryText(queryText)
+    collectionUpdateQueryText(queryText) // TODO ew stop abusing reducers..
   )
 
   return submitCollectionSearchWithFilter(history, filterState)
@@ -68,114 +69,171 @@ export const submitCollectionSearchWithQueryText = (history, queryText) => {
 export const submitCollectionSearchWithFilter = (history, filterState) => {
   // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
 
-  const prefetchHandler = dispatch => {
+  return async (dispatch, getState) => {
+    if (isRequestInvalid(getState())) {
+      return // TODO test this!
+    }
     dispatch(collectionNewSearchResetFiltersRequested(filterState))
-    dispatch(updateURLAndNavigateToCollectionRoute(history, filterState))
-  }
+    const updatedFilterState = getFilterFromState(getState())
+    navigateToCollectionUrl(history, updatedFilterState)
 
-  const bodyBuilder = () => {
-    return collectionBodyBuilder(filterState, true)
+    const body = collectionBodyBuilder(updatedFilterState, true)
+    if (!body) {
+      dispatch(collectionSearchError('Invalid Request'))
+      return
+    }
+    return fetchCollectionSearch(
+      body,
+      payload => {
+        dispatch(
+          collectionNewSearchResultsReceived(
+            payload.meta.total,
+            payload.data,
+            payload.meta.facets
+          )
+        )
+      },
+      e => {
+        // dispatch(showErrors(e.errors || e)) // TODO
+        dispatch(collectionSearchError(e.errors || e))
+      }
+    )
   }
-
-  return buildSearchAction(
-    'collection',
-    validRequestCheck,
-    prefetchHandler,
-    bodyBuilder,
-    newSearchSuccessHandler,
-    errorHandler
-  )
 }
+
+//
+//
+//   const prefetchHandler = dispatch => {
+//     dispatch(collectionNewSearchResetFiltersRequested(filterState))
+//     dispatch(navigateToCollectionUrl(history, filterState))
+//   }
+//
+//   const bodyBuilder = () => {
+//     return collectionBodyBuilder(filterState, true)
+//   }
+//
+//   return buildSearchAction(
+//     'collection',
+//     isRequestInvalid,
+//     prefetchHandler,
+//     bodyBuilder,
+//     newSearchSuccessHandler,
+//     errorHandler
+//   )
+// }
 
 export const submitCollectionSearch = history => {
   // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
 
-  const prefetchHandler = (dispatch, state) => {
-    const filterState = collectionFilterState(state)
+  return async (dispatch, getState) => {
+    if (isRequestInvalid(getState())) {
+      return // TODO test this!
+    }
     dispatch(collectionNewSearchRequested())
-    dispatch(updateURLAndNavigateToCollectionRoute(history, filterState))
-  }
+    const updatedFilterState = getFilterFromState(getState())
+    navigateToCollectionUrl(history, updatedFilterState)
 
-  const bodyBuilder = state => {
-    return collectionBodyBuilder(collectionFilterState(state), true)
+    const body = collectionBodyBuilder(updatedFilterState, true)
+    if (!body) {
+      dispatch(collectionSearchError('Invalid Request'))
+      return
+    }
+    return fetchCollectionSearch(
+      body,
+      payload => {
+        dispatch(
+          collectionNewSearchResultsReceived(
+            payload.meta.total,
+            payload.data,
+            payload.meta.facets
+          )
+        )
+      },
+      e => {
+        // dispatch(showErrors(e.errors || e)) // TODO
+        dispatch(collectionSearchError(e.errors || e))
+      }
+    )
   }
-
-  return buildSearchAction(
-    'collection',
-    validRequestCheck,
-    prefetchHandler,
-    bodyBuilder,
-    newSearchSuccessHandler,
-    errorHandler
-  )
+  //
+  // const prefetchHandler = (dispatch, state) => {
+  //   const filterState = getFilterFromState(state)
+  //   dispatch(collectionNewSearchRequested())
+  //   dispatch(navigateToCollectionUrl(history, filterState))
+  // }
+  //
+  // const bodyBuilder = state => {
+  //   return collectionBodyBuilder(getFilterFromState(state), true)
+  // }
+  //
+  // return buildSearchAction(
+  //   'collection',
+  //   isRequestInvalid,
+  //   prefetchHandler,
+  //   bodyBuilder,
+  //   newSearchSuccessHandler,
+  //   errorHandler
+  // )
 }
 
 export const submitCollectionSearchNextPage = () => {
   // note that this function does *not* make any changes to the URL - including push the user to the collection view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
 
-  const prefetchHandler = dispatch => {
+  return async (dispatch, getState) => {
+    if (isRequestInvalid(getState())) {
+      return // TODO test this!
+    }
     dispatch(collectionMoreResultsRequested())
+    const updatedFilterState = getFilterFromState(getState())
+
+    const body = collectionBodyBuilder(updatedFilterState, false)
+    if (!body) {
+      dispatch(collectionSearchError('Invalid Request'))
+      return
+    }
+    return fetchCollectionSearch(
+      body,
+      payload => {
+        dispatch(collectionMoreResultsReceived(payload.data))
+      },
+      e => {
+        // dispatch(showErrors(e.errors || e)) // TODO
+        dispatch(collectionSearchError(e.errors || e))
+      }
+    )
   }
 
-  const bodyBuilder = state => {
-    return collectionBodyBuilder(collectionFilterState(state), false)
-  }
-
-  const successHandler = (dispatch, payload) => {
-    dispatch(collectionMoreResultsReceived(payload.data))
-  }
-
-  return buildSearchAction(
-    'collection',
-    validRequestCheck,
-    prefetchHandler,
-    bodyBuilder,
-    successHandler,
-    errorHandler
-  )
+  // const prefetchHandler = dispatch => {
+  //   dispatch(collectionMoreResultsRequested())
+  // }
+  //
+  // const bodyBuilder = state => {
+  //   return collectionBodyBuilder(getFilterFromState(state), false)
+  // }
+  //
+  // const successHandler = (dispatch, payload) => {
+  //   dispatch(collectionMoreResultsReceived(payload.data))
+  // }
+  //
+  // return buildSearchAction(
+  //   'collection',
+  //   isRequestInvalid,
+  //   prefetchHandler,
+  //   bodyBuilder,
+  //   successHandler,
+  //   errorHandler
+  // )
 }
 
-const updateURLAndNavigateToCollectionRoute = (history, filterState) => {
-  return dispatch => {
-    const locationDescriptor = encodePathAndQueryString(
-      ROUTE.collections,
-      filterState
-    )
-    if (
-      !_.isEmpty(locationDescriptor.search) &&
-      isPathNew(history.location, locationDescriptor)
-    ) {
-      history.push(locationDescriptor)
-    }
-
-    // const query = encodeQueryString(filterState)
-    // if (!_.isEmpty(query)) {
-    //   return
-    // }
-    //
-    // let currentURLQueryString = history.location.search
-    // if (currentURLQueryString.indexOf('?') === 0) {
-    //   currentURLQueryString = currentURLQueryString.slice(1)
-    // }
-    // const currentURLQuery = decodeQueryString(currentURLQueryString)
-    // console.log('collection search url', query, filterState)
-    // // if (!_.isEmpty(query)) { // TODO don't push unless path is changed???
-    // if (
-    //   !(
-    //     history.location.path == '/collections' &&
-    //     currentURLQueryString == query
-    //   )
-    // ) {
-    //   const locationDescriptor = {
-    //     pathname: '/collections',
-    //     search: `?${query}`,
-    //   }
-    //   history.push(locationDescriptor)
-    // }
-    // else {
-    //   console.log('skipping collection search route push')
-    // }
-
-    // }
+const navigateToCollectionUrl = (history, filterState) => {
+  const locationDescriptor = encodeLocationDescriptor(
+    ROUTE.collections,
+    filterState
+  )
+  if (
+    !_.isEmpty(locationDescriptor.search) &&
+    isPathNew(history.location, locationDescriptor)
+  ) {
+    history.push(locationDescriptor)
   }
 }

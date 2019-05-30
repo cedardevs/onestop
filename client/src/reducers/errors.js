@@ -15,10 +15,10 @@ const errors = (state = initialState, action) => {
     case COLLECTION_SEARCH_ERROR:
     case GRANULE_SEARCH_ERROR:
     case COLLECTION_DETAIL_ERROR:
-      console.log(
-        'error reducer got granule error! (note, this does not push to the error display page)',
-        action.errors
-      )
+      // console.log(
+      //   'error reducer got granule error! (note, this does not push to the error display page)',
+      //   action.errors
+      // )
       return Immutable(action.errors)
 
     case CLEAR_ERRORS:

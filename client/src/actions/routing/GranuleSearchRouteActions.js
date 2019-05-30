@@ -1,9 +1,8 @@
 import _ from 'lodash'
-import {buildSearchAction} from './AsyncHelpers'
+import {fetchGranuleSearch} from './AsyncHelpers'
 import {
   assembleSearchRequest,
-  encodePathAndQueryString,
-  // decodeQueryString,
+  encodeLocationDescriptor,
 } from '../../utils/queryUtils'
 import {ROUTE, isPathNew} from '../../utils/urlUtils'
 import {showErrors} from '../ErrorActions'
@@ -20,28 +19,17 @@ import {
   Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
 */
 
-const validRequestCheck = state => {
-  const inFlight = state.search.granuleRequest.inFlight
-  return !inFlight
-}
-
-const errorHandler = (dispatch, e) => {
-  // dispatch(showErrors(e.errors || e)) // TODO show errors
-  dispatch(granuleSearchError(e.errors || e))
-}
-
-const granuleFilterState = state => {
+const getFilterFromState = state => {
   return (state && state.search && state.search.granuleFilter) || {}
 }
 
-const newSearchSuccessHandler = (dispatch, payload) => {
-  dispatch(
-    granuleNewSearchResultsReceived(
-      payload.meta.total,
-      payload.data,
-      payload.meta.facets
-    )
-  )
+const isAlreadyInFlight = state => {
+  const inFlight = state.search.granuleRequest.inFlight
+  return inFlight
+}
+
+const isRequestInvalid = (id, state) => {
+  return isAlreadyInFlight(state) || _.isEmpty(id)
 }
 
 const granuleBodyBuilder = (filterState, requestFacets) => {
@@ -60,130 +48,112 @@ export const submitGranuleSearchWithFilter = (
   collectionId,
   filterState
 ) => {
-  // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
+  return async (dispatch, getState) => {
+    // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
 
-  if (!collectionId) {
-    return
-  } // TODO test this!
+    if (isRequestInvalid(collectionId, getState())) {
+      return // TODO test this!
+    }
 
-  const prefetchHandler = dispatch => {
     dispatch(granuleNewSearchResetFiltersRequested(collectionId, filterState))
-    dispatch(
-      updateURLAndNavigateToGranuleRoute(history, collectionId, filterState)
+    const updatedFilterState = getFilterFromState(getState())
+    navigateToGranuleUrl(history, collectionId, updatedFilterState)
+
+    const body = granuleBodyBuilder(updatedFilterState, true)
+    return fetchGranuleSearch(
+      body,
+      payload => {
+        dispatch(
+          granuleNewSearchResultsReceived(
+            payload.meta.total,
+            payload.data,
+            payload.meta.facets
+          )
+        )
+      },
+      e => {
+        // dispatch(showErrors(e.errors || e)) // TODO
+        dispatch(granuleSearchError(e.errors || e))
+      }
     )
   }
-
-  const bodyBuilder = () => {
-    return granuleBodyBuilder(filterState, true)
-  }
-
-  return buildSearchAction(
-    'granule',
-    validRequestCheck,
-    prefetchHandler,
-    bodyBuilder,
-    newSearchSuccessHandler,
-    errorHandler
-  )
 }
 
 export const submitGranuleSearch = (history, collectionId) => {
   // new granule search *for granules within a single collection*
   // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
 
-  if (!collectionId) {
-    return
-  } // TODO test this!
+  return async (dispatch, getState) => {
+    if (isRequestInvalid(collectionId, getState())) {
+      return
+    }
 
-  const prefetchHandler = (dispatch, state) => {
-    const filterState = granuleFilterState(state)
     dispatch(granuleNewSearchRequested(collectionId))
-    dispatch(
-      updateURLAndNavigateToGranuleRoute(history, collectionId, filterState)
+    const updatedFilterState = getFilterFromState(getState())
+    navigateToGranuleUrl(history, collectionId, updatedFilterState)
+
+    const body = granuleBodyBuilder(updatedFilterState, true)
+    return fetchGranuleSearch(
+      body,
+      payload => {
+        dispatch(
+          granuleNewSearchResultsReceived(
+            payload.meta.total,
+            payload.data,
+            payload.meta.facets
+          )
+        )
+      },
+      e => {
+        // dispatch(showErrors(e.errors || e)) // TODO
+        dispatch(granuleSearchError(e.errors || e))
+      }
     )
   }
-
-  const bodyBuilder = state => {
-    const filterState = granuleFilterState(state)
-    return granuleBodyBuilder(filterState, true)
-  }
-
-  return buildSearchAction(
-    'granule',
-    validRequestCheck,
-    prefetchHandler,
-    bodyBuilder,
-    newSearchSuccessHandler,
-    errorHandler
-  )
 }
 
 export const submitGranuleSearchNextPage = () => {
   // note that this function does *not* make any changes to the URL - including push the user to the granule view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
   // fetch the next page of granules granule search *for granules within a single collection*
-  const prefetchHandler = dispatch => {
-    dispatch(granuleMoreResultsRequested())
-  }
+  return async (dispatch, getState) => {
+    if (isAlreadyInFlight(getState())) {
+      return
+    }
 
-  const bodyBuilder = state => {
-    const filterState = granuleFilterState(state)
-    if (!filterState.selectedIds || filterState.selectedIds.length == 0) {
+    dispatch(granuleMoreResultsRequested())
+    const updatedFilterState = getFilterFromState(getState())
+
+    if (
+      !updatedFilterState.selectedIds ||
+      updatedFilterState.selectedIds.length == 0
+    ) {
       return null
     } // TODO test me
 
-    return granuleBodyBuilder(filterState, false)
+    const body = granuleBodyBuilder(updatedFilterState, false)
+    return fetchGranuleSearch(
+      body,
+      payload => {
+        dispatch(granuleMoreResultsReceived(payload.data))
+      },
+      e => {
+        // dispatch(showErrors(e.errors || e)) // TODO
+        dispatch(granuleSearchError(e.errors || e))
+      }
+    )
   }
-
-  const successHandler = (dispatch, payload) => {
-    dispatch(granuleMoreResultsReceived(payload.data))
-  }
-
-  return buildSearchAction(
-    'granule',
-    validRequestCheck,
-    prefetchHandler,
-    bodyBuilder,
-    successHandler,
-    errorHandler
-  )
 }
 
-const updateURLAndNavigateToGranuleRoute = (
-  history,
-  collectionId,
-  filterState
-) => {
+const navigateToGranuleUrl = (history, collectionId, filterState) => {
   if (!collectionId) {
     return
   }
-  return dispatch => {
-    const locationDescriptor = encodePathAndQueryString(
-      ROUTE.granules,
-      filterState,
-      collectionId
-    )
-    if (isPathNew(history.location, locationDescriptor)) {
-      history.push(locationDescriptor)
-    }
-
-    // const query = encodeQueryString(filterState)
-    // let currentURLQueryString = history.location.search
-    // if (currentURLQueryString.indexOf('?') === 0) {
-    //   currentURLQueryString = currentURLQueryString.slice(1)
-    // }
-    // const currentURLQuery = decodeQueryString(currentURLQueryString)
-    // console.log('granule url', query, filterState)
-    // if (
-    //   !(
-    //     history.location.path == `/collections/granules/${collectionId}` &&
-    //     currentURLQueryString == query
-    //   )
-    // ) {
-    //   const locationDescriptor = {
-    //     pathname: `/collections/granules/${collectionId}`, // TODO get this path from urlUtils.ROUTE?
-    //     search: !_.isEmpty(query) ? `?${query}` : '',
-    //   }
-    //   history.push(locationDescriptor)
-    // }
+  const locationDescriptor = encodeLocationDescriptor(
+    ROUTE.granules,
+    filterState,
+    collectionId
+  )
+  if (isPathNew(history.location, locationDescriptor)) {
+    history.push(locationDescriptor)
   }
 }

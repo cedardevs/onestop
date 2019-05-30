@@ -95,10 +95,12 @@ const assemblePagination = ({pageOffset = 0}, maxPageSize) => {
   return {max: maxPageSize, offset: pageOffset}
 }
 
-export const encodePathAndQueryString = (route, searchParamsState, id) => {
+export const encodeLocationDescriptor = (route, searchParamsState) => {
   const query = encodeQueryString(searchParamsState)
   return {
-    pathname: route.toLocation(id), //searchParamsState.selectedIds ? searchParamsState.selectedIds[0] : null),
+    pathname: route.toLocation(
+      searchParamsState.selectedIds ? searchParamsState.selectedIds[0] : null
+    ),
     search: _.isEmpty(query) ? null : `?${query}`,
   }
 }
