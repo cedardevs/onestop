@@ -14,7 +14,7 @@ const styleLink = {
 }
 
 const styleLinkHover = {
-  color: '#277cb2',
+  color: '#21ABE2',
 }
 
 const styleLinkFocusing = {
