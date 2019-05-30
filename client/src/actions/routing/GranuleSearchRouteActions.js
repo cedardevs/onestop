@@ -5,7 +5,6 @@ import {
   encodeLocationDescriptor,
 } from '../../utils/queryUtils'
 import {ROUTE, isPathNew} from '../../utils/urlUtils'
-import {showErrors} from '../ErrorActions'
 import {
   granuleNewSearchRequested,
   granuleNewSearchResetFiltersRequested,
@@ -64,7 +63,7 @@ const helper = (dispatch, filterState, requestFacets, successHandler) => {
   // TODO rename this
   if (!filterState.selectedIds || filterState.selectedIds.length == 0) {
     dispatch(granuleSearchError('Invalid Request'))
-    return null
+    return
   }
 
   const body = granuleBodyBuilder(filterState, requestFacets)
@@ -74,7 +73,6 @@ const helper = (dispatch, filterState, requestFacets, successHandler) => {
     return
   }
   return fetchGranuleSearch(body, successHandler(dispatch), e => {
-    // dispatch(showErrors(e.errors || e)) // TODO
     dispatch(granuleSearchError(e.errors || e))
   })
 }

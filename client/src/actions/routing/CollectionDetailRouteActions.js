@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import {fetchGranuleSearch, fetchCollectionDetail} from './AsyncHelpers'
-import {showErrors} from '../ErrorActions'
 
 import {encodeLocationDescriptor} from '../../utils/queryUtils'
 import {ROUTE, isPathNew} from '../../utils/urlUtils'
@@ -43,8 +42,7 @@ const helper = (dispatch, id, filterState) => {
       )
     },
     e => {
-      // dispatch(showErrors(e.errors || e)) // TODO
-      dispatch(collectionDetailError(e.errors || e)) // TODO
+      dispatch(collectionDetailError(e.errors || e))
     }
   )
   const granuleCountPromise = fetchGranuleSearch(
@@ -53,8 +51,7 @@ const helper = (dispatch, id, filterState) => {
       dispatch(granuleMatchingCountReceived(payload.meta.total))
     },
     e => {
-      // dispatch(showErrors(e.errors || e)) // TODO
-      dispatch(granuleMatchingCountError(e.errors || e)) // TODO
+      dispatch(granuleMatchingCountError(e.errors || e))
     }
   )
 

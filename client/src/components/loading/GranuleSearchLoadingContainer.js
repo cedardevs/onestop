@@ -4,22 +4,23 @@ import LoadingBar from './LoadingBar'
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {loading} = state.search.granuleRequest.inFlight
+  const {inFlight, errorMessage} = state.search.granuleRequest
   const {
     granules,
     totalGranuleCount,
     loadedGranuleCount,
   } = state.search.granuleResult
 
-  const text = loading
+  const text = inFlight
     ? 'Searching for files...'
     : `Loaded ${loadedGranuleCount} of ${totalGranuleCount} files.`
-  const loadingId = `loading-id::${loading}`
+  const loadingId = `loading-id::${inFlight}`
 
   return {
-    loading: loading ? 1 : 0,
+    loading: inFlight ? 1 : 0,
     loadingText: text,
     loadingAlertId: loadingId,
+    error: errorMessage,
   }
 }
 

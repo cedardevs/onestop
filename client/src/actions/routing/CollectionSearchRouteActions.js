@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import {fetchCollectionSearch} from './AsyncHelpers'
-import {showErrors} from '../ErrorActions'
 
 import {
   assembleSearchRequest,
@@ -62,7 +61,6 @@ const helper = (dispatch, filterState, requestFacets, successHandler) => {
     return
   }
   return fetchCollectionSearch(body, successHandler(dispatch), e => {
-    // dispatch(showErrors(e.errors || e)) // TODO
     dispatch(collectionSearchError(e.errors || e))
   })
 }
