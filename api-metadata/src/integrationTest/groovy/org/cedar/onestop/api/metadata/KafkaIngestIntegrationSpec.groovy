@@ -1,6 +1,5 @@
 package org.cedar.onestop.api.metadata
 
-import io.confluent.kafka.schemaregistry.RestApp
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -16,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
+
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -50,18 +47,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 )
 @TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
 class KafkaIngestIntegrationSpec extends Specification {
-
-  @Configuration
-  @Profile('kafka-ingest')
-  static class KafkaIntegrationConfig {
-    @Value('${spring.embedded.zookeeper.connect:}')
-    String zkConnect
-
-    @Bean(initMethod = 'start')
-    RestApp schemaRegistryRestApp() {
-      new RestApp(8081, zkConnect, '_schemas')
-    }
-  }
 
   @LocalServerPort
   String port

@@ -166,7 +166,7 @@ class MetadataManagementService {
           if(esId != existingId){ //the record from PSI was already in the index by another ID, this is the re-key
             log.warn ("Message with id [$id] contains the same identifiers as an exsiting record [$existingId]. " +
                 "Re-keying record from $existingId to $id")
-            Map deleteResult = deleteMetadata(existingId, true) //todo more error handling / returning info to user
+            Map deleteResult = deleteMetadata(existingId, false) //todo more error handling / returning info to user
           }else{
             log.info("Updating ${type} document with ID: $esId")
           }

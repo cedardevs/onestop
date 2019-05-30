@@ -47,6 +47,9 @@ class ETLIntegrationTests extends Specification {
   @Autowired
   private MetadataManagementService metadataIndexService
 
+  @Autowired
+  IntegrationTestUtil integrationTestUtil
+
   // this is simply used as a convenience/consistency as opposed to typing `elasticsearchService.esConfig.*`
   ElasticsearchConfig esConfig
 
@@ -90,7 +93,7 @@ class ETLIntegrationTests extends Specification {
     noExceptionThrown()
 
     and:
-    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
+    integrationTestUtil.documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
       it.size() == 0
     })
   }
@@ -103,7 +106,7 @@ class ETLIntegrationTests extends Specification {
     etlService.updateSearchIndices()
 
     then:
-    def indexed = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+    def indexed = integrationTestUtil.documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
     List<Map> indexedCollections = indexed[esConfig.TYPE_COLLECTION] as List<Map>
     def collection = indexedCollections.first()
     getFileIdentifier(collection) == 'gov.noaa.nodc:NDBC-COOPS'
@@ -214,7 +217,7 @@ class ETLIntegrationTests extends Specification {
     noExceptionThrown()
 
     and:
-    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
+    integrationTestUtil.documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
       it.size() == 0
     })
   }
@@ -227,7 +230,7 @@ class ETLIntegrationTests extends Specification {
     etlService.rebuildSearchIndices()
 
     then:
-    documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
+    integrationTestUtil.documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS).every({
       it.size() == 0
     })
   }
@@ -244,11 +247,11 @@ class ETLIntegrationTests extends Specification {
     etlService.rebuildSearchIndices()
     separator("Done rebuilding search indices")
 
-    Map staged = documentsByType(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
+    Map staged = integrationTestUtil.documentsByType(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
     List<Map> stagedCollections = staged[esConfig.TYPE_COLLECTION] as List<Map>
     List<Map> stagedGranules = staged[esConfig.TYPE_GRANULE] as List<Map>
 
-    Map indexed = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+    Map indexed = integrationTestUtil.documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
     List<Map> indexedCollections = indexed[esConfig.TYPE_COLLECTION] as List<Map>
     List<Map> indexedGranules = indexed[esConfig.TYPE_GRANULE] as List<Map>
     List<Map> indexedFlatGranules = indexed[esConfig.TYPE_FLATTENED_GRANULE] as List<Map>
@@ -294,7 +297,7 @@ class ETLIntegrationTests extends Specification {
     when: 'touch the collection'
     insertMetadataFromPath('test/data/xml/COOPS/C1.xml')
     etlService.rebuildSearchIndices()
-    def indexed = documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+    def indexed = integrationTestUtil.documentsByType(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
     List<Map> indexedCollections = indexed[esConfig.TYPE_COLLECTION] as List<Map>
     List<Map> indexedGranules = indexed[esConfig.TYPE_GRANULE] as List<Map>
     List<Map> indexedFlatGranules = indexed[esConfig.TYPE_FLATTENED_GRANULE] as List<Map>
@@ -330,36 +333,6 @@ class ETLIntegrationTests extends Specification {
 
   private Map indexedFlatGranuleVersions() {
     indexedDocumentVersions(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
-  }
-
-  private Map documentsByType(String collectionIndex, String granuleIndex, String flatGranuleIndex = null) {
-    log.debug("Getting documents by type...")
-    log.debug("Refreshing collection and granule indices...")
-    elasticsearchService.refresh(collectionIndex, granuleIndex)
-    if (flatGranuleIndex) {
-      log.debug("Refreshing flattened granule indices...")
-      elasticsearchService.refresh(flatGranuleIndex)
-    }
-    log.debug("Searching ${collectionIndex}, ${granuleIndex}${flatGranuleIndex ? ", and ${flatGranuleIndex}" : ''} indices...")
-    def endpoint = "${collectionIndex},${granuleIndex}${flatGranuleIndex ? ",${flatGranuleIndex}" : ''}/_search"
-    def request = [version: true]
-    def response = elasticsearchService.performRequest('GET', endpoint, request)
-    Map groupedDocuments =  getDocuments(response).groupBy({ esConfig.typeFromIndex(getIndex(it)) })
-
-    List<Map> collectionDocuments = groupedDocuments[ElasticsearchConfig.TYPE_COLLECTION] ?: []
-    List<Map> granuleDocuments = groupedDocuments[ElasticsearchConfig.TYPE_GRANULE] ?: []
-    List<Map> flattenedGranuleDocuments = groupedDocuments[ElasticsearchConfig.TYPE_FLATTENED_GRANULE] ?: []
-
-    int numCollectionsFound = collectionDocuments.size()
-    int numGranulesFound = granuleDocuments.size()
-    int numFlattenedGranulesFound = flattenedGranuleDocuments.size()
-
-    log.debug("Found ${numCollectionsFound.toString()} collections.")
-    log.debug("Found ${numGranulesFound.toString()} granules.")
-    if(flatGranuleIndex) {
-      log.debug("Found ${numFlattenedGranulesFound.toString()} flattened granules.")
-    }
-    return groupedDocuments
   }
 
   private Map<String, Integer> indexedDocumentVersions(String alias) {
