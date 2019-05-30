@@ -40,13 +40,6 @@ const moreResultsReceived = (state, newGranules) => {
 
 export const granuleResult = (state = initialState, action) => {
   switch (action.type) {
-    // Result Effects from 'GranuleSearchStateActions'
-    // case GRANULE_CLEAR_FACETS:
-    //   return Immutable.set(state, 'facets', initialState.facets)
-    //
-    // case GRANULE_REMOVE_FILTERS:
-    //   return Immutable.set(state, 'facets', initialState.facets)
-
     case GRANULE_NEW_SEARCH_RESULTS_RECEIVED:
       return newSearchResultsReceived(
         state,

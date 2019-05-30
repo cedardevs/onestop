@@ -43,7 +43,7 @@ export const granuleFilter = (state = initialState, action) => {
           },
         ]),
         (value, key) => !(key in initialState)
-      ) //Object.keys(initialState).has(key))
+      )
 
     case GRANULE_MORE_RESULTS_REQUESTED:
       return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)

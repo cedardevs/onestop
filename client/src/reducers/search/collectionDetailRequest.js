@@ -45,13 +45,13 @@ export const collectionDetailRequest = (state = initialState, action) => {
     case COLLECTION_DETAIL_ERROR:
       return Immutable.merge(state, {
         inFlight: false,
-        errorMessage: action.errors, // TODO change components to use this, when appropriate
+        errorMessage: action.errors,
       })
 
     case GRANULE_MATCHING_COUNT_ERROR:
       return Immutable.merge(state, {
         backgroundInFlight: false,
-        backgroundErrorMessage: action.errors, // TODO change components to use this, when appropriate
+        backgroundErrorMessage: action.errors,
       })
 
     default:

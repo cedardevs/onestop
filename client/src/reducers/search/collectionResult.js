@@ -1,5 +1,4 @@
 import Immutable from 'seamless-immutable'
-// import _ from 'lodash'
 import {
   COLLECTION_NEW_SEARCH_RESULTS_RECEIVED,
   COLLECTION_MORE_RESULTS_RECEIVED,

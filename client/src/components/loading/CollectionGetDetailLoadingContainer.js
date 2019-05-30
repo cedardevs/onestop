@@ -10,7 +10,7 @@ const mapStateToProps = state => {
     errorMessage,
   } = state.search.collectionDetailRequest
   const text = inFlight
-    ? `Loading collection with id ${requestedID}` // the id sneakily lives in this boolean for some reason
+    ? `Loading collection with id ${requestedID}`
     : `Completed collection load.` // TODO put collection id
   const loadingId = `loading-id::${requestedID}`
 

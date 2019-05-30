@@ -15,5 +15,5 @@
   height: 25px;
   background: linear-gradient(270deg, #000, #fff, #000);
   background-size: 600% 600%;
-  /* animation: loadingAnimation 4s ease infinite; */
+  animation: loadingAnimation 4s ease infinite;
 }
