@@ -13,7 +13,7 @@ import java.util.stream.Collectors
 
 @Slf4j
 @Service
-@Profile("kafka-ingest")
+@Profile(["kafka-ingest", "migration-ingest"])
 class KafkaConsumerService {
 
   @Value('${kafka.topic.collections}')

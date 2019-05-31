@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
-
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -34,16 +33,16 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @EmbeddedKafka
 @ActiveProfiles(["integration", "kafka-ingest"])
 @SpringBootTest(
-        classes = [
-            Application,
-            DefaultApplicationConfig,
-            KafkaConsumerConfig,
-
-            // provides:
-            // - `RestClient` 'restClient' bean via test containers
-            ElasticsearchTestConfig,
-        ],
-        webEnvironment = RANDOM_PORT
+    classes = [
+        Application,
+        DefaultApplicationConfig,
+        KafkaConsumerConfig,
+        KafkaIntegrationConfig,
+        // provides:
+        // - `RestClient` 'restClient' bean via test containers
+        ElasticsearchTestConfig,
+    ],
+    webEnvironment = RANDOM_PORT
 )
 @TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
 class KafkaIngestIntegrationSpec extends Specification {
@@ -59,6 +58,9 @@ class KafkaIngestIntegrationSpec extends Specification {
 
   @Value('${kafka.topic.collections}')
   String collectionTopic
+
+  @Value('${schema-registry.url:localhost:8081}')
+  String schemaUrl
 
   @Autowired
   ElasticsearchService elasticsearchService
@@ -84,7 +86,7 @@ class KafkaIngestIntegrationSpec extends Specification {
     def producer = new KafkaProducer<>([
         (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG)                : bootstrapServers,
         (ProducerConfig.CLIENT_ID_CONFIG)                        : 'api_publisher',
-        (AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG): 'http://localhost:8081',
+        (AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG): schemaUrl,
         (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)             : StringSerializer.class.getName(),
         (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG)           : SpecificAvroSerializer.class.getName(),
     ])
@@ -111,7 +113,7 @@ class KafkaIngestIntegrationSpec extends Specification {
     def producer = new KafkaProducer<>([
         (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG)                : bootstrapServers,
         (ProducerConfig.CLIENT_ID_CONFIG)                        : 'api_publisher',
-        (AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG): 'http://localhost:8081',
+        (AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG): schemaUrl,
         (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)             : StringSerializer.class.getName(),
         (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG)           : SpecificAvroSerializer.class.getName(),
     ])

@@ -19,7 +19,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
 
 @EnableKafka
 @Configuration
-@Profile("kafka-ingest")
+@Profile(["kafka-ingest", 'migration-ingest'])
 class KafkaConsumerConfig {
   
   @Value('${kafka.bootstrap.servers}')
