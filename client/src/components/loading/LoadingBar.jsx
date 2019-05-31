@@ -1,4 +1,6 @@
 import React from 'react'
+
+import _ from 'lodash'
 import './LoadingBar.css'
 import InlineError from '../error/InlineError'
 import defaultStyles from '../../style/defaultStyles'
@@ -26,8 +28,9 @@ export class LoadingBar extends React.Component {
 
   render() {
     const {loading, loadingText, style, error} = this.props
-    const displayErrors =
-      error != null ? <InlineError errors={this.props.errors} /> : null
+    const displayErrors = !_.isEmpty(error) ? (
+      <InlineError errors={this.props.errors} />
+    ) : null
 
     return (
       <Switch>
