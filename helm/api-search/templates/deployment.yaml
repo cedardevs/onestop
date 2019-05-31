@@ -80,11 +80,24 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          # TODO: how to make these probes work without restarting app indefinitely?
-#          livenessProbe:
-#            httpGet:
-#              path: /
-#              port: http
+          # This liveness probe is necessary on both API deployments because they now trigger a runtime exception when
+          # they cannot gather the Elasticsearch version information from a running Elasticsearch service.
+          #
+          # Tomcat will try to deploy the WAR initially, but the underlying Spring app can die for the reason mentioned
+          # above, without trying to restart. This is because the base container only cares that Tomcat is running and
+          # not necessarily the WAR app itself.
+          #
+          # The initial delay here allows Tomcat time to deploy the WAR. The fact that an endpoint comes back also
+          # guarantees that a running Elasticsearch version was gathered upon Spring startup.
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /onestop-search/actuator/info
+            initialDelaySeconds: 60 # wait n seconds before initiating the probe
+            periodSeconds: 20       # how often this probe should be run
+            timeoutSeconds: 10      # how long to wait before timing out the probe
+            failureThreshold: 1     # try n times before restarting the pod
+            successThreshold: 1     # min # of consecutive successes for probe to be successful after having failed
 #          readinessProbe:
 #            httpGet:
 #              path: /

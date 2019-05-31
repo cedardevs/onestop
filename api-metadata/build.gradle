@@ -164,7 +164,14 @@ bootWar {
 // https://spin.atomicobject.com/2018/07/18/gradle-integration-tests/
 configurations {
   // fix for vulnerability warning
-  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+  implementation.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+
+  // while we are deploying a WAR to a tomcat environment, we will remove
+  // io.confluent:kafka-schema-registry's `websocket-*` JARs conflicting with Tomcat server
+  // as well as unneeded embedded tomcat dependencies
+  // for context, see: https://github.com/confluentinc/schema-registry/issues/1129
+  implementation.exclude group: 'org.eclipse.jetty.websocket'
+  implementation.exclude group: 'org.apache.tomcat.embed'
 
   integrationTestImplementation.extendsFrom testImplementation
   integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
