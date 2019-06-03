@@ -130,18 +130,13 @@ class InventoryManagerToOneStopUtil {
     // drop fields
     discoveryMap.remove("responsibleParties")
 
-    if(version.onOrAfter(Version.V_6_0_0)) {
-      discoveryMap.services = discoveryMap.services.collect{
-        [
-            title: it.title,
-            links: it.operations.sort()
-        ]
-      }
-    }
-    else {
-      // this needs to be in place until we can use ES6 ignore_missing flags
-      discoveryMap.services = []
-    }
+    discoveryMap.services = discoveryMap?.services ?
+        discoveryMap.services.collect{
+          [
+              title: it.title,
+              links: it.operations.sort()
+          ]
+        } : []
 
     if(record.type == RecordType.collection) {
       discoveryMap.remove("parentIdentifier")
