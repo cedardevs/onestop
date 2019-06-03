@@ -37,8 +37,8 @@ dependencies {
 
   testImplementation("com.github.cedardevs.schemas:schemas-core:master-SNAPSHOT:test")
 
-  implementation("io.confluent:kafka-schema-registry:5.1.0")
-  implementation("io.confluent:kafka-schema-registry:5.1.0:tests")
+  testImplementation("io.confluent:kafka-schema-registry:5.1.0")
+  testImplementation("io.confluent:kafka-schema-registry:5.1.0:tests")
 
   testImplementation("org.apache.kafka:kafka_2.11:2.1.1")
   testImplementation("org.apache.kafka:kafka_2.11:2.1.1:test")
@@ -88,9 +88,8 @@ dependencies {
   implementation 'commons-collections:commons-collections:3.2.2'
 
   // fix CVE-2019-0232, CVE-2019-0232 by forcing a higher version of the tomcat websocket dependency
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.19'
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.19'
-
+  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.19'
+  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.19'
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
@@ -168,10 +167,8 @@ configurations {
 
   // while we are deploying a WAR to a tomcat environment, we will remove
   // io.confluent:kafka-schema-registry's `websocket-*` JARs conflicting with Tomcat server
-  // as well as unneeded embedded tomcat dependencies
   // for context, see: https://github.com/confluentinc/schema-registry/issues/1129
-  implementation.exclude group: 'org.eclipse.jetty.websocket'
-  implementation.exclude group: 'org.apache.tomcat.embed'
+//  implementation.exclude group: 'org.eclipse.jetty.websocket'
 
   integrationTestImplementation.extendsFrom testImplementation
   integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
