@@ -166,7 +166,7 @@ class MetadataManagementService {
           if(esId != existingId){ //the record from PSI was already in the index by another ID, this is the re-key
             log.warn ("Message with id [$id] contains the same identifiers as an exsiting record [$existingId]. " +
                 "Re-keying record from $existingId to $id")
-            Map deleteResult = deleteMetadata(existingId, false) //todo more error handling / returning info to user
+            Map deleteResult = deleteMetadata(existingId, true, true) //todo more error handling / returning info to user
           }else{
             log.info("Updating ${type} document with ID: $esId")
           }
@@ -305,10 +305,10 @@ class MetadataManagementService {
     }
   }
   
-  Map deleteMetadata(String esId, boolean recursive) {
+  Map deleteMetadata(String esId, boolean recursive, boolean isRekey = false) {
     Map record = getMetadata(esId, true)
     if (record.data) {
-      return delete(record, recursive)
+      return delete(record, recursive, isRekey)
     } else {
       // Record does not exist -- return NOT_FOUND response
       return record
@@ -325,7 +325,7 @@ class MetadataManagementService {
     }
   }
   
-  private Map delete(Map record, boolean recursive) {
+  private Map delete(Map record, boolean recursive, boolean isRekey = false) {
     // collect up the ids, types, and potential granule parentIds to be deleted
     List<String> ids = []
     List<String> parentIds = []
@@ -360,7 +360,11 @@ class MetadataManagementService {
             ]
         ]
     ]
-    def endpoint = "${esConfig.COLLECTION_STAGING_INDEX_ALIAS},${esConfig.GRANULE_STAGING_INDEX_ALIAS},${esConfig.COLLECTION_SEARCH_INDEX_ALIAS},${esConfig.GRANULE_SEARCH_INDEX_ALIAS},${esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS}/_delete_by_query?wait_for_completion=true"
+
+    def endpoint = isRekey ?
+        "${esConfig.COLLECTION_STAGING_INDEX_ALIAS},${esConfig.COLLECTION_SEARCH_INDEX_ALIAS},${esConfig.GRANULE_SEARCH_INDEX_ALIAS},${esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS}/_delete_by_query?wait_for_completion=true" :
+        "${esConfig.COLLECTION_STAGING_INDEX_ALIAS},${esConfig.GRANULE_STAGING_INDEX_ALIAS},${esConfig.COLLECTION_SEARCH_INDEX_ALIAS},${esConfig.GRANULE_SEARCH_INDEX_ALIAS},${esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS}/_delete_by_query?wait_for_completion=true"
+
     def deleteResponse = esService.performRequest('POST', endpoint, query)
     
     return [
