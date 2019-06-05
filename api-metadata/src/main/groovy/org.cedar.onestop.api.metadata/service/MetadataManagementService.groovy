@@ -119,12 +119,11 @@ class MetadataManagementService {
       try {
         log.debug("Reformating record for search with [id: $id, filename: $filename]")
         Map source = InventoryManagerToOneStopUtil.reformatMessageForSearch(avroRecord, esService.version)
-        def type = source.parentIdentifier ? ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
         String fileId = source.fileIdentifier as String
         String doi = source.doi as String
 
         Map result = [
-            type      : type,
+            type      : source.remove('type'), //have to remove for ES
             attributes: source,
             meta      : [
                 id : id,
@@ -146,7 +145,7 @@ class MetadataManagementService {
           String detail = "The identifiers in this document match more than one existing document. " +
               "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
               "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
-          log.warn("Failed to load $type due to conflict with identifiers: ${result.meta}")
+          log.warn("Failed to load ${result.type} due to conflict with identifiers: ${result.meta}")
           result.meta.error = [
               status: HttpStatus.CONFLICT.value(),
               title : title,
@@ -156,17 +155,17 @@ class MetadataManagementService {
           return
         }
 
-        String esId = id ?: null
+        String esId = id ?: null //PSI is the source of truth, use the ID it gave us
         if(existingIds?.size() == 1){ //this is an update
           String existingId = existingIds[0]
-          esId = id ?: existingId //PSI is the source of truth, use the ID it gave us
-          log.info("Updating ${type} document with ID: $esId")
+          esId = id ?: existingId
+          log.info("Updating ${result.type} document with ID: $esId")
           if(esId != existingId){ //the record from PSI was already in the index by another ID, this is the re-key
             log.warn ("Message with id [$id] contains the same identifiers as an exsiting record [$existingId]. " +
                 "Re-keying record from $existingId to $id")
             Map deleteResult = deleteMetadata(existingId, true, true) //todo more error handling / returning info to user
           }else{
-            log.info("Updating ${type} document with ID: $esId")
+            log.info("Updating ${result.type} document with ID: $esId")
           }
         }else{
           log.info("Creating new staging document")
@@ -174,7 +173,7 @@ class MetadataManagementService {
 
         source.stagedDate = System.currentTimeMillis()
         result.id = esId as String
-        def index = type == ElasticsearchConfig.TYPE_COLLECTION ? esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.GRANULE_STAGING_INDEX_ALIAS
+        def index = result.type == ElasticsearchConfig.TYPE_COLLECTION ? esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.GRANULE_STAGING_INDEX_ALIAS
         def bulkCommand = [index: [_index: index, _type: esConfig.TYPE, _id: esId]]
         bulkRequest << JsonOutput.toJson(bulkCommand)
         bulkRequest << '\n'

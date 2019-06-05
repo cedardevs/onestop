@@ -9,6 +9,7 @@ import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.parse.ISOParser
 import org.xml.sax.SAXException
 import org.elasticsearch.Version
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
 
 import java.time.temporal.ChronoUnit
 
@@ -115,6 +116,9 @@ class InventoryManagerToOneStopUtil {
 
     Map discoveryMap = AvroUtils.avroToMap(discovery, true)
 
+    discoveryMap.type = discoveryMap?.parentIdentifier ?
+        ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
+
     // create GCMD keywords
     Map gcmdKeywords = createGcmdKeyword(discovery)
     discoveryMap.putAll(gcmdKeywords)
@@ -130,13 +134,7 @@ class InventoryManagerToOneStopUtil {
     // drop fields
     discoveryMap.remove("responsibleParties")
 
-    discoveryMap.services = discoveryMap?.services ?
-        discoveryMap.services.collect{
-          [
-              title: it.title,
-              links: it.operations.sort()
-          ]
-        } : []
+    discoveryMap.services = discoveryMap?.services ? formatServices(discoveryMap.services as List) : []
 
     if(record.type == RecordType.collection) {
       discoveryMap.remove("parentIdentifier")
@@ -144,7 +142,14 @@ class InventoryManagerToOneStopUtil {
 
     return discoveryMap
   }
-
+  static List formatServices(List services){
+    services.collect{
+      [
+          title: it.title,
+          links: it.operations.sort()
+      ]
+    }
+  }
   //Create GCMD keyword lists
   static Map createGcmdKeyword(Discovery discovery) {
     def gcmdScience = [] as Set
