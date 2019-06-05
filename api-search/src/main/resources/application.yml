@@ -30,16 +30,6 @@ elasticsearch:
   version: ${esVersion}
   host: localhost
   port: 9200
-  index:
-    sitemap:
-      name: sitemap
-    search:
-      collection:
-        name: search_collection
-      granule:
-        name: search_granule
-      flattened-granule:
-        name: search_flattened_granule
 
 search:
   minimumShouldMatch: 75%

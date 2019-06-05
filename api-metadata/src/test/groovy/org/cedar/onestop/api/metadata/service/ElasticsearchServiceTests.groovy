@@ -16,20 +16,11 @@ import spock.lang.Specification
 class ElasticsearchServiceTests extends Specification {
 
   static TEST_PREFIX = 'prefix-'
-  static TEST_COLLECTION_SEARCH_INDEX_ALIAS = 'search_collection'
 
   Version testVersion = Version.V_6_1_2
 
   ElasticsearchConfig esConfig = new ElasticsearchConfig(
-      TEST_COLLECTION_SEARCH_INDEX_ALIAS,
-      'staging_collection',
-      'search_granule',
-      'staging_granule',
-      'search_flattened_granule',
-      'sitemap',
       TEST_PREFIX,
-      'collection_pipeline',
-      'granule_pipeline',
       10,
       null,
       2,
@@ -41,18 +32,17 @@ class ElasticsearchServiceTests extends Specification {
 
 
   def setup() {
-    elasticsearchService.esConfig.COLLECTION_SEARCH_INDEX_ALIAS = TEST_COLLECTION_SEARCH_INDEX_ALIAS
     elasticsearchService.esConfig.PREFIX = TEST_PREFIX
   }
 
   def 'can create index with prefix'() {
     when:
-    elasticsearchService.createIndex(TEST_COLLECTION_SEARCH_INDEX_ALIAS)
+    elasticsearchService.createIndex(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
 
     then:
     1 * mockRestClient.performRequest({
       Request request = it as Request
-      request.method == 'PUT' && request.endpoint.startsWith(TEST_COLLECTION_SEARCH_INDEX_ALIAS)
+      request.method == 'PUT' && request.endpoint.startsWith(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
     }) >> buildMockResponse([dummy: "response"])
     noExceptionThrown()
   }

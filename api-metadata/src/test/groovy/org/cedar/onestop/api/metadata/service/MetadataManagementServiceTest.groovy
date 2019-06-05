@@ -12,15 +12,7 @@ class MetadataManagementServiceTest extends Specification {
   Version testVersion = Version.V_6_1_2
 
   ElasticsearchConfig esConfig = new ElasticsearchConfig(
-          'search_collection',
-          'staging_collection',
-          'search_granule',
-          'staging_granule',
-          'search_flattened_granule',
-          'sitemap',
           'prefix-',
-          'collection_pipeline',
-          'granule_pipeline',
           10,
           null,
           2,
