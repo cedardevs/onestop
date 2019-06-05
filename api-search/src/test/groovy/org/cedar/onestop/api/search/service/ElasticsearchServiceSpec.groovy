@@ -16,19 +16,10 @@ import spock.lang.Unroll
 @Unroll
 class ElasticsearchServiceSpec extends Specification {
 
-  String TEST_INDEX = 'test_index'
   Version testVersion = Version.V_6_1_2
 
   ElasticsearchConfig esConfig = new ElasticsearchConfig(
-      TEST_INDEX,
-      'staging_collection',
-      'search_granule',
-      'staging_granule',
-      'search_flattened_granule',
-      'sitemap',
       null,
-      'collection_pipeline',
-      'granule_pipeline',
       10,
       null,
       2,
@@ -54,7 +45,7 @@ class ElasticsearchServiceSpec extends Specification {
             hits: [
                 [
                     _id       : 'ABC',
-                    _index    : TEST_INDEX,
+                    _index    : esConfig.COLLECTION_SEARCH_INDEX_ALIAS,
                     attributes: [
                         title: 'THIS IS A TEST'
                     ]
@@ -66,7 +57,7 @@ class ElasticsearchServiceSpec extends Specification {
 
 
     when:
-    def result = elasticsearchService.searchFromRequest(searchRequest, TEST_INDEX)
+    def result = elasticsearchService.searchFromRequest(searchRequest, esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
 
     then:
     1 * mockRestClient.performRequest({
@@ -75,7 +66,7 @@ class ElasticsearchServiceSpec extends Specification {
       InputStream requestContent = requestEntity.content
       Map searchContent = new JsonSlurper().parse(requestContent) as Map
       assert request.method == 'GET'
-      assert request.endpoint.startsWith(TEST_INDEX)
+      assert request.endpoint.startsWith(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
       assert request.endpoint.endsWith('_search')
       assert searchContent.size == searchRequest.page.max
       assert searchContent.from == searchRequest.page.offset
