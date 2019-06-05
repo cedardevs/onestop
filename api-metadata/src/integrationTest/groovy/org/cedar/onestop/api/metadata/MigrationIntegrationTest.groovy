@@ -181,6 +181,6 @@ class MigrationIntegrationTest extends Specification {
 
     and:
     def rekeyedFlattenedGranule = reindexed[esConfig.TYPE_FLATTENED_GRANULE].first()
-    getInternalParentIdentifier(rekeyedFlattenedGranule) == reindexedCollection._id
+    getInternalParentIdentifier(rekeyedFlattenedGranule) == collectionKey2
   }
 }
