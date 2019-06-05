@@ -1,6 +1,5 @@
 package org.cedar.onestop.api.metadata.service
 
-import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import org.xml.sax.SAXException
 import static org.cedar.onestop.elastic.common.DocumentUtil.*
 
 @Slf4j
