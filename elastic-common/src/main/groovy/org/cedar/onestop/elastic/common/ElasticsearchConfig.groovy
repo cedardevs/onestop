@@ -150,10 +150,19 @@ class ElasticsearchConfig {
   }
 
   static String aliasFromIndex(String index) {
-    // determine position of postfix timestamp on index name
-    def timestampPosition = index.lastIndexOf('-')
-    // derive alias for index by cutting off timestamp postfix
-    return timestampPosition > 0 ? index.substring(0, timestampPosition) : index
+    // Determine position of postfix timestamp on index name.
+    // Index names are just the alias with an optional prefix
+    // AND suffix => '-' + System.currentTimeMillis()
+    // Regular Expression Explanation
+    // \d+ -> Indicates 1 or more numeric characters.
+    //        System.currentTimeMillis() is generally 13 digits in modern day,
+    //        but in theory could be less (past) or rollover (future) to >13 digits
+    // $ -> Indicates the end of the string (there should be nothing after the timestamp in the index name)
+
+    // This allows us to accommodate a test which used to use this function equivalent elsewhere by assuming
+    // it could be passed either an index or an alias, but in reality now, there's no reason why this function
+    // in the code would be called using an alias or prefixed alias alone.
+    return index.replaceFirst(/-\d+$/, "")
   }
 
   String typeFromIndex(String index) {

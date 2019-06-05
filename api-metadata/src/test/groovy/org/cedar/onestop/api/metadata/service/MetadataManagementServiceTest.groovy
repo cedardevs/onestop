@@ -57,9 +57,9 @@ class MetadataManagementServiceTest extends Specification {
 
     where:
     index                                 | expectedType
-    'prefix-search_collection'            | null
+    'prefix-search_collection'            | ElasticsearchConfig.TYPE_COLLECTION
     'prefix-search_granule-1519243661952' | ElasticsearchConfig.TYPE_GRANULE
-    'prefix-search_flattened_granule'     | null
+    'prefix-search_flattened_granule'     | ElasticsearchConfig.TYPE_FLATTENED_GRANULE
     'not-valid-index'                     | null
 
   }
