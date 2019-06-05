@@ -108,50 +108,6 @@ class KafkaIngestIntegrationSpec extends Specification {
     result.statusCode == HttpStatus.OK
   }
 
-  def 'simulate migration  re-key'() {
-    setup: 'create kafka producer and messages'
-    def producer = new KafkaProducer<>([
-        (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG)                : bootstrapServers,
-        (ProducerConfig.CLIENT_ID_CONFIG)                        : 'api_publisher',
-        (AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG): schemaUrl,
-        (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)             : StringSerializer.class.getName(),
-        (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG)           : SpecificAvroSerializer.class.getName(),
-    ])
-
-    def inputStream1 = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
-    def inputRecord1 = AvroUtils.<ParsedRecord> jsonToAvro(inputStream1, ParsedRecord.classSchema)
-    def inputKey1 = 'kafka_ingest_ABC'
-
-    def inputStream2 = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
-    def inputRecord2 = AvroUtils.<ParsedRecord> jsonToAvro(inputStream2, ParsedRecord.classSchema)
-    def inputKey2 = 'kafka_ingest_XYZ'
-    def record1 = new ProducerRecord(collectionTopic, inputKey1, inputRecord1)
-    def record2 = new ProducerRecord(collectionTopic, inputKey2, inputRecord2)
-
-    when: 'we send a record'
-    producer.send(record1)
-    sleep(1000)
-
-    def request1 = RequestEntity.get("${baseUrl}/metadata/${inputKey1}".toURI()).build()
-    def result1 = restTemplate.exchange(request1, Map)
-
-    then: 'the record exists'
-    result1.statusCode == HttpStatus.OK
-
-    and: 'if we send the same record with a different id to simulate a re-key scenario' //this should not happen when PSI starts resolving records duplicate IDs
-    producer.send(record2)
-    sleep(1000)
-    def request2 = RequestEntity.get("${baseUrl}/metadata/${inputKey1}".toURI()).build()
-    def result2 = restTemplate.exchange(request2, Map)
-
-    def request3 = RequestEntity.get("${baseUrl}/metadata/${inputKey2}".toURI()).build()
-    def result3 = restTemplate.exchange(request3, Map)
-
-    then: 'the first record is deleted and the second was created, i.e. re-keyed'
-    result2.statusCode == HttpStatus.NOT_FOUND
-    result3.statusCode == HttpStatus.OK
-  }
-
   def 'upload api is not available'() {
     when:
     def request = RequestEntity.post("${baseUrl}/metadata".toURI()).contentType(MediaType.APPLICATION_XML).body('<xml>test</xml>')
