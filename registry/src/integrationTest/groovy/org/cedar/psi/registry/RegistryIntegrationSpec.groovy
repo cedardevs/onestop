@@ -70,11 +70,11 @@ class RegistryIntegrationSpec extends Specification {
   RestTemplate restTemplate
   String baseUrl
 
-  final ObjectMapper mapper = new ObjectMapper()
-  final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
-  final String registryResponseSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('jsonSchema/registryResponse-schema.json').text
-  final JsonNode registryResponseSchemaNode = mapper.readTree(registryResponseSchemaString)
-  final JsonSchema registryResponseSchema = factory.getJsonSchema(registryResponseSchemaNode)
+  ObjectMapper mapper = new ObjectMapper()
+  JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
+  String registryResponseSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('jsonSchema/registryResponse-schema.json').text
+  JsonNode registryResponseSchemaNode = mapper.readTree(registryResponseSchemaString)
+  JsonSchema registryResponseSchema = factory.getJsonSchema(registryResponseSchemaNode)
 
   def setup() {
     restTemplate = new RestTemplate()

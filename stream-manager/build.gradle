@@ -18,6 +18,7 @@ configurations {
 }
 
 dependencies {
+  compile(project(':common'))
   compile('org.codehaus.groovy:groovy:2.4.13')
   compile('org.codehaus.groovy:groovy-json:2.4.13')
   compile("org.codehaus.groovy:groovy-xml:2.4.13")
@@ -27,8 +28,9 @@ dependencies {
   compile('org.apache.commons:commons-text:1.2')
   compile('org.slf4j:slf4j-api:1.7.25')
   compile('ch.qos.logback:logback-classic:1.2.3')
-  compile(project(':common'))
-  compile('org.locationtech.jts.io:jts-io-common:1.16.1')
+  
+  compile("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
+  compile("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
 
   testCompile("org.spockframework:spock-core:${project.spockVersion}")
   testCompile('org.apache.kafka:kafka-streams-test-utils:2.1.0')
@@ -38,8 +40,8 @@ dependencies {
   testCompile('io.confluent:kafka-schema-registry:5.1.0')
   testCompile('io.confluent:kafka-schema-registry:5.1.0:tests')
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
-  testCompile("com.github.cedardevs:schemas:${project.schemasVersion}:test")
-  testCompile("com.github.cedardevs:schemas:${project.schemasVersion}:sources")
+  testCompile("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
+  testCompile("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:sources")
 
 }
 

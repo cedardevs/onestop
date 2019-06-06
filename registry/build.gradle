@@ -47,7 +47,7 @@ dependencies {
   testCompile('io.confluent:kafka-schema-registry:5.1.0')
   testCompile('io.confluent:kafka-schema-registry:5.1.0:tests')
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
-  testCompile("com.github.cedardevs:schemas:${project.schemasVersion}:test")
+  testCompile("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
 }
 
 sourceSets {
