@@ -47,9 +47,6 @@ class InventoryManagerToOneStopUtil {
     if (identification && (!identification?.fileIdentifierExists && !identification?.doiExists)) {
       details << "Missing identifier - record contains neither a fileIdentifier nor a DOI"
     }
-    if (identification && (!identification?.fileIdentifierExists && !identification?.doiExists)) {
-      details << "Missing identifier - record contains neither a fileIdentifier nor a DOI"
-    }
     if (messageMap.type == RecordType.collection && (identification && identification?.parentIdentifierExists)) {
       details << "Invalid record: a collection cannot contain a parentIdentifier"
     }
