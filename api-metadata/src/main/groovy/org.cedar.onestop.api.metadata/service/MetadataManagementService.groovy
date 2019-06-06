@@ -157,18 +157,10 @@ class MetadataManagementService {
 
         String esId = id ?: null //PSI is the source of truth, use the ID it gave us
         if(existingIds?.size() == 1){ //this is an update
-          String existingId = existingIds[0]
-          esId = id ?: existingId
+          esId = updateRecord(existingIds[0], id)
           log.info("Updating ${result.type} document with ID: $esId")
-          if(esId != existingId){ //the record from PSI was already in the index by another ID, this is the re-key
-            log.warn ("Message with id [$id] contains the same identifiers as an exsiting record [$existingId]. " +
-                "Re-keying record from $existingId to $id")
-            Map deleteResult = deleteMetadata(existingId, true, true) //todo more error handling / returning info to user
-          }else{
-            log.info("Updating ${result.type} document with ID: $esId")
-          }
         }else{
-          log.info("Creating new staging document")
+          log.info("Creating new ${result.type} staging document.gi")
         }
 
         source.stagedDate = System.currentTimeMillis()
@@ -227,7 +219,18 @@ class MetadataManagementService {
     return results
   }
 
-  
+  String updateRecord(String existingId, String newId = null){ //records from API dont have an ID
+    String esId = newId ?: existingId
+    if(esId != existingId){ //the record from PSI was already in the index by another ID, this is the re-key
+      log.warn ("Message with id [$newId] contains the same identifiers as an exsiting record [$existingId]. " +
+          "Re-keying record from $existingId to $newId")
+      Map deleteResult = deleteMetadata(existingId, true, true) //todo more error handling / returning info to user
+    }else{
+      log.info("Updating document with ID: $esId")
+    }
+    return esId
+  }
+
   Map getMetadata(String esId, boolean idsOnly = false) {
     esService.refreshAllIndices()
     List<Map> resultsData = []
