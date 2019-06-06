@@ -19,8 +19,8 @@ class MetadataStoreSpec extends Specification {
   ReadOnlyKeyValueStore mockParsedStore
   MetadataStore mockMetadataStore
 
-  final testType = RecordType.granule
-  final testSource = 'class'
+  def testType = RecordType.granule
+  def testSource = 'class'
 
   def setup() {
     mockStreamsApp = Mock(KafkaStreams)
