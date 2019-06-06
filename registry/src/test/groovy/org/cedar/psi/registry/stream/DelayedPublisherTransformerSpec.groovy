@@ -130,7 +130,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     then:
     keyStore.get(key) == futureMillis
     timeStore.get(futureMillis) == '["' + key + '"]'
-    lookupStore.get(key) == value
+    lookupStore.get(key).equals(value)
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
@@ -174,8 +174,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     keyStore.get(key1) == futureMillis
     keyStore.get(key2) == futureMillis
     timeStore.get(futureMillis) == "[\"$key1\",\"$key2\"]"
-    lookupStore.get(key1) == value1
-    lookupStore.get(key2) == value2
+    lookupStore.get(key1).equals(value1)
+    lookupStore.get(key2).equals(value2)
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
@@ -239,9 +239,9 @@ class DelayedPublisherTransformerSpec extends Specification {
     timeStore.get(plusFiveMillis) == "[\"$plusFiveKey\"]"
     timeStore.get(plusSixMillis) == "[\"$plusSixKey\"]"
     timeStore.get(plusTenMillis) == "[\"$plusTenKey\"]"
-    lookupStore.get(plusFiveKey) == plusFiveValue
-    lookupStore.get(plusSixKey) == plusSixValue
-    lookupStore.get(plusTenKey) == plusTenValue
+    lookupStore.get(plusFiveKey).equals(plusFiveValue)
+    lookupStore.get(plusSixKey).equals(plusSixValue)
+    lookupStore.get(plusTenKey).equals(plusTenValue)
 
     when: // 8 seconds pass
     driver.advanceWallClockTime(8000)
@@ -253,9 +253,9 @@ class DelayedPublisherTransformerSpec extends Specification {
     timeStore.get(plusFiveMillis) == null
     timeStore.get(plusSixMillis) == null
     timeStore.get(plusTenMillis) == '["' + plusTenKey + '"]' // <-- not removed
-    lookupStore.get(plusFiveKey) == plusFiveValue
-    lookupStore.get(plusSixKey) == plusSixValue
-    lookupStore.get(plusTenKey) == plusTenValue // <-- original value remains
+    lookupStore.get(plusFiveKey).equals(plusFiveValue)
+    lookupStore.get(plusSixKey).equals(plusSixValue)
+    lookupStore.get(plusTenKey).equals(plusTenValue) // <-- original value remains
 
     and: // 3 original messages plus 2 republished messages have come out
     def output = readAllOutput(driver, OUTPUT_TOPIC)
@@ -299,8 +299,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     keyStore.get(key1) == null
     keyStore.get(key2) == null
     timeStore.get(futureMillis) == null
-    lookupStore.get(key1) == value1
-    lookupStore.get(key2) == value2
+    lookupStore.get(key1).equals(value1)
+    lookupStore.get(key2).equals(value2)
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
@@ -348,7 +348,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     keyStore.get(key) == null
     timeStore.get(futureMillis) == null
     timeStore.get(pastMillis) == null
-    lookupStore.get(key) == secondValue
+    lookupStore.get(key).equals(secondValue)
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
@@ -391,7 +391,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     then:
     keyStore.get(key) == null
     timeStore.get(futureMillis) == null
-    lookupStore.get(key) == secondValue
+    lookupStore.get(key).equals(secondValue)
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
@@ -436,8 +436,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     keyStore.get(key1) == null
     keyStore.get(key2) == futureMillis
     timeStore.get(futureMillis) == "[\"$key2\"]"
-    lookupStore.get(key1) == secondValue
-    lookupStore.get(key2) == firstValue
+    lookupStore.get(key1).equals(secondValue)
+    lookupStore.get(key2).equals(firstValue)
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
@@ -483,7 +483,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     keyStore.get(key) == secondMillis
     timeStore.get(firstMillis) == null
     timeStore.get(secondMillis) == "[\"$key\"]"
-    lookupStore.get(key) == secondValue
+    lookupStore.get(key).equals(secondValue)
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
@@ -529,7 +529,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     keyStore.get(key) == secondMillis
     timeStore.get(firstMillis) == null
     timeStore.get(secondMillis) == "[\"$key\"]"
-    lookupStore.get(key) == secondValue
+    lookupStore.get(key).equals(secondValue)
 
     and: // only the two input values come out; the first republishing event doesn't go off
     def output = readAllOutput(driver, OUTPUT_TOPIC)

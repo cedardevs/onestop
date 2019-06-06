@@ -29,18 +29,18 @@ class StreamFunctionsSpec extends Specification {
     StreamFunctions.setReducer.apply(curr, next) == null
   }
 
-  def 'can merge json strings'() {
-    def first = '{"trackingId":"ABC","message":"this is a test","answer": 42}'
-    def second = '{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}'
-    def merged = '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}'
+  def 'can merge maps'() {
+    def first = ["trackingId":"ABC","message":"this is a test","answer": 42]
+    def second = ["trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"]
+    def merged = ["trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"]
 
     expect:
-    StreamFunctions.mergeJsonMapStrings(first, second) == merged
+    StreamFunctions.mergeMaps(first, second) == merged
   }
 
   def 'aggregated input initializer returns a default AggregatedInput'() {
     expect:
-    StreamFunctions.aggregatedInputInitializer.apply() == AggregatedInput.newBuilder().build()
+    StreamFunctions.aggregatedInputInitializer.apply().equals(AggregatedInput.newBuilder().build())
   }
 
   def 'aggregates an initial input'() {
@@ -48,7 +48,7 @@ class StreamFunctionsSpec extends Specification {
     def input = new Input([
         type: RecordType.granule,
         method: Method.POST,
-        content: '{"trackingId":"ABC","message":"this is a test","answer":42}',
+        content: '{"trackingId":"ABC","fileInformation":{"size":42},"fileLocations":{"test:one":{"uri":"test:one"},"test:two":{"uri":"test:two"}}}',
         contentType: 'application/json',
         source: 'test',
         operation: null
@@ -64,9 +64,12 @@ class StreamFunctionsSpec extends Specification {
     result.rawXml == null
     result.initialSource == input.source
     result.type == input.type
-    result.fileInformation == null
-    result.fileLocations instanceof List
-    result.fileLocations.size() == 0
+    result.fileInformation instanceof FileInformation
+    result.fileInformation.size == 42
+    result.fileLocations instanceof Map
+    result.fileLocations.size() == 2
+    result.fileLocations['test:one'].uri == 'test:one'
+    result.fileLocations['test:two'].uri == 'test:two'
     result.publishing == null
     result.relationships instanceof List
     result.relationships.size() == 0
@@ -103,6 +106,7 @@ class StreamFunctionsSpec extends Specification {
     result.initialSource == currentAggregate.initialSource
     result.deleted == false
     result.events.size() == 2
+    // note: json should be merged together when PATCH is used
     result.rawJson == '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}'
   }
 
@@ -129,6 +133,7 @@ class StreamFunctionsSpec extends Specification {
     result.initialSource == currentAggregate.initialSource
     result.deleted == false
     result.events.size() == 2
+    // note: newer json replaces existing value when PUT is used
     result.rawJson == newValue.content
   }
 
