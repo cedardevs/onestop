@@ -5,6 +5,7 @@ import org.apache.kafka.streams.kstream.Aggregator;
 import org.apache.kafka.streams.kstream.Initializer;
 import org.apache.kafka.streams.kstream.Reducer;
 import org.cedar.psi.common.util.DataUtils;
+import org.cedar.psi.common.util.TimestampedValue;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ErrorEvent;
 import org.cedar.schemas.avro.psi.Input;
@@ -37,7 +38,8 @@ public class StreamFunctions {
 
   public static Initializer<AggregatedInput> aggregatedInputInitializer = () -> AggregatedInput.newBuilder().build();
 
-  public static Aggregator<String, Input, AggregatedInput> inputAggregator = (key, input, aggregate) -> {
+  public static Aggregator<String, TimestampedValue<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, aggregate) -> {
+    var input = timestampedInput.data;
     log.debug("Aggregating input for key {} with method {}", key, input.getMethod());
     if (input == null) {
       // TODO - ??
@@ -45,7 +47,7 @@ public class StreamFunctions {
 
     var method = input.getMethod();
     if (method == DELETE || method == GET) {
-      return updateDeleted(input, aggregate);
+      return updateDeleted(timestampedInput, aggregate);
     }
 
     // if we're PATCHing then build on top of the existing state, else create a new state
@@ -79,13 +81,13 @@ public class StreamFunctions {
     }
 
     // note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
-    builder.setEvents(DataUtils.addOrInit(aggregate.getEvents(), buildEventRecord(input)));
+    builder.setEvents(DataUtils.addOrInit(aggregate.getEvents(), buildEventRecord(timestampedInput)));
     return builder.build();
   };
 
-  public static AggregatedInput updateDeleted(Input input, AggregatedInput aggregate) {
+  public static AggregatedInput updateDeleted(TimestampedValue<Input> input, AggregatedInput aggregate) {
     return AggregatedInput.newBuilder(aggregate)
-        .setDeleted(input.getMethod().equals(DELETE))
+        .setDeleted(input.data.getMethod().equals(DELETE))
         .setEvents(DataUtils.addOrInit(aggregate.getEvents(), buildEventRecord(input)))
         .build();
   }
@@ -134,12 +136,12 @@ public class StreamFunctions {
         });
   }
 
-  public static InputEvent buildEventRecord(Input input) {
+  public static InputEvent buildEventRecord(TimestampedValue<Input> input) {
     return InputEvent.newBuilder()
-        .setMethod(input.getMethod())
-        .setOperation(input.getOperation())
-        .setSource(input.getSource())
-//        .setTimestamp() TODO - how do we do this?
+        .setMethod(input.data.getMethod())
+        .setOperation(input.data.getOperation())
+        .setSource(input.data.getSource())
+        .setTimestamp(input.timestampMillis)
         .build();
   }
 

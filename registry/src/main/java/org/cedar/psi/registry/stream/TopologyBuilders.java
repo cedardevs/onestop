@@ -8,6 +8,7 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.TransformerSupplier;
 import org.apache.kafka.streams.state.Stores;
 import org.cedar.psi.common.constants.Topics;
+import org.cedar.psi.common.util.Timestamper;
 import org.cedar.schemas.avro.psi.Input;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
@@ -39,6 +40,7 @@ public class TopologyBuilders {
             source -> source,
             source -> {
               return builder.<String, Input>stream(Topics.inputTopic(type, source))
+                  .transformValues(() -> new Timestamper<Input>())
                   .groupByKey()
                   .aggregate(
                       StreamFunctions.aggregatedInputInitializer,

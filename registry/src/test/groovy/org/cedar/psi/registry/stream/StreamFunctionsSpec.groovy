@@ -1,5 +1,6 @@
 package org.cedar.psi.registry.stream
 
+import org.cedar.psi.common.util.TimestampedValue
 import org.cedar.schemas.avro.psi.*
 import spock.lang.Specification
 
@@ -44,10 +45,11 @@ class StreamFunctionsSpec extends Specification {
         source: 'test',
         operation: null
     ])
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
     def aggregate = AggregatedInput.newBuilder().build()
 
     when:
-    def result = StreamFunctions.inputAggregator.apply(key, input, aggregate)
+    def result = StreamFunctions.inputAggregator.apply(key, timestampedInput, aggregate)
 
     then:
     result instanceof AggregatedInput
@@ -70,6 +72,7 @@ class StreamFunctionsSpec extends Specification {
     result.events[0].source == input.source
     result.events[0].method == input.method
     result.events[0].operation == input.operation
+    result.events[0].timestamp == timestampedInput.timestampMillis
     result.errors instanceof List
     result.errors.size() == 0
   }
@@ -84,10 +87,11 @@ class StreamFunctionsSpec extends Specification {
         source: 'test',
         operation: null
     ])
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
     def aggregate = AggregatedInput.newBuilder().build()
 
     when:
-    def result = StreamFunctions.inputAggregator.apply(key, input, aggregate)
+    def result = StreamFunctions.inputAggregator.apply(key, timestampedInput, aggregate)
 
     then:
     result.fileInformation == null
@@ -108,16 +112,17 @@ class StreamFunctionsSpec extends Specification {
         initialSource: 'test',
         events: [new InputEvent(null, Method.POST, 'test', null)]
     ])
-    def newValue = Input.newBuilder()
+    def input = Input.newBuilder()
         .setType(RecordType.granule)
         .setMethod(Method.PATCH)
         .setContent('{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}')
         .setContentType('application/json')
         .setSource('test')
         .build()
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
 
     when:
-    def result = StreamFunctions.inputAggregator.apply('ABC', newValue, currentAggregate)
+    def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
 
     then:
     result.type == currentAggregate.type
@@ -135,16 +140,17 @@ class StreamFunctionsSpec extends Specification {
         initialSource: 'test',
         events: [new InputEvent(null, Method.POST, 'test', null)]
     ])
-    def newValue = new Input([
+    def input = new Input([
         type: RecordType.granule,
         method: Method.PUT,
         content: '{"trackingId":"ABC","message":"this is only a test","greeting":"hello, world!"}',
         contentType: 'application/json',
         source: 'test'
     ])
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
 
     when:
-    def result = StreamFunctions.inputAggregator.apply('ABC', newValue, currentAggregate)
+    def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
 
     then:
     result.type == currentAggregate.type
@@ -152,7 +158,7 @@ class StreamFunctionsSpec extends Specification {
     result.deleted == false
     result.events.size() == 2
     // note: newer json replaces existing value when PUT is used
-    result.rawJson == newValue.content
+    result.rawJson == input.content
   }
 
   def 'aggregate input with DELETE method'() {
@@ -163,12 +169,13 @@ class StreamFunctionsSpec extends Specification {
         deleted: false,
         events: [new InputEvent(null, Method.POST, 'test', null)]
     ])
-    def newValue = new Input([
+    def input = new Input([
         method: Method.DELETE,
     ])
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
 
     when:
-    def result = StreamFunctions.inputAggregator.apply('ABC', newValue, currentAggregate)
+    def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
 
     then:
     result.type == currentAggregate.type
@@ -186,12 +193,13 @@ class StreamFunctionsSpec extends Specification {
         deleted: true,
         events: [new InputEvent(null, Method.POST, 'test', null)]
     ])
-    def newValue = new Input([
+    def input = new Input([
         method: Method.GET,
     ])
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
 
     when:
-    def result = StreamFunctions.inputAggregator.apply('ABC', newValue, currentAggregate)
+    def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
 
     then:
     result.type == currentAggregate.type
