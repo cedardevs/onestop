@@ -29,15 +29,6 @@ class StreamFunctionsSpec extends Specification {
     StreamFunctions.setReducer.apply(curr, next) == null
   }
 
-  def 'can merge maps'() {
-    def first = ["trackingId":"ABC","message":"this is a test","answer": 42]
-    def second = ["trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"]
-    def merged = ["trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"]
-
-    expect:
-    StreamFunctions.mergeMaps(first, second) == merged
-  }
-
   def 'aggregated input initializer returns a default AggregatedInput'() {
     expect:
     StreamFunctions.aggregatedInputInitializer.apply().equals(AggregatedInput.newBuilder().build())
@@ -81,6 +72,33 @@ class StreamFunctionsSpec extends Specification {
     result.events[0].operation == input.operation
     result.errors instanceof List
     result.errors.size() == 0
+  }
+
+  def 'records errors for bad fields and still parses good ones'() {
+    def key = 'ABC'
+    def input = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
+        content: '{"fileInformation":{"size":"THIS IS NOT A NUMBER!!"},"fileLocations":{"test:one":{"uri":"test:one"}}}',
+        contentType: 'application/json',
+        source: 'test',
+        operation: null
+    ])
+    def aggregate = AggregatedInput.newBuilder().build()
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply(key, input, aggregate)
+
+    then:
+    result.fileInformation == null
+    result.errors instanceof List
+    result.errors.size() == 1
+    result.errors[0].detail.contains("fileInformation")
+
+    and:
+    result.fileLocations instanceof Map
+    result.fileLocations.size() == 1
+    result.fileLocations['test:one'].uri == 'test:one'
   }
 
   def 'aggregate inputs with PATCH method'() {
