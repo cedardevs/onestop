@@ -226,7 +226,8 @@
           "dsmmTransparencyTraceability",
           "dsmmUsability",
           "updateFrequency",
-          "presentationForm"
+          "presentationForm",
+          "services"
         ],
         "ignore_missing": true
       }
