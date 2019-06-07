@@ -124,7 +124,7 @@ class RegistryIntegrationSpec extends Specification {
             initialSource  : "common-ingest",
             type           : "granule",
             fileInformation: null,
-            fileLocations  : [],
+            fileLocations  : [:],
             publishing     : null,
             relationships  : [],
             deleted        : false,
