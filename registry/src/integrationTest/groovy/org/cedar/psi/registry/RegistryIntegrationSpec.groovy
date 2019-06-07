@@ -108,32 +108,29 @@ class RegistryIntegrationSpec extends Specification {
     then:
     registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(retrieveResponse.body)))
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body.data.id == granuleId
-    retrieveResponse.body.data.type == 'granule'
-    retrieveResponse.body.links.parsed == "${baseUrl}metadata/granule/common-ingest/${granuleId}/parsed"
-    retrieveResponse.body.data.attributes.rawJson == JsonOutput.toJson(granuleMap)
-    retrieveResponse.body.data.attributes.initialSource == "common-ingest"
 
     and: // let's verify the full response just this once
-    retrieveResponse.body.data == [
-        id        : granuleId,
-        type      : 'granule',
-        attributes: [
-            rawJson        : JsonOutput.toJson(granuleMap),
-            rawXml         : null,
-            initialSource  : "common-ingest",
-            type           : "granule",
-            fileInformation: null,
-            fileLocations  : [:],
-            publishing     : null,
-            relationships  : [],
-            deleted        : false,
-            events         : [
-                [timestamp: null, method: "POST", source: "common-ingest", operation: null]
-            ],
-            errors         : []
-        ]
-    ]
+    def links = retrieveResponse.body.links
+    def data = retrieveResponse.body.data
+    links.parsed == "${baseUrl}metadata/granule/common-ingest/${granuleId}/parsed"
+    data.id == granuleId
+    data.type == 'granule'
+    data.attributes.rawJson == JsonOutput.toJson(granuleMap)
+    data.attributes.rawXml == null
+    data.attributes.initialSource == "common-ingest"
+    data.attributes.type == "granule"
+    data.attributes.fileInformation == null
+    data.attributes.fileLocations == [:]
+    data.attributes.publishing == null
+    data.attributes.relationships == []
+    data.attributes.deleted == false
+    data.attributes.events instanceof List
+    data.attributes.events.size() == 1
+    data.attributes.events[0].timestamp instanceof Long
+    data.attributes.events[0].method == "POST"
+    data.attributes.events[0].source == "common-ingest"
+    data.attributes.events[0].operation == null
+    data.attributes.errors == []
   }
 
   def 'collection that is not yet parsed returns 404'() {
