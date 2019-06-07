@@ -141,7 +141,7 @@ public class StreamFunctions {
         .setMethod(input.data.getMethod())
         .setOperation(input.data.getOperation())
         .setSource(input.data.getSource())
-        .setTimestamp(input.timestampMillis)
+        .setTimestamp(input.timestampMs)
         .build();
   }
 

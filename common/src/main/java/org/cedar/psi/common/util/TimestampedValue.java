@@ -5,11 +5,11 @@ package org.cedar.psi.common.util;
  * @param <T> The type of thing being held
  */
 public class TimestampedValue<T> {
-  public final long timestampMillis;
+  public final long timestampMs;
   public final T data;
 
-  TimestampedValue(long timestampMillis, T data) {
-    this.timestampMillis = timestampMillis;
+  TimestampedValue(long timestampMs, T data) {
+    this.timestampMs = timestampMs;
     this.data = data;
   }
 }

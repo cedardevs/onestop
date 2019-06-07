@@ -72,7 +72,7 @@ class StreamFunctionsSpec extends Specification {
     result.events[0].source == input.source
     result.events[0].method == input.method
     result.events[0].operation == input.operation
-    result.events[0].timestamp == timestampedInput.timestampMillis
+    result.events[0].timestamp == timestampedInput.timestampMs
     result.errors instanceof List
     result.errors.size() == 0
   }
