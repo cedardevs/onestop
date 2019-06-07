@@ -218,7 +218,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     then:
 
     // TODO: conditional based on ES6+ and ES5-?
-    result.services == []
+    result.serviceLinks == []
     result.accessionValues == []
 
     result.temporalBounding == expectedTemporalBounding
@@ -589,8 +589,9 @@ class InventoryManagerToOneStopUtilTest extends Specification {
 
     discoveryMap.services == expectedServices
 //todo metadata team requested this structure for API, which is different than how we currently parse it
-    stagingDoc.services[0].title == 'Multibeam Bathymetric Surveys ArcGIS Map Service'
-    stagingDoc.services[0].links == serviceLinks.sort()
+    stagingDoc.serviceLinks[0].title == 'Multibeam Bathymetric Surveys ArcGIS Map Service'
+    stagingDoc.serviceLinks[0].links == serviceLinks.sort()
+    stagingDoc.services == null
 
   }
 
