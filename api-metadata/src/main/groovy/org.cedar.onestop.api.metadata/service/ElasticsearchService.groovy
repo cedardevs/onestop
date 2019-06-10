@@ -2,6 +2,7 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
@@ -61,7 +62,13 @@ class ElasticsearchService {
 
   private void ensureAliasWithIndex(String alias) {
     def aliasExists = checkAliasExists(alias)
-    if (!aliasExists) {
+    if (aliasExists){
+      String jsonIndexDef = esConfig.jsonMapping(alias)
+      String type =  esConfig.TYPE
+      String endPoint = "/${alias}/mapping/${type}"
+      String jsonIndexMapping = JsonOutput.toJson((new JsonSlurper().parseText(jsonIndexDef)).mappings.doc)
+      performRequest('PUT', endPoint, jsonIndexMapping)
+    }else{
       def index = createIndex(alias)
       log.debug("Creating alias `${alias}` for index `${index}`")
       String endPoint = "/${index}/_alias/${alias}"
