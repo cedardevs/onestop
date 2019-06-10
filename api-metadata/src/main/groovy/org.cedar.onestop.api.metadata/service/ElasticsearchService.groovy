@@ -64,7 +64,7 @@ class ElasticsearchService {
     def aliasExists = checkAliasExists(alias)
     if (aliasExists){
       String jsonIndexDef = esConfig.jsonMapping(alias)
-      String endPoint = "/${alias}/_mapping/${esConfig.TYPE}"
+      String endPoint = "/${alias}/_mapping/doc"
       String jsonIndexMapping = JsonOutput.toJson((new JsonSlurper().parseText(jsonIndexDef)).mappings.doc)
       performRequest('PUT', endPoint, jsonIndexMapping)
     }else{
