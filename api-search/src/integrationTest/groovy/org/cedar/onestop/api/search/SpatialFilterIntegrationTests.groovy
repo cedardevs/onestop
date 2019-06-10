@@ -5,7 +5,6 @@ import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
@@ -31,7 +30,6 @@ class SpatialFilterIntegrationTests extends Specification {
   private final String SPATIAL_INDEX_ALIAS = 'spatial_filter'
 
   @Autowired
-  @Qualifier("restClient")
   RestClient restClient
 
   @Autowired

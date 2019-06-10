@@ -9,7 +9,6 @@ import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.Version
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
@@ -35,7 +34,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class ETLIntegrationTests extends Specification {
 
   @Autowired
-  @Qualifier("restClient")
   RestClient restClient
 
   @Autowired
