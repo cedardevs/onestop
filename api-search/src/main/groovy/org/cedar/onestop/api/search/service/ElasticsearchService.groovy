@@ -26,9 +26,9 @@ class ElasticsearchService {
   Version version
 
   @Autowired
-  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestClient restClient, Version version, ElasticsearchConfig elasticsearchConfig) {
+  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
 
-    this.version = version
+    this.version = elasticsearchConfig.version
     log.info("Elasticsearch found with version: ${this.version.toString()}" )
     boolean supported = version.onOrAfter(Version.V_5_6_0)
     if(!supported) {

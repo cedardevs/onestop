@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
   implementation(project(':elastic-common'))
+  testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
 
   // Kafka dependencies for connecting with PSI
   implementation('com.github.cedardevs.schemas:schemas-core:master-SNAPSHOT')
