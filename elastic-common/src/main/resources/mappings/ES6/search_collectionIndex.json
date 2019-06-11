@@ -258,11 +258,6 @@
         "dsmmAverage": {
           "type": "float"
         },
-        "services": {
-          "type": "binary",
-          "doc_values": false,
-          "index": false
-        },
         "serviceLinks": {
           "type": "nested",
           "properties": {
