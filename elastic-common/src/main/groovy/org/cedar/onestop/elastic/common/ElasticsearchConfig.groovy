@@ -85,7 +85,7 @@ class ElasticsearchConfig {
     this.SITEMAP_INDEX_ALIAS = PREFIX + this.SITEMAP_INDEX_ALIAS
 
     // type is no longer configurable and based entirely on the migration path from ES5 to ES6+
-    this.TYPE = version.onOrAfter(Version.V_6_2_0) ? '_doc' : 'doc'
+    this.TYPE = 'doc'
     this.MAX_TASKS = MAX_TASKS
     this.REQUESTS_PER_SECOND = REQUESTS_PER_SECOND
     this.SITEMAP_SCROLL_SIZE = SITEMAP_SCROLL_SIZE
