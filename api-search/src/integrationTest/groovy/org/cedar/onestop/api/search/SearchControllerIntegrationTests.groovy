@@ -4,7 +4,6 @@ import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
@@ -35,7 +34,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class SearchControllerIntegrationTests extends Specification {
 
   @Autowired
-  @Qualifier("restClient")
   RestClient restClient
 
   @Autowired

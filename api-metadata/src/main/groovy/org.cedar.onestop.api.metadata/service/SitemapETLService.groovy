@@ -72,9 +72,9 @@ class SitemapETLService {
     log.info "Sitemap updated with ${sitemapResult.updated} and created ${sitemapResult.created} in ${(end-start) / 1000}s"
   }
 
-  private Map runSitemapEtl(String collectionIndex, String destination) {
+  private Map runSitemapEtl(String collectionIndex, String sitemapIndex) {
     elasticsearchService.ensureSearchIndices()
-    elasticsearchService.refresh(collectionIndex, destination)
+    elasticsearchService.refresh(collectionIndex, sitemapIndex)
 
     List<List<String>> collections = []
     List<String> lastSubcollection = []
@@ -147,7 +147,7 @@ class SitemapETLService {
         sleep(1000)
       }
 
-      def task = etlSitemapTask(destination, subcollection)
+      def task = etlSitemapTask(sitemapIndex, subcollection)
       if (task) {
         tasksInFlight << task
       }
@@ -171,9 +171,9 @@ class SitemapETLService {
     return countSitemappedThings
   }
 
-  private String etlSitemapTask(String dest, List<String> collections) {
+  private String etlSitemapTask(String sitemapIndex, List<String> collections) {
     log.info "ETL sitemap task: ${collections}"
-     String endpoint = "${dest}/${esConfig.TYPE}/"
+     String endpoint = "${sitemapIndex}/${esConfig.TYPE}/"
      def body = [
        lastUpdatedDate: System.currentTimeMillis(),
        content: collections

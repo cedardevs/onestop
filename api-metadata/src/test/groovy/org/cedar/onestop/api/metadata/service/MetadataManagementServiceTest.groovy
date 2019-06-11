@@ -1,6 +1,7 @@
 package org.cedar.onestop.api.metadata.service
 
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchTestVersion
 import org.elasticsearch.Version
 import org.elasticsearch.client.RestClient
 import spock.lang.Specification
@@ -9,58 +10,51 @@ import spock.lang.Unroll
 @Unroll
 class MetadataManagementServiceTest extends Specification {
 
-  Version testVersion = Version.V_6_1_2
-
-  ElasticsearchConfig esConfig = new ElasticsearchConfig(
-          'prefix-',
-          10,
-          null,
-          2,
-          5,
-          testVersion
-  )
-  RestClient mockRestClient = Mock(RestClient)
-  ElasticsearchService elasticsearchService = new ElasticsearchService(mockRestClient, testVersion, esConfig)
-  MetadataManagementService metadataManagementService = new MetadataManagementService(elasticsearchService)
+  Map<Version, ElasticsearchConfig> esVersionedConfigs = [:]
 
   def setup() {
+    esVersionedConfigs = ElasticsearchTestVersion.configs()
   }
 
-  def "Alias #alias correctly parsed to type"() {
-    given:
-    def aliasToParse = alias
-
+  def "Alias #dataPipe.alias correctly parsed to type using ES version #dataPipe.version"() {
     when:
-    String type = esConfig.typeFromAlias(aliasToParse)
+    String alias = dataPipe.alias
+    String expectedType = dataPipe.expectedType
+    Version version = dataPipe.version as Version
+
+    ElasticsearchConfig esConfig = esVersionedConfigs[version]
+    String type = esConfig.typeFromAlias(alias)
 
     then:
     type == expectedType
 
     where:
-    alias                                 | expectedType
-    'prefix-search_collection'            | ElasticsearchConfig.TYPE_COLLECTION
-    'prefix-search_granule-1519243661952' | null
-    'prefix-search_flattened_granule'     | ElasticsearchConfig.TYPE_FLATTENED_GRANULE
-    'not-valid-index'                     | null
-
+    dataPipe << ElasticsearchTestVersion.versionedTestCases([
+        [ alias: 'prefix-search_collection',            expectedType: ElasticsearchConfig.TYPE_COLLECTION ],
+        [ alias: 'prefix-search_granule-1519243661952', expectedType: null ],
+        [ alias: 'prefix-search_flattened_granule',     expectedType: ElasticsearchConfig.TYPE_FLATTENED_GRANULE ],
+        [ alias: 'not-valid-index',                     expectedType: null ],
+    ])
   }
 
-  def "Index #index correctly parsed to type"() {
-    given:
-    def indexToParse = index
-
+  def "Index #dataPipe.index correctly parsed to type using ES version #dataPipe.version"() {
     when:
-    String type = metadataManagementService.esConfig.typeFromIndex(indexToParse)
+    String index = dataPipe.index
+    String expectedType = dataPipe.expectedType
+    Version version = dataPipe.version
+
+    ElasticsearchConfig esConfig = esVersionedConfigs[version]
+    String type = esConfig.typeFromIndex(index)
 
     then:
     type == expectedType
 
     where:
-    index                                 | expectedType
-    'prefix-search_collection'            | ElasticsearchConfig.TYPE_COLLECTION
-    'prefix-search_granule-1519243661952' | ElasticsearchConfig.TYPE_GRANULE
-    'prefix-search_flattened_granule'     | ElasticsearchConfig.TYPE_FLATTENED_GRANULE
-    'not-valid-index'                     | null
-
+    dataPipe << ElasticsearchTestVersion.versionedTestCases([
+        [ index: 'prefix-search_collection',            expectedType: ElasticsearchConfig.TYPE_COLLECTION ],
+        [ index: 'prefix-search_granule-1519243661952', expectedType: ElasticsearchConfig.TYPE_GRANULE ],
+        [ index: 'prefix-search_flattened_granule',     expectedType: ElasticsearchConfig.TYPE_FLATTENED_GRANULE ],
+        [ index: 'not-valid-index',                     expectedType: null ],
+    ])
   }
 }

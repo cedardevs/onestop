@@ -22,9 +22,6 @@ class ElasticsearchConfig {
   String FLAT_GRANULE_SEARCH_INDEX_ALIAS = "search_flattened_granule"
   String SITEMAP_INDEX_ALIAS = "sitemap"
 
-  // index/alias prefix
-  String PREFIX
-
   // pipeline names
   static final String COLLECTION_PIPELINE = "collection_pipeline"
   static final String GRANULE_PIPELINE = "granule_pipeline"
@@ -74,8 +71,10 @@ class ElasticsearchConfig {
       Version version
   ) {
 
-    // get prefix from config
-    this.PREFIX = PREFIX
+    // log prefix if it's not null
+    if(PREFIX) {
+      log.info("Prefix for Elasticsearch aliases provided by config as '${PREFIX}'")
+    }
 
     // tack on prefix to aliases so that later logic does not have to concern itself with prefixing at all
     this.COLLECTION_SEARCH_INDEX_ALIAS = PREFIX + this.COLLECTION_SEARCH_INDEX_ALIAS

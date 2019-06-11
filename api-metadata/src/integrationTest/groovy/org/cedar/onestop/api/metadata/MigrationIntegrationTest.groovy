@@ -59,6 +59,8 @@ class MigrationIntegrationTest extends Specification {
   @Value('${kafka.topic.granules}')
   String granuleTopic
 
+  // 8082 is used for adjacent Spring integration tests (with separate contexts) which utilize schema registry
+  // when the last test hasn't yet let go of port 8081, the tests can easily fail with a port in use error
   @Value('${schema-registry.url:localhost:8082}')
   String schemaUrl
 

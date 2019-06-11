@@ -22,10 +22,23 @@ dependencies {
     implementation "org.testcontainers:elasticsearch:${project.testContainersVersion}"
 }
 
+configurations {
+    testElastic.extendsFrom testCompile
+}
+
 // needed to share as local project dependency
 // https://stackoverflow.com/questions/54486199/multi-module-gradle-project-migrate-from-spring-boot-1-5-to-2-1#answer-54618449
 jar {
     enabled = true
+}
+
+task testJar(type: Jar) {
+    archiveClassifier.set('test')
+    from sourceSets.test.output
+}
+
+artifacts {
+    testElastic testJar
 }
 
 bootJar {

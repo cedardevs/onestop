@@ -24,6 +24,7 @@ configurations {
 
 dependencies {
   implementation(project(':elastic-common'))
+  testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
 
   implementation "org.codehaus.groovy:groovy:${project.groovyVersion}"
   implementation "org.codehaus.groovy:groovy-json:${project.groovyVersion}"

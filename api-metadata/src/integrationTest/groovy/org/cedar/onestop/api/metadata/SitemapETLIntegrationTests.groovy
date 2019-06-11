@@ -9,7 +9,6 @@ import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.cedar.onestop.elastic.common.RequestUtil
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
@@ -35,7 +34,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class SitemapETLIntegrationTests extends Specification {
 
   @Autowired
-  @Qualifier("restClient")
   RestClient restClient
 
   @Autowired

@@ -8,7 +8,6 @@ import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.cedar.onestop.elastic.common.RequestUtil
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
@@ -59,7 +58,6 @@ class UploadIntegrationTests extends Specification {
     private String contextPath
 
     @Autowired
-    @Qualifier("restClient")
     RestClient restClient
 
     @Autowired

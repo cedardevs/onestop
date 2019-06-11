@@ -2,10 +2,12 @@ package org.cedar.onestop.api.search.service
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.util.logging.Slf4j
 import org.apache.http.HttpEntity
 import org.apache.http.StatusLine
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchTestVersion
 import org.elasticsearch.Version
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
@@ -13,31 +15,29 @@ import org.elasticsearch.client.RestClient
 import spock.lang.Specification
 import spock.lang.Unroll
 
+@Slf4j
 @Unroll
 class ElasticsearchServiceSpec extends Specification {
 
-  Version testVersion = Version.V_6_1_2
-
-  ElasticsearchConfig esConfig = new ElasticsearchConfig(
-      null,
-      10,
-      null,
-      2,
-      5,
-      testVersion
-  )
   RestClient mockRestClient = Mock(RestClient)
   SearchConfig searchConfig = new SearchConfig()
   SearchRequestParserService searchRequestParserService = new SearchRequestParserService(searchConfig)
-  ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient, testVersion, esConfig)
+  Map<Version, ElasticsearchConfig> esVersionedConfigs = [:]
 
+  def setup() {
+    esVersionedConfigs = ElasticsearchTestVersion.configs()
+  }
 
-  def 'executes a search'() {
+  def 'executes a search using ES version #dataPipe.version'() {
+    given:
     Map searchRequest = [
         queries: [[type: 'queryText', value: 'test']],
         filters: [[type: 'year', beginYear: 1999]],
         page   : [max: 42, offset: 24]
     ]
+    Version version = dataPipe.version as Version
+    ElasticsearchConfig esConfig = esVersionedConfigs[version]
+    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient, esConfig)
 
     Response mockResponse = buildMockElasticResponse(200, [
         hits: [
@@ -78,6 +78,9 @@ class ElasticsearchServiceSpec extends Specification {
     result.data.size() == 1
     result.data[0].id == 'ABC'
     result.meta.took == 1234
+
+    where:
+    dataPipe << ElasticsearchTestVersion.versionedTestCases()
   }
 
   def 'supports pagination parameters'() {
