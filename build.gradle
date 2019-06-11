@@ -40,7 +40,7 @@ subprojects {
     testContainersVersion = '1.10.7'
 
     groovyVersion = '2.5.5'
-    openSAMLVersion = '3.4.2'
+    openSAMLVersion = '3.4.3'
     logbackVersion = '1.2.3'
     javaxServletAPIVersion = '4.0.1'
     junitVersion = '4.12'
@@ -60,6 +60,12 @@ subprojects {
           if (details.requested.version.startsWith('2.9') && details.requested.version <= '2.9.9') {
             details.useVersion '2.9.9'
             details.because 'fixes vulnerability in 2.9.x before 2.9.9'
+          }
+        }
+        if (details.requested.group == 'org.bouncycastle' && details.requested.name == 'bcprov-jdk15on') {
+          if (details.requested.version.startsWith('1.5') && details.requested.version <= '1.59') {
+            details.useVersion '1.62'
+            details.because 'fixes vulnerability in 1.5.x before 1.6'
           }
         }
       }
