@@ -39,6 +39,13 @@ class KafkaBeanConfig {
   @Value('${kafka.compression.type}')
   private String compressionType
 
+  // default: 100 MiB
+  @Value('${kafka.cache.max.bytes.buffering:104857600}')
+  private Long cacheMaxBytes
+
+  @Value('${kafka.commit.interval.ms:}')
+  private Long commitIntervalMs
+
   @Value('${schema.registry.url}')
   private String schemaRegistryUrl
 
@@ -84,11 +91,14 @@ class KafkaBeanConfig {
         (DEFAULT_KEY_SERDE_CLASS_CONFIG)     : Serdes.String().class.name,
         (DEFAULT_VALUE_SERDE_CLASS_CONFIG)   : SpecificAvroSerde.class.name,
         (AUTO_OFFSET_RESET_CONFIG)           : 'earliest',
+        (CACHE_MAX_BYTES_BUFFERING_CONFIG)   : cacheMaxBytes,
         (TopicConfig.COMPRESSION_TYPE_CONFIG): compressionType
     ]
     if (stateDir) {
-      println stateDir
       props.put(StreamsConfig.STATE_DIR_CONFIG, stateDir)
+    }
+    if (commitIntervalMs) {
+      props.put(COMMIT_INTERVAL_MS_CONFIG, commitIntervalMs)
     }
 
     def streamsConfig = new StreamsConfig(props)

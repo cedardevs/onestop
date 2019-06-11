@@ -29,6 +29,7 @@ deploy:
         config: |-
           ---
           server.servlet.context-path: /registry
+          kafka.commit.interval: 1000
         cp-schema-registry.url: http://psi-dev-cp-schema-registry:8081
         kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
       imageStrategy:
@@ -38,6 +39,9 @@ deploy:
       values:
         image: cedardevs/psi-stream-manager
       setValues:
+        config: |-
+          ---
+          kafka.commit.interval: 1000
         cp-schema-registry.url: http://psi-dev-cp-schema-registry:8081
         kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
       imageStrategy:

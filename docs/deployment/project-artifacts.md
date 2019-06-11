@@ -29,15 +29,17 @@ to support retrieval of all stored metadata via HTTP.
 
 #### Config
 
-| Environment Variable        | Importance | Required? | Default            | Description |
-| --------------------------- | ---------- | --------- | ------------------ | ----------- |
-| KAFKA_BOOTSTRAP_SERVERS     | High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
-| SCHEMA_REGISTRY_URL         | High       | No        | localhost:8081     | The URL of the Schema Registry |
-| STATE_DIR                   | High       | No        | /tmp/kafka-streams | Path to the directory under which local state should be stored |
-| KAFKA_COMPRESSION_TYPE      | Medium     | No        | gzip               | The compression algorithm to use when publishing kafka messages. Valid values are `none`, `gzip`, `snappy`, `lz4`, or `zstd` |
-| API_ROOT_URL                | Medium     | No        | (none)             | The full, public-facing URL at which the root of this API will be exposed [[1]](#a-note-on-proxies)
-| SERVER_SERVLET_CONTEXT-PATH | Medium     | No        | ''                 | The context path at which to run the root of this API [[1]](#a-note-on-proxies)
-| PUBLISHING_INTERVAL_MS      | Low        | No        | 300000 (5 minutes) | Frequency with which check for changes in entity publish status |
+| Environment Variable            | Importance | Required? | Default             | Description |
+| ------------------------------- | ---------- | --------- | ------------------- | ----------- |
+| KAFKA_BOOTSTRAP_SERVERS         | High       | No        | localhost:9092      | Comma-separated list of one or more kafka host:port combinations |
+| SCHEMA_REGISTRY_URL             | High       | No        | localhost:8081      | The URL of the Schema Registry |
+| STATE_DIR                       | High       | No        | /tmp/kafka-streams  | Path to the directory under which local state should be stored |
+| KAFKA_COMPRESSION_TYPE          | Medium     | No        | gzip                | The compression algorithm to use when publishing kafka messages. Valid values are `none`, `gzip`, `snappy`, `lz4`, or `zstd` |
+| API_ROOT_URL                    | Medium     | No        | (none)              | The full, public-facing URL at which the root of this API will be exposed [[1]](#a-note-on-proxies)
+| SERVER_SERVLET_CONTEXT-PATH     | Medium     | No        | ''                  | The context path at which to run the root of this API [[1]](#a-note-on-proxies)
+| PUBLISHING_INTERVAL_MS          | Low        | No        | 300000 (5 minutes)  | Frequency with which check for changes in entity publish status |
+| KAFKA_CACHE_MAX_BYTES_BUFFERING | Low        | No        | 104857600 (100 MiB) | Amount to memory to use to buffer messages before flushing them to kafka |
+| KAFKA_COMMIT_INTERVAL_MS        | Low        | No        | 30000 (30 sec)      | The frequency with which to save the position of the processor |
 
 ##### A Note On Proxies
 
@@ -99,11 +101,13 @@ that discovery information is then analyzed. All resulting info is then sent bac
 
 #### Config
 
-| Environment Variable    | Importance | Required? | Default            | Description |
-| ----------------------- | ---------- | --------- | ------------------ | ----------- |
-| KAFKA_BOOTSTRAP_SERVERS*| High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
-| SCHEMA_REGISTRY_URL     | High       | No        | localhost:8081     | The URL of the Schema Registry |
-| KAFKA_COMPRESSION_TYPE  | Medium     | No        | gzip               | The compression algorithm to use when publishing kafka messages. Valid values are `none`, `gzip`, `snappy`, `lz4`, or `zstd` |
+| Environment Variable            | Importance | Required? | Default            | Description |
+| ------------------------------- | ---------- | --------- | ------------------ | ----------- |
+| KAFKA_BOOTSTRAP_SERVERS*        | High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
+| SCHEMA_REGISTRY_URL             | High       | No        | localhost:8081     | The URL of the Schema Registry |
+| KAFKA_COMPRESSION_TYPE          | Medium     | No        | gzip               | The compression algorithm to use when publishing kafka messages. Valid values are `none`, `gzip`, `snappy`, `lz4`, or `zstd` |
+| KAFKA_CACHE_MAX_BYTES_BUFFERING | Low        | No        | 104857600 (100 MiB) | Amount to memory to use to buffer messages before flushing them to kafka |
+| KAFKA_COMMIT_INTERVAL_MS        | Low        | No        | 30000 (30 sec)      | The frequency with which to save the position of the processor |
 
 \* This variable was originally named `IM_BOOTSTRAP_SERVERS`. This old name continues to work in 0.1.x versions but
 is deprecated and will be removed in a future version.
