@@ -142,7 +142,7 @@
           "type": "keyword",
           "index": false,
           "doc_values": false
-        }
+        },
         "serviceLinks": {
           "type": "nested",
           "properties": {
@@ -193,7 +193,7 @@
             }
           }
         }
-      },
+      }
     }
   }
 }
