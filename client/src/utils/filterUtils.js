@@ -1,18 +1,18 @@
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 
-// export const toggleSelectedId = (selectedIds, value, idx = 0) => {
-//   // base case: reached the end of the selectedIds list without encountering the value, so we add (select) it
-//   if (idx === selectedIds.length) {
-//     return selectedIds.concat([ value ])
+// export const toggleSelectedId = (selectedCollectionIds, value, idx = 0) => {
+//   // base case: reached the end of the selectedCollectionIds list without encountering the value, so we add (select) it
+//   if (idx === selectedCollectionIds.length) {
+//     return selectedCollectionIds.concat([ value ])
 //   }
-//   else if (selectedIds[idx] === value) {
+//   else if (selectedCollectionIds[idx] === value) {
 //     // found an already selected ID matching the value, so we can remove (unselect) it
-//     return selectedIds.slice(0, idx).concat(selectedIds.slice(idx + 1))
+//     return selectedCollectionIds.slice(0, idx).concat(selectedCollectionIds.slice(idx + 1))
 //   }
 //   else {
-//     // recurse through selectedIds until base case is met
-//     return toggleSelectedId(selectedIds, value, idx + 1)
+//     // recurse through selectedCollectionIds until base case is met
+//     return toggleSelectedId(selectedCollectionIds, value, idx + 1)
 //   }
 // }
 

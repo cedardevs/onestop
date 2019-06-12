@@ -84,9 +84,9 @@ const assembleAdditionalFilters = ({excludeGlobal}) => {
   }
 }
 
-const assembleSelectedCollectionsFilters = ({selectedIds}) => {
-  if (selectedIds && selectedIds.length > 0) {
-    return {type: 'collection', values: selectedIds}
+const assembleSelectedCollectionsFilters = ({selectedCollectionIds}) => {
+  if (selectedCollectionIds && selectedCollectionIds.length > 0) {
+    return {type: 'collection', values: selectedCollectionIds}
   }
 }
 
@@ -99,7 +99,9 @@ export const encodeLocationDescriptor = (route, searchParamsState) => {
   const query = encodeQueryString(searchParamsState)
   return {
     pathname: route.toLocation(
-      searchParamsState.selectedIds ? searchParamsState.selectedIds[0] : null
+      searchParamsState.selectedCollectionIds
+        ? searchParamsState.selectedCollectionIds[0]
+        : null
     ),
     search: _.isEmpty(query) ? '' : `?${query}`,
   }
@@ -112,7 +114,7 @@ export const decodePathAndQueryString = (path, queryString) => {
   let search = decodeQueryString(queryString)
   const id = getIdFromPath(path)
   if (id) {
-    search = Immutable.merge(search, {selectedIds: [ id ]})
+    search = Immutable.merge(search, {selectedCollectionIds: [ id ]})
   }
   return {id: id, filters: search}
 }
@@ -195,7 +197,7 @@ const codecs = [
     },
   },
   // {
-  //   longKey: 'selectedIds',
+  //   longKey: 'selectedCollectionIds',
   //   shortKey: 'i',
   //   encode: ids => _.map(ids, id => encodeURIComponent(id)).join(','),
   //   decode: text => _.map(text.split(','), id => decodeURIComponent(id)),

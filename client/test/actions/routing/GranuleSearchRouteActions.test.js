@@ -65,7 +65,7 @@ describe('granule search actions', function(){
     store.dispatch(granuleNewSearchResultsReceived(0, [], {}))
     const {granuleRequest, granuleFilter} = store.getState().search
     expect(granuleRequest.inFlight).toBeFalsy()
-    expect(granuleFilter.selectedIds).toEqual([ 'original-uuid' ])
+    expect(granuleFilter.selectedCollectionIds).toEqual([ 'original-uuid' ])
   })
 
   afterEach(() => {
@@ -207,7 +207,7 @@ describe('granule search actions', function(){
 
           const {granuleRequest, granuleFilter} = store.getState().search
 
-          expect(granuleFilter.selectedIds).toEqual([ 'parent-uuid' ])
+          expect(granuleFilter.selectedCollectionIds).toEqual([ 'parent-uuid' ])
           expect(granuleRequest.inFlight).toBeTruthy()
           expect(granuleFilter.pageOffset).toEqual(0)
         })
@@ -220,7 +220,7 @@ describe('granule search actions', function(){
 
         const {granuleRequest, granuleFilter} = store.getState().search
 
-        expect(granuleFilter.selectedIds).toEqual([ 'original-uuid' ])
+        expect(granuleFilter.selectedCollectionIds).toEqual([ 'original-uuid' ])
         expect(granuleRequest.inFlight).toBeTruthy()
         expect(granuleFilter.pageOffset).toEqual(40)
       })

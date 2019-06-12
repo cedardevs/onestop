@@ -58,7 +58,7 @@ describe('The queryUtils', function(){
   describe('encodeLocationDescriptor', function(){
     it('correctly generates location from granules path with a selected id', function(){
       const result = queryUtils.encodeLocationDescriptor(ROUTE.granules, {
-        selectedIds: [ 'ABC' ],
+        selectedCollectionIds: [ 'ABC' ],
       })
       expect(result).toEqual({
         pathname: '/collections/granules/ABC',
@@ -305,7 +305,7 @@ function granuleTestCases(){
     {
       name: 'one collection',
       inputState: {
-        selectedIds: [ 'ABC123' ],
+        selectedCollectionIds: [ 'ABC123' ],
         pageOffset: 0,
       },
       expectedResult: {
@@ -326,7 +326,7 @@ function granuleTestCases(){
     {
       name: 'two collections',
       inputState: {
-        selectedIds: [ 'ABC123', 'XYZ789' ],
+        selectedCollectionIds: [ 'ABC123', 'XYZ789' ],
         pageOffset: 0,
       },
       expectedResult: {
@@ -348,7 +348,7 @@ function granuleTestCases(){
       name: 'two collections and a text query',
       inputState: {
         queryText: 'test',
-        selectedIds: [ 'ABC123', 'XYZ789' ],
+        selectedCollectionIds: [ 'ABC123', 'XYZ789' ],
         pageOffset: 0,
       },
       expectedResult: {
@@ -374,7 +374,7 @@ function granuleTestCases(){
     {
       name: 'more results requested',
       inputState: {
-        selectedIds: [], // TODO this isn't realistic for how we request more results
+        selectedCollectionIds: [], // TODO this isn't realistic for how we request more results
         pageOffset: 20,
       },
       expectedResult: {
@@ -395,7 +395,7 @@ function granuleCountTestCases(){
     {
       name: 'one collection',
       inputState: {
-        selectedIds: [ 'ABC123' ],
+        selectedCollectionIds: [ 'ABC123' ],
         pageOffset: 0,
       },
       expectedResult: {
@@ -416,7 +416,7 @@ function granuleCountTestCases(){
     {
       name: 'collection and filters',
       inputState: {
-        selectedIds: [ 'ABC123', 'XYZ789' ],
+        selectedCollectionIds: [ 'ABC123', 'XYZ789' ],
         geoJSON: {
           geometry: {
             type: 'Polygon',
@@ -516,7 +516,7 @@ function queryTestCases(){
     //   name: 'selected ids filter',
     //   string: 'i=ABC,with%20a%20space',
     //   state: Immutable.merge(initialState, {
-    //     selectedIds: [ 'ABC', 'with a space' ],
+    //     selectedCollectionIds: [ 'ABC', 'with a space' ],
     //   }),
     // },
     {
@@ -567,7 +567,7 @@ function queryTestCases(){
         queryText: 'ocean',
         startDateTime: '2010-01-01T00:00:00Z',
         endDateTime: '2010-01-01T00:00:00Z',
-        // selectedIds: [ 'ABC' ],
+        // selectedCollectionIds: [ 'ABC' ],
         excludeGlobal: true,
         selectedFacets: {
           platforms: [ 'DEM > Digital Elevation Model' ],

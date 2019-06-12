@@ -129,7 +129,9 @@ describe('collection detail action', function(){
           expect(collectionDetailRequest.inFlight).toBeTruthy()
           expect(collectionDetailRequest.backgroundInFlight).toBeTruthy()
           expect(collectionDetailRequest.requestedID).toEqual('uuid-ABC')
-          expect(collectionDetailFilter.selectedIds).toEqual([ 'uuid-ABC' ])
+          expect(collectionDetailFilter.selectedCollectionIds).toEqual([
+            'uuid-ABC',
+          ])
           // TODO worth asserting other filter state, or let it be assumed by the tests directly against that reducer + action?
         })
       })

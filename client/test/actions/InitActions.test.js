@@ -31,6 +31,6 @@ describe('init action', function(){
   })
 })
 
-// TODO it('do not dispatch a transition to the collections view, just a collectionClearSelectedIds action, when no search params are present', function () {})
+// TODO it('do not dispatch a transition to the collections view, just a collectionClearselectedCollectionIds action, when no search params are present', function () {})
 
 // TODO   it('initialize triggers config, version info, total counts, and data loading'...

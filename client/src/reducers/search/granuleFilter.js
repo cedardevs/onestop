@@ -20,19 +20,19 @@ export const initialState = Immutable({
   startDateTime: null,
   endDateTime: null,
   selectedFacets: {},
-  selectedIds: [],
+  selectedCollectionIds: [],
   excludeGlobal: null,
   pageOffset: 0,
 })
 
 const newSearchFilters = (collectionId, filters) => {
-  // create state with selectedIds set explicitly to collectionId,
+  // create state with selectedCollectionIds set explicitly to collectionId,
   // and all other filters set by action (or default to initial state values)
   return Immutable.merge(initialState, [
     filters,
     {
       pageOffset: initialState.pageOffset,
-      selectedIds: [ collectionId ],
+      selectedCollectionIds: [ collectionId ],
     },
   ])
 }

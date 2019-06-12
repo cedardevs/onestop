@@ -30,7 +30,7 @@ const assertAllFilterParams = (results, values, defaults) => {
   assertParam('endDateTime', results, values, defaults)
   assertParam('selectedFacets', results, values, defaults)
   assertParam('excludeGlobal', results, values, defaults)
-  assertParam('selectedIds', results, values, defaults)
+  assertParam('selectedCollectionIds', results, values, defaults)
 }
 
 describe('The granule filter reducer', function(){
@@ -38,7 +38,7 @@ describe('The granule filter reducer', function(){
     // not a single default value
     pageOffset: 40,
     queryText: 'demo',
-    selectedIds: [ 'abc', '123' ],
+    selectedCollectionIds: [ 'abc', '123' ],
     geoJSON: {
       type: 'Point',
       geometry: {type: 'Point', coordinates: [ 0, 0 ]},
@@ -50,7 +50,7 @@ describe('The granule filter reducer', function(){
   }
   const initialStateWithParentUuid = {
     pageOffset: 0,
-    selectedIds: [ 'parent-uuid' ],
+    selectedCollectionIds: [ 'parent-uuid' ],
     geoJSON: null,
     startDateTime: null,
     endDateTime: null,
@@ -63,7 +63,7 @@ describe('The granule filter reducer', function(){
 
     expect(result).toEqual({
       pageOffset: 0,
-      selectedIds: [],
+      selectedCollectionIds: [],
       geoJSON: null,
       startDateTime: null,
       endDateTime: null,
@@ -77,18 +77,21 @@ describe('The granule filter reducer', function(){
       desc: 'simple new search request action',
       its: [
         {
-          name: 'sets selectedIds',
+          name: 'sets selectedCollectionIds',
           initialState: initialState,
           function: granuleNewSearchRequested,
           params: [ 'parent-uuid' ],
-          expectedChanges: {selectedIds: [ 'parent-uuid' ]},
+          expectedChanges: {selectedCollectionIds: [ 'parent-uuid' ]},
         },
         {
-          name: 'resets only pageOffset and selectedIds',
+          name: 'resets only pageOffset and selectedCollectionIds',
           initialState: nonInitialState,
           function: granuleNewSearchRequested,
           params: [ 'parent-uuid' ],
-          expectedChanges: {selectedIds: [ 'parent-uuid' ], pageOffset: 0},
+          expectedChanges: {
+            selectedCollectionIds: [ 'parent-uuid' ],
+            pageOffset: 0,
+          },
         },
       ],
     },
@@ -140,7 +143,7 @@ describe('The granule filter reducer', function(){
           function: granuleNewSearchResetFiltersRequested,
           params: [ 'parent-uuid', {queryText: 'hello'} ],
           expectedChanges: {
-            selectedIds: [ 'parent-uuid' ],
+            selectedCollectionIds: [ 'parent-uuid' ],
           },
         },
         {
@@ -151,7 +154,7 @@ describe('The granule filter reducer', function(){
           params: [ 'parent-uuid', {startDateTime: '2000-01-01T00:00:00Z'} ],
           expectedChanges: {
             pageOffset: 0,
-            selectedIds: [ 'parent-uuid' ],
+            selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
             startDateTime: '2000-01-01T00:00:00Z',
             endDateTime: null,
@@ -174,7 +177,7 @@ describe('The granule filter reducer', function(){
           ],
           expectedChanges: {
             pageOffset: 0,
-            selectedIds: [ 'parent-uuid' ],
+            selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
             startDateTime: null,
             endDateTime: null,
@@ -199,7 +202,7 @@ describe('The granule filter reducer', function(){
           ],
           expectedChanges: {
             pageOffset: 0,
-            selectedIds: [ 'parent-uuid' ],
+            selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
             startDateTime: null,
             endDateTime: null,
@@ -238,7 +241,7 @@ describe('The granule filter reducer', function(){
           ],
           expectedChanges: {
             pageOffset: 0,
-            selectedIds: [ 'parent-uuid' ],
+            selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: {
               type: 'Polygon',
               coordinates: [

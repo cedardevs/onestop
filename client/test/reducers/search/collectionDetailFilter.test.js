@@ -19,14 +19,14 @@ const assertAllFilterParams = (results, values, defaults) => {
   assertParam('endDateTime', results, values, defaults)
   assertParam('selectedFacets', results, values, defaults)
   assertParam('excludeGlobal', results, values, defaults)
-  assertParam('selectedIds', results, values, defaults)
+  assertParam('selectedCollectionIds', results, values, defaults)
 }
 
 describe('The collection detail filter reducer', function(){
   const nonInitialState = {
     // not a single default value
     queryText: 'demo',
-    selectedIds: [ 'abc', '123' ],
+    selectedCollectionIds: [ 'abc', '123' ],
     geoJSON: {
       type: 'Point',
       geometry: {type: 'Point', coordinates: [ 0, 0 ]},
@@ -37,7 +37,7 @@ describe('The collection detail filter reducer', function(){
     excludeGlobal: true,
   }
   const initialStateWithParentUuid = {
-    selectedIds: [ 'parent-uuid' ],
+    selectedCollectionIds: [ 'parent-uuid' ],
     geoJSON: null,
     startDateTime: null,
     endDateTime: null,
@@ -49,7 +49,7 @@ describe('The collection detail filter reducer', function(){
     const result = collectionDetailFilter(initialState, {})
 
     expect(result).toEqual({
-      selectedIds: [],
+      selectedCollectionIds: [],
       geoJSON: null,
       startDateTime: null,
       endDateTime: null,
@@ -63,11 +63,11 @@ describe('The collection detail filter reducer', function(){
       desc: 'detail request action',
       its: [
         {
-          name: 'sets selectedIds',
+          name: 'sets selectedCollectionIds',
           initialState: initialState,
           function: collectionDetailRequested,
           params: [ 'parent-uuid', {} ],
-          expectedChanges: {selectedIds: [ 'parent-uuid' ]},
+          expectedChanges: {selectedCollectionIds: [ 'parent-uuid' ]},
         },
         {
           name: 'resets to initial values with null param',
@@ -96,7 +96,7 @@ describe('The collection detail filter reducer', function(){
           function: collectionDetailRequested,
           params: [ 'parent-uuid', {queryText: 'hello'} ],
           expectedChanges: {
-            selectedIds: [ 'parent-uuid' ],
+            selectedCollectionIds: [ 'parent-uuid' ],
           },
         },
         {
@@ -106,7 +106,7 @@ describe('The collection detail filter reducer', function(){
           function: collectionDetailRequested,
           params: [ 'parent-uuid', {startDateTime: '2000-01-01T00:00:00Z'} ],
           expectedChanges: {
-            selectedIds: [ 'parent-uuid' ],
+            selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
             startDateTime: '2000-01-01T00:00:00Z',
             endDateTime: null,
@@ -128,7 +128,7 @@ describe('The collection detail filter reducer', function(){
             },
           ],
           expectedChanges: {
-            selectedIds: [ 'parent-uuid' ],
+            selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
             startDateTime: null,
             endDateTime: null,
@@ -152,7 +152,7 @@ describe('The collection detail filter reducer', function(){
             },
           ],
           expectedChanges: {
-            selectedIds: [ 'parent-uuid' ],
+            selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
             startDateTime: null,
             endDateTime: null,
@@ -190,7 +190,7 @@ describe('The collection detail filter reducer', function(){
             },
           ],
           expectedChanges: {
-            selectedIds: [ 'parent-uuid' ],
+            selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: {
               type: 'Polygon',
               coordinates: [
