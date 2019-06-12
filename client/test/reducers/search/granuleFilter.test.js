@@ -22,7 +22,7 @@ const assertParam = (param, result, expected, fallback) => {
   )
 }
 
-const assert = (results, values, defaults) => {
+const assertAllFilterParams = (results, values, defaults) => {
   assertParam('pageOffset', results, values, defaults)
   // assertParam('queryText', results, values, defaults)
   assertParam('geoJSON', results, values, defaults)
@@ -272,7 +272,11 @@ describe('The granule filter reducer', function(){
             testCase.initialState,
             testCase.function(...args)
           )
-          assert(result, testCase.expectedChanges, testCase.initialState)
+          assertAllFilterParams(
+            result,
+            testCase.expectedChanges,
+            testCase.initialState
+          )
         })
       })
     })
@@ -410,7 +414,11 @@ describe('The granule filter reducer', function(){
           testCase.initialState,
           testCase.function(...args)
         )
-        assert(result, testCase.expectedChanges, testCase.initialState)
+        assertAllFilterParams(
+          result,
+          testCase.expectedChanges,
+          testCase.initialState
+        )
       })
     })
   })
