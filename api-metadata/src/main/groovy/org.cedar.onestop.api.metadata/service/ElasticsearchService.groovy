@@ -34,6 +34,8 @@ class ElasticsearchService {
     }
     this.restClient = restClient
     this.esConfig = elasticsearchConfig
+    putPipeline(esConfig.COLLECTION_PIPELINE)
+    putPipeline(esConfig.GRANULE_PIPELINE)
   }
 
   void ensureIndices() {

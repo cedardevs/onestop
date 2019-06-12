@@ -13,12 +13,29 @@ import spock.lang.Specification
 
 class ElasticsearchServiceTests extends Specification {
 
-  ElasticsearchConfig esConfig = ElasticsearchTestVersion.esConfigLatest()
-  RestClient mockRestClient = Mock(RestClient)
-  ElasticsearchService elasticsearchService = new ElasticsearchService(mockRestClient, esConfig)
+  ElasticsearchConfig esConfig
+  RestClient mockRestClient
+  ElasticsearchService elasticsearchService
 
-  def 'can create index with prefix'() {
+  def 'constructor ensures indicies and pipelines'(){
     given:
+    esConfig = ElasticsearchTestVersion.esConfigLatest()
+    mockRestClient = Mock(RestClient)
+
+    when: 'the constructor is called'
+    elasticsearchService = new ElasticsearchService(mockRestClient, esConfig)
+
+    then: 'we create/update the pipelines'
+    1 * mockRestClient.performRequest({
+      Request request = it as Request
+      request.method == 'PUT' && request.endpoint.endsWith(esConfig.COLLECTION_PIPELINE)
+    }) >> buildMockResponse([dummy: "response"])
+    1 * mockRestClient.performRequest({
+      Request request = it as Request
+      request.method == 'PUT' && request.endpoint.endsWith(esConfig.GRANULE_PIPELINE)
+    }) >> buildMockResponse([dummy: "response"])
+
+    and: 'can create index with prefix'
     String alias = elasticsearchService.esConfig.COLLECTION_SEARCH_INDEX_ALIAS
 
     when:
@@ -30,6 +47,7 @@ class ElasticsearchServiceTests extends Specification {
       request.method == 'PUT' && request.endpoint.startsWith(alias)
     }) >> buildMockResponse([dummy: "response"])
     noExceptionThrown()
+
   }
 
   private buildMockResponse(Map data) {
