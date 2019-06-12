@@ -59,11 +59,13 @@ const collectionPromise = (
   requestFacets,
   successHandler
 ) => {
+  // generate the request body based on filters, and if we need facets or not
   const body = collectionBodyBuilder(filterState, requestFacets)
   if (!body) {
     dispatch(collectionSearchError('Invalid Request'))
     return
   }
+  // return promise for search
   return fetchCollectionSearch(body, successHandler(dispatch), e => {
     dispatch(collectionSearchError(e.errors || e))
   })
@@ -75,15 +77,18 @@ export const submitCollectionSearchWithQueryText = (history, queryText) => {
 
 export const submitCollectionSearchWithFilter = (history, filterState) => {
   // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
-
+  // use middleware to dispatch an async function
   return async (dispatch, getState) => {
     if (isRequestInvalid(getState())) {
+      // short circuit silently if minimum request requirements are not met
       return
     }
+    // send notifications that request has begun, updating filter state if needed
     dispatch(collectionNewSearchResetFiltersRequested(filterState))
     const updatedFilterState = getFilterFromState(getState())
+    // update URL if needed (required to display loading indicator on the correct page)
     navigateToCollectionUrl(history, updatedFilterState)
-
+    // start async request
     return collectionPromise(
       dispatch,
       updatedFilterState,
@@ -95,15 +100,18 @@ export const submitCollectionSearchWithFilter = (history, filterState) => {
 
 export const submitCollectionSearch = history => {
   // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
-
+  // use middleware to dispatch an async function
   return async (dispatch, getState) => {
     if (isRequestInvalid(getState())) {
+      // short circuit silently if minimum request requirements are not met
       return
     }
+    // send notifications that request has begun, using existing filter state
     dispatch(collectionNewSearchRequested())
     const updatedFilterState = getFilterFromState(getState())
+    // update URL if needed (required to display loading indicator on the correct page)
     navigateToCollectionUrl(history, updatedFilterState)
-
+    // start async request
     return collectionPromise(
       dispatch,
       updatedFilterState,
@@ -115,14 +123,16 @@ export const submitCollectionSearch = history => {
 
 export const submitCollectionSearchNextPage = () => {
   // note that this function does *not* make any changes to the URL - including push the user to the collection view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
-
+  // use middleware to dispatch an async function
   return async (dispatch, getState) => {
     if (isRequestInvalid(getState())) {
+      // short circuit silently if minimum request requirements are not met
       return
     }
+    // send notifications that request has begun
     dispatch(collectionMoreResultsRequested())
     const updatedFilterState = getFilterFromState(getState())
-
+    // start async request
     return collectionPromise(
       dispatch,
       updatedFilterState,

@@ -26,6 +26,7 @@ const isRequestInvalid = (id, state) => {
 }
 
 const detailPromise = (dispatch, id, filterState) => {
+  // generate the request body with no facets, and a page size of zero, since we only need the count
   const body = granuleBodyBuilder(filterState, false, 0)
   if (!body) {
     // not covered by tests, since this should never actually occur due to the collectionId being provided, but included to prevent accidentally sending off really unreasonable requests
@@ -33,6 +34,7 @@ const detailPromise = (dispatch, id, filterState) => {
     return
   }
 
+  // promise for main request: GET by ID
   const detailPromise = fetchCollectionDetail(
     id,
     payload => {
@@ -44,6 +46,7 @@ const detailPromise = (dispatch, id, filterState) => {
       dispatch(collectionDetailError(e.errors || e))
     }
   )
+  // promise for secondary request: how many granules are in this collection when the search filters are applied?
   const granuleCountPromise = fetchGranuleSearch(
     body,
     payload => {
@@ -59,15 +62,19 @@ const detailPromise = (dispatch, id, filterState) => {
 }
 
 export const submitCollectionDetail = (history, id, filterState) => {
+  // use middleware to dispatch an async function
   return async (dispatch, getState) => {
     if (isRequestInvalid(id, getState())) {
+      // short circuit silently if minimum request requirements are not met
       return
     }
-
+    // send notifications that request has begun, updating filter state if needed
     dispatch(collectionDetailRequested(id, filterState))
     dispatch(granuleMatchingCountRequested())
     const updatedFilterState = getFilterFromState(getState())
+    // update URL if needed (required to display loading indicator on the correct page)
     navigateToDetailUrl(history, updatedFilterState)
+    // start async request
     return detailPromise(dispatch, id, updatedFilterState)
   }
 }

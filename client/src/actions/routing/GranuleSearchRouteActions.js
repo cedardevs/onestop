@@ -65,17 +65,14 @@ const granulePromise = (
   requestFacets,
   successHandler
 ) => {
-  if (!filterState.selectedIds || filterState.selectedIds.length == 0) {
-    dispatch(granuleSearchError('Invalid Request'))
-    return
-  }
-
+  // generate the request body based on filters, and if we need facets or not
   const body = granuleBodyBuilder(filterState, requestFacets)
   if (!body) {
     // not covered by tests, since this should never actually occur due to the collectionId being provided, but included to prevent accidentally sending off really unreasonable requests
     dispatch(granuleSearchError('Invalid Request'))
     return
   }
+  // return promise for search
   return fetchGranuleSearch(body, successHandler(dispatch), e => {
     dispatch(granuleSearchError(e.errors || e))
   })
@@ -86,17 +83,20 @@ export const submitGranuleSearchWithFilter = (
   collectionId,
   filterState
 ) => {
-  return async (dispatch, getState) => {
-    // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
+  // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
 
+  // use middleware to dispatch an async function
+  return async (dispatch, getState) => {
     if (isRequestInvalid(collectionId, getState())) {
+      // short circuit silently if minimum request requirements are not met
       return
     }
-
+    // send notifications that request has begun, updating filter state if needed
     dispatch(granuleNewSearchResetFiltersRequested(collectionId, filterState))
     const updatedFilterState = getFilterFromState(getState())
+    // update URL if needed (required to display loading indicator on the correct page)
     navigateToGranuleUrl(history, collectionId, updatedFilterState)
-
+    // start async request
     return granulePromise(
       dispatch,
       updatedFilterState,
@@ -110,15 +110,18 @@ export const submitGranuleSearch = (history, collectionId) => {
   // new granule search *for granules within a single collection*
   // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
 
+  // use middleware to dispatch an async function
   return async (dispatch, getState) => {
     if (isRequestInvalid(collectionId, getState())) {
+      // short circuit silently if minimum request requirements are not met
       return
     }
-
+    // send notifications that request has begun, updating filter state if needed
     dispatch(granuleNewSearchRequested(collectionId))
     const updatedFilterState = getFilterFromState(getState())
+    // update URL if needed (required to display loading indicator on the correct page)
     navigateToGranuleUrl(history, collectionId, updatedFilterState)
-
+    // start async request
     return granulePromise(
       dispatch,
       updatedFilterState,
@@ -131,13 +134,17 @@ export const submitGranuleSearch = (history, collectionId) => {
 export const submitGranuleSearchNextPage = () => {
   // note that this function does *not* make any changes to the URL - including push the user to the granule view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
   // fetch the next page of granules granule search *for granules within a single collection*
+
+  // use middleware to dispatch an async function
   return async (dispatch, getState) => {
     if (isAlreadyInFlight(getState())) {
+      // short circuit silently if minimum request requirements are not met
       return
     }
-
+    // send notifications that request has begun
     dispatch(granuleMoreResultsRequested())
     const updatedFilterState = getFilterFromState(getState())
+    // start async request
     return granulePromise(
       dispatch,
       updatedFilterState,
