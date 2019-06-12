@@ -133,10 +133,6 @@ class InventoryManagerToOneStopUtil {
 
     discoveryMap.serviceLinks = discoveryMap?.services ? formatServices(discoveryMap.remove('services') as List) : []
 
-    if(record.type == RecordType.collection) {
-      discoveryMap.remove("parentIdentifier")
-    }
-
     return discoveryMap
   }
   static List formatServices(List services){

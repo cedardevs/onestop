@@ -227,7 +227,8 @@
           "dsmmUsability",
           "updateFrequency",
           "presentationForm",
-          "services"
+          "services",
+          "parentIdentifier"
         ],
         "ignore_missing": true
       }
