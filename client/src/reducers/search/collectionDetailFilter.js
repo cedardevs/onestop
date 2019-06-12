@@ -11,26 +11,30 @@ export const initialState = Immutable({
   excludeGlobal: null,
 })
 
+const updateFilters = (collectionId, filters) => {
+  // create state with selectedIds set explicitly to collectionId,
+  // and all other filters set by action (or default to initial state values)
+  return Immutable.merge(initialState, [
+    filters,
+    {
+      selectedIds: [ collectionId ],
+    },
+  ])
+}
+
+const stripExtraFields = state => {
+  // without strips out all fields not part of original state, so no new keys can be added:
+  return Immutable.without(state, (value, key) => !(key in initialState))
+}
+
+const newDetailRequest = (collectionId, filters) => {
+  return stripExtraFields(updateFilters(collectionId, filters))
+}
+
 export const collectionDetailFilter = (state = initialState, action) => {
   switch (action.type) {
     case COLLECTION_DETAIL_REQUESTED:
-      return Immutable.without(
-        Immutable.merge(initialState, [
-          action.filters,
-          {
-            selectedIds: [ action.id ],
-          },
-        ]),
-        (value, key) => !(key in initialState)
-      )
-      return updateFilters(
-        Immutable.merge(initialState, [
-          action.filters,
-          {
-            selectedIds: [ action.id ],
-          },
-        ])
-      )
+      return newDetailRequest(action.id, action.filters)
 
     default:
       return state

@@ -25,25 +25,34 @@ export const initialState = Immutable({
   pageOffset: 0,
 })
 
+const newSearchFilters = (collectionId, filters) => {
+  // create state with selectedIds set explicitly to collectionId,
+  // and all other filters set by action (or default to initial state values)
+  return Immutable.merge(initialState, [
+    filters,
+    {
+      pageOffset: initialState.pageOffset,
+      selectedIds: [ collectionId ],
+    },
+  ])
+}
+
+const stripExtraFields = state => {
+  // without strips out all fields not part of original state, so no new keys can be added:
+  return Immutable.without(state, (value, key) => !(key in initialState))
+}
+
+const newSearchRequest = (collectionId, filters) => {
+  return stripExtraFields(newSearchFilters(collectionId, filters))
+}
+
 export const granuleFilter = (state = initialState, action) => {
   switch (action.type) {
     case GRANULE_NEW_SEARCH_REQUESTED:
-      return Immutable.merge(state, {
-        pageOffset: initialState.pageOffset,
-        selectedIds: [ action.id ],
-      })
+      return newSearchRequest(action.id, state) // this one doesn't REQUIRE the without step, but it's harmless
 
     case GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED:
-      return Immutable.without(
-        Immutable.merge(initialState, [
-          action.filters,
-          {
-            pageOffset: initialState.pageOffset,
-            selectedIds: [ action.id ],
-          },
-        ]),
-        (value, key) => !(key in initialState)
-      )
+      return newSearchRequest(action.id, action.filters)
 
     case GRANULE_MORE_RESULTS_REQUESTED:
       return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)

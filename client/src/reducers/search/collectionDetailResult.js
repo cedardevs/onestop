@@ -9,8 +9,7 @@ import {
 export const initialState = Immutable({
   collection: null,
   totalGranuleCount: 0,
-  filteredGranuleCount: 0, // TODO use -1 as flag in UI to alter display. Not 0 because carrying over filters means that a zero result is entirely possible
-  // TODO just use the backgroundInFlight and default it to zero instead. Duh.
+  filteredGranuleCount: 0, // TODO just use the backgroundInFlight and default it to zero instead. Duh.
 })
 
 export const collectionDetailResult = (state = initialState, action) => {
