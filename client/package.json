@@ -1,6 +1,6 @@
 {
   "name": "onestop-client",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "The web client for the OneStop discovery service",
   "repository": "ssh://git@github.com:cedardevs/onestop.git",
   "license": "GPL-2.0",

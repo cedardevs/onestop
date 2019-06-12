@@ -7,7 +7,7 @@ servers:
 info:
   title: OneStop Search API
   description: 'Search Collections and Granules! More information on search request and responses available at [Search API Requests](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests) and [Search API Responses](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Responses).'
-  version: 2.1.2
+  version: 2.2.0
 tags:
   - name: collection
     description: Discover available collections of data.
