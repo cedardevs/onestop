@@ -53,8 +53,12 @@ const pageSuccessHandler = dispatch => {
   }
 }
 
-const helper = (dispatch, filterState, requestFacets, successHandler) => {
-  // TODO rename this
+const collectionPromise = (
+  dispatch,
+  filterState,
+  requestFacets,
+  successHandler
+) => {
   const body = collectionBodyBuilder(filterState, requestFacets)
   if (!body) {
     dispatch(collectionSearchError('Invalid Request'))
@@ -80,7 +84,12 @@ export const submitCollectionSearchWithFilter = (history, filterState) => {
     const updatedFilterState = getFilterFromState(getState())
     navigateToCollectionUrl(history, updatedFilterState)
 
-    return helper(dispatch, updatedFilterState, true, newSearchSuccessHandler)
+    return collectionPromise(
+      dispatch,
+      updatedFilterState,
+      true,
+      newSearchSuccessHandler
+    )
   }
 }
 
@@ -95,7 +104,12 @@ export const submitCollectionSearch = history => {
     const updatedFilterState = getFilterFromState(getState())
     navigateToCollectionUrl(history, updatedFilterState)
 
-    return helper(dispatch, updatedFilterState, true, newSearchSuccessHandler)
+    return collectionPromise(
+      dispatch,
+      updatedFilterState,
+      true,
+      newSearchSuccessHandler
+    )
   }
 }
 
@@ -109,7 +123,12 @@ export const submitCollectionSearchNextPage = () => {
     dispatch(collectionMoreResultsRequested())
     const updatedFilterState = getFilterFromState(getState())
 
-    return helper(dispatch, updatedFilterState, false, pageSuccessHandler)
+    return collectionPromise(
+      dispatch,
+      updatedFilterState,
+      false,
+      pageSuccessHandler
+    )
   }
 }
 

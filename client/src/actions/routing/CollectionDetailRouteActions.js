@@ -25,8 +25,7 @@ const isRequestInvalid = (id, state) => {
   return inFlight || _.isEmpty(id)
 }
 
-const helper = (dispatch, id, filterState) => {
-  // TODO rename this
+const detailPromise = (dispatch, id, filterState) => {
   const body = granuleBodyBuilder(filterState, false, 0)
   if (!body) {
     // not covered by tests, since this should never actually occur due to the collectionId being provided, but included to prevent accidentally sending off really unreasonable requests
@@ -73,7 +72,7 @@ export const submitCollectionDetailAndUpdateUrl = (
     dispatch(granuleMatchingCountRequested())
     const updatedFilterState = getFilterFromState(getState())
     navigateToDetailUrl(history, updatedFilterState)
-    return helper(dispatch, id, updatedFilterState)
+    return detailPromise(dispatch, id, updatedFilterState)
   }
 }
 
@@ -86,7 +85,7 @@ export const submitCollectionDetail = (id, filterState) => {
     dispatch(collectionDetailRequested(id, filterState))
     dispatch(granuleMatchingCountRequested())
     const updatedFilterState = getFilterFromState(getState())
-    return helper(dispatch, id, updatedFilterState)
+    return detailPromise(dispatch, id, updatedFilterState)
   }
 }
 

@@ -59,8 +59,12 @@ const pageSuccessHandler = dispatch => {
   }
 }
 
-const helper = (dispatch, filterState, requestFacets, successHandler) => {
-  // TODO rename this
+const granulePromise = (
+  dispatch,
+  filterState,
+  requestFacets,
+  successHandler
+) => {
   if (!filterState.selectedIds || filterState.selectedIds.length == 0) {
     dispatch(granuleSearchError('Invalid Request'))
     return
@@ -93,7 +97,12 @@ export const submitGranuleSearchWithFilter = (
     const updatedFilterState = getFilterFromState(getState())
     navigateToGranuleUrl(history, collectionId, updatedFilterState)
 
-    return helper(dispatch, updatedFilterState, true, newSearchSuccessHandler)
+    return granulePromise(
+      dispatch,
+      updatedFilterState,
+      true,
+      newSearchSuccessHandler
+    )
   }
 }
 
@@ -110,7 +119,12 @@ export const submitGranuleSearch = (history, collectionId) => {
     const updatedFilterState = getFilterFromState(getState())
     navigateToGranuleUrl(history, collectionId, updatedFilterState)
 
-    return helper(dispatch, updatedFilterState, true, newSearchSuccessHandler)
+    return granulePromise(
+      dispatch,
+      updatedFilterState,
+      true,
+      newSearchSuccessHandler
+    )
   }
 }
 
@@ -124,7 +138,12 @@ export const submitGranuleSearchNextPage = () => {
 
     dispatch(granuleMoreResultsRequested())
     const updatedFilterState = getFilterFromState(getState())
-    return helper(dispatch, updatedFilterState, false, pageSuccessHandler)
+    return granulePromise(
+      dispatch,
+      updatedFilterState,
+      false,
+      pageSuccessHandler
+    )
   }
 }
 
