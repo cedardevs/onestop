@@ -164,7 +164,7 @@ describe('collection detail action', function(){
 
         expect(history_input).toEqual({
           pathname: '/collections/details/uuid-ABC',
-          search: null,
+          search: '',
         })
       })
 
@@ -172,7 +172,7 @@ describe('collection detail action', function(){
         // start already at that URL
         mockHistory.location = {
           pathname: '/collections/details/uuid-ABC',
-          search: null,
+          search: '',
         }
 
         store.dispatch(
@@ -233,7 +233,7 @@ describe('collection detail action', function(){
 
         expect(history_input).toEqual({
           pathname: '/collections/details/uuid-ABC',
-          search: null,
+          search: '',
         })
       })
 
@@ -322,7 +322,7 @@ describe('collection detail action', function(){
 
         expect(history_input).toEqual({
           pathname: '/collections/details/uuid-ABC',
-          search: null,
+          search: '',
         })
       })
 

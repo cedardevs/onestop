@@ -62,7 +62,7 @@ describe('The queryUtils', function(){
       })
       expect(result).toEqual({
         pathname: '/collections/granules/ABC',
-        search: null,
+        search: '',
       })
     })
   })

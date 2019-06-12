@@ -101,7 +101,7 @@ export const encodeLocationDescriptor = (route, searchParamsState) => {
     pathname: route.toLocation(
       searchParamsState.selectedIds ? searchParamsState.selectedIds[0] : null
     ),
-    search: _.isEmpty(query) ? null : `?${query}`,
+    search: _.isEmpty(query) ? '' : `?${query}`,
   }
 }
 

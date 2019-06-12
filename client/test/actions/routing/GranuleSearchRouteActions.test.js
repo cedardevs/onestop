@@ -78,7 +78,7 @@ describe('granule search actions', function(){
     params: [ mockHistory, 'parent-uuid' ],
     expectedURL: {
       pathname: '/collections/granules/parent-uuid',
-      search: null,
+      search: '',
     },
   }
   const submitSearchWithFilterCase = {
