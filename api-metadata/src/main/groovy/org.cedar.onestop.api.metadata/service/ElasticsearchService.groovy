@@ -56,8 +56,8 @@ class ElasticsearchService {
   }
 
   void ensurePipelines() {
-    ensurePipeline(esConfig.COLLECTION_PIPELINE)
-    ensurePipeline(esConfig.GRANULE_PIPELINE)
+    putPipeline(esConfig.COLLECTION_PIPELINE)
+    putPipeline(esConfig.GRANULE_PIPELINE)
   }
 
   private void ensureAliasWithIndex(String alias) {
@@ -72,13 +72,6 @@ class ElasticsearchService {
       log.debug("Creating alias `${alias}` for index `${index}`")
       String endPoint = "/${index}/_alias/${alias}"
       performRequest('PUT', endPoint)
-    }
-  }
-
-  private void ensurePipeline(String pipelineName) {
-    def pipelineCheck = performRequest('GET', "_ingest/pipeline/${pipelineName}?filter_path=*.version")
-    if(!pipelineCheck[pipelineName]) { // Request is empty response if pipeline doesn't exist
-      putPipeline(pipelineName)
     }
   }
 
