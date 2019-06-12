@@ -24,11 +24,11 @@ export const loadCollections = (history, newQueryString) => {
   }
 }
 
-export const loadDetails = (path, newQueryString) => {
+export const loadDetails = (history, path, newQueryString) => {
   return (dispatch, getState) => {
     const {id, filters} = decodePathAndQueryString(path, newQueryString)
     if (areFiltersChanged(getState, 'search.collectionDetailFilter', filters)) {
-      dispatch(submitCollectionDetail(id, filters)) // TODO make a no-history version of the other submit functions, or nuke the 'updateUrl' version of this one to make them consistent again...
+      dispatch(submitCollectionDetail(history, id, filters))
     }
   }
 }

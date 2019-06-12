@@ -2,10 +2,7 @@ import store from '../../../src/store' // create Redux store with appropriate mi
 import {RESET_STORE} from '../../../src/reducer'
 import fetchMock from 'fetch-mock'
 
-import {
-  submitCollectionDetail,
-  submitCollectionDetailAndUpdateUrl,
-} from '../../../src/actions/routing/CollectionDetailRouteActions'
+import {submitCollectionDetail} from '../../../src/actions/routing/CollectionDetailRouteActions'
 import {
   collectionDetailRequested,
   granuleMatchingCountRequested,
@@ -39,19 +36,13 @@ describe('collection detail action', function(){
     fetchMock.reset()
   })
 
-  const submitAndNavigateCase = {
-    name: 'submit and navigate',
-    function: submitCollectionDetailAndUpdateUrl,
-    params: [ mockHistory, 'uuid-ABC', {} ],
-  }
-
   const submitCase = {
     name: 'submit',
     function: submitCollectionDetail,
-    params: [ 'uuid-ABC', {} ],
+    params: [ mockHistory, 'uuid-ABC', {} ],
   }
 
-  const standardTestCases = [ submitAndNavigateCase, submitCase ]
+  const standardTestCases = [ submitCase ]
 
   const mockCollection = {
     id: 'uuid-ABC',
@@ -67,24 +58,14 @@ describe('collection detail action', function(){
   describe('all submit options behave the same with invalid id param', function(){
     const cases = [
       {
-        name: 'id null, submit and navigate',
-        function: submitCollectionDetailAndUpdateUrl,
-        params: [ mockHistory, null, {} ],
-      },
-      {
         name: 'id null, submit',
         function: submitCollectionDetail,
-        params: [ null, {} ],
-      },
-      {
-        name: 'id empty string, submit and navigate',
-        function: submitCollectionDetailAndUpdateUrl,
-        params: [ mockHistory, '', {} ],
+        params: [ mockHistory, null, {} ],
       },
       {
         name: 'id string, submit',
         function: submitCollectionDetail,
-        params: [ '', {} ],
+        params: [ mockHistory, '', {} ],
       },
     ]
 
@@ -154,11 +135,9 @@ describe('collection detail action', function(){
       })
     })
 
-    describe('each submit function treats the URL differently', function(){
-      it(`${submitAndNavigateCase.name} updates the URL`, function(){
-        store.dispatch(
-          submitAndNavigateCase.function(...submitAndNavigateCase.params)
-        )
+    describe('submit function treats the URL correctly', function(){
+      it(`${submitCase.name} updates the URL`, function(){
+        store.dispatch(submitCase.function(...submitCase.params))
 
         expect(historyPushCallCount).toEqual(1)
 
@@ -168,21 +147,13 @@ describe('collection detail action', function(){
         })
       })
 
-      it(`${submitAndNavigateCase.name} does not update history if no change`, function(){
+      it(`${submitCase.name} does not update history if no change`, function(){
         // start already at that URL
         mockHistory.location = {
           pathname: '/collections/details/uuid-ABC',
           search: '',
         }
 
-        store.dispatch(
-          submitAndNavigateCase.function(...submitAndNavigateCase.params)
-        )
-
-        expect(historyPushCallCount).toEqual(0)
-      })
-
-      it(`${submitCase.name} does not change the URL`, function(){
         store.dispatch(submitCase.function(...submitCase.params))
 
         expect(historyPushCallCount).toEqual(0)
@@ -218,29 +189,6 @@ describe('collection detail action', function(){
           expect(collectionDetailRequest.backgroundErrorMessage).toEqual('')
           expect(collectionDetailResult.filteredGranuleCount).toEqual(10)
         })
-      })
-    })
-
-    describe('each submit function treats the URL differently', function(){
-      // these tests mostly duplicate the prefetch URL checks, but in the context of waiting for the request to fully resolve
-
-      it(`${submitAndNavigateCase.name} updates the URL`, async () => {
-        await store.dispatch(
-          submitAndNavigateCase.function(...submitAndNavigateCase.params)
-        )
-
-        expect(historyPushCallCount).toEqual(1)
-
-        expect(history_input).toEqual({
-          pathname: '/collections/details/uuid-ABC',
-          search: '',
-        })
-      })
-
-      it(`${submitCase.name} does not change the URL`, async () => {
-        await store.dispatch(submitCase.function(...submitCase.params))
-
-        expect(historyPushCallCount).toEqual(0)
       })
     })
   })
@@ -303,33 +251,6 @@ describe('collection detail action', function(){
             )
           })
         })
-      })
-    })
-
-    describe('each submit function treats the URL differently', function(){
-      // these tests mostly duplicate the prefetch URL checks, (as a reminder that failure doesn't modify the URL in any way from success)
-      beforeEach(async () => {
-        fetchMock.get(`path:${BASE_URL}/collection/uuid-ABC`, 404)
-        fetchMock.post((url, opts) => url == `${BASE_URL}/search/granule`, 404)
-      })
-
-      it(`${submitAndNavigateCase.name} updates the URL`, async () => {
-        await store.dispatch(
-          submitAndNavigateCase.function(...submitAndNavigateCase.params)
-        )
-
-        expect(historyPushCallCount).toEqual(1)
-
-        expect(history_input).toEqual({
-          pathname: '/collections/details/uuid-ABC',
-          search: '',
-        })
-      })
-
-      it(`${submitCase.name} does not change the URL`, async () => {
-        await store.dispatch(submitCase.function(...submitCase.params))
-
-        expect(historyPushCallCount).toEqual(0)
       })
     })
   })

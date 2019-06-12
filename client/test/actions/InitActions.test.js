@@ -19,6 +19,7 @@ describe('init action', function(){
   it('updates granule filters from URL when loading detail page', async () => {
     await store.dispatch(
       loadDetails(
+        history,
         '/collections/details/uuid-ABC',
         '?q=co-ops&s=2017-01-01T00%3A00%3A00Z'
       )

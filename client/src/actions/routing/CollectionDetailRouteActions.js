@@ -58,11 +58,7 @@ const detailPromise = (dispatch, id, filterState) => {
   return Promise.all([ detailPromise, granuleCountPromise ])
 }
 
-export const submitCollectionDetailAndUpdateUrl = (
-  history,
-  id,
-  filterState
-) => {
+export const submitCollectionDetail = (history, id, filterState) => {
   return async (dispatch, getState) => {
     if (isRequestInvalid(id, getState())) {
       return
@@ -72,19 +68,6 @@ export const submitCollectionDetailAndUpdateUrl = (
     dispatch(granuleMatchingCountRequested())
     const updatedFilterState = getFilterFromState(getState())
     navigateToDetailUrl(history, updatedFilterState)
-    return detailPromise(dispatch, id, updatedFilterState)
-  }
-}
-
-export const submitCollectionDetail = (id, filterState) => {
-  return async (dispatch, getState) => {
-    if (isRequestInvalid(id, getState())) {
-      return
-    }
-
-    dispatch(collectionDetailRequested(id, filterState))
-    dispatch(granuleMatchingCountRequested())
-    const updatedFilterState = getFilterFromState(getState())
     return detailPromise(dispatch, id, updatedFilterState)
   }
 }
