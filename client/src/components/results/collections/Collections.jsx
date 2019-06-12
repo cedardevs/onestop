@@ -24,13 +24,7 @@ export default class Collections extends React.Component {
   }
 
   render() {
-    const {
-      loading,
-      results,
-      returnedHits,
-      totalHits,
-      fetchMoreResults,
-    } = this.props
+    const {results, returnedHits, totalHits, fetchMoreResults} = this.props
 
     const showMoreButton =
       returnedHits < totalHits ? (
@@ -51,7 +45,6 @@ export default class Collections extends React.Component {
         />
         <ListView
           items={results}
-          loading={!!loading}
           resultsMessage={'Search Results'}
           shown={returnedHits}
           total={totalHits}
@@ -69,7 +62,6 @@ export default class Collections extends React.Component {
 }
 
 Collections.propTypes = {
-  loading: PropTypes.number.isRequired,
   results: PropTypes.object.isRequired,
   totalHits: PropTypes.number.isRequired,
   returnedHits: PropTypes.number.isRequired,

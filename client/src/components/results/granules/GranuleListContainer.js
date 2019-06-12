@@ -29,7 +29,6 @@ const mapStateToProps = state => {
     results: granules,
     totalHits: totalGranuleCount,
     returnedHits: loadedGranuleCount,
-    loading: state.search.loading ? 1 : 0, // TODO gets passed to ListView
     selectedGranules: getSelectedGranulesFromStorage(state),
     featuresEnabled: state.config.featuresEnabled,
   }

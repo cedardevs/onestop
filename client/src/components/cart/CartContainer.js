@@ -37,7 +37,6 @@ const mapStateToProps = state => {
 
   return {
     featuresEnabled: state.config.featuresEnabled,
-    loading: state.search.loading ? 1 : 0,
     selectedGranules: selectedGranules,
     numberOfGranulesSelected: numberOfGranulesSelected,
   }

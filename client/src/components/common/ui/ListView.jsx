@@ -118,8 +118,6 @@ export default class ListView extends React.Component {
   render() {
     const {
       items,
-      loading,
-      loadingMessage,
       resultsMessage,
       resultsMessageEmpty,
       shown,
@@ -141,7 +139,7 @@ export default class ListView extends React.Component {
 
     const listInfo = (
       <h1 style={styleListInfo} key="list-view-info">
-        {loading ? loadingMessage ? loadingMessage : 'Loading...' : message}
+        {message}
       </h1>
     )
 
@@ -237,7 +235,6 @@ export default class ListView extends React.Component {
 
 ListView.propTypes = {
   items: PropTypes.object,
-  loading: PropTypes.bool,
   shown: PropTypes.number,
   total: PropTypes.number,
   showAsGrid: PropTypes.bool,

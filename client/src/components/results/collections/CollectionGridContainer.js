@@ -13,7 +13,6 @@ const mapStateToProps = state => {
     pageSize,
   } = state.search.collectionResult
   return {
-    loading: state.search.loading ? 1 : 0,
     results: collections,
     totalHits: totalCollectionCount,
     returnedHits: loadedCollectionCount,

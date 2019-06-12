@@ -109,7 +109,7 @@ export default class Cart extends React.Component {
   render() {
     const {
       featuresEnabled,
-      loading,
+      // loading, TODO does this need to wire up specific loading state somewhere else correctly now?
       selectedGranules,
       numberOfGranulesSelected,
       deselectAllGranules,
@@ -182,7 +182,6 @@ export default class Cart extends React.Component {
             {cartActionsWrapper}
             <ListView
               items={selectedGranules}
-              loading={!!loading}
               resultsMessage={'Files for download'}
               resultsMessageEmpty={'No files selected for download'}
               shown={shownGranules}
