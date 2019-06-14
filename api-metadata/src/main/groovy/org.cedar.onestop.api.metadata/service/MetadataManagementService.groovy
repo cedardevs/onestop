@@ -160,7 +160,7 @@ class MetadataManagementService {
           esId = updateRecord(existingIds[0], id)
           log.info("Updating ${result.type} document with ID: $esId")
         }else{
-          log.info("Creating new ${result.type} staging document.gi")
+          log.info("Creating new ${result.type} staging document")
         }
 
         source.stagedDate = System.currentTimeMillis()
