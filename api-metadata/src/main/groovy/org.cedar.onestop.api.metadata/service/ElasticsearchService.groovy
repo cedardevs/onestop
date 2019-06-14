@@ -216,110 +216,6 @@ class ElasticsearchService {
 
   Map checkTask(String taskId) {
     Map result = performRequest('GET', "_tasks/${taskId}")
-
-    // TODO: Analyze this log output to determine what's going on with the result of checking taskIds
-    JsonBuilder jsonResultBuilder = new JsonBuilder(result)
-    log.info(":::AdminService::checkTask::result:\n" + jsonResultBuilder.toPrettyString())
-
-    // TODO: 1) evaluate how we are distinguishing between a real request exception and a task that is simply complete
-    // TODO: 2) does this
-    // structure of result when task is gone (is caught as ResponseException try/catch of `performRequest`)
-    /*{
-      "error": {
-        "root_cause": [
-                {
-                  "type": "resource_not_found_exception",
-                  "reason": "task [IziaxPTxS_iEa-kkvW-rtQ:21463900] isn't running and hasn't stored its results"
-                }
-        ],
-        "type": "resource_not_found_exception",
-        "reason": "task [IziaxPTxS_iEa-kkvW-rtQ:21463900] isn't running and hasn't stored its results"
-      },
-        "status": 404
-    }*/
-
-    // structure of result when task is running (seems to be unlikely to catch this condition when tasks finish quickly)
-    // but since this condition doesn't trigger the try/catch for a ResponseException, our attempt to retrieve
-    // non-existent keys in the return of `checkTask` resulted in null pointer exceptions in the rare case that the
-    // task was "caught in the act"
-    /*{
-      "completed": false,
-      "task": {
-        "node": "IziaxPTxS_iEa-kkvW-rtQ",
-        "id": 21463900,
-        "type": "netty",
-        "action": "cluster:monitor/task/get",
-        "description": "",
-        "start_time_in_millis": 1556909931975,
-        "running_time_in_nanos": 23208,
-        "cancellable": false,
-        "parent_task_id": "zZnt4tEQSI-4EsaFseceEA:19801870"
-      }
-    }*/
-
-    // structure of result when running tests and log output
-    /*
-    {
-    "request": {
-        "uri": "_tasks/77gKHxhjS6GJWoeJnB79XQ:254",
-        "method": "GET",
-        "protocolVersion": {
-            "minor": 1,
-            "protocol": "HTTP",
-            "major": 1
-        }
-    },
-    "statusCode": 200,
-    "completed": true,
-    "task": {
-        "node": "77gKHxhjS6GJWoeJnB79XQ",
-        "id": 254,
-        "type": "transport",
-        "action": "indices:data/write/reindex",
-        "status": {
-            "total": 0,
-            "updated": 0,
-            "created": 0,
-            "deleted": 0,
-            "batches": 0,
-            "version_conflicts": 0,
-            "noops": 0,
-            "retries": {
-                "bulk": 0,
-                "search": 0
-            },
-            "throttled_millis": 0,
-            "requests_per_second": -1.0,
-            "throttled_until_millis": 0
-        },
-        "description": "reindex from [staging_collection] to [search_collection-1558471001643]",
-        "start_time_in_millis": 1558471002325,
-        "running_time_in_nanos": 137978600,
-        "cancellable": true
-    },
-    "response": {
-        "took": 69,
-        "timed_out": false,
-        "total": 0,
-        "updated": 0,
-        "created": 0,
-        "deleted": 0,
-        "batches": 0,
-        "version_conflicts": 0,
-        "noops": 0,
-        "retries": {
-            "bulk": 0,
-            "search": 0
-        },
-        "throttled_millis": 0,
-        "requests_per_second": -1.0,
-        "throttled_until_millis": 0,
-        "failures": [
-
-        ]
-    }
-}
-     */
     def completed = result.completed
     Map task = result.task as Map
     Map status = task.status as Map
@@ -327,9 +223,7 @@ class ElasticsearchService {
             completed: completed,
             totalDocs: status.total,
             updated: status.updated,
-            created: status.created,
-            /* took: completed ? result.response.took : null,      // REMOVE as task ID responses never have this
-            failures: completed ? result.response.failures : [] */ // REMOVE as task ID responses never have this
+            created: status.created
     ]
   }
 }
