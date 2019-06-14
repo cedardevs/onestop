@@ -78,7 +78,7 @@ class MetadataManagementService {
               filename: fileName,
           ]
       ]
-      log.info("Loading XML document $fileName")
+      log.info("Loading XML document ${fileName ? fileName.toString() : '(no filename provided)'}")
       Map parseResult = InventoryManagerToOneStopUtil.xmlToParsedRecord(xml)
       if(parseResult?.parsedRecord){
         Map validationResult = InventoryManagerToOneStopUtil.validateMessage(fileName, parseResult.parsedRecord)
