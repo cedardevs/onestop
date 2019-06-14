@@ -83,6 +83,11 @@ dependencies {
   compile 'com.google.guava:guava:27.0.1-jre'
   compile 'commons-collections:commons-collections:3.2.2'
 
+  // fix CVE-2019-0232, CVE-2019-0232 by forcing a higher version of the tomcat websocket dependency
+  compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.19'
+  compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.19'
+
+
   runtime 'org.springframework.boot:spring-boot-devtools'
 
   providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
@@ -127,14 +132,15 @@ keystore {
 
 
 ext {
-  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
+  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all.war")
 }
 
 war {
   enabled = true
   // TODO disabled dynamic project-based name for #827, plan to re-enable in #828
   // baseName = "${rootProject.name}-${project.name}"
-  baseName = "onestop-metadata"
+  // baseName = "onestop-metadata"
+  archiveName = "onestop-metadata.${extension}"
   finalizedBy bootWar
 }
 

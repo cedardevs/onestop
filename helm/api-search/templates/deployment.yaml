@@ -36,7 +36,7 @@ spec:
           {{- if .Values.config }}
             # if Helm values have a config section, it will be mounted as a YML file
             # this tells Spring where the additional config file is mounted
-            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+            - name: SPRING_CONFIG_ADDITIONAL-LOCATION
               value: /etc/conf/application.yml
           {{- end }}
           # EXPORT ACTIVE SPRING PROFILES TO TELL SPRING WHICH FEATURES TO ENABLE

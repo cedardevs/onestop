@@ -12,6 +12,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
   ElasticsearchService esService
 
   void setup() {
+    // See /docs/development/integration-tests/time-filter.md for more information about the test data used in these tests. It explains the logic behind the test cases chosen, and how they are organized to minimize unrelated test data interactions.
     refreshAndLoadGenericTestIndex(DATES_INDEX)
   }
 
