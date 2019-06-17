@@ -49,25 +49,24 @@ public class StreamManager {
     return builder.build();
   }
 
-  ;
-
   static StreamsBuilder addTopologyForType(StreamsBuilder builder, RecordType type) {
     var inputStream = builder.<String, AggregatedInput>stream(inputChangelogTopics(StreamsApps.REGISTRY_ID, type));
 
     inputStream
         .filterNot(RoutingUtils::hasErrors)
         .filter(RoutingUtils::requiresExtraction)
-        .mapValues((v) -> AvroUtils.avroToMap(v))
+        .mapValues(v -> AvroUtils.avroToMap(v))
         .mapValues(StreamManager::toJsonOrNull)
         .filterNot(RoutingUtils::isNull)
         .to(toExtractorTopic(type), Produced.with(Serdes.String(), Serdes.String()));
 
-    var fromExtractorsStream = builder.<String, String>stream(fromExtractorTopic(type), Consumed.with(Serdes.String(), Serdes.String()))
-        .mapValues((k, v) -> RecordParser.parse(k, v, type));
+    var fromExtractorsStream = builder.
+        <String, String>stream(fromExtractorTopic(type), Consumed.with(Serdes.String(), Serdes.String()))
+        .mapValues(v -> RecordParser.parseRaw(v, type));
 
     inputStream
         .filterNot(RoutingUtils::hasErrors)
-        .mapValues(RecordParser::parse)
+        .mapValues(RecordParser::parseInput)
         .merge(fromExtractorsStream)
         .mapValues(Analyzers::addAnalysis)
         .to(parsedTopic(type));

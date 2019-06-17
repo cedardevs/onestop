@@ -10,7 +10,6 @@ import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ErrorEvent;
 import org.cedar.schemas.avro.psi.Input;
 import org.cedar.schemas.avro.psi.InputEvent;
-import org.cedar.schemas.avro.util.AvroUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +72,9 @@ public class StreamFunctions {
     if (contentType.equals("application/json") || contentType.equals("text/json")) {
       var mergedMap = updateRawJson(builder, input);
       if (mergedMap != null) {
-        updateDerivedFields(builder, mergedMap);
+        // filter the merged map so we don't overwrite the entire AggregatedInput
+        var fieldsToParse = List.of("fileInformation", "fileLocations", "publishing", "relationships");
+        DataUtils.updateDerivedFields(builder, mergedMap);
       }
     }
     if (contentType.equals("application/xml") || contentType.equals("text/xml")) {
@@ -108,32 +109,6 @@ public class StreamFunctions {
       builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error));
       return null;
     }
-  }
-
-  public static void updateDerivedFields(AggregatedInput.Builder builder, Map<String, Object> fieldData) {
-    // 1. filter the merged map so we don't overwrite the entire AggregatedInput
-    var fieldsToParse = List.of("fileInformation", "fileLocations", "publishing", "relationships");
-    var schema = AggregatedInput.getClassSchema();
-    fieldData
-        .entrySet()
-        .stream()
-        .filter(e -> fieldsToParse.contains(e.getKey()))
-        .forEach(e -> {
-          try {
-            // 2. coerce the value to its AggregatedInput field value and apply it to the builder
-            var field = schema.getField(e.getKey());
-            var coerced = AvroUtils.coerceValueForSchema(e.getValue(), field.schema());
-            DataUtils.setValueOnPojo(builder, field.name(), coerced);
-          }
-          catch (Exception ex) {
-            // 3. if it fails attach an error to the AggregatedInput, but continue with remaining fields
-            var error = ErrorEvent.newBuilder()
-                .setTitle("Failed to parse field")
-                .setDetail("Failed to parse field [" + e.getKey() + "] with value [" + e.getValue() + "]")
-                .build();
-            builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error));
-          }
-        });
   }
 
   public static InputEvent buildEventRecord(TimestampedValue<Input> input) {

@@ -1,5 +1,6 @@
 package org.cedar.psi.manager.util
 
+import groovy.json.JsonOutput
 import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.Publishing
@@ -13,13 +14,13 @@ class RecordParserSpec extends Specification {
   def "ISO metadata in incoming message parsed correctly"() {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-    def incomingMsg = [
+    def incomingMsg = JsonOutput.toJson([
         contentType: 'application/xml',
         content    : xml
-    ]
+    ])
 
     when:
-    def response = RecordParser.parse(incomingMsg, RecordType.collection)
+    def response = RecordParser.parseRaw(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
@@ -33,13 +34,13 @@ class RecordParserSpec extends Specification {
 
   def "#type ISO metadata in incoming message results in error"() {
     given:
-    def incomingMsg = [
+    def incomingMsg = JsonOutput.toJson([
         contentType: 'application/xml',
         content    : metadata
-    ]
+    ])
 
     when:
-    def response = RecordParser.parse(incomingMsg, RecordType.collection)
+    def response = RecordParser.parseRaw(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
@@ -54,46 +55,48 @@ class RecordParserSpec extends Specification {
 
   def "malformed xml metadata in incoming message results in error"() {
     given:
-    def incomingMsg = [
+    def incomingMsg = JsonOutput.toJson([
         contentType: 'application/xml',
         content    : '<xml>oh no look out for the'
-    ]
+    ])
 
     when:
-    def response = RecordParser.parse(incomingMsg, RecordType.collection)
+    def response = RecordParser.parseRaw(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
     response.errors.size() == 1
-    response.errors[0].title == 'Unable to parse malformed content'
+    response.errors[0].title == 'Unable to parse malformed xml'
     response.errors[0].detail == 'SAXParseException: XML document structures must start and end within the same entity.'
   }
 
   def "Unknown metadata type in incoming message results in error"() {
     given:
-    def incomingMsg = [
+    def incomingMsg = JsonOutput.toJson([
         contentType: 'Not supported',
         content    : "Won't be parsed"
-    ]
+    ])
 
     when:
-    def response = RecordParser.parse(incomingMsg, RecordType.collection)
+    def response = RecordParser.parseRaw(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
     response.errors.size() == 1
-    response.errors[0].title == 'Unsupported content type'
-    response.errors[0].detail == "Content type [${incomingMsg.contentType}] is not supported"
+    response.errors[0].title == 'Unable to parse input'
+    response.errors[0].detail == "Input content does not appear to be either xml or json"
   }
 
   def 'parses publishing info'() {
     when:
-    def result = RecordParser.parsePublishing(input)
+    def json = JsonOutput.toJson([publishing: input])
+    def result = RecordParser.parseRaw(json, RecordType.collection)
 
     then:
-    result instanceof Publishing
-    result.isPrivate == isPrivate
-    result.until == until
+    result instanceof ParsedRecord
+    result.publishing instanceof Publishing
+    result.publishing.isPrivate == isPrivate
+    result.publishing.until == until
 
     where:
     input                        | isPrivate | until
