@@ -63,8 +63,8 @@ public class DataUtils {
           catch (Exception ex) {
             // 3. if it fails attach an error to the AggregatedInput, but continue with remaining fields
             var error = ErrorEvent.newBuilder()
-                .setTitle("Failed to parse field")
-                .setDetail("Failed to parse field [" + e.getKey() + "] with value [" + e.getValue() + "]")
+                .setTitle("Failed to parse field [" + e.getKey() + "]")
+                .setDetail(ex.getMessage())
                 .build();
             builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error));
           }
@@ -89,8 +89,8 @@ public class DataUtils {
           catch (Exception ex) {
             // 3. if it fails attach an error to the AggregatedInput, but continue with remaining fields
             var error = ErrorEvent.newBuilder()
-                .setTitle("Failed to parse field")
-                .setDetail("Failed to parse field [" + e.getKey() + "] with value [" + e.getValue() + "]")
+                .setTitle("Failed to parse field [" + e.getKey() + "]")
+                .setDetail(ex.getMessage())
                 .build();
             builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error));
           }
