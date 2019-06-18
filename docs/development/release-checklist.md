@@ -21,6 +21,7 @@
 
 1. Deploy the latest master branch code to https://sciapps.colorado.edu (private deployOS playbook)
 1. Reset the indices and reload the data. (private loadOnestop playbook)
+  - [ ] Check the logs, to make sure when ETL runs, 100% of the collections and granules make it into staging (or document that those that do not are not expected to)
 
 ## Manual UI Checks
 
