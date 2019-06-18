@@ -20,8 +20,19 @@ import java.util.Map;
 public class RecordParser {
   private static final Logger log = LoggerFactory.getLogger(RecordParser.class);
 
-
-  public static ParsedRecord parseInput(Object key, AggregatedInput input) {
+  /**
+   * Transforms an {@link AggregatedInput} into a {@link ParsedRecord} by parsing its
+   * xml and json content. The logic is as follows:
+   *   1. Parse rawXml into a {@link ParsedRecord}-shaped map, i.e. with {@link org.cedar.schemas.avro.psi.Discovery}
+   *      information under the "discovery" key
+   *   2. Parse rawJson into a {@link ParsedRecord}-shaped map
+   *   3. Combine the two maps of metadata, as well as any errors that were produced during parsing, and create
+   *      a {@link ParsedRecord} instance from them
+   *   4. If there is no metadata nor any errors, add an error indicating that no content was provided
+   * @param input The {@link AggregatedInput} to parse
+   * @return The resulting {@link ParsedRecord} instance
+   */
+  public static ParsedRecord parseInput(AggregatedInput input) {
     if (input == null || input.getDeleted()) {
       return null;
     }
@@ -58,6 +69,17 @@ public class RecordParser {
     return builder.build();
   }
 
+  /**
+   * Produce a {@link ParsedRecord} by parsing metadata from a string in a number of supported formats.
+   * Supported formats include:
+   *   - An xml string (parsed as {@link org.cedar.schemas.avro.psi.Discovery} information)
+   *   - A json string in the shape of a {@link ParsedRecord}
+   *   - A json string in the shape of an {@link org.cedar.schemas.avro.psi.Input}, with a "content" string
+   *     which is itself in one of the two above formats
+   * @param inputStr A string in a supported format
+   * @param type The {@link RecordType} to set on the returned {@link ParsedRecord}
+   * @return The resulting {@link ParsedRecord} instance
+   */
   public static ParsedRecord parseRaw(String inputStr, RecordType type) {
     final var builder = ParsedRecord.newBuilder().setType(type);
     final var metadata = marshalDataAndCollectErrors(inputStr);
