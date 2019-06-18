@@ -591,8 +591,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
 //todo metadata team requested this structure for API, which is different than how we currently parse it
     stagingDoc.serviceLinks[0].title == 'Multibeam Bathymetric Surveys ArcGIS Map Service'
     stagingDoc.serviceLinks[0].links == serviceLinks.sort()
-    stagingDoc.services == null
-
+    stagingDoc.services == ""
   }
 
   def "CVE-2018-1000840 use external docs hack"() {

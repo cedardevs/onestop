@@ -131,8 +131,12 @@ class InventoryManagerToOneStopUtil {
     // drop fields
     discoveryMap.remove("responsibleParties")
 
-    discoveryMap.serviceLinks = discoveryMap?.services ? formatServices(discoveryMap.remove('services') as List) : []
-
+    if(discoveryMap?.services){
+      discoveryMap.serviceLinks = formatServices(discoveryMap.remove('services') as List) 
+    }else{
+      discoveryMap.serviceLinks = []
+    }
+    discoveryMap.services = ''
     return discoveryMap
   }
   static List formatServices(List services){
