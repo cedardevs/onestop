@@ -14,7 +14,8 @@ import org.elasticsearch.client.ResponseException
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import static org.cedar.onestop.elastic.common.DocumentUtil.*
+
+import static org.cedar.onestop.elastic.common.DocumentUtil.parseAdminResponse
 
 @Slf4j
 @Service
@@ -216,9 +217,28 @@ class ElasticsearchService {
 
   Map checkTask(String taskId) {
     Map result = performRequest('GET', "_tasks/${taskId}")
+
     def completed = result.completed
     Map task = result.task as Map
+    String taskNode = task.node as String
+    int taskIdResponse = task.id as int
     Map status = task.status as Map
+
+    // instead of printing out all possible responses, selectively output failure reasons to simplify debugging
+    Map response = result.response as Map
+    List failures = response ? response.failures as List : []
+    int numFailures = failures ? failures.size() : 0
+    if(numFailures > 0) {
+      log.error("Task (node: ${taskNode}, id: ${taskIdResponse.toString()}) encountered ${numFailures} failure(s):")
+      failures.eachWithIndex { Map failure, int nthFailure ->
+        String failureIndex = failure.index as String
+        String failureId = failure.id as String
+        Map failureCause = failure.cause as Map
+        String failureReason = failureCause.reason as String
+        log.error("Failure ${nthFailure} occurred on index: '${failureIndex}' and id: '${failureId}'. Reason: ${failureReason}")
+      }
+    }
+
     return [
             completed: completed,
             totalDocs: status.total,

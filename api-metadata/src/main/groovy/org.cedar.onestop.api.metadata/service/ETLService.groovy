@@ -125,9 +125,16 @@ class ETLService {
             ]
         ]
     ]
+
+    log.debug("Running ETL from ${sourceCollection} to ${destCollection} & from ${sourceGranule} to ${destGranule}")
+    log.debug("maxCollectionStagedDate: ${maxCollectionStagedDate.toString()}")
+    log.debug("maxGranuleStagedDate: ${maxGranuleStagedDate.toString()}")
+
     def parentIdsResponse = elasticsearchService.performRequest('GET', "${esConfig.GRANULE_STAGING_INDEX_ALIAS}/_search", findParentIdsQuery)
     List<Map> collectionBuckets = getCollectionBuckets(parentIdsResponse)
     List<String> parentIds = collectionBuckets.collect { it.key as String }
+
+    log.trace("parentIds: [ ${parentIds.join(", ")} ]")
 
     def countGranules = [
         total: 0,
