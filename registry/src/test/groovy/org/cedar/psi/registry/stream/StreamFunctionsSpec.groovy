@@ -5,7 +5,9 @@ import groovy.json.JsonSlurper
 import org.cedar.psi.common.util.TimestampedValue
 import org.cedar.schemas.avro.psi.*
 import spock.lang.Specification
+import spock.lang.Unroll
 
+@Unroll
 class StreamFunctionsSpec extends Specification {
 
   final static String testGranuleJson = ClassLoader.systemClassLoader.getResourceAsStream("test_granule.json").text
@@ -41,14 +43,14 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregates an initial input'() {
     def key = 'ABC'
-    def input = new Input([
-        type: RecordType.granule,
-        method: Method.POST,
-        content: testGranuleJson,
-        contentType: 'application/json',
-        source: 'test',
-        operation: null
-    ])
+    def input = Input.newBuilder()
+        .setType(RecordType.granule)
+        .setMethod(Method.PUT)
+        .setContent(testGranuleJson)
+        .setContentType('application/json')
+        .setSource('common-ingest')
+        .setOperation( null)
+        .build()
     def uglifiedContent = JsonOutput.toJson(new JsonSlurper().parseText(testGranuleJson))
     def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
     def aggregate = AggregatedInput.newBuilder().build()
