@@ -12,10 +12,10 @@ dependencies:
     version: ~0.1.0
     repository: file://../api-search
     conditions: api-search.enabled,global.api-search.enabled
-  - name: api-user
-    version: ~0.1.0
-    repository: file://../api-user
-    conditions: api-user.enabled,global.api-user.enabled
+  # - name: api-user
+  #   version: ~0.1.0
+  #   repository: file://../api-user
+  #   conditions: api-user.enabled,global.api-user.enabled
   - name: client
     version: ~0.1.0
     repository: file://../client
