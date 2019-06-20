@@ -16,6 +16,7 @@
 
 - [ ] Review documentation, and that it is still in sync with the project.
 - [ ] Confirm supported browser docs: [Supported Browsers](https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers)
+- [ ] Update the "as of" date in the supported browser docs.
 
 ## Test Environment
 
