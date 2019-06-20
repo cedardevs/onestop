@@ -4,10 +4,12 @@ import org.apache.http.client.HttpClient
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.impl.client.LaxRedirectStrategy
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
+import org.cedar.onestop.elastic.common.RequestUtil
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
@@ -18,9 +20,25 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.ModelAndView
+import spock.lang.Specification
+import spock.lang.Unroll
+
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @ActiveProfiles(["integration", "manual-upload"])
-class UploadIntegrationTests extends IntegrationTest {
+@SpringBootTest(
+        classes = [
+            Application,
+            DefaultApplicationConfig,
+
+            // provides:
+            // - `RestClient` 'restClient' bean via test containers
+            ElasticsearchTestConfig,
+        ],
+        webEnvironment = RANDOM_PORT
+)
+@Unroll
+class UploadIntegrationTests extends Specification {
 
     /**
      * These tests cover:
@@ -40,14 +58,13 @@ class UploadIntegrationTests extends IntegrationTest {
     private String contextPath
 
     @Autowired
-    @Qualifier("elasticsearchRestClient")
     RestClient restClient
 
     @Autowired
     ElasticsearchService elasticsearchService
 
-    private collectionPath = "data/COOPS/C1.xml"
-    private granulePath = "data/COOPS/G1.xml"
+    private collectionPath = "test/data/xml/COOPS/C1.xml"
+    private granulePath = "test/data/xml/COOPS/G1.xml"
 
     RestTemplate restTemplate
     String metadataFormURI
@@ -79,7 +96,7 @@ class UploadIntegrationTests extends IntegrationTest {
         def multiResult = restTemplate.exchange(multiRequest, ModelAndView)
         String redirectPath = multiResult.headers.getLocation().getPath()
 
-        refreshIndices()
+        RequestUtil.refreshAllIndices(restClient)
 
         then: "Request returns 302 redirect to the expected response endpoint"
 
@@ -91,10 +108,6 @@ class UploadIntegrationTests extends IntegrationTest {
         def multipartMap = new LinkedMultiValueMap<String, Object>()
         paths.each { multipartMap.add("files", new ClassPathResource(it)) }
         RequestEntity.post(metadataFormURI.toURI()).contentType(MediaType.MULTIPART_FORM_DATA).body(multipartMap)
-    }
-
-    private refreshIndices() {
-        restClient.performRequest('POST', '_refresh')
     }
 
 }

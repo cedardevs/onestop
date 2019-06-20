@@ -1,93 +1,79 @@
 package org.cedar.onestop.api.metadata.service
 
+import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.elasticsearch.Version
+import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.ResponseException
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
+
+import static org.cedar.onestop.elastic.common.DocumentUtil.parseAdminResponse
 
 @Slf4j
 @Service
 class ElasticsearchService {
 
-  @Autowired
-  private Environment environment
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-  String COLLECTION_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.collection.name}')
-  String COLLECTION_STAGING_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
-  String GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
-  String GRANULE_STAGING_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
-  private String FLAT_GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
-  private String SITEMAP_INDEX
-
-  @Value('${elasticsearch.index.prefix:}')
-  String PREFIX
-
-  @Value('${elasticsearch.index.search.collection.pipeline-name}')
-  private String COLLECTION_PIPELINE
-
-  @Value('${elasticsearch.index.search.granule.pipeline-name}')
-  private String GRANULE_PIPELINE
-
-
   private RestClient restClient
-
-  private Boolean sitemapEnabled() {
-    return environment.activeProfiles.contains('sitemap')
-  }
+  Version version
+  ElasticsearchConfig esConfig
 
   @Autowired
-  ElasticsearchService(RestClient restClient) {
+  ElasticsearchService(RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
+    this.version = elasticsearchConfig.version
+    log.info("Elasticsearch found with version: ${this.version.toString()}" )
+    boolean supported = version.onOrAfter(Version.V_5_6_0)
+    if(!supported) {
+      throw new RuntimeException("Admin API does not support version ${version.toString()} of Elasticsearch")
+    }
     this.restClient = restClient
+    this.esConfig = elasticsearchConfig
+    putPipeline(esConfig.COLLECTION_PIPELINE)
+    putPipeline(esConfig.GRANULE_PIPELINE)
   }
 
-  public void ensureIndices() {
+  void ensureIndices() {
     ensureStagingIndices()
     ensureSearchIndices()
   }
 
-  public void ensureStagingIndices() {
-    ensureIndex(COLLECTION_STAGING_INDEX)
-    ensureIndex(GRANULE_STAGING_INDEX)
+  void ensureStagingIndices() {
+    ensureAliasWithIndex(esConfig.COLLECTION_STAGING_INDEX_ALIAS)
+    ensureAliasWithIndex(esConfig.GRANULE_STAGING_INDEX_ALIAS)
   }
 
-  public void ensureSearchIndices() {
-    ensureIndex(COLLECTION_SEARCH_INDEX)
-    ensureIndex(GRANULE_SEARCH_INDEX)
-    ensureIndex(FLAT_GRANULE_SEARCH_INDEX)
-    if(sitemapEnabled()) {
-      ensureIndex(SITEMAP_INDEX)
+  void ensureSearchIndices() {
+    ensureAliasWithIndex(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+    ensureAliasWithIndex(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
+    ensureAliasWithIndex(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+    if(esConfig.sitemapEnabled()) {
+      ensureAliasWithIndex(esConfig.SITEMAP_INDEX_ALIAS)
     }
   }
 
-  public void ensurePipelines() {
-    ensurePipeline(COLLECTION_PIPELINE)
-    ensurePipeline(GRANULE_PIPELINE)
+  void ensurePipelines() {
+    ensurePipeline(esConfig.COLLECTION_PIPELINE)
+    ensurePipeline(esConfig.GRANULE_PIPELINE)
   }
 
-  private void ensureIndex(String index) {
-    def indexExists = checkAliasExists(index)
-    if (!indexExists) {
-      def realName = create(index)
-      String endPoint = "/${realName}/_alias/${index}"
+  private void ensureAliasWithIndex(String alias) {
+    def aliasExists = checkAliasExists(alias)
+    if (aliasExists){
+      String jsonIndexDef = esConfig.jsonMapping(alias)
+      String endPoint = "/${alias}/_mapping/${esConfig.TYPE}"
+      String jsonIndexMapping = JsonOutput.toJson((new JsonSlurper().parseText(jsonIndexDef)).mappings.doc)
+      performRequest('PUT', endPoint, jsonIndexMapping)
+    }else{
+      def index = createIndex(alias)
+      log.debug("Creating alias `${alias}` for index `${index}`")
+      String endPoint = "/${index}/_alias/${alias}"
       performRequest('PUT', endPoint)
     }
   }
@@ -99,104 +85,165 @@ class ElasticsearchService {
     }
   }
 
-  public String create(String baseName) {
-    String indexName = "${baseName}-${System.currentTimeMillis()}"
-    def cl = Thread.currentThread().contextClassLoader
-    def jsonFilename = baseName.replaceFirst("^${PREFIX}", '') + 'Index.json'
-    def indexJson = cl.getResourceAsStream(jsonFilename).text
-    performRequest('PUT', indexName, indexJson)
-
-    log.debug "Created new index [${indexName}]"
-    return indexName
+  String createIndex(String alias) {
+    String index = "${alias}-${System.currentTimeMillis()}"
+    String jsonMapping = esConfig.jsonMapping(alias)
+    performRequest('PUT', index, jsonMapping)
+    log.debug "Created new index [${index}]"
+    return index
   }
 
-  public void refresh(String... indices) {
+  void refresh(String... indices) {
     String endpoint = "/${indices.join(',')}/_refresh"
     performRequest('POST', endpoint)
   }
 
-  public void refreshAllIndices() {
-    performRequest('POST', "${COLLECTION_STAGING_INDEX},${GRANULE_STAGING_INDEX},${COLLECTION_SEARCH_INDEX},${GRANULE_SEARCH_INDEX},${FLAT_GRANULE_SEARCH_INDEX}/_refresh")
+  void refreshAllIndices() {
+    def allIndices = [
+      esConfig.COLLECTION_STAGING_INDEX_ALIAS,
+      esConfig.GRANULE_STAGING_INDEX_ALIAS,
+      esConfig.COLLECTION_SEARCH_INDEX_ALIAS,
+      esConfig.GRANULE_SEARCH_INDEX_ALIAS,
+      esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS
+    ]
+    performRequest('POST', "${allIndices.join(',')}/_refresh")
   }
 
-  public void dropStagingIndices() {
-    drop(COLLECTION_STAGING_INDEX)
-    drop(GRANULE_STAGING_INDEX)
+  void dropStagingIndices() {
+    log.debug("Dropping staging indices...")
+    dropAlias(esConfig.COLLECTION_STAGING_INDEX_ALIAS)
+    dropAlias(esConfig.GRANULE_STAGING_INDEX_ALIAS)
   }
 
-  public void dropSearchIndices() {
-    drop(COLLECTION_SEARCH_INDEX)
-    drop(GRANULE_SEARCH_INDEX)
-    drop(FLAT_GRANULE_SEARCH_INDEX)
-    if(sitemapEnabled()) {
-      drop(SITEMAP_INDEX)
+  void dropSearchIndices() {
+    log.debug("Dropping search indices...")
+    dropAlias(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+    dropAlias(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
+    dropAlias(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+    if(esConfig.sitemapEnabled()) {
+      dropAlias(esConfig.SITEMAP_INDEX_ALIAS)
     }
   }
 
-  public void drop(String indexName) {
+  Set<String> getIndicesForAlias(String alias) {
     try {
-      performRequest('DELETE', indexName)
-      log.debug "Dropped index [${indexName}]"
+      // find all indices for this alias
+      def response = performRequest('GET',"_alias/${alias}")
+      return response.keySet().findAll({ it.startsWith(alias) })
     } catch (e) {
-      log.warn "Failed to drop index [${indexName}] because it was not found"
+      log.warn "Failed to retrieve indices for alias \'${alias}\' due to: ${e.message}"
+      return []
     }
   }
 
-  public void putPipeline(String pipelineName) {
-    def cl = Thread.currentThread().contextClassLoader
-    def jsonFileName = pipelineName + 'Definition.json'
-    def pipelineJson = cl.getResourceAsStream(jsonFileName).text
+  void dropAlias(String alias) {
+    // In Elasticsearch, once all indices associated with an alias are deleted,
+    // the alias is also removed. In ES6+, deleting an alias directly no longer
+    // deletes the underlying indices implicitly, so this approach should work
+    // for all versions.
+    log.debug("Dropping indices for alias: ${alias}")
+    getIndicesForAlias(alias).each { dropIndex(it) }
+  }
+
+  void dropIndex(String index) {
+    try {
+      performRequest('DELETE', index)
+      log.debug "Dropped index [${index}]"
+    } catch (e) {
+      log.warn "Failed to drop index [${index}] because it was not found: ${e.message}"
+    }
+  }
+
+  void putPipeline(String pipelineName) {
+    String pipelineJson = esConfig.jsonPipeline(pipelineName)
     String pipelineEndpoint = "_ingest/pipeline/${pipelineName}"
     performRequest('PUT', pipelineEndpoint, pipelineJson)
-
     log.debug("Put pipeline [${pipelineName}]")
   }
 
-  public void moveAliasToIndex(String alias, String index, Boolean dropOldIndices = false) {
-    def oldIndices = performRequest('GET', "_alias/${alias}").keySet()*.toString()
-    oldIndices = oldIndices.findAll({ it.startsWith(alias) })
-    def actions = oldIndices.collect { [remove: [index: it, alias: alias]] }
-    actions << [add: [index: index, alias: alias]]
-    performRequest('POST', '_aliases', [actions: actions])
-
+  void moveAliasToIndex(String alias, String index, Boolean dropOldIndices = false) {
+    def oldIndices = getIndicesForAlias(alias)
+    if(!oldIndices.isEmpty()) {
+      def actions = oldIndices.collect { [remove: [index: it, alias: alias]] }
+      actions << [add: [index: index, alias: alias]]
+      performRequest('POST', '_aliases', [actions: actions])
+    }
     if (dropOldIndices) {
-      oldIndices.each { drop(it) }
+      oldIndices.each { dropIndex(it) }
     }
   }
 
-  private Boolean checkAliasExists(String name) {
-    def status = restClient.performRequest('HEAD', name).statusLine.statusCode
-    return status == 200
+  private Boolean checkAliasExists(String alias) {
+    Request aliasExistsRequest = new Request('HEAD', alias)
+    int status = restClient.performRequest(aliasExistsRequest).statusLine.statusCode
+    Boolean exists = status == 200
+    log.debug("Alias `${alias}` ${exists ? 'exists' : 'does NOT exist'}")
+    return exists
   }
 
-  public Map performRequest(String method, String endpoint, Map requestBody) {
+  Map performRequest(String method, String endpoint, Map requestBody) {
     performRequest(method, endpoint, JsonOutput.toJson(requestBody))
   }
 
-  public Map performRequest(String method, String endpoint, String requestBody = null) {
+  Map performRequest(String method, String endpoint, String requestBody = null) {
+    String requestBodyOneLiner = requestBody ? requestBody.replace("\r\n", " ").replace("\n", " ") : null
     try {
-      log.debug("Performing elasticsearch request: ${method} ${endpoint} ${requestBody}")
-      def response = requestBody ?
-          restClient.performRequest(method, endpoint, Collections.EMPTY_MAP, new NStringEntity(requestBody, ContentType.APPLICATION_JSON)) :
-          restClient.performRequest(method, endpoint)
+      log.debug("Performing Elasticsearch request: ${method} ${endpoint} ${requestBodyOneLiner}")
+
+      Response response
+      if(requestBody) {
+        Request requestWithBody = new Request(method, endpoint)
+        requestWithBody.entity = new NStringEntity(requestBody, ContentType.APPLICATION_JSON)
+        response = restClient.performRequest(requestWithBody)
+      } else {
+        Request requestWithoutBody = new Request(method, endpoint)
+        response = restClient.performRequest(requestWithoutBody)
+      }
       log.debug("Got response: ${response}")
-      return parseResponse(response)
+      return parseAdminResponse(response)
     }
     catch (ResponseException e) {
-      def response = parseResponse(e.response)
+      def response = parseAdminResponse(e.response)
       log.error("Elasticsearch request failed: ${response}")
       return response
     }
   }
 
-  private static Map parseResponse(Response response) {
-    Map result = [
-        request   : response.requestLine,
-        statusCode: response.statusLine.statusCode
-    ]
-    if (response.entity) {
-      result += new JsonSlurper().parse(response.entity.content) as Map
+  boolean deleteTask(String taskId) {
+    def result = performRequest('DELETE', ".tasks/task/${taskId}")
+    log.debug("Deleted task [ ${taskId} ]: ${result.found}")
+    return result.found
+  }
+
+  Map checkTask(String taskId) {
+    Map result = performRequest('GET', "_tasks/${taskId}")
+
+    def completed = result.completed
+    Map task = result.task as Map
+    String taskNode = task.node as String
+    int taskIdResponse = task.id as int
+    Map status = task.status as Map
+
+    // instead of printing out all possible responses, selectively output failure reasons to simplify debugging
+    Map response = result.response as Map
+    List failures = response ? response.failures as List : []
+    int numFailures = failures ? failures.size() : 0
+    if(numFailures > 0) {
+      log.error("Task (node: ${taskNode}, id: ${taskIdResponse.toString()}) encountered ${numFailures} failure(s):")
+      failures.eachWithIndex { Map failure, int nthFailure ->
+        String failureIndex = failure.index as String
+        String failureId = failure.id as String
+        Map failureCause = failure.cause as Map
+        String failureReason = failureCause.reason as String
+        log.error("Failure ${nthFailure} occurred on index: '${failureIndex}' and id: '${failureId}'. Reason: ${failureReason}")
+      }
     }
-    return result
+
+    return [
+            completed: completed,
+            totalDocs: status.total,
+            updated: status.updated,
+            created: status.created
+    ]
   }
 }

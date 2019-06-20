@@ -1,0 +1,26 @@
+"request": {
+"uri": "search_collection,search_granule,search_flattened_granule/_search",
+"method": "GET",
+"protocolVersion": {
+"minor": 1,
+"protocol": "HTTP",
+"major": 1
+}
+},
+"statusCode": 200,
+"took": 11,
+"timed_out": false,
+"_shards": {
+"total": 15,
+"successful": 15,
+"skipped": 0,
+"failed": 0
+},
+"hits": {
+"total": 0,
+"max_score": null,
+"hits": [
+
+]
+}
+}
