@@ -222,6 +222,22 @@ The API defaults to a "summary" subset of fields (i.e., `title`, `thumbnail`, `s
 }
 ```
 
+Another use for `page` is to return zero results, and get just the total count matching the query.
+``` json
+ {
+ "queries": [
+    {
+      "type" : "queryText",
+      "value": "temperature"
+    }       
+  ],
+  "page": {
+    "max"   : 0,
+    "offset": 0
+  }    
+}
+```
+
 ## Putting It All Together
 
 An example of combining multiple search criteria:

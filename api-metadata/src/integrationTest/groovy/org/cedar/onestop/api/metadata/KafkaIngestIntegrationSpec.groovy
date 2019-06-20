@@ -1,6 +1,5 @@
 package org.cedar.onestop.api.metadata
 
-import io.confluent.kafka.schemaregistry.RestApp
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -9,15 +8,13 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.util.AvroUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -35,21 +32,20 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @DirtiesContext
 @EmbeddedKafka
 @ActiveProfiles(["integration", "kafka-ingest"])
-@SpringBootTest(classes = [Application, IntegrationTestConfig, KafkaConsumerConfig], webEnvironment = RANDOM_PORT)
+@SpringBootTest(
+    classes = [
+        Application,
+        DefaultApplicationConfig,
+        KafkaConsumerConfig,
+        KafkaIntegrationConfig,
+        // provides:
+        // - `RestClient` 'restClient' bean via test containers
+        ElasticsearchTestConfig,
+    ],
+    webEnvironment = RANDOM_PORT
+)
 @TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
 class KafkaIngestIntegrationSpec extends Specification {
-
-  @Configuration
-  @Profile('kafka-ingest')
-  static class KafkaIntegrationConfig {
-    @Value('${spring.embedded.zookeeper.connect:}')
-    String zkConnect
-
-    @Bean(initMethod = 'start')
-    RestApp schemaRegistryRestApp() {
-      new RestApp(8081, zkConnect, '_schemas')
-    }
-  }
 
   @LocalServerPort
   String port
@@ -63,13 +59,16 @@ class KafkaIngestIntegrationSpec extends Specification {
   @Value('${kafka.topic.collections}')
   String collectionTopic
 
+  @Value('${schema-registry.url:localhost:8081}')
+  String schemaUrl
+
   @Autowired
   ElasticsearchService elasticsearchService
 
   @Autowired
   MetadataManagementService metadataManagementService
 
-  String collectionPath = "data/COOPS/C1.xml"
+  String collectionPath = "test/data/xml/COOPS/C1.xml"
 
   RestTemplate restTemplate
   String baseUrl
@@ -87,7 +86,7 @@ class KafkaIngestIntegrationSpec extends Specification {
     def producer = new KafkaProducer<>([
         (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG)                : bootstrapServers,
         (ProducerConfig.CLIENT_ID_CONFIG)                        : 'api_publisher',
-        (AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG): 'http://localhost:8081',
+        (AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG): schemaUrl,
         (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)             : StringSerializer.class.getName(),
         (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG)           : SpecificAvroSerializer.class.getName(),
     ])

@@ -38,7 +38,7 @@ class UploadController {
   ModelAndView load(@RequestParam("files") MultipartFile[] metadataRecords, RedirectAttributes redirectAttributes) {
     log.debug("Received ${metadataRecords.length} metadata files to load")
 
-    def results = metadataService.loadMetadata(metadataRecords)
+    def results = metadataService.loadXMLdocuments(metadataRecords as List)
 
     def successes = results.data.findAll {
       !it.meta.error
