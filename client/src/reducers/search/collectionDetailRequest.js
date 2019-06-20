@@ -10,7 +10,7 @@ import {
 
 export const initialState = Immutable({
   inFlight: false,
-  requestedID: null, // TODO change to empty string if this causes any issues in the loading message container thing
+  requestedID: null,
   errorMessage: '',
   backgroundInFlight: false, // arguably these should have a first class place on a separate piece of state, rather than being labelled 'background'. As long as only one background request is needed for this view, this is fine for now. To be fair, background label makes sense considering we shouldn't show loading messages based on it...
   backgroundErrorMessage: '',

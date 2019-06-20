@@ -91,7 +91,6 @@ const assembleSelectedCollectionsFilters = ({selectedCollectionIds}) => {
 }
 
 const assemblePagination = ({pageOffset = 0}, maxPageSize) => {
-  // TODO tests to verify that
   return {max: maxPageSize, offset: pageOffset}
 }
 

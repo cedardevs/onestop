@@ -120,7 +120,7 @@ class Detail extends React.Component {
     }
 
     if (!item) {
-      // TODO error style? actually report an error in the flow if the collection is not found when search returns?
+      // TODO error style? actually report an error in the flow if the collection is not found when search returns? - I can verify this now!!
       return (
         <div style={styleCenterContent}>
           <div style={styleDetailWrapper}>

@@ -5,7 +5,7 @@ import './LoadingBar.css'
 import InlineError from '../error/InlineError'
 import defaultStyles from '../../style/defaultStyles'
 import {Route, Switch} from 'react-router'
-// TODO lazy suspense and hooks
+
 export class LoadingBar extends React.Component {
   constructor(props) {
     super(props)

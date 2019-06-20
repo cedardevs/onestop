@@ -9,7 +9,7 @@ import {
 export const initialState = Immutable({
   collection: null,
   totalGranuleCount: 0,
-  filteredGranuleCount: 0, // TODO just use the backgroundInFlight and default it to zero instead. Duh.
+  filteredGranuleCount: 0,
 })
 
 export const collectionDetailResult = (state = initialState, action) => {
@@ -23,7 +23,7 @@ export const collectionDetailResult = (state = initialState, action) => {
       })
     case COLLECTION_DETAIL_REQUESTED:
       return Immutable.merge(state, {
-        filteredGranuleCount: initialState.filteredGranuleCount, // reset when we have a new request, before background results return (just in case there's a problem with that request, the UI can display regardless)
+        filteredGranuleCount: initialState.filteredGranuleCount, // reset when we have a new request, before background results return (just in case there's a problem with that request, the UI can display regardless)  // TODO just use the backgroundInFlight and default it to zero instead. Duh.
       })
     case GRANULE_MATCHING_COUNT_RECEIVED:
       return Immutable.merge(state, {
