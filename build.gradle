@@ -58,7 +58,7 @@ subprojects {
         if (details.requested.group == 'org.bouncycastle' && details.requested.name == 'bcprov-jdk15on') {
           if (details.requested.version.startsWith('1.5') && details.requested.version <= '1.59') {
             details.useVersion '1.62'
-            details.because 'fixes vulnerability in 1.5.x before 1.6'
+            details.because 'fixes vulnerability in 1.5x before 1.6x'
           }
         }
       }
