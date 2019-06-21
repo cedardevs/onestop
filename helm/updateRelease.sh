@@ -11,6 +11,7 @@ popd > /dev/null
 
 pushd "$BASEDIR/onestop" > /dev/null
 rm charts/*.tgz
+rm *.tgz
 helm dependency update
 helm package .
 popd  > /dev/null
