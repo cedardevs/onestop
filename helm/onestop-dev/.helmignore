@@ -22,4 +22,3 @@
 .vscode/
 # tmp files
 *.yaml--
-*.tgz
