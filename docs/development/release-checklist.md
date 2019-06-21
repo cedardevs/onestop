@@ -180,6 +180,11 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] **keyboard** Select the show matching files link
     - [ ] Files with a variety of bounding boxes appear
     - [ ] Access Protocols show Download, FTP, OPeNDAP, THREDDS and Web
+1. Search `DEM`. One of those should be "Hilo, Hawaii 1/3 arc-second DEM" 
+    - Select this collection
+    - [ ] In the dev tools network tab, look for the last GET to /onestop-search/collection/<ID>. 
+    - [ ] The response should include `serviceLinks`
+    - [ ] Future feature: display in UI
 1. In the search box:
     - [ ] Enter a search with blank text field (disallowed)
     - [ ] Enter a search starting with `*` (disallowed)
