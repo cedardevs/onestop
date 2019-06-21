@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.codehaus.groovy:groovy-all:2.3.11'
+    implementation "org.codehaus.groovy:groovy-all:${project.groovyVersion}"
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     implementation group: 'org.springframework', name: 'spring-context'
     implementation "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
