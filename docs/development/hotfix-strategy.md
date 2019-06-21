@@ -32,12 +32,25 @@ git commit -m "test"
 
 Once a hotfix has been committed to the release branch, tag a hotfix. For example, say the branch is release/N.x, and the current version is N.0.0.
 
+Nominally, the current version is represented by what the last tag in GitHub is. Ideally, the value in  `gradle.properties` represents what the second parameter (e.g. - N.0.2) of the promote script was from the last time it was called and created a tag.
+
+Having the promote script update to the next anticipated version prevents subsequent builds from making snapshot versions on a tag that's already been released. 
+
 ### TLDR; `bash promote.sh N.0.1 N.0.2`.
+
+Where, in general:
+
+Current tag: N.0.0
+Tag to be created from promote script: N.0.1
+Assumed next version: N.0.2
+
+Due to the expectations on the release branch specifically, we need to be a little more careful and follow this procedure:
 
 ### The slightly longer description of what I normally do in practice:
 
 1. Checkout the release branch
-1. Comment out the line `updateAndCommit $incrementToVersion` from promote.sh (This is important on master, but doesn't really make much sense on the release branch, based on how we normally tag releases.) (It's also not a big deal if you skip this step.
+1. Comment out the line `updateAndCommit $incrementToVersion` from promote.sh (This is used on master, but causes problems with the system that builds for production from the release branch, and the script hasn't been updated to account for these variations yet.)
 1. Run `bash promote.sh N.0.1 N.0.2`. This will create the tag, and make sure all the versions are correctly set to N.0.1
 1. On GitHub, create a release from the `vN.0.1` tag.
-1. Revert promote.sh
+1. When finished, your working directory should be clean except for the commented line in promote.sh. Make sure to restore it to it's normal state now.
+

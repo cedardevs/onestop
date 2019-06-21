@@ -13,7 +13,7 @@ import java.util.stream.Collectors
 
 @Slf4j
 @Service
-@Profile("kafka-ingest")
+@Profile(["kafka-ingest", "migration-ingest"])
 class KafkaConsumerService {
 
   @Value('${kafka.topic.collections}')
@@ -31,12 +31,12 @@ class KafkaConsumerService {
     log.info("consuming message from kafka topic")
     try {
       def validRecords = records.stream().filter({
-        it != null && InventoryManagerToOneStopUtil.validateMessage(it.key(), it.value())
+        it != null && InventoryManagerToOneStopUtil.validateMessage(it.key(), it.value())?.valid
       }).map({
         [id: it.key(), parsedRecord: it.value()]
       }).collect(Collectors.toList())
       if (validRecords.size() > 0) {
-        metadataManagementService.loadParsedMetadata(validRecords)
+        metadataManagementService.loadParsedRecords(validRecords)
       }
     }
     catch (Exception e) {
