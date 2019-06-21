@@ -1,15 +1,15 @@
 dependencies:
+- name: elasticsearch
+  repository: file://../elasticsearch
+  version: 0.1.0
 - name: api-admin
   repository: file://../api-admin
   version: 0.1.0
 - name: api-search
   repository: file://../api-search
   version: 0.1.0
-- name: api-user
-  repository: file://../api-user
-  version: 0.1.0
 - name: client
   repository: file://../client
   version: 0.1.0
-digest: sha256:be576535a3009bcec42545e730fade56d4b3da8adb1b8d7bfd7e0a104a6e9e81
-generated: 2019-03-29T12:26:43.84707-06:00
+digest: sha256:2ec1d977e9bea8f84156f53eb5952de191c50a62a29e0b90276b2fc047a807a9
+generated: 2019-06-20T14:28:20.483938-06:00

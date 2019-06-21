@@ -25,7 +25,7 @@ enabled: true  # set to false to use external elasticsearch
 # serviceNameOverride:  # used to point to external elasticsearch service
 
 cluster:
-  name: elasticearch
+  name: elasticsearch
   xpackEnabled: false
   heapMi: 512
   diskGi: 1
