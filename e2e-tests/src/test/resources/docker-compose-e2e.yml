@@ -13,7 +13,7 @@ services:
   api-search:
     image: cedardevs/onestop-api-search:latest
     ports:
-      - 8097:8097
+      - 8097:8080
     depends_on:
       - elasticsearch
     environment:
@@ -24,7 +24,7 @@ services:
   api-metadata:
     image: cedardevs/onestop-api-metadata:latest
     ports:
-      - 8098:8098
+      - 8098:8080
     depends_on:
       - elasticsearch
     environment:
@@ -34,10 +34,9 @@ services:
       - SPRING_PROFILES_ACTIVE=securitydisabled,kafkadisabled
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-5.6.14}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-6.7.1}
     environment:
       - xpack.security.enabled=false
     ports:
       - 9300:9300
       - 9200:9200
-

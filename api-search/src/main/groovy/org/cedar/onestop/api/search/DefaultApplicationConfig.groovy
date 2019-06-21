@@ -1,21 +1,26 @@
 package org.cedar.onestop.api.search
 
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
+import org.apache.http.HttpEntity
 import org.apache.http.HttpHost
 import org.apache.http.auth.AuthScope
 import org.apache.http.auth.UsernamePasswordCredentials
 import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
+import org.elasticsearch.Version
+import org.elasticsearch.client.Request
+import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestClientBuilder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Profile
 
 @Slf4j
 @Configuration
-@Profile("!integration")
 class DefaultApplicationConfig {
 
   @Value('${elasticsearch.port}')
@@ -33,7 +38,25 @@ class DefaultApplicationConfig {
   @Value('${elasticsearch.ro.pass:}')
   String roPassword
 
-  @Bean(destroyMethod = 'close')
+  @Bean(name = 'elasticsearchVersion')
+  @DependsOn('restClient')
+  Version elasticsearchVersion(RestClient restClient) throws IOException {
+    Request versionRequest = new Request('GET', '/')
+    Response versionResponse = restClient.performRequest(versionRequest)
+    HttpEntity responseEntity = versionResponse.entity
+    InputStream responseContent = responseEntity.content
+    Map content = new JsonSlurper().parse(responseContent) as Map
+    Map versionInfo = content.version as Map
+    String versionNumber = versionInfo.number as String
+    final Version version = Version.fromString(versionNumber)
+    if(version == null) {
+      throw new RuntimeException("Elasticsearch version not found in the response")
+    }
+    return version
+  }
+
+  @Profile("!integration")
+  @Bean(name = 'restClient', destroyMethod = 'close')
   RestClient restClient() {
     def hosts = []
     elasticHost.each { host ->

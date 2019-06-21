@@ -41,7 +41,7 @@ class SearchRequestParserService {
     return requestQuery
   }
 
-  Map createCollectionsAggregation() {
+  static Map createCollectionsAggregation() {
     return [
         terms       : [
             field: "internalParentIdentifier",
@@ -360,7 +360,7 @@ class SearchRequestParserService {
     return esFilters
   }
 
-  private Map constructSpatialFilter(Map filterRequest) {
+  static private Map constructSpatialFilter(Map filterRequest) {
     return [
         geo_shape: [
             spatialBounding: [
@@ -371,7 +371,7 @@ class SearchRequestParserService {
     ]
   }
 
-  private Map constructFacetFilter(Map filterRequest) {
+  static private Map constructFacetFilter(Map filterRequest) {
     def fieldName = facetNameMappings[filterRequest.name] ?: filterRequest.name
     return [
         terms: [

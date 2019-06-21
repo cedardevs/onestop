@@ -25,8 +25,8 @@ class LoadAndSearchTests extends Specification {
       .withPull(false)
 
   static esApiBase = "http://localhost:9200"
-  static searchApiBase = "http://localhost:8097/onestop/api"
-  static metadataApiBase = "http://localhost:8098/onestop/admin"
+  static searchApiBase = "http://localhost:8097/onestop-search"
+  static metadataApiBase = "http://localhost:8098/onestop-admin"
   static restTemplate = new RestTemplate()
 
   def setupSpec() {
@@ -49,16 +49,16 @@ class LoadAndSearchTests extends Specification {
   void 'load -> update -> search -> delete -> search'() {
     when:
     def paths = [
-        'data/COOPS/C1.xml',
-        'data/COOPS/G1.xml',
-        'data/COOPS/G2.xml',
-        'data/COOPS/O1.xml',
-        'data/DEM/1.xml',
-        'data/DEM/2.xml',
-        'data/DEM/3.xml',
-        'data/GHRSST/1.xml',
-        'data/GHRSST/2.xml',
-        'data/GHRSST/3.xml',
+        'test/data/xml/COOPS/C1.xml',
+        'test/data/xml/COOPS/G1.xml',
+        'test/data/xml/COOPS/G2.xml',
+        'test/data/xml/COOPS/O1.xml',
+        'test/data/xml/DEM/1.xml',
+        'test/data/xml/DEM/2.xml',
+        'test/data/xml/DEM/3.xml',
+        'test/data/xml/GHRSST/1.xml',
+        'test/data/xml/GHRSST/2.xml',
+        'test/data/xml/GHRSST/3.xml',
     ]
     def body = new LinkedMultiValueMap<String, Object>()
     paths.each { body.add("files", new ClassPathResource(it)) }
