@@ -85,12 +85,6 @@ subprojects {
             details.because 'fixes CVE-2019-0221'
           }
         }
-        if (details.requested.name == 'testng') {
-          if (details.requested.version <= '7.0') {
-            details.useVersion '7.0'
-            details.because 'jquery CVE'
-          }
-        }
       }
     }
 
