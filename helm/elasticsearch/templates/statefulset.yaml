@@ -83,6 +83,8 @@ spec:
               path: /
               port: http
             initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 10
           resources:
             limits:
               cpu: {{ .Values.cluster.cpu }}
