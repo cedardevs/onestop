@@ -12,8 +12,11 @@ popd > /dev/null
 pushd "$BASEDIR/onestop" > /dev/null
 rm charts/*.tgz
 helm dependency update
-helm package .
 popd  > /dev/null
+
+pushd "$BASEDIR" > /dev/null
+helm package onestop
+popd > /dev/null
 
 pushd "$BASEDIR"  > /dev/null
 helm repo index . --merge index.yaml
