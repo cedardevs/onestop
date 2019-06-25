@@ -28,7 +28,11 @@ class ElasticsearchServiceSpec extends Specification {
     esVersionedConfigs = ElasticsearchTestVersion.configs()
   }
 
-  def "preserve page max 0 offset 0 into request" () {
+  def "preserve page max 0 offset 0 into request using ES version #dataPipe.version" () {
+    given:
+    Version version = dataPipe.version as Version
+    ElasticsearchConfig esConfig = esVersionedConfigs[version]
+    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient, esConfig)
     // post processing on the request was altering the results after addPagination
     when:
     def queryResult = elasticsearchService.buildRequestBody([page:[max: 0, offset:0]])
@@ -36,9 +40,12 @@ class ElasticsearchServiceSpec extends Specification {
     then:
     queryResult.size == 0
     queryResult.from == 0
+
+    where:
+    dataPipe << ElasticsearchTestVersion.versionedTestCases()
   }
 
-  def 'executes a search  using ES version #dataPipe.version'() {
+  def 'executes a search using ES version #dataPipe.version'() {
     def testIndex = 'test_index'
     def searchRequest = [
         queries: [[type: 'queryText', value: 'test']],
