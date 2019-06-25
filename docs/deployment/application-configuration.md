@@ -91,11 +91,15 @@ Logging output is quite customizable and all possible configuration settings all
 ### UI Values
 Some features of the associated UI are customizable via the API.
 
-A disclaimer can be placed at the top of all pages, with a personalized message and color scheme (CSS colors). For example:
+A disclaimer can be placed at the top of all pages, with a personalized message and color scheme (CSS colors). The `color` and `backgroundColor` fields are optional. The colors fallback to a red-colored background with white text, respectively, when invalid CSS color values are provided. Valid colors include: `ForestGreen`, `springgreen`, `Violet`, `#123456`, `#A11`, `rgb(240, 4, 133)`, `rgba(0, 45, 0, 0.3)`, and many other browser-friendly CSS colors.
+
+#### Disclaimer Configuration Example:
 
 ```yml
 ui:
   disclaimer: "This is a demo"
+  backgroundColor: yellow
+  color: #000
 ```
 
 Additionally, featured data sets are customizable. Here's an example:
