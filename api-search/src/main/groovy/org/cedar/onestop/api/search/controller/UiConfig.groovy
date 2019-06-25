@@ -7,17 +7,13 @@ import org.springframework.stereotype.Component
 @ConfigurationProperties('ui')
 class UiConfig {
 
-  BannerConfig banner
+  DisclaimerConfig disclaimer
   List<FeaturedConfig> featured
 
-  static class BannerConfig {
+  static class DisclaimerConfig {
     String message
-    BannerColorConfig colors
-  }
-
-  static class BannerColorConfig {
-    String text
-    String background
+    String color
+    String backgroundColor
   }
 
   static class FeaturedConfig { // featured datasets

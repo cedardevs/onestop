@@ -91,7 +91,7 @@ Logging output is quite customizable and all possible configuration settings all
 ### UI Values
 Some features of the associated UI are customizable via the API.
 
-A banner can be placed at the top of all pages, with a personalized message and color scheme (CSS colors). For example:
+A disclaimer can be placed at the top of all pages, with a personalized message and color scheme (CSS colors). For example:
 
 ```yml
 ui:
