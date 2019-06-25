@@ -1,11 +1,15 @@
 import React from 'react'
 import {SiteColors} from '../../style/defaultStyles'
+import {isColor} from '../../utils/styleUtils'
 
-const styleDisclaimer = {
-  background: SiteColors.WARNING,
-  textAlign: 'center',
-  padding: '0.618em',
-  fontSize: '1.2em',
+const styleDisclaimer = (color, backgroundColor) => {
+  return {
+    color: isColor(color) ? color : SiteColors.HEADER_TEXT,
+    background: isColor(backgroundColor) ? backgroundColor : SiteColors.WARNING,
+    textAlign: 'center',
+    padding: '0.618em',
+    fontSize: '1.2em',
+  }
 }
 
 class Disclaimer extends React.Component {
@@ -20,7 +24,9 @@ class Disclaimer extends React.Component {
       return null
     }
 
-    return <div style={styleDisclaimer}>{disclaimer}</div>
+    const {message, color, backgroundColor} = disclaimer
+
+    return <div style={styleDisclaimer(color, backgroundColor)}>{message}</div>
   }
 }
 

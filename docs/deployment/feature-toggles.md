@@ -82,8 +82,8 @@ There are two *new* sections to the search API UI config YML.
         alwaysSendToDefaultTracker: false
     enabledFeatureToggles:
       - featureName: cart
-    banner:
-      message: TEST - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
+    disclaimer:
+      message: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
     featured:
       - title: Super Important Featured Dataset 1
         searchTerm: '"Gridded Satellite GOES"'
