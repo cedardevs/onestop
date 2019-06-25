@@ -97,9 +97,10 @@ A disclaimer can be placed at the top of all pages, with a personalized message 
 
 ```yml
 ui:
-  disclaimer: "This is a demo"
-  backgroundColor: yellow
-  color: #000
+  disclaimer:
+    message: "This is a demo"
+    backgroundColor: yellow
+    color: #000
 ```
 
 Additionally, featured data sets are customizable. Here's an example:
