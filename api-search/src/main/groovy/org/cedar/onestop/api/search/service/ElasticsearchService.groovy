@@ -323,7 +323,7 @@ class ElasticsearchService {
   }
 
   private Map pruneEmptyElements(Map requestBody) {
-    def prunedRequest = requestBody.collectEntries { k, v -> [k, v instanceof Map ? pruneEmptyElements(v) : v]}.findAll { k, v -> v != null }
+    def prunedRequest = requestBody.collectEntries { k, v -> [k, v instanceof Map ? pruneEmptyElements(v) : v]}.findAll { k, v -> v != null && v != [:] }
     return prunedRequest
   }
 }
