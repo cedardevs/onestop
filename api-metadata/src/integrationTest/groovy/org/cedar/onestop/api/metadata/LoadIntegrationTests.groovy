@@ -1,19 +1,39 @@
 package org.cedar.onestop.api.metadata
 
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
+import org.cedar.onestop.elastic.common.RequestUtil
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
+import spock.lang.Specification
+import spock.lang.Unroll
 
-class LoadIntegrationTests extends IntegrationTest {
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+
+@ActiveProfiles(["integration"])
+@SpringBootTest(
+        classes = [
+            Application,
+            DefaultApplicationConfig,
+
+            // provides:
+            // - `RestClient` 'restClient' bean via test containers
+            ElasticsearchTestConfig,
+        ],
+        webEnvironment = RANDOM_PORT
+)
+@Unroll
+class LoadIntegrationTests extends Specification {
 
   /**
    * These tests cover:
@@ -33,14 +53,13 @@ class LoadIntegrationTests extends IntegrationTest {
   private String contextPath
 
   @Autowired
-  @Qualifier("elasticsearchRestClient")
   RestClient restClient
 
   @Autowired
   ElasticsearchService elasticsearchService
 
-  private collectionPath = "data/COOPS/C1.xml"
-  private granulePath = "data/COOPS/G1.xml"
+  private collectionPath = "test/data/xml/COOPS/C1.xml"
+  private granulePath = "test/data/xml/COOPS/G1.xml"
 
   RestTemplate restTemplate
   String metadataURI
@@ -72,7 +91,7 @@ class LoadIntegrationTests extends IntegrationTest {
     when:
     def loadRequest = buildLoadRequest(collectionPath)
     def loadResult = restTemplate.exchange(loadRequest, Map)
-    refreshIndices()
+    RequestUtil.refreshAllIndices(restClient)
 
     then: "Load returns CREATED"
     loadResult.statusCode == HttpStatus.CREATED
@@ -105,7 +124,7 @@ class LoadIntegrationTests extends IntegrationTest {
     when:
     def step1Result = restTemplate.exchange(buildLoadRequest('data/BadFiles/conflictStep1.xml'), Map)
     def step2Result = restTemplate.exchange(buildLoadRequest('data/BadFiles/conflictStep2.xml'), Map)
-    refreshIndices() // need to refresh so that step 1 is searchable and step 3 can update it
+    RequestUtil.refreshAllIndices(restClient) // need to refresh so that step 1 is searchable and step 3 can update it
     def step3Result = restTemplate.exchange(buildLoadRequest('data/BadFiles/conflictStep3.xml'), Map)
     def doc1Id = step1Result.body.data.id
     def doc2Id = step2Result.body.data.id
@@ -115,7 +134,7 @@ class LoadIntegrationTests extends IntegrationTest {
     step3Result.body.data.id == doc1Id
 
     when:
-    refreshIndices() // refresh again so step 3 is searchable and the conflict is triggered
+    RequestUtil.refreshAllIndices(restClient) // refresh again so step 3 is searchable and the conflict is triggered
     def step4Result = restTemplate.exchange(buildLoadRequest('data/BadFiles/conflictStep4.xml'), Map)
 
     then:
@@ -136,13 +155,14 @@ class LoadIntegrationTests extends IntegrationTest {
 
     and: 'one with no ids and refresh'
     def step3Result = restTemplate.exchange(buildLoadRequest(fileWoIds), Map)
-    refreshIndices()
+    RequestUtil.refreshAllIndices(restClient)
 
     then: 'doc1 and 2 are unique records, doc3 fails no id'
     doc1Id != doc2Id
 
     step3Result.statusCode == HttpStatus.BAD_REQUEST
-    step3Result.body.errors[0].title.contains('Unable to parse')
+    step3Result.body.errors[0].title.contains('Invalid record')
+    step3Result.body.errors[0].detail.contains('Missing identifier')
   }
 
   def 'does not allow a record with malformed temporal bounding to be loaded'() {
@@ -151,15 +171,17 @@ class LoadIntegrationTests extends IntegrationTest {
 
     then:
     badDateResult.statusCode == HttpStatus.BAD_REQUEST
-    badDateResult.body.errors[0].title.contains('malformed data')
-    badDateResult.body.errors[0].detail.contains('DateTimeParseException')
+
+    badDateResult.body.errors[0].title.contains('Invalid record')
+    badDateResult.body.errors[0].detail.contains('Invalid beginDate')
+    badDateResult.body.errors[0].detail.contains('Invalid endDate')
   }
 
   def 'retrieve a metadata record by elasticsearch id'() {
     setup:
     def loadResult = restTemplate.exchange(buildLoadRequest(collectionPath), Map)
     def elasticsearchId = loadResult.body.data.id
-    refreshIndices()
+    RequestUtil.refreshAllIndices(restClient)
 
     expect:
     def getRequest = RequestEntity.get("$metadataURI/$elasticsearchId".toURI()).build()
@@ -180,7 +202,7 @@ class LoadIntegrationTests extends IntegrationTest {
     setup:
     def loadResult = restTemplate.exchange(buildLoadRequest(collectionPath), Map)
     def fileIdentifier = loadResult.body.data.attributes.fileIdentifier
-    refreshIndices()
+    RequestUtil.refreshAllIndices(restClient)
 
     expect:
     def getRequest = RequestEntity.get("$metadataURI?fileIdentifier=$fileIdentifier".toURI()).build()
@@ -192,7 +214,7 @@ class LoadIntegrationTests extends IntegrationTest {
     setup:
     def loadResult = restTemplate.exchange(buildLoadRequest(collectionPath), Map)
     def doi = loadResult.body.data.attributes.doi
-    refreshIndices()
+    RequestUtil.refreshAllIndices(restClient)
 
     expect:
     def getRequest = RequestEntity.get("$metadataURI?doi=$doi".toURI()).build()
@@ -205,7 +227,7 @@ class LoadIntegrationTests extends IntegrationTest {
     def loadResult = restTemplate.exchange(buildLoadRequest(collectionPath), Map)
     def fileIdentifier = loadResult.body.data.attributes.fileIdentifier
     def doi = loadResult.body.data.attributes.doi
-    refreshIndices()
+    RequestUtil.refreshAllIndices(restClient)
 
     expect:
     def getRequest = RequestEntity.get("$metadataURI?fileIdentifier=$fileIdentifier&doi=$doi".toURI()).build()
@@ -227,10 +249,6 @@ class LoadIntegrationTests extends IntegrationTest {
             .contentType(MediaType.APPLICATION_XML)
             .header(HttpHeaders.USER_AGENT, "Spring's RestTemplate") // value can be whatever
             .body(new ClassPathResource(content))
-  }
-
-  private refreshIndices() {
-    restClient.performRequest('POST', '_refresh')
   }
 
 }

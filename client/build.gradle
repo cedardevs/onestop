@@ -3,7 +3,7 @@ apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 node {
-    version = '10.15.1'
+    version = '10.15.3'
     download = true
 }
 
@@ -43,14 +43,20 @@ task start(type: Exec) {
 }
 
 task tarResults(type: Tar) {
-    dependsOn 'compile'
+  dependsOn 'compile'
 
-    from "${buildDir}/dist"
-    baseName = 'onestop-client'
-    version = ''//project.version
-    compression = 'gzip'
-    extension = 'tar.gz'
-    destinationDir = file("${buildDir}/libs")
+  from "${buildDir}/dist"
+  archiveBaseName.set("onestop-client")
+  archiveExtension.set("tar.gz")
+  version = '' //project.version
+
+  // If the `archiveFileName` has not been explicitly set,
+  // the pattern for the name is:
+  // "${archiveBaseName}-${archiveAppendix}-${archiveVersion}-${archiveClassifier}.${archiveExtension}"
+  archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
+
+  setCompression(Compression.GZIP)
+  destinationDirectory = file("${buildDir}/libs")
 }
 
 assemble.dependsOn 'tarResults'
@@ -84,17 +90,14 @@ check {
 }
 
 build {
-    dependsOn 'assemble', 'check'
+    dependsOn 'assemble', 'check', 'sourceJar'
 }
 
 task sourceJar(type: Jar) {
-  classifier "sources"
-
-  baseName = "${rootProject.name}-${project.name}"
+  archiveClassifier.set("sources")
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   from "${projectDir}/src"
 }
-
-build.dependsOn sourceJar
 
 publishing {
     publications {

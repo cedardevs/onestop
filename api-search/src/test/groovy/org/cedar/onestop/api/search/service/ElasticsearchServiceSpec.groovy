@@ -2,24 +2,33 @@ package org.cedar.onestop.api.search.service
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.util.logging.Slf4j
+import org.apache.http.HttpEntity
 import org.apache.http.StatusLine
 import org.apache.http.nio.entity.NStringEntity
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchTestVersion
+import org.elasticsearch.Version
+import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import groovy.json.JsonSlurper
+@Slf4j
 @Unroll
 class ElasticsearchServiceSpec extends Specification {
 
-  private slurper = new JsonSlurper()
-  def mockRestClient = Mock(RestClient)
-  def searchConfig = new SearchConfig()
-  def searchRequestParserService = new SearchRequestParserService(searchConfig)
-  def elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient)
+  RestClient mockRestClient = Mock(RestClient)
+  SearchConfig searchConfig = new SearchConfig()
+  SearchRequestParserService searchRequestParserService = new SearchRequestParserService(searchConfig)
+  Map<Version, ElasticsearchConfig> esVersionedConfigs = [:]
 
-  def "preservse page max 0 offset 0 into request" () {
+  def setup() {
+    esVersionedConfigs = ElasticsearchTestVersion.configs()
+  }
+
+  def "preserve page max 0 offset 0 into request" () {
     // post processing on the request was altering the results after addPagination
     when:
     def queryResult = elasticsearchService.buildRequestBody([page:[max: 0, offset:0]])
@@ -29,21 +38,24 @@ class ElasticsearchServiceSpec extends Specification {
     queryResult.from == 0
   }
 
-  def 'executes a search'() {
+  def 'executes a search  using ES version #dataPipe.version'() {
     def testIndex = 'test_index'
     def searchRequest = [
         queries: [[type: 'queryText', value: 'test']],
         filters: [[type: 'year', beginYear: 1999]],
         page   : [max: 42, offset: 24]
     ]
+    Version version = dataPipe.version as Version
+    ElasticsearchConfig esConfig = esVersionedConfigs[version]
+    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient, esConfig)
 
-    def mockResponse = buildMockElasticResponse(200, [
+    Response mockResponse = buildMockElasticResponse(200, [
         hits: [
             total: 1,
             hits: [
                 [
                     _id       : 'ABC',
-                    _index    : testIndex,
+                    _index    : esConfig.COLLECTION_SEARCH_INDEX_ALIAS,
                     attributes: [
                         title: 'THIS IS A TEST'
                     ]
@@ -54,11 +66,17 @@ class ElasticsearchServiceSpec extends Specification {
     ])
 
     when:
-    def result = elasticsearchService.searchFromRequest(searchRequest, testIndex)
+    def result = elasticsearchService.searchFromRequest(searchRequest, esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
 
     then:
-    1 * mockRestClient.performRequest('GET', testIndex + '/_search', [:], { NStringEntity it ->
-      def searchContent = new JsonSlurper().parse(it.content)
+    1 * mockRestClient.performRequest({
+      Request request = it as Request
+      HttpEntity requestEntity = request.entity
+      InputStream requestContent = requestEntity.content
+      Map searchContent = new JsonSlurper().parse(requestContent) as Map
+      assert request.method == 'GET'
+      assert request.endpoint.startsWith(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+      assert request.endpoint.endsWith('_search')
       assert searchContent.size == searchRequest.page.max
       assert searchContent.from == searchRequest.page.offset
       return true
@@ -69,6 +87,9 @@ class ElasticsearchServiceSpec extends Specification {
     result.data.size() == 1
     result.data[0].id == 'ABC'
     result.meta.took == 1234
+
+    where:
+    dataPipe << ElasticsearchTestVersion.versionedTestCases()
   }
 
   def 'supports pagination parameters'() {
@@ -86,16 +107,12 @@ class ElasticsearchServiceSpec extends Specification {
 
 
   private Response buildMockElasticResponse(int status, Map body) {
-    def mockResponse = Mock(Response)
-    mockResponse.getStatusLine() >> buildMockStatusLine(status)
-    mockResponse.getEntity() >> new NStringEntity(JsonOutput.toJson(body))
+    Response mockResponse = Mock(Response)
+    StatusLine mockStatusLine = Mock(StatusLine)
+    mockResponse.statusLine >> mockStatusLine
+    mockStatusLine.statusCode >> status
+    mockResponse.entity >> new NStringEntity(JsonOutput.toJson(body))
     return mockResponse
-  }
-
-  private StatusLine buildMockStatusLine(int status) {
-    def result = Mock(StatusLine)
-    result.getStatusCode() >> status
-    return result
   }
 
 }
