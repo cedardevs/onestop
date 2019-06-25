@@ -2,7 +2,10 @@ package org.cedar.psi.registry.api
 
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
-import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.psi.AggregatedInput
+import org.cedar.schemas.avro.psi.ErrorEvent
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import spock.lang.Specification
@@ -14,12 +17,10 @@ class MetadataRestControllerSpec extends Specification {
   static final testId = 'abc'
   static final testType = RecordType.collection
   static final testSource = Topics.DEFAULT_SOURCE
-  static final testInput = Input.newBuilder()
+  static final testAggInput = AggregatedInput.newBuilder()
       .setType(RecordType.collection)
-      .setContent('{"hello":"world"}')
-      .setMethod(Method.POST)
-      .setContentType('application/json')
-      .setSource('test')
+      .setRawJson('{"hello":"world"}')
+      .setInitialSource('test')
       .build()
   static final testParsed = ParsedRecord.newBuilder().setType(RecordType.collection).build()
 
@@ -38,14 +39,14 @@ class MetadataRestControllerSpec extends Specification {
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
-    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testInput
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
 
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.links.parsed == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
     result.data.id == testId
     result.data.type == testType.toString()
-    result.data.attributes == testInput
+    result.data.attributes == testAggInput
     result.errors == null
   }
 
@@ -58,14 +59,14 @@ class MetadataRestControllerSpec extends Specification {
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
-    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testInput
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
 
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.links.parsed == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
     result.data.id == testId
     result.data.type == testType.toString()
-    result.data.attributes == testInput
+    result.data.attributes == testAggInput
     result.errors == null
   }
 
@@ -179,12 +180,11 @@ class MetadataRestControllerSpec extends Specification {
   }
 
   def 'handles deleted input'() {
-    def deletedInput = Input.newBuilder()
+    def deletedInput = AggregatedInput.newBuilder()
         .setType(RecordType.collection)
-        .setContent('{"hola":"mundo"}')
-        .setMethod(Method.DELETE)
-        .setContentType('application/json')
-        .setSource('test')
+        .setRawJson('{"hola":"mundo"}')
+        .setDeleted(true)
+        .setInitialSource('test')
         .build()
     def path = "/metadata/${testType}/${testSource}/${testId}"
     def request = buildMockRequest(path)

@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Profile
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
 import static org.apache.kafka.streams.StreamsConfig.*
-import static org.cedar.psi.common.constants.StreamsApps.getREGISTRY_ID
+import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID
 
 @Slf4j
 @CompileStatic
@@ -38,6 +38,13 @@ class KafkaBeanConfig {
 
   @Value('${kafka.compression.type}')
   private String compressionType
+
+  // default: 100 MiB
+  @Value('${kafka.cache.max.bytes.buffering:104857600}')
+  private Long cacheMaxBytes
+
+  @Value('${kafka.commit.interval.ms:}')
+  private Long commitIntervalMs
 
   @Value('${schema.registry.url}')
   private String schemaRegistryUrl
@@ -84,11 +91,14 @@ class KafkaBeanConfig {
         (DEFAULT_KEY_SERDE_CLASS_CONFIG)     : Serdes.String().class.name,
         (DEFAULT_VALUE_SERDE_CLASS_CONFIG)   : SpecificAvroSerde.class.name,
         (AUTO_OFFSET_RESET_CONFIG)           : 'earliest',
+        (CACHE_MAX_BYTES_BUFFERING_CONFIG)   : cacheMaxBytes,
         (TopicConfig.COMPRESSION_TYPE_CONFIG): compressionType
     ]
     if (stateDir) {
-      println stateDir
       props.put(StreamsConfig.STATE_DIR_CONFIG, stateDir)
+    }
+    if (commitIntervalMs) {
+      props.put(COMMIT_INTERVAL_MS_CONFIG, commitIntervalMs)
     }
 
     def streamsConfig = new StreamsConfig(props)

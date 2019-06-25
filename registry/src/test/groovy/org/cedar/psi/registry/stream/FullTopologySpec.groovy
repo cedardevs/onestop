@@ -60,8 +60,13 @@ class FullTopologySpec extends Specification {
     driver.pipeInput(inputFactory.create(inputTopic, key, value1))
     driver.pipeInput(inputFactory.create(inputTopic, key, value2))
 
+    and:
+    def aggregate = inputStore.get('A')
+
     then:
-    inputStore.get('A') == buildTestGranule('{"size":42,"name":"test"}', Method.PATCH)
+    aggregate instanceof AggregatedInput
+    aggregate.rawJson == '{"size":42,"name":"test"}'
+    aggregate.events.size() == 2
   }
 
   def 'values for discovery and publishing are set to the default values'() {
@@ -82,7 +87,7 @@ class FullTopologySpec extends Specification {
     driver.pipeInput(parsedFactory.create(parsedTopic, key, value1))
 
     then:
-    parsedStore.get(key) == value1
+    parsedStore.get(key).equals(value1)
     def output = readAllOutput(driver, publishedTopic)
     OutputVerifier.compareKeyValue(output[0], key, value1)
     output.size() == 1
@@ -145,7 +150,7 @@ class FullTopologySpec extends Specification {
     driver.pipeInput(parsedFactory.create(parsedTopic, key, value2))
 
     then:
-    parsedStore.get(key) == value2
+    parsedStore.get(key).equals(value2)
     def output = readAllOutput(driver, publishedTopic)
     OutputVerifier.compareKeyValue(output[0], key, value1)
     OutputVerifier.compareKeyValue(output[1], key, value2)
@@ -172,7 +177,7 @@ class FullTopologySpec extends Specification {
     driver.pipeInput(parsedFactory.create(parsedTopic, key, value))
 
     then:
-    parsedStore.get(key) == value
+    parsedStore.get(key).equals(value)
     def output = readAllOutput(driver, publishedTopic)
     OutputVerifier.compareKeyValue(output[0], key, null)
     output.size() == 1
@@ -202,7 +207,7 @@ class FullTopologySpec extends Specification {
     driver.pipeInput(parsedFactory.create(parsedTopic, key, plusFiveMessage))
 
     then: // a tombstone is published
-    parsedStore.get(key) == plusFiveMessage
+    parsedStore.get(key).equals(plusFiveMessage)
     def output1 = readAllOutput(driver, publishedTopic)
     OutputVerifier.compareKeyValue(output1[0], key, null)
     output1.size() == 1
@@ -211,7 +216,7 @@ class FullTopologySpec extends Specification {
     driver.advanceWallClockTime(6000)
 
     then:
-    parsedStore.get(key) == plusFiveMessage
+    parsedStore.get(key).equals(plusFiveMessage)
     def output2 = readAllOutput(driver, publishedTopic)
     OutputVerifier.compareKeyValue(output2[0], key, plusFiveMessage)
     output2.size() == 1

@@ -28,7 +28,7 @@ dependencies {
   compile('io.confluent:kafka-streams-avro-serde:5.1.0')
   compile(project(':common'))
   //configure  to unzip and copy schema definitions 
-  schemaDefinitions ("com.github.cedardevs:schemas:${project.schemasVersion}")
+  schemaDefinitions ("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
 
   compileOnly('org.springframework.boot:spring-boot-starter-tomcat')
 
@@ -39,7 +39,7 @@ dependencies {
   testCompile("org.spockframework:spock-core:${project.spockVersion}")
   testCompile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
   testCompile('org.springframework.boot:spring-boot-starter-test')
-  testCompile('org.springframework.kafka:spring-kafka-test:2.2.3.RELEASE')
+  testCompile('org.springframework.kafka:spring-kafka-test:2.2.5.RELEASE')
   testCompile('org.apache.kafka:kafka-streams-test-utils:2.1.0')
   testCompile('org.apache.kafka:kafka-clients:2.1.0:test')
   testCompile('org.apache.kafka:kafka_2.12:2.1.0')
@@ -49,6 +49,8 @@ dependencies {
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
   testCompile("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
 }
+
+sourceCompatibility = '11'
 
 sourceSets {
   integrationTest {
