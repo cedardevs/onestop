@@ -119,10 +119,10 @@ class RegistryIntegrationSpec extends Specification {
     data.attributes.rawXml == null
     data.attributes.initialSource == "common-ingest"
     data.attributes.type == "granule"
-    data.attributes.fileInformation == null
-    data.attributes.fileLocations == [:]
+    data.attributes.fileInformation instanceof Map
+    data.attributes.fileLocations instanceof Map
     data.attributes.publishing == null
-    data.attributes.relationships == []
+    data.attributes.relationships instanceof List
     data.attributes.deleted == false
     data.attributes.events instanceof List
     data.attributes.events.size() == 1

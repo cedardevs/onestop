@@ -1,10 +1,16 @@
 package org.cedar.psi.registry.stream
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.cedar.psi.common.util.TimestampedValue
 import org.cedar.schemas.avro.psi.*
 import spock.lang.Specification
+import spock.lang.Unroll
 
+@Unroll
 class StreamFunctionsSpec extends Specification {
+
+  final static String testGranuleJson = ClassLoader.systemClassLoader.getResourceAsStream("test_granule.json").text
 
   def 'identity reducer returns the next value'() {
     def curr = 'A'
@@ -37,14 +43,15 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregates an initial input'() {
     def key = 'ABC'
-    def input = new Input([
-        type: RecordType.granule,
-        method: Method.POST,
-        content: '{"trackingId":"ABC","fileInformation":{"size":42},"fileLocations":{"test:one":{"uri":"test:one"},"test:two":{"uri":"test:two"}}}',
-        contentType: 'application/json',
-        source: 'test',
-        operation: null
-    ])
+    def input = Input.newBuilder()
+        .setType(RecordType.granule)
+        .setMethod(Method.PUT)
+        .setContent(testGranuleJson)
+        .setContentType('application/json')
+        .setSource('common-ingest')
+        .setOperation( null)
+        .build()
+    def uglifiedContent = JsonOutput.toJson(new JsonSlurper().parseText(testGranuleJson))
     def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
     def aggregate = AggregatedInput.newBuilder().build()
 
@@ -53,19 +60,18 @@ class StreamFunctionsSpec extends Specification {
 
     then:
     result instanceof AggregatedInput
-    result.rawJson == input.content
+    result.rawJson == uglifiedContent
     result.rawXml == null
     result.initialSource == input.source
     result.type == input.type
     result.fileInformation instanceof FileInformation
     result.fileInformation.size == 42
     result.fileLocations instanceof Map
-    result.fileLocations.size() == 2
-    result.fileLocations['test:one'].uri == 'test:one'
-    result.fileLocations['test:two'].uri == 'test:two'
+    result.fileLocations.size() == 1
+    result.fileLocations['http://www.google.com'].uri == 'http://www.google.com'
     result.publishing == null
     result.relationships instanceof List
-    result.relationships.size() == 0
+    result.relationships.size() == 1
     result.deleted == false
     result.events instanceof List
     result.events.size() == 1
@@ -97,7 +103,7 @@ class StreamFunctionsSpec extends Specification {
     result.fileInformation == null
     result.errors instanceof List
     result.errors.size() == 1
-    result.errors[0].detail.contains("fileInformation")
+    result.errors[0].title.contains("fileInformation")
 
     and:
     result.fileLocations instanceof Map
