@@ -28,6 +28,7 @@ deploy:
       setValues:
         config: |-
           ---
+          logging.level.org.cedar: DEBUG
           server.servlet.context-path: /registry
           kafka.commit.interval: 1000
         cp-schema-registry.url: http://psi-dev-cp-schema-registry:8081
@@ -41,6 +42,7 @@ deploy:
       setValues:
         config: |-
           ---
+          logging.level.org.cedar: DEBUG
           kafka.commit.interval: 1000
         cp-schema-registry.url: http://psi-dev-cp-schema-registry:8081
         kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
