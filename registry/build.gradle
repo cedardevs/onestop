@@ -9,24 +9,31 @@ plugins {
 }
 
 configurations {
-  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
-  testCompile.exclude(group: 'ch.qos.logback')
-
-  integrationTestCompile.extendsFrom testCompile
+  implementation.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+  testImplementation.exclude(group: 'ch.qos.logback')
+  integrationTestImplementation.extendsFrom testImplementation
   integrationTestRuntime.extendsFrom testRuntime
+  integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
   
   schemaDefinitions
 }
 
 dependencies {
-  compile('org.codehaus.groovy:groovy')
-  compile('org.codehaus.groovy:groovy-json')
-  compile('org.springframework.boot:spring-boot-starter-actuator')
-  compile('org.springframework.boot:spring-boot-starter-web')
-  compile('org.apache.kafka:kafka-streams:2.1.0')
-  compile('org.apache.kafka:kafka-clients:2.1.0')
-  compile('io.confluent:kafka-streams-avro-serde:5.1.0')
-  compile(project(':common'))
+  implementation('org.codehaus.groovy:groovy')
+  implementation('org.codehaus.groovy:groovy-json')
+  implementation('org.springframework.boot:spring-boot-starter-actuator')
+  implementation('org.springframework.boot:spring-boot-starter-web')
+  implementation('org.apache.kafka:kafka-streams:2.1.0')
+  implementation('org.apache.kafka:kafka-clients:2.1.0')
+  implementation('io.confluent:kafka-streams-avro-serde:5.1.0')
+  implementation(project(':common'))
+
+  // -- CAS Authentication --
+  implementation('org.springframework.boot:spring-boot-starter-security')
+  implementation('org.springframework.security:spring-security-cas')
+  testImplementation('org.springframework.security:spring-security-test')
+
+
   //configure  to unzip and copy schema definitions 
   schemaDefinitions ("com.github.cedardevs:schemas:${project.schemasVersion}")
 
@@ -34,35 +41,39 @@ dependencies {
 
   runtime('org.springframework.boot:spring-boot-devtools')
 
-  testCompile('org.springframework.boot:spring-boot-starter-test')
-  testCompile("org.spockframework:spock-spring:${project.spockVersion}")
-  testCompile("org.spockframework:spock-core:${project.spockVersion}")
-  testCompile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
-  testCompile('org.springframework.boot:spring-boot-starter-test')
-  testCompile('org.springframework.kafka:spring-kafka-test:2.2.3.RELEASE')
-  testCompile('org.apache.kafka:kafka-streams-test-utils:2.1.0')
-  testCompile('org.apache.kafka:kafka-clients:2.1.0:test')
-  testCompile('org.apache.kafka:kafka_2.12:2.1.0')
-  testCompile('org.apache.kafka:kafka_2.12:2.1.0:test')
-  testCompile('io.confluent:kafka-schema-registry:5.1.0')
-  testCompile('io.confluent:kafka-schema-registry:5.1.0:tests')
-  testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
-  testCompile("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
+  testImplementation('org.springframework.boot:spring-boot-starter-test')
+  testImplementation("org.spockframework:spock-spring:${project.spockVersion}")
+  testImplementation("org.spockframework:spock-core:${project.spockVersion}")
+  testImplementation('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
+  testImplementation('org.springframework.boot:spring-boot-starter-test')
+  testImplementation('org.springframework.kafka:spring-kafka-test:2.2.3.RELEASE')
+  testImplementation('org.apache.kafka:kafka-streams-test-utils:2.1.0')
+  testImplementation('org.apache.kafka:kafka-clients:2.1.0:test')
+  testImplementation('org.apache.kafka:kafka_2.12:2.1.0')
+  testImplementation('org.apache.kafka:kafka_2.12:2.1.0:test')
+  testImplementation('io.confluent:kafka-schema-registry:5.1.0')
+  testImplementation('io.confluent:kafka-schema-registry:5.1.0:tests')
+  testImplementation('com.github.java-json-tools:json-schema-validator:2.2.10')
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
 }
 
 sourceSets {
   integrationTest {
+    compileClasspath += sourceSets.main.output + sourceSets.test.output
+    runtimeClasspath += sourceSets.main.output + sourceSets.test.output
     groovy.srcDir file('src/integrationTest/groovy')
-//    resources.srcDir file("src/main/resources")
-    compileClasspath += main.output + test.output + configurations.testRuntime
-    runtimeClasspath += output + compileClasspath
+    resources.srcDir file('src/integrationTest/resources')
   }
 }
 
-task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
-  mustRunAfter 'test'
+task integrationTest(type: Test) {
+  description = 'Runs the integration tests'
+  group = 'verification'
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
+  outputs.upToDateWhen { false }
+  shouldRunAfter test
+
   reports.junitXml.destination = file("${buildDir}/integration-test-results")
   reports.html.destination =  file("${buildDir}/reports/integrationTests")
 }

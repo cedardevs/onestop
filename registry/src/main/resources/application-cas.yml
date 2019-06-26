@@ -1,0 +1,7 @@
+cas:
+  service: 'http://localhost/registry/login/cas'
+  serverUrlPrefix: 'https://auth.ncdc.noaa.gov/cas'
+  loginUrl: 'https://auth.ncdc.noaa.gov/cas/login'
+  logoutSuccessUrl: 'https://auth.ncdc.noaa.gov/cas/logout'
+  providerKey: 'CAS_PROVIDER_INVENTORY_MANAGER_LOCALHOST'
+  sendRenew: false

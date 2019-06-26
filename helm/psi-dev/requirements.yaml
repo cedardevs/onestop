@@ -12,3 +12,6 @@ dependencies:
 - name: nginx-ingress
   version: ~1.1.4
   repository: "@stable"
+- name: cas
+  version: ~0.1.0
+  repository: file://../cas
