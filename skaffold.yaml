@@ -48,7 +48,7 @@ deploy:
         features.manual-upload: false
         features.kafka-ingest: false
         features.sitemap: true
-        env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
+        # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
         config: |-
           ---
           logging.level.org.cedar.onestop.api.metadata: DEBUG
@@ -77,7 +77,7 @@ deploy:
         # all features default to "false" in base chart, unless otherwise overridden
         features.login-gov: false
         features.sitemap: true
-        env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
+        # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
         env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
         env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
         # config: |-
@@ -97,6 +97,16 @@ deploy:
         # allows api-search to be exposed outside the cluster in dev
         prefixPath: onestop
         apiSearch.endpoint: api-search:8080/onestop-search
+
+    ###############################################################################
+    # ELASTICSEARCH
+    ###############################################################################
+    - name: elasticsearch
+      chartPath: helm/elasticsearch
+      setValues:
+        service.type: NodePort
+        service.nodePort: 30092
+
     ###############################################################################
     # DEV DEPENDENCIES
     ###############################################################################

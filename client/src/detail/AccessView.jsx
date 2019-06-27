@@ -112,7 +112,7 @@ export default class AccessView extends React.Component {
     const linkSections = [
       {linkFunction: 'information', heading: 'Information', showEmpty: true},
       {linkFunction: 'download', heading: 'Download Data', showEmpty: true},
-      {linkFunction: 'search', heading: 'Search Data'},
+      {linkFunction: 'search', heading: 'Search for Data'},
       {linkFunction: 'order', heading: 'Order'},
       {linkFunction: 'offlineAccess', heading: 'Offline Access'},
     ]

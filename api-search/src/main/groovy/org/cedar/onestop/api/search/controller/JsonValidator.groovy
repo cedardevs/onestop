@@ -9,11 +9,11 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 @Slf4j
 class JsonValidator {
 
-  public static Map validateSearchRequestSchema(Map request) {
+  static Map validateSearchRequestSchema(Map request) {
     validateSchema(request, 'onestop-request-schema.json')
   }
 
-  public static Map validateSchema(Map params, String schemaName) {
+  static Map validateSchema(Map params, String schemaName) {
     final mapper = new ObjectMapper()
     final factory = JsonSchemaFactory.byDefault()
     final schemaJson = mapper.readTree(this.classLoader.getResource(schemaName).text)

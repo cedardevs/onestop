@@ -1,18 +1,45 @@
 package org.cedar.onestop.api.search
 
 import org.cedar.onestop.api.search.service.ElasticsearchService
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import spock.lang.Specification
 import spock.lang.Unroll
 
-class SpatialFilterIntegrationTests extends IntegrationTest {
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
-  private final String SPATIAL_INDEX = 'spatial_filter'
+@ActiveProfiles(["integration"])
+@SpringBootTest(
+    classes = [
+        Application,
+        DefaultApplicationConfig,
+
+        // provides:
+        // - `RestClient` 'restClient' bean via test containers
+        ElasticsearchTestConfig,
+    ],
+    webEnvironment = RANDOM_PORT
+)
+@Unroll
+class SpatialFilterIntegrationTests extends Specification {
+
+  private final String SPATIAL_INDEX_ALIAS = 'spatial_filter'
+
+  @Autowired
+  RestClient restClient
+
+  @Autowired
+  ElasticsearchConfig esConfig
 
   @Autowired
   ElasticsearchService esService
 
   void setup() {
-    refreshAndLoadGenericTestIndex(SPATIAL_INDEX)
+    TestUtil.resetLoadAndRefreshGenericTestIndex(SPATIAL_INDEX_ALIAS, restClient, esConfig)
   }
 
   def 'Spatial filter with #relation relation returns correct results'() {
@@ -32,7 +59,7 @@ class SpatialFilterIntegrationTests extends IntegrationTest {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, SPATIAL_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, SPATIAL_INDEX_ALIAS)
 
     then:
     def actualMatchingIds = queryResponse.data.collect { it.id }
@@ -62,7 +89,7 @@ class SpatialFilterIntegrationTests extends IntegrationTest {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, SPATIAL_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, SPATIAL_INDEX_ALIAS)
 
     then:
     def actualMatchingIds = queryResponse.data.collect { it.id }

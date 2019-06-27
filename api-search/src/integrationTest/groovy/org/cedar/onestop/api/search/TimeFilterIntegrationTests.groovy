@@ -1,18 +1,45 @@
 package org.cedar.onestop.api.search
 
 import org.cedar.onestop.api.search.service.ElasticsearchService
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import spock.lang.Specification
 import spock.lang.Unroll
 
-class TimeFilterIntegrationTests extends IntegrationTest {
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
-  private final String DATES_INDEX = 'time_filter'
+@ActiveProfiles(["integration"])
+@SpringBootTest(
+    classes = [
+        Application,
+
+        // provides:
+        // - `RestClient` 'restClient' bean via test containers
+        ElasticsearchTestConfig,
+    ],
+    webEnvironment = RANDOM_PORT
+)
+@Unroll
+class TimeFilterIntegrationTests extends Specification {
+
+  private final String DATES_INDEX_ALIAS = 'time_filter'
+
+  @Autowired
+  RestClient restClient
+
+  @Autowired
+  ElasticsearchConfig esConfig
 
   @Autowired
   ElasticsearchService esService
 
   void setup() {
-    refreshAndLoadGenericTestIndex(DATES_INDEX)
+    // See /docs/development/integration-tests/time-filter.md for more information about the test data used in these tests. It explains the logic behind the test cases chosen, and how they are organized to minimize unrelated test data interactions.
+    TestUtil.resetLoadAndRefreshGenericTestIndex(DATES_INDEX_ALIAS, restClient, esConfig)
   }
 
   def 'Datetime filter q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {
@@ -31,7 +58,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
@@ -67,7 +94,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
@@ -104,7 +131,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
@@ -136,7 +163,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
@@ -168,7 +195,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
@@ -201,7 +228,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     ]
 
     when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
     def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:

@@ -3,44 +3,26 @@ package org.cedar.onestop.api.metadata.service
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.schemas.avro.psi.ParsedRecord
+import org.elasticsearch.Version
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import org.xml.sax.SAXException
+import static org.cedar.onestop.elastic.common.DocumentUtil.*
 
 @Slf4j
 @Service
 class MetadataManagementService {
 
-  @Value('${elasticsearch.index.search.collection.name}')
-  String COLLECTION_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.staging.collection.name}')
-  String COLLECTION_STAGING_INDEX
-
-  @Value('${elasticsearch.index.search.granule.name}')
-  String GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.staging.granule.name}')
-  String GRANULE_STAGING_INDEX
-
-  @Value('${elasticsearch.index.search.flattened-granule.name}')
-  private String FLAT_GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.universal-type}')
-  String TYPE
-
-  @Value('${elasticsearch.index.prefix:}')
-  String PREFIX
-
   private ElasticsearchService esService
+  private ElasticsearchConfig esConfig
 
   @Autowired
-  public MetadataManagementService(ElasticsearchService esService) {
+  MetadataManagementService(ElasticsearchService esService) {
     this.esService = esService
+    this.esConfig = esService.esConfig
   }
 
   /**
@@ -60,132 +42,142 @@ class MetadataManagementService {
    * @return
    */
 
-  Map loadParsedMetadata(List<Map> payload) {
+  Map loadMetadata(String document) {
+    List<String> documentArray = [document]
+    def result = loadXMLdocuments(documentArray).data[0]
+    if (result?.meta?.error) {
+      return [errors: [result.meta.error]]
+    } else {
+      return [data: result]
+    }
+  }
+
+  Map loadMetadata(Object[] documents){
+    def result = loadXMLdocuments(documents as List).data[0]
+    if (result?.meta?.error) {
+      return [errors: [result.meta.error]]
+    } else {
+      return [data: result]
+    }
+  }
+
+  Map loadXMLdocuments(List documents){
+    List<Map<String, ?>> parsedRecords = []
+    List results = []
+    documents.each { document ->
+      String fileName = null
+      String xml = null
+      if (document instanceof MultipartFile) {
+        fileName = document.originalFilename
+        xml = document.inputStream.text
+      } else {
+        xml = document as String
+      }
+      Map result = [
+          meta      : [
+              filename: fileName,
+          ]
+      ]
+      log.info("Loading XML document ${fileName ? fileName.toString() : '(no filename provided)'}")
+      Map parseResult = InventoryManagerToOneStopUtil.xmlToParsedRecord(xml)
+      if(parseResult?.parsedRecord){
+        Map validationResult = InventoryManagerToOneStopUtil.validateMessage(fileName, parseResult.parsedRecord)
+        if(!validationResult?.title){
+          log.debug("Validation success: $fileName is valid")
+          parsedRecords << [filename:fileName, parsedRecord: parseResult.parsedRecord as ParsedRecord]
+        }else{
+          log.warn("Validation failed: $fileName is invalid. Cause: ${validationResult.details} ")
+          validationResult.status = HttpStatus.BAD_REQUEST.value()
+          result.meta.error = validationResult
+          results << result
+        }
+      }else {
+        String title = "${parseResult?.error?.title ?: 'Parse error'}"
+        String parseErrorDetails = "${parseResult?.error?.detail ?: "Unable to generate a ParsedRecord from xml "}"
+        result.meta = [error: [title: title, detail: parseErrorDetails, status: HttpStatus.BAD_REQUEST.value()]]
+        log.warn(parseErrorDetails)
+        results << result
+      }
+    }
+    return [data: results + loadParsedRecords(parsedRecords)]
+  }
+
+  List loadParsedRecords(List<Map<String, ?>> parsedRecords){
+    log.debug("Loading ${parsedRecords.size()} parsedRecords...")
     esService.ensureStagingIndices()
     esService.ensurePipelines()
     esService.refreshAllIndices()
+    List<Map> results = []
     def bulkRequest = new StringBuilder()
-    def loadedIndices = []
-    def results = []
+    Set<Integer>  loadedIndices = []
 
-    payload.eachWithIndex { record, i ->
-      String id = record.id
+    parsedRecords.eachWithIndex { record, i ->
+      String id = record?.id ?: null
+      String filename = record?.filename ?: null
       ParsedRecord avroRecord = record.parsedRecord
 
       try {
-        def source = InventoryManagerToOneStopUtil.reformatMessageForSearch(avroRecord)
-        def type = source.parentIdentifier ? 'granule' : 'collection'
-        source.stagedDate = System.currentTimeMillis()
-        def result = [
-            id        : id,
-            type      : type,
+        log.debug("Reformating record for search with [id: $id, filename: $filename]")
+        Map source = InventoryManagerToOneStopUtil.reformatMessageForSearch(avroRecord, esService.version)
+        String fileId = source.fileIdentifier as String
+        String doi = source.doi as String
+
+        Map result = [
+            type      : source.remove('type'), //have to remove for ES
             attributes: source,
+            meta      : [
+                id : id,
+                filename: filename,
+                fileId: fileId,
+                doi: doi
+            ]
         ]
 
-        def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
-        def bulkCommand = [index: [_index: index, _type: TYPE, _id: id]]
+        log.info("Loading ${result.type} record with identifiers: ${result.meta}")
+
+        Map existingRecord = findMetadata(fileId, doi, true)
+        List<String> existingIds = existingRecord.data*.id
+
+        log.debug("Records with matching identifiers: ${existingIds}")
+
+        if (existingIds?.size() > 1) { //if we matched more than one file, there is a conflict
+          String title = 'Ambiguous metadata records in existence; metadata not loaded.'
+          String detail = "The identifiers in this document match more than one existing document. " +
+              "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
+              "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
+          log.warn("Failed to load ${result.type} due to conflict with identifiers: ${result.meta}")
+          result.meta.error = [
+              status: HttpStatus.CONFLICT.value(),
+              title : title,
+              detail: detail
+          ]
+          results << result
+          return
+        }
+
+        String esId = id ?: null //PSI is the source of truth, use the ID it gave us
+        if(existingIds?.size() == 1){ //this is an update
+          esId = updateRecord(existingIds[0], id)
+          log.info("Updating ${result.type} document with ID: $esId")
+        }else{
+          log.info("Creating new ${result.type} staging document")
+        }
+
+        source.stagedDate = System.currentTimeMillis()
+        result.id = esId as String
+        def index = result.type == ElasticsearchConfig.TYPE_COLLECTION ? esConfig.COLLECTION_STAGING_INDEX_ALIAS : esConfig.GRANULE_STAGING_INDEX_ALIAS
+        def bulkCommand = [index: [_index: index, _type: esConfig.TYPE, _id: esId]]
         bulkRequest << JsonOutput.toJson(bulkCommand)
         bulkRequest << '\n'
         bulkRequest << JsonOutput.toJson(source)
         bulkRequest << '\n'
-        results << result
         loadedIndices << i
 
-      } catch (Exception e) {
-        log.error("Load request failed: ${e}", e)
-      }
-    }
-
-    String bulkRequestBody = bulkRequest.toString()
-    if (bulkRequestBody) { // Don't send a request if there is nothing to send
-      def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
-      log.debug("bulkResponse: ${bulkResponse} loadedIndices: ${loadedIndices} ")
-    }
-
-    return [data: results]
-  }
-
-  public Map loadMetadata(Object[] documents) {
-    esService.ensureStagingIndices()
-    esService.ensurePipelines()
-    esService.refreshAllIndices()
-    def results = []
-    def bulkRequest = new StringBuilder()
-    def loadedIndices = []
-
-    documents.eachWithIndex { document, i ->
-      def filename
-      if (document instanceof MultipartFile) {
-        filename = document.originalFilename
-        document = document.inputStream.text
-      } else {
-        filename = null
-        document = document as String
-      }
-      try {
-        def source = MetadataParser.parseXMLMetadataToMap(document)
-        def type = source.parentIdentifier ? 'granule' : 'collection'
-        def fileId = source.fileIdentifier as String
-        def doi = source.doi as String
-
-        def result = [
-            type      : type,
-            attributes: source,
-            meta      : [
-                filename: filename,
-            ]
-        ]
-
-        if(!fileId && !doi){ //do not allow records without an id
-          result.meta.error = [
-              status: HttpStatus.BAD_REQUEST.value(),
-              title : 'Unable to parse FileIdentifier or DOI from document; metadata not loaded.',
-              detail: "Please confirm the document contains valid identifiers."
-          ]
-        }else{ //check for existing records
-          source.stagedDate = System.currentTimeMillis()
-          def existingRecord = findMetadata(fileId, doi, true)
-          def existingIds = existingRecord.data*.id
-          def esId = existingIds?.size() == 1 ? existingIds[0] : null
-          result.id = esId as String
-          if (existingIds?.size() > 1) { //if we matched more than one file, there is a conflict
-            result.meta.error = [
-                status: HttpStatus.CONFLICT.value(),
-                title : 'Ambiguous metadata records in existence; metadata not loaded.',
-                detail: "The identifiers in this document match more than one existing document. " +
-                    "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
-                    "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
-            ]
-          }else{
-            source.stagedDate = System.currentTimeMillis() //only set stagedDate if the data was staged
-            result.attributes = source //update return payload
-            def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
-            def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
-            bulkRequest << JsonOutput.toJson(bulkCommand)
-            bulkRequest << '\n'
-            bulkRequest << JsonOutput.toJson(source)
-            bulkRequest << '\n'
-            loadedIndices << i
-          }
-        }
         results << result
-      }
-      catch (SAXException e) {
-        results << [
-            meta: [
-                filename: filename,
-                error   : [
-                    status: HttpStatus.BAD_REQUEST.value(),
-                    title : 'Load request failed due to malformed XML.',
-                    detail: ExceptionUtils.getRootCauseMessage(e)
-                ]
-            ]
-        ]
       }
       catch (Exception e) {
         results << [
             meta: [
-                filename: filename,
                 error   : [
                     status: HttpStatus.BAD_REQUEST.value(),
                     title : 'Load request failed due to malformed data.',
@@ -198,36 +190,52 @@ class MetadataManagementService {
 
     String bulkRequestBody = bulkRequest.toString()
     if (bulkRequestBody) { // Don't send a request if there is nothing to send
-      def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
-      bulkResponse.items.eachWithIndex { result, i ->
-        def resultRecord = results.get(loadedIndices[i])
-        resultRecord.id = result.index._id
-        resultRecord.meta.status = result.index.status
-        resultRecord.meta.created = result.index.created
+      Map bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
+      List<Map> items = bulkResponse.items as List<Map>
+      items.eachWithIndex { result, i ->
+        Map index = result.index as Map
+        Map resultRecord = results.get(loadedIndices[i])
+        Map resultRecordMeta = resultRecord.meta as Map
+        resultRecord.id = index._id
+        resultRecordMeta.status = index.status
+
+        // ES6+ changed the item structure in a batch response
+        // `index.result` <string> (e.g. 'created') exists in both versions,
+        // but `index.created` <bool> is no longer there (presumably because it's redundant,
+        // especially with the `index.status` <int> (e.g. 201)
+        if(esConfig.version.onOrAfter(Version.V_6_0_0)) {
+          resultRecordMeta.created = index.result == "created"
+        }
+        else {
+          resultRecordMeta.created = index.created
+        }
+
         if (result.error) {
-          resultRecord.meta.error = result.error
+          resultRecordMeta.error = result.error
         }
       }
     }
-
-    return [data: results]
+    log.debug("Update results: ${results}")
+    return results
   }
 
-  public Map loadMetadata(String document) {
-    String[] documentArray = [document]
-    def result = loadMetadata(documentArray).data[0]
-    if (result.meta.error) {
-      return [errors: [result.meta.error]]
-    } else {
-      return [data: result]
+  String updateRecord(String existingId, String newId = null){ //records from API dont have an ID
+    String esId = newId ?: existingId
+    if(esId != existingId){ //the record from PSI was already in the index by another ID, this is the re-key
+      log.warn ("Message with id [$newId] contains the same identifiers as an exsiting record [$existingId]. " +
+          "Re-keying record from $existingId to $newId")
+      Map deleteResult = deleteMetadata(existingId, true, true) //todo more error handling / returning info to user
+    }else{
+      log.info("Updating document with ID: $esId")
     }
+    return esId
   }
 
-  public Map getMetadata(String esId, boolean idsOnly = false) {
+  Map getMetadata(String esId, boolean idsOnly = false) {
     esService.refreshAllIndices()
-    def resultsData = []
-    [PREFIX + COLLECTION_STAGING_INDEX, PREFIX + GRANULE_STAGING_INDEX].each { index ->
-      String endpoint = "${index}/${TYPE}/${esId}"
+    List<Map> resultsData = []
+    [esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS].each { alias ->
+      String endpoint = "${alias}/${esConfig.TYPE}/${esId}"
       if (idsOnly) {
         endpoint += '?_source=fileIdentifier,doi'
       }
@@ -236,9 +244,9 @@ class MetadataManagementService {
       if (response.found) {
         resultsData.add(
             [
-                id        : response._id,
-                type      : determineType(response._index),
-                attributes: response._source
+                id        : getId(response),
+                type      : esConfig.typeFromIndex(getIndex(response)),
+                attributes: getSource(response)
             ]
         )
 
@@ -258,10 +266,10 @@ class MetadataManagementService {
     }
   }
 
-  public Map findMetadata(String fileId, String doi, boolean idsOnly = false) {
+  Map findMetadata(String fileId, String doi, boolean idsOnly = false) {
     esService.refreshAllIndices()
-    String endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX}/_search"
-    def searchParams = []
+    String endpoint = "${esConfig.COLLECTION_STAGING_INDEX_ALIAS},${esConfig.GRANULE_STAGING_INDEX_ALIAS}/_search"
+    List<Map> searchParams = []
     if (fileId) {
       searchParams.add([term: [fileIdentifier: fileId]])
     }
@@ -276,14 +284,15 @@ class MetadataManagementService {
         ],
         _source: idsOnly ? ['fileIdentifier', 'doi'] : true
     ]
-    def response = esService.performRequest('GET', endpoint, requestBody)
+    Map response = esService.performRequest('GET', endpoint, requestBody)
 
-    if (response.hits.total > 0) {
-      def resources = response.hits.hits.collect {
+    if (getHitsTotal(response) > 0) {
+      List<Map> documents = getDocuments(response)
+      List<Map> resources = documents.collect {
         [
-            id        : it._id,
-            type      : determineType(it._index),
-            attributes: it._source
+            id        : getId(it),
+            type      : esConfig.typeFromIndex(getIndex(it)),
+            attributes: getSource(it)
         ]
       }
       return [data: resources]
@@ -296,8 +305,18 @@ class MetadataManagementService {
     }
   }
 
-  public Map deleteMetadata(String esId, boolean recursive) {
-    def record = getMetadata(esId, true)
+  Map deleteMetadata(String esId, boolean recursive, boolean isRekey = false) {
+    Map record = getMetadata(esId, true)
+    if (record.data) {
+      return delete(record, recursive, isRekey)
+    } else {
+      // Record does not exist -- return NOT_FOUND response
+      return record
+    }
+  }
+
+  Map deleteMetadata(String fileId, String doi, boolean recursive) {
+    Map record = findMetadata(fileId, doi, true)
     if (record.data) {
       return delete(record, recursive)
     } else {
@@ -306,30 +325,26 @@ class MetadataManagementService {
     }
   }
 
-  public Map deleteMetadata(String fileId, String doi, boolean recursive) {
-    def record = findMetadata(fileId, doi, true)
-    if (record.data) {
-      return delete(record, recursive)
-    } else {
-      // Record does not exist -- return NOT_FOUND response
-      return record
-    }
-  }
-
-  private Map delete(Map record, boolean recursive) {
+  private Map delete(Map record, boolean recursive, boolean isRekey = false) {
     // collect up the ids, types, and potential granule parentIds to be deleted
-    def ids = []
-    def parentIds = []
-    def toBeDeleted = []
-    record.data.each {
-      toBeDeleted << [id: it.id, type: it.type]
-      ids << it.id
+    List<String> ids = []
+    List<String> parentIds = []
+    List<Map> toBeDeleted = []
+    List<Map> data = record.data as List<Map>
+    data.each {
+      String id = it.id
+      String type = it.type
+      Map source = it.attributes as Map
+      toBeDeleted << [id: id, type: type]
+      ids << id
       if (recursive) {
-        if (it.attributes?.fileIdentifier) {
-          parentIds << it.attributes.fileIdentifier
+        String fileIdentifier = getFileIdentifierFromSource(source)
+        String doi = getDOIFromSource(source)
+        if (fileIdentifier) {
+          parentIds << fileIdentifier
         }
-        if (it.attributes?.doi) {
-          parentIds << it.attributes.doi
+        if (doi) {
+          parentIds << doi
         }
       }
     }
@@ -345,7 +360,11 @@ class MetadataManagementService {
             ]
         ]
     ]
-    def endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX},${PREFIX}${COLLECTION_SEARCH_INDEX},${PREFIX}${GRANULE_SEARCH_INDEX},${PREFIX}${FLAT_GRANULE_SEARCH_INDEX}/_delete_by_query?wait_for_completion=true"
+
+    def endpoint = isRekey ?
+        "${esConfig.COLLECTION_STAGING_INDEX_ALIAS},${esConfig.COLLECTION_SEARCH_INDEX_ALIAS},${esConfig.GRANULE_SEARCH_INDEX_ALIAS},${esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS}/_delete_by_query?wait_for_completion=true" :
+        "${esConfig.COLLECTION_STAGING_INDEX_ALIAS},${esConfig.GRANULE_STAGING_INDEX_ALIAS},${esConfig.COLLECTION_SEARCH_INDEX_ALIAS},${esConfig.GRANULE_SEARCH_INDEX_ALIAS},${esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS}/_delete_by_query?wait_for_completion=true"
+
     def deleteResponse = esService.performRequest('POST', endpoint, query)
 
     return [
@@ -355,23 +374,6 @@ class MetadataManagementService {
         ],
         status  : deleteResponse.failures ? HttpStatus.MULTI_STATUS.value() : HttpStatus.OK.value()
     ]
-  }
-
-  public String determineType(String index) {
-
-    def parsedIndex = PREFIX ? index.replace(PREFIX, '') : index
-    def endPosition = parsedIndex.lastIndexOf('-')
-    parsedIndex = endPosition > 0 ? parsedIndex.substring(0, endPosition) : parsedIndex
-
-    def indexToTypeMap = [
-        (COLLECTION_SEARCH_INDEX)  : 'collection',
-        (COLLECTION_STAGING_INDEX) : 'collection',
-        (GRANULE_SEARCH_INDEX)     : 'granule',
-        (GRANULE_STAGING_INDEX)    : 'granule',
-        (FLAT_GRANULE_SEARCH_INDEX): 'flattenedGranule'
-    ]
-
-    return indexToTypeMap[parsedIndex]
   }
 
 }
