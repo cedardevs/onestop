@@ -10,28 +10,23 @@ import org.springframework.stereotype.Component
 class CASConfigurationProperties {
 	// The callback URL of the service the user is authenticating to
   // e.g. - "https://sciapps.colorado.edu/registry/login/cas"
-//  @NotNull
   String service
 
   // The CAS server URL prefix
   // e.g. - "https://auth.ncdc.noaa.gov/cas"
-//  @NotNull
   String serverUrlPrefix
 
   // The enterprise-wide CAS login URL.
   // e.g. - "https://auth.ncdc.noaa.gov/cas/login"
-//  @NotNull
   String loginUrl
 
   // After logout, a redirect will be performed to this URL
   // e.g. - "https://auth.ncdc.noaa.gov/cas/logout"
-//  @NotNull
   String logoutSuccessUrl
 
   // A key is required so CasAuthenticationProvider can identify tokens it previously authenticated
   // e.g. - "CAS_PROVIDER_INVENTORY_MANAGER_SCIAPPS"
   //      - "CAS_PROVIDER_INVENTORY_MANAGER_LOCALHOST"
-//  @NotNull
   String providerKey
 
   // Force CAS to authenticate the user again (even if the user has previously authenticated).

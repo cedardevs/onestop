@@ -14,14 +14,19 @@ import javax.servlet.http.HttpServletResponse
 
 @Profile('cas')
 @RestController
-class LoginController {
+class CASController {
 
-//  @GetMapping("/logout")
-//  String logout(HttpServletRequest request, HttpServletResponse response, SecurityContextLogoutHandler logoutHandler) {
-//    Authentication auth = SecurityContextHolder.getContext().getAuthentication()
-//    logoutHandler.logout(request, response, auth)
-//    new CookieClearingLogoutHandler(AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY).logout(request, response, auth)
-//    return [ response: "You have logged out of Cas Secured Spring Boot App Successfully." ] as Map
+//  @GetMapping("/login")
+//  String login() {
+//    return "redirect:/secured"
 //  }
+
+  @GetMapping("/logout")
+  String logout(HttpServletRequest request, HttpServletResponse response, SecurityContextLogoutHandler logoutHandler) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication()
+    logoutHandler.logout(request, response, auth)
+    new CookieClearingLogoutHandler(AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY).logout(request, response, auth)
+    return [ response: "You have logged out of CAS-secured PSI Registry service successfully." ] as Map
+  }
 
 }

@@ -1,5 +1,6 @@
 package org.cedar.psi.registry.security
 
+import groovy.util.logging.Slf4j
 import org.jasig.cas.client.session.SingleSignOutFilter
 import org.jasig.cas.client.session.SingleSignOutHttpSessionListener
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 
 import javax.servlet.http.HttpSessionEvent
 
+@Slf4j
 @Profile('cas')
 @Configuration
 class CASConfiguration {
@@ -48,6 +50,9 @@ class CASConfiguration {
 
   @Autowired
   CASConfigurationProperties props
+
+  @Autowired
+  AuthorizationConfigurationProperties authz
 
   @Bean
   ServiceProperties serviceProperties() {
@@ -74,23 +79,18 @@ class CASConfiguration {
 
   @Bean
   CasAuthenticationProvider casAuthenticationProvider() {
-
-    AuthorityUtils.createAuthorityList()
-
     CasAuthenticationProvider provider = new CasAuthenticationProvider()
     UserDetailsService userDetailsService = new UserDetailsService() {
       @Override
       UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // TODO: use actual LDAP?
-        return new User(
-            "casuser",
-            "Mellon",
-            true,
-            true,
-            true,
-            true,
-            AuthorityUtils.createAuthorityList("ROLE_ADMIN")
-        )
+        String[] authorityList = authz.getAuthorityList(username)
+        log.info("authorityList: ${authorityList.dump()}")
+        if(authorityList == null || authorityList.length == 0) {
+          throw new UsernameNotFoundException("User name not found.")
+        }
+        else {
+          return new User(username, "", AuthorityUtils.createAuthorityList(authorityList))
+        }
       }
     }
     provider.setServiceProperties(serviceProperties())
