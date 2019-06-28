@@ -39,8 +39,7 @@ const styleSuggestedQuery = {
 
 export default class NotFound extends React.Component {
   search = query => {
-    const {submit, collectionUpdateQueryText} = this.props
-    collectionUpdateQueryText(query)
+    const {submit} = this.props
     submit(query)
   }
 

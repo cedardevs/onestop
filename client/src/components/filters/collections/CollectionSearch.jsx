@@ -131,7 +131,7 @@ class CollectionSearch extends React.Component {
     }
     else {
       this.setState({warning: ''})
-      this.props.submit()
+      this.props.submit(trimmedQuery)
     }
   }
 
@@ -200,4 +200,4 @@ class CollectionSearch extends React.Component {
   }
 }
 
-export default CollectionSearch
+export default CollectionSearch // TODO move this out of filters directory!

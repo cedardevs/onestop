@@ -3,12 +3,8 @@ import Map from '../spatial/Map'
 import {
   collectionUpdateGeometry,
   collectionRemoveGeometry,
-} from '../../../actions/search/CollectionFilterActions'
-import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
-import {
-  triggerSearch,
-  showCollections,
-} from '../../../actions/search/SearchActions'
+} from '../../../actions/routing/CollectionSearchStateActions'
+import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 import {withRouter} from 'react-router'
 
@@ -25,9 +21,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleNewGeometry: geoJSON => dispatch(collectionUpdateGeometry(geoJSON)),
     removeGeometry: () => dispatch(collectionRemoveGeometry()),
     submit: () => {
-      dispatch(collectionClearResults())
-      dispatch(triggerSearch())
-      dispatch(showCollections(ownProps.history))
+      dispatch(submitCollectionSearch(ownProps.history))
     },
   }
 }

@@ -1,6 +1,26 @@
 import * as urlUtils from '../../src/utils/urlUtils'
 
 describe('The URL Utils', function(){
+  it('quick check it handles path change checks correctly', function(){
+    expect(
+      urlUtils.isPathNew(
+        {pathname: 'abc', search: '?q=123'},
+        {pathname: 'abc', search: '?q=123'}
+      )
+    ).toBeFalsy()
+    expect(
+      urlUtils.isPathNew(
+        {pathname: 'abc', search: '?q=123'},
+        {pathname: 'xyz', search: '?q=123'}
+      )
+    ).toBeTruthy()
+    expect(
+      urlUtils.isPathNew(
+        {pathname: 'abc', search: '?q=123'},
+        {pathname: 'abc', search: null}
+      )
+    ).toBeTruthy()
+  })
   const pathTests = [
     {
       path: '/collections/details/foobar',

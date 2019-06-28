@@ -1,6 +1,8 @@
 import React from 'react'
-import './LoadingBar.css'
 
+import _ from 'lodash'
+import './LoadingBar.css'
+import InlineError from '../error/InlineError'
 import defaultStyles from '../../style/defaultStyles'
 import {Route, Switch} from 'react-router'
 
@@ -25,7 +27,11 @@ export class LoadingBar extends React.Component {
   }
 
   render() {
-    const {loading, loadingText, style} = this.props
+    const {loading, loadingText, style, error} = this.props
+    const displayErrors = !_.isEmpty(error) ? (
+      <InlineError errors={this.props.errors} />
+    ) : null
+
     return (
       <Switch>
         <Route path="/" exact />
@@ -39,6 +45,7 @@ export class LoadingBar extends React.Component {
               <div id={this.props.loadingAlertId}>{this.state.loadingText}</div>
             </div>
             <div className={loading ? 'loadingContainer' : null} />
+            {displayErrors}
           </div>
         </Route>
       </Switch>

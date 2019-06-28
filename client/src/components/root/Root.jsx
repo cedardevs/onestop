@@ -7,7 +7,7 @@ import DisclaimerContainer from '../disclaimer/DisclaimerContainer'
 import HeaderContainer from '../header/HeaderContainer'
 import FiltersContainer from '../filters/FiltersContainer'
 import FiltersHiddenContainer from '../filters/FiltersHiddenContainer'
-import InteractiveMapContainer from '../filters/spatial/InteractiveMapContainer'
+import InteractiveMap from '../filters/spatial/InteractiveMap'
 import ResultsContainer from '../results/ResultsContainer'
 import ErrorContainer from '../error/ErrorContainer'
 import LandingContainer from '../landing/LandingContainer'
@@ -17,7 +17,9 @@ import Help from '../help/Help'
 import AboutContainer from '../about/AboutContainer'
 import CartContainer from '../cart/CartContainer'
 
-import LoadingBarContainer from '../loading/LoadingBarContainer'
+import CollectionGetDetailLoadingContainer from '../loading/CollectionGetDetailLoadingContainer'
+import GranuleSearchLoadingContainer from '../loading/GranuleSearchLoadingContainer'
+import CollectionSearchLoadingContainer from '../loading/CollectionSearchLoadingContainer'
 
 import FooterContainer from '../footer/FooterContainer'
 
@@ -82,9 +84,6 @@ export default class Root extends React.Component {
 
     const middle = (
       <div style={{width: '100%'}}>
-        <LoadingBarContainer />
-        <InteractiveMapContainer />
-
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
           <Route path="/" exact>
@@ -93,11 +92,26 @@ export default class Root extends React.Component {
 
           <Route path={ROUTE.details.path}>
             {/*TODO parameterize this path!*/}
-            <DetailContainer />
+            <div>
+              <CollectionGetDetailLoadingContainer />
+              <DetailContainer />
+            </div>
           </Route>
 
-          <Route path={ROUTE.search.path}>
-            <ResultsContainer />
+          <Route path={ROUTE.granules.path}>
+            <div>
+              <GranuleSearchLoadingContainer />
+              <InteractiveMap />
+              <ResultsContainer />
+            </div>
+          </Route>
+
+          <Route path={ROUTE.collections.path}>
+            <div>
+              <CollectionSearchLoadingContainer />
+              <InteractiveMap />
+              <ResultsContainer />
+            </div>
           </Route>
 
           <Route path={ROUTE.about.path}>

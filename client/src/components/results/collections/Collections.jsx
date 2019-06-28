@@ -18,15 +18,13 @@ const styleShowMoreFocus = {
 }
 
 export default class Collections extends React.Component {
+  itemSelect = key => {
+    const {selectCollection, collectionDetailFilter} = this.props
+    selectCollection(key, collectionDetailFilter)
+  }
+
   render() {
-    const {
-      loading,
-      results,
-      returnedHits,
-      totalHits,
-      selectCollection,
-      fetchMoreResults,
-    } = this.props
+    const {results, returnedHits, totalHits, fetchMoreResults} = this.props
 
     const showMoreButton =
       returnedHits < totalHits ? (
@@ -47,11 +45,10 @@ export default class Collections extends React.Component {
         />
         <ListView
           items={results}
-          loading={!!loading}
           resultsMessage={'Search Results'}
           shown={returnedHits}
           total={totalHits}
-          onItemSelect={selectCollection}
+          onItemSelect={this.itemSelect}
           ListItemComponent={null}
           GridItemComponent={CollectionCard}
           propsForItem={item => {
@@ -65,7 +62,6 @@ export default class Collections extends React.Component {
 }
 
 Collections.propTypes = {
-  loading: PropTypes.number.isRequired,
   results: PropTypes.object.isRequired,
   totalHits: PropTypes.number.isRequired,
   returnedHits: PropTypes.number.isRequired,

@@ -3,24 +3,25 @@ import watch from 'redux-watch'
 import {isDetailPage, isGranuleListPage, isSitemap} from './utils/urlUtils'
 import {
   initialize,
-  getSitemap,
   loadCollections,
   loadDetails,
   loadGranulesList,
-} from './actions/search/SearchActions'
+} from './actions/InitActions'
+import {fetchSitemap} from './actions/fetch/FetchActions'
+import history from './history'
 
 const loadFromUrl = (path, newQueryString) => {
   if (isSitemap(path)) {
-    store.dispatch(getSitemap())
+    store.dispatch(fetchSitemap())
   }
   else if (isDetailPage(path)) {
-    store.dispatch(loadDetails(path))
+    store.dispatch(loadDetails(history, path, newQueryString))
   }
   else if (isGranuleListPage(path)) {
-    store.dispatch(loadGranulesList(path))
+    store.dispatch(loadGranulesList(history, path, newQueryString))
   }
   else {
-    store.dispatch(loadCollections(newQueryString))
+    store.dispatch(loadCollections(history, newQueryString))
   }
 }
 

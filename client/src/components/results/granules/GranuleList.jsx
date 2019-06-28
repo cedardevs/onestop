@@ -68,7 +68,6 @@ export default class GranuleList extends React.Component {
 
   render() {
     const {
-      loading,
       results,
       returnedHits,
       totalHits,
@@ -111,7 +110,6 @@ export default class GranuleList extends React.Component {
           <GranuleListLegend usedProtocols={usedProtocols} />
           <ListView
             items={results}
-            loading={!!loading}
             resultsMessage={'Collection Files'}
             shown={returnedHits}
             total={totalHits}
@@ -128,7 +126,6 @@ export default class GranuleList extends React.Component {
 }
 
 GranuleList.propTypes = {
-  loading: PropTypes.number.isRequired,
   results: PropTypes.object.isRequired,
   totalHits: PropTypes.number.isRequired,
   returnedHits: PropTypes.number.isRequired,

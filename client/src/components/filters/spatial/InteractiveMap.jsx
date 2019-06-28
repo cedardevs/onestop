@@ -9,7 +9,7 @@ export default class InteractiveMap extends React.Component {
     const {content} = this.props
     return (
       <Switch>
-        <Route path={ROUTE.search.path} exact>
+        <Route path={ROUTE.collections.path} exact>
           <CollectionMapContainer selection={true} features={false} />
         </Route>
         <Route path={ROUTE.granules.parameterized}>

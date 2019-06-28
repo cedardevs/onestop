@@ -1,11 +1,6 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import Landing from './Landing'
-import {
-  triggerSearch,
-  showCollections,
-} from '../../actions/search/SearchActions'
-import {collectionClearFacets} from '../../actions/search/CollectionFilterActions'
 
 const mapStateToProps = state => {
   return {
@@ -14,13 +9,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    submit: () => {
-      dispatch(collectionClearFacets())
-      dispatch(triggerSearch())
-      dispatch(showCollections(ownProps.history))
-    },
-  }
+  return {}
 }
 
 const LandingContainer = withRouter(

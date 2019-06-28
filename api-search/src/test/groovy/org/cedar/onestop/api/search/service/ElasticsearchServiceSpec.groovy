@@ -28,9 +28,26 @@ class ElasticsearchServiceSpec extends Specification {
     esVersionedConfigs = ElasticsearchTestVersion.configs()
   }
 
-  def 'executes a search using ES version #dataPipe.version'() {
+  def "preserve page max 0 offset 0 into request using ES version #dataPipe.version" () {
     given:
-    Map searchRequest = [
+    Version version = dataPipe.version as Version
+    ElasticsearchConfig esConfig = esVersionedConfigs[version]
+    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient, esConfig)
+    // post processing on the request was altering the results after addPagination
+    when:
+    def queryResult = elasticsearchService.buildRequestBody([page:[max: 0, offset:0]])
+
+    then:
+    queryResult.size == 0
+    queryResult.from == 0
+
+    where:
+    dataPipe << ElasticsearchTestVersion.versionedTestCases()
+  }
+
+  def 'executes a search using ES version #dataPipe.version'() {
+    def testIndex = 'test_index'
+    def searchRequest = [
         queries: [[type: 'queryText', value: 'test']],
         filters: [[type: 'year', beginYear: 1999]],
         page   : [max: 42, offset: 24]
@@ -54,7 +71,6 @@ class ElasticsearchServiceSpec extends Specification {
         ],
         took: 1234,
     ])
-
 
     when:
     def result = elasticsearchService.searchFromRequest(searchRequest, esConfig.COLLECTION_SEARCH_INDEX_ALIAS)

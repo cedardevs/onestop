@@ -1,46 +1,37 @@
 import Immutable from 'seamless-immutable'
 import {
-  COLLECTION_SEARCH_REQUEST,
-  COLLECTION_SEARCH_SUCCESS,
-  COLLECTION_DETAIL_REQUEST,
-  COLLECTION_DETAIL_SUCCESS,
-  COLLECTION_DETAIL_GRANULES_REQUEST,
-  COLLECTION_DETAIL_GRANULES_SUCCESS,
-} from '../../actions/search/CollectionRequestActions'
+  COLLECTION_NEW_SEARCH_REQUESTED,
+  COLLECTION_MORE_RESULTS_REQUESTED,
+  COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED,
+  COLLECTION_NEW_SEARCH_RESULTS_RECEIVED,
+  COLLECTION_MORE_RESULTS_RECEIVED,
+  COLLECTION_SEARCH_ERROR,
+} from '../../actions/routing/CollectionSearchStateActions'
 
 export const initialState = Immutable({
-  collectionSearchRequestInFlight: false,
-  collectionDetailRequestInFlight: false,
-  collectionDetailGranulesRequestInFlight: false,
+  inFlight: false,
+  errorMessage: '',
 })
 
 export const collectionRequest = (state = initialState, action) => {
   switch (action.type) {
-    case COLLECTION_SEARCH_REQUEST:
-      return Immutable.set(state, 'collectionSearchRequestInFlight', true)
+    case COLLECTION_NEW_SEARCH_REQUESTED:
+    case COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED:
+    case COLLECTION_MORE_RESULTS_REQUESTED:
+      return Immutable.merge(state, {
+        inFlight: true,
+        errorMessage: '',
+      })
 
-    case COLLECTION_SEARCH_SUCCESS:
-      return Immutable.set(state, 'collectionSearchRequestInFlight', false)
+    case COLLECTION_NEW_SEARCH_RESULTS_RECEIVED:
+    case COLLECTION_MORE_RESULTS_RECEIVED:
+      return Immutable.set(state, 'inFlight', false)
 
-    case COLLECTION_DETAIL_REQUEST:
-      return Immutable.set(state, 'collectionDetailRequestInFlight', action.id)
-
-    case COLLECTION_DETAIL_SUCCESS:
-      return Immutable.set(state, 'collectionDetailRequestInFlight', false)
-
-    case COLLECTION_DETAIL_GRANULES_REQUEST:
-      return Immutable.set(
-        state,
-        'collectionDetailGranulesRequestInFlight',
-        true
-      )
-
-    case COLLECTION_DETAIL_GRANULES_SUCCESS:
-      return Immutable.set(
-        state,
-        'collectionDetailGranulesRequestInFlight',
-        false
-      )
+    case COLLECTION_SEARCH_ERROR:
+      return Immutable.merge(state, {
+        inFlight: false,
+        errorMessage: action.errors,
+      })
 
     default:
       return state

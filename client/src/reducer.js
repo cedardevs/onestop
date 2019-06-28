@@ -10,12 +10,15 @@ import user from './reducers/user'
 import collectionFilter from './reducers/search/collectionFilter'
 import collectionRequest from './reducers/search/collectionRequest'
 import collectionResult from './reducers/search/collectionResult'
-// TODO: granule reducers
-// import granuleFilter from './reducers/search/granuleFilter'
-// import granuleRequest from './reducer/search/granuleRequest'
-// import granuleResult from './reducers/search/granuleResult'
+
+import collectionDetailFilter from './reducers/search/collectionDetailFilter'
+import collectionDetailRequest from './reducers/search/collectionDetailRequest'
+import collectionDetailResult from './reducers/search/collectionDetailResult'
+
+import granuleFilter from './reducers/search/granuleFilter'
+import granuleRequest from './reducers/search/granuleRequest'
+import granuleResult from './reducers/search/granuleResult'
 import info from './reducers/search/info'
-import loading from './reducers/search/loading'
 
 export const RESET_STORE = 'reset_store'
 
@@ -23,12 +26,13 @@ const search = combineReducers({
   collectionFilter,
   collectionRequest,
   collectionResult,
-  // TODO: granule reducers
-  // granuleFilter,
-  // granuleRequest,
-  // granuleResult,
+  collectionDetailFilter,
+  collectionDetailRequest,
+  collectionDetailResult,
+  granuleFilter,
+  granuleRequest,
+  granuleResult,
   info,
-  loading,
 })
 
 // TODO: Pass search state elements to query removing the need for state duplication

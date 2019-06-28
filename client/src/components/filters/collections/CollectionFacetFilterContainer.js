@@ -1,13 +1,9 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import FacetFilter from '../facet/FacetFilter'
-import {collectionToggleFacet} from '../../../actions/search/CollectionFilterActions'
+import {collectionToggleFacet} from '../../../actions/routing/CollectionSearchStateActions'
 import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
-import {
-  triggerSearch,
-  showCollections,
-} from '../../../actions/search/SearchActions'
-import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
+import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 const mapStateToProps = state => {
   return {
@@ -20,13 +16,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    collectionToggleFacet: (category, facetName, selected) => {
+    toggleFacet: (category, facetName, selected) => {
       dispatch(collectionToggleFacet(category, facetName, selected))
     },
     submit: () => {
-      dispatch(collectionClearResults())
-      dispatch(triggerSearch())
-      dispatch(showCollections(ownProps.history))
+      dispatch(submitCollectionSearch(ownProps.history))
     },
   }
 }

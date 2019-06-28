@@ -107,13 +107,7 @@ class Detail extends React.Component {
   }
 
   render() {
-    const {
-      id,
-      item,
-      loading,
-      totalGranuleCount,
-      navigateToGranules,
-    } = this.props
+    const {id, item, loading} = this.props
 
     if (loading) {
       return (
@@ -126,7 +120,7 @@ class Detail extends React.Component {
     }
 
     if (!item) {
-      // TODO error style? actually report an error in the flow if the collection is not found when search returns?
+      // TODO error style? actually report an error in the flow if the collection is not found when search returns? - I can verify this now!!
       return (
         <div style={styleCenterContent}>
           <div style={styleDetailWrapper}>
@@ -188,12 +182,7 @@ class Detail extends React.Component {
           >
             <div style={styleHeadingSpanApplied}>{item.title}</div>
           </h1>
-          <DescriptionView
-            item={item}
-            itemUuid={id}
-            totalGranuleCount={totalGranuleCount}
-            navigateToGranules={() => navigateToGranules(id)}
-          />
+          <DescriptionView item={item} itemUuid={id} />
           <Tabs
             style={{display: 'flex'}}
             styleContent={styleContent}

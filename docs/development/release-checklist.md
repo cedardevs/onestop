@@ -160,13 +160,17 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] Videos tab exists
     - [ ] Themes has only 3 keywords, and no show all link
     - [ ] Instrument and platforms both say 'none provided'
-1. Search `co-ops` and select the "Coastal meteorological and water temperature data from National Water Level Observation Network (NWLON)..." result.
-    - [ ] Files section has a link indicating the collection has "22 matching files"
+1. Search `co-ops`
+    - [ ] filter the results with start date `2017`
+    - and select the "Coastal meteorological and water temperature data from National Water Level Observation Network (NWLON)..." result.
+    - [ ] Files section has a link indicating the collection has "10 matching of 22 total files" (wording TBD)
     - [ ] Wave/ANDI automated 508 checks
     - [ ] This collection has no end date, so displays as "2013-03-01 to Present"
     - **keyboard** Navigate to the Access Tab.
     - [ ] It has sections for Information, Download Data, Search Data, Distribution Format. All are populated
-    - **mouse** Click `Show 22 matching files`
+    - **mouse** Click `Show 10 of 22 matching files` (wording TBD)
+    - [ ] 10 granules are shown, with a applied filter indicating the `2017` start date has carried over from the collection search. Remove the filter.
+    - [ ] Use the browser back button to go back to before the collection search, then the forward button to return to this page in the history to confirm that no weird loading things prevent that from working.
     - [ ] Wave/ANDI automated 508 checks
     - [ ] 20 granules are shown, with a "show more" button at the bottom to load the rest
     - [ ] each granule has a map with a point shown

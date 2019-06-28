@@ -4,13 +4,9 @@ import {
   collectionToggleExcludeGlobal,
   collectionUpdateGeometry,
   collectionRemoveGeometry,
-} from '../../../actions/search/CollectionFilterActions'
+} from '../../../actions/routing/CollectionSearchStateActions'
 import {toggleMap} from '../../../actions/LayoutActions'
-import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
-import {
-  triggerSearch,
-  showCollections,
-} from '../../../actions/search/SearchActions'
+import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 import {withRouter} from 'react-router'
 
@@ -28,9 +24,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(collectionToggleExcludeGlobal())
     },
     submit: () => {
-      dispatch(collectionClearResults())
-      dispatch(triggerSearch())
-      dispatch(showCollections(ownProps.history))
+      dispatch(submitCollectionSearch(ownProps.history))
     },
     toggleMap: () => {
       dispatch(toggleMap())

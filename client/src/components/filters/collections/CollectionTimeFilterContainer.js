@@ -4,12 +4,8 @@ import TimeFilter from '../time/TimeFilter'
 import {
   collectionRemoveDateRange,
   collectionUpdateDateRange,
-} from '../../../actions/search/CollectionFilterActions'
-import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
-import {
-  triggerSearch,
-  showCollections,
-} from '../../../actions/search/SearchActions'
+} from '../../../actions/routing/CollectionSearchStateActions'
+import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 const mapStateToProps = state => {
   const {startDateTime, endDateTime} = state.search.collectionFilter
@@ -28,9 +24,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(collectionRemoveDateRange())
     },
     submit: () => {
-      dispatch(collectionClearResults())
-      dispatch(triggerSearch())
-      dispatch(showCollections(ownProps.history))
+      dispatch(submitCollectionSearch(ownProps.history))
     },
   }
 }

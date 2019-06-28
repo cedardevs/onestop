@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
+import {getIdFromPath} from './urlUtils'
 import {recenterGeometry} from './geoUtils'
 import {initialState} from '../reducers/search/collectionFilter'
 import {
@@ -7,47 +8,43 @@ import {
   convertGeoJsonToBboxString,
 } from './geoUtils'
 
-export const assembleSearchRequestString = (
-  state,
-  granules,
-  retrieveFacets
+export const PAGE_SIZE = 20
+
+// export const assembleCollectionSearchRequestString = (
+//   state,
+//   granules,
+//   retrieveFacets
+// ) => {
+//   if (granules) {
+//     return JSON.stringify(assembleGranuleSearchRequest(state, retrieveFacets))
+//   }
+//   return JSON.stringify(assembleCollectionSearchRequest(state, retrieveFacets))
+// }
+
+export const assembleSearchRequest = (
+  filter,
+  retrieveFacets,
+  maxPageSize = PAGE_SIZE
 ) => {
-  return JSON.stringify(assembleSearchRequest(state, granules, retrieveFacets))
+  return {
+    queries: assembleQueries(filter),
+    filters: assembleFilters(filter),
+    facets: retrieveFacets,
+    page: assemblePagination(filter, maxPageSize),
+  }
 }
 
-export const assembleSearchRequest = (state, granules, retrieveFacets) => {
-  const search = state.search || {}
-  const collectionFilter = search.collectionFilter || {}
-  const collectionResult = search.collectionResult || {}
-  const pageOffset =
-    (granules
-      ? collectionResult.granulesPageOffset
-      : collectionResult.collectionsPageOffset) || 0
-  const pageSize = collectionResult.pageSize || 20
-  const page = assemblePagination(pageSize, pageOffset)
-
-  // collection search, assembled for search API / elasticsearch
-  let queries = assembleQueries(collectionFilter)
+const assembleFilters = filter => {
   let filters = _.concat(
-    assembleFacetFilters(collectionFilter),
-    assembleGeometryFilters(collectionFilter),
-    assembleTemporalFilters(collectionFilter),
-    assembleAdditionalFilters(collectionFilter)
+    assembleFacetFilters(filter),
+    assembleGeometryFilters(filter),
+    assembleTemporalFilters(filter),
+    assembleAdditionalFilters(filter),
+    assembleSelectedCollectionsFilters(filter)
   )
 
-  // change which filters are applied and drop query text for granules (until #445 allows changing filters applied to granules directly)
-  if (granules) {
-    filters = _.concat(assembleSelectedCollectionsFilters(collectionFilter))
-    queries = []
-  }
   filters = _.flatten(_.compact(filters))
-
-  return {
-    queries: queries,
-    filters: filters,
-    facets: retrieveFacets,
-    page: page,
-  }
+  return filters
 }
 
 const assembleQueries = ({queryText}) => {
@@ -87,20 +84,42 @@ const assembleAdditionalFilters = ({excludeGlobal}) => {
   }
 }
 
-const assembleSelectedCollectionsFilters = ({selectedIds}) => {
-  if (selectedIds.length > 0) {
-    return {type: 'collection', values: selectedIds}
+const assembleSelectedCollectionsFilters = ({selectedCollectionIds}) => {
+  if (selectedCollectionIds && selectedCollectionIds.length > 0) {
+    return {type: 'collection', values: selectedCollectionIds}
   }
 }
 
-const assemblePagination = (max, offset) => {
-  return {max: max, offset: offset}
+const assemblePagination = ({pageOffset = 0}, maxPageSize) => {
+  return {max: maxPageSize, offset: pageOffset}
 }
 
-export const encodeQueryString = state => {
-  const searchParams =
-    (state && state.search && state.search.collectionFilter) || {}
-  const queryParams = _.map(searchParams, (v, k) => {
+export const encodeLocationDescriptor = (route, searchParamsState) => {
+  const query = encodeQueryString(searchParamsState)
+  return {
+    pathname: route.toLocation(
+      searchParamsState.selectedCollectionIds
+        ? searchParamsState.selectedCollectionIds[0]
+        : null
+    ),
+    search: _.isEmpty(query) ? '' : `?${query}`,
+  }
+}
+
+export const decodePathAndQueryString = (path, queryString) => {
+  if (queryString.indexOf('?') === 0) {
+    queryString = queryString.slice(1)
+  }
+  let search = decodeQueryString(queryString)
+  const id = getIdFromPath(path)
+  if (id) {
+    search = Immutable.merge(search, {selectedCollectionIds: [ id ]})
+  }
+  return {id: id, filters: search}
+}
+
+export const encodeQueryString = searchParamsState => {
+  const queryParams = _.map(searchParamsState, (v, k) => {
     const codec = _.find(codecs, c => c.longKey === k)
     const encode = codec && (v === true || !_.isEmpty(v))
     return encode ? `${codec.shortKey}=${codec.encode(v)}` : null
@@ -176,12 +195,12 @@ const codecs = [
       )
     },
   },
-  {
-    longKey: 'selectedIds',
-    shortKey: 'i',
-    encode: ids => _.map(ids, id => encodeURIComponent(id)).join(','),
-    decode: text => _.map(text.split(','), id => decodeURIComponent(id)),
-  },
+  // {
+  //   longKey: 'selectedCollectionIds',
+  //   shortKey: 'i',
+  //   encode: ids => _.map(ids, id => encodeURIComponent(id)).join(','),
+  //   decode: text => _.map(text.split(','), id => decodeURIComponent(id)),
+  // },
   {
     longKey: 'excludeGlobal',
     shortKey: 'eg',

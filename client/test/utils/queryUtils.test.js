@@ -1,6 +1,7 @@
 import Immutable from 'seamless-immutable'
 import * as queryUtils from '../../src/utils/queryUtils'
 import {initialState} from '../../src/reducers/search/collectionFilter'
+import {ROUTE} from '../../src/utils/urlUtils'
 
 describe('The queryUtils', function(){
   describe('assembles collection requests', function(){
@@ -8,57 +9,86 @@ describe('The queryUtils', function(){
       it(`with ${testCase.name}`, function(){
         const objectResult = queryUtils.assembleSearchRequest(
           testCase.inputState,
-          false,
           true
         )
-        const stringResult = queryUtils.assembleSearchRequestString(
-          testCase.inputState,
-          false,
-          true
-        )
+        // const stringResult = queryUtils.assembleSearchRequestString(
+        //   testCase.inputState,
+        //   false,
+        //   true
+        // )
         expect(objectResult).toEqual(testCase.expectedResult)
-        expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
+        // expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
       })
     })
   })
 
   describe('assembles granule requests', function(){
+    // TODO do the query test cases cover Next Page completely? I didn't actually look
+
     granuleTestCases().forEach(function(testCase){
       it(`with ${testCase.name}`, function(){
         const objectResult = queryUtils.assembleSearchRequest(
           testCase.inputState,
-          true,
           false
         )
-        const stringResult = queryUtils.assembleSearchRequestString(
-          testCase.inputState,
-          true,
-          false
-        )
+        // const stringResult = queryUtils.assembleSearchRequestString(
+        //   testCase.inputState,
+        //   true,
+        //   false
+        // )
         expect(objectResult).toEqual(testCase.expectedResult)
-        expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
+        // expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
       })
     })
   })
 
-  it(`encodes & decodes a queryString accurately`, function(){
+  describe('assembles granule count requests', function(){
+    granuleCountTestCases().forEach(function(testCase){
+      it(`with ${testCase.name}`, function(){
+        const objectResult = queryUtils.assembleSearchRequest(
+          testCase.inputState,
+          false,
+          0
+        )
+        expect(objectResult).toEqual(testCase.expectedResult)
+      })
+    })
+  })
+
+  describe('encodeLocationDescriptor', function(){
+    it('correctly generates location from granules path with a selected id', function(){
+      const result = queryUtils.encodeLocationDescriptor(ROUTE.granules, {
+        selectedCollectionIds: [ 'ABC' ],
+      })
+      expect(result).toEqual({
+        pathname: '/collections/granules/ABC',
+        search: '',
+      })
+    })
+  })
+
+  describe('a queryString', function(){
     queryTestCases().forEach(testCase => {
-      const tempState = {search: {collectionFilter: testCase.state}}
-      const encodedString = queryUtils.encodeQueryString(tempState)
-      expect(encodedString).toBe(testCase.string)
-      const decodedString = queryUtils.decodeQueryString(encodedString)
-      expect(decodedString).toEqual(testCase.state)
+      it(`encodes accurately with ${testCase.name}`, function(){
+        const encodedString = queryUtils.encodeQueryString(testCase.state)
+        expect(encodedString).toBe(testCase.string)
+      })
+
+      it(`decodes accurately with ${testCase.name}`, function(){
+        const decodedString = queryUtils.decodeQueryString(testCase.string)
+        expect(decodedString).toEqual(testCase.state)
+      })
     })
   })
 })
 
 function collectionTestCases(){
   return [
-    {
+    /*{
       name: 'defaults',
-      inputState: {},
+      inputState: {}, // TODO this is not a real initial state anyway... in a real case where we have bad input, this util should throw an error because paging is a min requirement...
       expectedResult: {
-        queries: [],
+        queries: [], // this is also an unrealistic example because there are lots of places prior to this preventing no query...
         filters: [],
         facets: true,
         page: {
@@ -66,15 +96,12 @@ function collectionTestCases(){
           offset: 0,
         },
       },
-    },
+    },*/
     {
       name: 'a text search',
       inputState: {
-        search: {
-          collectionFilter: {
-            queryText: 'test text',
-          },
-        },
+        queryText: 'test text',
+        pageOffset: 0,
       },
       expectedResult: {
         queries: [
@@ -94,12 +121,9 @@ function collectionTestCases(){
     {
       name: 'a temporal search',
       inputState: {
-        search: {
-          collectionFilter: {
-            startDateTime: '2017-01-01',
-            endDateTime: '2017-01-20',
-          },
-        },
+        startDateTime: '2017-01-01',
+        endDateTime: '2017-01-20',
+        pageOffset: 0,
       },
       expectedResult: {
         queries: [],
@@ -120,27 +144,24 @@ function collectionTestCases(){
     {
       name: 'a spatial search',
       inputState: {
-        search: {
-          collectionFilter: {
-            geoJSON: {
-              geometry: {
-                type: 'Polygon',
-                coordinates: [
-                  [
-                    [ 100.0, 0.0 ],
-                    [ 101.0, 0.0 ],
-                    [ 101.0, 1.0 ],
-                    [ 100.0, 1.0 ],
-                    [ 100.0, 0.0 ],
-                  ],
-                ],
-              },
-              properties: {
-                description: 'Valid test GeoJSON',
-              },
-            },
+        geoJSON: {
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ 100.0, 0.0 ],
+                [ 101.0, 0.0 ],
+                [ 101.0, 1.0 ],
+                [ 100.0, 1.0 ],
+                [ 100.0, 0.0 ],
+              ],
+            ],
+          },
+          properties: {
+            description: 'Valid test GeoJSON',
           },
         },
+        pageOffset: 0,
       },
       expectedResult: {
         queries: [],
@@ -171,13 +192,10 @@ function collectionTestCases(){
     {
       name: 'a facet search',
       inputState: {
-        search: {
-          collectionFilter: {
-            selectedFacets: {
-              science: [ 'Atmosphere' ],
-            },
-          },
+        selectedFacets: {
+          science: [ 'Atmosphere' ],
         },
+        pageOffset: 0,
       },
       expectedResult: {
         queries: [],
@@ -198,33 +216,30 @@ function collectionTestCases(){
     {
       name: 'all filters applied',
       inputState: {
-        search: {
-          collectionFilter: {
-            geoJSON: {
-              geometry: {
-                type: 'Polygon',
-                coordinates: [
-                  [
-                    [ 100.0, 0.0 ],
-                    [ 101.0, 0.0 ],
-                    [ 101.0, 1.0 ],
-                    [ 100.0, 1.0 ],
-                    [ 100.0, 0.0 ],
-                  ],
-                ],
-              },
-              properties: {
-                description: 'Valid test GeoJSON',
-              },
-            },
-            startDateTime: '2017-01-01',
-            endDateTime: '2017-01-20',
-            queryText: 'test text',
-            selectedFacets: {
-              science: [ 'Atmosphere' ],
-            },
+        geoJSON: {
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ 100.0, 0.0 ],
+                [ 101.0, 0.0 ],
+                [ 101.0, 1.0 ],
+                [ 100.0, 1.0 ],
+                [ 100.0, 0.0 ],
+              ],
+            ],
+          },
+          properties: {
+            description: 'Valid test GeoJSON',
           },
         },
+        startDateTime: '2017-01-01',
+        endDateTime: '2017-01-20',
+        queryText: 'test text',
+        selectedFacets: {
+          science: [ 'Atmosphere' ],
+        },
+        pageOffset: 0,
       },
       expectedResult: {
         queries: [
@@ -268,13 +283,9 @@ function collectionTestCases(){
       },
     },
     {
-      name: 'more results requested',
+      name: 'more results requested', // TODO more results WITH filters?
       inputState: {
-        search: {
-          collectionResult: {
-            collectionsPageOffset: 20,
-          },
-        },
+        pageOffset: 20,
       },
       expectedResult: {
         queries: [],
@@ -294,11 +305,8 @@ function granuleTestCases(){
     {
       name: 'one collection',
       inputState: {
-        search: {
-          collectionFilter: {
-            selectedIds: [ 'ABC123' ],
-          },
-        },
+        selectedCollectionIds: [ 'ABC123' ],
+        pageOffset: 0,
       },
       expectedResult: {
         queries: [],
@@ -318,11 +326,8 @@ function granuleTestCases(){
     {
       name: 'two collections',
       inputState: {
-        search: {
-          collectionFilter: {
-            selectedIds: [ 'ABC123', 'XYZ789' ],
-          },
-        },
+        selectedCollectionIds: [ 'ABC123', 'XYZ789' ],
+        pageOffset: 0,
       },
       expectedResult: {
         queries: [],
@@ -342,15 +347,17 @@ function granuleTestCases(){
     {
       name: 'two collections and a text query',
       inputState: {
-        search: {
-          collectionFilter: {
-            queryText: 'test',
-            selectedIds: [ 'ABC123', 'XYZ789' ],
-          },
-        },
+        queryText: 'test',
+        selectedCollectionIds: [ 'ABC123', 'XYZ789' ],
+        pageOffset: 0,
       },
       expectedResult: {
-        queries: [],
+        queries: [
+          {
+            type: 'queryText',
+            value: 'test',
+          },
+        ],
         filters: [
           {
             type: 'collection',
@@ -367,14 +374,8 @@ function granuleTestCases(){
     {
       name: 'more results requested',
       inputState: {
-        search: {
-          collectionFilter: {
-            selectedIds: [],
-          },
-          collectionResult: {
-            granulesPageOffset: 20,
-          },
-        },
+        selectedCollectionIds: [], // TODO this isn't realistic for how we request more results
+        pageOffset: 20,
       },
       expectedResult: {
         queries: [],
@@ -389,43 +390,144 @@ function granuleTestCases(){
   ]
 }
 
+function granuleCountTestCases(){
+  return [
+    {
+      name: 'one collection',
+      inputState: {
+        selectedCollectionIds: [ 'ABC123' ],
+        pageOffset: 0,
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            type: 'collection',
+            values: [ 'ABC123' ],
+          },
+        ],
+        facets: false,
+        page: {
+          max: 0,
+          offset: 0,
+        },
+      },
+    },
+    {
+      name: 'collection and filters',
+      inputState: {
+        selectedCollectionIds: [ 'ABC123', 'XYZ789' ],
+        geoJSON: {
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ 100.0, 0.0 ],
+                [ 101.0, 0.0 ],
+                [ 101.0, 1.0 ],
+                [ 100.0, 1.0 ],
+                [ 100.0, 0.0 ],
+              ],
+            ],
+          },
+          properties: {
+            description: 'Valid test GeoJSON',
+          },
+        },
+        startDateTime: '2017-01-01',
+        endDateTime: '2017-01-20',
+        selectedFacets: {
+          science: [ 'Atmosphere' ],
+        },
+        pageOffset: 0,
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            type: 'facet',
+            name: 'science',
+            values: [ 'Atmosphere' ],
+          },
+          {
+            type: 'geometry',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [ 100.0, 0.0 ],
+                  [ 101.0, 0.0 ],
+                  [ 101.0, 1.0 ],
+                  [ 100.0, 1.0 ],
+                  [ 100.0, 0.0 ],
+                ],
+              ],
+            },
+          },
+          {
+            type: 'datetime',
+            after: '2017-01-01',
+            before: '2017-01-20',
+          },
+          {
+            type: 'collection',
+            values: [ 'ABC123', 'XYZ789' ],
+          },
+        ],
+        facets: false,
+        page: {
+          max: 0,
+          offset: 0,
+        },
+      },
+    },
+  ]
+}
+
 function queryTestCases(){
   return [
     {
+      name: 'empty string - initial state',
       string: '',
       state: initialState,
     },
     {
+      name: 'text query filter',
       string: 'q=ocean',
       state: Immutable.merge(initialState, {
         queryText: 'ocean',
       }),
     },
     {
+      name: 'start date filter',
       string: 's=2010-01-01T00%3A00%3A00Z',
       state: Immutable.merge(initialState, {
         startDateTime: '2010-01-01T00:00:00Z',
       }),
     },
     {
+      name: 'end date filter',
       string: 'e=2010-01-01T00%3A00%3A00Z',
       state: Immutable.merge(initialState, {
         endDateTime: '2010-01-01T00:00:00Z',
       }),
     },
+    // {
+    //   name: 'selected ids filter',
+    //   string: 'i=ABC,with%20a%20space',
+    //   state: Immutable.merge(initialState, {
+    //     selectedCollectionIds: [ 'ABC', 'with a space' ],
+    //   }),
+    // },
     {
-      string: 'i=ABC,with%20a%20space',
-      state: Immutable.merge(initialState, {
-        selectedIds: [ 'ABC', 'with a space' ],
-      }),
-    },
-    {
+      name: 'exclude global filter',
       string: 'eg=1',
       state: Immutable.merge(initialState, {
         excludeGlobal: true,
       }),
     },
     {
+      name: 'selected facets filter',
       string:
         'f=science:Oceans,Oceans%20%3E%20Sea%20Surface%20Temperature;platforms:DEM%20%3E%20Digital%20Elevation%20Model',
       state: Immutable.merge(initialState, {
@@ -436,6 +538,7 @@ function queryTestCases(){
       }),
     },
     {
+      name: 'geometry filter',
       string: 'g=-83.9531,29.234,-70.5938,38.5527',
       state: Immutable.merge(initialState, {
         geoJSON: {
@@ -457,13 +560,14 @@ function queryTestCases(){
       }),
     },
     {
+      name: 'all types of filters',
       string:
-        'q=ocean&g=-83,29,-70,38&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&i=ABC&eg=1',
+        'q=ocean&g=-83,29,-70,38&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&eg=1',
       state: Immutable.merge(initialState, {
         queryText: 'ocean',
         startDateTime: '2010-01-01T00:00:00Z',
         endDateTime: '2010-01-01T00:00:00Z',
-        selectedIds: [ 'ABC' ],
+        // selectedCollectionIds: [ 'ABC' ],
         excludeGlobal: true,
         selectedFacets: {
           platforms: [ 'DEM > Digital Elevation Model' ],

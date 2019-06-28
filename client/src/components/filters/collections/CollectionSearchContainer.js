@@ -1,16 +1,8 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import CollectionSearch from './CollectionSearch'
-import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
-import {
-  collectionRemoveFilters,
-  collectionUpdateQueryText,
-  collectionUpdateFilters,
-} from '../../../actions/search/CollectionFilterActions'
-import {
-  triggerSearch,
-  showCollections,
-} from '../../../actions/search/SearchActions'
+import {collectionUpdateQueryText} from '../../../actions/routing/CollectionSearchStateActions'
+import {submitCollectionSearchWithQueryText} from '../../../actions/routing/CollectionSearchRouteActions'
 
 const mapStateToProps = state => {
   return {
@@ -20,15 +12,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    submit: () => {
-      dispatch(collectionRemoveFilters())
-      dispatch(collectionClearResults())
-      dispatch(triggerSearch())
-      dispatch(showCollections(ownProps.history))
+    submit: text => {
+      dispatch(submitCollectionSearchWithQueryText(ownProps.history, text))
     },
     collectionUpdateQueryText: text =>
-      dispatch(collectionUpdateQueryText(text)),
-    clearSearch: () => dispatch(collectionUpdateFilters()),
+      dispatch(collectionUpdateQueryText(text)), // TODO is this prop function really needed... sorta maybe?
   }
 }
 

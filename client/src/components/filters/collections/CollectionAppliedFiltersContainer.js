@@ -5,13 +5,9 @@ import {
   collectionToggleFacet,
   collectionUpdateDateRange,
   collectionRemoveGeometry,
-} from '../../../actions/search/CollectionFilterActions'
-import {collectionClearResults} from '../../../actions/search/CollectionResultActions'
-import {
-  triggerSearch,
-  showCollections,
-} from '../../../actions/search/SearchActions'
-import CollectionAppliedFilters from './CollectionAppliedFilters'
+} from '../../../actions/routing/CollectionSearchStateActions'
+import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
+import AppliedFilters from '../AppliedFilters'
 
 const mapStateToProps = state => {
   const {
@@ -36,12 +32,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     toggleExcludeGlobal: () => {
       dispatch(collectionToggleExcludeGlobal())
     },
-    collectionToggleFacet: (category, facetName, selected) =>
+    toggleFacet: (category, facetName, selected) =>
       dispatch(collectionToggleFacet(category, facetName, selected)),
     submit: () => {
-      dispatch(collectionClearResults())
-      dispatch(triggerSearch())
-      dispatch(showCollections(ownProps.history))
+      dispatch(submitCollectionSearch(ownProps.history))
     },
     updateDateRange: (startDate, endDate) =>
       dispatch(collectionUpdateDateRange(startDate, endDate)),
@@ -50,7 +44,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 }
 
 const CollectionAppliedFiltersContainer = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(CollectionAppliedFilters)
+  connect(mapStateToProps, mapDispatchToProps)(AppliedFilters)
 )
 
 export default CollectionAppliedFiltersContainer

@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {collectionIncrementDetailGranulesResultOffset} from '../../../actions/search/CollectionResultActions'
+import {granuleIncrementResultsOffset} from '../../../actions/routing/GranuleSearchStateActions'
 import {
   insertSelectedGranule,
   insertMultipleSelectedGranules,
@@ -15,19 +15,20 @@ import {
 import GranuleList from './GranuleList'
 
 import {withRouter} from 'react-router'
-import {collectionDetailGranulesRequest} from '../../../actions/search/CollectionRequestActions'
+import {submitGranuleSearchNextPage} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
-  const {granules, totalGranules} = state.search.collectionResult
-  const focusedItem = state.search.collectionResult.collectionDetail
+  const {
+    granules,
+    totalGranuleCount,
+    loadedGranuleCount,
+  } = state.search.granuleResult
+  const focusedItem = state.search.collectionDetailResult.collection
   return {
-    collectionTitle: focusedItem
-      ? focusedItem.collection.attributes.title
-      : null,
+    collectionTitle: focusedItem ? focusedItem.attributes.title : null,
     results: granules,
-    totalHits: totalGranules,
-    returnedHits: (granules && Object.keys(granules).length) || 0,
-    loading: state.search.loading ? 1 : 0,
+    totalHits: totalGranuleCount,
+    returnedHits: loadedGranuleCount,
     selectedGranules: getSelectedGranulesFromStorage(state),
     featuresEnabled: state.config.featuresEnabled,
   }
@@ -36,8 +37,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     fetchMoreResults: () => {
-      dispatch(collectionIncrementDetailGranulesResultOffset())
-      dispatch(collectionDetailGranulesRequest(false))
+      dispatch(submitGranuleSearchNextPage())
     },
     selectGranule: (item, itemId) => {
       insertGranule(itemId, item)

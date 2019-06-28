@@ -6,10 +6,9 @@ import FlexRow from '../../common/ui/FlexRow'
 import Button from '../../common/input/Button'
 import FilterHeading from '../FilterHeading'
 
-// TODO: replace these with granule specific redux containers for new granule filtering
-// import CollectionTimeFilterContainer from './time/CollectionTimeFilterContainer'
-// import CollectionFacetFilterContainer from './facet/CollectionFacetFilterContainer'
-// import CollectionMapFilterContainer from './spatial/CollectionMapFilterContainer'
+import GranuleTimeFilterContainer from './GranuleTimeFilterContainer'
+import GranuleFacetFilterContainer from './GranuleFacetFilterContainer'
+import GranuleMapFilterContainer from './GranuleMapFilterContainer'
 
 import mapFilterIcon from '../../../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../../../img/font-awesome/white/svg/calendar.svg'
@@ -86,25 +85,17 @@ class GranuleFilters extends React.Component {
       {
         name: 'location',
         heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
-        // TODO: replace w/new granule specific container
-        // content: <CollectionMapFilterContainer isOpen={this.state.location} />,
-        content: 'put granule map filter here',
+        content: <GranuleMapFilterContainer isOpen={this.state.location} />,
       },
       {
         name: 'time',
         heading: <FilterHeading icon={timeFilterIcon} text="Date" />,
-        // TODO: replace w/new granule specific container
-        // content: <CollectionTimeFilterContainer />,
-        content: 'put granule time filter here',
+        content: <GranuleTimeFilterContainer />,
       },
       {
         name: 'keywords',
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
-        // TODO: replace w/new granule specific container
-        // content: (
-        //     <CollectionFacetFilterContainer submit={this.props.submit} marginNest={'1em'} />
-        // ),
-        content: 'put granule keyword filter here',
+        content: <GranuleFacetFilterContainer marginNest={'1em'} />,
       },
     ]
   }

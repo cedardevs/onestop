@@ -4,148 +4,142 @@ import {
   initialState,
 } from '../../../src/reducers/search/collectionResult'
 import {
-  collectionClearResults,
-  collectionClearDetailGranulesResult,
-  COLLECTION_METADATA_RECEIVED,
-} from '../../../src/actions/search/CollectionResultActions'
-
-import {
-  collectionSearchSuccess,
-  collectionDetailGranulesSuccess,
-} from '../../../src/actions/search/CollectionRequestActions'
+  collectionNewSearchResultsReceived,
+  collectionMoreResultsReceived,
+  collectionSearchError,
+} from '../../../src/actions/routing/CollectionSearchStateActions'
 
 describe('The collectionResult reducer', function(){
   it('has a default state', function(){
     const initialAction = {type: 'init'}
     const result = collectionResult(initialState, initialAction)
 
-    expect(result.collections).toBeInstanceOf(Object)
-    expect(result.granules).toBeInstanceOf(Object)
-    expect(result.facets).toBeInstanceOf(Object)
+    expect(result).toEqual({
+      collections: {},
+      facets: {},
+      totalCollectionCount: 0,
+      loadedCollectionCount: 0,
+    })
   })
 
-  it('merges received collections into the map of collections', function(){
-    const firstSetCollections = new Map()
-    firstSetCollections.set('A', {id: 1})
-    const expectedFirstMap = {A: {id: 1}}
-    const firstRoundResult = collectionResult(
-      initialState,
-      collectionSearchSuccess(firstSetCollections)
-    )
-    expect(firstRoundResult.collections).toEqual(expectedFirstMap)
-
-    const secondSetCollections = new Map()
-    secondSetCollections.set('B', {id: 2})
-    secondSetCollections.set('C', {id: 3})
-    const expectedSecondMap = {A: {id: 1}, B: {id: 2}, C: {id: 3}}
-    const secondRoundResult = collectionResult(
-      firstRoundResult,
-      collectionSearchSuccess(secondSetCollections)
-    )
-    expect(secondRoundResult.collections).toEqual(expectedSecondMap)
-  })
-
-  it('can clear existing collection state', function(){
+  it('can reset existing collection state on error', function(){
     const stateWithCollections = Immutable({
       collections: {A: {id: 123}},
-      totalCollections: 1,
-      collectionsPageOffset: 20,
-    })
-    const result = collectionResult(
-      stateWithCollections,
-      collectionClearResults()
-    )
-    expect(result.collections).toEqual({})
-    expect(result.totalCollections).toBe(0)
-    expect(result.collectionsPageOffset).toBe(0)
-  })
-
-  it('merges received granules into the map of granules', function(){
-    const firstRoundData = [
-      {id: 'A', attributes: {version: 1}},
-      {id: 'B', attributes: {version: 1}},
-    ]
-    const firstRoundMap = {A: {version: 1}, B: {version: 1}}
-    const firstRoundResult = collectionResult(
-      initialState,
-      collectionDetailGranulesSuccess(firstRoundData)
-    )
-    expect(firstRoundResult.granules).toEqual(firstRoundMap)
-
-    const secondRoundData = [
-      {id: 'B', attributes: {version: 2}},
-      {id: 'C', attributes: {version: 1}},
-    ]
-    const secondRoundMap = {A: {version: 1}, B: {version: 2}, C: {version: 1}}
-    const secondRoundResult = collectionResult(
-      firstRoundResult,
-      collectionDetailGranulesSuccess(secondRoundData)
-    )
-    expect(secondRoundResult.granules).toEqual(secondRoundMap)
-  })
-
-  it('can clear existing granule state', function(){
-    const stateWithGranules = Immutable({
-      granules: {A: {id: 'A'}},
-      totalGranules: 1,
-      granulesPageOffset: 20,
-    })
-    const result = collectionResult(
-      stateWithGranules,
-      collectionClearDetailGranulesResult()
-    )
-    expect(result.granules).toEqual({})
-    expect(result.totalGranules).toBe(0)
-    expect(result.granulesPageOffset).toBe(0)
-  })
-
-  it('should handle COLLECTION_METADATA_RECEIVED', () => {
-    const facetsRecAction = {
-      type: COLLECTION_METADATA_RECEIVED,
-      metadata: {
-        facets: {
-          science: {
-            Oceans: {
-              count: 5,
-            },
-            'Oceans > Ocean Temperature': {
-              count: 5,
-            },
-            'Oceans > Ocean Temperature > Sea Surface Temperature': {
-              count: 5,
-            },
-            dataResolution: {},
-          },
-        },
-      },
-      procSelectedFacets: true,
-    }
-
-    let expectedState = {
-      collectionDetail: null,
-      collections: {},
-      granules: {},
       facets: {
         science: {
           Oceans: {
             count: 5,
           },
-          'Oceans > Ocean Temperature': {
-            count: 5,
-          },
-          'Oceans > Ocean Temperature > Sea Surface Temperature': {
-            count: 5,
-          },
-          dataResolution: {},
         },
       },
-      totalCollections: 0,
-      totalGranules: 0,
-      collectionsPageOffset: 0,
-      granulesPageOffset: 0,
-      pageSize: 20,
-    }
-    let stateWithFacets = collectionResult(initialState, facetsRecAction)
-    expect(stateWithFacets).toEqual(expectedState)
+      totalCollectionCount: 1,
+      loadedCollectionCount: 1,
+    })
+    const result = collectionResult(
+      stateWithCollections,
+      collectionSearchError()
+    )
+    expect(result.collections).toEqual({})
+    expect(result.facets).toEqual({})
+    expect(result.totalCollectionCount).toBe(0)
+    expect(result.loadedCollectionCount).toBe(0)
   })
+
+  it('can update collections on recieving more results', function(){
+    const resultsPage1LoadedState = Immutable({
+      collections: {A: {title: 'title A'}},
+      totalCollectionCount: 3,
+      loadedCollectionCount: 1,
+      facets: {},
+    })
+
+    const result = collectionResult(
+      resultsPage1LoadedState,
+      collectionMoreResultsReceived([
+        {id: 'B', attributes: {title: 'title B'}},
+        {id: 'C', attributes: {title: 'title C'}},
+      ])
+    )
+
+    expect(result.collections).toEqual({
+      A: {title: 'title A'},
+      B: {title: 'title B'},
+      C: {title: 'title C'},
+    })
+    expect(result.totalCollectionCount).toBe(3)
+    expect(result.loadedCollectionCount).toBe(3)
+  })
+
+  it('can reset existing collection state on new search', function(){
+    const stateWithCollections = Immutable({
+      collections: {A: {title: 'title A'}},
+      facets: {
+        science: {
+          Oceans: {
+            count: 5,
+          },
+        },
+      },
+      totalCollections: 1,
+      loadedCollections: 1,
+    })
+
+    const facets = {
+      science: {
+        Oceans: {
+          count: 5,
+        },
+        'Oceans > Ocean Temperature': {
+          count: 5,
+        },
+        'Oceans > Ocean Temperature > Sea Surface Temperature': {
+          count: 5,
+        },
+        dataResolution: {},
+      },
+    }
+
+    const result = collectionResult(
+      stateWithCollections,
+      collectionNewSearchResultsReceived(
+        30,
+        [
+          {id: 'B', attributes: {title: 'title B'}},
+          {id: 'C', attributes: {title: 'title C'}},
+        ],
+        facets
+      )
+    )
+    expect(result.collections).toEqual({
+      B: {title: 'title B'},
+      C: {title: 'title C'},
+    })
+    expect(result.facets).toEqual(facets)
+    expect(result.totalCollectionCount).toBe(30)
+    expect(result.loadedCollectionCount).toBe(2)
+  })
+
+  // it('merges received granules into the map of granules', function(){
+  //   const firstRoundData = [
+  //     {id: 'A', attributes: {version: 1}},
+  //     {id: 'B', attributes: {version: 1}},
+  //   ]
+  //   const firstRoundMap = {A: {version: 1}, B: {version: 1}}
+  //   const firstRoundResult = collectionResult(
+  //     initialState,
+  //     collectionDetailGranulesSuccess(firstRoundData)
+  //   )
+  //   expect(firstRoundResult.granules).toEqual(firstRoundMap)
+  //
+  //   const secondRoundData = [
+  //     {id: 'B', attributes: {version: 2}},
+  //     {id: 'C', attributes: {version: 1}},
+  //   ]
+  //   const secondRoundMap = {A: {version: 1}, B: {version: 2}, C: {version: 1}}
+  //   const secondRoundResult = collectionResult(
+  //     firstRoundResult,
+  //     collectionDetailGranulesSuccess(secondRoundData)
+  //   )
+  //   expect(secondRoundResult.granules).toEqual(secondRoundMap)
+  // })
 })

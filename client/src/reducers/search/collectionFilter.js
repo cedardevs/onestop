@@ -1,19 +1,18 @@
 import Immutable from 'seamless-immutable'
 import {
-  COLLECTION_UPDATE_FILTERS,
-  COLLECTION_REMOVE_FILTERS,
   COLLECTION_UPDATE_QUERY_TEXT,
   COLLECTION_UPDATE_GEOMETRY,
   COLLECTION_REMOVE_GEOMETRY,
   COLLECTION_UPDATE_DATE_RANGE,
   COLLECTION_REMOVE_DATE_RANGE,
-  COLLECTION_TOGGLE_SELECTED_ID,
-  COLLECTION_CLEAR_SELECTED_IDS,
   COLLECTION_TOGGLE_FACET,
-  COLLECTION_CLEAR_FACETS,
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
-} from '../../actions/search/CollectionFilterActions'
-import {toggleSelectedId} from '../../utils/filterUtils'
+  COLLECTION_NEW_SEARCH_REQUESTED,
+  COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED,
+  COLLECTION_MORE_RESULTS_REQUESTED,
+} from '../../actions/routing/CollectionSearchStateActions'
+import {PAGE_SIZE} from '../../utils/queryUtils'
+import {updateSelectedFacets} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
   queryText: '',
@@ -21,27 +20,12 @@ export const initialState = Immutable({
   startDateTime: null,
   endDateTime: null,
   selectedFacets: {},
-  selectedIds: [],
   excludeGlobal: null,
+  pageOffset: 0,
 })
 
 export const collectionFilter = (state = initialState, action) => {
   switch (action.type) {
-    case COLLECTION_UPDATE_FILTERS:
-      return Immutable.merge(initialState, action.filters || {})
-
-    case COLLECTION_REMOVE_FILTERS:
-      return Immutable.merge(state, {
-        // this action is triggered by 'queryText' searches to ensure a fresh filter;
-        // consequently, we do not reset 'queryText' back to its initial state
-        geoJSON: initialState.geoJSON,
-        startDateTime: initialState.startDateTime,
-        endDateTime: initialState.endDateTime,
-        selectedFacets: initialState.selectedFacets,
-        selectedIds: initialState.selectedIds,
-        excludeGlobal: initialState.excludeGlobal,
-      })
-
     case COLLECTION_UPDATE_QUERY_TEXT:
       return Immutable.set(state, 'queryText', action.queryText)
 
@@ -63,23 +47,31 @@ export const collectionFilter = (state = initialState, action) => {
         endDateTime: initialState.endDateTime,
       })
 
-    case COLLECTION_TOGGLE_SELECTED_ID:
-      return Immutable.set(
-        state,
-        'selectedIds',
-        toggleSelectedId(state.selectedIds, action.collectionId)
-      )
-    case COLLECTION_CLEAR_SELECTED_IDS:
-      return Immutable.set(state, 'selectedIds', initialState.selectedIds)
-
     case COLLECTION_TOGGLE_FACET:
-      return Immutable.set(state, 'selectedFacets', action.selectedFacets)
+      const {selectedFacets} = state
+      const newSelectedFacets = updateSelectedFacets(
+        selectedFacets,
+        action.category,
+        action.facetName,
+        action.selected
+      )
 
-    case COLLECTION_CLEAR_FACETS:
-      return Immutable.set(state, 'selectedFacets', initialState.selectedFacets)
+      return Immutable.set(state, 'selectedFacets', newSelectedFacets)
 
     case COLLECTION_TOGGLE_EXCLUDE_GLOBAL:
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
+
+    case COLLECTION_NEW_SEARCH_REQUESTED:
+      return Immutable.merge(state, {pageOffset: initialState.pageOffset})
+
+    case COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED:
+      return Immutable.merge(initialState, [
+        action.filters,
+        {pageOffset: initialState.pageOffset},
+      ])
+
+    case COLLECTION_MORE_RESULTS_REQUESTED:
+      return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)
 
     default:
       return state

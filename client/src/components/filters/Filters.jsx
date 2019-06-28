@@ -8,7 +8,7 @@ export default class Filters extends React.Component {
   render() {
     return (
       <Switch>
-        <Route path={ROUTE.search.path} exact>
+        <Route path={ROUTE.collections.path} exact>
           <CollectionFiltersContainer />
         </Route>
         <Route path={ROUTE.granules.parameterized}>

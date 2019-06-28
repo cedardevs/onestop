@@ -1,24 +1,19 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import Detail from './Detail'
-import {showGranulesList} from '../../../actions/search/SearchActions'
 
 const mapStateToProps = state => {
-  const focusedItem = state.search.collectionResult.collectionDetail
+  const focusedItem = state.search.collectionDetailResult.collection
+
   return {
-    id: focusedItem ? focusedItem.collection.id : null,
-    item: focusedItem ? focusedItem.collection.attributes : null,
-    totalGranuleCount: focusedItem ? focusedItem.totalGranuleCount : null,
-    loading: state.search.collectionRequest.collectionDetailRequestInFlight,
+    id: focusedItem ? focusedItem.id : null,
+    item: focusedItem ? focusedItem.attributes : null,
+    loading: state.search.collectionDetailRequest.inFlight,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    navigateToGranules: id => {
-      dispatch(showGranulesList(ownProps.history, id))
-    },
-  }
+  return {}
 }
 
 const DetailContainer = withRouter(

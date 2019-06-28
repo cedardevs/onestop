@@ -66,9 +66,7 @@ export default class ActionPane extends React.Component {
         icon={email}
         styleIcon={styleIcon}
         iconPadding={'0.309em'}
-        onClick={() => {
-          console.log(`click on email button: ${itemId}`)
-        }}
+        onClick={() => {}}
       />
     )
 

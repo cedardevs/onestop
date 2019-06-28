@@ -1,7 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
-import AppliedFilterBubble from '../AppliedFilterBubble'
-import * as geoUtils from '../../../utils/geoUtils'
+import AppliedFilterBubble from './AppliedFilterBubble'
+import * as geoUtils from '../../utils/geoUtils'
 
 const Theme = {
   facet: {
@@ -24,13 +24,13 @@ const styleWrapper = {
   padding: '0 2em 1em',
 }
 
-export default class CollectionAppliedFilters extends React.Component {
+export default class AppliedFilters extends React.Component {
   constructor(props) {
     super(props)
   }
 
   unselectFacetAndSubmitSearch = (category, term) => {
-    this.props.collectionToggleFacet(category, term, false)
+    this.props.toggleFacet(category, term, false)
     this.props.submit()
   }
 
