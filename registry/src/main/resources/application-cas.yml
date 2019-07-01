@@ -1,6 +1,9 @@
 ---
+# -- allows for better security logs for debugging --
 #logging.level.org.springframework.security: DEBUG
 
+# -- point to the actual CAS server --
+# -- note: will require actually registering service in the future...
 cas:
   service: 'http://localhost/registry/login/cas'
   serverUrlPrefix: 'https://auth.ncdc.noaa.gov/cas'
@@ -9,6 +12,8 @@ cas:
   providerKey: 'CAS_PROVIDER_INVENTORY_MANAGER_NCDC'
   sendRenew: false
 
+# -- point to the local dev CAS server built from the CAS Overlay --
+# -- note: uses our own baked-in JSON registry to know of this service
 #cas:
 #  service: 'http://localhost/registry/login/cas'
 #  serverUrlPrefix: 'http://localhost/cas'
