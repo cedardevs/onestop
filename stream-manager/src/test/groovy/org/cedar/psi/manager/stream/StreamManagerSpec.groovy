@@ -1,5 +1,6 @@
 package org.cedar.psi.manager.stream
 
+import groovy.json.JsonOutput
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
@@ -40,7 +41,7 @@ class StreamManagerSpec extends Specification {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def key = 'A123'
-    def input = buildInput(method: Method.POST, contentType: 'application/xml', content: xml)
+    def input = buildAggInput(rawXml: xml)
 
     when:
     driver.pipeInput(inputFactory.create(testChangelog, key, input))
@@ -73,8 +74,8 @@ class StreamManagerSpec extends Specification {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def key = 'A123'
-    def postInput = buildInput(method: Method.POST, contentType: 'application/xml', content: xml)
-    def deleteInput = buildInput(method: Method.DELETE, contentType: 'application/xml')
+    def postInput = buildAggInput(rawXml: xml)
+    def deleteInput = buildAggInput(rawXml: xml, deleted: true)
 
     when:
     driver.pipeInput(inputFactory.create(testChangelog, key, postInput))
@@ -98,29 +99,27 @@ class StreamManagerSpec extends Specification {
     updatedOutput.value() == null
   }
 
-  def "SME granule ends up in SME topic"() {
+  def "SME granule ends up in both SME and parsed topics"() {
     given:
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
     def smeKey = 'sme'
-    def smeValue = buildInput(
-        source: 'common-ingest',
-        contentType: 'application/xml',
-        content: xmlSME,
-        method: Method.POST
+    def smeValue = buildAggInput(
+        initialSource : 'common-ingest',
+        rawXml        : xmlSME
     )
 
     when:
     driver.pipeInput(inputFactory.create(testChangelog, smeKey, smeValue))
 
-    then:
-    // The record is in the SME topic
+    then: // The record is in the SME topic as json
     def smeOutput = driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, STRING_DESERIALIZER)
     smeOutput.key() == smeKey
-    smeOutput.value() == smeValue.content
+    smeOutput.value() == JsonOutput.toJson(AvroUtils.avroToMap(smeValue))
 
-    and:
-    // Nothing in the parsed topic
-    driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    and: // And also in the parsed topic as a ParsedRecord
+    def parsedOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    parsedOutput.key() == smeKey
+    parsedOutput.value() instanceof ParsedRecord
   }
 
   def "Non-SME granule and SME granule end up in parsed-granule topic"() {
@@ -128,10 +127,8 @@ class StreamManagerSpec extends Specification {
     def xmlNonSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
     def nonSMEInputKey = 'notSME'
-    def nonSMEInputValue = buildInput(
-        contentType: 'application/xml',
-        content: xmlNonSME,
-        method: Method.POST
+    def nonSMEInputValue = buildAggInput(
+        rawXml: xmlNonSME
     )
     def unparsedKey = 'sme'
     def unparsedValue = [
@@ -170,10 +167,8 @@ class StreamManagerSpec extends Specification {
   def "Unparsable granule produces record with errors"() {
     given:
     def key = 'failure101'
-    def value = buildInput(
-        contentType: 'text/csv',
-        content: 'it,does,not,parse',
-        method: Method.POST
+    def value = buildAggInput(
+        rawXml: 'it,does,not,parse'
     )
 
     when:
@@ -192,12 +187,12 @@ class StreamManagerSpec extends Specification {
   }
 
   private static inputDefaults = [
-      type      : RecordType.granule,
-      source    : 'test'
+      type          : RecordType.granule,
+      initialSource : 'test'
   ]
 
-  private static buildInput(Map overrides) {
-    (inputDefaults + overrides).inject(Input.newBuilder(), { b, k, v ->
+  private static AggregatedInput buildAggInput(Map overrides) {
+    (inputDefaults + overrides).inject(AggregatedInput.newBuilder(), { b, k, v ->
       b[k] = v
       b
     }).build()

@@ -7,7 +7,7 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.serialization.Serializer
 
 
-final class JsonMapSerde extends Serdes.WrapperSerde<Map> {
+final class JsonMapSerde extends Serdes.WrapperSerde<Map<String, Object>> {
   JsonMapSerde() {
     super(new JsonMapSerializer(), new JsonMapDeserializer())
   }

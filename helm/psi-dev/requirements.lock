@@ -11,8 +11,5 @@ dependencies:
 - name: nginx-ingress
   repository: https://kubernetes-charts.storage.googleapis.com
   version: 1.1.5
-- name: cas
-  repository: file://../cas
-  version: 0.1.0
-digest: sha256:1c8be5754ba255d8278dcab543b0b480e361acd12e1b6029f6fc92145b3b34b5
-generated: 2019-06-20T16:04:29.477882-06:00
+digest: sha256:8a8ed14c664a9a95d71714426786982cb8bf533549df0082fd104401672a894e
+generated: 2019-07-01T12:31:15.271939-06:00

@@ -108,25 +108,29 @@ class RegistryIntegrationSpec extends Specification {
     then:
     registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(retrieveResponse.body)))
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body.data.id == granuleId
-    retrieveResponse.body.data.type == 'granule'
-    retrieveResponse.body.links.parsed == "${baseUrl}metadata/granule/common-ingest/${granuleId}/parsed"
-    retrieveResponse.body.data.attributes.content == granuleText
-    retrieveResponse.body.data.attributes.contentType == "application/json"
-    retrieveResponse.body.data.attributes.source == "common-ingest"
 
     and: // let's verify the full response just this once
-    retrieveResponse.body.data == [
-        id        : granuleId,
-        type      : 'granule',
-        attributes: [
-            "content"    : granuleText,
-            "contentType": "application/json",
-            "method"     : "POST",
-            "source"     : "common-ingest",
-            "type"       : "granule"
-        ]
-    ]
+    def links = retrieveResponse.body.links
+    def data = retrieveResponse.body.data
+    links.parsed == "${baseUrl}metadata/granule/common-ingest/${granuleId}/parsed"
+    data.id == granuleId
+    data.type == 'granule'
+    data.attributes.rawJson == JsonOutput.toJson(granuleMap)
+    data.attributes.rawXml == null
+    data.attributes.initialSource == "common-ingest"
+    data.attributes.type == "granule"
+    data.attributes.fileInformation instanceof Map
+    data.attributes.fileLocations instanceof Map
+    data.attributes.publishing == null
+    data.attributes.relationships instanceof List
+    data.attributes.deleted == false
+    data.attributes.events instanceof List
+    data.attributes.events.size() == 1
+    data.attributes.events[0].timestamp instanceof Long
+    data.attributes.events[0].method == "POST"
+    data.attributes.events[0].source == "common-ingest"
+    data.attributes.events[0].operation == null
+    data.attributes.errors == []
   }
 
   def 'collection that is not yet parsed returns 404'() {

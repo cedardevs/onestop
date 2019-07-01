@@ -4,7 +4,10 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.QueryableStoreType
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
-import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.psi.AggregatedInput
+import org.cedar.schemas.avro.psi.ErrorEvent
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.RecordType
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -87,10 +90,10 @@ class MetadataStoreSpec extends Specification {
 
     then:
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
-    1 * mockInputStore.get(testId) >> testInput
+    1 * mockInputStore.get(testId) >> testAggInput
 
     and:
-    result ==  testInput
+    result ==  testAggInput
   }
 
   def 'retrieves a parsed record by type and id'() {
@@ -122,12 +125,10 @@ class MetadataStoreSpec extends Specification {
   }
 
 
-  private static testInput = Input.newBuilder()
+  private static testAggInput = AggregatedInput.newBuilder()
       .setType(RecordType.collection)
-      .setContent('{"hello":"world"}')
-      .setMethod(Method.POST)
-      .setContentType('application/json')
-      .setSource('test')
+      .setRawJson('{"hello":"world"}')
+      .setInitialSource('test')
       .build()
 
   private static testParsed = ParsedRecord.newBuilder().setType(RecordType.collection).build()

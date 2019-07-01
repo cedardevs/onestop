@@ -1,6 +1,7 @@
 package org.cedar.psi.registry.stream
 
 import org.apache.kafka.clients.admin.AdminClient
+import org.apache.kafka.clients.admin.CreateTopicsOptions
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.common.config.TopicConfig
 
@@ -42,7 +43,7 @@ class TopicInitializer {
       return new NewTopic(name, numPartitions, replicationFactor)
           .configs(topicConfigs[name] ?: [:])
     }
-    def result = adminClient.createTopics(newTopics)
+    def result = adminClient.createTopics(newTopics, new CreateTopicsOptions(timeoutMs: 30000))
     result.all().get()
   }
 
