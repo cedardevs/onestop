@@ -32,17 +32,50 @@ public class DataUtils {
     }
   }
 
-  // TODO - This needs to be MUCH more thorough to handle PATCHing of deeply nested ojects and lists...
+//  // TODO - This needs to be MUCH more thorough to handle PATCHing of deeply nested ojects and lists...
+//  public static Map<String, Object> mergeMaps(Map<String, Object> first, Map<String, Object> second) {
+//    if (first == null && second == null) {
+//      return null;
+//    }
+//    Map left = first != null ? first : Map.of();
+//    Map right = second != null ? second : Map.of();
+//    Map result = new LinkedHashMap();
+//    left.forEach((k, v) -> result.merge(k, v, (v1, v2) -> v2));
+//    right.forEach((k, v) -> result.merge(k, v, (v1, v2) -> v2));
+//    return result;
+//  }
+
+
   public static Map<String, Object> mergeMaps(Map<String, Object> first, Map<String, Object> second) {
     if (first == null && second == null) {
       return null;
     }
-    Map left = first != null ? first : Map.of();
-    Map right = second != null ? second : Map.of();
-    Map result = new LinkedHashMap();
-    left.forEach((k, v) -> result.merge(k, v, (v1, v2) -> v2));
-    right.forEach((k, v) -> result.merge(k, v, (v1, v2) -> v2));
-    return result;
+
+    Map mergedMap = first == null ? new HashMap() : new HashMap(first);
+    if (second != null) {
+      second.forEach( (k, v) -> {
+        var originalValue = mergedMap.get(k);
+        if (originalValue == null) {
+          mergedMap.put(k, v);
+        }
+        else if (v instanceof Map && originalValue instanceof Map) {
+          mergedMap.put(k, mergeMaps((Map) originalValue, (Map) v));
+        }
+        else if (v instanceof List && originalValue instanceof List) {
+          var mergedList = new HashSet((List) originalValue);
+          mergedList.addAll((List) v); // FIXME -- verify this works for a list of Maps
+          mergedMap.put(k, mergedList);
+        }
+        else {
+        /* This overwrites simple values but also mismatched object types. Accepting that "risk" since we will
+        generate useful errors downstream for objects being cast to avro pojos but also because we allow for
+        unknown JSON to pass through our parsing/analysis untouched (either type change could be erroneous but we
+        have no way of knowing which) */
+          mergedMap.put(k, v);
+        }
+      });
+    }
+    return mergedMap;
   }
 
   public static void updateDerivedFields(AggregatedInput.Builder builder, Map<String, Object> fieldData) {

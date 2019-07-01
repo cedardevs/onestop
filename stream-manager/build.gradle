@@ -12,6 +12,8 @@ repositories {
   mavenCentral()
 }
 
+sourceCompatibility = '11'
+
 configurations {
   integrationTestCompile.extendsFrom testCompile
   integrationTestRuntime.extendsFrom testRuntime

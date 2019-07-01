@@ -41,18 +41,23 @@ class DataUtilsSpec extends Specification {
     DataUtils.mergeMaps(in1, in2) == out
 
     where:
-    in1           | in2           | out
-    null          | null          | null
-    null          | [b: 2]        | [b: 2]
-    [a: 1]        | null          | [a: 1]
-    [:]           | [:]           | [:]
-    [a: 1]        | [:]           | [a: 1]
-    [:]           | [b: 2]        | [b: 2]
-    [a: 1]        | [b: 2]        | [a: 1, b: 2]
-    [a: 1]        | [a: 2]        | [a: 2]
+    in1             | in2             | out
+    null            | null            | null
+    null            | [b: 2]          | [b: 2]
+    [a: 1]          | null            | [a: 1]
+    [:]             | [:]             | [:]
+    [a: 1]          | [:]             | [a: 1]
+    [:]             | [b: 2]          | [b: 2]
+    [a: 1]          | [b: 2]          | [a: 1, b: 2]
+    [a: 1]          | [a: 2]          | [a: 2]
+    [a: 1, b: 1]    | [b: 2]          | [a: 1, b: 2]
+    [b: 1]          | [a: null, b: 2] | [a: null, b: 2]
+    [a: null, b: 1] | [b: 2]          | [a: null, b: 2]
   }
 
-  // TODO - there are so many more ways to merge maps...
+  def "mergeMaps supports complex deep merges"() {
+    // TODO
+  }
 
   def "setValueOnPojo... does that"() {
     def pojo = new TestPojo()
