@@ -37,7 +37,7 @@ jobs:
       # build it!
       - run:
           name: Run OWASP Check
-          command: ./gradlew dependencyCheckAnalyze
+          command: ./gradlew dependencyCheckAggregate
           no_output_timeout: 30m
 
   build:
@@ -72,7 +72,7 @@ jobs:
       # build it!
       - run:
           name: Build
-          command: ./gradlew build -x dependencyCheckAnalyze
+          command: ./gradlew build -x dependencyCheckAggregate
 
       - run:
           name: Save test results
