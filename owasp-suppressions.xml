@@ -111,4 +111,14 @@
     <cve>CVE-2018-8088</cve>
   </suppress>
 
+  <suppress>
+    <notes><![CDATA[
+      The CVE (https://nvd.nist.gov/vuln/detail/CVE-2018-1258) explicitly states that this vulnerability applies to
+      Spring Framework version 5.0.5, and as of this suppression, the Spring Boot 2.1.6.RELEASE version (corresponding
+      to Spring Framework version 5.1.x) is being used, so this CVE can be suppressed.
+    ]]></notes>
+      <gav regex="true">^org.springframework.security:spring-security.*$</gav>
+      <cve>CVE-2018-1258</cve>
+  </suppress>
+
 </suppressions>
