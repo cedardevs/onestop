@@ -84,7 +84,6 @@ class CASConfiguration {
       @Override
       UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String[] authorityList = authz.getAuthorityList(username)
-        log.info("authorityList: ${authorityList.dump()}")
         if(authorityList == null || authorityList.length == 0) {
           throw new UsernameNotFoundException("User name not found.")
         }

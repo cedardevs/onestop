@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 @Component
 @ConfigurationProperties(prefix = 'authorization')
 class AuthorizationConfigurationProperties {
+
   private Map<String, List<String>> roles
 
   Map<String, List<String>> getRoles() {
@@ -22,9 +23,8 @@ class AuthorizationConfigurationProperties {
 
   String[] getAuthorityList(String principal) {
     Set<String> list = []
-    log.info("principal = ${principal}\n------")
+
     roles.each { String role, List<String> principals ->
-      log.info("role: ${role}, principals: ${principals.dump()}")
       if(principals.contains(principal)) {
         list.add("ROLE_" + role)
       }

@@ -80,7 +80,6 @@ class SecurityEnabledConfig extends WebSecurityConfigurerAdapter {
     http.authenticationProvider(authenticationProvider).authorizeRequests()
 
       // secured endpoints
-      .antMatchers(HttpMethod.GET, "/metadata/**").hasRole("ADMIN")
       .antMatchers(HttpMethod.POST, "/metadata/**").hasRole("ADMIN")
       .antMatchers(HttpMethod.PUT, "/metadata/**").hasRole("ADMIN")
       .antMatchers(HttpMethod.PATCH, "/metadata/**").hasRole("ADMIN")

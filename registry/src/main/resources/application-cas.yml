@@ -1,24 +1,24 @@
 ---
-logging.level.org.springframework.security: DEBUG
-
-#cas:
-#  service: 'http://localhost/registry/login/cas'
-#  serverUrlPrefix: 'https://auth.ncdc.noaa.gov/cas'
-#  loginUrl: 'https://auth.ncdc.noaa.gov/cas/login'
-#  logoutSuccessUrl: 'https://auth.ncdc.noaa.gov/cas/logout'
-#  providerKey: 'CAS_PROVIDER_INVENTORY_MANAGER_NCDC'
-#  sendRenew: false
+#logging.level.org.springframework.security: DEBUG
 
 cas:
   service: 'http://localhost/registry/login/cas'
-  serverUrlPrefix: 'http://localhost/cas'
-  loginUrl: 'http://localhost/cas/login'
-  logoutSuccessUrl: 'http://localhost/cas/logout'
-  providerKey: 'CAS_PROVIDER_INVENTORY_MANAGER_LOCALHOST'
+  serverUrlPrefix: 'https://auth.ncdc.noaa.gov/cas'
+  loginUrl: 'https://auth.ncdc.noaa.gov/cas/login'
+  logoutSuccessUrl: 'https://auth.ncdc.noaa.gov/cas/logout'
+  providerKey: 'CAS_PROVIDER_INVENTORY_MANAGER_NCDC'
   sendRenew: false
+
+#cas:
+#  service: 'http://localhost/registry/login/cas'
+#  serverUrlPrefix: 'http://localhost/cas'
+#  loginUrl: 'http://localhost/cas/login'
+#  logoutSuccessUrl: 'http://localhost/cas/logout'
+#  providerKey: 'CAS_PROVIDER_INVENTORY_MANAGER_LOCALHOST'
+#  sendRenew: false
 
 authorization:
   roles:
     ADMIN:
-      - casuser
       - elliott.richerson
+      #- casuser

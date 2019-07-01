@@ -16,11 +16,6 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 class CASController {
 
-//  @GetMapping("/login")
-//  String login() {
-//    return "redirect:/secured"
-//  }
-
   @GetMapping("/logout")
   String logout(HttpServletRequest request, HttpServletResponse response, SecurityContextLogoutHandler logoutHandler) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication()
