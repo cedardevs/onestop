@@ -41,7 +41,7 @@ dependencies {
 
 
   //configure  to unzip and copy schema definitions 
-  schemaDefinitions ("com.github.cedardevs:schemas-core:${project.schemasVersion}")
+  schemaDefinitions ("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
 
   compileOnly('org.springframework.boot:spring-boot-starter-tomcat')
 
