@@ -2,7 +2,7 @@ plugins {
   id 'war'
   id 'groovy'
   id 'jacoco'
-  id "org.springframework.boot" version "2.1.1.RELEASE"
+  id "org.springframework.boot" version "2.1.6.RELEASE"
   id "io.spring.dependency-management" version "1.0.6.RELEASE"
   id 'org.cedar.dockerplugin' version '1.0.3'
   id "com.moowork.node"
@@ -21,7 +21,12 @@ configurations {
 dependencies {
   compile('org.codehaus.groovy:groovy')
   compile('org.codehaus.groovy:groovy-json')
-  compile('org.springframework.boot:spring-boot-starter-actuator')
+  // TODO: solve CVE for micrometer-core-1.1.5 in actuator
+  /* we can address this at later version but for now we comment it out since we don't use actuator
+  /  CVE-2008-5516, CVE-2010-2542, CVE-2010-3906, CVE-2013-0308,
+  /  CVE-2014-9938, CVE-2015-7082, CVE-2015-7545, CVE-2017-14867
+  */
+//  compile('org.springframework.boot:spring-boot-starter-actuator')
   compile('org.springframework.boot:spring-boot-starter-web')
   compile('org.apache.kafka:kafka-streams:2.1.0')
   compile('org.apache.kafka:kafka-clients:2.1.0')
