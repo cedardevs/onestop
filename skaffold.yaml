@@ -28,7 +28,7 @@ deploy:
       setValues:
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
         # all features default to "false" in base chart, unless otherwise overridden
-        features.cas: true
+        features.cas: false
         config: |-
           ---
           server.servlet.context-path: /registry
