@@ -24,6 +24,4 @@ cas:
 
 authorization:
   roles:
-    ADMIN:
-      - elliott.richerson
-      #- casuser
+    ADMIN: []

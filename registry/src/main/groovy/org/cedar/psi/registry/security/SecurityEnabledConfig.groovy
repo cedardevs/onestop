@@ -84,7 +84,7 @@ class SecurityEnabledConfig extends WebSecurityConfigurerAdapter {
       .antMatchers(HttpMethod.PUT, "/metadata/**").hasRole("ADMIN")
       .antMatchers(HttpMethod.PATCH, "/metadata/**").hasRole("ADMIN")
       .antMatchers(HttpMethod.DELETE, "/metadata/**").hasRole("ADMIN")
-      .antMatchers(HttpMethod.GET, "**/resurrection").hasRole("ADMIN")
+      .antMatchers(HttpMethod.GET, "/metadata/**/resurrection").hasRole("ADMIN")
 
       .antMatchers("/login/cas","/login").authenticated()
 
