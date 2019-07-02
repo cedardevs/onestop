@@ -1,6 +1,6 @@
 # CAS Server Development
 
-## Summary
+## Overview
 The Inventory Manager ([PSI](https://github.com/cedardevs/psi)) and [OneStop](https://github.com/cedardevs/onestop) projects leverage the [CAS Server](https://apereo.github.io/cas/current/index.html) for authentication.
 
 As of today (July 2, 2019), the federal instance of the CAS Server -- using real NEMS credentials -- is made open to any service. The login endpoint ([https://auth.ncdc.noaa.gov/cas/login](https://auth.ncdc.noaa.gov/cas/login)), however,  will eventually require individual services to be registered.
