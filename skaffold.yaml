@@ -26,6 +26,9 @@ deploy:
       values:
         image: cedardevs/psi-registry
       setValues:
+        # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
+        # all features default to "false" in base chart, unless otherwise overridden
+        features.cas: false
         config: |-
           ---
           logging.level.org.cedar: DEBUG
