@@ -86,6 +86,9 @@ If the JSON Registry is included and and configured properly, the `etc/cas/servi
 }
 ```
 
+The `serviceId` here should match the `service` in the client's CAS configuration. A separate registration and ids would be needed for a service deployed to a different environment. For example, if you were developing and testing authentication on `sciapps.colorado.edu`, you might use `"serviceId" : "^http://sciapps.colorado.edu/registry/login/cas".
+
+
 ### Building Development CAS Server from Overlay
 ```
 git clone https://github.com/apereo/cas-overlay-template.git
@@ -166,7 +169,45 @@ ingress:
   ...
 ```
 
-The `serviceId` here should match the `service` in the client's CAS configuration. A separate registration and ids would be needed for a service deployed to a different environment. For example, if you were developing and testing authentication on `sciapps.colorado.edu`, you might use `"serviceId" : "^http://sciapps.colorado.edu/registry/login/cas".
+#### Feature Toggling Security
+To toggle the Spring Profile, 'cas', Skaffold and/or Helm needs to know how to set the `SPRING_PROFILE_ACTIVE=cas`. Multiple profiles can be set via Skaffold and Helm if the Helm charts have the proper template to properly comma-delimit the environment variable:
+
+```
+# skaffold.yaml
+deploy:
+  helm:
+    releases:
+    - name: psi-registry
+      ...
+      setValues:
+        # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
+        # all features default to "false" in base chart, unless otherwise overridden
+        features.cas: true # override the default false set in the chart's `values.yaml`
+```
+
+```
+# helm/psi-registry/values.yaml
+# chart cas feature defaulted to false
+features:
+  cas: false
+```
+
+```
+# helm/psi-registry/templates/statefulset.yaml
+...
+    env:
+    # EXPORT ACTIVE SPRING PROFILES TO TELL SPRING WHICH FEATURES TO ENABLE
+    # the loop is making a comma delimited list for multi-feature handling
+    - name: SPRING_PROFILES_ACTIVE
+      value: '{{ $active := dict "profiles" (list) -}}
+              {{- range $feature, $enabled := .Values.features -}}
+                {{- if $enabled -}}
+                  {{- $noop := $feature | append $active.profiles | set $active "profiles" -}}
+                {{- end -}}
+              {{- end -}}
+              {{- join "," $active.profiles }}'
+...
+```
 
 ## Spring Boot Configuration
 
