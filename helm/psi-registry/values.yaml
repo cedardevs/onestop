@@ -20,6 +20,14 @@ volume:
   size: 1Gi
   storageClass:
 
+###############################################################################
+# FEATURE TOGGLES (SUBCHART DEFAULTS)
+###############################################################################
+# map of features to enable
+# if the features are not here, they will be disabled
+features:
+  cas: false
+
 config: # inline application config yaml
 
 ingress:

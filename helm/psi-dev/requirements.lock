@@ -1,0 +1,18 @@
+dependencies:
+- name: cp-helm-charts
+  repository: https://confluentinc.github.io/cp-helm-charts/
+  version: 0.1.0
+- name: prometheus
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 8.7.1
+- name: grafana
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 1.26.1
+- name: nginx-ingress
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 1.1.5
+- name: cas
+  repository: file://../cas
+  version: 0.1.0
+digest: sha256:1c8be5754ba255d8278dcab543b0b480e361acd12e1b6029f6fc92145b3b34b5
+generated: 2019-07-02T17:01:00.718487-06:00
