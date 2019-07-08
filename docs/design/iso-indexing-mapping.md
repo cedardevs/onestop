@@ -472,6 +472,13 @@ The `dsmmAverage` field is simply the mean average calculation of the numerical 
 ***
 
 ### `services`
+***Depreciating- this field will be empty for newly created documents but still exists in the index for older records.*** 
+The entire block of XML is ingested and stored as a Base64-encoded string object. Multiple sections results in an array of these strings.
+> /gmi:MI_Metadata/gmd:identificationInfo//srv:SV_ServiceIdentification
+
+***
+
+### `servicesLinks`
 The top level object of this object is 
 > /gmi:MI_Metadata/gmd:identificationInfo//srv:SV_ServiceIdentification
 Sub-fields in the table below are relative to the above path.
