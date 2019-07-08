@@ -190,12 +190,11 @@ class MigrationIntegrationTest extends Specification {
     then: 'we can  also update the granule'
     producer.send(granuleRecordUpdate)
     sleep(1000)
-    def rekeyedGranuleRequest = RequestEntity.get("${baseUrl}/metadata/${collectionKey2}".toURI()).build()
-    def rekeyedGranuleResult = restTemplate.exchange(rekeyedGranuleRequest, Map)
     def oldGranuleRequest = RequestEntity.get("${baseUrl}/metadata/${granuleKey1}".toURI()).build()
     def oldGranuleResult = restTemplate.exchange(oldGranuleRequest, Map)
+    def rekeyedGranuleRequest = RequestEntity.get("${baseUrl}/metadata/${granuleKey2}".toURI()).build()
+    def rekeyedGranuleResult = restTemplate.exchange(rekeyedGranuleRequest, Map)
     oldGranuleResult.statusCode == HttpStatus.NOT_FOUND
     rekeyedGranuleResult.statusCode == HttpStatus.OK
-
   }
 }
