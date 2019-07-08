@@ -131,7 +131,7 @@ class GranuleFilters extends React.Component {
     }
 
     const heading = (
-      <h1
+      <h2
         key="filtersH1"
         tabIndex={-1}
         ref={header => (this.headerRef = header)}
@@ -140,7 +140,7 @@ class GranuleFilters extends React.Component {
         style={styleOverallHeadingApplied}
       >
         Filters
-      </h1>
+      </h2>
     )
 
     const buttonHide = (
