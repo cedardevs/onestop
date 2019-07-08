@@ -32,28 +32,18 @@ public class DataUtils {
     }
   }
 
-//  // TODO - This needs to be MUCH more thorough to handle PATCHing of deeply nested ojects and lists...
-//  public static Map<String, Object> mergeMaps(Map<String, Object> first, Map<String, Object> second) {
-//    if (first == null && second == null) {
-//      return null;
-//    }
-//    Map left = first != null ? first : Map.of();
-//    Map right = second != null ? second : Map.of();
-//    Map result = new LinkedHashMap();
-//    left.forEach((k, v) -> result.merge(k, v, (v1, v2) -> v2));
-//    right.forEach((k, v) -> result.merge(k, v, (v1, v2) -> v2));
-//    return result;
-//  }
-
-
-  public static Map<String, Object> mergeMaps(Map<String, Object> first, Map<String, Object> second) {
-    if (first == null && second == null) {
-      return null;
-    }
-
-    Map mergedMap = first == null ? new HashMap() : new HashMap(first);
-    if (second != null) {
-      second.forEach( (k, v) -> {
+  /**
+   * Returns a merged Map of the original and toAdd Maps. Deep merges of nested Maps and Lists are performed and
+   * explicit duplicates (exact matches for all fields) are avoided.
+   * @param original Base Map to which elements will be merged from toAdd
+   * @param toAdd Map of elements to add to the original Map
+   * @return An updated original Map where new elements from toAdd have been merged. Returns empty Map if
+   * original and toAdd are empty or null.
+   */
+  public static Map<String, Object> mergeMaps(Map<String, Object> original, Map<String, Object> toAdd) {
+    Map mergedMap = original == null ? new LinkedHashMap() : new LinkedHashMap(original);
+    if (toAdd != null) {
+      toAdd.forEach( (k, v) -> {
         var originalValue = mergedMap.get(k);
         if (originalValue == null) {
           mergedMap.put(k, v);
@@ -63,15 +53,44 @@ public class DataUtils {
         }
         else if (v instanceof List && originalValue instanceof List) {
           var mergedList = new HashSet((List) originalValue);
-          mergedList.addAll((List) v); // FIXME -- verify this works for a list of Maps
+          mergedList.addAll((List) v);
           mergedMap.put(k, mergedList);
         }
         else {
-        /* This overwrites simple values but also mismatched object types. Accepting that "risk" since we will
-        generate useful errors downstream for objects being cast to avro pojos but also because we allow for
-        unknown JSON to pass through our parsing/analysis untouched (either type change could be erroneous but we
-        have no way of knowing which) */
+        /* This overwrites simple values but also mismatched object types. Accepting that "risk" here since
+        useful errors are generated downstream for objects being cast to avro pojos but also because unknown JSON is
+        allowed to pass through later parsing/analysis steps untouched (either type change could be erroneous but
+        there's no way to know which) */
           mergedMap.put(k, v);
+        }
+      });
+    }
+    return mergedMap;
+  }
+
+  /**
+   * Returns a new Map of the original with elements in toRemove discarded. Elements in toRemove must match those in
+   * original exactly, or they will not be removed. Handles nested Maps and Lists.
+   * @param original Base Map from which elements in toRemove will be removed
+   * @param toRemove Map of elements to remove from the original Map
+   * @return An updated original Map where matching elements from toRemove have been discarded. Returns empty Map if
+   * original is empty or null.
+   */
+  public static Map<String, Object> removeFromMap(Map<String, Object> original, Map<String, Object> toRemove) {
+    Map mergedMap = original == null ? new LinkedHashMap() : new LinkedHashMap(original);
+    if (toRemove != null) {
+      toRemove.forEach( (k, v) -> {
+        var originalValue = mergedMap.get(k);
+        if (v instanceof Map && originalValue instanceof Map) {
+          mergedMap.put(k, removeFromMap((Map) originalValue, (Map) v));
+        }
+        else if (v instanceof List && originalValue instanceof List) {
+          var mergedList = new HashSet((List) originalValue);
+          mergedList.removeAll((List) v);
+          mergedMap.put(k, mergedList);
+        }
+        else if ((v == null && originalValue == null) || v.equals(originalValue)) {
+          mergedMap.remove(k);
         }
       });
     }
