@@ -107,8 +107,10 @@ class MigrationIntegrationTest extends Specification {
 
     String granuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/G1.xml').text
     ParsedRecord parsedGranule = InventoryManagerToOneStopUtil.xmlToParsedRecord(granuleXml).parsedRecord
-    String granuleKey1 = 'kafka_ingest_123'
+    String granuleKey1 = 'api_ingest_123'
+    String granuleKey2  = 'kafka_ingest_789'
     ProducerRecord granuleRecord = new ProducerRecord(granuleTopic, granuleKey1, parsedGranule)
+    ProducerRecord granuleRecordUpdate = new ProducerRecord(granuleTopic, granuleKey2, parsedCollection)
 
     when: 'we send a collection and granule to simulate pre-existing docs in the index'
     producer.send(collectionRecord)
@@ -163,7 +165,7 @@ class MigrationIntegrationTest extends Specification {
     rekeyedCollectionResult.statusCode == HttpStatus.OK
     oldCollectionResult.statusCode == HttpStatus.NOT_FOUND
 
-    and: 'then  if we refresh the search index'
+    and: 'if we refresh the search index'
     etlService.updateSearchIndices()
 
     then: 'the search granules and flattened granules have an updated parent identifier'
@@ -184,5 +186,16 @@ class MigrationIntegrationTest extends Specification {
     and:
     def rekeyedFlattenedGranule = reindexed[esConfig.TYPE_FLATTENED_GRANULE].first()
     getInternalParentIdentifier(rekeyedFlattenedGranule) == collectionKey2
+
+    then: 'we can  also update the granule'
+    producer.send(granuleRecordUpdate)
+    sleep(1000)
+    def rekeyedGranuleRequest = RequestEntity.get("${baseUrl}/metadata/${collectionKey2}".toURI()).build()
+    def rekeyedGranuleResult = restTemplate.exchange(rekeyedGranuleRequest, Map)
+    def oldGranuleRequest = RequestEntity.get("${baseUrl}/metadata/${granuleKey1}".toURI()).build()
+    def oldGranuleResult = restTemplate.exchange(oldGranuleRequest, Map)
+    oldGranuleResult.statusCode == HttpStatus.NOT_FOUND
+    rekeyedGranuleResult.statusCode == HttpStatus.OK
+
   }
 }
