@@ -224,7 +224,7 @@ class MetadataManagementService {
     if(esId != existingId){ //the record from PSI was already in the index by another ID, this is the re-key
       log.warn ("Message with id [$newId] contains the same identifiers as an exsiting record [$existingId]. " +
           "Re-keying record from $existingId to $newId")
-      boolean isCollectionRekey = result.type as String == ElasticsearchConfig.TYPE_COLLECTION as String ? true : false
+      boolean isCollectionRekey = type as String == ElasticsearchConfig.TYPE_COLLECTION as String ? true : false
       Map deleteResult = deleteMetadata(existingId, true, isCollectionRekey) //todo more error handling / returning info to user
     }else{
       log.info("Updating document with ID: $esId")
@@ -325,7 +325,7 @@ class MetadataManagementService {
       return record
     }
   }
-  
+
   private Map delete(Map record, boolean recursive, boolean isCollectionRekey = false) {
     // collect up the ids, types, and potential granule parentIds to be deleted
     List<String> ids = []

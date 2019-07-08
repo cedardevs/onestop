@@ -110,7 +110,7 @@ class MigrationIntegrationTest extends Specification {
     String granuleKey1 = 'api_ingest_123'
     String granuleKey2  = 'kafka_ingest_789'
     ProducerRecord granuleRecord = new ProducerRecord(granuleTopic, granuleKey1, parsedGranule)
-    ProducerRecord granuleRecordUpdate = new ProducerRecord(granuleTopic, granuleKey2, parsedCollection)
+    ProducerRecord granuleRecordUpdate = new ProducerRecord(granuleTopic, granuleKey2, parsedGranule)
 
     when: 'we send a collection and granule to simulate pre-existing docs in the index'
     producer.send(collectionRecord)
