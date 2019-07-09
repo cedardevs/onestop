@@ -129,18 +129,21 @@ export default class ListView extends React.Component {
       customControl,
     } = this.props
 
-    let message = `${resultsMessage
-      ? resultsMessage
-      : 'Results'} (showing ${shown} of ${total})`
-
+    let message = `${resultsMessage ? resultsMessage : 'Results'}`
+    let countMessage = `Showing ${shown} of ${total}`
     if (total === 0) {
       message = resultsMessageEmpty ? resultsMessageEmpty : 'No Results'
     }
 
     const listInfo = (
-      <h1 style={styleListInfo} key="list-view-info">
+      <h2 style={styleListInfo} key="list-view-info">
         {message}
-      </h1>
+      </h2>
+    )
+    const countInfo = (
+      <h3 style={styleListInfo} key="list-view-info">
+        {countMessage}
+      </h3>
     )
 
     const toggleAvailable = ListItemComponent && GridItemComponent
@@ -221,7 +224,10 @@ export default class ListView extends React.Component {
 
     return (
       <div style={styleListView}>
-        <FlexRow style={styleTopRow} items={[ listInfo, customControl ]} />
+        <FlexRow
+          style={styleTopRow}
+          items={[ listInfo, countInfo, customControl ]}
+        />
         {controlElement}
         <div style={this.state.showAsGrid ? styleGrid : styleList}>
           {itemElements}
