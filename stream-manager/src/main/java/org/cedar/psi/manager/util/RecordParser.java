@@ -55,7 +55,7 @@ public class RecordParser {
 
     final Map<String, Object> combinedMetadata = DataUtils.mergeMaps(metadataFromXml.value, metadataFromJson.value);
     final var builder = ParsedRecord.newBuilder().setType(input.getType()).setErrors(combinedErrors);
-    if (combinedMetadata != null && !combinedMetadata.isEmpty()) {
+    if (!combinedMetadata.isEmpty()) {
       DataUtils.updateDerivedFields(builder, combinedMetadata);
     }
     else if (builder.getErrors() == null || builder.getErrors().size() == 0) {

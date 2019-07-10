@@ -111,7 +111,7 @@ class StreamFunctionsSpec extends Specification {
     result.fileLocations['test:one'].uri == 'test:one'
   }
 
-  def 'aggregate inputs with PATCH method'() {
+  def 'aggregate inputs with PATCH method and no operation declared'() {
     def currentAggregate = new AggregatedInput([
         type: RecordType.granule,
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
@@ -135,8 +135,63 @@ class StreamFunctionsSpec extends Specification {
     result.initialSource == currentAggregate.initialSource
     result.deleted == false
     result.events.size() == 2
-    // note: json should be merged together when PATCH is used
     result.rawJson == '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}'
+  }
+
+  def 'aggregate inputs with PATCH method and operation ADD'() {
+    def currentAggregate = new AggregatedInput([
+        type: RecordType.granule,
+        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        initialSource: 'test',
+        events: [new InputEvent(null, Method.POST, 'test', null)]
+    ])
+    def input = Input.newBuilder()
+        .setType(RecordType.granule)
+        .setMethod(Method.PATCH)
+        .setContent('{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}')
+        .setContentType('application/json')
+        .setSource('test')
+        .setOperation(OperationType.ADD)
+        .build()
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
+
+    then:
+    result.type == currentAggregate.type
+    result.initialSource == currentAggregate.initialSource
+    result.deleted == false
+    result.events.size() == 2
+    result.rawJson == '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}'
+  }
+
+  def 'aggregate inputs with PATCH method and operation REMOVE'() {
+    def currentAggregate = new AggregatedInput([
+        type: RecordType.granule,
+        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        initialSource: 'test',
+        events: [new InputEvent(null, Method.POST, 'test', null)]
+    ])
+    def input = Input.newBuilder()
+        .setType(RecordType.granule)
+        .setMethod(Method.PATCH)
+        .setContent('{"answer": 42}')
+        .setContentType('application/json')
+        .setSource('test')
+        .setOperation(OperationType.REMOVE)
+        .build()
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
+
+    then:
+    result.type == currentAggregate.type
+    result.initialSource == currentAggregate.initialSource
+    result.deleted == false
+    result.events.size() == 2
+    result.rawJson == '{"trackingId":"ABC","message":"this is a test"}'
   }
 
   def 'aggregate input with PUT method'() {

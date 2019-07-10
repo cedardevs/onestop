@@ -6,14 +6,12 @@ import org.apache.kafka.streams.kstream.Initializer;
 import org.apache.kafka.streams.kstream.Reducer;
 import org.cedar.psi.common.util.DataUtils;
 import org.cedar.psi.common.util.TimestampedValue;
-import org.cedar.schemas.avro.psi.AggregatedInput;
-import org.cedar.schemas.avro.psi.ErrorEvent;
-import org.cedar.schemas.avro.psi.Input;
-import org.cedar.schemas.avro.psi.InputEvent;
+import org.cedar.schemas.avro.psi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,7 +68,8 @@ public class StreamFunctions {
 
     var contentType = input.getContentType().strip().toLowerCase();
     if (contentType.equals("application/json") || contentType.equals("text/json")) {
-      var mergedMap = updateRawJson(builder, input);
+      var operation = input.getOperation();
+      var mergedMap = updateRawJson(builder, input, operation);
       if (mergedMap != null) {
         // filter the merged map so we don't overwrite the entire AggregatedInput
         var fieldsToParse = List.of("fileInformation", "fileLocations", "publishing", "relationships");
@@ -93,11 +92,17 @@ public class StreamFunctions {
         .build();
   }
 
-  public static Map updateRawJson(AggregatedInput.Builder builder, Input input) {
+  public static Map updateRawJson(AggregatedInput.Builder builder, Input input, OperationType operationType) {
     try {
       var currentMap = DataUtils.parseJsonMap(builder.getRawJson());
       var inputMap = DataUtils.parseJsonMap(input.getContent());
-      var mergedMap = DataUtils.mergeMaps(currentMap, inputMap);
+      Map mergedMap = new HashMap();
+      if(operationType == OperationType.REMOVE) {
+        mergedMap = DataUtils.removeFromMap(currentMap, inputMap);
+      }
+      else {
+        mergedMap = DataUtils.mergeMaps(currentMap, inputMap);
+      }
       builder.setRawJson(JsonOutput.toJson(mergedMap));
       return mergedMap;
     }
