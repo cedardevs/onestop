@@ -4,11 +4,12 @@
 #
 version: 2
 jobs:
-  build:
+
+  check-owasp-cve:
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:11-jdk
-      
+
       # Specify stream dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -20,7 +21,42 @@ jobs:
       # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
       TERM: dumb
-    
+
+    steps:
+      - checkout
+
+      - setup_remote_docker
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v2-dependencies-
+
+      # build it!
+      - run:
+          name: Run OWASP Check
+          command: ./gradlew dependencyCheckAggregate
+          no_output_timeout: 30m
+
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/openjdk:11-jdk
+
+      # Specify stream dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
+    environment:
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+
     steps:
       - checkout
 
@@ -36,7 +72,7 @@ jobs:
       # build it!
       - run:
           name: Build
-          command: ./gradlew build
+          command: ./gradlew build -x dependencyCheckAggregate
 
       - run:
           name: Save test results
@@ -86,3 +122,23 @@ jobs:
 #  webhooks:
 #    # A list of hashes representing hooks. Only the url field is supported.
 #    - url: https://hooks.slack.com/services/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
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - checkout
+      - check-owasp-cve:
+          requires:
+            - checkout
