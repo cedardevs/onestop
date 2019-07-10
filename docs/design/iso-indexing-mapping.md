@@ -482,6 +482,7 @@ The entire block of XML is ingested and stored as a Base64-encoded string object
 ### `serviceLinks`
 The top level object of this object is 
 > /gmi:MI_Metadata/gmd:identificationInfo//srv:SV_ServiceIdentification
+
 Sub-fields in the table below are relative to the above path.
 
 | Sub-Field                         | XPath |
