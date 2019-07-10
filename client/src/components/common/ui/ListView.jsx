@@ -24,6 +24,17 @@ const styleListInfo = {
   padding: 0,
 }
 
+const styleCountInfo = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.0em',
+}
+
+const styleSearchInfo = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.0em',
+  padding: 0,
+}
+
 const styleListControl = {
   display: 'flex',
   padding: '0.618em',
@@ -120,6 +131,7 @@ export default class ListView extends React.Component {
       items,
       resultsMessage,
       resultsMessageEmpty,
+      searchTerms,
       shown,
       total,
       onItemSelect,
@@ -136,15 +148,22 @@ export default class ListView extends React.Component {
     }
 
     const listInfo = (
-      <h2 style={styleListInfo} key="list-view-info">
+      <h1 style={styleListInfo} key="list-view-info">
         {message}
+      </h1>
+    )
+
+    const countInfo = (
+      <h2 style={styleCountInfo} key="list-count-info">
+        {countMessage}
       </h2>
     )
-    const countInfo = (
-      <h3 style={styleListInfo} key="list-view-info">
-        {countMessage}
+
+    const searchTermsMessage = searchTerms ? (
+      <h3 style={styleSearchInfo} key="search-info">
+        {'You searched for "' + searchTerms + '"'}
       </h3>
-    )
+    ) : null
 
     const toggleAvailable = ListItemComponent && GridItemComponent
 
@@ -228,6 +247,7 @@ export default class ListView extends React.Component {
           style={styleTopRow}
           items={[ listInfo, countInfo, customControl ]}
         />
+        {searchTermsMessage}
         {controlElement}
         <div style={this.state.showAsGrid ? styleGrid : styleList}>
           {itemElements}
