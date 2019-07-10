@@ -111,7 +111,8 @@ The top level path of all keyword objects is:
 > /gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification//gmd:MD_Keywords
 
 #### `keywords`
-For every keyword found at the top level path **except** accession values (see next sub-section), a `keywords` object is created with the following sub-fields.
+For every keyword found at the top level path **except** accession values (see next sub-section), a `keywords` object is created with 
+the following sub-fields.
 Sub-fields in the table below are relative to the above path. For `values`, which is listed twice, either path is accepted.
 
 | Sub-Field            | XPath |
@@ -478,7 +479,7 @@ The entire block of XML is ingested and stored as a Base64-encoded string object
 
 ***
 
-### `servicesLinks`
+### `serviceLinks`
 The top level object of this object is 
 > /gmi:MI_Metadata/gmd:identificationInfo//srv:SV_ServiceIdentification
 Sub-fields in the table below are relative to the above path.
