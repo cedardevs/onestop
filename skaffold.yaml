@@ -7,17 +7,17 @@ build:
     docker:
       buildArgs:
         DATE: now
-        JAR_NAME: psi-registry-0.3.0-SNAPSHOT-all.jar
+        JAR_NAME: psi-registry-1.0.0-SNAPSHOT-all.jar
         VCS_REF: local
-        VERSION: 0.3.0-SNAPSHOT
+        VERSION: 1.0.0-SNAPSHOT
   - image: cedardevs/psi-stream-manager
     context: ./stream-manager
     docker:
       buildArgs:
         DATE: now
-        JAR_NAME: psi-stream-manager-0.3.0-SNAPSHOT-all.jar
+        JAR_NAME: psi-stream-manager-1.0.0-SNAPSHOT-all.jar
         VCS_REF: local
-        VERSION: 0.3.0-SNAPSHOT
+        VERSION: 1.0.0-SNAPSHOT
 deploy:
   helm:
     releases:
@@ -26,6 +26,9 @@ deploy:
       values:
         image: cedardevs/psi-registry
       setValues:
+        # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
+        # all features default to "false" in base chart, unless otherwise overridden
+        features.cas: false
         config: |-
           ---
           logging.level.org.cedar: DEBUG

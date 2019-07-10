@@ -22,6 +22,15 @@
     <cve>CVE-2018-7489</cve>
   </suppress>
 
+  <suppress until="2019-07-15Z">
+    <notes><![CDATA[
+      Temporary suppression until version 2.9.9.1 (or 2.9.10?) becomes available. See the following issues on GitHub:
+      https://github.com/FasterXML/jackson-databind/issues/2371, https://github.com/FasterXML/jackson-databind/issues/2341
+      ]]></notes>
+    <filePath regex="true">.*jackson-databind-.*\.jar</filePath>
+    <cve>CVE-2019-12814</cve>
+  </suppress>
+
   <suppress>
     <notes><![CDATA[
       Refers to a Groovy LDAP class which is not in use in this application
@@ -100,6 +109,16 @@
     ]]></notes>
     <gav regex="true">^org\.slf4j:jul-to-slf4j:.*$</gav>
     <cve>CVE-2018-8088</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      The CVE (https://nvd.nist.gov/vuln/detail/CVE-2018-1258) explicitly states that this vulnerability applies to
+      Spring Framework version 5.0.5, and as of this suppression, the Spring Boot 2.1.6.RELEASE version (corresponding
+      to Spring Framework version 5.1.x) is being used, so this CVE can be suppressed.
+    ]]></notes>
+      <gav regex="true">^org.springframework.security:spring-security.*$</gav>
+      <cve>CVE-2018-1258</cve>
   </suppress>
 
 </suppressions>
