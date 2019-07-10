@@ -43,7 +43,7 @@ All of the following fields are indexed for every data type (collection and gran
 * [updateFrequency](#updatefrequency)
 * [presentationForm](#presentationform)
 * [services](#services)
-
+* [serviceLinks](#serviceLinks)
 # Fields In Detail
 ## _All parsed fields are nullable unless otherwise stated._
 
