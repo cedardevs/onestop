@@ -7,7 +7,6 @@ helm dependency update
 popd  > /dev/null
 
 pushd "$BASEDIR" > /dev/null
-helm dependency update
 helm package psi
 popd  > /dev/null
 
