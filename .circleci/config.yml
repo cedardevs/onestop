@@ -138,7 +138,4 @@ workflows:
               only:
                 - master
     jobs:
-      - checkout
-      - check-owasp-cve:
-          requires:
-            - checkout
+      - check-owasp-cve

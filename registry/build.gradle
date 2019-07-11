@@ -21,12 +21,6 @@ configurations {
 dependencies {
   implementation('org.codehaus.groovy:groovy')
   implementation('org.codehaus.groovy:groovy-json')
-
-  // TODO: solve CVE for micrometer-core-1.1.5 in actuator
-  /* we can address this at later version but for now we comment it out since we don't use actuator
-  /  CVE-2008-5516, CVE-2010-2542, CVE-2010-3906, CVE-2013-0308,
-  /  CVE-2014-9938, CVE-2015-7082, CVE-2015-7545, CVE-2017-14867*/
-  // implementation('org.springframework.boot:spring-boot-starter-actuator')
   implementation('org.springframework.boot:spring-boot-starter-web')
   implementation('org.apache.kafka:kafka-streams:2.1.0')
   implementation('org.apache.kafka:kafka-clients:2.1.0')
@@ -38,7 +32,7 @@ dependencies {
   implementation('org.springframework.security:spring-security-cas')
   testImplementation('org.springframework.security:spring-security-test')
   
-  //configure  to unzip and copy schema definitions 
+  //used to copy schema definitions to generate openAPI 
   schemaDefinitions ("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
 
   compileOnly('org.springframework.boot:spring-boot-starter-tomcat')
