@@ -9,23 +9,18 @@ const styleParagraph = {
   margin: '0 0 1.618em 0',
 }
 
-const styleContent = {
-  padding: '1.618em',
-}
-
-const styleServiceContent = {
-  padding: '1.618em 0 0 1.618em',
+const styleContent = (isServiceLink = false) => {
+  let padding = isServiceLink ? '1.618em 0 0 1.618em' : '1.618em 1.618em 1.618em 1.618em'
+  return {padding: padding}
 }
 
 const styleContentList = (showBulletPoints, isServiceLink = false) => {
   let padding = isServiceLink
     ? '0 1.618em 0 1.618em'
-    : '0 1.618em 1.618em 1.618em'
-  let margin = '0 0 0 1.618em'
+    : '0 1.618em 1.618em 0'
   return {
     ...{
       padding: padding,
-      margin: margin,
     },
     ...(showBulletPoints ? {} : {listStyleType: 'none'}),
   }
@@ -84,21 +79,21 @@ export default class AccessView extends React.Component {
     })
     const isEmpty = listItems.length < 1
     if (isEmpty && showEmpty) {
-      return <div style={styleContent}>No links in metadata.</div>
+      return <div style={styleContent()}>No links in metadata.</div>
     }
     else if (isEmpty && !showEmpty) {
       return null
     }
     else {
       return (
-        <div style={styleContent}>
+        <div style={styleContent()}>
           <ul style={styleContentList(false)}>{listItems}</ul>
         </div>
       )
     }
   }
 
-  renderAccessServiceLinkList = (title, links) => {
+  renderAccessServiceLinkList = (title, links, serviceIndex) => {
     let listItems = links.map((link, index) => {
       return this.renderAccessLink(link, index)
     })
@@ -108,7 +103,7 @@ export default class AccessView extends React.Component {
     }
     else {
       return (
-        <div style={styleServiceContent}>
+        <div key={serviceIndex} style={styleContent(true)}>
           <div style={styleParagraph}>{title}</div>
           <ul style={styleContentList(false, true)}>{listItems}</ul>
         </div>
@@ -119,13 +114,13 @@ export default class AccessView extends React.Component {
   renderAccessList = (items, notAvailable) => {
     const list = items ? items : []
     if (list.length === 0) {
-      return <div style={styleContent}>{notAvailable}</div>
+      return <div style={styleContent()}>{notAvailable}</div>
     }
     const distributionsFormats = list.map((format, index) => {
       return <li key={index}>{format.name}</li>
     })
     return (
-      <div style={styleContent}>
+      <div style={styleContent()}>
         <ul style={styleContentList(true)}>{distributionsFormats}</ul>
       </div>
     )
@@ -154,18 +149,7 @@ export default class AccessView extends React.Component {
       .filter(section => {
         return section !== null
       })
-      .concat(
-        item.serviceLinks !== [] && item.serviceLinks[0]
-          ? [
-              [
-                this.renderAccessHeading('Services'),
-                item.serviceLinks.map(service =>
-                  this.renderAccessServiceLinkList(service.title, service.links)
-                ),
-              ],
-            ]
-          : []
-      )
+
     const distributionFormatsHeading = this.renderAccessHeading(
       'Distribution Formats'
     )
@@ -173,6 +157,17 @@ export default class AccessView extends React.Component {
       item.dataFormats,
       'No formats in metadata.'
     )
+
+    if (item.serviceLinks !== [] && item.serviceLinks[0]) {
+      const serviceLinks = [
+        this.renderAccessHeading('Services'),
+        item.serviceLinks.map((service, index) =>
+          this.renderAccessServiceLinkList(service.title, service.links, index)
+        ),
+      ]
+
+      accessGrid.push(serviceLinks)
+    }
     accessGrid.push([ distributionFormatsHeading, distributionFormatsList ])
 
     return <DetailGrid grid={accessGrid} colWidths={[ {sm: 3}, {sm: 9} ]} />
