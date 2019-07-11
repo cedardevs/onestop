@@ -24,7 +24,7 @@ const styleContentList = showBulletPoints => {
 }
 
 const styleServiceContent = {
-  padding: '0.8em',
+  padding: '1.618em 0 0 1.618em',
 }
 
 const styleServiceContentList = showBulletPoints => {
