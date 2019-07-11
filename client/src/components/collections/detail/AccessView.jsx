@@ -13,25 +13,19 @@ const styleContent = {
   padding: '1.618em',
 }
 
-const styleContentList = showBulletPoints => {
-  return {
-    ...{
-      padding: '0 1.618em 1.618em 1.618em',
-      margin: '0 0 0 1.618em',
-    },
-    ...(showBulletPoints ? {} : {listStyleType: 'none'}),
-  }
-}
-
 const styleServiceContent = {
   padding: '1.618em 0 0 1.618em',
 }
 
-const styleServiceContentList = showBulletPoints => {
+const styleContentList = (showBulletPoints, isServiceLink = false) => {
+  let padding = isServiceLink
+    ? '0 1.618em 0 1.618em'
+    : '0 1.618em 1.618em 1.618em'
+  let margin = '0 0 0 1.618em'
   return {
     ...{
-      padding: '0 1.618em 0 1.618em',
-      margin: '0 0 0 1.618em',
+      padding: padding,
+      margin: margin,
     },
     ...(showBulletPoints ? {} : {listStyleType: 'none'}),
   }
@@ -106,7 +100,7 @@ export default class AccessView extends React.Component {
 
   renderAccessServiceLinkList = (title, links) => {
     let listItems = links.map((link, index) => {
-        return this.renderAccessLink(link, index)
+      return this.renderAccessLink(link, index)
     })
     const isEmpty = listItems.length < 1
     if (isEmpty) {
@@ -116,7 +110,7 @@ export default class AccessView extends React.Component {
       return (
         <div style={styleServiceContent}>
           <div style={styleParagraph}>{title}</div>
-          <ul style={styleServiceContentList(false)}>{listItems}</ul>
+          <ul style={styleContentList(false, true)}>{listItems}</ul>
         </div>
       )
     }
