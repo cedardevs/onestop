@@ -69,25 +69,24 @@ export default class AccessView extends React.Component {
     )
   }
 
+  renderAccessLink = (link, index) => {
+    const {linkUrl, linkName, linkProtocol, linkDescription} = link
+    const linkTitle = linkName ? linkName : linkProtocol
+    return (
+      <li key={index} aria-label={linkTitle}>
+        <div>
+          <A href={linkUrl} target="_blank" title={linkTitle} style={styleLink}>
+            {linkTitle}
+          </A>
+          <div style={styleParagraph}>{linkDescription}</div>
+        </div>
+      </li>
+    )
+  }
+
   renderAccessLinkList = (links, showEmpty) => {
     let listItems = links.map((link, index) => {
-      const {linkUrl, linkName, linkProtocol, linkDescription} = link
-      const linkTitle = linkName ? linkName : linkProtocol
-      return (
-        <li key={index} aria-label={linkTitle}>
-          <div>
-            <A
-              href={linkUrl}
-              target="_blank"
-              title={linkTitle}
-              style={styleLink}
-            >
-              {linkTitle}
-            </A>
-            <div style={styleParagraph}>{linkDescription}</div>
-          </div>
-        </li>
-      )
+      return this.renderAccessLink(link, index)
     })
     const isEmpty = listItems.length < 1
     if (isEmpty && showEmpty) {
@@ -107,23 +106,7 @@ export default class AccessView extends React.Component {
 
   renderAccessServiceLinkList = (title, links) => {
     let listItems = links.map((link, index) => {
-      const {linkUrl, linkName, linkProtocol, linkDescription} = link
-      const linkTitle = linkName ? linkName : linkProtocol
-      return (
-        <li key={index} aria-label={linkTitle}>
-          <div>
-            <A
-              href={linkUrl}
-              target="_blank"
-              title={linkTitle}
-              style={styleLink}
-            >
-              {linkTitle}
-            </A>
-            <div style={styleParagraph}>{linkDescription}</div>
-          </div>
-        </li>
-      )
+        return this.renderAccessLink(link, index)
     })
     const isEmpty = listItems.length < 1
     if (isEmpty) {
