@@ -23,6 +23,20 @@ const styleContentList = showBulletPoints => {
   }
 }
 
+const styleServiceContent = {
+  padding: '0.8em',
+}
+
+const styleServiceContentList = showBulletPoints => {
+  return {
+    ...{
+      padding: '0 1.618em 0 1.618em',
+      margin: '0 0 0 1.618em',
+    },
+    ...(showBulletPoints ? {} : {listStyleType: 'none'}),
+  }
+}
+
 const styleLink = {
   display: 'inline-block',
   color: SiteColors.LINK,
@@ -91,6 +105,40 @@ export default class AccessView extends React.Component {
     }
   }
 
+  renderAccessServiceLinkList = (title, links) => {
+    let listItems = links.map((link, index) => {
+      const {linkUrl, linkName, linkProtocol, linkDescription} = link
+      const linkTitle = linkName ? linkName : linkProtocol
+      return (
+        <li key={index} aria-label={linkTitle}>
+          <div>
+            <A
+              href={linkUrl}
+              target="_blank"
+              title={linkTitle}
+              style={styleLink}
+            >
+              {linkTitle}
+            </A>
+            <div style={styleParagraph}>{linkDescription}</div>
+          </div>
+        </li>
+      )
+    })
+    const isEmpty = listItems.length < 1
+    if (isEmpty) {
+      return null
+    }
+    else {
+      return (
+        <div style={styleServiceContent}>
+          <div style={styleParagraph}>{title}</div>
+          <ul style={styleServiceContentList(false)}>{listItems}</ul>
+        </div>
+      )
+    }
+  }
+
   renderAccessList = (items, notAvailable) => {
     const list = items ? items : []
     if (list.length === 0) {
@@ -129,7 +177,18 @@ export default class AccessView extends React.Component {
       .filter(section => {
         return section !== null
       })
-
+      .concat(
+        item.serviceLinks !== [] && item.serviceLinks[0]
+          ? [
+              [
+                this.renderAccessHeading('Services'),
+                item.serviceLinks.map(service =>
+                  this.renderAccessServiceLinkList(service.title, service.links)
+                ),
+              ],
+            ]
+          : []
+      )
     const distributionFormatsHeading = this.renderAccessHeading(
       'Distribution Formats'
     )
