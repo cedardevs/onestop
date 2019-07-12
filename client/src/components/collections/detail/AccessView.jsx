@@ -10,14 +10,14 @@ const styleParagraph = {
 }
 
 const styleContent = (isServiceLink = false) => {
-  let padding = isServiceLink ? '1.618em 0 0 1.618em' : '1.618em 1.618em 1.618em 1.618em'
+  let padding = isServiceLink
+    ? '1.618em 0 0 1.618em'
+    : '1.618em 1.618em 1.618em 1.618em'
   return {padding: padding}
 }
 
 const styleContentList = (showBulletPoints, isServiceLink = false) => {
-  let padding = isServiceLink
-    ? '0 1.618em 0 1.618em'
-    : '0 1.618em 1.618em 0'
+  let padding = isServiceLink ? '0 1.618em 0 1.618em' : '0 1.618em 1.618em 0'
   return {
     ...{
       padding: padding,
