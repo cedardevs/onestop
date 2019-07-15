@@ -33,6 +33,7 @@ public class RecordParser {
    * @return The resulting {@link ParsedRecord} instance
    */
   public static ParsedRecord parseInput(AggregatedInput input) {
+    var fieldsToParse = List.of("discovery", "fileInformation", "fileLocations", "publishing", "relationships", "errors");
     if (input == null || input.getDeleted()) {
       return null;
     }
@@ -56,7 +57,7 @@ public class RecordParser {
     final Map<String, Object> combinedMetadata = DataUtils.mergeMaps(metadataFromXml.value, metadataFromJson.value);
     final var builder = ParsedRecord.newBuilder().setType(input.getType()).setErrors(combinedErrors);
     if (!combinedMetadata.isEmpty()) {
-      DataUtils.updateDerivedFields(builder, combinedMetadata);
+      DataUtils.updateDerivedFields(builder, combinedMetadata, fieldsToParse);
     }
     else if (builder.getErrors() == null || builder.getErrors().size() == 0) {
       var error = ErrorEvent.newBuilder()
@@ -81,13 +82,14 @@ public class RecordParser {
    * @return The resulting {@link ParsedRecord} instance
    */
   public static ParsedRecord parseRaw(String inputStr, RecordType type) {
+    var fieldsToParse = List.of("discovery", "fileInformation", "fileLocations", "publishing", "relationships", "errors");
     final var builder = ParsedRecord.newBuilder().setType(type);
     final var metadata = marshalDataAndCollectErrors(inputStr);
     if (metadata.errors instanceof List) {
       builder.setErrors(metadata.errors);
     }
     if (metadata.value instanceof Map && !metadata.value.isEmpty()) {
-      DataUtils.updateDerivedFields(builder, metadata.value);
+      DataUtils.updateDerivedFields(builder, metadata.value, fieldsToParse);
     }
     else if (builder.getErrors() == null || builder.getErrors().size() == 0) {
       var error = ErrorEvent.newBuilder()

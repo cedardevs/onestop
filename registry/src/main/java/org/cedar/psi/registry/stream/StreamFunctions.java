@@ -73,7 +73,7 @@ public class StreamFunctions {
       if (mergedMap != null) {
         // filter the merged map so we don't overwrite the entire AggregatedInput
         var fieldsToParse = List.of("fileInformation", "fileLocations", "publishing", "relationships");
-        DataUtils.updateDerivedFields(builder, mergedMap);
+        DataUtils.updateDerivedFields(builder, mergedMap, fieldsToParse);
       }
     }
     if (contentType.equals("application/xml") || contentType.equals("text/xml")) {
