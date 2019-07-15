@@ -45,6 +45,26 @@ public class DataUtils {
     return result;
   }
 
+  public static Map<String, Object> consolidateNestedKeysInMap(String parentKey, Map<String, Object> originalMap) {
+    // Make sure parentKey is an empty or non-whitespace-only String before using it
+    var parent = (parentKey == null || parentKey.isBlank()) ? new String() : parentKey;
+    var newMap = new HashMap<String, Object>();
+
+    if(originalMap != null && !originalMap.isEmpty()) {
+      originalMap.forEach((k, v) -> {
+        String newKey = parent.isEmpty() ? k : parent + "." + k;
+        if(v instanceof Map) {
+          newMap.putAll(consolidateNestedKeysInMap(newKey, (Map<String, Object>) v));
+        }
+        else {
+          newMap.put(newKey, v);
+        }
+      });
+    }
+    return newMap;
+  }
+
+
   public static void updateDerivedFields(AggregatedInput.Builder builder, Map<String, Object> fieldData) {
     // 1. filter the merged map so we don't overwrite the entire AggregatedInput
     var fieldsToParse = List.of("fileInformation", "fileLocations", "publishing", "relationships");
