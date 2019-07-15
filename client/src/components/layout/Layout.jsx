@@ -55,10 +55,7 @@ export default class Layout extends React.Component {
               visible={bannerVisible}
               key={'banner'}
             />,
-            <Content
-              middle={title}
-              key={'title'}
-            />,
+            <Content middle={title} key={'title'} />,
             <Content
               left={left}
               leftWidth={leftWidth}

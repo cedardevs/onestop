@@ -96,14 +96,10 @@ export default class Root extends React.Component {
       <div style={styleHiddenTitleRow}>
         <Switch>
           <Route path={ROUTE.collections.path} exact>
-            <h1 key="collection-result-title">
-              Collection search results
-            </h1>
+            <h1 key="collection-result-title">Collection search results</h1>
           </Route>
           <Route path={ROUTE.granules.path}>
-            <h1 key="granule-result-title">
-              Granule search results
-            </h1>
+            <h1 key="granule-result-title">Granule search results</h1>
           </Route>
         </Switch>
       </div>

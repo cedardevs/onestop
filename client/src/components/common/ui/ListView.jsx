@@ -139,7 +139,9 @@ export default class ListView extends React.Component {
       <h1 style={styleListInfo} key="list-view-info">
         {countMessage}
       </h1>
-    ) : message
+    ) : (
+      message
+    )
 
     const toggleAvailable = ListItemComponent && GridItemComponent
 
