@@ -24,13 +24,6 @@ const styleListInfo = {
   padding: 0,
 }
 
-const styleCountInfo = {
-  fontFamily: fontFamilySerif(),
-  fontSize: '1.0em',
-  justifyContent: 'flex-end',
-  padding: '0 1.618em 0 0',
-}
-
 const styleListControl = {
   display: 'flex',
   padding: '0.618em',
@@ -137,21 +130,15 @@ export default class ListView extends React.Component {
       customControl,
     } = this.props
     let message = `${resultsMessage ? resultsMessage : 'Results'}`
-    let countMessage = `Showing ${shown.toLocaleString()} of ${total.toLocaleString()}`
+    let countMessage = `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} results for "${searchTerms}"`
     if (total === 0) {
       message = resultsMessageEmpty ? resultsMessageEmpty : 'No Results'
     }
 
     const listInfo = searchTerms ? (
       <h1 style={styleListInfo} key="list-view-info">
-        {'You searched for "' + searchTerms + '"'}
-      </h1>
-    ) : null
-
-    const countInfo = total !== 0 ? (
-      <h2 style={styleCountInfo} key="list-count-info">
         {countMessage}
-      </h2>
+      </h1>
     ) : message
 
     const toggleAvailable = ListItemComponent && GridItemComponent
@@ -233,7 +220,6 @@ export default class ListView extends React.Component {
     return (
       <div style={styleListView}>
         <FlexRow style={styleTopRow} items={[ listInfo, customControl ]} />
-        <FlexRow style={styleCountInfo} items={[ countInfo ]} />
         {controlElement}
         <div style={this.state.showAsGrid ? styleGrid : styleList}>
           {itemElements}

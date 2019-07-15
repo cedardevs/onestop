@@ -45,6 +45,16 @@ const styleBrowserWarningParagraph = {
   textAlign: 'center',
 }
 
+//web aim suggested styling for hidden content
+const styleHiddenTitleRow = {
+  position: 'absolute',
+  left: '-10000px',
+  top: 'auto',
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
+}
+
 // component
 export default class Root extends React.Component {
   constructor(props) {
@@ -81,6 +91,23 @@ export default class Root extends React.Component {
     const bannerVisible = isHome(location.pathname)
     const leftVisible = isSearch(location.pathname)
     const rightVisible = false
+
+    const titleRow = (
+      <div style={styleHiddenTitleRow}>
+        <Switch>
+          <Route path={ROUTE.collections.path} exact>
+            <h1 key="collection-result-title">
+              Collection search results
+            </h1>
+          </Route>
+          <Route path={ROUTE.granules.path}>
+            <h1 key="granule-result-title">
+              Granule search results
+            </h1>
+          </Route>
+        </Switch>
+      </div>
+    )
 
     const middle = (
       <div style={{width: '100%'}}>
@@ -151,6 +178,7 @@ export default class Root extends React.Component {
           bannerHeight={'30em'}
           bannerArcHeight={'15em'}
           bannerVisible={bannerVisible}
+          title={titleRow}
           /* - Left - */
           left={leftOpen ? <FiltersContainer /> : <FiltersHiddenContainer />}
           leftWidth={leftOpen ? '20em' : '2em'}
