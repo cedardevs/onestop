@@ -141,6 +141,7 @@ export default class Root extends React.Component {
     else {
       return (
         <Layout
+          location={location}
           /* - Disclaimer - */
           disclaimer={<DisclaimerContainer />}
           /* - Header - */

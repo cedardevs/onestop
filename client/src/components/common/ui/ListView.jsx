@@ -15,7 +15,7 @@ const styleListView = {
 const styleTopRow = {
   justifyContent: 'space-between',
   alignItems: 'center',
-  margin: '0 1.618em 0.618em 0',
+  margin: '0 1.618em 0 0',
 }
 
 const styleListInfo = {
@@ -27,12 +27,8 @@ const styleListInfo = {
 const styleCountInfo = {
   fontFamily: fontFamilySerif(),
   fontSize: '1.0em',
-}
-
-const styleSearchInfo = {
-  fontFamily: fontFamilySerif(),
-  fontSize: '1.0em',
-  padding: 0,
+  justifyContent: 'flex-end',
+  padding: '0 1.618em 0 0',
 }
 
 const styleListControl = {
@@ -140,30 +136,23 @@ export default class ListView extends React.Component {
       propsForItem,
       customControl,
     } = this.props
-
     let message = `${resultsMessage ? resultsMessage : 'Results'}`
-    let countMessage = `Showing ${shown} of ${total}`
+    let countMessage = `Showing ${shown.toLocaleString()} of ${total.toLocaleString()}`
     if (total === 0) {
       message = resultsMessageEmpty ? resultsMessageEmpty : 'No Results'
     }
 
-    const listInfo = (
+    const listInfo = searchTerms ? (
       <h1 style={styleListInfo} key="list-view-info">
-        {message}
+        {'You searched for "' + searchTerms + '"'}
       </h1>
-    )
+    ) : null
 
-    const countInfo = (
+    const countInfo = total !== 0 ? (
       <h2 style={styleCountInfo} key="list-count-info">
         {countMessage}
       </h2>
-    )
-
-    const searchTermsMessage = searchTerms ? (
-      <h3 style={styleSearchInfo} key="search-info">
-        {'You searched for "' + searchTerms + '"'}
-      </h3>
-    ) : null
+    ) : message
 
     const toggleAvailable = ListItemComponent && GridItemComponent
 
@@ -243,11 +232,8 @@ export default class ListView extends React.Component {
 
     return (
       <div style={styleListView}>
-        <FlexRow
-          style={styleTopRow}
-          items={[ listInfo, countInfo, customControl ]}
-        />
-        {searchTermsMessage}
+        <FlexRow style={styleTopRow} items={[ listInfo, customControl ]} />
+        <FlexRow style={styleCountInfo} items={[ countInfo ]} />
         {controlElement}
         <div style={this.state.showAsGrid ? styleGrid : styleList}>
           {itemElements}
