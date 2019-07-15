@@ -8,6 +8,8 @@ repositories {
   maven { url "https://jitpack.io" }
 }
 
+sourceCompatibility = '11'
+
 dependencies {
   compile('org.codehaus.groovy:groovy:2.4.13')
   compile('org.codehaus.groovy:groovy-json:2.4.13')
