@@ -130,10 +130,13 @@ export default class ListView extends React.Component {
       propsForItem,
       customControl,
     } = this.props
+
     let countMessage = `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} ${resultType
       ? resultType
       : 'results'} ${searchTerms ? 'for "' + searchTerms + '"' : ''}`
+
     let message = `${resultsMessage ? resultsMessage : countMessage}`
+
     if (total === 0) {
       message = resultsMessageEmpty ? resultsMessageEmpty : 'No Results'
     }
