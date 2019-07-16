@@ -47,7 +47,6 @@ export default class Collections extends React.Component {
         <ListView
           items={results}
           resultType="collections"
-          resultsMessage={'Collection search results'}
           searchTerms={queryText}
           shown={returnedHits}
           total={totalHits}
