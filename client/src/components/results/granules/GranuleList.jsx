@@ -111,7 +111,6 @@ export default class GranuleList extends React.Component {
           <ListView
             items={results}
             resultType="collection files"
-            resultsMessage={'Collection Files'}
             shown={returnedHits}
             total={totalHits}
             onItemSelect={selectCollection}
