@@ -118,6 +118,7 @@ export default class ListView extends React.Component {
   render() {
     const {
       items,
+      resultType,
       resultsMessage,
       resultsMessageEmpty,
       searchTerms,
@@ -129,18 +130,16 @@ export default class ListView extends React.Component {
       propsForItem,
       customControl,
     } = this.props
-    let message = `${resultsMessage ? resultsMessage : 'Results'}`
-    let countMessage = `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} results for "${searchTerms}"`
+    let countMessage = `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} ${resultType ? resultType : 'results'} for "${searchTerms}"`
+    let message = `${resultsMessage ? resultsMessage : countMessage}`
     if (total === 0) {
       message = resultsMessageEmpty ? resultsMessageEmpty : 'No Results'
     }
 
-    const listInfo = searchTerms ? (
+    const listInfo = (
       <h1 style={styleListInfo} key="list-view-info">
-        {countMessage}
+        {message}
       </h1>
-    ) : (
-      message
     )
 
     const toggleAvailable = ListItemComponent && GridItemComponent
