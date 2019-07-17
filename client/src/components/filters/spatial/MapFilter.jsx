@@ -339,7 +339,7 @@ export default class MapFilter extends React.Component {
         </label>
         {inputColumn}
         <div style={styleSeparator} />
-        <h3 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h3>
+        <h4 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h4>
         {excludeGlobalCheckbox}
       </div>
     )
