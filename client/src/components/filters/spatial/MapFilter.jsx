@@ -333,10 +333,10 @@ export default class MapFilter extends React.Component {
 
     return (
       <div style={styleMapFilter}>
-        <label id="mapFilterInstructions" style={styleDescription}>
+        <legend id="mapFilterInstructions" style={styleDescription}>
           Type coordinates or draw on the map. Use the Clear button to reset the
           location filter.
-        </label>
+        </legend>
         {inputColumn}
         <div style={styleSeparator} />
         <h3 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h3>

@@ -105,10 +105,10 @@ export default class FacetFilter extends React.Component {
     return (
       <div style={styleFacetFilter}>
         <div style={styleDescription}>
-          <label id="facetFilterInstructions">
+          <legend id="facetFilterInstructions">
             In each subsection, you can use arrow keys navigate keywords, and
             space or enter to toggle selections.
-          </label>
+          </legend>
         </div>
         {expandableCategories}
       </div>

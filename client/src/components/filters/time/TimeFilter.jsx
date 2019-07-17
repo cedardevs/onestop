@@ -457,10 +457,10 @@ export default class TimeFilter extends React.Component {
 
     return (
       <div style={styleTimeFilter}>
-        <label id="timeFilterInstructions">
+        <legend id="timeFilterInstructions">
           Provide a start date, end date, or both. Day and month are optional.
           Future dates are not accepted.
-        </label>
+        </legend>
         {inputColumn}
       </div>
     )
