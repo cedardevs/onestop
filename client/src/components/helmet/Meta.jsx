@@ -68,30 +68,69 @@ export default class Meta extends React.Component {
     )
 
     return (
-      <Helmet>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link href={faviconPath} rel="shortcut icon" />
-        <meta property="og:url" content={URL} />
-
-        <meta property="robots" content={robotsValue} />
-
-        <title>{formattedTitle}</title>
-        <meta property="dcterms.title" content={formattedTitle} />
-        <meta property="og:title" content={formattedTitle} />
-
-        <meta property="description" content={descriptionValue} />
-        <meta property="og:description" content={descriptionValue} />
-        <meta property="dcterms.format" content="text/html" />
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:site_name"
-          content="National Oceanic and Atmospheric Administration"
-        />
-
-        <meta property="og:image" content={imageValue} />
-        <meta property="og:image:width" content="800" />
-        <meta property="og:image:height" content="400" />
-
+      <Helmet
+        title={formattedTitle}
+        link={[
+          {
+            href: faviconPath,
+            rel: 'shortcut icon',
+          },
+        ]}
+        meta={[
+          {
+            name: 'viewport',
+            content: 'width=device-width, initial-scale=1',
+          },
+          {
+            name: 'og:url',
+            content: URL,
+          },
+          {
+            name: 'robots',
+            content: robotsValue,
+          },
+          {
+            name: 'dcterms.title',
+            content: formattedTitle,
+          },
+          {
+            name: 'description',
+            content: descriptionValue,
+          },
+          {
+            name: 'og:description',
+            content: descriptionValue,
+          },
+          {
+            name: 'dcterms.format',
+            content: 'text/html',
+          },
+          {
+            name: 'dcterms.format',
+            content: 'text/html',
+          },
+          {
+            name: 'og:type',
+            content: 'website',
+          },
+          {
+            name: 'og:site_name',
+            content: 'National Oceanic and Atmospheric Administration',
+          },
+          {
+            name: 'og:image',
+            content: {imageValue},
+          },
+          {
+            name: 'og:image:width',
+            content: '800',
+          },
+          {
+            name: 'og:image:height',
+            content: '400',
+          },
+        ]}
+      >
         {jsonLD}
         {searchActionJsonLd}
       </Helmet>
