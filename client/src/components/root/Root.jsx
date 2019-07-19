@@ -86,7 +86,7 @@ export default class Root extends React.Component {
       <div style={{width: '100%'}}>
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
-          <Route path="/" exact>
+          <Route path="/:path(|index|index.html)" exact>
             <LandingContainer />
           </Route>
 
@@ -122,7 +122,9 @@ export default class Root extends React.Component {
             <Help />
           </Route>
 
-          <CartContainer />
+          <Route path={ROUTE.cart.path}>
+            <CartContainer />
+          </Route>
 
           <Route path={ROUTE.error.path}>
             <ErrorContainer />

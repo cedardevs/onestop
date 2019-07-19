@@ -1,8 +1,7 @@
 import _ from 'lodash'
 
 export const getBasePath = () => {
-  const windowpath = window.location.pathname
-  return extractBaseFromKnownRoutes(windowpath) || windowpath
+  return '/onestop'
 }
 
 export const apiPath = () => {
