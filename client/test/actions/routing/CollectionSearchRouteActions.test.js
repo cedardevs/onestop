@@ -10,9 +10,9 @@ import {
 } from '../../../src/actions/routing/CollectionSearchRouteActions'
 import {
   // used to set up pre-test conditions
+  collectionNewSearchResetFiltersRequested,
   collectionMoreResultsRequested,
   collectionNewSearchResultsReceived,
-  collectionUpdateQueryText,
   collectionUpdateDateRange,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
@@ -62,10 +62,10 @@ describe('collection search actions', function(){
     // reset store to initial conditions
     await store.dispatch(resetStore())
 
-    // set default queryText
-    store.dispatch(collectionUpdateQueryText('demo'))
-    const {collectionFilter} = store.getState().search
-    expect(collectionFilter.queryText).toEqual('demo')
+    // // set default queryText
+    // await store.dispatch(submitCollectionSearchWithQueryText('demo'))
+    // const {collectionFilter} = store.getState().search
+    // expect(collectionFilter.queryText).toEqual('demo')
   })
 
   afterEach(() => {
@@ -118,260 +118,299 @@ describe('collection search actions', function(){
     submitNextPageCase,
   ]
 
-  describe('new searches treat filters differently', function(){
+  describe('with demo querytext', function(){
     beforeEach(async () => {
-      // set up existing filters with lazily formatted dates
-      store.dispatch(collectionUpdateDateRange('2017', '2018'))
-      const {collectionFilter} = store.getState().search
-      expect(collectionFilter.startDateTime).toEqual('2017')
-      expect(collectionFilter.endDateTime).toEqual('2018')
-      expect(collectionFilter.queryText).toEqual('demo')
-    })
-
-    it(`${submitSearchCase.name} does not change existing filters`, function(){
-      store.dispatch(submitSearchCase.function(...submitSearchCase.params))
-
-      const collectionFilter = store.getState().search.collectionFilter
-      expect(collectionFilter.startDateTime).toEqual('2017')
-      expect(collectionFilter.endDateTime).toEqual('2018')
-      expect(collectionFilter.queryText).toEqual('demo')
-    })
-
-    it(`${submitSearchWithQueryTextCase.name} resets existing filters`, function(){
+      // set default queryText
+      // await store.dispatch(submitCollectionSearchWithQueryText('demo'))
       store.dispatch(
-        submitSearchWithQueryTextCase.function(
-          ...submitSearchWithQueryTextCase.params
-        )
+        collectionNewSearchResetFiltersRequested({queryText: 'demo'})
       )
+      store.dispatch(collectionNewSearchResultsReceived(0, [], []))
 
-      const collectionFilter = store.getState().search.collectionFilter
-      expect(collectionFilter.startDateTime).toBeNull()
-      expect(collectionFilter.endDateTime).toBeNull()
-      expect(collectionFilter.queryText).toEqual('hello')
+      const {collectionFilter, collectionRequest} = store.getState().search
+      expect(collectionFilter.queryText).toEqual('demo')
+      expect(collectionRequest.inFlight).toBeFalsy()
     })
 
-    it(`${submitSearchWithFilterCase.name} resets existing filters`, function(){
-      store.dispatch(
-        submitSearchWithFilterCase.function(
-          ...submitSearchWithFilterCase.params
+    describe('new searches treat filters differently', function(){
+      beforeEach(async () => {
+        // set up existing filters with lazily formatted dates
+        store.dispatch(collectionUpdateDateRange('2017', '2018'))
+        const {collectionFilter} = store.getState().search
+        expect(collectionFilter.startDateTime).toEqual('2017')
+        expect(collectionFilter.endDateTime).toEqual('2018')
+        expect(collectionFilter.queryText).toEqual('demo')
+      })
+
+      it(`${submitSearchCase.name} does not change existing filters`, function(){
+        store.dispatch(submitSearchCase.function(...submitSearchCase.params))
+
+        const collectionFilter = store.getState().search.collectionFilter
+        expect(collectionFilter.startDateTime).toEqual('2017')
+        expect(collectionFilter.endDateTime).toEqual('2018')
+        expect(collectionFilter.queryText).toEqual('demo')
+      })
+
+      it(`${submitSearchWithQueryTextCase.name} resets existing filters`, function(){
+        store.dispatch(
+          submitSearchWithQueryTextCase.function(
+            ...submitSearchWithQueryTextCase.params
+          )
         )
-      )
 
-      const collectionFilter = store.getState().search.collectionFilter
-      expect(collectionFilter.startDateTime).toEqual('1998')
-      expect(collectionFilter.endDateTime).toBeNull()
-      expect(collectionFilter.queryText).toEqual('')
-    })
-  })
+        const collectionFilter = store.getState().search.collectionFilter
+        expect(collectionFilter.startDateTime).toBeNull()
+        expect(collectionFilter.endDateTime).toBeNull()
+        expect(collectionFilter.queryText).toEqual('hello')
+      })
 
-  describe('all submit options behave the same when a detail request is already in flight', function(){
-    beforeEach(async () => {
-      //setup send something into flight first
-      store.dispatch(collectionMoreResultsRequested())
-      const {collectionRequest, collectionFilter} = store.getState().search
-      expect(collectionRequest.inFlight).toBeTruthy()
-      expect(collectionFilter.pageOffset).toBe(20)
-    })
+      it(`${submitSearchWithFilterCase.name} resets existing filters`, function(){
+        store.dispatch(
+          submitSearchWithFilterCase.function(
+            ...submitSearchWithFilterCase.params
+          )
+        )
 
-    allTestCases.forEach(function(testCase){
-      it(`${testCase.name} does not continue with a submit request`, function(){
-        store.dispatch(testCase.function(...testCase.params))
-
-        expect(historyPushCallCount).toEqual(0) // all new searches push a new history request right now (although next page would not)
-        expect(store.getState().search.collectionFilter.pageOffset).toBe(20) // but just in case, this definitely should always be reset to 0, or changed to 40
+        const collectionFilter = store.getState().search.collectionFilter
+        expect(collectionFilter.startDateTime).toEqual('1998')
+        expect(collectionFilter.endDateTime).toBeNull()
+        expect(collectionFilter.queryText).toEqual('')
       })
     })
-  })
 
-  describe('prefetch actions', function(){
-    beforeEach(async () => {
-      // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
-      store.dispatch(collectionMoreResultsRequested())
-      store.dispatch(collectionNewSearchResultsReceived(0, [], {}))
-      const {collectionRequest, collectionFilter} = store.getState().search
-      expect(collectionRequest.inFlight).toBeFalsy()
-      expect(collectionFilter.pageOffset).toEqual(20)
+    describe('all submit options behave the same when a detail request is already in flight', function(){
+      beforeEach(async () => {
+        //setup send something into flight first
+        store.dispatch(collectionMoreResultsRequested())
+        const {collectionRequest, collectionFilter} = store.getState().search
+        expect(collectionRequest.inFlight).toBeTruthy()
+        expect(collectionFilter.pageOffset).toBe(20)
+      })
+
+      allTestCases.forEach(function(testCase){
+        it(`${testCase.name} does not continue with a submit request`, function(){
+          store.dispatch(testCase.function(...testCase.params))
+
+          expect(historyPushCallCount).toEqual(0) // all new searches push a new history request right now (although next page would not)
+          expect(store.getState().search.collectionFilter.pageOffset).toBe(20) // but just in case, this definitely should always be reset to 0, or changed to 40
+        })
+      })
     })
 
-    describe('all submit options update the state correctly', function(){
-      standardNewSearchTestCases.forEach(function(testCase){
-        it(`${testCase.name}`, function(){
-          store.dispatch(testCase.function(...testCase.params))
+    describe('prefetch actions', function(){
+      beforeEach(async () => {
+        // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
+        store.dispatch(collectionMoreResultsRequested())
+        store.dispatch(collectionNewSearchResultsReceived(0, [], {}))
+        const {collectionRequest, collectionFilter} = store.getState().search
+        expect(collectionRequest.inFlight).toBeFalsy()
+        expect(collectionFilter.pageOffset).toEqual(20)
+      })
+
+      describe('all submit options update the state correctly', function(){
+        standardNewSearchTestCases.forEach(function(testCase){
+          it(`${testCase.name}`, function(){
+            store.dispatch(testCase.function(...testCase.params))
+
+            const {
+              collectionRequest,
+              collectionFilter,
+            } = store.getState().search
+
+            expect(collectionRequest.inFlight).toBeTruthy()
+            expect(collectionFilter.pageOffset).toEqual(0)
+          })
+        })
+
+        it(`${submitNextPageCase.name}`, function(){
+          store.dispatch(
+            submitNextPageCase.function(...submitNextPageCase.params)
+          )
 
           const {collectionRequest, collectionFilter} = store.getState().search
 
           expect(collectionRequest.inFlight).toBeTruthy()
-          expect(collectionFilter.pageOffset).toEqual(0)
+          expect(collectionFilter.pageOffset).toEqual(40)
         })
       })
 
-      it(`${submitNextPageCase.name}`, function(){
-        store.dispatch(
-          submitNextPageCase.function(...submitNextPageCase.params)
-        )
+      describe('each submit function treats the URL differently', function(){
+        standardNewSearchTestCases.forEach(function(testCase){
+          it(`${testCase.name} updates the URL`, function(){
+            store.dispatch(testCase.function(...testCase.params))
 
-        const {collectionRequest, collectionFilter} = store.getState().search
+            const {
+              collectionRequest,
+              collectionFilter,
+            } = store.getState().search
 
-        expect(collectionRequest.inFlight).toBeTruthy()
-        expect(collectionFilter.pageOffset).toEqual(40)
-      })
-    })
-
-    describe('each submit function treats the URL differently', function(){
-      standardNewSearchTestCases.forEach(function(testCase){
-        it(`${testCase.name} updates the URL`, function(){
-          store.dispatch(testCase.function(...testCase.params))
-
-          const {collectionRequest, collectionFilter} = store.getState().search
-
-          expect(historyPushCallCount).toEqual(1)
-          expect(history_input).toEqual(testCase.expectedURL)
+            expect(historyPushCallCount).toEqual(1)
+            expect(history_input).toEqual(testCase.expectedURL)
+          })
         })
-      })
 
-      standardNewSearchTestCases.forEach(function(testCase){
-        it(`${testCase.name} does not update history if no change`, function(){
-          mockHistory.location = testCase.expectedURL
-          store.dispatch(testCase.function(...testCase.params))
+        standardNewSearchTestCases.forEach(function(testCase){
+          it(`${testCase.name} does not update history if no change`, function(){
+            mockHistory.location = testCase.expectedURL
+            store.dispatch(testCase.function(...testCase.params))
 
-          const {collectionRequest, collectionFilter} = store.getState().search
+            const {
+              collectionRequest,
+              collectionFilter,
+            } = store.getState().search
+
+            expect(historyPushCallCount).toEqual(0)
+          })
+        })
+
+        it(`${submitNextPageCase.name} does not update the URL`, function(){
+          store.dispatch(
+            submitNextPageCase.function(...submitNextPageCase.params)
+          )
 
           expect(historyPushCallCount).toEqual(0)
         })
       })
+    })
 
-      it(`${submitNextPageCase.name} does not update the URL`, function(){
+    describe('success path', function(){
+      beforeEach(async () => {
+        fetchMock.post(
+          (url, opts) => url == `${BASE_URL}/search/collection`,
+          mockPayload
+        )
         store.dispatch(
-          submitNextPageCase.function(...submitNextPageCase.params)
-        )
-
-        expect(historyPushCallCount).toEqual(0)
-      })
-    })
-  })
-
-  describe('success path', function(){
-    beforeEach(async () => {
-      fetchMock.post(
-        (url, opts) => url == `${BASE_URL}/search/collection`,
-        mockPayload
-      )
-      store.dispatch(
-        collectionNewSearchResultsReceived(
-          10,
-          [
-            {
-              id: 'uuid-XYZ',
-              attributes: {
-                title: 'XYZ',
+          collectionNewSearchResultsReceived(
+            10,
+            [
+              {
+                id: 'uuid-XYZ',
+                attributes: {
+                  title: 'XYZ',
+                },
               },
-            },
-            {
-              id: 'uuid-987',
-              attributes: {
-                title: '987',
+              {
+                id: 'uuid-987',
+                attributes: {
+                  title: '987',
+                },
               },
-            },
-          ],
-          mockFacets
+            ],
+            mockFacets
+          )
         )
-      )
-      const {collectionResult} = store.getState().search
+        const {collectionResult} = store.getState().search
 
-      // results from a previous search
-      expect(collectionResult.collections).toEqual({
-        'uuid-XYZ': {title: 'XYZ'},
-        'uuid-987': {title: '987'},
-      })
-    })
-
-    describe('all submit options update request status state correctly', function(){
-      allTestCases.forEach(function(testCase){
-        it(`${testCase.name}`, async () => {
-          await store.dispatch(testCase.function(...testCase.params))
-
-          const {collectionRequest, collectionResult} = store.getState().search
-
-          expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
-          expect(collectionRequest.errorMessage).toEqual('')
+        // results from a previous search
+        expect(collectionResult.collections).toEqual({
+          'uuid-XYZ': {title: 'XYZ'},
+          'uuid-987': {title: '987'},
         })
       })
-    })
 
-    describe('all new search options update the result state correctly', function(){
-      standardNewSearchTestCases.forEach(function(testCase){
-        it(`${testCase.name}`, async () => {
-          await store.dispatch(testCase.function(...testCase.params))
+      describe('all submit options update request status state correctly', function(){
+        allTestCases.forEach(function(testCase){
+          it(`${testCase.name}`, async () => {
+            await store.dispatch(testCase.function(...testCase.params))
 
-          const {collectionRequest, collectionResult} = store.getState().search
+            const {
+              collectionRequest,
+              collectionResult,
+            } = store.getState().search
+
+            expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+            expect(collectionRequest.errorMessage).toEqual('')
+          })
+        })
+      })
+
+      describe('all new search options update the result state correctly', function(){
+        standardNewSearchTestCases.forEach(function(testCase){
+          it(`${testCase.name}`, async () => {
+            await store.dispatch(testCase.function(...testCase.params))
+
+            const {
+              collectionRequest,
+              collectionResult,
+            } = store.getState().search
+
+            expect(collectionResult.collections).toEqual({
+              'uuid-ABC': {title: 'ABC'},
+              'uuid-123': {title: '123'},
+            })
+            expect(collectionResult.facets).toEqual(mockFacets)
+            expect(collectionResult.totalCollectionCount).toEqual(10)
+            expect(collectionResult.loadedCollectionCount).toEqual(2)
+          })
+        })
+      })
+
+      describe('next page updates the result state correctly', function(){
+        it(`${submitNextPageCase.name}`, async () => {
+          await store.dispatch(
+            submitNextPageCase.function(...submitNextPageCase.params)
+          )
+
+          const {
+            collectionRequest,
+            collectionResult,
+            collectionFilter,
+          } = store.getState().search
 
           expect(collectionResult.collections).toEqual({
             'uuid-ABC': {title: 'ABC'},
             'uuid-123': {title: '123'},
+            'uuid-XYZ': {title: 'XYZ'},
+            'uuid-987': {title: '987'},
           })
           expect(collectionResult.facets).toEqual(mockFacets)
           expect(collectionResult.totalCollectionCount).toEqual(10)
-          expect(collectionResult.loadedCollectionCount).toEqual(2)
+          expect(collectionResult.loadedCollectionCount).toEqual(4)
         })
       })
     })
 
-    describe('next page updates the result state correctly', function(){
-      it(`${submitNextPageCase.name}`, async () => {
-        await store.dispatch(
-          submitNextPageCase.function(...submitNextPageCase.params)
+    describe('failure path', function(){
+      beforeEach(async () => {
+        fetchMock.post(
+          (url, opts) => url == `${BASE_URL}/search/collection`,
+          500
         )
-
-        const {
-          collectionRequest,
-          collectionResult,
-          collectionFilter,
-        } = store.getState().search
-
-        expect(collectionResult.collections).toEqual({
-          'uuid-ABC': {title: 'ABC'},
-          'uuid-123': {title: '123'},
-          'uuid-XYZ': {title: 'XYZ'},
-          'uuid-987': {title: '987'},
-        })
-        expect(collectionResult.facets).toEqual(mockFacets)
-        expect(collectionResult.totalCollectionCount).toEqual(10)
-        expect(collectionResult.loadedCollectionCount).toEqual(4)
       })
-    })
-  })
 
-  describe('failure path', function(){
-    beforeEach(async () => {
-      fetchMock.post((url, opts) => url == `${BASE_URL}/search/collection`, 500)
-    })
+      describe('all submit options update request status state correctly', function(){
+        allTestCases.forEach(function(testCase){
+          it(`${testCase.name}`, async () => {
+            await store.dispatch(testCase.function(...testCase.params))
 
-    describe('all submit options update request status state correctly', function(){
-      allTestCases.forEach(function(testCase){
-        it(`${testCase.name}`, async () => {
-          await store.dispatch(testCase.function(...testCase.params))
+            const {
+              collectionRequest,
+              collectionResult,
+            } = store.getState().search
 
-          const {collectionRequest, collectionResult} = store.getState().search
-
-          expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
-          expect(collectionRequest.errorMessage).toEqual(
-            new Error('Internal Server Error')
-          )
+            expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+            expect(collectionRequest.errorMessage).toEqual(
+              new Error('Internal Server Error')
+            )
+          })
         })
       })
-    })
 
-    describe('all submit options update the result state correctly', function(){
-      allTestCases.forEach(function(testCase){
-        it(`${testCase.name}`, async () => {
-          await store.dispatch(testCase.function(...testCase.params))
+      describe('all submit options update the result state correctly', function(){
+        allTestCases.forEach(function(testCase){
+          it(`${testCase.name}`, async () => {
+            await store.dispatch(testCase.function(...testCase.params))
 
-          const {collectionRequest, collectionResult} = store.getState().search
+            const {
+              collectionRequest,
+              collectionResult,
+            } = store.getState().search
 
-          expect(collectionResult.collections).toEqual({})
-          expect(collectionResult.facets).toEqual({})
-          expect(collectionResult.totalCollectionCount).toEqual(0)
-          expect(collectionResult.loadedCollectionCount).toEqual(0)
+            expect(collectionResult.collections).toEqual({})
+            expect(collectionResult.facets).toEqual({})
+            expect(collectionResult.totalCollectionCount).toEqual(0)
+            expect(collectionResult.loadedCollectionCount).toEqual(0)
+          })
         })
       })
     })
@@ -384,8 +423,7 @@ describe('collection search actions', function(){
         mockPayload
       )
 
-      store.dispatch(collectionUpdateQueryText('')) // clear the state query filter
-
+      // make sure there is no query text in the filters
       const {collectionFilter} = store.getState().search
       expect(collectionFilter.queryText).toEqual('')
     })
