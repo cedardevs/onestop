@@ -3,6 +3,7 @@ package org.cedar.psi.manager.config
 import spock.lang.Specification
 
 import static ManagerConfig.*
+import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG
 
 
 class ManagerConfigSpec extends Specification {
@@ -33,13 +34,14 @@ class ManagerConfigSpec extends Specification {
         'TEST_B': 'B',
         'tEsT.C': 'C',
         'TeSt_D': 'D'
-    ])
+    ]).getCurrentConfigMap()
 
     expect:
     config['test.a'] == 'A'
     config['test.b'] == 'B'
     config['test.c'] == 'C'
     config['test.d'] == 'D'
+    config.size() == 4
   }
 
 }
