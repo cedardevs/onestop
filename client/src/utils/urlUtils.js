@@ -115,7 +115,11 @@ export const validHomePaths = [ '', 'index', 'index.html' ] // put this in some 
 export const isHome = path => {
   let pathNoTrailingSlash = path.replace(/\/+$/, '')
   return validHomePaths.some(homePath => {
-    return path === '/' || pathNoTrailingSlash === `/${homePath}`
+    return (
+      path === '/' ||
+      pathNoTrailingSlash === '' ||
+      pathNoTrailingSlash === `/${homePath}`
+    )
   })
 }
 

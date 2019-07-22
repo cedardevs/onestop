@@ -146,7 +146,9 @@ export default class Root extends React.Component {
           /* - Disclaimer - */
           disclaimer={<DisclaimerContainer />}
           /* - Header - */
-          header={<HeaderContainer />}
+          header={
+            <HeaderContainer showSearchInput={!isHome(location.pathname)} />
+          }
           /* - Banner - */
           bannerGraphic={earth}
           bannerHeight={'30em'}
