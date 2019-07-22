@@ -110,8 +110,15 @@ export const isSitemap = path => {
   return sitemapMatch(path) ? true : false
 }
 
+export const validHomePaths = [ '', 'index', 'index.html'] // put this in some util you can export like urlUtils, I think
+
 export const isHome = path => {
-  return path === '/'
+    let pathNoTrailingSlash = path.replace(/\/+$/, "")
+    return validHomePaths.some(homePath => {
+       console.log(homePath)
+        console.log(pathNoTrailingSlash)
+        return pathNoTrailingSlash === `/${homePath}`
+    })
 }
 
 export const isSearch = path => {
