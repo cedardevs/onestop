@@ -86,7 +86,7 @@ export default class Root extends React.Component {
       <div style={{width: '100%'}}>
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
-          <Route path={ `/:path(${validHomePaths.join('|')})`} exact>
+          <Route path={`/:path(${validHomePaths.join('|')})`} exact>
             <LandingContainer />
           </Route>
 
