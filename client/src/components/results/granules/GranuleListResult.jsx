@@ -163,7 +163,7 @@ class ListResult extends React.Component {
   }
 
   renderServiceLinks = serviceLinks => {
-    const services = serviceLinks.map((service, index) => {
+    const services = serviceLinks.map(service => {
       return this.renderLinks(service.links)
     })
     return (
