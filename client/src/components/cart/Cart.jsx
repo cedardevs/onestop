@@ -174,28 +174,26 @@ export default class Cart extends React.Component {
     )
 
     return (
-      <Route path={ROUTE.cart.path}>
-        <div style={styleCenterContent}>
-          <Meta title="File Access Cart" robots="noindex" />
+      <div style={styleCenterContent}>
+        <Meta title="File Access Cart" robots="noindex" />
 
-          <div style={styleCartListWrapper}>
-            {cartActionsWrapper}
-            <ListView
-              items={selectedGranules}
-              resultsMessage={'Files for download'}
-              resultsMessageEmpty={'No files selected for download'}
-              shown={shownGranules}
-              total={selectedGranulesCount}
-              onItemSelect={this.handleSelectItem}
-              ListItemComponent={CartItem}
-              GridItemComponent={null}
-              propsForItem={this.propsForResult}
-              customControl={selectedGranulesCount > 0 ? clearCartButton : null}
-            />
-            {showMoreButton}
-          </div>
+        <div style={styleCartListWrapper}>
+          {cartActionsWrapper}
+          <ListView
+            items={selectedGranules}
+            resultsMessage={'Files for download'}
+            resultsMessageEmpty={'No files selected for download'}
+            shown={shownGranules}
+            total={selectedGranulesCount}
+            onItemSelect={this.handleSelectItem}
+            ListItemComponent={CartItem}
+            GridItemComponent={null}
+            propsForItem={this.propsForResult}
+            customControl={selectedGranulesCount > 0 ? clearCartButton : null}
+          />
+          {showMoreButton}
         </div>
-      </Route>
+      </div>
     )
   }
 }

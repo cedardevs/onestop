@@ -1,8 +1,7 @@
 import _ from 'lodash'
 
 export const getBasePath = () => {
-  const windowpath = window.location.pathname
-  return extractBaseFromKnownRoutes(windowpath) || windowpath
+  return '/onestop'
 }
 
 export const apiPath = () => {
@@ -111,8 +110,17 @@ export const isSitemap = path => {
   return sitemapMatch(path) ? true : false
 }
 
+export const validHomePaths = [ '', 'index', 'index.html' ] // put this in some util you can export like urlUtils, I think
+
 export const isHome = path => {
-  return path === '/'
+  let pathNoTrailingSlash = path.replace(/\/+$/, '')
+  return validHomePaths.some(homePath => {
+    return (
+      path === '/' ||
+      pathNoTrailingSlash === '' ||
+      pathNoTrailingSlash === `/${homePath}`
+    )
+  })
 }
 
 export const isSearch = path => {
