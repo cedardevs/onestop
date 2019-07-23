@@ -211,7 +211,7 @@ The number of results returned can be specified by the `page` property object in
 
 Elasticsearch imposes a hard limit of only the first 10,000 results returned. This is in place to protect the cluster as paging through a large result set is a very memory-intensive operation. **Therefore, please be mindful of this limitation and attempt to revise your search criteria to match a smaller number of documents.**
 
-The API defaults to a "summary" subset of fields (i.e., `title`, `thumbnail`, `spatialBounding`, `beginDate`, `beginYear`, `endDate`, `endYear`, `links`, `citeAsStatements`, and `internalParentIdentifier` for granules and flattened-granules) in the response for each result unless "summary: false" is included in the request body.
+The API defaults to a "summary" subset of fields (i.e., `title`, `thumbnail`, `spatialBounding`, `beginDate`, `beginYear`, `endDate`, `endYear`, `links`, `serviceLinks`, `citeAsStatements`, and `internalParentIdentifier` for granules and flattened-granules) in the response for each result unless "summary: false" is included in the request body.
 ``` json
  {
   "page": {
