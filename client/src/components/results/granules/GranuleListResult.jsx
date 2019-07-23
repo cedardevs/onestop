@@ -361,6 +361,9 @@ class ListResult extends React.Component {
         </div>
       )
     }
+    if (showLinks && item.serviceLinks) {
+      rightItems.push(this.renderServiceLinks(item.serviceLinks))
+    }
     if (showTimeAndSpace) {
       rightItems.push(
         this.renderTimeAndSpaceString(
@@ -371,9 +374,6 @@ class ListResult extends React.Component {
           item.spatialBounding
         )
       )
-    }
-    if (showLinks && item.serviceLinks) {
-      rightItems.push(this.renderServiceLinks(item.serviceLinks))
     }
     const left = (
       <FlexColumn
