@@ -24,7 +24,7 @@ import CollectionSearchLoadingContainer from '../loading/CollectionSearchLoading
 import FooterContainer from '../footer/FooterContainer'
 
 import {SiteColors} from '../../style/defaultStyles'
-import {isHome, isSearch, ROUTE} from '../../utils/urlUtils'
+import {isHome, isSearch, validHomePaths, ROUTE} from '../../utils/urlUtils'
 import NotFoundContainer from '../404/NotFoundContainer'
 
 import earth from '../../../img/Earth.jpg'
@@ -86,7 +86,7 @@ export default class Root extends React.Component {
       <div style={{width: '100%'}}>
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
-          <Route path="/" exact>
+          <Route path={`/:path(${validHomePaths.join('|')})`} exact>
             <LandingContainer />
           </Route>
 
@@ -122,7 +122,9 @@ export default class Root extends React.Component {
             <Help />
           </Route>
 
-          <CartContainer />
+          <Route path={ROUTE.cart.path}>
+            <CartContainer />
+          </Route>
 
           <Route path={ROUTE.error.path}>
             <ErrorContainer />
@@ -144,7 +146,9 @@ export default class Root extends React.Component {
           /* - Disclaimer - */
           disclaimer={<DisclaimerContainer />}
           /* - Header - */
-          header={<HeaderContainer />}
+          header={
+            <HeaderContainer showSearchInput={!isHome(location.pathname)} />
+          }
           /* - Banner - */
           bannerGraphic={earth}
           bannerHeight={'30em'}

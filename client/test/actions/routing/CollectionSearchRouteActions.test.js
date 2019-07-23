@@ -29,7 +29,7 @@ const mockHistory = {
 }
 
 describe('collection search actions', function(){
-  const BASE_URL = '/-search'
+  const BASE_URL = '/onestop-search'
   const resetStore = () => ({type: RESET_STORE})
   const mockFacets = {
     mock: 'has facets',

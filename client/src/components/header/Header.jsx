@@ -185,16 +185,9 @@ class Header extends React.Component {
 
     const insignia = <Logo key="insignia" style={{flex: '0 0 275px'}} />
 
-    const search = (
-      <Switch key="header:search:route">
-        <Route exact path="/">
-          {null}
-        </Route>
-        <Route path="/">
-          <CollectionSearchContainer key="search" />
-        </Route>
-      </Switch>
-    )
+    const search = this.props.showSearchInput ? (
+      <CollectionSearchContainer key="search" />
+    ) : null
 
     const menu = (
       <nav key="menu" aria-label="Main" style={styleNav}>
