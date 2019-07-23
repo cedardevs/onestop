@@ -256,7 +256,8 @@ class ElasticsearchService {
         "endDate",
         "endYear",
         "links",
-        "citeAsStatements"
+        "citeAsStatements",
+        "serviceLinks"
     ]
     requestBody._source = sourceFilter
     return requestBody
