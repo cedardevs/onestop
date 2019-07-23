@@ -162,6 +162,18 @@ class ListResult extends React.Component {
     )
   }
 
+  renderServiceLinks = serviceLinks => {
+    const services = serviceLinks.map((service, index) => {
+      return this.renderLinks(service.links)
+    })
+    return (
+      <div key={'ListResult::serviceLinks'}>
+        <h3 style={styleSectionHeader}>Service links</h3>
+        {services}
+      </div>
+    )
+  }
+
   renderBadge = (link, itemId) => {
     const {protocol, url, displayName, linkProtocol} = link
     const linkText = displayName ? displayName : protocol.label
@@ -249,12 +261,7 @@ class ListResult extends React.Component {
       .value()
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges
 
-    return (
-      <div key={'ListResult::accessLinks'}>
-        <h3 style={styleSectionHeader}>Data Access Links:</h3>
-        <ul style={util.styleProtocolList}>{badgesElement}</ul>
-      </div>
-    )
+    return badgesElement
   }
 
   handleFocus = event => {
@@ -347,7 +354,12 @@ class ListResult extends React.Component {
 
     const rightItems = []
     if (showLinks) {
-      rightItems.push(this.renderLinks(item.links))
+      rightItems.push(
+        <div key={'ListResult::accessLinks'}>
+          <h3 style={styleSectionHeader}>Data Access Links:</h3>
+          <ul style={util.styleProtocolList}>{this.renderLinks(item.links)}</ul>
+        </div>
+      )
     }
     if (showTimeAndSpace) {
       rightItems.push(
@@ -360,7 +372,9 @@ class ListResult extends React.Component {
         )
       )
     }
-
+    if (showLinks && item.serviceLinks) {
+      rightItems.push(this.renderServiceLinks(item.serviceLinks))
+    }
     const left = (
       <FlexColumn
         key={'ListResult::leftColumn'}
