@@ -101,13 +101,16 @@ that discovery information is then analyzed. All resulting info is then sent bac
 
 #### Config
 
+The following config values are set inside the stream-manager application if no environment variables, system properties, or YAML config file are available. All of these can be overridden, along with any of the values found in the [Kafka configuration documentation](https://kafka.apache.org/documentation/#configuration) through any of the configuration sources. All Kafka properties are expected to begin with `kafka` when provided to the application.
+
 | Environment Variable            | Importance | Required? | Default            | Description |
 | ------------------------------- | ---------- | --------- | ------------------ | ----------- |
 | KAFKA_BOOTSTRAP_SERVERS*        | High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
-| SCHEMA_REGISTRY_URL             | High       | No        | localhost:8081     | The URL of the Schema Registry |
+| KAFKA_SCHEMA_REGISTRY_URL             | High       | No        | localhost:8081     | The URL of the Schema Registry |
 | KAFKA_COMPRESSION_TYPE          | Medium     | No        | gzip               | The compression algorithm to use when publishing kafka messages. Valid values are `none`, `gzip`, `snappy`, `lz4`, or `zstd` |
 | KAFKA_CACHE_MAX_BYTES_BUFFERING | Low        | No        | 104857600 (100 MiB) | Amount to memory to use to buffer messages before flushing them to kafka |
 | KAFKA_COMMIT_INTERVAL_MS        | Low        | No        | 30000 (30 sec)      | The frequency with which to save the position of the processor |
+| KAFKA_AUTO_OFFSET_RESET         | Medium     | No        | earliest            | What to reset the offset to when there is no initial offset in Kafka or if the current offset does not exist anymore on the server. Valid values: `earliest`, `latest`, `none` (which throws an exception to the consumer).
 
 \* This variable was originally named `IM_BOOTSTRAP_SERVERS`. This old name continues to work in 0.1.x versions but
 is deprecated and will be removed in a future version.

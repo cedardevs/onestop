@@ -1,5 +1,6 @@
 package org.cedar.psi.manager.config;
 
+import org.apache.avro.data.Json;
 import org.apache.kafka.common.config.TopicConfig;
 import org.cedar.psi.common.util.DataUtils;
 import org.slf4j.Logger;
@@ -22,10 +23,10 @@ public class ManagerConfig {
 
   // Needed default values for starting (in case no config provided)
   static final String BOOTSTRAP_SERVERS_DEFAULT = "http://localhost:9092";
-  static final Long CACHE_MAX_BYTES_DEFAULT = 104857600L; // 100 MiB
-  static final Long COMMIT_INTERVAL_DEFAULT = 30000L;
   static final String SCHEMA_REGISTRY_URL_DEFAULT = "http://localhost:8081";
   static final String COMPRESSION_TYPE_DEFAULT = "gzip";
+  static final Long CACHE_MAX_BYTES_DEFAULT = 104857600L; // 100 MiB
+  static final Long COMMIT_INTERVAL_DEFAULT = 30000L;
   static final String AUTO_OFFSET_RESET_DEFAULT = "earliest";
 
   private final Map<String, Object> internal;
@@ -58,14 +59,6 @@ public class ManagerConfig {
     environmentVariables = getEnv();
     systemProperties = System.getProperties();
     configFileProperties = parseYamlConfigFile(filePath);
-    updateInternalMapping();
-  }
-
-  public ManagerConfig(Map<String, Object> configFileProps) {
-    internal = new LinkedHashMap<String, Object>(defaults);
-    environmentVariables = getEnv();
-    systemProperties = System.getProperties();
-    configFileProperties = configFileProps;
     updateInternalMapping();
   }
 
@@ -102,19 +95,23 @@ public class ManagerConfig {
     // Internal starts as defaults; merge in order of least --> most preferred props (env, sys, file)
     // NOTE: Any environment or system properties are prefixed with "kafka." so remove the prefix before merging (Kafka
     // config values do NOT have this prefix)
-    environmentVariables.forEach((k, v) -> internal.merge(normalizeKey(k, "kafka."), v.toString(), (v1, v2) -> v2));
-    systemProperties.forEach((k, v) -> internal.merge(normalizeKey(k, "kafka."), v.toString(), (v1, v2) -> v2));
+    environmentVariables.forEach((k, v) -> {
+      if(k.toLowerCase().startsWith("kafka")) {
+        internal.put(normalizeKey(k.substring(6)), v); // Trim "kafka" and first delimiter before normalizing
+      }
+    });
+    systemProperties.forEach((k, v) -> {
+      String key = k.toString();
+      if(key.toLowerCase().startsWith("kafka")) {
+        internal.put(normalizeKey(key.substring(6)), v); // Trim "kafka" and first delimiter before normalizing
+      }
+    });
 
     internal.putAll(configFileProperties);
   }
 
-  private String normalizeKey(Object key, String caseInsensitivePrefix) {
-    String newKey = key.toString().toLowerCase();
-    String prefix = caseInsensitivePrefix.toLowerCase();
-    if(prefix != null && !prefix.isEmpty() && newKey.startsWith(prefix)) {
-      newKey = newKey.substring(prefix.length());
-    }
-    return newKey.replaceAll("_", ".");
+  private String normalizeKey(String key) {
+    return key.toLowerCase().replaceAll("_", ".");
   }
 
 
@@ -123,6 +120,7 @@ public class ManagerConfig {
   public String compressionType() { return (String) internal.get(TopicConfig.COMPRESSION_TYPE_CONFIG); }
   public Long cacheMaxBytes() { return (Long) internal.get(CACHE_MAX_BYTES_BUFFERING_CONFIG); }
   public Long commitInterval() { return (Long) internal.get(COMMIT_INTERVAL_MS_CONFIG); }
+  public String autoOffsetReset() { return (String) internal.get(AUTO_OFFSET_RESET_CONFIG); }
 
 
   /**

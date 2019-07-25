@@ -288,7 +288,7 @@ class DataUtilsSpec extends Specification {
     ]
 
     expect:
-    DataUtils.consolidateNestedKeysInMap(parentKey, inputMap).equals(expected);
+    DataUtils.consolidateNestedKeysInMap(parentKey, ".", inputMap).equals(expected);
 
     where:
     parentKey << [new String(), "", null]

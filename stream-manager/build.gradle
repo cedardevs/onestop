@@ -33,6 +33,7 @@ dependencies {
   compile("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
 
   testCompile("org.spockframework:spock-core:${project.spockVersion}")
+  testCompile('com.github.stefanbirkner:system-rules:1.19.0')
   testCompile('org.apache.kafka:kafka-streams-test-utils:2.1.0')
   testCompile('org.apache.kafka:kafka-clients:2.1.0:test')
   testCompile('org.apache.kafka:kafka_2.12:2.1.0')
