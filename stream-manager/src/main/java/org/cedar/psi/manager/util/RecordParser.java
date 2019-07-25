@@ -1,5 +1,6 @@
 package org.cedar.psi.manager.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.cedar.psi.common.util.DataUtils;
 import org.cedar.psi.common.util.ValueWithErrors;
@@ -9,7 +10,6 @@ import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
 import org.cedar.schemas.avro.util.AvroUtils;
 import org.cedar.schemas.parse.ISOParser;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class RecordParser {
   private static final Logger log = LoggerFactory.getLogger(RecordParser.class);
 
