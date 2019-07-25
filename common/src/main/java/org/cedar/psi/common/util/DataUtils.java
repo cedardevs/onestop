@@ -1,5 +1,6 @@
 package org.cedar.psi.common.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ErrorEvent;
 import org.cedar.schemas.avro.psi.ParsedRecord;
