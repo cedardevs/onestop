@@ -61,12 +61,6 @@ subprojects {
             details.because 'fixes vulnerability in 1.5x before 1.6x'
           }
         }
-        if (details.requested.group == 'org.apache.zookeeper' && details.requested.name == 'zookeeper') {
-          if (details.requested.version.startsWith('3.4') && details.requested.version <= '3.5.5') {
-            details.useVersion '3.5.5'
-            details.because 'Enforce zookeeper 3.4.14+ to avoid vulnerability CVE-2019-0201'
-          }
-        }
         if (details.requested.group == 'org.elasticsearch' && details.requested.name == 'elasticsearch') {
           if (details.requested.version <= esVersion) {
             details.useVersion esVersion
