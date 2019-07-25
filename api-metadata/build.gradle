@@ -31,20 +31,20 @@ dependencies {
   implementation('com.github.cedardevs.schemas:schemas-core:0.2.0')
   implementation('com.github.cedardevs.schemas:schemas-parse:0.2.0')
   implementation('com.github.cedardevs.schemas:schemas-analyze:0.2.0')
-  implementation("io.confluent:kafka-streams-avro-serde:5.1.0")
+  implementation("io.confluent:kafka-streams-avro-serde:5.3.0")
 
-  implementation("org.apache.kafka:kafka-clients:2.1.1")
-  implementation("org.springframework.kafka:spring-kafka:2.2.5.RELEASE")
+  implementation("org.apache.kafka:kafka-clients:2.3.0")
+  implementation("org.springframework.kafka:spring-kafka:2.2.7.RELEASE")
 
   testImplementation("com.github.cedardevs.schemas:schemas-core:0.2.0:test")
 
-  testImplementation("io.confluent:kafka-schema-registry:5.1.0")
-  testImplementation("io.confluent:kafka-schema-registry:5.1.0:tests")
+  testImplementation("io.confluent:kafka-schema-registry:5.3.0")
+  testImplementation("io.confluent:kafka-schema-registry:5.3.0:tests")
 
-  testImplementation("org.apache.kafka:kafka_2.11:2.1.1")
-  testImplementation("org.apache.kafka:kafka_2.11:2.1.1:test")
-  testImplementation("org.apache.kafka:kafka-clients:2.1.1:test")
-  implementation("org.springframework.kafka:spring-kafka-test:2.2.5.RELEASE")
+  testImplementation("org.apache.kafka:kafka_2.12:2.3.0")
+  testImplementation("org.apache.kafka:kafka_2.12:2.3.0:test")
+  testImplementation("org.apache.kafka:kafka-clients:2.3.0:test")
+  implementation("org.springframework.kafka:spring-kafka-test:2.2.7.RELEASE")
 
   // opensaml
   implementation("org.opensaml:opensaml-core:${project.openSAMLVersion}")
