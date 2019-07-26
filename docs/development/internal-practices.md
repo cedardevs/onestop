@@ -3,14 +3,16 @@
 ## Git Workflow
 
   * `master` contains changes being prepped for a release, with tags marking each release. The master branch should be kept in a working state but represents the "bleeding edge" version of the project. 
-  * `release/[version]` contains the existing release paths. These only deviate from the release tagged on the master branch when hotfixes are required. A new release branch should be created for every major version. Minor releases can be merged into major version branch. Patches should also be merged to their respective branch, but follows a different work flow. Reference hotfix documentation for more information.  
+  * `release/[version]` contains the existing release paths. These only deviate from the release tagged on the master branch when hotfixes are required. A new release branch should be created for every major version. Minor releases can be merged into their major version branch. Patches should also be merged to their respective branch, but follows a different work flow. Reference [Hotfix Strategy](/docs/development/hotfix-strategy.md) for more information.  
   * temporary branches are used to work on features, until they are reviewed as a pull request and deleted.
 
 ### Versioning: 
   * Ideally the current version indicates what release you're working toward, not what version you are on. [citation stackoverflow issue](https://softwareengineering.stackexchange.com/questions/166215/when-do-you-change-your-major-minor-patch-version-number). This is to avoid new artifacts from colliding with older artifacts built prior to the last tag.
-  * Always increment the minor version after a release. Ideally major versions are incremented when the breaking change is made, but we should also consider incrementing major version prior to any release to avoid breaking a release branch. 
-  * The patch version can be incremented after applying the fix. See hotfix documentation for patching. 
-  * We find more here - https://semver.org/
+  * To accomplish that, it is important we always increment the minor version after a release. 
+  * It's difficult to know if the next release will be a new major version. Theoretically incrementing the major version should be done when the breaking change is introduced (e.g. dropping support for ES5). 
+  * But that may not always happen when it should. For that reason it is important we review changes prior to cutting a release and determine if should increment the major version. It is important we avoid merging breaking changes to an existing release branch. 
+  * The patch version can be incremented after applying the fix. See [Hotfix Strategy](/docs/development/hotfix-strategy.md) documentation for patching. 
+  * Find more on version best practices here - https://semver.org/
 
 ### Releases: Tags and Release Branches
 When all the features in master are ready for production, it is time to cut a release. A "release" is either a new major or minor version. For a patch, see the hotfix documentation. Follow these steps to publish a release:
@@ -26,7 +28,7 @@ When all the features in master are ready for production, it is time to cut a re
      ```
   6. If this is a new major version, create a branch from that commit named for this version `release/[version]`, e.g. `release/3.x`.
   7. If this is a minor version, create a PR into the release branch. 
-  8. IMPORTANT: On master, increment the minor version number using `manageVersions.sh`, commit to directly to master  (small change, no need for PR).
+  8. IMPORTANT: On master, increment the minor version number using `manageVersions.sh`, commit to directly to master (small change, no need for PR).
   9. Write the release notes on GitHub:
      * pushing that tag should have created a new release in the "releases" tab on github.
      * [Draft the release][draft release] from the corresponding tag on the `master` branch.
