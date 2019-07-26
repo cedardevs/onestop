@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: cedardevs/onestop-client
-  tag: 2.3-SNAPSHOT
+  tag: 2.3.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""
