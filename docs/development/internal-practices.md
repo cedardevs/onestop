@@ -11,7 +11,7 @@
   * To accomplish that, it is important we always increment the minor version after a release. 
   * It's difficult to know if the next release will be a new major version. Theoretically incrementing the major version should be done when the breaking change is introduced (e.g. dropping support for ES5). 
   * But that may not always happen when it should. For that reason it is important we review changes prior to cutting a release and determine if should increment the major version. It is important we avoid merging breaking changes to an existing release branch. 
-  * The patch version can be incremented after applying the fix. See [Hotfix Strategy](/docs/development/hotfix-strategy.md) documentation for patching. 
+  * The patch version is incremented when a patch is applied. See [Hotfix Strategy](/docs/development/hotfix-strategy.md) documentation for patching. 
   * Find more on version best practices here - https://semver.org/
 
 ### Releases: Tags and Release Branches
