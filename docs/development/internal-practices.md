@@ -15,7 +15,7 @@
   * Find more on version best practices here - https://semver.org/
 
 ### Releases: Tags and Release Branches
-When all the features in master are ready for production, it is time to cut a release. A "release" is either a new major or minor version. For a patch, see the hotfix documentation. Follow these steps to publish a release:
+When all the features in master are ready for production, it is time to cut a release. A "release" is either a new major or minor version. For a patch, see the [Hotfix Strategy](/docs/development/hotfix-strategy.md) documentation. Follow these steps to publish a release:
 
   1. Run the `manageVersions.sh` script to get the version number throughout the project.
   2. It may not be necessary to increment the version before tagging. After the last release, we bumped the minor version, as *you will* after tagging. 
