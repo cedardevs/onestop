@@ -32,8 +32,13 @@ git commit -m "test"
 
 ## Tagging a hotfix release
 
-Once a hotfix and incremented patched version number has been merged to the release branch, tag a hotfix. 
+Once a hotfix and incremented patched version number has been merged to the release branch, tag it. 
  ```
  git tag <tag>
  git push origin <tag>
  ```
+Write the release notes on GitHub:
+ * pushing that tag should have created a new release in the "releases" tab on github.
+ * [Draft the release][draft release] from the corresponding tag on the `master` branch.
+ * Have at least one team member review the release notes.
+ * Publish the [release](https://github.com/cedardevs/onestop/releases) on GitHub.
