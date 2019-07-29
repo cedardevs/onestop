@@ -230,3 +230,37 @@ class UploadTestDataTask extends DefaultTask {
 }
 
 task uploadTestData(type: UploadTestDataTask)
+
+class ResolveProperties extends DefaultTask {
+
+  @Input
+  String prop
+
+  ResolveProperties() {
+    // if no --prop=<property> is provided, default to spitting out all properties
+    prop = "properties"
+  }
+
+  @Option(option = 'prop', description = 'Set the property to be evaluated for the project.')
+  void setProp(final String prop) {
+    this.prop = prop
+  }
+
+  @TaskAction
+  void resolveProp() {
+    List<String> propPath = this.prop.tokenize('.')
+    int n = propPath.size()
+    def currentProp = project
+    propPath.eachWithIndex { p, i ->
+        if(currentProp.hasProperty(p)) {
+          currentProp = currentProp.property(p)
+        }
+        else {
+          throw new GradleException("failed to resolve property: ${this.prop}")
+        }
+    }
+    println "${this.prop} -> ${currentProp}"
+  }
+}
+
+task resolveProperties(type: ResolveProperties)

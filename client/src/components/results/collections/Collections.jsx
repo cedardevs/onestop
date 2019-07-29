@@ -25,6 +25,7 @@ export default class Collections extends React.Component {
 
   render() {
     const {results, returnedHits, totalHits, fetchMoreResults} = this.props
+    const queryText = this.props.collectionDetailFilter.queryText
 
     const showMoreButton =
       returnedHits < totalHits ? (
@@ -39,13 +40,14 @@ export default class Collections extends React.Component {
     return (
       <div style={styleCollections}>
         <Meta
-          title="Collection Search Results"
+          title={'Collection Search Results for ' + queryText}
           formatTitle={true}
           robots="noindex"
         />
         <ListView
           items={results}
-          resultsMessage={'Search Results'}
+          resultType="collections"
+          searchTerms={queryText}
           shown={returnedHits}
           total={totalHits}
           onItemSelect={this.itemSelect}

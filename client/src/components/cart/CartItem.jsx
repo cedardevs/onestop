@@ -176,9 +176,9 @@ export default class CartItem extends React.Component {
     const {itemId, item, handleExpandableToggle} = this.props
 
     const title = (
-      <h2 key={'cartItemTitle'} style={styleTitle(this.state.expanded)}>
+      <h3 key={'cartItemTitle'} style={styleTitle(this.state.expanded)}>
         {item.title}
-      </h2>
+      </h3>
     )
 
     const summaryView = (

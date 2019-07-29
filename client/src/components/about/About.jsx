@@ -86,10 +86,10 @@ export default class About extends React.Component {
               amended in 1998.
             </p>
             <p>
-              We recognize not all pages on our site are fully accessible at
-              this time, however, we aim to meet Level AA accessibility for all
-              of our features. We will continue to make improvements across our
-              entire site until all pages are fully compliant.
+              We have completed a 3rd party review that confirms the site is Level AA
+              accessibility for all of our features. We will continue to make
+              improvements across our entire site aiming for AAA compliance
+              where possible.
             </p>
             <p>
               If you experience any challenges while accessing parts of our
