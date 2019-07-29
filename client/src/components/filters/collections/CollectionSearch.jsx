@@ -143,6 +143,7 @@ class CollectionSearch extends React.Component {
 
     const searchButton = (
       <Button
+        id="searchButton"
         key="searchButton"
         icon={search}
         onClick={this.validateAndSubmit}
@@ -186,6 +187,7 @@ class CollectionSearch extends React.Component {
       <section style={searchFieldStyle}>
         <div role="search" style={styleSearchWrapper}>
           <TextSearchField
+            id="collectionSearch"
             onEnterKeyDown={this.validateAndSubmit}
             onChange={collectionUpdateQueryText}
             onClear={this.clearQueryString}
