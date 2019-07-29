@@ -333,11 +333,13 @@ export default class MapFilter extends React.Component {
 
     return (
       <div style={styleMapFilter}>
-        <label id="mapFilterInstructions" style={styleDescription}>
-          Type coordinates or draw on the map. Use the Clear button to reset the
-          location filter.
-        </label>
-        {inputColumn}
+        <fieldset>
+          <legend id="mapFilterInstructions" style={styleDescription}>
+            Type coordinates or draw on the map. Use the Clear button to reset
+            the location filter.
+          </legend>
+          {inputColumn}
+        </fieldset>
         <div style={styleSeparator} />
         <h4 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h4>
         {excludeGlobalCheckbox}
