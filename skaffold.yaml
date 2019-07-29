@@ -18,14 +18,14 @@ build:
         VCS_REF: local
         VERSION: 2.3.0
         WAR_NAME: onestop-search.war
-#  - image: cedardevs/onestop-client
-#    context: ./client
-#    docker:
-#      buildArgs:
-#        DATE: now
-#        VCS_REF: local
-#        VERSION: 2.3.0
-#        TAR_NAME: onestop-client.tar.gz
+  - image: cedardevs/onestop-client
+    context: ./client
+    docker:
+      buildArgs:
+        DATE: now
+        VCS_REF: local
+        VERSION: 2.3.0
+        TAR_NAME: onestop-client.tar.gz
 
 deploy:
   helm:
@@ -86,17 +86,17 @@ deploy:
     ###############################################################################
     # CLIENT
     ###############################################################################
-#    - name: client
-#      chartPath: helm/client
-#      values:
-#        # skaffold may not build/deploy w/the latest if this is not set here
-#        image: cedardevs/onestop-client
-#      imageStrategy:
-#        helm: {}
-#      setValues:
-#        # allows api-search to be exposed outside the cluster in dev
-#        prefixPath: onestop
-#        apiSearch.endpoint: api-search:8080/onestop-search
+    - name: client
+      chartPath: helm/client
+      values:
+        # skaffold may not build/deploy w/the latest if this is not set here
+        image: cedardevs/onestop-client
+      imageStrategy:
+        helm: {}
+      setValues:
+        # allows api-search to be exposed outside the cluster in dev
+        prefixPath: onestop
+        apiSearch.endpoint: api-search:8080/onestop-search
 
     ###############################################################################
     # ELASTICSEARCH
