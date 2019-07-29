@@ -168,7 +168,7 @@ class ListResult extends React.Component {
     })
     return (
       <div key={'ListResult::serviceLinks'}>
-        <h3 style={styleSectionHeader}>Service links</h3>
+        <h3 style={styleSectionHeader}>Service Links</h3>
         {services}
       </div>
     )
