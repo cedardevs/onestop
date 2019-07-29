@@ -161,9 +161,15 @@ class Header extends React.Component {
     ) : null
 
     const welcomeUser = userEmail ? (
-      <div style={styleUserWelcome} key="emailDisplay">
-        Logged in as {userEmail}
-      </div>
+      <FlexRow
+        style={styleUserWelcome}
+        key="welcomeUser"
+        items={[
+          <div style={styleUserWelcome} key="emailDisplay">
+            Logged in as {userEmail}
+          </div>,
+        ]}
+      />
     ) : null
 
     const menuContent = (
@@ -220,11 +226,7 @@ class Header extends React.Component {
       <Route path="/">
         <div style={styleWrapper}>
           <div style={styleHeader}>
-            <FlexRow
-              style={styleUserWelcome}
-              key="welcomeUser"
-              items={[ welcomeUser ]}
-            />
+            {welcomeUser}
             <FlexRow
               style={styleHeaderFlexRow}
               items={[

@@ -13,7 +13,6 @@ import {
   collectionNewSearchResultsReceived,
   collectionMoreResultsReceived,
   collectionSearchError,
-  collectionUpdateQueryText,
 } from './CollectionSearchStateActions'
 
 const getFilterFromState = state => {

@@ -110,7 +110,7 @@ export default class GranuleList extends React.Component {
           <GranuleListLegend usedProtocols={usedProtocols} />
           <ListView
             items={results}
-            resultsMessage={'Collection Files'}
+            resultType="collection files"
             shown={returnedHits}
             total={totalHits}
             onItemSelect={selectCollection}

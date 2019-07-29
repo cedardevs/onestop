@@ -80,7 +80,9 @@ const styleSearchButton = {fontSize: '1em', display: 'inline'}
 class CollectionSearch extends React.Component {
   constructor(props) {
     super(props)
+    const {queryString} = this.props
     this.state = {
+      queryString: queryString,
       warning: '',
       hoveringWarningClose: false,
       focusingWarningClose: false,
@@ -90,6 +92,12 @@ class CollectionSearch extends React.Component {
   handleMouseOverWarningClose = event => {
     this.setState({
       hoveringWarningClose: true,
+    })
+  }
+
+  handleInputChange = value => {
+    this.setState({
+      queryString: value,
     })
   }
 
@@ -112,12 +120,11 @@ class CollectionSearch extends React.Component {
   }
 
   clearQueryString = () => {
-    this.setState({warning: ''})
-    this.props.collectionUpdateQueryText('')
+    this.setState({warning: '', queryString: ''})
   }
 
   validateAndSubmit = () => {
-    let trimmedQuery = _.trim(this.props.queryString)
+    let trimmedQuery = _.trim(this.state.queryString)
     if (!trimmedQuery) {
       this.setState({warning: 'You must enter a search term.'})
     }
@@ -136,8 +143,8 @@ class CollectionSearch extends React.Component {
   }
 
   render() {
-    const {home, collectionUpdateQueryText, queryString} = this.props
-    const {warning, focusingWarningClose} = this.state
+    const {home} = this.props
+    const {warning, focusingWarningClose, queryString} = this.state
 
     const instructionalCopy = home ? 'Search NOAA Data' : 'New NOAA Data Search'
 
@@ -189,7 +196,7 @@ class CollectionSearch extends React.Component {
           <TextSearchField
             id="collectionSearch"
             onEnterKeyDown={this.validateAndSubmit}
-            onChange={collectionUpdateQueryText}
+            onChange={this.handleInputChange}
             onClear={this.clearQueryString}
             value={queryString}
             warningPopup={warningPopup}

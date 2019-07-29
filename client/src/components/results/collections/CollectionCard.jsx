@@ -247,7 +247,7 @@ export default class CollectionCard extends React.Component {
           >
             {this.renderThumbnailMap()}
             <div style={styleArchMerged}>
-              <h2 style={styleTitle}>{title}</h2>
+              <h3 style={styleTitle}>{title}</h3>
             </div>
           </button>
         </div>

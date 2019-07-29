@@ -15,7 +15,7 @@ const styleListView = {
 const styleTopRow = {
   justifyContent: 'space-between',
   alignItems: 'center',
-  margin: '0 1.618em 0.618em 0',
+  margin: '0 1.618em 0 0',
 }
 
 const styleListInfo = {
@@ -118,8 +118,10 @@ export default class ListView extends React.Component {
   render() {
     const {
       items,
+      resultType,
       resultsMessage,
       resultsMessageEmpty,
+      searchTerms,
       shown,
       total,
       onItemSelect,
@@ -129,18 +131,20 @@ export default class ListView extends React.Component {
       customControl,
     } = this.props
 
-    let message = `${resultsMessage
-      ? resultsMessage
-      : 'Results'} (showing ${shown} of ${total})`
+    let countMessage = `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} ${resultType
+      ? resultType
+      : 'results'} ${searchTerms ? 'for "' + searchTerms + '"' : ''}`
+
+    let message = `${resultsMessage ? resultsMessage : countMessage}`
 
     if (total === 0) {
       message = resultsMessageEmpty ? resultsMessageEmpty : 'No Results'
     }
 
     const listInfo = (
-      <h1 style={styleListInfo} key="list-view-info">
+      <h2 style={styleListInfo} key="list-view-info">
         {message}
-      </h1>
+      </h2>
     )
 
     const toggleAvailable = ListItemComponent && GridItemComponent
