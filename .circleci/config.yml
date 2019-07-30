@@ -367,6 +367,8 @@ workflows:
             - meta-build
       - meta-publish:
           filters:  # using regex filters requires the entire branch to match
+            tags:
+              only: /.*/
             branches:
               only:  # only branches matching the below regex filters will run
                 - master
@@ -385,6 +387,8 @@ workflows:
             - search-build
       - search-publish:
           filters:  # using regex filters requires the entire branch to match
+            tags:
+              only: /.*/
             branches:
               only:  # only branches matching the below regex filters will run
                 - master
@@ -400,6 +404,8 @@ workflows:
             - client-build
       - client-publish:
           filters:  # using regex filters requires the entire branch to match
+            tags:
+              only: /.*/
             branches:
               only:  # only branches matching the below regex filters will run
                 - master

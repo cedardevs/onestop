@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: nginx
-  tag: stable
+  tag: 2.3.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""
