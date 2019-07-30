@@ -38,14 +38,6 @@ export const collectionSearchError = errors => ({
   errors,
 })
 
-export const COLLECTION_UPDATE_QUERY_TEXT = 'COLLECTION_UPDATE_QUERY_TEXT'
-export const collectionUpdateQueryText = queryText => {
-  return {
-    type: COLLECTION_UPDATE_QUERY_TEXT,
-    queryText: queryText,
-  }
-}
-
 export const COLLECTION_UPDATE_GEOMETRY = 'COLLECTION_UPDATE_GEOMETRY'
 export const collectionUpdateGeometry = geoJSON => {
   return {

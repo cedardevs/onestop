@@ -4,7 +4,6 @@ import {
   initialState,
 } from '../../../src/reducers/search/collectionFilter'
 import {
-  collectionUpdateQueryText,
   collectionUpdateDateRange,
   collectionRemoveDateRange,
   collectionUpdateGeometry,
@@ -279,20 +278,6 @@ describe('The collection filter reducer', function(){
       },
     }
     const paramActionTestCases = [
-      {
-        name: 'sets query text',
-        initialState: initialState,
-        function: collectionUpdateQueryText,
-        params: [ 'foobar' ],
-        expectedChanges: {queryText: 'foobar'},
-      },
-      {
-        name: 'resets query text',
-        initialState: nonInitialState,
-        function: collectionUpdateQueryText,
-        params: [ 'foobar' ],
-        expectedChanges: {queryText: 'foobar'},
-      },
       {
         name: 'sets start date',
         initialState: initialState,
