@@ -150,14 +150,26 @@ class ListResult extends React.Component {
   ) {
     return (
       <div key={'ListResult::timeAndSpace'}>
-        <h4 style={styleSectionHeader}>Time Period:</h4>
+        <h3 style={styleSectionHeader}>Time Period:</h3>
         <div style={styleSectionContent}>
           {util.buildTimePeriodString(beginDate, beginYear, endDate, endYear)}
         </div>
-        <h4 style={styleSectionHeader}>Bounding Coordinates:</h4>
+        <h3 style={styleSectionHeader}>Bounding Coordinates:</h3>
         <div style={styleSectionContent}>
           {util.buildCoordinatesString(spatialBounding)}
         </div>
+      </div>
+    )
+  }
+
+  renderServiceLinks = serviceLinks => {
+    const services = serviceLinks.map(service => {
+      return this.renderLinks(service.links)
+    })
+    return (
+      <div key={'ListResult::serviceLinks'}>
+        <h3 style={styleSectionHeader}>Service Links</h3>
+        {services}
       </div>
     )
   }
@@ -249,12 +261,7 @@ class ListResult extends React.Component {
       .value()
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges
 
-    return (
-      <div key={'ListResult::accessLinks'}>
-        <h4 style={styleSectionHeader}>Data Access Links:</h4>
-        <ul style={util.styleProtocolList}>{badgesElement}</ul>
-      </div>
-    )
+    return badgesElement
   }
 
   handleFocus = event => {
@@ -317,7 +324,7 @@ class ListResult extends React.Component {
     }
 
     const title = (
-      <h3
+      <h2
         id={`ListResult::title::${itemId}`}
         key={`ListResult::title::${itemId}`}
         tabIndex={-1}
@@ -329,7 +336,7 @@ class ListResult extends React.Component {
         style={styleOverallHeadingApplied}
       >
         {item.title}
-      </h3>
+      </h2>
     )
 
     const granuleDownloadable = granuleDownloadableLinks([ item ]).length > 0
@@ -347,7 +354,15 @@ class ListResult extends React.Component {
 
     const rightItems = []
     if (showLinks) {
-      rightItems.push(this.renderLinks(item.links))
+      rightItems.push(
+        <div key={'ListResult::accessLinks'}>
+          <h3 style={styleSectionHeader}>Data Access Links:</h3>
+          <ul style={util.styleProtocolList}>{this.renderLinks(item.links)}</ul>
+        </div>
+      )
+    }
+    if (showLinks && item.serviceLinks) {
+      rightItems.push(this.renderServiceLinks(item.serviceLinks))
     }
     if (showTimeAndSpace) {
       rightItems.push(
@@ -360,7 +375,6 @@ class ListResult extends React.Component {
         )
       )
     }
-
     const left = (
       <FlexColumn
         key={'ListResult::leftColumn'}

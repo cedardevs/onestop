@@ -81,6 +81,14 @@ The table below shows all possible fields for a document returned by the OneStop
 | **links**.linkUrl                                   |      N     	|      -      	|        	|
 | **links**.linkDescription                           |      N     	|      -      	|        	|
 | **links**.linkFunction                              |      N     	|      -      	|        	|
+| **serviceLinks**.title                              |      N     	|      -      	|        	|
+| **serviceLinks**.alternateTitle                     |      N     	|      -      	|        	|
+| **serviceLinks**.description                        |      N     	|      -      	|        	|
+| **serviceLinks**.links.linkName                     |      N     	|      -      	|        	|
+| **serviceLinks**.links.linkProtocol                 |      N     	|      -      	|        	|
+| **serviceLinks**.links.linkUrl                      |      N     	|      -      	|        	|
+| **serviceLinks**.links.linkDescription              |      N     	|      -      	|        	|
+| **serviceLinks**.links.linkFunction                 |      N     	|      -      	|        	|
 | individualNames<sup>C</sup>                     |      Y     	|      N      	|        	|
 | organizationNames<sup>C</sup>                   |      Y     	|      N      	|        	|
 | **thumbnail**                                       |      N     	|      -      	|        	|
