@@ -100,6 +100,9 @@
             }
           }
         },
+        "dataFormatNames": {
+          "type": "keyword"
+        },
         "links": {
           "type": "nested",
           "properties": {
@@ -129,6 +132,9 @@
               "doc_values": false
             }
           }
+        },
+        "linkProtocols": {
+          "type": "keyword",
         },
         "thumbnail": {
           "type": "keyword",

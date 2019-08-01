@@ -276,6 +276,9 @@
             }
           }
         },
+        "dataFormatNames": {
+          "type": "keyword"
+        },
         "links": {
           "type": "nested",
           "properties": {
@@ -305,6 +308,9 @@
               "index": false
             }
           }
+        },
+        "linkProtocols": {
+          "type": "keyword",
         },
         "contacts": {
           "type": "nested",

@@ -116,6 +116,13 @@ class InventoryManagerToOneStopUtil {
     discoveryMap.type = discoveryMap?.parentIdentifier ?
         ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
 
+    // create data format name list for this record
+    discoveryMap.dataFormatNames = createDataFormatNames(discovery)
+
+    // create protocol list (from links of this record)
+    // https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
+    discoveryMap.linkProtocols = createLinkProtocols(discovery)
+
     // create GCMD keywords
     Map gcmdKeywords = createGcmdKeyword(discovery)
     discoveryMap.putAll(gcmdKeywords)
@@ -149,7 +156,22 @@ class InventoryManagerToOneStopUtil {
       ]
     }
   }
-  //Create GCMD keyword lists
+
+  // create data format names
+  static Set<String> createDataFormatNames(Discovery discovery) {
+    List<DataFormat> dataFormats = discovery.dataFormats
+    Set<String> dataFormatNames = dataFormats*.name.toSet()
+    return dataFormatNames
+  }
+
+  // create link protocols
+  static Set<String> createLinkProtocols(Discovery discovery) {
+    List<Link> links = discovery.links
+    Set<String> uniqueProtocols = links*.linkProtocol.toSet()
+    return uniqueProtocols
+  }
+
+  // create GCMD keyword lists
   static Map createGcmdKeyword(Discovery discovery) {
     def gcmdScience = [] as Set
     def gcmdScienceServices = [] as Set
