@@ -78,7 +78,12 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   const n = textToNumber(north)
 
   // Invalid coordinates checks
-  if (!w && w !== 0 || !s && s !== 0 || !e && e !== 0 || !n && n !== 0 ) {
+  if (
+    (!w && w !== 0) ||
+    (!s && s !== 0) ||
+    (!e && e !== 0) ||
+    (!n && n !== 0)
+  ) {
     return null
   }
 

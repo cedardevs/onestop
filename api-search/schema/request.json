@@ -35,6 +35,12 @@
           },
           {
             "$ref": "components/excludeGlobalFilter.json"
+          },
+          {
+            "$ref": "components/dataFormatFilter.json"
+          },
+          {
+            "$ref": "components/protocolFilter.json"
           }
         ]
       }
