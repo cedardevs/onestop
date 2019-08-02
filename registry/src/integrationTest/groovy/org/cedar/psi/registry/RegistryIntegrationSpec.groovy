@@ -67,6 +67,9 @@ class RegistryIntegrationSpec extends Specification {
   @Autowired
   RestApp schemaRegistryRestApp
 
+  @Autowired
+  Properties kafkaProperties
+
   RestTemplate restTemplate
   String baseUrl
 
