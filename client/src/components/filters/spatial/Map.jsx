@@ -91,7 +91,7 @@ class Map extends React.Component {
       flex: showMap ? '1' : '0',
       width: showMap ? '100%' : '0%',
       opacity: showMap ? '1' : '0',
-      filterType: filterType
+      filterType: filterType,
     }
   }
 
