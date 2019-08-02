@@ -18,6 +18,17 @@ import static org.cedar.schemas.avro.psi.ValidDescriptor.*
 @Slf4j
 class InventoryManagerToOneStopUtil {
 
+  enum ProtocolCategory {
+    LINKS("Links"), SERVICES("Services")
+    ProtocolCategory(String value) {
+      this.value = value
+    }
+    private final String value
+    String toString() {
+      return this.value
+    }
+  }
+
   static Map validateMessage(String id, ParsedRecord messageMap) {
     def discovery = messageMap?.discovery
     def analysis = messageMap?.analysis
@@ -116,13 +127,6 @@ class InventoryManagerToOneStopUtil {
     discoveryMap.type = discoveryMap?.parentIdentifier ?
         ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
 
-    // create data format name list for this record
-    discoveryMap.dataFormatNames = createDataFormatNames(discovery)
-
-    // create protocol list (from links of this record)
-    // https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
-    discoveryMap.linkProtocols = createLinkProtocols(discovery)
-
     // create GCMD keywords
     Map gcmdKeywords = createGcmdKeyword(discovery)
     discoveryMap.putAll(gcmdKeywords)
@@ -138,37 +142,99 @@ class InventoryManagerToOneStopUtil {
     // drop fields
     discoveryMap.remove("responsibleParties")
 
-    if(discoveryMap?.services){
-      discoveryMap.serviceLinks = formatServices(discoveryMap.remove('services') as List) 
-    }else{
-      discoveryMap.serviceLinks = []
-    }
+    List<Service> services = discovery.services
+    discoveryMap.remove('services')
+    discoveryMap.serviceLinks = createServices(services)
+
+    // create data format name list for this record
+    discoveryMap.dataFormat = createDataFormat(discovery)
+
+    // create protocol list (from links of this record)
+    // https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
+    discoveryMap.linkProtocol = createLinkProtocol(discovery)
+
     discoveryMap.services = ''
     return discoveryMap
   }
-  static List formatServices(List services){
-    services.collect{
-      [
-          title: it?.title,
-          alternateTitle: it?.alternateTitle,
-          description: it?.description,
-          links: it?.operations.sort()
-      ]
+
+  static List<Link> getLinksForService(Service service) {
+    List<Link> operations = service?.operations
+    if(operations) {
+      return operations.sort()
     }
+    return []
+  }
+
+  static List<Map> createServices(List<Service> services) {
+    if(services) {
+      return services.collect { service ->
+        [
+            title: service.title,
+            alternateTitle: service.alternateTitle,
+            description: service.description,
+            links: AvroUtils.avroCollectionToList(getLinksForService(service), true).sort()
+        ]
+      }
+    }
+    return []
   }
 
   // create data format names
-  static Set<String> createDataFormatNames(Discovery discovery) {
+  static Set<String> createDataFormat(Discovery discovery) {
+    Set<String> uniqueDataFormatKeywords = []
+    Set<DataFormat> uniqueDataFormats = []
+
     List<DataFormat> dataFormats = discovery.dataFormats
-    Set<String> dataFormatNames = dataFormats*.name.toSet()
-    return dataFormatNames
+    dataFormats.each { dataFormat ->
+
+      // normalize (clean whitespace/trim/uppercase/nullify empty string) contents of DataFormat to check for uniqueness
+      DataFormat ndf = normalizeHierarchicalDataFormat(dataFormat)
+
+      // if we have NOT already added a data format with the same normalized name and version, then add it
+      DataFormat newDataFormat = uniqueDataFormats.find { udf ->
+        !(ndf.name == udf.name && ndf.version == udf.version)
+      }
+      if (newDataFormat) {
+        uniqueDataFormats.add(newDataFormat)
+      }
+    }
+
+    // of our unique, normalized data formats, tokenize and add to the data format set
+    uniqueDataFormats.each { uniqueDataFormat ->
+      if(uniqueDataFormat.name && !uniqueDataFormat.version) {
+        uniqueDataFormatKeywords.addAll(tokenizeHierarchyKeyword(uniqueDataFormat.name))
+      }
+      if(uniqueDataFormat.name && uniqueDataFormat.version) {
+        uniqueDataFormatKeywords.addAll(tokenizeHierarchyKeyword(uniqueDataFormat.name + " > " + uniqueDataFormat.version))
+      }
+    }
+    return uniqueDataFormatKeywords
   }
 
   // create link protocols
-  static Set<String> createLinkProtocols(Discovery discovery) {
+  static Set<String> createLinkProtocol(Discovery discovery) {
+    // initialize set for unique protocols in both links and serviceLinks
+    Set<String> linkProtocol = []
+
+    // add links to linkProtocol set
     List<Link> links = discovery.links
-    Set<String> uniqueProtocols = links*.linkProtocol.toSet()
-    return uniqueProtocols
+    links.each { link ->
+      def linkProtocolKeyword = normalizeHierarchicalLinkProtocol(ProtocolCategory.LINKS, link)
+      if(linkProtocolKeyword) {
+        linkProtocol.addAll(tokenizeHierarchyKeyword(linkProtocolKeyword))
+      }
+    }
+
+    // add service links to linkProtocol set
+    List<Link> serviceLinks = discovery.services.collect { getLinksForService(it) }.flatten()
+    serviceLinks.each { serviceLink ->
+      def serviceLinkProtocolKeyword = normalizeHierarchicalLinkProtocol(ProtocolCategory.SERVICES, serviceLink)
+      if(serviceLinkProtocolKeyword) {
+        linkProtocol.addAll(tokenizeHierarchyKeyword(serviceLinkProtocolKeyword))
+      }
+    }
+
+    return linkProtocol
   }
 
   // create GCMD keyword lists
@@ -384,8 +450,35 @@ class InventoryManagerToOneStopUtil {
   }
 
   // helper functions
+  static DataFormat normalizeHierarchicalDataFormat(DataFormat dataFormat) {
+
+    String name = null
+    String version = null
+    if (dataFormat.name) {
+      name = cleanInternalKeywordWhitespace(dataFormat.name).trim().toUpperCase()
+      if (dataFormat.version) {
+        version = cleanInternalKeywordWhitespace(dataFormat.name).trim().toUpperCase()
+      }
+    }
+
+    name = name?.isEmpty() ? null : name
+    version = version?.isEmpty() ? null : name
+
+    return new DataFormat(name, version)
+  }
+
+  static String normalizeHierarchicalLinkProtocol(ProtocolCategory protocolCategory, Link link) {
+    String protocol = link?.linkProtocol
+    if(protocol) {
+      String cleanProtocolCategory = protocolCategory.toString().trim()
+      String cleanProtocol = cleanInternalKeywordWhitespace(protocol).trim().toUpperCase()
+      return cleanProtocolCategory + " > " + cleanProtocol
+    }
+    return null
+  }
+
   static String normalizeHierarchyKeyword(String text) {
-    def cleanText = cleanInternalGCMDKeywordWhitespace(text)
+    def cleanText = cleanInternalKeywordWhitespace(text)
     return WordUtils.capitalizeFully(cleanText, capitalizingDelimiters)
         .replace('Earth Science > ', '').replace('Earth Science Services > ', '')
   }
@@ -394,7 +487,7 @@ class InventoryManagerToOneStopUtil {
     // These are in the format 'Short Name > Long Name', where 'Short Name' is likely an acronym. This normalizing allows
     // for title casing the 'Long Name' if and only if it's given in all caps or all lowercase (so we don't title case an
     // acronym here)
-    def cleanText = cleanInternalGCMDKeywordWhitespace(text)
+    def cleanText = cleanInternalKeywordWhitespace(text)
     def elements = Arrays.asList(cleanText.split(' > '))
     String longName = elements.last()
     if (longName == longName.toUpperCase() || longName == longName.toLowerCase()) {
@@ -406,7 +499,7 @@ class InventoryManagerToOneStopUtil {
 
   static final char[] capitalizingDelimiters = [' ', '/', '.', '(', '-', '_'].collect({ it as char })
 
-  static String cleanInternalGCMDKeywordWhitespace(String text) {
+  static String cleanInternalKeywordWhitespace(String text) {
     String cleanString = text.replaceAll("\\s+", " ")
     return cleanString
   }

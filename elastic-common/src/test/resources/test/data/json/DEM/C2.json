@@ -103,6 +103,9 @@
       "version": "1"
     }
   ],
+  "dataFormat": [
+    "ESRI ARC ASCII"
+  ],
   "links": [
     {
       "linkFunction": "download",
@@ -132,6 +135,9 @@
       "linkName": "Map Interface",
       "linkProtocol": null
     }
+  ],
+  "linkProtocol": [
+
   ],
   "individualNames": [
     "",

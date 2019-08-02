@@ -102,6 +102,9 @@
       "version": null
     }
   ],
+  "dataFormat": [
+    "VARIES"
+  ],
   "links": [
     {
       "linkFunction": "search",
@@ -117,6 +120,9 @@
       "linkName": "Grid Extract Tool",
       "linkProtocol": "http"
     }
+  ],
+  "linkProtocol": [
+    "http"
   ],
   "individualNames": [
     "",

@@ -369,6 +369,20 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def aggsResult = requestParser.createGCMDAggregations()
     def expectedAggs = [
+        dataFormats   : [
+            terms         : [
+                field: 'dataFormat',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        protocols     : [
+            terms         : [
+                field: 'linkProtocol',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
         science       : [
             terms: [
                 field: 'gcmdScience',
@@ -449,6 +463,20 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def aggsResult = requestParser.createGCMDAggregations()
     def expectedAggs = [
+        dataFormats   : [
+          terms         : [
+            field: 'dataFormat',
+            size : Integer.MAX_VALUE,
+            order: ['_term': 'asc']
+          ]
+        ],
+        protocols     : [
+          terms         : [
+            field: 'linkProtocol',
+            size : Integer.MAX_VALUE,
+            order: ['_term': 'asc']
+          ]
+        ],
         science       : [
             terms       : [
                 field: 'gcmdScience',

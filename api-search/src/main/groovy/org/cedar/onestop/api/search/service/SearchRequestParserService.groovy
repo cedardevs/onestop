@@ -11,8 +11,8 @@ class SearchRequestParserService {
   private SearchConfig config
 
   public static final Map<String, String> facetNameMappings = [
-      'dataFormats'         : 'dataFormatNames',
-      'protocols'           : 'linkProtocols',
+      'dataFormats'         : 'dataFormat',
+      'protocols'           : 'linkProtocol',
       'science'             : 'gcmdScience',
       'services'            : 'gcmdScienceServices',
       'locations'           : 'gcmdLocations',
