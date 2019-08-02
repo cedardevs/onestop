@@ -11,6 +11,7 @@ import {withRouter} from 'react-router'
 const mapStateToProps = state => {
   const {geoJSON} = state.search.collectionFilter
   return {
+    filterType: 'collectionFilter',
     geoJsonSelection: geoJSON,
     showMap: state.layout.showMap,
   }
