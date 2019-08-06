@@ -124,6 +124,9 @@
   "linkProtocol": [
     "http"
   ],
+  "serviceLinkProtocol": [
+
+  ],
   "individualNames": [
     "",
     "Barry W. Eakins",

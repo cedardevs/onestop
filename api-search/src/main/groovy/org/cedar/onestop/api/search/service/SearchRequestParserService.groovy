@@ -12,7 +12,8 @@ class SearchRequestParserService {
 
   public static final Map<String, String> facetNameMappings = [
       'dataFormats'         : 'dataFormat',
-      'protocols'           : 'linkProtocol',
+      'linkProtocols'       : 'linkProtocol',
+      'serviceLinkProtocols': 'serviceLinkProtocol',
       'science'             : 'gcmdScience',
       'services'            : 'gcmdScienceServices',
       'locations'           : 'gcmdLocations',
@@ -65,7 +66,7 @@ class SearchRequestParserService {
     ]
   }
 
-  Map createGCMDAggregations() {
+  Map createFacetAggregations() {
     def aggregations = [:]
     facetNameMappings.each { name, field ->
       def agg = [

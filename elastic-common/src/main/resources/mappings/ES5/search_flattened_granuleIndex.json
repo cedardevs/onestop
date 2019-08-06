@@ -141,6 +141,10 @@
           "type": "keyword",
           "doc_values": true
         },
+        "serviceLinkProtocol": {
+          "type": "keyword",
+          "doc_values": true
+        },
         "individualNames": {
           "type": "text"
         },

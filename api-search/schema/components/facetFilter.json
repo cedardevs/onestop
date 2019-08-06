@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Facet Filter",
-  "description": "Filters results based on given terms (data formats, protocols, GCMD keywords) where returned results MUST have the specified term values. Multiple facetFilter objects will be combined with logical AND; multiple values in a single facetFilter object will be combined with the logical OR.",
+  "description": "Filters results based on given terms (data formats, link protocols, service link protocols, GCMD keywords) where returned results MUST have the specified term values. Multiple facetFilter objects will be combined with logical AND; multiple values in a single facetFilter object will be combined with the logical OR.",
   "type": "object",
   "properties": {
     "type": {
@@ -11,14 +11,14 @@
       ]
     },
     "name": {
-      "description": "One of the following: 'dataFormats', 'protocols', or GCMD keyword categories ('science', 'services', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'horizontalResolution', 'verticalResolution', 'temporalResolution').",
-      "enum": ["dataFormats", "protocols", "science", "services", "locations", "instruments", "platforms", "projects", "dataCenters", "horizontalResolution", "verticalResolution", "temporalResolution"]
+      "description": "One of the following: 'dataFormats', 'linkProtocols', 'serviceLinkProtocols', or GCMD keyword categories ('science', 'services', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'horizontalResolution', 'verticalResolution', 'temporalResolution').",
+      "enum": ["dataFormats", "linkProtocols", "serviceLinkProtocols", "science", "services", "locations", "instruments", "platforms", "projects", "dataCenters", "horizontalResolution", "verticalResolution", "temporalResolution"]
     },
     "values": {
       "description": "List of terms to match",
       "type": "array",
       "items": {
-        "description": "Exact match data format(s) (e.g. - \"NETCDF\"), protocol(s) (e.g. - \"ftp\"), or GCMD keyword(s) (e.g. - \"Atmosphere > Atmospheric Temperature > Surface Temperature\")",
+        "description": "Exact match data format(s) (e.g. - \"NETCDF\"), link or service link protocol(s) (e.g. - \"ftp\"), or GCMD keyword(s) (e.g. - \"Atmosphere > Atmospheric Temperature > Surface Temperature\")",
         "type": "string"
       }
     }

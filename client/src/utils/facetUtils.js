@@ -51,7 +51,12 @@ const categoryName = category => {
 }
 
 const determineIfHierarchy = category => {
-  return category === 'science' || category === 'services'
+  return (
+    category === 'science' ||
+    category === 'services' ||
+    category === 'protocols' ||
+    category === 'dataFormats'
+  )
 }
 
 const facets = (category, terms, selectedFacets) => {
@@ -69,7 +74,9 @@ const facets = (category, terms, selectedFacets) => {
   })
 }
 
-export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
+export const buildFilterHierarchyMap = (facetMap, selectedFacets) => {
+  console.log('facetMap:', JSON.stringify(facetMap, null, 2))
+
   return _.map(facetMap, (terms, category) => {
     if (!_.isEmpty(terms) && category !== 'locations') {
       // Don't load categories that have no results & don't load Locations category

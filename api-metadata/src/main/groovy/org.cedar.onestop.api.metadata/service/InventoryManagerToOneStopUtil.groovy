@@ -18,17 +18,6 @@ import static org.cedar.schemas.avro.psi.ValidDescriptor.*
 @Slf4j
 class InventoryManagerToOneStopUtil {
 
-  enum ProtocolCategory {
-    LINKS("Links"), SERVICES("Services")
-    ProtocolCategory(String value) {
-      this.value = value
-    }
-    private final String value
-    String toString() {
-      return this.value
-    }
-  }
-
   static Map validateMessage(String id, ParsedRecord messageMap) {
     def discovery = messageMap?.discovery
     def analysis = messageMap?.analysis
@@ -149,9 +138,10 @@ class InventoryManagerToOneStopUtil {
     // create data format name list for this record
     discoveryMap.dataFormat = createDataFormat(discovery)
 
-    // create protocol list (from links of this record)
+    // create protocol list (from links and service links of this record)
     // https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
     discoveryMap.linkProtocol = createLinkProtocol(discovery)
+    discoveryMap.serviceLinkProtocol = createServiceLinkProtocol(discovery)
 
     discoveryMap.services = ''
     return discoveryMap
@@ -181,60 +171,50 @@ class InventoryManagerToOneStopUtil {
 
   // create data format names
   static Set<String> createDataFormat(Discovery discovery) {
-    Set<String> uniqueDataFormatKeywords = []
-    Set<DataFormat> uniqueDataFormats = []
+    Set<String> dataFormatKeywords = []
 
     List<DataFormat> dataFormats = discovery.dataFormats
     dataFormats.each { dataFormat ->
 
       // normalize (clean whitespace/trim/uppercase/nullify empty string) contents of DataFormat to check for uniqueness
-      DataFormat ndf = normalizeHierarchicalDataFormat(dataFormat)
-
-      // if we have NOT already added a data format with the same normalized name and version, then add it
-      DataFormat newDataFormat = uniqueDataFormats.find { udf ->
-        !(ndf.name == udf.name && ndf.version == udf.version)
-      }
-      if (newDataFormat) {
-        uniqueDataFormats.add(newDataFormat)
+      String dataFormatKeyword = normalizeHierarchicalDataFormat(dataFormat)
+      if(dataFormatKeyword) {
+        // adding to set ensures unique entries (with the help of normalization)
+        dataFormatKeywords.addAll(tokenizeHierarchyKeyword(dataFormatKeyword))
       }
     }
-
-    // of our unique, normalized data formats, tokenize and add to the data format set
-    uniqueDataFormats.each { uniqueDataFormat ->
-      if(uniqueDataFormat.name && !uniqueDataFormat.version) {
-        uniqueDataFormatKeywords.addAll(tokenizeHierarchyKeyword(uniqueDataFormat.name))
-      }
-      if(uniqueDataFormat.name && uniqueDataFormat.version) {
-        uniqueDataFormatKeywords.addAll(tokenizeHierarchyKeyword(uniqueDataFormat.name + " > " + uniqueDataFormat.version))
-      }
-    }
-    return uniqueDataFormatKeywords
+    return dataFormatKeywords
   }
 
   // create link protocols
   static Set<String> createLinkProtocol(Discovery discovery) {
-    // initialize set for unique protocols in both links and serviceLinks
+    // initialize set for unique protocols in links
     Set<String> linkProtocol = []
 
     // add links to linkProtocol set
     List<Link> links = discovery.links
     links.each { link ->
-      def linkProtocolKeyword = normalizeHierarchicalLinkProtocol(ProtocolCategory.LINKS, link)
+      def linkProtocolKeyword = normalizeLinkProtocol(link)
       if(linkProtocolKeyword) {
         linkProtocol.addAll(tokenizeHierarchyKeyword(linkProtocolKeyword))
       }
     }
+    return linkProtocol
+  }
 
-    // add service links to linkProtocol set
+  static Set<String> createServiceLinkProtocol(Discovery discovery) {
+    // initialize set for unique protocols in service links
+    Set<String> serviceLinkProtocol = []
+
+    // add service links to serviceLinkProtocol set
     List<Link> serviceLinks = discovery.services.collect { getLinksForService(it) }.flatten()
     serviceLinks.each { serviceLink ->
-      def serviceLinkProtocolKeyword = normalizeHierarchicalLinkProtocol(ProtocolCategory.SERVICES, serviceLink)
+      def serviceLinkProtocolKeyword = normalizeLinkProtocol(serviceLink)
       if(serviceLinkProtocolKeyword) {
-        linkProtocol.addAll(tokenizeHierarchyKeyword(serviceLinkProtocolKeyword))
+        serviceLinkProtocol.addAll(tokenizeHierarchyKeyword(serviceLinkProtocolKeyword))
       }
     }
-
-    return linkProtocol
+    return serviceLinkProtocol
   }
 
   // create GCMD keyword lists
@@ -450,29 +430,32 @@ class InventoryManagerToOneStopUtil {
   }
 
   // helper functions
-  static DataFormat normalizeHierarchicalDataFormat(DataFormat dataFormat) {
+  static String normalizeHierarchicalDataFormat(DataFormat dataFormat) {
 
     String name = null
     String version = null
     if (dataFormat.name) {
       name = cleanInternalKeywordWhitespace(dataFormat.name).trim().toUpperCase()
       if (dataFormat.version) {
-        version = cleanInternalKeywordWhitespace(dataFormat.name).trim().toUpperCase()
+        version = cleanInternalKeywordWhitespace(dataFormat.version).trim().toUpperCase()
       }
     }
 
     name = name?.isEmpty() ? null : name
-    version = version?.isEmpty() ? null : name
+    version = version?.isEmpty() ? null : version
 
-    return new DataFormat(name, version)
+    String cleanDataFormat = name
+    if (version) {
+      cleanDataFormat += " > " + version
+    }
+    return cleanDataFormat
   }
 
-  static String normalizeHierarchicalLinkProtocol(ProtocolCategory protocolCategory, Link link) {
+  static String normalizeLinkProtocol(Link link) {
     String protocol = link?.linkProtocol
     if(protocol) {
-      String cleanProtocolCategory = protocolCategory.toString().trim()
       String cleanProtocol = cleanInternalKeywordWhitespace(protocol).trim().toUpperCase()
-      return cleanProtocolCategory + " > " + cleanProtocol
+      return cleanProtocol
     }
     return null
   }

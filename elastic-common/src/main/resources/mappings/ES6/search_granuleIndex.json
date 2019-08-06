@@ -138,6 +138,10 @@
           "type": "keyword",
           "doc_values": true
         },
+        "serviceLinkProtocol": {
+          "type": "keyword",
+          "doc_values": true
+        },
         "thumbnail": {
           "type": "keyword",
           "index": false,

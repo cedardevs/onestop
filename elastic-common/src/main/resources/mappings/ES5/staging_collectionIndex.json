@@ -314,6 +314,10 @@
           "type": "keyword",
           "doc_values": true
         },
+        "serviceLinkProtocol": {
+          "type": "keyword",
+          "doc_values": true
+        },
         "contacts": {
           "type": "nested",
           "properties": {
