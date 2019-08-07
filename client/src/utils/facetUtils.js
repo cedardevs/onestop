@@ -54,7 +54,6 @@ const determineIfHierarchy = category => {
   return (
     category === 'science' ||
     category === 'services' ||
-    category === 'protocols' ||
     category === 'dataFormats'
   )
 }
