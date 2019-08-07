@@ -51,8 +51,8 @@ subprojects {
       resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
           if (details.requested.version.startsWith('2.9') && details.requested.version <= '2.9.9') {
-            details.useVersion '2.9.9'
-            details.because 'fixes vulnerability in 2.9.x before 2.9.9'
+            details.useVersion '2.9.9.1'
+            details.because 'fixes vulnerability in 2.9.9 and before'
           }
         }
         if (details.requested.group == 'org.bouncycastle' && details.requested.name == 'bcprov-jdk15on') {
@@ -189,7 +189,7 @@ class UploadTestDataTask extends DefaultTask {
     project.delete 'upload/testData'
 
     // expand the test data tar.gz into testData directory
-    def testDataTGZ = 'testData_20180502.tar.gz'
+    def testDataTGZ = 'testData_20190726.tar.gz'
     def stdoutExpand = new ByteArrayOutputStream()
     def stderrExpand = new ByteArrayOutputStream()
     def resultExpand = project.exec(new Action<ExecSpec>() {

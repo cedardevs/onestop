@@ -67,13 +67,13 @@ export default class FacetFilter extends React.Component {
       const expandableKey = category
 
       const highLevelHeading = (
-        <h3
+        <h4
           id={facetCategory.id}
           style={{fontSize: '1em', fontWeight: 'normal', display: 'inline'}}
         >
           <span aria-hidden="true">&#9776;&nbsp;</span>
           {category}
-        </h3>
+        </h4>
       )
 
       const expandableFacets = (
@@ -105,10 +105,10 @@ export default class FacetFilter extends React.Component {
     return (
       <div style={styleFacetFilter}>
         <div style={styleDescription}>
-          <label id="facetFilterInstructions">
+          <legend id="facetFilterInstructions">
             In each subsection, you can use arrow keys navigate keywords, and
             space or enter to toggle selections.
-          </label>
+          </legend>
         </div>
         {expandableCategories}
       </div>

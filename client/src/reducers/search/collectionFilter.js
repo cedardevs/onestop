@@ -1,6 +1,5 @@
 import Immutable from 'seamless-immutable'
 import {
-  COLLECTION_UPDATE_QUERY_TEXT,
   COLLECTION_UPDATE_GEOMETRY,
   COLLECTION_REMOVE_GEOMETRY,
   COLLECTION_UPDATE_DATE_RANGE,
@@ -26,9 +25,6 @@ export const initialState = Immutable({
 
 export const collectionFilter = (state = initialState, action) => {
   switch (action.type) {
-    case COLLECTION_UPDATE_QUERY_TEXT:
-      return Immutable.set(state, 'queryText', action.queryText)
-
     case COLLECTION_UPDATE_GEOMETRY:
       return Immutable.set(state, 'geoJSON', action.geoJSON)
 

@@ -40,7 +40,7 @@ export default class FilterHeading extends React.Component {
             alt={`${this.props.text} Icon`}
           />
         </div>
-        <h2 style={styleText}>{this.props.text}</h2>
+        <h3 style={styleText}>{this.props.text}</h3>
       </div>
     )
   }
