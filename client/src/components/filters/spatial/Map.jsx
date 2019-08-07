@@ -246,8 +246,9 @@ class Map extends React.Component {
   }
 
   updateSelectionLayer() {
+    let {filterType} = this.props
     let {editableLayers, style} = this.state
-    let w = watch(store.getState, 'search.collectionFilter.geoJSON')
+    let w = watch(store.getState, 'search.' + filterType + '.geoJSON')
     store.subscribe(
       w(newGeoJson => {
         editableLayers.clearLayers()
