@@ -82,7 +82,7 @@ const drawStyle = {
 class Map extends React.Component {
   constructor(props) {
     super(props)
-    const {showMap, filterType} = this.props
+    const {showMap} = this.props
     this.state = {
       initialized: false,
       open: showMap,
@@ -91,7 +91,6 @@ class Map extends React.Component {
       flex: showMap ? '1' : '0',
       width: showMap ? '100%' : '0%',
       opacity: showMap ? '1' : '0',
-      filterType: filterType,
     }
   }
 
@@ -247,7 +246,8 @@ class Map extends React.Component {
   }
 
   updateSelectionLayer() {
-    let {editableLayers, style, filterType} = this.state
+    let {filterType} = this.props
+    let {editableLayers, style} = this.state
     let w = watch(store.getState, 'search.' + filterType + '.geoJSON')
     store.subscribe(
       w(newGeoJson => {
