@@ -67,17 +67,20 @@ Unfortunately, we don’t currently have a way to dynamically determine where th
 
 There are two *new* sections to the search API UI config YML.
 
-1. Google Analytics can be configured by replacing the following parts with the appropriate IDs for the test and prod environments. See Google Analytics documentation for more details.
-    - `trackingId: 'UA-XXXXXXXXX-X'`
-    - `userId: XXXXXXXXX`
 1. If the cart feature is desired, simply add the `enableFeatureToggles` config section as seen below. Without it, the UI will default to not showing a cart feature.
+
+1. Google Analytics can be configured by replacing the following parts with the appropriate IDs for the test and prod environments. When using multiple trackers, you **must** provide a name for additional trackers. There can only be one default (without a name), and the one without a name will only receive updates depending on `reactGaOptions.alwaysSendToDefaultTracker`. See Google Analytics and react-ga documentation for more details.   
+    - `trackingId: 'UA-XXXXXXXXX-X'`
+    - `name: XXXXXXXXX`
+    
+
 ```
  ui:
     googleAnalytics:
       profiles:
         - trackingId: 'UA-XXXXXXXXX-X'
           gaOptions:
-            userId: XXXXXXXXX
+            name: XXXXXXXXX
       reactGaOptions:
         alwaysSendToDefaultTracker: false
     enabledFeatureToggles:

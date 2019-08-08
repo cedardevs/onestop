@@ -31,19 +31,30 @@ export default class GoogleAnalytics extends React.Component {
     const isDifferentSearch = search !== prevLocation.collectionFilter
 
     if (analyticsInitiated && (isDifferentPathname || isDifferentSearch)) {
-      this.logPageChange(pathname, search)
+      let profileNames = []
+      if (analyticsConfig.profiles) {
+        analyticsConfig.profiles.forEach(profile => {
+          if (profile.gaOptions && profile.gaOptions.name) {
+            profileNames.push(profile.gaOptions.name)
+          }
+        })
+      }
+      this.logPageChange(pathname, search, profileNames)
     }
   }
 
-  logPageChange(pathname, search = '') {
+  logPageChange(pathname, search = '', profileNames) {
     const page = pathname + search
     const {location} = window
-    ReactGA.set({
-      page,
-      location: `${location.origin}${page}`,
-      ...this.props.options,
-    })
-    ReactGA.pageview(page)
+    ReactGA.set(
+      {
+        page,
+        location: `${location.origin}${page}`,
+        ...this.props.options,
+      },
+      profileNames
+    )
+    ReactGA.pageview(page, profileNames)
   }
 
   render() {
