@@ -127,7 +127,12 @@ describe('collection detail action', function(){
           } = store.getState().search
 
           expect(collectionDetailRequest.inFlight).toBeTruthy()
-          expect(collectionDetailRequest.backgroundInFlight).toBeTruthy()
+          // backgroundInFlight state is determined by GRANULE_MATCHING_COUNT_REQUESTED action
+          // which now only applies intelligently (if there are filters applied)
+          // if no filters are applied, the granule count request is unnecessary
+          // In other words: if this test were to simulate applied filters, this would be truthy,
+          // but for now it's falsy!
+          expect(collectionDetailRequest.backgroundInFlight).toBeFalsy()
           expect(collectionDetailRequest.requestedID).toEqual('uuid-ABC')
           expect(collectionDetailFilter.selectedCollectionIds).toEqual([
             'uuid-ABC',

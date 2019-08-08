@@ -70,8 +70,15 @@ export const submitCollectionDetail = (history, id, filterState) => {
     }
     // send notifications that request has begun, updating filter state if needed
     dispatch(collectionDetailRequested(id, filterState))
-    dispatch(granuleMatchingCountRequested())
     const updatedFilterState = getFilterFromState(getState())
+    if (
+      updatedFilterState.geoJSON ||
+      updatedFilterState.endDateTime ||
+      _.size(updatedFilterState.selectedFacets) >= 1 ||
+      updatedFilterState.startDateTime
+    ) {
+      dispatch(granuleMatchingCountRequested())
+    }
     // update URL if needed (required to display loading indicator on the correct page)
     navigateToDetailUrl(history, updatedFilterState)
     // start async request
