@@ -1,6 +1,6 @@
 ## Architectural Background
 
-This project embraces the event-streaming paradigm reflected in the [Kappa Architecture](www.kappa-architecture.com):
+This project embraces the event-streaming paradigm reflected in the [Kappa Architecture](http://www.kappa-architecture.com):
 
 1. All state changes are recorded as immutable events in an ordered, distributed log
 1. Business logic is implemented in distributed processing algorithms that operate on the stream of events
