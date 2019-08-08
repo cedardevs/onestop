@@ -1,8 +1,6 @@
 package org.cedar.psi.registry.service;
 
-import groovy.transform.CompileStatic;
 import groovy.util.logging.Slf4j;
-import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -24,13 +22,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.AbstractEnvironment;
-import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
 
 import java.util.*;
-import java.util.stream.StreamSupport;
+import java.util.concurrent.ExecutionException;
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
@@ -111,10 +106,12 @@ public class KafkaBeanConfig {
   }
 
   @Bean(destroyMethod = "close")
-  KafkaStreams streamsApp(StreamsConfig streamsConfig, TopicInitializer topicInitializer) {
+  KafkaStreams streamsApp(StreamsConfig streamsConfig, TopicInitializer topicInitializer) throws InterruptedException, ExecutionException {
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
     var app = new KafkaStreams(streamsTopology, streamsConfig);
-
+//    app.setUncaughtExceptionHandler((Thread thread, Throwable throwable) -> {
+//      FIXME
+//    });
     topicInitializer.initialize();
     app.start();
 
