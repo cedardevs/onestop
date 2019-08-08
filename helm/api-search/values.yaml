@@ -33,7 +33,7 @@ config: |-
       profiles:
         - trackingId: 'UA-127993388-1'
           gaOptions:
-            userId: 127993388
+            name: 127993388
       reactGaOptions:
         alwaysSendToDefaultTracker: false
     enabledFeatureToggles:
