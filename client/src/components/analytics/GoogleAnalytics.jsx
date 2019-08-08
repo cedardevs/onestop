@@ -31,13 +31,14 @@ export default class GoogleAnalytics extends React.Component {
     const isDifferentSearch = search !== prevLocation.collectionFilter
 
     if (analyticsInitiated && (isDifferentPathname || isDifferentSearch)) {
-      const profileNames = analyticsConfig.profiles
-        ? analyticsConfig.profiles.map(profile => {
-            if (profile.gaOptions && profile.gaOptions.name) {
-              return profile.gaOptions.name
-            }
-          })
-        : []
+      let profileNames = []
+      if (analyticsConfig.profiles) {
+        analyticsConfig.profiles.forEach(profile => {
+          if (profile.gaOptions && profile.gaOptions.name) {
+            profileNames.push(profile.gaOptions.name)
+          }
+        })
+      }
       this.logPageChange(pathname, search, profileNames)
     }
   }
