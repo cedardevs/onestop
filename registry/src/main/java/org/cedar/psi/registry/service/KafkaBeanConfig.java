@@ -48,9 +48,6 @@ public class KafkaBeanConfig {
     defaults.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
   }
 
-  @Autowired
-  Environment environment;
-
   @Value("${publishing.interval.ms:300000}")
   private long publishInterval;
 
@@ -70,6 +67,7 @@ public class KafkaBeanConfig {
     return kafkaPropsMap;
   }
 
+  @Profile("!integration")
   @Bean(destroyMethod = "close")
   AdminClient adminClient(Map kafkaProps) {
     Map<String, Object> config = new HashMap<>();
@@ -90,28 +88,25 @@ public class KafkaBeanConfig {
     configProps.put(ProducerConfig.CLIENT_ID_CONFIG, "api_publisher");
     configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class.getName());
-    kafkaProps.forEach((k, v) -> configProps.put((String) k, v) ); // fixme putall
+    configProps.putAll(kafkaProps);
     return new KafkaProducer<>(configProps);
   }
 
   @Bean
-  StreamsConfig streamsConfig(Map kafkaProps) {
-    var props = new HashMap<String, Object>();
+  Properties streamsConfig(Map kafkaProps) {
+    var props = new Properties();
     props.put(APPLICATION_ID_CONFIG, REGISTRY_ID);
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
-    kafkaProps.forEach((k, v) -> props.put((String) k, v) ); //fixme putall
+    props.putAll(kafkaProps);
 
-    return new StreamsConfig(props);
+    return props;
   }
 
   @Bean(destroyMethod = "close")
-  KafkaStreams streamsApp(StreamsConfig streamsConfig, TopicInitializer topicInitializer) throws InterruptedException, ExecutionException {
+  KafkaStreams streamsApp(Properties streamsConfig, TopicInitializer topicInitializer) throws InterruptedException, ExecutionException {
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
     var app = new KafkaStreams(streamsTopology, streamsConfig);
-//    app.setUncaughtExceptionHandler((Thread thread, Throwable throwable) -> {
-//      FIXME
-//    });
     topicInitializer.initialize();
     app.start();
 
