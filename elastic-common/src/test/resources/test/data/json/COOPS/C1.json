@@ -472,6 +472,9 @@
       "version": null
     }
   ],
+  "dataFormat": [
+    "ORIGINATOR DATA FORMAT"
+  ],
   "links": [
     {
       "linkFunction": "information",
@@ -515,6 +518,15 @@
       "linkName": "FTP",
       "linkProtocol": "FTP"
     }
+  ],
+  "linkProtocol": [
+    "HTTP",
+    "THREDDS",
+    "DAP",
+    "FTP"
+  ],
+  "serviceLinkProtocol": [
+
   ],
   "individualNames": [
     "",

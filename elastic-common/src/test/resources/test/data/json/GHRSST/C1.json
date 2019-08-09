@@ -127,6 +127,9 @@
       "version": "netCDF-4"
     }
   ],
+  "dataFormat": [
+    "NETCDF"
+  ],
   "links": [
     {
       "linkFunction": "search",
@@ -177,6 +180,16 @@
       "linkName": "FTP",
       "linkProtocol": "FTP"
     }
+  ],
+  "linkProtocol": [
+    "HTTP",
+    "LAS",
+    "THREDDS",
+    "DAP",
+    "FTP"
+  ],
+  "serviceLinkProtocol": [
+
   ],
   "individualNames": [
     "",

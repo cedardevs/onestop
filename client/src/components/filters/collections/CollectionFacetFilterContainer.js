@@ -2,12 +2,12 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import FacetFilter from '../facet/FacetFilter'
 import {collectionToggleFacet} from '../../../actions/routing/CollectionSearchStateActions'
-import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
+import {buildFilterHierarchyMap} from '../../../utils/facetUtils'
 import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 const mapStateToProps = state => {
   return {
-    facets: buildKeywordHierarchyMap(
+    facets: buildFilterHierarchyMap(
       state.search.collectionResult.facets,
       state.search.collectionFilter.selectedFacets
     ),

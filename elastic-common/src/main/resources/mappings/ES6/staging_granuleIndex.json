@@ -273,6 +273,10 @@
             }
           }
         },
+        "dataFormat": {
+          "type": "keyword",
+          "doc_values": true
+        },
         "links": {
           "type": "nested",
           "properties": {
@@ -302,6 +306,14 @@
               "index": false
             }
           }
+        },
+        "linkProtocol": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "serviceLinkProtocol": {
+          "type": "keyword",
+          "doc_values": true
         },
         "contacts": {
           "type": "nested",

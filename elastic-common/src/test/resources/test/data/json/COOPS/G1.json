@@ -166,6 +166,9 @@
       "version": null
     }
   ],
+  "dataFormat": [
+    "NETCDF"
+  ],
   "links": [
     {
       "linkFunction": "download",
@@ -195,6 +198,13 @@
       "linkName": "THREDDS OPeNDAP",
       "linkProtocol": "HTTP"
     }
+  ],
+  "linkProtocol": [
+    "HTTP",
+    "FTP"
+  ],
+  "serviceLinkProtocol": [
+
   ],
   "thumbnail": "http://maps.googleapis.com/maps/api/staticmap?center=36.977,-76.315&zoom=14&scale=false&size=600x600&maptype=terrain&format=png&visual_refresh=true&markers=color:red%7C36.977,-76.315&stream=true&stream_ID=plot_image",
   "citeAsStatements": [
