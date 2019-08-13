@@ -15,7 +15,7 @@ import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
-  // queryText: '', Not currently a valid param for granule searchs!
+  queryText: '',
   geoJSON: null,
   startDateTime: null,
   endDateTime: null,
