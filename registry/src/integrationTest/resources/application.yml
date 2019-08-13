@@ -7,6 +7,6 @@ kafka:
   schema:
     registry:
       url: http://localhost:8081
-
-# use a random, temp dir for rocksdb state to prevent one run from interfering with the next
-state.dir: ${java.io.tmpdir}/${random.uuid}
+      # use a random, temp dir for rocksdb state to prevent one run from interfering with the next
+  state:
+    dir: ${java.io.tmpdir}/${random.uuid}

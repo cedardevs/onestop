@@ -36,7 +36,7 @@ import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID;
 @Configuration
 public class KafkaBeanConfig {
 
-  public static final Map<String, Object> defaults = new LinkedHashMap<>(); // fixme make private
+  private static final Map<String, Object> defaults = new LinkedHashMap<>();
 
   static {
     defaults.put(BOOTSTRAP_SERVERS_CONFIG, "http://localhost:9092");
@@ -64,7 +64,6 @@ public class KafkaBeanConfig {
     kafkaProperties.forEach((k, v) -> {
       kafkaPropsMap.put(k.toString(), v);
     });
-    System.out.println(kafkaPropsMap);
     return kafkaPropsMap;
   }
 
@@ -75,7 +74,7 @@ public class KafkaBeanConfig {
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
     props.putAll(kafkaProps);
-
+    System.out.println(props); // fixme delete
     return props;
   }
 

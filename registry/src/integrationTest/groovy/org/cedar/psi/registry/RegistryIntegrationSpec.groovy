@@ -41,9 +41,6 @@ class RegistryIntegrationSpec extends Specification {
     @Value('${spring.embedded.zookeeper.connect}')
     String zkConnect
 
-    @Value('${kafka.bootstrap.servers}')
-    String bootstrapServers
-
     @Bean(initMethod = 'start')
     RestApp schemaRegistryRestApp() {
       new RestApp(8081, zkConnect, '_schemas')
@@ -69,9 +66,6 @@ class RegistryIntegrationSpec extends Specification {
 
   @Autowired
   RestApp schemaRegistryRestApp
-
-  @Autowired
-  Properties kafkaProperties
 
   RestTemplate restTemplate
   String baseUrl
