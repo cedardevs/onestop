@@ -6,7 +6,7 @@ import {
   granuleUpdateQuery,
 } from '../../../actions/routing/GranuleSearchStateActions'
 import {toggleMap} from '../../../actions/LayoutActions'
-import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
+import {submitGranuleSearchWithFilter} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
   return {
@@ -16,10 +16,12 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    submit: (text) => {
-      dispatch(granuleUpdateQuery(text)) // TODO wrap into granule search params
-      dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
+    clear: () => {
       // TODO also probably need a clearQuery action
+      dispatch(submitGranuleSearchWithFilter(ownProps.history, ownProps.match.params.id, {queryText: ''}))
+    },
+    submit: (text) => {
+      dispatch(submitGranuleSearchWithFilter(ownProps.history, ownProps.match.params.id, {queryText: text}))
     },
   }
 }

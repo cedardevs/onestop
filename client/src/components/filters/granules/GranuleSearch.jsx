@@ -111,6 +111,7 @@ class GranuleSearch extends React.Component {
 
   clearQueryString = () => {
     this.setState({warning: '', queryString: ''})
+    this.props.clear()
   }
 
   validateAndSubmit = () => {
@@ -189,8 +190,8 @@ class GranuleSearch extends React.Component {
             value={queryString}
             warningPopup={warningPopup}
             instructionalCopy={instructionalCopy}
-            textFieldStyle={{width: '17em'}}
-            
+            textFieldStyle={{width: '10em', minWidth:'6em'}}
+
           />
           {searchButton}
         </div>
