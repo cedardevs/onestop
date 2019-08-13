@@ -36,7 +36,7 @@ import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID;
 @Configuration
 public class KafkaBeanConfig {
 
-  private static final Map<String, Object> defaults = new LinkedHashMap<>();
+  public static final Map<String, Object> defaults = new LinkedHashMap<>(); // fixme make private
 
   static {
     defaults.put(BOOTSTRAP_SERVERS_CONFIG, "http://localhost:9092");
@@ -64,37 +64,13 @@ public class KafkaBeanConfig {
     kafkaProperties.forEach((k, v) -> {
       kafkaPropsMap.put(k.toString(), v);
     });
+    System.out.println(kafkaPropsMap);
     return kafkaPropsMap;
-  }
-
-  @Profile("!integration")
-  @Bean(destroyMethod = "close")
-  AdminClient adminClient(Map kafkaProps) {
-    Map<String, Object> config = new HashMap<>();
-    config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProps.get(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG));
-    config.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, kafkaProps.get(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG));
-    return AdminClient.create(config);
-  }
-
-  @Profile("!integration")
-  @Bean(initMethod = "initialize")
-  TopicInitializer topicInitializer(AdminClient adminClient) {
-    return new TopicInitializer(adminClient);
-  }
-
-  @Bean
-  Producer<String, Input> kafkaProducer(Map kafkaProps) {
-    Map<String, Object> configProps = new HashMap<>();
-    configProps.put(ProducerConfig.CLIENT_ID_CONFIG, "api_publisher");
-    configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-    configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class.getName());
-    configProps.putAll(kafkaProps);
-    return new KafkaProducer<>(configProps);
   }
 
   @Bean
   Properties streamsConfig(Map kafkaProps) {
-    var props = new Properties();
+    var props = kafkaPropertiesBuilder(kafkaProps, StreamsConfig.configDef().withClientSaslSupport().withClientSslSupport().names());
     props.put(APPLICATION_ID_CONFIG, REGISTRY_ID);
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
@@ -111,6 +87,56 @@ public class KafkaBeanConfig {
     app.start();
 
     return app;
+  }
+
+  @Bean
+  Properties adminConfig(Map kafkaProps) {
+    var props = kafkaPropertiesBuilder(kafkaProps, AdminClientConfig.configNames());
+    return props;
+  }
+
+  @Bean(destroyMethod = "close")
+  AdminClient adminClient(Properties adminConfig) {
+    return AdminClient.create(adminConfig);
+  }
+
+  @Profile("!integration")
+  @Bean(initMethod = "initialize")
+  TopicInitializer topicInitializer(AdminClient adminClient) {
+    return new TopicInitializer(adminClient);
+  }
+
+  @Bean
+  Properties producerConfig(Map kafkaProps) {
+    var props = kafkaPropertiesBuilder(kafkaProps, ProducerConfig.configNames());
+    return props;
+  }
+
+  @Bean
+  Producer<String, Input> kafkaProducer(Properties producerConfig) {
+    Map<String, Object> configProps = new HashMap<>();
+    configProps.put(ProducerConfig.CLIENT_ID_CONFIG, "api_publisher");
+    configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class.getName());
+    producerConfig.forEach( (k, v) -> {
+      configProps.put((String) k, v);
+    });
+    return new KafkaProducer<>(configProps);
+  }
+
+  // Helper functions:
+
+  private static Properties kafkaPropertiesBuilder(Map kafkaConfigMap, Set<String> keySet) {
+    var props = new Properties();
+    kafkaConfigMap.forEach( (k, v) -> {
+      if(keySet.contains(k)) {
+        props.put(k, v);
+      }
+    });
+
+    // Make sure schema registry URL is also harvested
+    props.put(SCHEMA_REGISTRY_URL_CONFIG, kafkaConfigMap.get(SCHEMA_REGISTRY_URL_CONFIG));
+    return props;
   }
 
 }

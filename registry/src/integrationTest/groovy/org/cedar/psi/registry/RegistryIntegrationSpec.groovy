@@ -9,7 +9,6 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import io.confluent.kafka.schemaregistry.RestApp
 import org.apache.kafka.clients.admin.AdminClient
-import org.apache.kafka.clients.admin.AdminClientConfig
 import org.apache.kafka.streams.KafkaStreams
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.stream.TopicInitializer
@@ -48,14 +47,6 @@ class RegistryIntegrationSpec extends Specification {
     @Bean(initMethod = 'start')
     RestApp schemaRegistryRestApp() {
       new RestApp(8081, zkConnect, '_schemas')
-    }
-
-    @Bean(destroyMethod = 'close')
-    AdminClient adminClient() {
-      Map<String, Object> config = new HashMap<>()
-      config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
-      config.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, 1000)
-      return AdminClient.create(config)
     }
 
     @Bean
