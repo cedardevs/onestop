@@ -170,9 +170,8 @@ export const submitGranuleSearchForCart = (history, filterState) => {
     const totalGranuleCount = getTotalGranuleCountFromState(stateSnapshot)
     const updatedFilterState = getFilterFromState(stateSnapshot)
 
-    // TODO: remove this navigate as it is only for debugging purposes for now
-    // OR: not?
-    //navigateToCart(history)
+    // TODO: should we keep this?
+    navigateToCart(history)
 
     // start async request
     return granulesForCartPromise(
