@@ -26,7 +26,7 @@ class FullTopologySpec extends Specification {
   static final UTC_ID = ZoneId.of('UTC')
 
   def config = [
-      (APPLICATION_ID_CONFIG)           : 'delayed_publisher_spec',
+      (APPLICATION_ID_CONFIG)           : 'full_topology_spec',
       (BOOTSTRAP_SERVERS_CONFIG)        : 'http://localhost:9092',
       (SCHEMA_REGISTRY_URL_CONFIG)      : 'http://localhost:8081',
       (DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
@@ -42,6 +42,7 @@ class FullTopologySpec extends Specification {
   def inputType = RecordType.granule
   def inputSource = DEFAULT_SOURCE
   def inputTopic = inputTopic(inputType, inputSource)
+  def inputChangelogTopic = inputChangelogTopic(config[APPLICATION_ID_CONFIG], inputType, inputSource)
   def parsedTopic = parsedTopic(inputType)
   def publishedTopic = publishedTopic(inputType)
   def inputStore = driver.getKeyValueStore(inputStore(inputType, inputSource))
@@ -67,6 +68,25 @@ class FullTopologySpec extends Specification {
     aggregate instanceof AggregatedInput
     aggregate.rawJson == '{"size":42,"name":"test"}'
     aggregate.events.size() == 2
+  }
+
+  def 'handles a delete input for nonexistent record'() {
+    def key = 'A'
+    def value1 = Input.newBuilder().setMethod(Method.DELETE).setType(inputType).build()
+
+    when:
+    driver.pipeInput(inputFactory.create(inputTopic, key, value1))
+
+    and:
+    def aggregate = inputStore.get('A')
+
+    then:
+    aggregate == null
+
+    and:
+    def output = readAllOutput(driver, inputChangelogTopic)
+    OutputVerifier.compareKeyValue(output[0], key, null)
+    output.size() == 1
   }
 
   def 'values for discovery and publishing are set to the default values'() {
