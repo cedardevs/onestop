@@ -27,7 +27,7 @@ class ManagerConfigSpec extends Specification {
     config.autoOffsetReset() == AUTO_OFFSET_RESET_DEFAULT
   }
 
-  def 'config file overrides defaults'() {
+  def 'config file overrides defaults for valid properties'() {
     given:
     def filePath = Thread.currentThread().contextClassLoader.getResource('test-config.yaml').file
     def config = new ManagerConfig(filePath)
@@ -42,11 +42,9 @@ class ManagerConfigSpec extends Specification {
         "compression.type": "snappy",
         "cache.max.bytes.buffering": 209715200,
         "commit.interval.ms": 50000,
-        "auto.offset.reset": "latest",
-        "producer.one": "testproducer1",
-        "producer.two": "testproducer2",
-        "consumer.one": "testconsumer"
+        "auto.offset.reset": "latest"
     ])
+    !actualMap.containsKey('producer.one')
   }
 
   def 'uses defaults when config file not parsable'() {
@@ -106,7 +104,7 @@ class ManagerConfigSpec extends Specification {
     config.autoOffsetReset() == AUTO_OFFSET_RESET_DEFAULT
   }
 
-  def 'config file overrides system properties and environment variables'() {
+  def 'config file overrides system properties and environment variables for valid properties'() {
     given:
     def newRegistryUrl = 'http://schemaUrl:9000'
     def newCompressionType = 'zstd'
@@ -125,10 +123,8 @@ class ManagerConfigSpec extends Specification {
         "compression.type": "snappy",
         "cache.max.bytes.buffering": 209715200,
         "commit.interval.ms": 50000,
-        "auto.offset.reset": "latest",
-        "producer.one": "testproducer1",
-        "producer.two": "testproducer2",
-        "consumer.one": "testconsumer"
+        "auto.offset.reset": "latest"
     ])
+    !actualMap.containsKey('producer.one')
   }
 }

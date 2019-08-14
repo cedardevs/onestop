@@ -5,6 +5,7 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -69,7 +70,10 @@ public class KafkaBeanConfig {
 
   @Bean
   Properties streamsConfig(Map kafkaProps) {
-    var props = kafkaPropertiesBuilder(kafkaProps, StreamsConfig.configDef().withClientSaslSupport().withClientSslSupport().names());
+    var validConfigNames = new HashSet<String>(StreamsConfig.configDef().names());
+    validConfigNames.addAll(ProducerConfig.configNames());
+    validConfigNames.addAll(ConsumerConfig.configNames());
+    var props = kafkaPropertiesBuilder(kafkaProps, validConfigNames);
     props.put(APPLICATION_ID_CONFIG, REGISTRY_ID);
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());

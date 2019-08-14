@@ -1,7 +1,10 @@
 package org.cedar.psi.manager.config;
 
 import org.apache.avro.data.Json;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.TopicConfig;
+import org.apache.kafka.streams.StreamsConfig;
 import org.cedar.psi.common.util.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +15,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
@@ -92,22 +97,36 @@ public class ManagerConfig {
   }
 
   private void updateInternalMapping() {
-    // Internal starts as defaults; merge in order of least --> most preferred props (env, sys, file)
-    // NOTE: Any environment or system properties are prefixed with "kafka." so remove the prefix before merging (Kafka
-    // config values do NOT have this prefix)
+    // Starting with defaults, merge in order of least --> most preferred props (defaults, env, sys, file).
+    var combinedConfig = new LinkedHashMap<>(defaults);
+
     environmentVariables.forEach((k, v) -> {
       if(k.toLowerCase().startsWith("kafka")) {
-        internal.put(normalizeKey(k.substring(6)), v); // Trim "kafka" and first delimiter before normalizing
-      }
-    });
-    systemProperties.forEach((k, v) -> {
-      String key = k.toString();
-      if(key.toLowerCase().startsWith("kafka")) {
-        internal.put(normalizeKey(key.substring(6)), v); // Trim "kafka" and first delimiter before normalizing
+        combinedConfig.put(normalizeKey(k.substring(6)), v); // Trim "kafka" and first delimiter before normalizing
       }
     });
 
-    internal.putAll(configFileProperties);
+    systemProperties.forEach((k, v) -> {
+      String key = k.toString();
+      if(key.toLowerCase().startsWith("kafka")) {
+        combinedConfig.put(normalizeKey(key.substring(6)), v); // Trim "kafka" and first delimiter before normalizing
+      }
+    });
+
+    combinedConfig.putAll(configFileProperties);
+
+    // Filter to only valid config values -- Streams config + possible internal Producer & Consumer config
+    var validConfigNames = new HashSet<String>(StreamsConfig.configDef().names());
+    validConfigNames.addAll(ProducerConfig.configNames());
+    validConfigNames.addAll(ConsumerConfig.configNames());
+
+    combinedConfig.entrySet().stream()
+        .filter(e -> validConfigNames.contains(e.getKey()))
+        .forEach(e -> {
+          internal.put(e.getKey(), e.getValue());
+        });
+    // Make sure schema registry url is included
+    internal.put(SCHEMA_REGISTRY_URL_CONFIG, combinedConfig.get(SCHEMA_REGISTRY_URL_CONFIG));
   }
 
   private String normalizeKey(String key) {

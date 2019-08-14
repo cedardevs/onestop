@@ -17,9 +17,6 @@ kafka:
     offset:
       reset: "latest"
   producer:
-    one: "testproducer1"
-    two: "testproducer2"
-  consumer:
-    one: "testconsumer"
+    one: "invalid kafka config won't be saved"
 elasticsearch:
   setting: "this will not be saved"
