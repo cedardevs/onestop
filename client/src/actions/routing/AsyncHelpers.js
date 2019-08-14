@@ -32,7 +32,6 @@ export const fetchCollectionSearch = (body, successHandler, errorHandler) => {
 
 export const fetchGranuleSearch = (body, successHandler, errorHandler) => {
   const endpoint = apiPath() + '/search/granule'
-
   return fetchIt(
     endpoint,
     searchFetchParams(body),

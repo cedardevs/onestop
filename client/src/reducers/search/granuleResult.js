@@ -5,6 +5,10 @@ import {
   GRANULE_MORE_RESULTS_RECEIVED,
   GRANULE_SEARCH_ERROR,
 } from '../../actions/routing/GranuleSearchStateActions'
+import {
+  countKeys,
+  mergeGranulesArrayIntoGranulesMap,
+} from '../../utils/resultUtils'
 
 export const initialState = Immutable({
   granules: {},
@@ -13,43 +17,37 @@ export const initialState = Immutable({
   loadedGranuleCount: 0,
 })
 
-const getGranulesFromAction = action => {
-  return action.items.reduce(
-    (existing, next) => existing.set(next.id, next.attributes),
+const newSearchResultsReceived = (state, action) => {
+  let newGranules = mergeGranulesArrayIntoGranulesMap(
+    action.granules,
     initialState.granules
   )
-}
-
-const newSearchResultsReceived = (state, total, granules, facets) => {
   return Immutable.merge(state, {
-    loadedGranuleCount: (granules && Object.keys(granules).length) || 0,
-    granules: granules,
-    totalGranuleCount: total,
-    facets: facets,
+    granules: newGranules,
+    loadedGranuleCount: countKeys(newGranules),
+    totalGranuleCount: action.total,
+    facets: action.facets,
   })
 }
 
-const moreResultsReceived = (state, newGranules) => {
-  let granules = state.granules.merge(newGranules)
-
+const moreResultsReceived = (state, action) => {
+  let newGranules = mergeGranulesArrayIntoGranulesMap(
+    action.granules,
+    state.granules
+  )
   return Immutable.merge(state, {
-    loadedGranuleCount: (granules && Object.keys(granules).length) || 0,
-    granules: granules,
+    granules: newGranules,
+    loadedGranuleCount: countKeys(newGranules),
   })
 }
 
 export const granuleResult = (state = initialState, action) => {
   switch (action.type) {
     case GRANULE_NEW_SEARCH_RESULTS_RECEIVED:
-      return newSearchResultsReceived(
-        state,
-        action.total,
-        getGranulesFromAction(action),
-        action.facets
-      )
+      return newSearchResultsReceived(state, action)
 
     case GRANULE_MORE_RESULTS_RECEIVED:
-      return moreResultsReceived(state, getGranulesFromAction(action))
+      return moreResultsReceived(state, action)
 
     case GRANULE_SEARCH_ERROR:
       return Immutable.merge(state, {

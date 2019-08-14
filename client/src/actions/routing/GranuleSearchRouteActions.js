@@ -12,11 +12,25 @@ import {
   granuleNewSearchResultsReceived,
   granuleMoreResultsReceived,
   granuleSearchError,
+  granulesForCartRequested,
+  granulesForCartError,
+  granulesForCartResultsReceived,
 } from './GranuleSearchStateActions'
+import {insertGranules} from '../../utils/localStorageUtil'
 
 /*
   Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
 */
+
+const getTotalGranuleCountFromState = state => {
+  return (
+    (state &&
+      state.search &&
+      state.search.granuleResult &&
+      state.search.granuleResult.totalGranuleCount) ||
+    0
+  )
+}
 
 const getFilterFromState = state => {
   return (state && state.search && state.search.granuleFilter) || {}
@@ -31,6 +45,15 @@ const isRequestInvalid = (id, state) => {
   return isAlreadyInFlight(state) || _.isEmpty(id)
 }
 
+const isCartRequestAlreadyInFlight = state => {
+  const inFlight = state.search.granuleRequest.cartGranulesInFlight
+  return inFlight
+}
+
+const isCartRequestInvalid = state => {
+  return isCartRequestAlreadyInFlight(state)
+}
+
 export const granuleBodyBuilder = (filterState, requestFacets, pageSize) => {
   const body = assembleSearchRequest(filterState, requestFacets, pageSize)
   const hasQueries = body && body.queries && body.queries.length > 0
@@ -43,19 +66,30 @@ export const granuleBodyBuilder = (filterState, requestFacets, pageSize) => {
 
 const newSearchSuccessHandler = dispatch => {
   return payload => {
-    dispatch(
-      granuleNewSearchResultsReceived(
-        payload.meta.total,
-        payload.data,
-        payload.meta.facets
-      )
-    )
+    const granules = payload.data
+    const facets = payload.meta.facets
+    const total = payload.meta.total
+    dispatch(granuleNewSearchResultsReceived(granules, facets, total))
+  }
+}
+
+const granulesForCartSuccessHandler = dispatch => {
+  return payload => {
+    const granules = payload.data
+    const total = payload.meta.total
+
+    // add to local storage
+    insertGranules(granules)
+
+    // and then add to redux state
+    dispatch(granulesForCartResultsReceived(granules, total))
   }
 }
 
 const pageSuccessHandler = dispatch => {
   return payload => {
-    dispatch(granuleMoreResultsReceived(payload.data))
+    const granules = payload.data
+    dispatch(granuleMoreResultsReceived(granules))
   }
 }
 
@@ -76,6 +110,79 @@ const granulePromise = (
   return fetchGranuleSearch(body, successHandler(dispatch), e => {
     dispatch(granuleSearchError(e.errors || e))
   })
+}
+
+const granulesForCartPromise = (
+  dispatch,
+  totalGranuleCount,
+  filterState,
+  requestFacets,
+  successHandler
+) => {
+  console.log('granulesForCartPromise')
+  console.log('totalGranuleCount', totalGranuleCount)
+
+  // NOTES:
+  // - We re-use the existing granule endpoint because real-time scroll requests are not recommended by ES.
+  // `filterState` is a seamless-immutable object, so we have to use that API to copy/set into a new instance.
+
+  // prevent cart addition requests from adding more than 1000 items at a time
+  const maxCartAddition = 10
+  if (totalGranuleCount > maxCartAddition) {
+    dispatch(
+      granulesForCartError(
+        `${totalGranuleCount} granules exceeds the allowable ${maxCartAddition} that can be added to the cart at one time.`
+      )
+    )
+    return
+  }
+
+  // Ensure the filter page offset is 0, since we are grabbing as much as we can
+  // from the beginning -- up to `maxCartAddition` in a single request.
+  const filterStateModifiedForCartRequest = filterState.set('pageOffset', 0)
+
+  // generate the request body based on filters, and if we need facets or not
+  const body = granuleBodyBuilder(
+    filterStateModifiedForCartRequest,
+    requestFacets,
+    maxCartAddition
+  )
+  if (!body) {
+    dispatch(granulesForCartError('Invalid Request'))
+    return
+  }
+  // return promise for search
+  return fetchGranuleSearch(body, successHandler(dispatch), e => {
+    dispatch(granulesForCartError(e.errors || e))
+  })
+}
+
+export const submitGranuleSearchForCart = (history, filterState) => {
+  return async (dispatch, getState) => {
+    if (isCartRequestInvalid(getState())) {
+      // short circuit silently if minimum request requirements are not met
+      return
+    }
+    // send notifications that request has begun, updating filter state if needed
+    dispatch(granulesForCartRequested(filterState))
+
+    const stateSnapshot = getState()
+    const totalGranuleCount = getTotalGranuleCountFromState(stateSnapshot)
+    const updatedFilterState = getFilterFromState(stateSnapshot)
+
+    // TODO: remove this navigate as it is only for debugging purposes for now
+    // OR: not?
+    //navigateToCart(history)
+
+    // start async request
+    return granulesForCartPromise(
+      dispatch,
+      totalGranuleCount,
+      updatedFilterState,
+      true,
+      granulesForCartSuccessHandler
+    )
+  }
 }
 
 export const submitGranuleSearchWithFilter = (
@@ -163,6 +270,13 @@ const navigateToGranuleUrl = (history, collectionId, filterState) => {
     filterState,
     collectionId
   )
+  if (isPathNew(history.location, locationDescriptor)) {
+    history.push(locationDescriptor)
+  }
+}
+
+const navigateToCart = history => {
+  const locationDescriptor = encodeLocationDescriptor(ROUTE.cart, {})
   if (isPathNew(history.location, locationDescriptor)) {
     history.push(locationDescriptor)
   }

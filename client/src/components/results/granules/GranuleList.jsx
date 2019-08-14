@@ -5,8 +5,9 @@ import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
 import GranuleListResultContainer from './GranuleListResultContainer'
 import {identifyProtocol} from '../../../utils/resultUtils'
-import {boxShadow} from '../../../style/defaultStyles'
+import {boxShadow, SiteColors} from '../../../style/defaultStyles'
 import Meta from '../../helmet/Meta'
+import _ from 'lodash'
 
 const styleCenterContent = {
   display: 'flex',
@@ -29,6 +30,28 @@ const styleShowMore = {
 const styleShowMoreFocus = {
   outline: '2px dashed #5C87AC',
   outlineOffset: '.118em',
+}
+
+const styleAddFilteredGranulesToCartButton = {
+  outline: '2px dashed #5C87AC',
+  outlineOffset: '.118em',
+}
+
+const styleWarning = warning => {
+  if (_.isEmpty(warning)) {
+    return {
+      display: 'none',
+    }
+  }
+  else {
+    return {
+      color: SiteColors.WARNING,
+      textAlign: 'center',
+      margin: '0.75em 0 0.5em',
+      fontWeight: 'bold',
+      fontSize: '1.15em',
+    }
+  }
 }
 
 export default class GranuleList extends React.Component {
@@ -73,7 +96,10 @@ export default class GranuleList extends React.Component {
       totalHits,
       selectCollection,
       fetchMoreResults,
+      addFilteredGranulesToCart,
+      addFilteredGranulesToCartWarning,
       collectionTitle,
+      granuleFilter,
     } = this.props
 
     // keep track of used protocols in results to avoid unnecessary legend keys
@@ -107,6 +133,19 @@ export default class GranuleList extends React.Component {
         />
 
         <div style={styleGranuleListWrapper}>
+          <Button
+            text="Add All Filtered Results to Cart"
+            onClick={() => addFilteredGranulesToCart(granuleFilter)}
+            style={styleAddFilteredGranulesToCartButton}
+          />
+          <div
+            key="GranuleList::Warning"
+            style={styleWarning(addFilteredGranulesToCartWarning)}
+            role="alert"
+          >
+            {addFilteredGranulesToCartWarning}
+          </div>
+
           <GranuleListLegend usedProtocols={usedProtocols} />
           <ListView
             items={results}
