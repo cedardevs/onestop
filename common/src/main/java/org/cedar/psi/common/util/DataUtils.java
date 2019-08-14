@@ -60,7 +60,7 @@ public class DataUtils {
       else if (v instanceof List && originalValue instanceof List) {
         var mergedList = new HashSet((List) originalValue);
         mergedList.addAll((List) v);
-        mergedMap.put(k, mergedList);
+        mergedMap.put(k, new ArrayList(mergedList));
       }
       else {
         /* This overwrites simple values but also mismatched object types. Accepting that "risk" here since

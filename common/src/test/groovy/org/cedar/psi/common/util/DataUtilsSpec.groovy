@@ -120,6 +120,7 @@ class DataUtilsSpec extends Specification {
 
     then:
     def expectedA = new ArrayList(Arrays.asList([b: "string1", c: 1234], [b: "string2", c: 5678], [b: "string3", c: 9012]))
+    result.a instanceof List
     result.a.size() == 3
     result.a.containsAll(expectedA)
   }
