@@ -1,6 +1,6 @@
-import * as keywordUtils from '../../src/utils/keywordUtils'
+import * as facetUtils from '../../src/utils/facetUtils'
 
-describe('The keyword utils', function(){
+describe('The facet utils', function(){
   describe('hierarchy map util', function(){
     it('can build a hierarchy map with science theme data', function(){
       const input = {
@@ -124,7 +124,7 @@ describe('The keyword utils', function(){
           },
         ],
       }
-      const result = keywordUtils.buildKeywordHierarchyMap(input, {})
+      const result = facetUtils.buildFilterHierarchyMap(input, {})
       expect(result.length).toBe(1)
       expect(result[0]).toEqual(expected)
     })
@@ -174,7 +174,7 @@ describe('The keyword utils', function(){
         ],
       }
 
-      const result = keywordUtils.buildKeywordHierarchyMap(input, {})
+      const result = facetUtils.buildFilterHierarchyMap(input, {})
       expect(result.length).toBe(1)
       expect(result[0]).toEqual(expected)
     })

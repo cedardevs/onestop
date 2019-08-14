@@ -164,6 +164,9 @@
       "version": null
     }
   ],
+  "dataFormat": [
+    "NETCDF"
+  ],
   "links": [
     {
       "linkFunction": "download",
@@ -193,6 +196,13 @@
       "linkName": "THREDDS OPeNDAP",
       "linkProtocol": "HTTP"
     }
+  ],
+  "linkProtocol": [
+    "HTTP",
+    "FTP"
+  ],
+  "serviceLinkProtocol": [
+
   ],
   "individualNames": [
     "",

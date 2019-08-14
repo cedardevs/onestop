@@ -35,7 +35,7 @@ const detailPromise = (dispatch, id, filterState) => {
   }
 
   // promise for main request: GET by ID
-  const detailPromise = fetchCollectionDetail(
+  const detailPromiseMain = fetchCollectionDetail(
     id,
     payload => {
       dispatch(
@@ -58,7 +58,7 @@ const detailPromise = (dispatch, id, filterState) => {
   )
 
   // TODO test that these requests are fired in parallel
-  return Promise.all([ detailPromise, granuleCountPromise ])
+  return Promise.all([ detailPromiseMain, granuleCountPromise ])
 }
 
 export const submitCollectionDetail = (history, id, filterState) => {

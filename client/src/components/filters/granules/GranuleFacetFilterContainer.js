@@ -2,12 +2,12 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import FacetFilter from '../facet/FacetFilter'
 import {granuleToggleFacet} from '../../../actions/routing/GranuleSearchStateActions'
-import {buildKeywordHierarchyMap} from '../../../utils/keywordUtils'
+import {buildFilterHierarchyMap} from '../../../utils/facetUtils'
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
   return {
-    facets: buildKeywordHierarchyMap(
+    facets: buildFilterHierarchyMap(
       state.search.granuleResult.facets,
       state.search.granuleFilter.selectedFacets
     ),

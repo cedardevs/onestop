@@ -100,6 +100,10 @@
             }
           }
         },
+        "dataFormat": {
+          "type": "keyword",
+          "doc_values": true
+        },
         "links": {
           "type": "nested",
           "properties": {
@@ -129,6 +133,14 @@
               "doc_values": false
             }
           }
+        },
+        "linkProtocol": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "serviceLinkProtocol": {
+          "type": "keyword",
+          "doc_values": true
         },
         "thumbnail": {
           "type": "keyword",

@@ -93,7 +93,7 @@ class CollectionFilters extends React.Component {
       },
       {
         name: 'keywords',
-        heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
+        heading: <FilterHeading icon={facetFilterIcon} text="Attributes" />,
         content: <CollectionFacetFilterContainer marginNest={'1em'} />,
       },
     ]

@@ -367,8 +367,29 @@ class SearchRequestParserServiceTest extends Specification {
 
   def 'Default GCMD aggregations are built for granules'() {
     when:
-    def aggsResult = requestParser.createGCMDAggregations()
+    def aggsResult = requestParser.createFacetAggregations()
     def expectedAggs = [
+        dataFormats   : [
+            terms         : [
+                field: 'dataFormat',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        linkProtocols     : [
+            terms         : [
+                field: 'linkProtocol',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        serviceLinkProtocols: [
+            terms         : [
+                field: 'serviceLinkProtocol',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
         science       : [
             terms: [
                 field: 'gcmdScience',
@@ -447,8 +468,29 @@ class SearchRequestParserServiceTest extends Specification {
 
   def 'Default GCMD aggregations are built for collections'() {
     when:
-    def aggsResult = requestParser.createGCMDAggregations()
+    def aggsResult = requestParser.createFacetAggregations()
     def expectedAggs = [
+        dataFormats   : [
+          terms         : [
+            field: 'dataFormat',
+            size : Integer.MAX_VALUE,
+            order: ['_term': 'asc']
+          ]
+        ],
+        linkProtocols     : [
+            terms         : [
+                field: 'linkProtocol',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        serviceLinkProtocols: [
+            terms         : [
+                field: 'serviceLinkProtocol',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
         science       : [
             terms       : [
                 field: 'gcmdScience',
