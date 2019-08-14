@@ -177,7 +177,7 @@ class GranuleFilters extends React.Component {
       )
     })
 
-    const textQuery = <input key='textQuery' />
+    const textQuery = <input key="textQuery" />
 
     return (
       <div>
@@ -191,7 +191,7 @@ class GranuleFilters extends React.Component {
             },
           }}
         />
-      <GranuleSearchContainer/>
+        <GranuleSearchContainer />
         {expandableFilters}
       </div>
     )

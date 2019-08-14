@@ -155,7 +155,7 @@ class TextSearchField extends React.Component {
 
     const styleTextFieldMerged = {
       ...styleTextField,
-      ...(this.props.textFieldStyle),
+      ...this.props.textFieldStyle,
       ...(this.state.focusingText ? styleTextFieldFocus : {}),
     }
 

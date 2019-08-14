@@ -54,7 +54,7 @@ const warningStyle = warning => {
 
 const searchFieldStyle = {
   position: 'relative',
-  marginRight: '1em',
+  margin: '.3em',
   alignSelf: 'center',
 }
 
@@ -190,8 +190,7 @@ class GranuleSearch extends React.Component {
             value={queryString}
             warningPopup={warningPopup}
             instructionalCopy={instructionalCopy}
-            textFieldStyle={{width: '10em', minWidth:'6em'}}
-
+            textFieldStyle={{minWidth: '6em', maxWidth: '100%'}}
           />
           {searchButton}
         </div>

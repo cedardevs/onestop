@@ -24,7 +24,7 @@ const assertParam = (param, result, expected, fallback) => {
 
 const assertAllFilterParams = (results, values, defaults) => {
   assertParam('pageOffset', results, values, defaults)
-  // assertParam('queryText', results, values, defaults)
+  assertParam('queryText', results, values, defaults)
   assertParam('geoJSON', results, values, defaults)
   assertParam('startDateTime', results, values, defaults)
   assertParam('endDateTime', results, values, defaults)
@@ -49,6 +49,7 @@ describe('The granule filter reducer', function(){
     excludeGlobal: true,
   }
   const initialStateWithParentUuid = {
+    queryText: '',
     pageOffset: 0,
     selectedCollectionIds: [ 'parent-uuid' ],
     geoJSON: null,
@@ -69,6 +70,7 @@ describe('The granule filter reducer', function(){
       endDateTime: null,
       selectedFacets: {},
       excludeGlobal: null,
+      queryText: '',
     })
   })
 
@@ -138,11 +140,12 @@ describe('The granule filter reducer', function(){
           expectedChanges: initialStateWithParentUuid,
         },
         {
-          name: 'does not pass through queryText',
+          name: 'passes through queryText',
           initialState: initialState,
           function: granuleNewSearchResetFiltersRequested,
           params: [ 'parent-uuid', {queryText: 'hello'} ],
           expectedChanges: {
+            queryText: 'hello',
             selectedCollectionIds: [ 'parent-uuid' ],
           },
         },
@@ -153,6 +156,7 @@ describe('The granule filter reducer', function(){
           function: granuleNewSearchResetFiltersRequested,
           params: [ 'parent-uuid', {startDateTime: '2000-01-01T00:00:00Z'} ],
           expectedChanges: {
+            queryText: '',
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
@@ -176,6 +180,7 @@ describe('The granule filter reducer', function(){
             },
           ],
           expectedChanges: {
+            queryText: '',
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
@@ -201,6 +206,7 @@ describe('The granule filter reducer', function(){
             },
           ],
           expectedChanges: {
+            queryText: 'new',
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
@@ -240,6 +246,7 @@ describe('The granule filter reducer', function(){
             },
           ],
           expectedChanges: {
+            queryText: '',
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: {
