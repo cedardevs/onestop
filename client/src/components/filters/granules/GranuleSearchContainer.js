@@ -2,9 +2,12 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import GranuleSearch from './GranuleSearch'
 
-import {granuleUpdateQuery} from '../../../actions/routing/GranuleSearchStateActions'
+import {
+  clearGranuleQueryText,
+  setGranuleQueryText,
+} from '../../../actions/routing/GranuleSearchStateActions'
 import {toggleMap} from '../../../actions/LayoutActions'
-import {submitGranuleSearchWithFilter} from '../../../actions/routing/GranuleSearchRouteActions'
+import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
   return {
@@ -16,22 +19,27 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     clear: () => {
       // TODO also probably need a clearQuery action
-      dispatch(
-        submitGranuleSearchWithFilter(
-          ownProps.history,
-          ownProps.match.params.id,
-          {queryText: ''}
-        )
-      )
+      dispatch(clearGranuleQueryText())
+      dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
+
+      // dispatch(
+      //   submitGranuleSearchWithFilter(
+      //     ownProps.history,
+      //     ownProps.match.params.id,
+      //     {queryText: ''}
+      //   )
+      // )
     },
     submit: text => {
-      dispatch(
-        submitGranuleSearchWithFilter(
-          ownProps.history,
-          ownProps.match.params.id,
-          {queryText: text}
-        )
-      )
+      dispatch(setGranuleQueryText(text))
+      dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
+      // dispatch(
+      //   submitGranuleSearchWithFilter(
+      //     ownProps.history,
+      //     ownProps.match.params.id,
+      //     {queryText: text}
+      //   )
+      // )
     },
   }
 }

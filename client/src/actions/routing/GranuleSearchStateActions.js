@@ -43,15 +43,16 @@ export const granuleSearchError = errors => ({
   errors,
 })
 
-//
-// export const GRANULE_UPDATE_QUERY_TEXT = 'GRANULE_UPDATE_QUERY_TEXT'
-// export const granuleUpdateQueryText = queryText => {
-//   return {
-//     type: GRANULE_UPDATE_QUERY_TEXT,
-//     queryText: queryText,
-//   }
-// }
-//
+export const GRANULE_SET_QUERY_TEXT = 'GRANULE_SET_QUERY_TEXT'
+export const setGranuleQueryText = text => ({
+  type: GRANULE_SET_QUERY_TEXT,
+  text: text,
+})
+export const clearGranuleQueryText = () => ({
+  type: GRANULE_SET_QUERY_TEXT,
+  text: '',
+})
+
 export const GRANULE_UPDATE_GEOMETRY = 'GRANULE_UPDATE_GEOMETRY'
 export const granuleUpdateGeometry = geoJSON => {
   return {
