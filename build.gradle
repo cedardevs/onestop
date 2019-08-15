@@ -3,6 +3,7 @@ buildscript {
     spockVersion = '1.1-groovy-2.4'
     schemasVersion = 'master-SNAPSHOT'
     confluentVersion = '5.3.0'
+    kafkaVersion = '2.3.0'
   }
   dependencies {
     classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
