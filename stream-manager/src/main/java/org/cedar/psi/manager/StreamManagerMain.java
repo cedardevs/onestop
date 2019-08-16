@@ -10,12 +10,15 @@ public class StreamManagerMain {
 
   public static void main(String[] args) {
     ManagerConfig appConfig;
-    if(args.length == 1) {
+    if (args.length == 1) {
       appConfig = new ManagerConfig(args[0]);
     }
-    else if(args.length > 1) {
+    else if (args.length > 1) {
       log.error("Application received more than one arg for config file path. Using defaults and/or system/environment variables.");
       appConfig = new ManagerConfig();
+    }
+    else if (System.getenv().containsKey("CONFIG_LOCATION")) {
+      appConfig = new ManagerConfig(System.getenv().get("CONFIG_LOCATION"));
     }
     else {
       appConfig = new ManagerConfig();
