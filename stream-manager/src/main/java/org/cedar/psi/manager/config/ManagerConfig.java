@@ -1,6 +1,5 @@
 package org.cedar.psi.manager.config;
 
-import org.apache.avro.data.Json;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.TopicConfig;
@@ -14,9 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
@@ -68,14 +68,13 @@ public class ManagerConfig {
   }
 
   private Map<String, Object> parseYamlConfigFile(String filePath) {
-    Map<String, Object> yamlKafkaConfigs = new LinkedHashMap<>();
-    Yaml yaml = new Yaml();
     try {
+      Yaml yaml = new Yaml();
       InputStream inputStream = Files.newInputStream(Path.of(filePath));
       Map<String, Object> configFileMap = yaml.load(inputStream);
 
       // Note -- if anything other than "kafka" config values are in the yaml file, we are currently dropping them.
-      yamlKafkaConfigs = DataUtils.consolidateNestedKeysInMap(null, ".", (Map<String, Object>) configFileMap.get("kafka"));
+      return DataUtils.consolidateNestedKeysInMap(null, ".", (Map<String, Object>) configFileMap.get("kafka"));
     } catch (IOException e) {
       log.error("Cannot open config file path [ " + filePath + " ]. Using defaults and/or system/environment variables.");
     }
@@ -83,7 +82,7 @@ public class ManagerConfig {
       // In case there's any other exception trying to parse the file...
       log.error("Cannot parse config file path [ " + filePath + " ] as YAML. Using defaults and/or system/environment variables.");
     }
-    return yamlKafkaConfigs;
+    return new LinkedHashMap<>();
   }
 
   private static Map<String, String> getEnv() {
