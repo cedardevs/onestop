@@ -19,7 +19,9 @@ describe('The request reducer', function(){
 
     expect(result).toEqual({
       inFlight: false,
+      cartGranulesInFlight: false,
       errorMessage: '',
+      cartGranulesErrorMessage: '',
     })
   })
 

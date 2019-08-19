@@ -62,7 +62,7 @@ describe('granule search actions', function(){
     await store.dispatch(resetStore())
 
     store.dispatch(granuleNewSearchRequested('original-uuid')) // TODO replace with await store.dispatch(granuleNewSearchRequested('original-uuid')) ??
-    store.dispatch(granuleNewSearchResultsReceived(0, [], {}))
+    store.dispatch(granuleNewSearchResultsReceived([], {}, 0))
     const {granuleRequest, granuleFilter} = store.getState().search
     expect(granuleRequest.inFlight).toBeFalsy()
     expect(granuleFilter.selectedCollectionIds).toEqual([ 'original-uuid' ])
@@ -194,7 +194,7 @@ describe('granule search actions', function(){
     beforeEach(async () => {
       // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
       store.dispatch(granuleMoreResultsRequested())
-      store.dispatch(granuleNewSearchResultsReceived(0, [], {}))
+      store.dispatch(granuleNewSearchResultsReceived([], {}, 0))
       const {granuleRequest, granuleFilter} = store.getState().search
       expect(granuleRequest.inFlight).toBeFalsy()
       expect(granuleFilter.pageOffset).toEqual(20)
@@ -267,7 +267,6 @@ describe('granule search actions', function(){
       )
       store.dispatch(
         granuleNewSearchResultsReceived(
-          10,
           [
             {
               id: 'uuid-XYZ',
@@ -282,7 +281,8 @@ describe('granule search actions', function(){
               },
             },
           ],
-          mockFacets
+          mockFacets,
+          10
         )
       )
       const {granuleResult} = store.getState().search

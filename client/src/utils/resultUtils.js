@@ -18,7 +18,11 @@ export const mergeGranulesArrayIntoGranulesMap = (
 ) => {
   // api search returns data from the payload as an array,
   // but in redux we store it in a map, keyed by id
-  return granulesArray.reduce(
+  let granules = granulesArray ? granulesArray : []
+  if (granules.length === 0) {
+    return granulesMap
+  }
+  return granules.reduce(
     (existing, next) => existing.set(next.id, next.attributes),
     granulesMap
   )
