@@ -92,17 +92,14 @@ class SearchRequestParserService {
     return groupedFilters.text.collect {
       Map phrase = [:]
       String field = "${(it.field as String).trim()}"
-      phrase.put(field, (it.value as String).trim())
-      // phrase["$field"] = (it.value as String).trim()
+      phrase.put(field, [
+        query: (it.value as String).trim(),
+        fuzziness: 'AUTO'
+        ])
       return [
-        match_phrase: phrase
+        match: phrase
       ]
-        // return [
-        //   match_phrase: [
-        //     "${(it.field as String).trim()}": (it.value as String).trim()
-        //   ]
-        // ]
-      }
+    }
   }
 
   private List<Map> assembleScoringContext(List<Map> queries, List<Map> filters) {

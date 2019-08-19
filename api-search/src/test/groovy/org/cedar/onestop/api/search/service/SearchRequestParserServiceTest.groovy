@@ -18,26 +18,8 @@ class SearchRequestParserServiceTest extends Specification {
     def params = slurper.parseText(json)
 
     when:
-    List<Map> queryResult = requestParser.assembleTextFilterAsQuery(params.filters)
-    // def field = "title"
-    // Map expectedQuery = [match_phrase: [title: 'foo']]
-    // List<Map> expectedResult = [expectedQuery]
-    def expectedQuery = [[match_phrase:[title:'foo']]]
-
-    then:
-    queryResult == expectedQuery
-
-  }
-  def "Request with text filter part2"() {
-    given:
-    def json = """{
-      "filters": [{"type":"text", "field": "title", "value":"foo"}]
-      }"""
-    def params = slurper.parseText(json)
-
-    when:
-    def queryResult = requestParser.parseSearchQuery(params)
-    def expectedQuery = [[match_phrase:[title:'foo']]]
+    def queryResult = requestParser.assembleTextFilterAsQuery(params.filters)
+    def expectedQuery = [[match:[title:[query:'foo', fuzziness:'AUTO']]]]
 
     then:
     queryResult == expectedQuery
@@ -122,7 +104,7 @@ class SearchRequestParserServiceTest extends Specification {
                     function_score: [
                         query             : [
                             bool: [
-                                must: [[
+                                must: [[[
                                            query_string: [
                                                query               : "winter",
                                                fields              : ["_all"],
@@ -130,7 +112,7 @@ class SearchRequestParserServiceTest extends Specification {
                                                tie_breaker         : 0,
                                                minimum_should_match: '75%',
                                                lenient             : true
-                                           ]]]]
+                                           ]]]]]
                         ],
                         field_value_factor: [
                             field   : 'dsmmAverage',
@@ -168,7 +150,7 @@ class SearchRequestParserServiceTest extends Specification {
                     function_score: [
                         query             : [
                             bool: [
-                                must: [[
+                                must: [[[
                                            query_string: [
                                                query               : "winter",
                                                fields              : ["title^4.0"],
@@ -176,7 +158,7 @@ class SearchRequestParserServiceTest extends Specification {
                                                tie_breaker         : 0,
                                                minimum_should_match: '75%',
                                                lenient             : true
-                                           ]]]]
+                                           ]]]]]
                         ],
                         field_value_factor: [
                             field   : 'dsmmAverage',
