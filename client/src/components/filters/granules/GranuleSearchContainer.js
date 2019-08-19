@@ -18,7 +18,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     clear: () => {
-      // TODO also probably need a clearQuery action
       dispatch(clearGranuleQueryText())
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
 

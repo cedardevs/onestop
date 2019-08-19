@@ -142,12 +142,13 @@ class GranuleSearch extends React.Component {
       <Button
         id="searchButton"
         key="searchButton"
-        icon={search}
         onClick={this.validateAndSubmit}
         title={`Submit: ${instructionalCopy}`}
         style={styleSearchButton}
         styleIcon={styleSearchButtonIcon}
-      />
+      >
+        Apply
+      </Button>
     )
 
     const warningText = <div key="warning-text">{warning}</div>
@@ -179,6 +180,19 @@ class GranuleSearch extends React.Component {
       />
     )
 
+    const styleTextBox = {minWidth: '6em', maxWidth: '100%'}
+    //
+    // <label>Filter by title:</label>
+    // <input
+    //   type="text"
+    //   id="granuleSearch"
+    //   name="granuleSearch"
+    //   placeholder={instructionalCopy}
+    //   aria-placeholder={instructionalCopy}
+    //   value={queryString}
+    //   style={styleTextBox}
+    //   onChange={this.handleInputChange}
+    // />
     return (
       <section style={searchFieldStyle}>
         <div role="search" style={styleSearchWrapper}>
@@ -190,7 +204,7 @@ class GranuleSearch extends React.Component {
             value={queryString}
             warningPopup={warningPopup}
             instructionalCopy={instructionalCopy}
-            textFieldStyle={{minWidth: '6em', maxWidth: '100%'}}
+            textFieldStyle={styleTextBox}
           />
           {searchButton}
         </div>
