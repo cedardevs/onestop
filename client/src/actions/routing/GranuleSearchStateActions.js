@@ -65,6 +65,11 @@ export const granulesForCartError = warning => ({
   warning: warning,
 })
 
+export const GRANULES_FOR_CART_CLEAR_ERROR = 'GRANULES_FOR_CART_CLEAR_ERROR'
+export const granulesForCartClearError = () => ({
+  type: GRANULES_FOR_CART_CLEAR_ERROR,
+})
+
 //
 // export const GRANULE_UPDATE_QUERY_TEXT = 'GRANULE_UPDATE_QUERY_TEXT'
 // export const granuleUpdateQueryText = queryText => {

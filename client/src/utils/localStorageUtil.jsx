@@ -23,12 +23,9 @@ export const storageAvailable = type => {
   }
 }
 
-// export const insertMultipleGranules = (
-//
-
 export const insertGranule = (itemId, item) => {
-  console.log('localStorageUtil::insertGranule::itemId=', itemId)
-  console.log('localStorageUtil::insertGranule::item=', item)
+  //console.log('localStorageUtil::insertGranule::itemId=', itemId)
+  //console.log('localStorageUtil::insertGranule::item=', item)
 
   let selectedGranules = localStorage.getItem('selectedGranules')
     ? JSON.parse(localStorage.getItem('selectedGranules'))

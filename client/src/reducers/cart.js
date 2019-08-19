@@ -7,6 +7,7 @@ import {
   CLEAR_SELECTED_GRANULES,
 } from '../actions/CartActions'
 import {
+  GRANULES_FOR_CART_CLEAR_ERROR,
   GRANULES_FOR_CART_ERROR,
   GRANULES_FOR_CART_RESULTS_RECEIVED,
 } from '../actions/routing/GranuleSearchStateActions'
@@ -34,8 +35,10 @@ export const cart = (state = initialState, action) => {
       return newGranulesForCartResultsReceived(state, action)
 
     case GRANULES_FOR_CART_ERROR:
-      console.log('GRANULES_FOR_CART_ERROR::action', action)
       return state.setIn([ 'error' ], action.warning)
+
+    case GRANULES_FOR_CART_CLEAR_ERROR:
+      return state.setIn([ 'error' ], initialState.error)
 
     case INSERT_SELECTED_GRANULE:
       const newInsertState = state.setIn(

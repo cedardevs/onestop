@@ -15,8 +15,13 @@ import {
   granulesForCartRequested,
   granulesForCartError,
   granulesForCartResultsReceived,
+  granulesForCartClearError,
 } from './GranuleSearchStateActions'
-import {insertGranules} from '../../utils/localStorageUtil'
+import {
+  getSelectedGranulesFromStorage,
+  insertGranules,
+} from '../../utils/localStorageUtil'
+import {CART_CAPACITY, MAX_CART_ADDITION} from '../../utils/cartUtils'
 
 /*
   Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
@@ -73,10 +78,59 @@ const newSearchSuccessHandler = dispatch => {
   }
 }
 
-const granulesForCartSuccessHandler = dispatch => {
+const granulesForCartSuccessHandler = (dispatch, getState) => {
+  const stateSnapshot = getState()
+  const cartGranules = getSelectedGranulesFromStorage(stateSnapshot)
+
   return payload => {
     const granules = payload.data
     const total = payload.meta.total
+
+    // Prevent cart addition from overflowing the cart capacity, taking into account
+    // duplicates that would artificially inflate the estimate. This check must be done after the actual
+    // request so that we can compare duplicate IDs for every possible addition (not just what's been paged)
+    // The concern is placing excessive information into local storage or the Redux store.
+    const cartGranuleIds = Object.keys(cartGranules)
+    const cartGranuleCount = cartGranuleIds.length
+    const duplicateIds = cartGranuleIds.filter(cartGranuleId => {
+      return (
+        granules.find(granule => {
+          return granule.id === cartGranuleId
+        }) !== undefined
+      )
+    })
+    const numUniqueAdditions = granules.length - duplicateIds.length
+
+    // everything in this filter is already in the cart
+    if (numUniqueAdditions === 0) {
+      dispatch(
+        granulesForCartError(
+          `Everything in this filter has already been added to the cart.`
+        )
+      )
+      return
+    }
+
+    // this would overflow the cart
+    if (cartGranuleCount + numUniqueAdditions > CART_CAPACITY) {
+      // the cart is empty (changes the wording a bit for user-friendliness)
+      if (cartGranuleCount === 0) {
+        dispatch(
+          granulesForCartError(
+            `This filter contains ${numUniqueAdditions} granules not already in the cart. Adding these granules would exceed the cart capacity of ${CART_CAPACITY}. Consider refining your filter.`
+          )
+        )
+        return
+      }
+      else {
+        dispatch(
+          granulesForCartError(
+            `This filter contains ${numUniqueAdditions} granules not already in the cart. Adding these granules would exceed the cart capacity of ${CART_CAPACITY}. Consider cleaning your cart or refining your filter.`
+          )
+        )
+        return
+      }
+    }
 
     // add to local storage
     insertGranules(granules)
@@ -114,24 +168,23 @@ const granulePromise = (
 
 const granulesForCartPromise = (
   dispatch,
-  totalGranuleCount,
-  filterState,
+  getState,
   requestFacets,
   successHandler
 ) => {
-  console.log('granulesForCartPromise')
-  console.log('totalGranuleCount', totalGranuleCount)
+  const stateSnapshot = getState()
+  const totalGranuleCount = getTotalGranuleCountFromState(stateSnapshot)
+  const granuleFilter = getFilterFromState(stateSnapshot)
 
   // NOTES:
   // - We re-use the existing granule endpoint because real-time scroll requests are not recommended by ES.
   // `filterState` is a seamless-immutable object, so we have to use that API to copy/set into a new instance.
 
   // prevent cart addition requests from adding more than 1000 items at a time
-  const maxCartAddition = 10
-  if (totalGranuleCount > maxCartAddition) {
+  if (totalGranuleCount > MAX_CART_ADDITION) {
     dispatch(
       granulesForCartError(
-        `${totalGranuleCount} granules exceeds the allowable ${maxCartAddition} that can be added to the cart at one time.`
+        `${totalGranuleCount} granules exceeds the allowable ${MAX_CART_ADDITION} that can be added to the cart at one time. Try refining your results with the filter.`
       )
     )
     return
@@ -139,20 +192,20 @@ const granulesForCartPromise = (
 
   // Ensure the filter page offset is 0, since we are grabbing as much as we can
   // from the beginning -- up to `maxCartAddition` in a single request.
-  const filterStateModifiedForCartRequest = filterState.set('pageOffset', 0)
+  const filterStateModifiedForCartRequest = granuleFilter.set('pageOffset', 0)
 
   // generate the request body based on filters, and if we need facets or not
   const body = granuleBodyBuilder(
     filterStateModifiedForCartRequest,
     requestFacets,
-    maxCartAddition
+    MAX_CART_ADDITION
   )
   if (!body) {
     dispatch(granulesForCartError('Invalid Request'))
     return
   }
   // return promise for search
-  return fetchGranuleSearch(body, successHandler(dispatch), e => {
+  return fetchGranuleSearch(body, successHandler(dispatch, getState), e => {
     dispatch(granulesForCartError(e.errors || e))
   })
 }
@@ -166,18 +219,13 @@ export const submitGranuleSearchForCart = (history, filterState) => {
     // send notifications that request has begun, updating filter state if needed
     dispatch(granulesForCartRequested(filterState))
 
-    const stateSnapshot = getState()
-    const totalGranuleCount = getTotalGranuleCountFromState(stateSnapshot)
-    const updatedFilterState = getFilterFromState(stateSnapshot)
-
     // TODO: should we keep this?
-    navigateToCart(history)
+    //navigateToCart(history)
 
     // start async request
     return granulesForCartPromise(
       dispatch,
-      totalGranuleCount,
-      updatedFilterState,
+      getState,
       true,
       granulesForCartSuccessHandler
     )
@@ -197,6 +245,9 @@ export const submitGranuleSearchWithFilter = (
       // short circuit silently if minimum request requirements are not met
       return
     }
+    // in case we had previously received a warning for submitting filtered granules to the cart, clear the warning
+    dispatch(granulesForCartClearError())
+
     // send notifications that request has begun, updating filter state if needed
     dispatch(granuleNewSearchResetFiltersRequested(collectionId, filterState))
     const updatedFilterState = getFilterFromState(getState())
@@ -222,6 +273,9 @@ export const submitGranuleSearch = (history, collectionId) => {
       // short circuit silently if minimum request requirements are not met
       return
     }
+    // in case we had previously received a warning for submitting filtered granules to the cart, clear the warning
+    dispatch(granulesForCartClearError())
+
     // send notifications that request has begun, updating filter state if needed
     dispatch(granuleNewSearchRequested(collectionId))
     const updatedFilterState = getFilterFromState(getState())
