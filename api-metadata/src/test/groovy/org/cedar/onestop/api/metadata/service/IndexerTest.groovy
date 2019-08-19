@@ -3,7 +3,6 @@ package org.cedar.onestop.api.metadata.service
 import groovy.json.JsonOutput
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
-import org.elasticsearch.Version
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -211,13 +210,9 @@ class IndexerTest extends Specification {
 
   def "new record is ready for onestop"() {
     when:
-
-    // TODO: test both ES6+ and ES5- ?
-    def result = Indexer.reformatMessageForSearch(inputRecord, Version.V_6_1_2)
+    def result = Indexer.reformatMessageForSearch(inputRecord)
 
     then:
-
-    // TODO: conditional based on ES6+ and ES5-?
     result.serviceLinks == []
     result.accessionValues == []
 
@@ -361,7 +356,7 @@ class IndexerTest extends Specification {
     Map parsedXML = Indexer.xmlToParsedRecord(document)
     Map validationResult = Indexer.validateMessage('parsed_record_test_id', parsedXML.parsedRecord)
     Map discoveryMap = AvroUtils.avroToMap(parsedXML.parsedRecord.discovery, true)
-    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
+    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord)
     def generatedKeywords = JsonOutput.toJson(stagingDoc.keywords)
 
     then:
@@ -614,7 +609,7 @@ class IndexerTest extends Specification {
     when:
     Map parsedXML = Indexer.xmlToParsedRecord(document)
 
-    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
+    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord)
 
     then:
     stagingDoc.temporalBounding == [
@@ -632,7 +627,7 @@ class IndexerTest extends Specification {
     when:
     Map parsedXML = Indexer.xmlToParsedRecord(document)
 
-    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
+    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord)
 
     then:
     stagingDoc.temporalBounding == [
@@ -650,7 +645,7 @@ class IndexerTest extends Specification {
     when:
     Map parsedXML = Indexer.xmlToParsedRecord(document)
 
-    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
+    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord)
 
     then:
     stagingDoc.temporalBounding == [
@@ -667,7 +662,7 @@ class IndexerTest extends Specification {
 
     when:
     Map parsedXML = Indexer.xmlToParsedRecord(document)
-    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
+    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord)
 
     then:
     parsedXML.parsedRecord.analysis.temporalBounding.beginDescriptor as String == 'INVALID'

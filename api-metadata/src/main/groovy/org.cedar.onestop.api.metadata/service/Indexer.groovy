@@ -8,7 +8,6 @@ import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.parse.ISOParser
 import org.xml.sax.SAXException
-import org.elasticsearch.Version
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 
 import java.time.temporal.ChronoUnit
@@ -19,6 +18,7 @@ import static org.cedar.schemas.avro.psi.ValidDescriptor.*
 class Indexer {
 
   static Map validateMessage(String id, ParsedRecord messageMap) {
+
     def discovery = messageMap?.discovery
     def analysis = messageMap?.analysis
     def titles = analysis?.titles
@@ -107,7 +107,7 @@ class Indexer {
     return result
   }
 
-  static Map reformatMessageForSearch(ParsedRecord record, Version version) {
+  static Map reformatMessageForSearch(ParsedRecord record) {
     Discovery discovery = record.discovery
     Analysis analysis = record.analysis
 

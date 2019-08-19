@@ -121,7 +121,7 @@ class MetadataManagementService {
 
       try {
         log.debug("Reformating record for search with [id: $id, filename: $filename]")
-        Map source = Indexer.reformatMessageForSearch(avroRecord, esService.version)
+        Map source = Indexer.reformatMessageForSearch(avroRecord)
         String fileId = source.fileIdentifier as String
         String doi = source.doi as String
 
