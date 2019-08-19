@@ -143,10 +143,22 @@ class ETLService {
     ]
     def granuleTasksInFlight = []
     parentIds.each { parentId ->
-      Map internalIdResponse = metadataManagementService.findMetadata(parentId as String, parentId as String, true)
-      List<Map> internalIdData = internalIdResponse.data as List<Map>
-      // Only push to Search granules which can be definitively linked to a single, existing collection
+      // parentId could be a collection's: fileIdentifier, doi, or id; since GET ES request is less taxing than a search
+      // query, attempt to locate by id first
+      def foundInternalParentId
+      List<Map> internalIdData = metadataManagementService.getMetadata(parentId as String, true).data
       if(internalIdData && internalIdData.size() == 1 && internalIdData[0].type == ElasticsearchConfig.TYPE_COLLECTION) {
+        foundInternalParentId = parentId
+      }
+      else {
+        List<Map> externalIdData = metadataManagementService.findMetadata(parentId as String, parentId as String, true).data
+        if(externalIdData && externalIdData.size() == 1 && externalIdData[0].type == ElasticsearchConfig.TYPE_COLLECTION) {
+          foundInternalParentId = externalIdData[0].id
+        }
+      }
+
+      // Only push to Search granules which can be definitively linked to a single, existing collection
+      if(foundInternalParentId) {
         while(granuleTasksInFlight.size() == esConfig.MAX_TASKS) {
           granuleTasksInFlight.removeAll { taskId ->
             def status = elasticsearchService.checkTask(taskId as String)
@@ -162,7 +174,7 @@ class ETLService {
           sleep(1000)
         }
 
-        def granuleTask = etlGranules(sourceGranule, destGranule, parentId as String, internalIdData[0].id, maxGranuleStagedDate)
+        def granuleTask = etlGranules(sourceGranule, destGranule, parentId as String, foundInternalParentId, maxGranuleStagedDate)
         granuleTasksInFlight << granuleTask
       }
     }

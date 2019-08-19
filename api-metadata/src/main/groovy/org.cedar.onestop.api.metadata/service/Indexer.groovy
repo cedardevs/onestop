@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit
 import static org.cedar.schemas.avro.psi.ValidDescriptor.*
 
 @Slf4j
-class InventoryManagerToOneStopUtil {
+class Indexer {
 
   static Map validateMessage(String id, ParsedRecord messageMap) {
     def discovery = messageMap?.discovery

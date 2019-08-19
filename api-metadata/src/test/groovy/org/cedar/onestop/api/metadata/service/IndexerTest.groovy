@@ -11,7 +11,7 @@ import spock.lang.Unroll
 import static org.cedar.schemas.avro.util.TemporalTestData.situations
 
 @Unroll
-class InventoryManagerToOneStopUtilTest extends Specification {
+class IndexerTest extends Specification {
 
   def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
   def inputRecord = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
@@ -160,7 +160,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
 
   def "Create GCMD keyword lists"() {
     when:
-    Map parsedKeywords = InventoryManagerToOneStopUtil.createGcmdKeyword(inputRecord.discovery)
+    Map parsedKeywords = Indexer.createGcmdKeyword(inputRecord.discovery)
 
     then:
     parsedKeywords.gcmdScienceServices == expectedGcmdKeywords.gcmdScienceServices
@@ -181,7 +181,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
 
   def "Create contacts, publishers and creators from responsibleParties"() {
     when:
-    Map partiesMap = InventoryManagerToOneStopUtil.parseResponsibleParties(inputRecord.discovery.responsibleParties)
+    Map partiesMap = Indexer.parseResponsibleParties(inputRecord.discovery.responsibleParties)
 
     then:
     partiesMap.contacts == expectedResponsibleParties.contacts
@@ -191,7 +191,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
 
   def "When #situation.description, expected temporal bounding generated"() {
     when:
-    def newTimeMetadata = InventoryManagerToOneStopUtil.readyDatesForSearch(situation.bounding, situation.analysis)
+    def newTimeMetadata = Indexer.readyDatesForSearch(situation.bounding, situation.analysis)
 
     then:
     newTimeMetadata == expectedResult
@@ -213,7 +213,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     when:
 
     // TODO: test both ES6+ and ES5- ?
-    def result = InventoryManagerToOneStopUtil.reformatMessageForSearch(inputRecord, Version.V_6_1_2)
+    def result = Indexer.reformatMessageForSearch(inputRecord, Version.V_6_1_2)
 
     then:
 
@@ -236,7 +236,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
 
   def "valid message passes validation check"() {
     expect:
-    InventoryManagerToOneStopUtil.validateMessage('dummy id', inputRecord)
+    Indexer.validateMessage('dummy id', inputRecord)
   }
 
   def "invalid message fails validation check"() {
@@ -266,7 +266,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
         .build()
 
     expect:
-    !InventoryManagerToOneStopUtil.validateMessage('dummy id', record)?.valid
+    !Indexer.validateMessage('dummy id', record)?.valid
   }
 
   def 'xml to ParsedRecord to staging doc (test from old MetadataParserSpec)'(){
@@ -358,10 +358,10 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
-    Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
-    Map validationResult = InventoryManagerToOneStopUtil.validateMessage('parsed_record_test_id', parsedXML.parsedRecord)
+    Map parsedXML = Indexer.xmlToParsedRecord(document)
+    Map validationResult = Indexer.validateMessage('parsed_record_test_id', parsedXML.parsedRecord)
     Map discoveryMap = AvroUtils.avroToMap(parsedXML.parsedRecord.discovery, true)
-    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
+    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
     def generatedKeywords = JsonOutput.toJson(stagingDoc.keywords)
 
     then:
@@ -600,7 +600,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
 
     when: 'you attempt to parse the xml'
 
-    def parsedXml = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
+    def parsedXml = Indexer.xmlToParsedRecord(document)
 
     then: 'we throw an exception instead of parsing attack-vector xml'
     parsedXml.error.title == 'Load request failed due to malformed XML.'
@@ -612,9 +612,9 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
-    Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
+    Map parsedXML = Indexer.xmlToParsedRecord(document)
 
-    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
+    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
 
     then:
     stagingDoc.temporalBounding == [
@@ -630,9 +630,9 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-paleo-dates-metadata.xml").text
 
     when:
-    Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
+    Map parsedXML = Indexer.xmlToParsedRecord(document)
 
-    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
+    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
 
     then:
     stagingDoc.temporalBounding == [
@@ -648,9 +648,9 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-no-timezone-dates-metadata.xml").text
 
     when:
-    Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
+    Map parsedXML = Indexer.xmlToParsedRecord(document)
 
-    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
+    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
 
     then:
     stagingDoc.temporalBounding == [
@@ -666,8 +666,8 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-invalid-dates-metadata.xml").text
 
     when:
-    Map parsedXML = InventoryManagerToOneStopUtil.xmlToParsedRecord(document)
-    Map stagingDoc = InventoryManagerToOneStopUtil.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
+    Map parsedXML = Indexer.xmlToParsedRecord(document)
+    Map stagingDoc = Indexer.reformatMessageForSearch(parsedXML.parsedRecord, Version.V_6_1_2)
 
     then:
     parsedXML.parsedRecord.analysis.temporalBounding.beginDescriptor as String == 'INVALID'

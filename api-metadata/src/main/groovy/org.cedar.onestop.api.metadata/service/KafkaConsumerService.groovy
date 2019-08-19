@@ -31,7 +31,7 @@ class KafkaConsumerService {
     log.info("consuming message from kafka topic")
     try {
       def validRecords = records.stream().filter({
-        it != null && InventoryManagerToOneStopUtil.validateMessage(it.key(), it.value())?.valid
+        it != null && Indexer.validateMessage(it.key(), it.value())?.valid
       }).map({
         [id: it.key(), parsedRecord: it.value()]
       }).collect(Collectors.toList())

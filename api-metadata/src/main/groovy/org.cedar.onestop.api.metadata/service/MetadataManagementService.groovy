@@ -61,7 +61,7 @@ class MetadataManagementService {
     }
   }
 
-  Map loadXMLdocuments(List documents){
+  Map loadXMLdocuments(List documents) {
     List<Map<String, ?>> parsedRecords = []
     List results = []
     documents.each { document ->
@@ -70,7 +70,8 @@ class MetadataManagementService {
       if (document instanceof MultipartFile) {
         fileName = document.originalFilename
         xml = document.inputStream.text
-      } else {
+      }
+      else {
         xml = document as String
       }
       Map result = [
@@ -79,19 +80,21 @@ class MetadataManagementService {
           ]
       ]
       log.info("Loading XML document ${fileName ? fileName.toString() : '(no filename provided)'}")
-      Map parseResult = InventoryManagerToOneStopUtil.xmlToParsedRecord(xml)
+      Map parseResult = Indexer.xmlToParsedRecord(xml)
       if(parseResult?.parsedRecord){
-        Map validationResult = InventoryManagerToOneStopUtil.validateMessage(fileName, parseResult.parsedRecord)
+        Map validationResult = Indexer.validateMessage(fileName, parseResult.parsedRecord)
         if(!validationResult?.title){
           log.debug("Validation success: $fileName is valid")
           parsedRecords << [filename:fileName, parsedRecord: parseResult.parsedRecord as ParsedRecord]
-        }else{
+        }
+        else{
           log.warn("Validation failed: $fileName is invalid. Cause: ${validationResult.details} ")
           validationResult.status = HttpStatus.BAD_REQUEST.value()
           result.meta.error = validationResult
           results << result
         }
-      }else {
+      }
+      else {
         String title = "${parseResult?.error?.title ?: 'Parse error'}"
         String parseErrorDetails = "${parseResult?.error?.detail ?: "Unable to generate a ParsedRecord from xml "}"
         result.meta = [error: [title: title, detail: parseErrorDetails, status: HttpStatus.BAD_REQUEST.value()]]
@@ -118,7 +121,7 @@ class MetadataManagementService {
 
       try {
         log.debug("Reformating record for search with [id: $id, filename: $filename]")
-        Map source = InventoryManagerToOneStopUtil.reformatMessageForSearch(avroRecord, esService.version)
+        Map source = Indexer.reformatMessageForSearch(avroRecord, esService.version)
         String fileId = source.fileIdentifier as String
         String doi = source.doi as String
 
