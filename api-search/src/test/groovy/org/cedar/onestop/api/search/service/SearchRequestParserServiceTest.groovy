@@ -10,6 +10,40 @@ class SearchRequestParserServiceTest extends Specification {
   private slurper = new JsonSlurper()
   private requestParser = new SearchRequestParserService(null)
 
+  def "Request with text filter"() {
+    given:
+    def json = """{
+      "filters": [{"type":"text", "field": "title", "value":"foo"}]
+      }"""
+    def params = slurper.parseText(json)
+
+    when:
+    List<Map> queryResult = requestParser.assembleTextFilterAsQuery(params.filters)
+    // def field = "title"
+    // Map expectedQuery = [match_phrase: [title: 'foo']]
+    // List<Map> expectedResult = [expectedQuery]
+    def expectedQuery = [[match_phrase:[title:'foo']]]
+
+    then:
+    queryResult == expectedQuery
+
+  }
+  def "Request with text filter part2"() {
+    given:
+    def json = """{
+      "filters": [{"type":"text", "field": "title", "value":"foo"}]
+      }"""
+    def params = slurper.parseText(json)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [[match_phrase:[title:'foo']]]
+
+    then:
+    queryResult == expectedQuery
+
+  }
+
   def "Request with zeros in #type filter #relative (#relation) creates valid elasticsearch request"() {
     // confirms a bug fix - 0s were causing no filter to be created
     given: 'datetime or year filters before/after 0'

@@ -15,7 +15,7 @@ import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
-  queryText: '',
+  title: '',
   geoJSON: null,
   startDateTime: null,
   endDateTime: null,
@@ -58,7 +58,7 @@ export const granuleFilter = (state = initialState, action) => {
       return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)
 
     case GRANULE_SET_QUERY_TEXT:
-      return Immutable.set(state, 'queryText', action.text)
+      return Immutable.set(state, 'title', action.text)
 
     case GRANULE_UPDATE_GEOMETRY:
       return Immutable.set(state, 'geoJSON', action.geoJSON)

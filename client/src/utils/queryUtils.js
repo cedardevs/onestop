@@ -40,7 +40,8 @@ const assembleFilters = filter => {
     assembleGeometryFilters(filter),
     assembleTemporalFilters(filter),
     assembleAdditionalFilters(filter),
-    assembleSelectedCollectionsFilters(filter)
+    assembleSelectedCollectionsFilters(filter),
+    assembleTitleTextFilters(filter)
   )
 
   filters = _.flatten(_.compact(filters))
@@ -52,7 +53,16 @@ const assembleQueries = ({queryText}) => {
   if (trimmedText && trimmedText !== '*') {
     return [ {type: 'queryText', value: trimmedText} ]
   }
+  // if (title) {
+  //   return assembleTitleTextFilters(title)
+  // }
   return []
+}
+
+const assembleTitleTextFilters = ({title}) => {
+  if (title) {
+    return [ {type: 'text', field: 'title', value: title} ]
+  }
 }
 
 const assembleFacetFilters = ({selectedFacets}) => {
@@ -147,6 +157,12 @@ const codecs = [
   {
     longKey: 'queryText',
     shortKey: 'q',
+    encode: text => encodeURIComponent(text),
+    decode: text => decodeURIComponent(text),
+  },
+  {
+    longKey: 'title',
+    shortKey: 't',
     encode: text => encodeURIComponent(text),
     decode: text => decodeURIComponent(text),
   },

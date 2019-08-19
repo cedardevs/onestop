@@ -37,7 +37,8 @@ class SearchRequestParserService {
 
     def requestQuery = [
         bool: [
-            must  : assembleScoringContext(params.queries) ?: [:],
+            must  : assembleScoringContext(params.queries, params.filters) ?: [:],
+
             filter: assembleFilteringContext(params.filters) ?: [:]
         ]
     ]
@@ -83,24 +84,66 @@ class SearchRequestParserService {
     return aggregations
   }
 
-  private List<Map> assembleScoringContext(List<Map> queries) {
-    if (!queries) {
+  private List<Map> assembleTextFilterAsQuery(List<Map> filters) {
+    if (!filters) {
+      return null
+    }
+    def groupedFilters = filters.groupBy { it.type }
+    return groupedFilters.text.collect {
+      Map phrase = [:]
+      String field = "${(it.field as String).trim()}"
+      phrase.put(field, (it.value as String).trim())
+      // phrase["$field"] = (it.value as String).trim()
+      return [
+        match_phrase: phrase
+      ]
+        // return [
+        //   match_phrase: [
+        //     "${(it.field as String).trim()}": (it.value as String).trim()
+        //   ]
+        // ]
+      }
+  }
+
+  private List<Map> assembleScoringContext(List<Map> queries, List<Map> filters) {
+    if (!queries && !filters) {
       return null
     }
 
-    def groupedQueries = queries.groupBy { it.type }
-    def allTextQueries = groupedQueries.queryText.collect {
-      return [
-          query_string: [
-              query               : (it.value as String).trim(),
-              // FIXME: Test if default of _all is necessary; if so, we should control the fields in it. #190
-              fields              : config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: ['_all'],
-              phrase_slop         : config?.phraseSlop ?: 0,
-              tie_breaker         : config?.tieBreaker ?: 0,
-              minimum_should_match: config?.minimumShouldMatch ?: '75%',
-              lenient             : true
-          ]
-      ]
+    def allTextQueries = []
+
+    if(queries) {
+      def groupedQueries = queries.groupBy { it.type }
+      allTextQueries.add(groupedQueries.queryText.collect {
+        return [
+            query_string: [
+                query               : (it.value as String).trim(),
+                // FIXME: Test if default of _all is necessary; if so, we should control the fields in it. #190
+                fields              : config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: ['_all'],
+                phrase_slop         : config?.phraseSlop ?: 0,
+                tie_breaker         : config?.tieBreaker ?: 0,
+                minimum_should_match: config?.minimumShouldMatch ?: '75%',
+                lenient             : true
+            ]
+        ]
+      })
+    }
+
+    if (filters) {
+      // def groupedFilters = filters.groupBy { it.type }
+      // allTextQueries.add(groupedFilters.text.collect {
+      //     return [
+      //       match_phrase: [
+      //         "${(it.field as String).trim()}": (it.value as String).trim()
+      //       ]
+      //     ]
+      //   })
+        allTextQueries.add(assembleTextFilterAsQuery(filters))
+        return assembleTextFilterAsQuery(filters)
+    }
+
+    if (!allTextQueries) {
+      return null
     }
 
     return [[
@@ -128,6 +171,11 @@ class SearchRequestParserService {
 
     def allFilters = []
     def groupedFilters = filters.groupBy { it.type }
+
+    // Text filters:
+    // groupdFilters.text.each {
+    //   allFilters.add(constructTextFilter(it))
+    // }
 
     // Temporal filters:
     groupedFilters.datetime.each {
@@ -173,6 +221,10 @@ class SearchRequestParserService {
     }
 
     return allFilters
+  }
+
+  private List<Map> constructTextFilter(Map filterRequest) {
+
   }
 
   private List<Map> constructDateTimeFilter(Map filterRequest) {

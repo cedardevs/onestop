@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Text Filter",
+  "description": "Filter by matching phrase text. Much more restrictive than query.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "Filter type.",
+      "enum": [
+        "text"
+      ]
+    },
+    "field": {
+      "description": "Field to search against.",
+      "type": "string"
+    },
+    "value": {
+      "description": "Phrase to search.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "field",
+    "value"
+  ],
+  "additionalProperties": false
+}

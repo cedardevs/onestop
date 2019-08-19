@@ -11,7 +11,7 @@ import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteAc
 
 const mapStateToProps = state => {
   return {
-    queryString: state.search.granuleFilter.queryText,
+    queryString: state.search.granuleFilter.title,
   }
 }
 
