@@ -60,7 +60,10 @@ export const cart = (state = initialState, action) => {
       //TODO: implement state transition
       return state
     case CLEAR_SELECTED_GRANULES:
-      const newRemoveAllState = state.set('selectedGranules', null)
+      const newRemoveAllState = state.set(
+        'selectedGranules',
+        initialState.selectedGranules
+      )
       // delete state['selectedGranules']
       return newRemoveAllState
     default:

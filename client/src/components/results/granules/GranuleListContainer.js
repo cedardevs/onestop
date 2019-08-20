@@ -18,6 +18,7 @@ import {
   submitGranuleSearchForCart,
   submitGranuleSearchNextPage,
 } from '../../../actions/routing/GranuleSearchRouteActions'
+import {CART_CAPACITY, MAX_CART_ADDITION} from '../../../utils/cartUtils'
 
 const mapStateToProps = state => {
   const {
@@ -45,7 +46,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(submitGranuleSearchNextPage())
     },
     addFilteredGranulesToCart: granuleFilter => {
-      dispatch(submitGranuleSearchForCart(ownProps.history, granuleFilter))
+      dispatch(
+        submitGranuleSearchForCart(
+          ownProps.history,
+          granuleFilter,
+          MAX_CART_ADDITION,
+          CART_CAPACITY
+        )
+      )
     },
     selectGranule: (item, itemId) => {
       insertGranule(itemId, item)
