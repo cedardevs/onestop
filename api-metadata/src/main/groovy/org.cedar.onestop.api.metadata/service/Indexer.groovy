@@ -24,6 +24,7 @@ class Indexer {
     def titles = analysis?.titles
     def identification = analysis?.identification
     def temporal = analysis?.temporalBounding
+    def spatial = analysis?.spatialBounding
 
     def failure = [title: 'Invalid record']
     List<String> details = []
@@ -64,6 +65,9 @@ class Indexer {
     }
     if (temporal && temporal.beginDescriptor != UNDEFINED && temporal.endDescriptor != UNDEFINED && temporal.instantDescriptor == INVALID) {
       details << "Invalid instant-only date"
+    }
+    if (spatial && spatial.spatialBoundingExists && !spatial.isValid) {
+      details << "Invalid geoJSON for spatial bounding"
     }
     if (details.size() > 0 ) {
       log.info("INVALID RECORD [ $id ]. VALIDATION FAILURES:  $details ")
