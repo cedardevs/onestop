@@ -32,7 +32,8 @@ import {
   Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
 */
 
-const getTotalGranuleCountFromState = state => { // TODO we need a selectors section of the code
+const getTotalGranuleCountFromState = state => {
+  // TODO we need a selectors section of the code
   return (
     (state &&
       state.search &&
@@ -55,12 +56,14 @@ const isRequestInvalid = (id, state) => {
   return isAlreadyInFlight(state) || _.isEmpty(id)
 }
 
-const isCartRequestAlreadyInFlight = state => { // ditto TODO selectors code section needed
+const isCartRequestAlreadyInFlight = state => {
+  // ditto TODO selectors code section needed
   const inFlight = state.search.granuleRequest.cartGranulesInFlight
   return inFlight
 }
 
-const isCartRequestInvalid = state => { // ditto TODO selectors code section needed
+const isCartRequestInvalid = state => {
+  // ditto TODO selectors code section needed
   return isCartRequestAlreadyInFlight(state)
 }
 
