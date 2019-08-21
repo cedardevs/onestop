@@ -32,7 +32,7 @@ import {
   Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
 */
 
-const getTotalGranuleCountFromState = state => {
+const getTotalGranuleCountFromState = state => { // TODO we need a selectors section of the code
   return (
     (state &&
       state.search &&
