@@ -32,6 +32,9 @@ class SearchRequestParserService {
   }
 
   Map parseSearchQuery(Map params) {
+    log.debug("Queries: ${params.queries}")
+    log.debug("Filters: ${params.filters}")
+
     def requestQuery = [
         bool: [
             must  : assembleScoringContext(params.queries) ?: [:],
@@ -87,20 +90,10 @@ class SearchRequestParserService {
     }
     def groupedFilters = filters.groupBy { it.type }
     return groupedFilters.text.collect {
-      // Map phrase = [:]
-      // String field = "${(it.field as String).trim()}"
-      // phrase.put(field, [
-      //   query: (it.value as String).trim(),
-      //   fuzziness: '0'
-      //   ])
-      // return [
-      //   query_string: phrase
-      // ]
       return [
         query_string: [
           query               : (it.value as String).trim(),
           fields              : ["${(it.field as String).trim()}^1"],
-          //config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: ['_all'],
           phrase_slop         : config?.phraseSlop ?: 0,
           tie_breaker         : config?.tieBreaker ?: 0,
           minimum_should_match: config?.minimumShouldMatch ?: '75%',
@@ -160,11 +153,6 @@ class SearchRequestParserService {
     def allFilters = []
     def groupedFilters = filters.groupBy { it.type }
 
-    // Text filters:
-    // groupdFilters.text.each {
-    //   allFilters.add(constructTextFilter(it))
-    // }
-
     // Temporal filters:
     groupedFilters.datetime.each {
       allFilters.add(constructDateTimeFilter(it))
@@ -209,10 +197,6 @@ class SearchRequestParserService {
     }
 
     return allFilters
-  }
-
-  private List<Map> constructTextFilter(Map filterRequest) {
-
   }
 
   private List<Map> constructDateTimeFilter(Map filterRequest) {
