@@ -40,29 +40,25 @@ const assembleFilters = filter => {
     assembleGeometryFilters(filter),
     assembleTemporalFilters(filter),
     assembleAdditionalFilters(filter),
-    assembleSelectedCollectionsFilters(filter),
-    assembleTitleTextFilters(filter)
+    assembleSelectedCollectionsFilters(filter)
   )
 
   filters = _.flatten(_.compact(filters))
   return filters
 }
 
-const assembleQueries = ({queryText}) => {
+const assembleQueries = ({queryText, title}) => {
   let trimmedText = _.trim(queryText)
   if (trimmedText && trimmedText !== '*') {
     return [ {type: 'queryText', value: trimmedText} ]
   }
-  // if (title) {
-  //   return assembleTitleTextFilters(title)
-  // }
-  return []
-}
-
-const assembleTitleTextFilters = ({title}) => {
   if (title) {
-    return [ {type: 'text', field: 'title', value: title} ]
+    let trimmedText = _.trim(title)
+    if (trimmedText && trimmedText !== '*') {
+      return [ {type: 'queryText', value: `title:${trimmedText}`} ]
+    }
   }
+  return []
 }
 
 const assembleFacetFilters = ({selectedFacets}) => {

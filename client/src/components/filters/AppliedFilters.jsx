@@ -17,8 +17,8 @@ const Theme = {
     borderColor: '#7A2CAB',
   },
   text: {
-    backgroundColor: 'pink', // TODO this is both ugly and not 508 compliant!
-    borderColor: 'red',
+    backgroundColor: '#0e274e',
+    borderColor: '#18478F',
   },
 }
 

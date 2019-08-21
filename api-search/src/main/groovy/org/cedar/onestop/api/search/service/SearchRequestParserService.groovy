@@ -32,12 +32,9 @@ class SearchRequestParserService {
   }
 
   Map parseSearchQuery(Map params) {
-    log.debug("Queries: ${params.queries}")
-    log.debug("Filters: ${params.filters}")
-
     def requestQuery = [
         bool: [
-            must  : assembleScoringContext(params.queries, params.filters) ?: [:],
+            must  : assembleScoringContext(params.queries) ?: [:],
 
             filter: assembleFilteringContext(params.filters) ?: [:]
         ]
@@ -113,8 +110,8 @@ class SearchRequestParserService {
     }
   }
 
-  private List<Map> assembleScoringContext(List<Map> queries, List<Map> filters) {
-    if (!queries && !filters) {
+  private List<Map> assembleScoringContext(List<Map> queries) {
+    if (!queries) {
       return null
     }
 
@@ -135,23 +132,6 @@ class SearchRequestParserService {
             ]
         ]
       })
-    }
-
-    if (filters) {
-      // def groupedFilters = filters.groupBy { it.type }
-      // allTextQueries.add(groupedFilters.text.collect {
-      //     return [
-      //       match_phrase: [
-      //         "${(it.field as String).trim()}": (it.value as String).trim()
-      //       ]
-      //     ]
-      //   })
-        allTextQueries.add(assembleTextFilterAsQuery(filters))
-        return assembleTextFilterAsQuery(filters)
-    }
-
-    if (!allTextQueries) {
-      return null
     }
 
     return [[

@@ -364,24 +364,6 @@ class JsonValidatorSpec extends Specification {
           "facets":true,
           "page":{"max":1000, "offset":0}
         }"""
-    'text filter' |
-        """\
-        {
-      "queries": [],
-      "filters": [{
-          "type": "text",
-          "field": "title",
-          "value": "177000"
-      },{
-          "type": "collection",
-          "values": ["EXDJdmsBhyNeHoSaEdU4"]
-      }],
-      "facets": true,
-      "page": {
-          "max": 20,
-          "offset": 0
-      }
-  }"""
   }
 
   def 'invalid search requests: #desc'() {

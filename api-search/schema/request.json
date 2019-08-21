@@ -19,9 +19,6 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "components/textFilter.json"
-          },
-          {
             "$ref": "components/datetimeFilter.json"
           },
           {
