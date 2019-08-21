@@ -19,7 +19,7 @@ class SearchRequestParserServiceTest extends Specification {
 
     when:
     def queryResult = requestParser.assembleTextFilterAsQuery(params.filters)
-    def expectedQuery = [[match:[title:[query:'foo', fuzziness:'AUTO']]]]
+    def expectedQuery = [[query_string:[query:'foo', fields:['title^1'], phrase_slop:0, tie_breaker:0, minimum_should_match:'75%', lenient:true]]]
 
     then:
     queryResult == expectedQuery
