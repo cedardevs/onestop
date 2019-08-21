@@ -140,7 +140,7 @@ class GranuleFilters extends React.Component {
         onBlur={this.handleBlur}
         style={styleOverallHeadingApplied}
       >
-        Granule Filters
+        File Filters
       </h2>
     )
 
@@ -191,7 +191,11 @@ class GranuleFilters extends React.Component {
             },
           }}
         />
-      <GranuleTextFilter clear={this.props.clear} submit={this.props.submit} query={this.props.queryString} />
+        <GranuleTextFilter
+          clear={this.props.clear}
+          submit={this.props.submit}
+          query={this.props.queryString}
+        />
         {expandableFilters}
       </div>
     )

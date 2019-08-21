@@ -9,13 +9,12 @@ import {
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
-  console.log('prop connector?',state.search.granuleFilter.title)
   return {
     queryString: state.search.granuleFilter.title,
   }
 }
 
-const mapDispatchToProps = (dispatch,ownProps) => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     closeLeft: () => dispatch(closeLeft()),
     clear: () => {
@@ -25,7 +24,7 @@ const mapDispatchToProps = (dispatch,ownProps) => {
     submit: text => {
       dispatch(setGranuleQueryText(text))
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
-    }
+    },
   }
 }
 
