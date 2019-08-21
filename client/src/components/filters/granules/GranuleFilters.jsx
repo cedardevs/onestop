@@ -6,7 +6,7 @@ import FlexRow from '../../common/ui/FlexRow'
 import Button from '../../common/input/Button'
 import FilterHeading from '../FilterHeading'
 
-import GranuleSearchContainer from './GranuleSearchContainer'
+import GranuleTextFilter from './GranuleTextFilter'
 import GranuleTimeFilterContainer from './GranuleTimeFilterContainer'
 import GranuleFacetFilterContainer from './GranuleFacetFilterContainer'
 import GranuleMapFilterContainer from './GranuleMapFilterContainer'
@@ -177,7 +177,7 @@ class GranuleFilters extends React.Component {
       )
     })
 
-    const textQuery = <input key="textQuery" />
+    // const textQuery = <input key="textQuery" />
 
     return (
       <div>
@@ -191,7 +191,7 @@ class GranuleFilters extends React.Component {
             },
           }}
         />
-        <GranuleSearchContainer />
+      <GranuleTextFilter clear={this.props.clear} submit={this.props.submit} query={this.props.queryString} />
         {expandableFilters}
       </div>
     )
