@@ -233,9 +233,6 @@ export const submitGranuleSearchForCart = (
     // send notifications that request has begun, updating filter state if needed
     dispatch(granulesForCartRequested())
 
-    // TODO: should we keep this?
-    //navigateToCart(history)
-
     // start async request
     return granulesForCartPromise(
       dispatch,
@@ -243,7 +240,7 @@ export const submitGranuleSearchForCart = (
       granuleFilter,
       maxCartAddition,
       cartCapacity,
-      true, // TODO: can we make this false?
+      false, // granule requests for cart don't need facet information (yet?)
       granulesForCartSuccessHandler
     )
   }
