@@ -21,6 +21,12 @@ import {
   getSelectedGranulesFromStorage,
   insertGranules,
 } from '../../utils/localStorageUtil'
+import {
+  warningExceedsMaxAddition,
+  warningNothingNew,
+  warningOverflow,
+  warningOverflowFromEmpty,
+} from '../../utils/cartUtils'
 
 /*
   Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
@@ -102,11 +108,7 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
 
     // everything in this filter is already in the cart
     if (numUniqueAdditions === 0) {
-      dispatch(
-        granulesForCartError(
-          `Everything in this filter has already been added to the cart.`
-        )
-      )
+      dispatch(granulesForCartError(warningNothingNew()))
       return
     }
 
@@ -116,7 +118,7 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
       if (cartGranuleCount === 0) {
         dispatch(
           granulesForCartError(
-            `This filter contains ${numUniqueAdditions} granules not already in the cart. Adding these granules would exceed the cart capacity of ${cartCapacity}. Consider refining your filter.`
+            warningOverflowFromEmpty(numUniqueAdditions, cartCapacity)
           )
         )
         return
@@ -124,7 +126,7 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
       else {
         dispatch(
           granulesForCartError(
-            `This filter contains ${numUniqueAdditions} granules not already in the cart. Adding these granules would exceed the cart capacity of ${cartCapacity}. Consider cleaning your cart or refining your filter.`
+            warningOverflow(numUniqueAdditions, cartCapacity)
           )
         )
         return
@@ -168,6 +170,7 @@ const granulePromise = (
 const granulesForCartPromise = (
   dispatch,
   getState,
+  granuleFilter,
   maxCartAddition,
   cartCapacity,
   requestFacets,
@@ -175,7 +178,7 @@ const granulesForCartPromise = (
 ) => {
   const stateSnapshot = getState()
   const totalGranuleCount = getTotalGranuleCountFromState(stateSnapshot)
-  const granuleFilter = getFilterFromState(stateSnapshot)
+  // const granuleFilter = getFilterFromState(stateSnapshot)
 
   // NOTES:
   // - We re-use the existing granule endpoint because real-time scroll requests are not recommended by ES.
@@ -185,7 +188,7 @@ const granulesForCartPromise = (
   if (totalGranuleCount > maxCartAddition) {
     dispatch(
       granulesForCartError(
-        `${totalGranuleCount} granules exceeds the allowable ${maxCartAddition} that can be added to the cart at one time. Try refining your results with the filter.`
+        warningExceedsMaxAddition(totalGranuleCount, maxCartAddition)
       )
     )
     return
@@ -194,6 +197,7 @@ const granulesForCartPromise = (
   // Ensure the filter page offset is 0, since we are grabbing as much as we can
   // from the beginning -- up to `maxCartAddition` in a single request.
   const filterStateModifiedForCartRequest = granuleFilter.set('pageOffset', 0)
+  // granuleFilter.pageOffset = 0
 
   // generate the request body based on filters, and if we need facets or not
   const body = granuleBodyBuilder(
@@ -217,7 +221,7 @@ const granulesForCartPromise = (
 
 export const submitGranuleSearchForCart = (
   history,
-  filterState,
+  granuleFilter,
   maxCartAddition,
   cartCapacity
 ) => {
@@ -227,7 +231,7 @@ export const submitGranuleSearchForCart = (
       return
     }
     // send notifications that request has begun, updating filter state if needed
-    dispatch(granulesForCartRequested(filterState))
+    dispatch(granulesForCartRequested())
 
     // TODO: should we keep this?
     //navigateToCart(history)
@@ -236,6 +240,7 @@ export const submitGranuleSearchForCart = (
     return granulesForCartPromise(
       dispatch,
       getState,
+      granuleFilter,
       maxCartAddition,
       cartCapacity,
       true, // TODO: can we make this false?

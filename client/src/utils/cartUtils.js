@@ -10,6 +10,23 @@ export const MAX_CART_ADDITION = 1000
 // 10,000 items is used here because that is a generous constraint on a UI, redux store, and local storage
 export const CART_CAPACITY = 10000
 
+// testable warnings for special error conditions when adding granules to the cart
+export const warningNothingNew = () => {
+  return `Everything in this filter has already been added to the cart.`
+}
+export const warningOverflowFromEmpty = (numUniqueAdditions, cartCapacity) => {
+  return `This filter contains ${numUniqueAdditions} granules not already in the cart. Adding these granules would exceed the cart capacity of ${cartCapacity}. Consider refining your filter.`
+}
+export const warningOverflow = (numUniqueAdditions, cartCapacity) => {
+  return `This filter contains ${numUniqueAdditions} granules not already in the cart. Adding these granules would exceed the cart capacity of ${cartCapacity}. Consider cleaning your cart or refining your filter.`
+}
+export const warningExceedsMaxAddition = (
+  totalGranuleCount,
+  maxCartAddition
+) => {
+  return `${totalGranuleCount} granules exceeds the allowable ${maxCartAddition} that can be added to the cart at one time. Try refining your results with the filter.`
+}
+
 export const granuleDownloadableLinks = (granules, protocol, source) => {
   let downloadLinks = []
   granules.forEach(granule => {

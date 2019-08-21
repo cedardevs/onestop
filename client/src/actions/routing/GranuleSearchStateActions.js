@@ -46,9 +46,8 @@ export const granuleSearchError = errors => ({
 })
 
 export const GRANULES_FOR_CART_REQUESTED = 'GRANULES_FOR_CART_REQUESTED'
-export const granulesForCartRequested = filters => ({
+export const granulesForCartRequested = () => ({
   type: GRANULES_FOR_CART_REQUESTED,
-  filters: filters,
 })
 
 export const GRANULES_FOR_CART_RESULTS_RECEIVED =
