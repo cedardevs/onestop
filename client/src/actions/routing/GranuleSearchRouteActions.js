@@ -55,12 +55,12 @@ const isRequestInvalid = (id, state) => {
   return isAlreadyInFlight(state) || _.isEmpty(id)
 }
 
-const isCartRequestAlreadyInFlight = state => {
+const isCartRequestAlreadyInFlight = state => { // ditto TODO selectors code section needed
   const inFlight = state.search.granuleRequest.cartGranulesInFlight
   return inFlight
 }
 
-const isCartRequestInvalid = state => {
+const isCartRequestInvalid = state => { // ditto TODO selectors code section needed
   return isCartRequestAlreadyInFlight(state)
 }
 
@@ -178,7 +178,6 @@ const granulesForCartPromise = (
 ) => {
   const stateSnapshot = getState()
   const totalGranuleCount = getTotalGranuleCountFromState(stateSnapshot)
-  // const granuleFilter = getFilterFromState(stateSnapshot)
 
   // NOTES:
   // - We re-use the existing granule endpoint because real-time scroll requests are not recommended by ES.
@@ -197,7 +196,6 @@ const granulesForCartPromise = (
   // Ensure the filter page offset is 0, since we are grabbing as much as we can
   // from the beginning -- up to `maxCartAddition` in a single request.
   const filterStateModifiedForCartRequest = granuleFilter.set('pageOffset', 0)
-  // granuleFilter.pageOffset = 0
 
   // generate the request body based on filters, and if we need facets or not
   const body = granuleBodyBuilder(

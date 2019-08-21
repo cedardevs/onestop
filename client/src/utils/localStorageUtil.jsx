@@ -24,9 +24,6 @@ export const storageAvailable = type => {
 }
 
 export const insertGranule = (itemId, item) => {
-  //console.log('localStorageUtil::insertGranule::itemId=', itemId)
-  //console.log('localStorageUtil::insertGranule::item=', item)
-
   let selectedGranules = localStorage.getItem('selectedGranules')
     ? JSON.parse(localStorage.getItem('selectedGranules'))
     : {}
@@ -49,9 +46,6 @@ export const insertGranules = granules => {
     const item = g.attributes
     let cartGranule = {}
     cartGranule[itemId] = item
-
-    //console.log("localStorageUtil::insertGranule::itemId=", itemId)
-    //console.log("localStorageUtil::insertGranule::item=", item)
 
     // set each granule into local storage,
     // overriding any previous conflicting granule ids with new
