@@ -14,6 +14,7 @@ import GranuleMapFilterContainer from './GranuleMapFilterContainer'
 import mapFilterIcon from '../../../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../../../img/font-awesome/white/svg/calendar.svg'
 import facetFilterIcon from '../../../../img/font-awesome/white/svg/key.svg'
+import fileIcon from '../../../../img/font-awesome/white/svg/file-text-o.svg'
 
 import arrowLeft from '../../../../img/font-awesome/white/svg/arrow-left.svg'
 import {fontFamilySerif} from '../../../utils/styleUtils'
@@ -83,6 +84,17 @@ class GranuleFilters extends React.Component {
 
   createFilters = () => {
     return [
+      {
+        name: 'text',
+        heading: <FilterHeading icon={fileIcon} text="Filename" />,
+        content: (
+          <GranuleTextFilter
+            clear={this.props.clear}
+            submit={this.props.submit}
+            query={this.props.queryString}
+          />
+        ),
+      },
       {
         name: 'location',
         heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
@@ -190,11 +202,6 @@ class GranuleFilters extends React.Component {
               borderTop: `1px solid ${SiteColors.HEADER_TEXT}`,
             },
           }}
-        />
-        <GranuleTextFilter
-          clear={this.props.clear}
-          submit={this.props.submit}
-          query={this.props.queryString}
         />
         {expandableFilters}
       </div>

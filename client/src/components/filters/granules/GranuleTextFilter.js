@@ -25,20 +25,18 @@ const styleButtonRow = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-around',
-  marginBottom: '0.5em',
+  // marginBottom: '0.5em',
 }
 
 const styleField = {
   margin: '2px',
-  // display: 'flex',
-  // flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'space-around',
-  marginBottom: '0.25em',
+  // marginBottom: '0.25em',
 }
 
 const styleLabel = {
-  marginBottom: '0.25em',
+  // marginBottom: '0.25em',
 }
 
 const styleInput = {
@@ -120,7 +118,7 @@ const GranuleTextFilter = props => {
                       style={styleLabel}
                       htmlFor={id}
                     >
-                      Filename contains
+                      Contains
                     </label>,
                     input,
                   ]}
