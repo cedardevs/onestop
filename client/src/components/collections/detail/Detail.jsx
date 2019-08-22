@@ -22,9 +22,6 @@ const styleDetailWrapper = {
   maxWidth: '80em',
   width: '80em',
   boxShadow: boxShadow,
-  // Note: margins on this element are temporarily needed to show the box shadow correctly. I expect this to change when we restructure the details page to get rid of tabs, as well as possibly when we update the router.
-  marginRight: '3px',
-  marginLeft: '1px',
   backgroundColor: 'white',
 }
 

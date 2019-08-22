@@ -18,8 +18,6 @@ const styleCenterContent = {
 const styleGranuleListWrapper = {
   maxWidth: '80em',
   width: '80em',
-  marginRight: '3px',
-  marginLeft: '1px',
   color: '#222',
 }
 

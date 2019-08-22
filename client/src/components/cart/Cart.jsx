@@ -24,8 +24,6 @@ const styleCartListWrapper = {
   maxWidth: '80em',
   width: '80em',
   boxShadow: boxShadow,
-  marginRight: '3px',
-  marginLeft: '1px',
   paddingTop: '1.618em',
   paddingBottom: '1.618em',
   backgroundColor: 'white',
