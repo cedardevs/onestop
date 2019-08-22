@@ -6,9 +6,6 @@ import org.cedar.schemas.avro.psi.RecordType
 @CompileStatic
 class Topics {
 
-  public static final int DEFAULT_NUM_PARTITIONS = 20 // FIXME -- Allow for config of this value; broker config?
-  public static final short DEFAULT_REPLICATION_FACTOR = 3 // FIXME -- Allow for config of this value; broker config?
-
   public static final String DEFAULT_SOURCE = 'unknown'
 
   public static final Map<RecordType, List<String>> INPUTS = [

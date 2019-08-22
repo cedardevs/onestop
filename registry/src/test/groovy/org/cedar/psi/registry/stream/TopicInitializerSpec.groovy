@@ -2,7 +2,6 @@ package org.cedar.psi.registry.stream
 
 import org.apache.kafka.clients.admin.MockAdminClient
 import org.apache.kafka.common.Node
-import org.cedar.psi.common.constants.Topics
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -14,11 +13,11 @@ class TopicInitializerSpec extends Specification {
     def adminClient = new MockAdminClient(nodes, nodes.first())
 
     when:
-    def initializer = new TopicInitializer(adminClient)
+    def initializer = new TopicInitializer(adminClient, 20, 3 as short)
 
     then:
-    initializer.replicationFactor == Topics.DEFAULT_REPLICATION_FACTOR
-    initializer.numPartitions == Topics.DEFAULT_NUM_PARTITIONS
+    initializer.replicationFactor == 3
+    initializer.numPartitions == 20
   }
 
   def 'can set partitions and replication explicitly'() {

@@ -80,7 +80,7 @@ public class KafkaBeanConfig {
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
     props.putAll(kafkaProps);
-    System.out.println(props); // fixme delete
+
     return props;
   }
 
@@ -130,7 +130,6 @@ public class KafkaBeanConfig {
   }
 
   // Helper functions:
-
   private static Properties kafkaPropertiesBuilder(Map kafkaConfigMap, Set<String> keySet) {
     var props = new Properties();
     kafkaConfigMap.forEach( (k, v) -> {
