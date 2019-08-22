@@ -22,6 +22,7 @@ const styleListInfo = {
   fontFamily: fontFamilySerif(),
   fontSize: '1.2em',
   padding: 0,
+  margin: '0 0 0.618em',
 }
 
 const styleListControl = {

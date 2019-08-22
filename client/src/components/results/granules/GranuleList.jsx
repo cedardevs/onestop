@@ -5,7 +5,6 @@ import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
 import GranuleListResultContainer from './GranuleListResultContainer'
 import {identifyProtocol} from '../../../utils/resultUtils'
-import {boxShadow} from '../../../style/defaultStyles'
 import Meta from '../../helmet/Meta'
 
 const styleCenterContent = {
@@ -16,10 +15,8 @@ const styleCenterContent = {
 const styleGranuleListWrapper = {
   maxWidth: '80em',
   width: '80em',
-  boxShadow: boxShadow,
   marginRight: '3px',
   marginLeft: '1px',
-  backgroundColor: 'white',
   color: '#222',
 }
 

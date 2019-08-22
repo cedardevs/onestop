@@ -26,13 +26,28 @@ const styleHiddentContentVerticalText = {
   fontFamily: fontFamilySerif(),
   fontSize: '1em',
   transform: 'rotate(-90deg)',
-  lineHeight: '1em',
+  lineHeight: '0.72em',
   display: 'block',
 }
 
 class FiltersHidden extends React.Component {
   render() {
-    const {openLeft} = this.props
+    const {openLeft, text} = this.props
+
+    const verticalChars = [ ' ', ...text, ' ' ].reverse().map((c, i) => {
+      // when the characters are empty spaces, we use the unicode `\u00A0` character
+      // so that JSX knows how to handle a whitespace without collapsing it or treating
+      // other attempts like &nbsp; as literal text
+      return (
+        <span
+          key={`verticalChar${i}`}
+          aria-hidden="true"
+          style={styleHiddentContentVerticalText}
+        >
+          {/\s/.test(c) ? '\u00A0' : c}
+        </span>
+      )
+    })
 
     const buttonHide = (
       <Button
@@ -41,7 +56,7 @@ class FiltersHidden extends React.Component {
         onClick={() => {
           openLeft()
         }}
-        title={'Show Filter Menu'}
+        title={`Show ${text} Menu`}
         ariaExpanded={false}
         styleHover={{
           background: 'linear-gradient(90deg, #277CB2, #28323E)',
@@ -50,34 +65,14 @@ class FiltersHidden extends React.Component {
         <img
           style={styleHiddentContentImage}
           aria-hidden="true"
-          alt="Show Filter Menu"
+          alt={`Show ${text} Menu`}
           src={arrowRight}
         />
-        <span aria-hidden="true" style={styleHiddentContentVerticalText}>
-          S
-        </span>
-        <span aria-hidden="true" style={styleHiddentContentVerticalText}>
-          R
-        </span>
-        <span aria-hidden="true" style={styleHiddentContentVerticalText}>
-          E
-        </span>
-        <span aria-hidden="true" style={styleHiddentContentVerticalText}>
-          T
-        </span>
-        <span aria-hidden="true" style={styleHiddentContentVerticalText}>
-          L
-        </span>
-        <span aria-hidden="true" style={styleHiddentContentVerticalText}>
-          I
-        </span>
-        <span aria-hidden="true" style={styleHiddentContentVerticalText}>
-          F
-        </span>
+        {verticalChars}
         <img
           style={styleHiddentContentImage}
           aria-hidden="true"
-          alt="Show Filter Menu"
+          alt={`Show ${text} Menu`}
           src={arrowRight}
         />
       </Button>

@@ -138,7 +138,7 @@ class CollectionFilters extends React.Component {
         onBlur={this.handleBlur}
         style={styleOverallHeadingApplied}
       >
-        Filters
+        Collection Filters
       </h2>
     )
 

@@ -23,7 +23,7 @@ const styleErrorHeading = {
 }
 
 const styleErrorDescription = {
-  margin: '0 0 1.618em 0',
+  margin: 0,
   padding: 0,
 }
 

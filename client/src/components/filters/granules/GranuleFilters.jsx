@@ -139,7 +139,7 @@ class GranuleFilters extends React.Component {
         onBlur={this.handleBlur}
         style={styleOverallHeadingApplied}
       >
-        Filters
+        File Filters
       </h2>
     )
 

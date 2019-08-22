@@ -24,7 +24,13 @@ import CollectionSearchLoadingContainer from '../loading/CollectionSearchLoading
 import FooterContainer from '../footer/FooterContainer'
 
 import {SiteColors} from '../../style/defaultStyles'
-import {isHome, isSearch, validHomePaths, ROUTE} from '../../utils/urlUtils'
+import {
+  isHome,
+  isSearch,
+  validHomePaths,
+  ROUTE,
+  isGranuleListPage,
+} from '../../utils/urlUtils'
 import NotFoundContainer from '../404/NotFoundContainer'
 
 import earth from '../../../img/Earth.jpg'
@@ -90,6 +96,7 @@ export default class Root extends React.Component {
 
     const bannerVisible = isHome(location.pathname)
     const leftVisible = isSearch(location.pathname)
+    const onGranuleListPage = isGranuleListPage(location.pathname)
     const rightVisible = false
 
     const titleRow = (
@@ -180,7 +187,15 @@ export default class Root extends React.Component {
           bannerVisible={bannerVisible}
           title={titleRow}
           /* - Left - */
-          left={leftOpen ? <FiltersContainer /> : <FiltersHiddenContainer />}
+          left={
+            leftOpen ? (
+              <FiltersContainer />
+            ) : (
+              <FiltersHiddenContainer
+                text={onGranuleListPage ? 'File Filters' : 'Collection Filters'}
+              />
+            )
+          }
           leftWidth={leftOpen ? '20em' : '2em'}
           leftOpen={leftOpen}
           leftVisible={leftVisible}
