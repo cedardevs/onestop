@@ -67,6 +67,9 @@ export const ROUTE = Object.freeze({
   cart: {
     path: '/cart',
     regex: /\/cart/,
+    toLocation: () => {
+      return '/cart'
+    },
   },
   details: {
     path: '/collections/details',

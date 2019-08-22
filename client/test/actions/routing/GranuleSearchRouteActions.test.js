@@ -1,11 +1,13 @@
 import store from '../../../src/store' // create Redux store with appropriate middleware
 import {RESET_STORE} from '../../../src/reducer'
 import fetchMock from 'fetch-mock'
+import Immutable from 'seamless-immutable'
 
 import {
   submitGranuleSearch,
   submitGranuleSearchWithFilter,
   submitGranuleSearchNextPage,
+  submitGranuleSearchForCart,
 } from '../../../src/actions/routing/GranuleSearchRouteActions'
 import {
   // used to set up pre-test conditions
@@ -13,7 +15,17 @@ import {
   granuleNewSearchResultsReceived,
   granuleMoreResultsRequested,
   granuleUpdateDateRange,
+  granulesForCartRequested,
+  granulesForCartResultsReceived,
+  granulesForCartError,
+  granulesForCartClearError,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
+import {
+  warningExceedsMaxAddition,
+  warningNothingNew,
+  warningOverflow,
+  warningOverflowFromEmpty,
+} from '../../../src/utils/cartUtils'
 
 let history_input = {}
 let historyPushCallCount = 0
@@ -54,6 +66,59 @@ describe('granule search actions', function(){
     },
   }
 
+  const mockPayloadCart1 = {
+    data: [
+      {
+        id: 'uuid-ABC',
+        attributes: {
+          title: 'ABC',
+        },
+      },
+      {
+        id: 'uuid-DEF',
+        attributes: {
+          title: 'DEF',
+        },
+      },
+      {
+        id: 'uuid-GHI',
+        attributes: {
+          title: 'GHI',
+        },
+      },
+    ],
+    meta: {
+      facets: mockFacets,
+      total: 3,
+    },
+  }
+  const mockPayloadCart2 = {
+    data: [
+      {
+        id: 'uuid-123',
+        attributes: {
+          title: '123',
+        },
+      },
+      {
+        id: 'uuid-456',
+        attributes: {
+          title: '456',
+        },
+      },
+      {
+        id: 'uuid-789',
+        attributes: {
+          title: '789',
+        },
+      },
+    ],
+    meta: {
+      facets: mockFacets,
+      total: 3,
+    },
+  }
+
   beforeEach(async () => {
     history_input = {}
     historyPushCallCount = 0
@@ -61,8 +126,8 @@ describe('granule search actions', function(){
     // reset store to initial conditions
     await store.dispatch(resetStore())
 
-    store.dispatch(granuleNewSearchRequested('original-uuid')) // TODO replace with await store.dispatch(granuleNewSearchRequested('original-uuid')) ??
-    store.dispatch(granuleNewSearchResultsReceived(0, [], {}))
+    store.dispatch(granuleNewSearchRequested('original-uuid'))
+    store.dispatch(granuleNewSearchResultsReceived([], {}, 0))
     const {granuleRequest, granuleFilter} = store.getState().search
     expect(granuleRequest.inFlight).toBeFalsy()
     expect(granuleFilter.selectedCollectionIds).toEqual([ 'original-uuid' ])
@@ -94,6 +159,23 @@ describe('granule search actions', function(){
     name: 'submit next page',
     function: submitGranuleSearchNextPage,
     params: [],
+  }
+
+  const submitGranuleSearchForCartCase = {
+    name: 'submit granule search for cart',
+    function: submitGranuleSearchForCart,
+    params: [
+      mockHistory,
+      {
+        geoJSON: null,
+        startDateTime: null,
+        endDateTime: null,
+        selectedFacets: {},
+        selectedCollectionIds: [ 'J5pZkWwBHQMyuNGWG_Lh' ],
+        excludeGlobal: null,
+        pageOffset: 0,
+      },
+    ],
   }
 
   const standardNewSearchTestCases = [
@@ -169,6 +251,18 @@ describe('granule search actions', function(){
       expect(granuleFilter.startDateTime).toEqual('1998')
       expect(granuleFilter.endDateTime).toBeNull()
     })
+
+    it(`${submitGranuleSearchForCartCase.name} does not change existing filters`, function(){
+      store.dispatch(
+        submitGranuleSearchForCartCase.function(
+          ...submitGranuleSearchForCartCase.params
+        )
+      )
+
+      const granuleFilter = store.getState().search.granuleFilter
+      expect(granuleFilter.startDateTime).toEqual('2017')
+      expect(granuleFilter.endDateTime).toEqual('2018')
+    })
   })
 
   describe('all submit options behave the same when a detail request is already in flight', function(){
@@ -194,7 +288,7 @@ describe('granule search actions', function(){
     beforeEach(async () => {
       // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
       store.dispatch(granuleMoreResultsRequested())
-      store.dispatch(granuleNewSearchResultsReceived(0, [], {}))
+      store.dispatch(granuleNewSearchResultsReceived([], {}, 0))
       const {granuleRequest, granuleFilter} = store.getState().search
       expect(granuleRequest.inFlight).toBeFalsy()
       expect(granuleFilter.pageOffset).toEqual(20)
@@ -267,7 +361,6 @@ describe('granule search actions', function(){
       )
       store.dispatch(
         granuleNewSearchResultsReceived(
-          10,
           [
             {
               id: 'uuid-XYZ',
@@ -282,7 +375,8 @@ describe('granule search actions', function(){
               },
             },
           ],
-          mockFacets
+          mockFacets,
+          10
         )
       )
       const {granuleResult} = store.getState().search
@@ -347,6 +441,303 @@ describe('granule search actions', function(){
         expect(granuleResult.totalGranuleCount).toEqual(10)
         expect(granuleResult.loadedGranuleCount).toEqual(4)
       })
+    })
+  })
+
+  describe('Add Filtered Granules to Cart Actions', function(){
+    let mockMaxCartAdditions = 3
+    let mockCartCapacity = 5
+
+    let granuleFilterState = Immutable({
+      geoJSON: null,
+      startDateTime: null,
+      endDateTime: null,
+      selectedFacets: {},
+      selectedCollectionIds: [ 'original-uuid' ],
+      excludeGlobal: null,
+      pageOffset: 0,
+    })
+
+    beforeEach(async () => {
+      // reset local storage before each test
+      localStorage.clear()
+
+      fetchMock.post(
+        (url, opts) => url == `${BASE_URL}/search/granule`,
+        mockPayloadCart1
+      )
+
+      history_input = {}
+      historyPushCallCount = 0
+      mockHistory.location = {
+        pathname: '/collections/granules/original-uuid',
+        search: null,
+      }
+
+      // reset store to initial conditions
+      await store.dispatch(resetStore())
+    })
+
+    afterEach(() => {
+      fetchMock.reset()
+    })
+
+    test('in flight flagged on request, deflagged on results', async () => {
+      const stateBefore = store.getState()
+      expect(stateBefore.search.granuleRequest.cartGranulesInFlight).toBeFalsy()
+      await store.dispatch(granulesForCartRequested())
+      const stateAfterRequest = store.getState()
+      expect(
+        stateAfterRequest.search.granuleRequest.cartGranulesInFlight
+      ).toBeTruthy()
+      await store.dispatch(granulesForCartResultsReceived([], 0))
+      const stateAfterResults = store.getState()
+      expect(
+        stateAfterResults.search.granuleRequest.cartGranulesInFlight
+      ).toBeFalsy()
+    })
+
+    test('in flight flagged on request, deflagged on error', async () => {
+      const stateBefore = store.getState()
+      expect(stateBefore.search.granuleRequest.cartGranulesInFlight).toBeFalsy()
+      await store.dispatch(granulesForCartRequested())
+      const stateAfterRequest = store.getState()
+      expect(
+        stateAfterRequest.search.granuleRequest.cartGranulesInFlight
+      ).toBeTruthy()
+      await store.dispatch(granulesForCartError('warning'))
+      const stateAfterError = store.getState()
+      expect(
+        stateAfterError.search.granuleRequest.cartGranulesInFlight
+      ).toBeFalsy()
+    })
+
+    test('success path', async () => {
+      const stateBefore = store.getState()
+
+      // initially there are no selected granules in the cart
+      expect(stateBefore.cart.selectedGranules).toStrictEqual({})
+
+      await store.dispatch(
+        submitGranuleSearchForCart(
+          mockHistory,
+          granuleFilterState,
+          mockMaxCartAdditions,
+          mockCartCapacity
+        )
+      )
+
+      const stateAfter = store.getState()
+
+      // after the request, we expect the cart selected granules to be the same length as the mock granule response data
+      expect(Object.keys(stateAfter.cart.selectedGranules).length).toBe(
+        mockPayloadCart1.data.length
+      )
+    })
+
+    test('cart capacity overflow', async () => {
+      const stateBefore = store.getState()
+
+      // initially there are no selected granules in the cart
+      expect(stateBefore.cart.selectedGranules).toStrictEqual({})
+
+      await store.dispatch(
+        submitGranuleSearchForCart(
+          mockHistory,
+          granuleFilterState,
+          mockMaxCartAdditions,
+          mockCartCapacity
+        )
+      )
+
+      const stateAfter = store.getState()
+
+      // after the first request, we expect the cart selected granules to be the same length as the mock granule response data
+      // because 3 items should not overflow the cart yet (that limit is dummied out to 5)
+      expect(Object.keys(stateAfter.cart.selectedGranules).length).toBe(
+        mockPayloadCart1.data.length
+      )
+      expect(
+        Object.keys(JSON.parse(localStorage.selectedGranules)).length
+      ).toBe(mockPayloadCart1.data.length)
+
+      // mock another set of unique ID granules to add to cart which will cause the overflow
+      fetchMock.reset()
+      fetchMock.post(
+        (url, opts) => url == `${BASE_URL}/search/granule`,
+        mockPayloadCart2
+      )
+      await store.dispatch(
+        submitGranuleSearchForCart(
+          mockHistory,
+          granuleFilterState,
+          mockMaxCartAdditions,
+          mockCartCapacity
+        )
+      )
+
+      const stateAfter2 = store.getState()
+      // after the second request, we expect a warning
+      expect(stateAfter2.cart.error).toEqual(
+        warningOverflow(mockPayloadCart2.data.length, mockCartCapacity)
+      )
+
+      // the amount of items in the redux store and in local storage should be the same as after th first request
+      expect(Object.keys(stateAfter2.cart.selectedGranules).length).toBe(
+        mockPayloadCart1.data.length
+      )
+      expect(
+        Object.keys(JSON.parse(localStorage.selectedGranules)).length
+      ).toBe(mockPayloadCart1.data.length)
+
+      // dispatching `granulesForCartClearError()` after a warning has been set in the cart reducer, clears it
+      await store.dispatch(granulesForCartClearError())
+      const stateAfter3 = store.getState()
+      expect(stateAfter3.cart.error).toBeNull()
+    })
+
+    test('cart capacity overflow from empty', async () => {
+      let lowCartCapacity = 2
+      const stateBefore = store.getState()
+
+      // initially there are no selected granules in the cart
+      expect(stateBefore.cart.selectedGranules).toStrictEqual({})
+
+      await store.dispatch(
+        submitGranuleSearchForCart(
+          mockHistory,
+          granuleFilterState,
+          mockMaxCartAdditions,
+          lowCartCapacity
+        )
+      )
+
+      const stateAfter = store.getState()
+
+      // after the first request, we expect the cart selected granules to be empty because we made the capacity 2
+      // and we requested a filter with 3 granules
+      expect(Object.keys(stateAfter.cart.selectedGranules).length).toBe(0)
+      // if we've never added anything to local storage, the key 'selectedGranules' may not even exist
+      // so testing it's length to be 0 would be pointless
+      if (localStorage.selectedGranules) {
+        expect(
+          Object.keys(JSON.parse(localStorage.selectedGranules)).length
+        ).toBe(0)
+      }
+
+      // after the request, we expect a warning
+      expect(stateAfter.cart.error).toEqual(
+        warningOverflowFromEmpty(mockPayloadCart1.data.length, lowCartCapacity)
+      )
+    })
+
+    test('nothing new to add warning', async () => {
+      const stateBefore = store.getState()
+
+      // initially there are no selected granules in the cart
+      expect(stateBefore.cart.selectedGranules).toStrictEqual({})
+
+      await store.dispatch(
+        submitGranuleSearchForCart(
+          mockHistory,
+          granuleFilterState,
+          mockMaxCartAdditions,
+          mockCartCapacity
+        )
+      )
+
+      const stateAfter = store.getState()
+
+      // after the request, we expect the cart selected granules to be the same length as the mock granule response data
+      expect(Object.keys(stateAfter.cart.selectedGranules).length).toBe(
+        mockPayloadCart1.data.length
+      )
+
+      // if we repeat the same request, we would be attempting to add the same exact IDs to the cart and should get
+      // a warning, the same request can be mocked with the same previous fetch mock, so we don't need to do anything
+      // special to mock the second request here
+      await store.dispatch(
+        submitGranuleSearchForCart(
+          mockHistory,
+          granuleFilterState,
+          mockMaxCartAdditions,
+          mockCartCapacity
+        )
+      )
+
+      const stateAfter2 = store.getState()
+
+      // the amount of items in the redux store and in local storage should be the same as after th first request
+      expect(Object.keys(stateAfter2.cart.selectedGranules).length).toBe(
+        mockPayloadCart1.data.length
+      )
+      expect(
+        Object.keys(JSON.parse(localStorage.selectedGranules)).length
+      ).toBe(mockPayloadCart1.data.length)
+
+      // after the second request, we expect a warning
+      expect(stateAfter2.cart.error).toEqual(warningNothingNew())
+    })
+
+    test('exceeds max cart additions warning', async () => {
+      // mock a non-cart granule search response so that the total granule count of our filter gets set for comparison
+      // prior to any cart submission action
+      fetchMock.reset()
+      fetchMock.post(
+        (url, opts) => url == `${BASE_URL}/search/granule/parent-uuid`,
+        mockPayloadCart1
+      )
+      store.dispatch(
+        granuleNewSearchResultsReceived(
+          mockPayloadCart1.data,
+          mockPayloadCart1.meta.facets,
+          mockPayloadCart1.meta.total
+        )
+      )
+
+      // reset and revert to our previous cart addition request mock
+      fetchMock.reset()
+      fetchMock.post(
+        (url, opts) => url == `${BASE_URL}/search/granule`,
+        mockPayloadCart1
+      )
+
+      // artificially set the max cart additions to something that will trigger the warning
+      let lowMaxCartAdditions = 2
+      const stateBefore = store.getState()
+
+      // initially there are no selected granules in the cart
+      expect(stateBefore.cart.selectedGranules).toStrictEqual({})
+
+      await store.dispatch(
+        submitGranuleSearchForCart(
+          mockHistory,
+          granuleFilterState,
+          lowMaxCartAdditions,
+          mockCartCapacity
+        )
+      )
+
+      const stateAfter = store.getState()
+
+      // after the first request, we expect the cart selected granules to be empty because we made the max additions 2
+      // and we requested a filter with 3 granules
+      expect(Object.keys(stateAfter.cart.selectedGranules).length).toBe(0)
+      // if we've never added anything to local storage, the key 'selectedGranules' may not even exist
+      // so testing it's length to be 0 would be pointless
+      if (localStorage.selectedGranules) {
+        expect(
+          Object.keys(JSON.parse(localStorage.selectedGranules)).length
+        ).toBe(0)
+      }
+
+      // after the second request, we expect a warning
+      expect(stateAfter.cart.error).toEqual(
+        warningExceedsMaxAddition(
+          mockPayloadCart1.meta.total,
+          lowMaxCartAdditions
+        )
+      )
     })
   })
 

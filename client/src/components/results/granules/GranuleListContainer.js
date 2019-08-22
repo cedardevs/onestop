@@ -1,5 +1,4 @@
 import {connect} from 'react-redux'
-import {granuleIncrementResultsOffset} from '../../../actions/routing/GranuleSearchStateActions'
 import {
   insertSelectedGranule,
   insertMultipleSelectedGranules,
@@ -15,7 +14,11 @@ import {
 import GranuleList from './GranuleList'
 
 import {withRouter} from 'react-router'
-import {submitGranuleSearchNextPage} from '../../../actions/routing/GranuleSearchRouteActions'
+import {
+  submitGranuleSearchForCart,
+  submitGranuleSearchNextPage,
+} from '../../../actions/routing/GranuleSearchRouteActions'
+import {CART_CAPACITY, MAX_CART_ADDITION} from '../../../utils/cartUtils'
 
 const mapStateToProps = state => {
   const {
@@ -24,6 +27,7 @@ const mapStateToProps = state => {
     loadedGranuleCount,
   } = state.search.granuleResult
   const focusedItem = state.search.collectionDetailResult.collection
+
   return {
     collectionTitle: focusedItem ? focusedItem.attributes.title : null,
     results: granules,
@@ -31,13 +35,25 @@ const mapStateToProps = state => {
     returnedHits: loadedGranuleCount,
     selectedGranules: getSelectedGranulesFromStorage(state),
     featuresEnabled: state.config.featuresEnabled,
+    granuleFilter: state.search.granuleFilter,
+    addFilteredGranulesToCartWarning: state.cart.error,
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     fetchMoreResults: () => {
       dispatch(submitGranuleSearchNextPage())
+    },
+    addFilteredGranulesToCart: granuleFilter => {
+      dispatch(
+        submitGranuleSearchForCart(
+          ownProps.history,
+          granuleFilter,
+          MAX_CART_ADDITION,
+          CART_CAPACITY
+        )
+      )
     },
     selectGranule: (item, itemId) => {
       insertGranule(itemId, item)
@@ -49,9 +65,6 @@ const mapDispatchToProps = dispatch => {
     deselectGranule: itemId => {
       removeGranuleFromLocalStorage(itemId)
       dispatch(removeSelectedGranule(itemId))
-    },
-    deselectVisibleGranules: itemIds => {
-      dispatch(removeMultipleSelectedGranules(itemIds))
     },
   }
 }

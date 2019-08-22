@@ -22,11 +22,7 @@ class UiConfig {
     String imageUrl
   }
 
-  List<FeatureToggles> enabledFeatureToggles
-
-  static class FeatureToggles {
-    String featureName
-  }
+  List<String> features
 
   GoogleAnalytics googleAnalytics
 

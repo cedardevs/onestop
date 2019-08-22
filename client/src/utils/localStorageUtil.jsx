@@ -35,6 +35,27 @@ export const insertGranule = (itemId, item) => {
   )
 }
 
+export const insertGranules = granules => {
+  // loop through the granule "data" array returned from a search API granule success payload
+  granules.forEach(g => {
+    let selectedGranules = localStorage.getItem('selectedGranules')
+      ? JSON.parse(localStorage.getItem('selectedGranules'))
+      : {}
+
+    const itemId = g.id
+    const item = g.attributes
+    let cartGranule = {}
+    cartGranule[itemId] = item
+
+    // set each granule into local storage,
+    // overriding any previous conflicting granule ids with new
+    localStorage.setItem(
+      'selectedGranules',
+      JSON.stringify({...selectedGranules, ...cartGranule})
+    )
+  })
+}
+
 export const removeGranuleFromLocalStorage = itemId => {
   let selectedGranules = JSON.parse(localStorage.getItem('selectedGranules'))
   delete selectedGranules[itemId]
