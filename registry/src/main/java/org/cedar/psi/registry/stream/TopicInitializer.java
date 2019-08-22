@@ -5,6 +5,7 @@ import org.apache.kafka.clients.admin.CreateTopicsOptions;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
+import org.cedar.psi.registry.service.TopicsConfigurationProps;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -14,7 +15,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static org.cedar.psi.common.constants.Topics.*;
-import static org.cedar.psi.common.constants.Topics.DEFAULT_NUM_PARTITIONS;
 
 public class TopicInitializer {
 
@@ -25,8 +25,8 @@ public class TopicInitializer {
   // add custom config by topic name here
   static Map<String, Map> topicConfigs = new LinkedHashMap<>();
 
-  public TopicInitializer(AdminClient adminClient) {
-    this(adminClient, DEFAULT_NUM_PARTITIONS, DEFAULT_REPLICATION_FACTOR);
+  public TopicInitializer(AdminClient adminClient, TopicsConfigurationProps topicProps) {
+    this(adminClient, topicProps.getNumPartitions(), topicProps.getReplicationFactor());
   }
 
   public TopicInitializer(AdminClient adminClient, int numPartitions, short replicationFactor) {

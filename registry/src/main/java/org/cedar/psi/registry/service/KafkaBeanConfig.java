@@ -17,13 +17,11 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.cedar.psi.registry.stream.TopicInitializer;
 import org.cedar.psi.registry.stream.TopologyBuilders;
 import org.cedar.schemas.avro.psi.Input;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -57,6 +55,10 @@ public class KafkaBeanConfig {
   Properties kafkaProperties() {
     return new Properties();
   }
+
+  @ConfigurationProperties(prefix = "topics")
+  @Bean
+  TopicsConfigurationProps topicsConfigurationProps(){return new TopicsConfigurationProps();}
 
   @Bean
   Map<String, Object> kafkaProps(Properties kafkaProperties) {
@@ -106,7 +108,7 @@ public class KafkaBeanConfig {
   @Profile("!integration")
   @Bean(initMethod = "initialize")
   TopicInitializer topicInitializer(AdminClient adminClient) {
-    return new TopicInitializer(adminClient);
+    return new TopicInitializer(adminClient, topicsConfigurationProps());
   }
 
   @Bean
