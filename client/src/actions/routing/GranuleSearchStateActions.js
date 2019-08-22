@@ -1,3 +1,5 @@
+import Immutable from 'seamless-immutable'
+
 export const GRANULE_NEW_SEARCH_REQUESTED = 'GRANULE_NEW_SEARCH_REQUESTED'
 export const granuleNewSearchRequested = collectionId => ({
   // this indicates a granule search within a single collection
@@ -24,23 +26,47 @@ export const granuleMoreResultsRequested = () => ({
 
 export const GRANULE_NEW_SEARCH_RESULTS_RECEIVED =
   'GRANULE_NEW_SEARCH_RESULTS_RECEIVED'
-export const granuleNewSearchResultsReceived = (total, items, facets) => ({
+export const granuleNewSearchResultsReceived = (granules, facets, total) => ({
   type: GRANULE_NEW_SEARCH_RESULTS_RECEIVED,
-  total: total,
+  granules: granules,
   facets: facets,
-  items: items,
+  total: total,
 })
 
 export const GRANULE_MORE_RESULTS_RECEIVED = 'GRANULE_MORE_RESULTS_RECEIVED'
-export const granuleMoreResultsReceived = items => ({
+export const granuleMoreResultsReceived = granules => ({
   type: GRANULE_MORE_RESULTS_RECEIVED,
-  items: items,
+  granules: granules,
 })
 
 export const GRANULE_SEARCH_ERROR = 'GRANULE_SEARCH_ERROR'
 export const granuleSearchError = errors => ({
   type: GRANULE_SEARCH_ERROR,
   errors,
+})
+
+export const GRANULES_FOR_CART_REQUESTED = 'GRANULES_FOR_CART_REQUESTED'
+export const granulesForCartRequested = () => ({
+  type: GRANULES_FOR_CART_REQUESTED,
+})
+
+export const GRANULES_FOR_CART_RESULTS_RECEIVED =
+  'GRANULES_FOR_CART_RESULTS_RECEIVED'
+export const granulesForCartResultsReceived = (granules, total) => ({
+  type: GRANULES_FOR_CART_RESULTS_RECEIVED,
+  granules: granules,
+  total: total,
+})
+
+export const GRANULES_FOR_CART_ERROR = 'GRANULES_FOR_CART_ERROR'
+export const granulesForCartError = warning => ({
+  type: GRANULES_FOR_CART_ERROR,
+  warning: warning,
+})
+
+export const GRANULES_FOR_CART_CLEAR_ERROR = 'GRANULES_FOR_CART_CLEAR_ERROR'
+export const granulesForCartClearError = () => ({
+  type: GRANULES_FOR_CART_CLEAR_ERROR,
 })
 
 //

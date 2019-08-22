@@ -29,7 +29,7 @@ describe('The ScriptDownloader component', () => {
     })
 
     // cart page will only be navigable and have the proper components when cart feature enabled
-    const featuresList = [ {featureName: 'cart'} ]
+    const featuresList = [ 'cart' ]
     await store.dispatch(toggleFeatures(featuresList))
 
     // initialize history to be on the '/cart' route
@@ -40,6 +40,7 @@ describe('The ScriptDownloader component', () => {
 
   it('exists on the /cart page', () => {
     const scriptDownloader = component.find(ScriptDownloader)
+    console.log('scriptDownloader:', JSON.stringify(scriptDownloader, null, 4))
     expect(scriptDownloader.length).toBe(1)
   })
 

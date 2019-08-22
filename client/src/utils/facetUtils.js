@@ -74,8 +74,6 @@ const facets = (category, terms, selectedFacets) => {
 }
 
 export const buildFilterHierarchyMap = (facetMap, selectedFacets) => {
-  console.log('facetMap:', JSON.stringify(facetMap, null, 2))
-
   return _.map(facetMap, (terms, category) => {
     if (!_.isEmpty(terms) && category !== 'locations') {
       // Don't load categories that have no results & don't load Locations category
