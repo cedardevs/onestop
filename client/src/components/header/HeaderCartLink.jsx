@@ -106,7 +106,7 @@ export default class HeaderCartLink extends React.Component {
 
     if (featuresEnabled.includes(FEATURE_CART)) {
       return (
-        <div>
+        <div style={{display: 'flex'}}>
           <div
             aria-live="polite"
             aria-atomic="false"
