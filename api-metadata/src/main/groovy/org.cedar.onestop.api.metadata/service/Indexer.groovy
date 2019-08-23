@@ -25,6 +25,7 @@ class Indexer {
     def identification = analysis?.identification
     def temporal = analysis?.temporalBounding
     def spatial = analysis?.spatialBounding
+    def links = analysis?.dataAccess
 
     def failure = [title: 'Invalid record']
     List<String> details = []
@@ -68,6 +69,9 @@ class Indexer {
     }
     if (spatial && spatial.spatialBoundingExists && !spatial.isValid) {
       details << "Invalid geoJSON for spatial bounding"
+    }
+    if (messageMap.type == RecordType.granule && links && !links.dataAccessExists) {
+      details << "Granule record with no data access available"
     }
     if (details.size() > 0 ) {
       log.info("INVALID RECORD [ $id ]. VALIDATION FAILURES:  $details ")

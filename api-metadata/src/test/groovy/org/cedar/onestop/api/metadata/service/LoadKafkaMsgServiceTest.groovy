@@ -64,4 +64,18 @@ class LoadKafkaMsgServiceTest extends Specification {
     1 * mockMetadataService.loadParsedRecords({ it.size() == 1 && it[0].parsedRecord == validRecord.value() })
   }
 
+  def "appends default index-ready Discovery and Analysis to ParsedRecord"() {
+    given:
+    def inputKey = 'default123'
+    def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('parsed-record-no-discovery-or-analysis.json')
+    def inputValue = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
+    def inputRecord = new ConsumerRecord(testCollectionTopic, 0 , 0, inputKey, inputValue)
+
+    when:
+    consumerService.listen([inputRecord])
+
+    then:
+    1 * mockMetadataService.loadParsedRecords([[id: inputKey, parsedRecord: inputValue]])
+  }
+
 }
