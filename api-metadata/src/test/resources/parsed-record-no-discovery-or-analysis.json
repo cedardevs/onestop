@@ -7,9 +7,11 @@
   "fileInformation": {
     "org.cedar.schemas.avro.psi.FileInformation": {
       "name": "testGranuleFile.nc",
-      "size": null,
+      "size": 108162440,
       "checksums": [],
-      "format": "NetCDF",
+      "format": {
+        "string": "NetCDF"
+      },
       "headers": null,
       "optionalAttributes": {}
     }
@@ -25,21 +27,21 @@
       "asynchronous": false,
       "locality": null,
       "lastModified": null,
-      "serviceType": "cloud",
+      "serviceType": {
+        "string": "cloud"
+      },
       "optionalAttributes": {}
     }
   },
   "publishing": {
-    "org.cedar.schemas.avro.psi.Publishing": {
-      "isPrivate": false,
-      "until": null
-    }
+    "isPrivate": false,
+    "until": null
   },
   "relationships": [
     {
       "org.cedar.schemas.avro.psi.Relationship": {
-        "type": {
-          "org.cedar.schemas.avro.psi.RelationshipType": "COLLECTION"
+        "type":  {
+          "org.cedar.schemas.avro.psi.Relationship.RelationshipType": "COLLECTION"
         },
         "id": "cb03311a-0ee0-4649-92d9-f8c3a28bcb29"
       }
