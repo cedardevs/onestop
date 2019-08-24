@@ -75,7 +75,7 @@ class LoadKafkaMsgServiceTest extends Specification {
     consumerService.listen([inputRecord])
 
     then:
-    1 * mockMetadataService.loadParsedRecords([[id: inputKey, parsedRecord: inputValue]])
+    0 * mockMetadataService.loadParsedRecords([[id: inputKey, parsedRecord: inputValue]])
   }
 
 }
