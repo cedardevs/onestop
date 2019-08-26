@@ -32,31 +32,43 @@ class Indexer {
 
     // Validate record
     if (discovery == null) {
+      // FIXME Is this possible anymore with DefaultParser?
       details << "Missing discovery metadata"
     }
     if (analysis == null) {
+      // FIXME Is this possible anymore with DefaultParser?
       details << "Missing analysis metadata"
     }
     if (titles == null) {
+      // FIXME Only null if Discovery & Analysis was null -- actually required?
       details << "Missing title analysis"
     }
     if (identification == null) {
+      // FIXME Only null if Discovery & Analysis was null -- actually required?
       details << "Missing identification analysis"
     }
     if (temporal == null) {
+      // FIXME Only null if Discovery & Analysis was null -- actually required?
       details << "Missing temporal analysis"
     }
+
+    ///////////
+    // FIXME -- cleanup: below should never be checked if no Discovery & no Analysis
+    ///////////
+
     if (identification && (!identification?.fileIdentifierExists && !identification?.doiExists)) {
       details << "Missing identifier - record contains neither a fileIdentifier nor a DOI"
     }
-    if (messageMap.type == RecordType.collection && (identification && identification?.parentIdentifierExists)) {
-      details << "Invalid record: a collection cannot contain a parentIdentifier"
-    }
+    // FIXME -- suddenly not true:
+//    if (messageMap.type == RecordType.collection && (identification && identification?.parentIdentifierExists)) {
+//      details << "Invalid record: a collection cannot contain a parentIdentifier"
+//    }
+    // FIXME -- logic has changed
+//    if (discovery && identification && discovery.hierarchyLevelName == 'granule' && !identification.parentIdentifierExists) {
+//      details << "Mismatch between metadata type and identifiers detected"
+//    }
     if (titles && !titles.titleExists) {
       details << "Missing title"
-    }
-    if (discovery && identification && discovery.hierarchyLevelName == 'granule' && !identification.parentIdentifierExists) {
-      details << "Mismatch between metadata type and identifiers detected"
     }
     if (temporal && temporal.beginDescriptor == INVALID) {
       details << "Invalid beginDate"
@@ -69,9 +81,6 @@ class Indexer {
     }
     if (spatial && spatial.spatialBoundingExists && !spatial.isValid) {
       details << "Invalid geoJSON for spatial bounding"
-    }
-    if (messageMap.type == RecordType.granule && links && !links.dataAccessExists) {
-      details << "Granule record with no data access available"
     }
     if (details.size() > 0 ) {
       log.info("INVALID RECORD [ $id ]. VALIDATION FAILURES:  $details ")
