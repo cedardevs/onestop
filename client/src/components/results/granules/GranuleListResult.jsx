@@ -18,7 +18,7 @@ import {granuleDownloadableLinks} from '../../../utils/cartUtils'
 
 const styleResult = {
   minHeight: '15.5em',
-  margin: '0 1.618em 1.618em 0',
+  margin: '0 1.618em 1em 0',
   padding: '0.618em',
   boxShadow: boxShadow,
   borderRadius: '0.309em',

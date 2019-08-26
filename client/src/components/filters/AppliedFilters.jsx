@@ -22,6 +22,7 @@ const styleWrapper = {
   display: 'flex',
   flexFlow: 'row wrap',
   margin: '1.618em',
+  justifyContent: 'center',
 }
 
 const styleHidden = {

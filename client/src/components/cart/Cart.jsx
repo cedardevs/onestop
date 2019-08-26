@@ -45,6 +45,7 @@ const styleClearCartButton = {
   fontSize: '1em',
   display: 'inline-flex',
   padding: '0.309em 0.618em 0.309em 0.309em',
+  marginBottom: '0.618em',
 }
 
 const styleClearCartButtonFocus = {
