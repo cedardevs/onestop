@@ -8,18 +8,6 @@ import spock.lang.Unroll
 @Unroll
 class TopicInitializerSpec extends Specification {
 
-  def 'partitions and replication set to default values when not provided regardless of number of nodes'() {
-    def nodes = nodeList((int) Math.round(Math.random()*10))
-    def adminClient = new MockAdminClient(nodes, nodes.first())
-
-    when:
-    def initializer = new TopicInitializer(adminClient, 20, 3 as short)
-
-    then:
-    initializer.replicationFactor == 3
-    initializer.numPartitions == 20
-  }
-
   def 'can set partitions and replication explicitly'() {
     def nodes = nodeList(5)
     def adminClient = new MockAdminClient(nodes, nodes.first())

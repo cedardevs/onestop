@@ -11,5 +11,5 @@ kafka:
   state:
     dir: ${java.io.tmpdir}/${random.uuid}
 topics:
-  NUM_PARTITIONS: 20
-  replication-factor: 1
+  num-partitions: 20
+  replication-factor: 3
