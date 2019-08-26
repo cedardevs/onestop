@@ -84,16 +84,35 @@ class Indexer {
     }
   }
 
-  static Map xmlToParsedRecord(String xmlDoc){
+  static Map xmlToParsedRecord(String xmlDoc) {
     Map result = [:]
     def parsedRecordBuilder = ParsedRecord.newBuilder()
     try {
+      // Convert XML to ParsedRecord -- Discovery and Analysis objects only
       log.debug('Parsing XML for discovery metadata')
       Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(xmlDoc)
       log.debug('Analyzing discovery metadata')
       Analysis analysis = Analyzers.analyze(discovery)
-      Map source = AvroUtils.avroToMap(discovery, true)
-      RecordType type = source.parentIdentifier ? RecordType.granule : RecordType.collection
+
+      // Determine RecordType (aka granule or collection) from Discovery & Analysis info
+      String parentIdentifier = discovery.parentIdentifier
+      String hierarchyLevelName = discovery.hierarchyLevelName
+
+      RecordType type
+      if(hierarchyLevelName != 'granule') {
+        type = RecordType.collection
+      }
+      else {
+        // Pro-tip: In Java 11 future, "null || isBlank()" will suffice...
+        if(parentIdentifier == null || parentIdentifier.isEmpty() || parentIdentifier.isAllWhitespace()) {
+          // Set to null rather than throwing an error so that this can be caught at the validation step
+          type = null
+        }
+        else {
+          type = RecordType.granule
+        }
+      }
+
       parsedRecordBuilder.setType(type)
       parsedRecordBuilder.setDiscovery(discovery)
       parsedRecordBuilder.setAnalysis(analysis)
