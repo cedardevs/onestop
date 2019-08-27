@@ -114,6 +114,48 @@ public class DataUtils {
   }
 
   /**
+   * Turns a nested map into a flat map with nested keys appended together with the delimiter
+   * @param parentKey Prefix that all flattened keys start with. Null, empty, or whitespace-only value results in no prefix
+   * @param delimiter String to delimit between each nested key. Defaults to "." if null or empty
+   * @param originalMap Nested-key map to be flattened
+   * @return Single-level map with flattened keys
+   */
+  public static Map<String, Object> consolidateNestedKeysInMap(String parentKey, String delimiter, Map<String, Object> originalMap) {
+    var parent = (parentKey == null || parentKey.isBlank()) ? new String() : parentKey;
+    var delimiterString = (delimiter == null || delimiter.isEmpty()) ? "." : delimiter;
+    var newMap = new HashMap<String, Object>();
+
+    if(originalMap != null && !originalMap.isEmpty()) {
+      originalMap.forEach((k, v) -> {
+        String newKey = parent.isEmpty() ? k : parent + delimiterString + k;
+        if(v instanceof Map) {
+          newMap.putAll(consolidateNestedKeysInMap(newKey, delimiterString, (Map<String, Object>) v));
+        }
+        else {
+          newMap.put(newKey, v);
+        }
+      });
+    }
+    return newMap;
+  }
+
+  /**
+   * Removes the given trimString from any keys in originalMap that match. For example a trim string 'abc.' would turn
+   * key 'abc.123' into key '123'.
+   * @param trimString Case insensitive prefix to remove from keys in originalMap
+   * @param originalMap
+   * @return New map with modified keys
+   */
+  public static Map<String, Object> trimMapKeys(String trimString, Map<String, Object> originalMap) {
+    Map<String, Object> trimmedKeysMap = new LinkedHashMap<>();
+    originalMap.forEach((k, v) -> {
+      String trimmedKey = k.toLowerCase().startsWith(trimString.toLowerCase()) ? k.substring(trimString.length()) : k;
+      trimmedKeysMap.put(trimmedKey, v);
+    });
+    return trimmedKeysMap;
+  }
+
+  /**
    * @param builderType   type of schema builder either ParsedRecord or AggregatedInput, otherwise error out
    * @param fieldData     parsed or input metadata values
    * @param fieldsToParse list of schema fields that only support merged map

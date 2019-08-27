@@ -88,14 +88,9 @@ public class StreamManager {
     log.info("Building kafka streams appConfig for {}", appId);
     Properties streamsConfiguration = new Properties();
     streamsConfiguration.put(APPLICATION_ID_CONFIG, appId);
-    streamsConfiguration.put(BOOTSTRAP_SERVERS_CONFIG, config.bootstrapServers());
-    streamsConfiguration.put(SCHEMA_REGISTRY_URL_CONFIG, config.schemaRegistryUrl());
     streamsConfiguration.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     streamsConfiguration.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
-    streamsConfiguration.put(COMMIT_INTERVAL_MS_CONFIG, config.commitInterval());
-    streamsConfiguration.put(CACHE_MAX_BYTES_BUFFERING_CONFIG, config.cacheMaxBytes());
-    streamsConfiguration.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
-    streamsConfiguration.put(TopicConfig.COMPRESSION_TYPE_CONFIG, config.compressionType());
+    streamsConfiguration.putAll(config.getCurrentConfigMap());
     return streamsConfiguration;
   }
 }

@@ -44,14 +44,11 @@ If you would rather not have gradle and skaffold watching for every change, you 
 
 ### Accessing Kubernetes Services
 
-The registry api, as well as Landoop's [kafka-topics-ui](https://github.com/Landoop/kafka-topics-ui) and Yahoo's
-[kafka-manager](https://github.com/yahoo/kafka-manager) are exposed through ambassador via a LoadBalancer service.
+The registry api is exposed through ambassador via a LoadBalancer service.
 When using docker desktop, you can access them at:
 
 ```
 http://localhost/registry       # psi-registry
-http://localhost/kafka-ui       # kafka-ui
-http://localhost/kafka-manager  # kafka-manager
 ```
 
 From there you can do things like upload some metadata to test the system:

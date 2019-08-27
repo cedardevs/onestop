@@ -264,6 +264,37 @@ class DataUtilsSpec extends Specification {
     result.b.d.containsAll(expected.b.d)
   }
 
+  def "consolidateNestedKeysInMap returns a non-nested map"() {
+    given:
+    def inputMap = [
+        a: "a value",
+        b: [1, 2],
+        c: [
+            d: "c.d value",
+            e: "c.e value",
+            f: ["f1", "f2"],
+            g: [
+                h: "c.g.h value"
+            ]
+        ]
+    ]
+
+    def expected = [
+        a: "a value",
+        b: [1, 2],
+        "c.d": "c.d value",
+        "c.e": "c.e value",
+        "c.f": ["f1", "f2"],
+        "c.g.h": "c.g.h value"
+    ]
+
+    expect:
+    DataUtils.consolidateNestedKeysInMap(parentKey, ".", inputMap).equals(expected);
+
+    where:
+    parentKey << [new String(), "", null]
+  }
+
   def "setValueOnPojo... does that"() {
     def pojo = new TestPojo()
     def fieldName = 'testField'
