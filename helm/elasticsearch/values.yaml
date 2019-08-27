@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: docker.elastic.co/elasticsearch/elasticsearch
-  tag: 6.7.1
+  tag: 6.8.2
   pullPolicy: IfNotPresent
 
 nameOverride: ""
