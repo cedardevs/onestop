@@ -34,16 +34,29 @@ const styleForm = {
   flexDirection: 'column',
 }
 
-const styleButtons = {
+const styleApplyClearButtonRow = {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  justifyContent: 'space-around',
-  marginTop: '1em',
+  justifyContent: 'center',
+  marginBottom: '0.618em',
 }
 
-const styleBreathingRoom = {
-  marginTop: '1em',
+const styleApplyButton = {
+  width: '30.9%',
+  padding: '0.309em',
+  margin: '0 0.309em',
+  fontSize: '1.05em',
+}
+const styleClearButton = {
+  width: '30.9%',
+  padding: '0.309em',
+  margin: '0 0.309em',
+  fontSize: '1.05em',
+}
+
+const styleButtonShowMap = {
+  fontSize: '1.05em',
 }
 
 const styleInputRow = {
@@ -77,7 +90,7 @@ const styleTextBox = {
 
 const styleSeparator = {
   borderBottom: `1px solid ${FilterColors.TEXT}`,
-  margin: '1em 0',
+  margin: '0.618em 0',
 }
 
 export default class MapFilter extends React.Component {
@@ -247,7 +260,7 @@ export default class MapFilter extends React.Component {
 
   renderCoordinateInput = () => {
     return (
-      <div key="MapFilterCoordinatesInput::all" style={styleBreathingRoom}>
+      <div key="MapFilterCoordinatesInput::all">
         <form
           style={styleForm}
           onKeyDown={this.handleKeyDown}
@@ -275,7 +288,12 @@ export default class MapFilter extends React.Component {
         onClick={() => {
           this.props.showMap ? this.handleHideMap() : this.handleShowMap()
         }}
-        style={styleBreathingRoom}
+        style={styleButtonShowMap}
+        styleIcon={{
+          width: '1.618em',
+          height: '1.618em',
+          marginRight: '0.618em',
+        }}
         ariaExpanded={this.props.showMap}
       />
     )
@@ -286,7 +304,7 @@ export default class MapFilter extends React.Component {
         text="Apply"
         title="Apply location filter"
         onClick={this.applyGeometry}
-        style={{width: '35%'}}
+        style={styleApplyButton}
       />
     )
 
@@ -296,7 +314,7 @@ export default class MapFilter extends React.Component {
         text="Clear"
         title="Clear location filter"
         onClick={this.clearGeometry}
-        style={{width: '35%'}}
+        style={styleClearButton}
       />
     )
 
@@ -306,7 +324,10 @@ export default class MapFilter extends React.Component {
       <FlexColumn
         items={[
           inputBoundingBox,
-          <div key="MapFilter::InputColumn::Buttons" style={styleButtons}>
+          <div
+            key="MapFilter::InputColumn::Buttons"
+            style={styleApplyClearButtonRow}
+          >
             {buttonApply}
             {buttonClear}
           </div>,
@@ -323,25 +344,28 @@ export default class MapFilter extends React.Component {
     )
 
     const excludeGlobalCheckbox = (
-      <Checkbox
-        label="Exclude Global Results"
-        id="MapFilter::excludeGlobalCheckbox"
-        checked={!!this.props.excludeGlobal}
-        onChange={this.toggleExcludeGlobalResults}
-      />
+      <div style={{marginLeft: '0.309em'}}>
+        <Checkbox
+          label="Exclude Global Results"
+          id="MapFilter::excludeGlobalCheckbox"
+          checked={!!this.props.excludeGlobal}
+          onChange={this.toggleExcludeGlobalResults}
+        />
+      </div>
     )
 
     return (
       <div style={styleMapFilter}>
-        <fieldset>
+        <fieldset style={{padding: '0.618em'}}>
           <legend id="mapFilterInstructions" style={styleDescription}>
             Type coordinates or draw on the map. Use the Clear button to reset
             the location filter.
           </legend>
           {inputColumn}
         </fieldset>
-        <div style={styleSeparator} />
-        <h4 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h4>
+        <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
+          Additional Filtering Options:
+        </h4>
         {excludeGlobalCheckbox}
       </div>
     )

@@ -8,35 +8,28 @@ import FilterFieldset from '../FilterFieldset'
 
 import {FilterColors} from '../../../style/defaultStyles'
 
-const styleBreathingRoom = {
-  marginTop: '1em',
-}
-
 const styleTextFilter = {
   ...{padding: '0.618em'},
 }
 
 const styleButton = {
-  width: '35%',
+  width: '30.9%',
+  padding: '0.309em',
+  margin: '0 0.309em 0 0.309em',
+  fontSize: '1.05em',
 }
 
 const styleButtonRow = {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  justifyContent: 'space-around',
-  // marginBottom: '0.5em',
+  justifyContent: 'center',
 }
 
 const styleField = {
   margin: '2px',
   alignItems: 'center',
   justifyContent: 'space-around',
-  // marginBottom: '0.25em',
-}
-
-const styleLabel = {
-  // marginBottom: '0.25em',
 }
 
 const styleInput = {
@@ -46,6 +39,7 @@ const styleInput = {
   padding: '0 0.309em',
   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
+  width: '100%',
 }
 
 const styleInputWrapper = {
@@ -106,18 +100,15 @@ const GranuleTextFilter = props => {
   return (
     <div style={styleTextFilter}>
       <FlexColumn
+        style={{border: '2px groove threedface', padding: '0.618em'}}
         items={[
-          <div key="TextFilterInput::all" style={styleBreathingRoom}>
+          <div key="TextFilterInput::all">
             <form onSubmit={submit}>
               <FilterFieldset>
                 <FlexRow
                   style={styleField}
                   items={[
-                    <label
-                      key="TextFilter::input::label"
-                      style={styleLabel}
-                      htmlFor={id}
-                    >
+                    <label key="TextFilter::input::label" htmlFor={id}>
                       Contains
                     </label>,
                     input,

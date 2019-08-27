@@ -8,7 +8,7 @@ const styleFieldset = {
     alignSelf: 'center',
     border: 'none',
     boxShadow: boxShadow,
-    marginBottom: '1em',
+    marginBottom: '0.618em',
     borderRadius: '0.309em',
   },
 }
