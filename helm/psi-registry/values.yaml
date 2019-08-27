@@ -28,7 +28,11 @@ volume:
 features:
   cas: false
 
-config: # inline application config yaml
+config: |-
+  ---
+  topics:
+    num-partitions: 20
+    replication-factor: 3
 
 ingress:
   enabled: true
