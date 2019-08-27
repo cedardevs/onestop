@@ -10,6 +10,7 @@ const styleFieldset = {
     boxShadow: boxShadow,
     marginBottom: '0.618em',
     borderRadius: '0.309em',
+    padding: '0.618em',
   },
 }
 
