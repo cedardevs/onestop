@@ -6,4 +6,4 @@ dependencies:
   repository: file://../kibana
   version: 0.1.0
 digest: sha256:2a15b5ad40ec4a900a8a240e8ba79e7bdc474dc26f7526dec30aa4b075e57c7a
-generated: 2019-06-20T14:28:17.619217-06:00
+generated: "2019-08-27T11:20:51.227199-06:00"

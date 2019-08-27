@@ -66,7 +66,7 @@ export default class AppliedFilters extends React.Component {
         <AppliedFilterBubble
           backgroundColor={Theme.text.backgroundColor}
           borderColor={Theme.text.borderColor}
-          text={`${textFilter}`}
+          text={`Filename Contains: ${textFilter}`}
           key="appliedFilter::textFilter"
           onUnselect={() => this.unselectText()}
         />
