@@ -47,10 +47,16 @@ const assembleFilters = filter => {
   return filters
 }
 
-const assembleQueries = ({queryText}) => {
+const assembleQueries = ({queryText, title}) => {
   let trimmedText = _.trim(queryText)
   if (trimmedText && trimmedText !== '*') {
     return [ {type: 'queryText', value: trimmedText} ]
+  }
+  if (title) {
+    let trimmedText = _.trim(title)
+    if (trimmedText && trimmedText !== '*') {
+      return [ {type: 'queryText', value: `title:${trimmedText}`} ]
+    }
   }
   return []
 }
@@ -147,6 +153,12 @@ const codecs = [
   {
     longKey: 'queryText',
     shortKey: 'q',
+    encode: text => encodeURIComponent(text),
+    decode: text => decodeURIComponent(text),
+  },
+  {
+    longKey: 'title',
+    shortKey: 't',
     encode: text => encodeURIComponent(text),
     decode: text => decodeURIComponent(text),
   },

@@ -8,7 +8,7 @@ const styleContainer = {
 const styleIcon = {
   display: 'flex',
   alignItems: 'center',
-  marginRight: '0.616em',
+  marginRight: '0.618em',
   width: '2em',
   height: '2em',
 }

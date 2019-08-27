@@ -5,7 +5,9 @@ import {
   granuleToggleFacet,
   granuleUpdateDateRange,
   granuleRemoveGeometry,
+  clearGranuleQueryText,
 } from '../../../actions/routing/GranuleSearchStateActions'
+
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 import AppliedFilters from '../AppliedFilters'
 
@@ -16,6 +18,7 @@ const mapStateToProps = state => {
     endDateTime,
     geoJSON,
     excludeGlobal,
+    title,
   } = state.search.granuleFilter
   return {
     selectedFacets,
@@ -24,11 +27,15 @@ const mapStateToProps = state => {
     geoJSON,
     excludeGlobal,
     showAppliedFilters: state.layout.showAppliedFilterBubbles,
+    textFilter: title,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    clearFilterText: () => {
+      dispatch(clearGranuleQueryText())
+    },
     toggleExcludeGlobal: () => {
       dispatch(granuleToggleExcludeGlobal())
     },

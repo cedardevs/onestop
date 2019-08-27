@@ -12,4 +12,4 @@ dependencies:
   repository: file://../client
   version: 0.1.0
 digest: sha256:2ec1d977e9bea8f84156f53eb5952de191c50a62a29e0b90276b2fc047a807a9
-generated: 2019-06-20T14:28:20.483938-06:00
+generated: "2019-08-27T11:20:42.373569-06:00"

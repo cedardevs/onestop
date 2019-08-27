@@ -1,5 +1,3 @@
-import Immutable from 'seamless-immutable'
-
 export const GRANULE_NEW_SEARCH_REQUESTED = 'GRANULE_NEW_SEARCH_REQUESTED'
 export const granuleNewSearchRequested = collectionId => ({
   // this indicates a granule search within a single collection
@@ -39,12 +37,6 @@ export const granuleMoreResultsReceived = granules => ({
   granules: granules,
 })
 
-export const GRANULE_SEARCH_ERROR = 'GRANULE_SEARCH_ERROR'
-export const granuleSearchError = errors => ({
-  type: GRANULE_SEARCH_ERROR,
-  errors,
-})
-
 export const GRANULES_FOR_CART_REQUESTED = 'GRANULES_FOR_CART_REQUESTED'
 export const granulesForCartRequested = () => ({
   type: GRANULES_FOR_CART_REQUESTED,
@@ -69,15 +61,22 @@ export const granulesForCartClearError = () => ({
   type: GRANULES_FOR_CART_CLEAR_ERROR,
 })
 
-//
-// export const GRANULE_UPDATE_QUERY_TEXT = 'GRANULE_UPDATE_QUERY_TEXT'
-// export const granuleUpdateQueryText = queryText => {
-//   return {
-//     type: GRANULE_UPDATE_QUERY_TEXT,
-//     queryText: queryText,
-//   }
-// }
-//
+export const GRANULE_SEARCH_ERROR = 'GRANULE_SEARCH_ERROR'
+export const granuleSearchError = errors => ({
+  type: GRANULE_SEARCH_ERROR,
+  errors,
+})
+
+export const GRANULE_SET_QUERY_TEXT = 'GRANULE_SET_QUERY_TEXT'
+export const setGranuleQueryText = text => ({
+  type: GRANULE_SET_QUERY_TEXT,
+  text: text,
+})
+export const clearGranuleQueryText = () => ({
+  type: GRANULE_SET_QUERY_TEXT,
+  text: '',
+})
+
 export const GRANULE_UPDATE_GEOMETRY = 'GRANULE_UPDATE_GEOMETRY'
 export const granuleUpdateGeometry = geoJSON => {
   return {
