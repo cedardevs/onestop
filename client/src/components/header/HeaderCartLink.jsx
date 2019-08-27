@@ -2,7 +2,7 @@ import React from 'react'
 import {FEATURE_CART} from '../../utils/featureUtils'
 import {cart_arrow_down, SvgIcon} from '../common/SvgIcon'
 import HeaderLink from './HeaderLink'
-import {SiteColors} from '../../style/defaultStyles'
+import defaultStyles, {SiteColors} from '../../style/defaultStyles'
 
 const styleCartMenuItem = {
   position: 'relative',
@@ -106,14 +106,28 @@ export default class HeaderCartLink extends React.Component {
 
     if (featuresEnabled.includes(FEATURE_CART)) {
       return (
-        <HeaderLink
-          title={cartLabel}
-          to="/cart"
-          onMouseOver={this.handleMouseOver}
-          onMouseOut={this.handleMouseOut}
-        >
-          {cartMenuItem}
-        </HeaderLink>
+        <div style={{display: 'flex'}}>
+          <div
+            aria-live="polite"
+            aria-atomic="false"
+            style={defaultStyles.hideOffscreen}
+          >
+            {numberOfGranulesSelected ? (
+              `${numberOfGranulesSelected} items in cart`
+            ) : (
+              ''
+            )}
+          </div>
+          <HeaderLink
+            title={cartLabel}
+            to="/cart"
+            onMouseOver={this.handleMouseOver}
+            onMouseOut={this.handleMouseOut}
+            badgeAlert={true}
+          >
+            {cartMenuItem}
+          </HeaderLink>
+        </div>
       )
     }
     else {

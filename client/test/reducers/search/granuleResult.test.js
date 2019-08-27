@@ -99,12 +99,12 @@ describe('The granuleResult reducer', function(){
     const result = granuleResult(
       stateWithGranules,
       granuleNewSearchResultsReceived(
-        30,
         [
           {id: 'B', attributes: {title: 'title B'}},
           {id: 'C', attributes: {title: 'title C'}},
         ],
-        facets
+        facets,
+        30
       )
     )
     expect(result.granules).toEqual({

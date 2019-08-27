@@ -32,7 +32,6 @@ export const fetchCollectionSearch = (body, successHandler, errorHandler) => {
 
 export const fetchGranuleSearch = (body, successHandler, errorHandler) => {
   const endpoint = apiPath() + '/search/granule'
-
   return fetchIt(
     endpoint,
     searchFetchParams(body),
@@ -52,7 +51,9 @@ const fetchIt = (endpoint, params, successHandler, errorHandler) => {
     .then(response => {
       return response.json()
     })
-    .then(json => successHandler(json))
+    .then(json => {
+      successHandler(json)
+    })
     .catch(ajaxError => {
       // TODO how to handle when ajaxError doesn't have response.json()...????
       if (ajaxError.response) {

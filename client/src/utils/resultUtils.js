@@ -4,6 +4,30 @@ import Immutable from 'seamless-immutable'
 import {SvgIcon, cloud, video_camera} from '../components/common/SvgIcon'
 import {fontFamilySansSerif} from './styleUtils'
 
+export const countArray = arr => {
+  return (arr && arr.length) || 0
+}
+
+export const countKeys = map => {
+  return (map && Object.keys(map).length) || 0
+}
+
+export const mergeGranulesArrayIntoGranulesMap = (
+  granulesArray,
+  granulesMap
+) => {
+  // api search returns data from the payload as an array,
+  // but in redux we store it in a map, keyed by id
+  let granules = granulesArray ? granulesArray : []
+  if (granules.length === 0) {
+    return granulesMap
+  }
+  return granules.reduce(
+    (existing, next) => existing.set(next.id, next.attributes),
+    granulesMap
+  )
+}
+
 export const styleProtocolListItem = {
   display: 'inline-flex',
   marginRight: '0.309em',

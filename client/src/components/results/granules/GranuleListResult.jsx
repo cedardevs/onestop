@@ -344,8 +344,8 @@ class ListResult extends React.Component {
       featuresEnabled.includes(FEATURE_CART) && granuleDownloadable ? (
         <Checkbox
           key={`checkbox-${itemId}`}
-          title={`Mark ${item.title} as file to download`}
-          label={`Mark as file to download`}
+          title={`Add ${item.title} to cart`}
+          label={`Add to cart`}
           id={itemId}
           checked={checkGranule}
           onChange={handleCheckboxChange(itemId, item)}
