@@ -19,69 +19,49 @@ class Indexer {
 
   static Map validateMessage(String id, ParsedRecord messageMap) {
 
-    def discovery = messageMap?.discovery
-    def analysis = messageMap?.analysis
-    def titles = analysis?.titles
-    def identification = analysis?.identification
-    def temporal = analysis?.temporalBounding
-    def spatial = analysis?.spatialBounding
-    def links = analysis?.dataAccess
-
     def failure = [title: 'Invalid record']
     List<String> details = []
 
-    // Validate record
-    if (discovery == null) {
-      // FIXME Is this possible anymore with DefaultParser?
-      details << "Missing discovery metadata"
+    def discovery = messageMap?.discovery
+    if(discovery == null || discovery == Discovery.newBuilder().build()) {
+      details << "Discovery metadata missing. No metadata to load into OneStop."
     }
-    if (analysis == null) {
-      // FIXME Is this possible anymore with DefaultParser?
-      details << "Missing analysis metadata"
-    }
-    if (titles == null) {
-      // FIXME Only null if Discovery & Analysis was null -- actually required?
-      details << "Missing title analysis"
-    }
-    if (identification == null) {
-      // FIXME Only null if Discovery & Analysis was null -- actually required?
-      details << "Missing identification analysis"
-    }
-    if (temporal == null) {
-      // FIXME Only null if Discovery & Analysis was null -- actually required?
-      details << "Missing temporal analysis"
+    else {
+      def analysis = messageMap?.analysis
+      if(analysis == null || analysis == Analysis.newBuilder().build()) {
+        details << "Analysis metadata missing. Cannot verify metadata quality for OneStop."
+      }
+      else {
+        def titles = analysis.titles
+        def identification = analysis.identification
+        def temporal = analysis.temporalBounding
+        def spatial = analysis.spatialBounding
+
+        if (!identification?.fileIdentifierExists && !identification?.doiExists) {
+          details << "Missing identifier - record contains neither a fileIdentifier nor a DOI"
+        }
+        if(messageMap.type == null || !identification.matchesIdentifiers) {
+          details << "Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided OR type unknown."
+        }
+        if (!titles.titleExists) {
+          details << "Missing title"
+        }
+        if (temporal.beginDescriptor == INVALID) {
+          details << "Invalid beginDate"
+        }
+        if (temporal.endDescriptor == INVALID) {
+          details << "Invalid endDate"
+        }
+        if (temporal.beginDescriptor != UNDEFINED && temporal.endDescriptor != UNDEFINED && temporal.instantDescriptor == INVALID) {
+          details << "Invalid instant-only date"
+        }
+        if (spatial.spatialBoundingExists && !spatial.isValid) {
+          details << "Invalid geoJSON for spatial bounding"
+        }
+      }
+
     }
 
-    ///////////
-    // FIXME -- cleanup: below should never be checked if no Discovery & no Analysis
-    ///////////
-
-    if (identification && (!identification?.fileIdentifierExists && !identification?.doiExists)) {
-      details << "Missing identifier - record contains neither a fileIdentifier nor a DOI"
-    }
-    // FIXME -- suddenly not true:
-//    if (messageMap.type == RecordType.collection && (identification && identification?.parentIdentifierExists)) {
-//      details << "Invalid record: a collection cannot contain a parentIdentifier"
-//    }
-    // FIXME -- logic has changed
-//    if (discovery && identification && discovery.hierarchyLevelName == 'granule' && !identification.parentIdentifierExists) {
-//      details << "Mismatch between metadata type and identifiers detected"
-//    }
-    if (titles && !titles.titleExists) {
-      details << "Missing title"
-    }
-    if (temporal && temporal.beginDescriptor == INVALID) {
-      details << "Invalid beginDate"
-    }
-    if (temporal && temporal.endDescriptor == INVALID) {
-      details << "Invalid endDate"
-    }
-    if (temporal && temporal.beginDescriptor != UNDEFINED && temporal.endDescriptor != UNDEFINED && temporal.instantDescriptor == INVALID) {
-      details << "Invalid instant-only date"
-    }
-    if (spatial && spatial.spatialBoundingExists && !spatial.isValid) {
-      details << "Invalid geoJSON for spatial bounding"
-    }
     if (details.size() > 0 ) {
       log.info("INVALID RECORD [ $id ]. VALIDATION FAILURES:  $details ")
       failure.detail = details.join(', ')
