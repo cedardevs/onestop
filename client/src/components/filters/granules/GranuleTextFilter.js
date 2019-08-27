@@ -27,9 +27,12 @@ const styleButtonRow = {
 }
 
 const styleField = {
-  margin: '2px',
+  display: 'flex',
+  flexDirection: 'row',
+  margin: '0.618em 0',
   alignItems: 'center',
-  justifyContent: 'space-around',
+  justifyContent: 'space-between',
+  width: '15em',
 }
 
 const styleInput = {
@@ -39,7 +42,7 @@ const styleInput = {
   padding: '0 0.309em',
   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
-  width: '100%',
+  width: '10em',
 }
 
 const styleInputWrapper = {
@@ -108,7 +111,11 @@ const GranuleTextFilter = props => {
                 <FlexRow
                   style={styleField}
                   items={[
-                    <label key="TextFilter::input::label" htmlFor={id}>
+                    <label
+                      key="TextFilter::input::label"
+                      htmlFor={id}
+                      style={{width: '4em'}}
+                    >
                       Contains
                     </label>,
                     input,

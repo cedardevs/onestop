@@ -64,7 +64,7 @@ const styleInputRow = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  margin: '0.616em 0',
+  margin: '0.618em 0',
   width: '15em',
 }
 
