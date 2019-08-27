@@ -104,6 +104,27 @@ class PublisherSpec extends Specification {
     collection | 'application/xml'  | '<text>xml woooo....</text>'
     collection | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
   }
+  
+  def 'publishes nothing for malformed #contentType'() {
+    setup:
+    String requestUri = "/metadata/$type"
+    String method = 'POST'
+    def request = new MockHttpServletRequest(method,requestUri)
+    request.contentType = contentType
+    
+    when:
+    publisher.publishMetadata(request, type, data, Topics.DEFAULT_SOURCE)
+    
+    then:
+    0 * mockProducer.send(_)
+
+    
+    where:
+    type       |  contentType       | data
+    granule    | 'application/json' | '{ "key": "Something "Name" something", "key2": "value2" }'
+    granule    | 'application/json' | '{"collections":[{"key":"key2":"right"}]}' //json array
+    granule    | 'application/xml'    | 'xml woooo....</text>'
+  }
 
   def 'publishes nothing for invalid type'() {
     setup:

@@ -7,10 +7,17 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.cedar.schemas.avro.psi.Input
 import org.cedar.schemas.avro.psi.Method
 import org.cedar.schemas.avro.psi.RecordType
+import org.json.JSONException
+import org.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.xml.sax.InputSource
+import org.xml.sax.SAXException
+import org.xml.sax.helpers.DefaultHandler
 
 import javax.servlet.http.HttpServletRequest
+import javax.xml.parsers.SAXParser
+import javax.xml.parsers.SAXParserFactory
 
 import static org.cedar.psi.common.constants.Topics.inputTopic
 
@@ -28,6 +35,13 @@ class Publisher {
   }
 
   Map publishMetadata(HttpServletRequest request, RecordType type, String data, String source, String id = null) {
+    def contentType = request.contentType.toString()
+    Map isValidContent = (contentType == "application/json") ? isJsonValid(data) : isXmlValid(data)
+    
+    if (!isValidContent.isValid) {
+      return isValidContent
+    }
+    
     String topic = inputTopic(type, source)
     if (!topic) {
       return [
@@ -46,6 +60,35 @@ class Publisher {
     ]
   }
 
+  Map isJsonValid(String content) {
+    try {
+      new JSONObject(content) && content.startsWith("{") && content.endsWith("}")
+      return [isValid: true]
+    }
+    catch (JSONException ex) {
+      return [
+        status : 400,
+        content: [errors: [[title: "Malformed json input: with error ${ex} "]]]
+      ]
+    }
+  }
+  
+  Map isXmlValid(String content) {
+    SAXParserFactory factory = SAXParserFactory.newInstance()
+    SAXParser saxParser = factory.newSAXParser()
+    DefaultHandler handler = new DefaultHandler()
+    try {
+      saxParser.parse(new InputSource(new StringReader(content)), handler)
+      return [isValid: true]
+    }
+    catch (SAXException e) {
+      return [
+        status : 400,
+        content: [errors: [[title: "Malformed xml input: with error ${e} "]]]
+      ]
+    }
+  }
+  
   Input buildInputTopicMessage(HttpServletRequest request, RecordType type, String data, String source, String id) {
     def builder = Input.newBuilder()
     builder.type = type
