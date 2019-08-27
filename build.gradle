@@ -2,6 +2,8 @@ buildscript {
   ext {
     spockVersion = '1.1-groovy-2.4'
     schemasVersion = 'master-SNAPSHOT'
+    confluentVersion = '5.3.0'
+    kafkaVersion = '2.3.0'
   }
   dependencies {
     classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
@@ -77,15 +79,6 @@ subprojects {
             details.requested.version <= '9.0.19') {
           details.useVersion '9.0.20'
           details.because 'Enforce tomcat 9.0.20+ to avoid vulnerabilities CVE-2019-0199, CVE-2019-0232, and CVE-2019-10072'
-        }
-      }
-
-      resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if (details.requested.group.startsWith('org.apache.zookeeper') &&
-            details.requested.name.equals('zookeeper') &&
-            details.requested.version <= '3.4.13') {
-          details.useVersion '3.4.14'
-          details.because 'Enforce zookeeper 3.4.14+ to avoid vulnerability CVE-2019-0201'
         }
       }
     }

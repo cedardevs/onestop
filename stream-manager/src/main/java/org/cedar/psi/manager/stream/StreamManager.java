@@ -1,5 +1,6 @@
 package org.cedar.psi.manager.stream;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
@@ -16,7 +17,6 @@ import org.cedar.schemas.analyze.Analyzers;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.RecordType;
 import org.cedar.schemas.avro.util.AvroUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

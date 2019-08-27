@@ -33,7 +33,7 @@ public class StreamFunctions {
     }
   };
 
-  public static Initializer<AggregatedInput> aggregatedInputInitializer = () -> AggregatedInput.newBuilder().build();
+  public static Initializer<AggregatedInput> aggregatedInputInitializer = () -> null;
 
   public static Aggregator<String, TimestampedValue<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, aggregate) -> {
     var input = timestampedInput.data;
@@ -48,7 +48,9 @@ public class StreamFunctions {
     }
 
     // if we're PATCHing then build on top of the existing state, else create a new state
-    var builder = method == PATCH ? AggregatedInput.newBuilder(aggregate) : AggregatedInput.newBuilder();
+    var builder = method == PATCH && aggregate instanceof AggregatedInput ?
+        AggregatedInput.newBuilder(aggregate) :
+        AggregatedInput.newBuilder();
 
     if (builder.getType() == null) {
       builder.setType(input.getType());
@@ -81,13 +83,20 @@ public class StreamFunctions {
     }
 
     // note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
-    builder.setEvents(DataUtils.addOrInit(aggregate.getEvents(), buildEventRecord(timestampedInput)));
+    var currentEvents = aggregate != null ? aggregate.getEvents() : null;
+    builder.setEvents(DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput)));
     return builder.build();
   };
 
   public static AggregatedInput updateDeleted(TimestampedValue<Input> input, AggregatedInput aggregate) {
+    if (aggregate == null) {
+      return null;
+    }
+    var data = input != null ? input.data : null;
+    var method = data != null ? input.data.getMethod() : null;
+    var deleted = method != null && method.equals(DELETE);
     return AggregatedInput.newBuilder(aggregate)
-        .setDeleted(input.data.getMethod().equals(DELETE))
+        .setDeleted(deleted)
         .setEvents(DataUtils.addOrInit(aggregate.getEvents(), buildEventRecord(input)))
         .build();
   }

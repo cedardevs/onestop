@@ -38,7 +38,7 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregated input initializer returns a default AggregatedInput'() {
     expect:
-    StreamFunctions.aggregatedInputInitializer.apply().equals(AggregatedInput.newBuilder().build())
+    StreamFunctions.aggregatedInputInitializer.apply().equals(null)
   }
 
   def 'aggregates an initial input'() {
@@ -49,11 +49,11 @@ class StreamFunctionsSpec extends Specification {
         .setContent(testGranuleJson)
         .setContentType('application/json')
         .setSource('common-ingest')
-        .setOperation( null)
+        .setOperation(null)
         .build()
     def uglifiedContent = JsonOutput.toJson(new JsonSlurper().parseText(testGranuleJson))
     def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
-    def aggregate = AggregatedInput.newBuilder().build()
+    def aggregate = StreamFunctions.aggregatedInputInitializer.apply()
 
     when:
     def result = StreamFunctions.inputAggregator.apply(key, timestampedInput, aggregate)
@@ -81,6 +81,38 @@ class StreamFunctionsSpec extends Specification {
     result.events[0].timestamp == timestampedInput.timestampMs
     result.errors instanceof List
     result.errors.size() == 0
+  }
+
+  def 'handles a DELETE when no aggregate exists yet'() {
+    def key = 'ABC'
+    def input = Input.newBuilder()
+        .setType(RecordType.collection)
+        .setMethod(Method.DELETE)
+        .build()
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def aggregate = StreamFunctions.aggregatedInputInitializer.apply()
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply(key, timestampedInput, aggregate)
+
+    then:
+    result == null
+  }
+
+  def 'handles a GET when no aggregate exists yet'() {
+    def key = 'ABC'
+    def input = Input.newBuilder()
+        .setType(RecordType.collection)
+        .setMethod(Method.GET)
+        .build()
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def aggregate = StreamFunctions.aggregatedInputInitializer.apply()
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply(key, timestampedInput, aggregate)
+
+    then:
+    result == null
   }
 
   def 'records errors for bad fields and still parses good ones'() {

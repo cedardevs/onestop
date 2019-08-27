@@ -14,12 +14,14 @@ public class RoutingUtils {
       RecordType.granule, List.of("common-ingest"));
 
   public static boolean requiresExtraction(String key, AggregatedInput value) {
-    var extractableInputsForType = extractableInputSources.get(value.getType());
+    var type = value instanceof AggregatedInput ? value.getType() : null;
+    if (type == null) { return false; }
+    var extractableInputsForType = extractableInputSources.get(type);
     return extractableInputsForType instanceof List && extractableInputsForType.contains(value.getInitialSource());
   };
 
   public static boolean hasErrors(String key, AggregatedInput value) {
-    return value.getErrors() != null && value.getErrors().size() > 0;
+    return value != null && value.getErrors() != null && value.getErrors().size() > 0;
   }
 
   public static boolean isNull(String key, Object value) {

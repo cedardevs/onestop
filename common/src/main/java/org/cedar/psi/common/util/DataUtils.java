@@ -1,15 +1,16 @@
 package org.cedar.psi.common.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ErrorEvent;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.util.AvroUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class DataUtils {
 
   public static <T> List<T> addOrInit(List<T> list, T item) {
@@ -60,7 +61,7 @@ public class DataUtils {
       else if (v instanceof List && originalValue instanceof List) {
         var mergedList = new HashSet((List) originalValue);
         mergedList.addAll((List) v);
-        mergedMap.put(k, mergedList);
+        mergedMap.put(k, new ArrayList(mergedList));
       }
       else {
         /* This overwrites simple values but also mismatched object types. Accepting that "risk" here since

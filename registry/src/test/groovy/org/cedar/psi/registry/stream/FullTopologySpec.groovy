@@ -1,5 +1,7 @@
 package org.cedar.psi.registry.stream
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.apache.kafka.common.header.internals.RecordHeaders
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
@@ -7,6 +9,7 @@ import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
 import org.cedar.psi.registry.util.TimeFormatUtils
 import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
 import spock.lang.Specification
 
@@ -26,7 +29,7 @@ class FullTopologySpec extends Specification {
   static final UTC_ID = ZoneId.of('UTC')
 
   def config = [
-      (APPLICATION_ID_CONFIG)           : 'delayed_publisher_spec',
+      (APPLICATION_ID_CONFIG)           : 'full_topology_spec',
       (BOOTSTRAP_SERVERS_CONFIG)        : 'http://localhost:9092',
       (SCHEMA_REGISTRY_URL_CONFIG)      : 'http://localhost:8081',
       (DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
@@ -42,6 +45,7 @@ class FullTopologySpec extends Specification {
   def inputType = RecordType.granule
   def inputSource = DEFAULT_SOURCE
   def inputTopic = inputTopic(inputType, inputSource)
+  def inputChangelogTopic = inputChangelogTopic(config[APPLICATION_ID_CONFIG], inputType, inputSource)
   def parsedTopic = parsedTopic(inputType)
   def publishedTopic = publishedTopic(inputType)
   def inputStore = driver.getKeyValueStore(inputStore(inputType, inputSource))
@@ -67,6 +71,73 @@ class FullTopologySpec extends Specification {
     aggregate instanceof AggregatedInput
     aggregate.rawJson == '{"size":42,"name":"test"}'
     aggregate.events.size() == 2
+  }
+
+  def 'handles duplicated inputs'() {
+    def key = 'A'
+    def json1 = '{"relationships":[{"type":"COLLECTION","id":"11111111-1111-1111-1111-111111111111"}]}'
+    def json2 = '{"relationships":[{"type":"COLLECTION","id":"11111111-1111-1111-1111-111111111111"}]}'
+    def value1 = buildTestGranule(json1,  Method.PATCH)
+    def value2 = buildTestGranule(json2,  Method.PATCH)
+
+    when:
+    driver.pipeInput(inputFactory.create(inputTopic, key, value1))
+    driver.pipeInput(inputFactory.create(inputTopic, key, value2))
+
+    and:
+    def aggregate = inputStore.get('A')
+
+    then:
+    aggregate instanceof AggregatedInput
+    aggregate.rawJson == json2
+    aggregate.relationships.size() == 1
+    aggregate.relationships[0].id == '11111111-1111-1111-1111-111111111111'
+    aggregate.events.size() == 2
+    aggregate.errors.size() == 0
+  }
+
+  def 'handles real world inputs with duplicated values from common ingest'() {
+    def key = 'A'
+    def jsonInputs = new JsonSlurper().parse(ClassLoader.systemClassLoader.getResourceAsStream('real-world-inputs.json'))
+    def avroInputs = jsonInputs.collect {
+      AvroUtils.jsonToAvro(JsonOutput.toJson(it), Input.classSchema)
+    }
+    def recordInputs = avroInputs.collect {
+      inputFactory.create(inputTopic, key, it)
+    }
+
+    when:
+    driver.pipeInput(recordInputs)
+
+    then:
+    def (out1, out2, out3, out4) = readAllOutput(driver, inputChangelogTopic)
+    out1.value() instanceof AggregatedInput
+    out1.value().errors.size() == 0
+    out2.value() instanceof AggregatedInput
+    out2.value().errors.size() == 0
+    out3.value() instanceof AggregatedInput
+    out3.value().errors.size() == 0
+    out4.value() instanceof AggregatedInput
+    out4.value().errors.size() == 0
+  }
+
+  def 'handles a delete input for nonexistent record'() {
+    def key = 'A'
+    def value1 = Input.newBuilder().setMethod(Method.DELETE).setType(inputType).build()
+
+    when:
+    driver.pipeInput(inputFactory.create(inputTopic, key, value1))
+
+    and:
+    def aggregate = inputStore.get('A')
+
+    then:
+    aggregate == null
+
+    and:
+    def output = readAllOutput(driver, inputChangelogTopic)
+    OutputVerifier.compareKeyValue(output[0], key, null)
+    output.size() == 1
   }
 
   def 'values for discovery and publishing are set to the default values'() {
