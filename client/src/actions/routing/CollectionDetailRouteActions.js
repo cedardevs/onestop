@@ -35,17 +35,7 @@ const detailPromise = (dispatch, id, filterState) => {
   }
 
   // promise for main request: GET by ID
-  const detailPromiseMain = fetchCollectionDetail(
-    id,
-    payload => {
-      dispatch(
-        collectionDetailReceived(payload.data[0], payload.meta.totalGranules)
-      )
-    },
-    e => {
-      dispatch(collectionDetailError(e.errors || e))
-    }
-  )
+  const detailPromiseMain = detailPromiseIsolated(dispatch, id)
   // promise for secondary request: how many granules are in this collection when the search filters are applied?
   const granuleCountPromise = fetchGranuleSearch(
     body,
@@ -59,6 +49,22 @@ const detailPromise = (dispatch, id, filterState) => {
 
   // TODO test that these requests are fired in parallel
   return Promise.all([ detailPromiseMain, granuleCountPromise ])
+}
+
+const detailPromiseIsolated = (dispatch, collectionId) => {
+  // promise for main request: GET by ID
+  const detailPromiseMain = fetchCollectionDetail(
+    collectionId,
+    payload => {
+      dispatch(
+        collectionDetailReceived(payload.data[0], payload.meta.totalGranules)
+      )
+    },
+    e => {
+      dispatch(collectionDetailError(e.errors || e))
+    }
+  )
+  return detailPromiseMain
 }
 
 export const submitCollectionDetail = (history, id, filterState) => {
@@ -83,6 +89,21 @@ export const submitCollectionDetail = (history, id, filterState) => {
     navigateToDetailUrl(history, updatedFilterState)
     // start async request
     return detailPromise(dispatch, id, updatedFilterState)
+  }
+}
+
+export const submitCollectionDetailIsolated = collectionId => {
+  // use middleware to dispatch an async function
+  return async (dispatch, getState) => {
+    if (isRequestInvalid(collectionId, getState())) {
+      // short circuit silently if minimum request requirements are not met
+      return
+    }
+    // send notifications that request has begun, updating filter state if needed
+    dispatch(collectionDetailRequested(collectionId, {}))
+
+    // start async request
+    return detailPromiseIsolated(dispatch, collectionId)
   }
 }
 

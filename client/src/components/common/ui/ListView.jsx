@@ -22,14 +22,16 @@ const styleListInfo = {
   fontFamily: fontFamilySerif(),
   fontSize: '1.2em',
   padding: 0,
+  margin: '0 0 0.618em',
 }
 
 const styleListControl = {
   display: 'flex',
+  justifyContent: 'space-around',
   padding: '0.618em',
   backgroundColor: 'rgba(0,0,0, 0.2)',
   borderRadius: '0.309em',
-  margin: '0 1.618em 1.618em 0',
+  margin: '0 1.618em 1em 0',
 }
 
 const styleControlButtonIcon = {
@@ -129,6 +131,8 @@ export default class ListView extends React.Component {
       GridItemComponent,
       propsForItem,
       customControl,
+      customButtons,
+      customMessage,
     } = this.props
 
     let countMessage = `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} ${resultType
@@ -142,25 +146,38 @@ export default class ListView extends React.Component {
     }
 
     const listInfo = (
-      <h2 style={styleListInfo} key="list-view-info">
-        {message}
-      </h2>
+      <div key="list-view-info">
+        <h2 style={styleListInfo}>{message}</h2>
+      </div>
     )
 
-    const toggleAvailable = ListItemComponent && GridItemComponent
-
+    // initialize vars for control elements
     let controlElement = null
+    let buttons = []
+
+    // if both list and grid components are provided,
+    // we can show a toggle between views
+    const toggleAvailable = ListItemComponent && GridItemComponent
     if (toggleAvailable) {
-      controlElement = (
-        <div style={styleListControl}>
-          <Button
-            text={this.state.showAsGrid ? 'Show List' : 'Show Grid'}
-            icon={this.state.showAsGrid ? listIcon : gridIcon}
-            styleIcon={styleControlButtonIcon}
-            onClick={this.toggleShowAsGrid}
-          />
-        </div>
+      buttons.push(
+        <Button
+          text={this.state.showAsGrid ? 'Show List' : 'Show Grid'}
+          icon={this.state.showAsGrid ? listIcon : gridIcon}
+          styleIcon={styleControlButtonIcon}
+          onClick={this.toggleShowAsGrid}
+        />
       )
+    }
+
+    // add any provided custom buttons to the control element
+    const customButtonsAvailable = customButtons && customButtons.length > 0
+    if (customButtonsAvailable) {
+      buttons = buttons.concat(customButtons)
+    }
+
+    // if any control buttons are available to show, show them
+    if (buttons.length > 0) {
+      controlElement = <div style={styleListControl}>{buttons}</div>
     }
 
     let itemElements = []
@@ -227,6 +244,7 @@ export default class ListView extends React.Component {
       <div style={styleListView}>
         <FlexRow style={styleTopRow} items={[ listInfo, customControl ]} />
         {controlElement}
+        {customMessage}
         <div style={this.state.showAsGrid ? styleGrid : styleList}>
           {itemElements}
         </div>
