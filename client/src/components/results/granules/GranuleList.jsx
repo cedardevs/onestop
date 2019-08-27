@@ -1,14 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import GranuleListLegend from './GranuleListLegend'
 import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
 import GranuleListResultContainer from './GranuleListResultContainer'
 import {identifyProtocol} from '../../../utils/resultUtils'
-import {boxShadow, SiteColors} from '../../../style/defaultStyles'
+import {SiteColors} from '../../../style/defaultStyles'
 import Meta from '../../helmet/Meta'
 import _ from 'lodash'
 import cartIcon from '../../../../img/font-awesome/white/svg/shopping-cart.svg'
+import {FEATURE_CART} from '../../../utils/featureUtils'
 
 const styleCenterContent = {
   display: 'flex',
@@ -18,10 +18,6 @@ const styleCenterContent = {
 const styleGranuleListWrapper = {
   maxWidth: '80em',
   width: '80em',
-  boxShadow: boxShadow,
-  marginRight: '3px',
-  marginLeft: '1px',
-  backgroundColor: 'white',
   color: '#222',
 }
 
@@ -31,12 +27,6 @@ const styleShowMore = {
 const styleShowMoreFocus = {
   outline: '2px dashed #5C87AC',
   outlineOffset: '.118em',
-}
-
-const styleAddFilteredGranulesToCart = {
-  display: 'flex',
-  alignItems: 'center',
-  margin: '1.618em',
 }
 
 const styleAddFilteredGranulesToCartButton = {
@@ -66,15 +56,27 @@ const styleWarning = warning => {
   }
   else {
     return {
-      color: SiteColors.WARNING,
-      marginLeft: '1em',
+      backgroundColor: SiteColors.WARNING,
+      color: 'white',
       fontWeight: 'bold',
       fontSize: '1.15em',
+      margin: '0 1.618em 1em 0',
+      padding: '0.618em',
+      display: 'flex',
+      justifyContent: 'center',
+      borderRadius: '0.309em',
     }
   }
 }
 
 export default class GranuleList extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      hovering: false,
+    }
+  }
+
   isGranuleSelected = itemId => {
     const {selectedGranules} = this.props
     const checkIt = Object.keys(selectedGranules).includes(itemId)
@@ -91,10 +93,6 @@ export default class GranuleList extends React.Component {
         deselectGranule(itemId)
       }
     }
-  }
-
-  handleSelectAll = () => {
-    const {results, selectVisibleGranules} = this.props
   }
 
   propsForResult = (item, itemId) => {
@@ -120,7 +118,10 @@ export default class GranuleList extends React.Component {
       addFilteredGranulesToCartWarning,
       collectionTitle,
       granuleFilter,
+      featuresEnabled,
     } = this.props
+
+    const {hovering} = this.state
 
     // keep track of used protocols in results to avoid unnecessary legend keys
     const usedProtocols = new Set()
@@ -144,6 +145,35 @@ export default class GranuleList extends React.Component {
         />
       ) : null
 
+    // custom control for list view
+    let customButtons = []
+
+    if (featuresEnabled.includes(FEATURE_CART)) {
+      customButtons.push(
+        <Button
+          key={'addMatchingToCartButton'}
+          icon={cartIcon}
+          iconAfter={true}
+          styleIcon={styleAddFilteredGranulesToCartButtonIcon}
+          text="Add Matching to Cart"
+          onClick={() => addFilteredGranulesToCart(granuleFilter)}
+          style={styleAddFilteredGranulesToCartButton}
+          styleFocus={styleAddFilteredGranulesToCartButtonFocus}
+          styleText={styleAddFilteredGranulesToCartButtonText}
+        />
+      )
+    }
+
+    let customMessage = addFilteredGranulesToCartWarning ? (
+      <div
+        key="GranuleList::Warning"
+        style={styleWarning(addFilteredGranulesToCartWarning)}
+        role="alert"
+      >
+        {addFilteredGranulesToCartWarning}
+      </div>
+    ) : null
+
     return (
       <div style={styleCenterContent}>
         <Meta
@@ -153,27 +183,7 @@ export default class GranuleList extends React.Component {
         />
 
         <div style={styleGranuleListWrapper}>
-          <div style={styleAddFilteredGranulesToCart}>
-            <Button
-              icon={cartIcon}
-              iconAfter={true}
-              styleIcon={styleAddFilteredGranulesToCartButtonIcon}
-              text="Add Matching to Cart"
-              onClick={() => addFilteredGranulesToCart(granuleFilter)}
-              style={styleAddFilteredGranulesToCartButton}
-              styleFocus={styleAddFilteredGranulesToCartButtonFocus}
-              styleText={styleAddFilteredGranulesToCartButtonText}
-            />
-            <div
-              key="GranuleList::Warning"
-              style={styleWarning(addFilteredGranulesToCartWarning)}
-              role="alert"
-            >
-              {addFilteredGranulesToCartWarning}
-            </div>
-          </div>
-
-          <GranuleListLegend usedProtocols={usedProtocols} />
+          {/*<GranuleListLegend usedProtocols={usedProtocols} />*/}
           <ListView
             items={results}
             resultType="collection files"
@@ -183,6 +193,8 @@ export default class GranuleList extends React.Component {
             ListItemComponent={GranuleListResultContainer}
             GridItemComponent={null}
             propsForItem={this.propsForResult}
+            customButtons={customButtons}
+            customMessage={customMessage}
           />
           {showMoreButton}
         </div>

@@ -24,8 +24,6 @@ const styleCartListWrapper = {
   maxWidth: '80em',
   width: '80em',
   boxShadow: boxShadow,
-  marginRight: '3px',
-  marginLeft: '1px',
   paddingTop: '1.618em',
   paddingBottom: '1.618em',
   backgroundColor: 'white',
@@ -47,6 +45,7 @@ const styleClearCartButton = {
   fontSize: '1em',
   display: 'inline-flex',
   padding: '0.309em 0.618em 0.309em 0.309em',
+  marginBottom: '0.618em',
 }
 
 const styleClearCartButtonFocus = {

@@ -1,9 +1,7 @@
 import {connect} from 'react-redux'
 import {
   insertSelectedGranule,
-  insertMultipleSelectedGranules,
   removeSelectedGranule,
-  removeMultipleSelectedGranules,
 } from '../../../actions/CartActions'
 import {
   insertGranule,
@@ -58,9 +56,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     selectGranule: (item, itemId) => {
       insertGranule(itemId, item)
       dispatch(insertSelectedGranule(item, itemId))
-    },
-    selectVisibleGranules: (items, itemIds) => {
-      dispatch(insertMultipleSelectedGranules(items, itemIds))
     },
     deselectGranule: itemId => {
       removeGranuleFromLocalStorage(itemId)

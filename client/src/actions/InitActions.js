@@ -1,6 +1,9 @@
 import {decodePathAndQueryString} from '../utils/queryUtils'
 import {submitGranuleSearchWithFilter} from './routing/GranuleSearchRouteActions'
-import {submitCollectionDetail} from './routing/CollectionDetailRouteActions'
+import {
+  submitCollectionDetail,
+  submitCollectionDetailIsolated,
+} from './routing/CollectionDetailRouteActions'
 import {submitCollectionSearchWithFilter} from './routing/CollectionSearchRouteActions'
 import {fetchSitemap} from './fetch/FetchActions'
 import {fetchConfig} from './ConfigActions'
@@ -30,6 +33,12 @@ export const loadDetails = (history, path, newQueryString) => {
     if (areFiltersChanged(getState, 'search.collectionDetailFilter', filters)) {
       dispatch(submitCollectionDetail(history, id, filters))
     }
+  }
+}
+
+export const loadDetailsIsolated = collectionId => {
+  return dispatch => {
+    dispatch(submitCollectionDetailIsolated(collectionId))
   }
 }
 

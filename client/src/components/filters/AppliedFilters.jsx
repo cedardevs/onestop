@@ -21,7 +21,14 @@ const Theme = {
 const styleWrapper = {
   display: 'flex',
   flexFlow: 'row wrap',
-  padding: '0 2em 1em',
+  margin: '1.618em',
+  justifyContent: 'center',
+}
+
+const styleHidden = {
+  display: 'flex',
+  flexFlow: 'row wrap',
+  margin: '1.618em 0 0 0',
 }
 
 export default class AppliedFilters extends React.Component {
@@ -131,14 +138,17 @@ export default class AppliedFilters extends React.Component {
   }
 
   render() {
+    const {showAppliedFilters} = this.props
+
     const appliedFilters = [
       ...this.buildSpaceBubbles(),
       ...this.buildTimeBubbles(),
       ...this.buildFacetBubbles(),
     ]
-    if (this.props.showAppliedFilters) {
+
+    if (showAppliedFilters && appliedFilters.length !== 0) {
       return <div style={styleWrapper}>{appliedFilters}</div>
     }
-    return <div style={styleWrapper} />
+    return <div style={styleHidden} />
   }
 }

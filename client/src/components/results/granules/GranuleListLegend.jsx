@@ -4,7 +4,7 @@ import {styleBadge, renderBadgeIcon} from '../../../utils/resultUtils'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 
 const styleLegend = {
-  margin: '1.618em',
+  margin: '0 1.618em 1.618em 1.618em',
 }
 
 const styleHeading = {
