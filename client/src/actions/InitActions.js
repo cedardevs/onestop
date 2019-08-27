@@ -37,7 +37,6 @@ export const loadDetails = (history, path, newQueryString) => {
 }
 
 export const loadDetailsIsolated = collectionId => {
-  console.log('loadDetailsIsolated')
   return dispatch => {
     dispatch(submitCollectionDetailIsolated(collectionId))
   }

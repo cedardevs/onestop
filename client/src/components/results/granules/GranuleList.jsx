@@ -29,12 +29,6 @@ const styleShowMoreFocus = {
   outlineOffset: '.118em',
 }
 
-// const styleAddFilteredGranulesToCart = {
-//   display: 'flex',
-//   alignItems: 'center',
-//   padding: '0 1em 1em 1em',
-// }
-
 const styleAddFilteredGranulesToCartButton = {
   flexShrink: 0,
   height: 'fit-content',

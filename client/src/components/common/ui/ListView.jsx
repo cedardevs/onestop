@@ -176,7 +176,6 @@ export default class ListView extends React.Component {
     }
 
     // if any control buttons are available to show, show them
-    console.log('buttons', buttons)
     if (buttons.length > 0) {
       controlElement = <div style={styleListControl}>{buttons}</div>
     }

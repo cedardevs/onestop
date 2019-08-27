@@ -35,17 +35,7 @@ const detailPromise = (dispatch, id, filterState) => {
   }
 
   // promise for main request: GET by ID
-  const detailPromiseMain = fetchCollectionDetail(
-    id,
-    payload => {
-      dispatch(
-        collectionDetailReceived(payload.data[0], payload.meta.totalGranules)
-      )
-    },
-    e => {
-      dispatch(collectionDetailError(e.errors || e))
-    }
-  )
+  const detailPromiseMain = detailPromiseIsolated(dispatch, id)
   // promise for secondary request: how many granules are in this collection when the search filters are applied?
   const granuleCountPromise = fetchGranuleSearch(
     body,
