@@ -129,8 +129,8 @@ class Indexer {
 
     Map discoveryMap = AvroUtils.avroToMap(discovery, true)
 
-    // FIXME this is not how we set this...
-    discoveryMap.type = discoveryMap?.parentIdentifier ?
+    // Records validated before getting to this point to no null record.type possible (always granule or collection)
+    discoveryMap.type = record.type == RecordType.granule ?
         ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
 
     // create GCMD keywords
