@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gmi:MI_Metadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmi">
+  <gmd:fileIdentifier>
+    <gco:CharacterString>gov.super.important:FILE-ID</gco:CharacterString>
+  </gmd:fileIdentifier>
+  <gmd:hierarchyLevelName>
+    <gco:CharacterString>collection</gco:CharacterString>
+  </gmd:hierarchyLevelName>
+</gmi:MI_Metadata>

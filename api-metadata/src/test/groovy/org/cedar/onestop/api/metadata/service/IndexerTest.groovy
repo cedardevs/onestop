@@ -157,84 +157,16 @@ class IndexerTest extends Specification {
       endYear  : 2011
   ]
 
-  def "Create GCMD keyword lists"() {
-    when:
-    Map parsedKeywords = Indexer.createGcmdKeyword(inputRecord.discovery)
-
-    then:
-    parsedKeywords.gcmdScienceServices == expectedGcmdKeywords.gcmdScienceServices
-    parsedKeywords.gcmdScience == expectedGcmdKeywords.gcmdScience
-    parsedKeywords.gcmdLocations == expectedGcmdKeywords.gcmdLocations
-    parsedKeywords.gcmdInstruments == expectedGcmdKeywords.gcmdInstruments
-    parsedKeywords.gcmdPlatforms == expectedGcmdKeywords.gcmdPlatforms
-    parsedKeywords.gcmdProjects == expectedGcmdKeywords.gcmdProjects
-    parsedKeywords.gcmdDataCenters == expectedGcmdKeywords.gcmdDataCenters
-    parsedKeywords.gcmdHorizontalResolution == expectedGcmdKeywords.gcmdHorizontalResolution
-    parsedKeywords.gcmdVerticalResolution == expectedGcmdKeywords.gcmdVerticalResolution
-    parsedKeywords.gcmdTemporalResolution == expectedGcmdKeywords.gcmdTemporalResolution
-
-    and: "should recreate keywords with out accession values"
-    parsedKeywords.keywords.namespace.every { it != 'NCEI ACCESSION NUMBER' }
-    parsedKeywords.keywords.size() == expectedKeywords.size()
-  }
-
-  def "Create contacts, publishers and creators from responsibleParties"() {
-    when:
-    Map partiesMap = Indexer.parseResponsibleParties(inputRecord.discovery.responsibleParties)
-
-    then:
-    partiesMap.contacts == expectedResponsibleParties.contacts
-    partiesMap.creators == expectedResponsibleParties.creators
-    partiesMap.publishers == expectedResponsibleParties.publishers
-  }
-
-  def "When #situation.description, expected temporal bounding generated"() {
-    when:
-    def newTimeMetadata = Indexer.readyDatesForSearch(situation.bounding, situation.analysis)
-
-    then:
-    newTimeMetadata == expectedResult
-
-    // Only include data that will be checked to cut down on size of below tables
-    where:
-    situation                | expectedResult
-    situations.instantDay   | [beginDate: '1999-12-31T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
-    situations.instantYear  | [beginDate: '1999-01-01T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
-    situations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000]
-    situations.instantNano  | [beginDate: '2008-04-01T00:00:00Z', endDate: '2008-04-01T00:00:00Z', beginYear: 2008, endYear: 2008]
-    situations.bounded      | [beginDate: '1900-01-01T00:00:00Z', endDate: '2009-12-31T23:59:59Z', beginYear: 1900, endYear: 2009]
-    situations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000]
-    situations.ongoing      | [beginDate: '1975-06-15T12:30:00Z', endDate: null, beginYear: 1975, endYear: null]
-    situations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null]
-  }
-
-  def "new record is ready for onestop"() {
-    when:
-    def result = Indexer.reformatMessageForSearch(inputRecord)
-
-    then:
-    result.serviceLinks == []
-    result.accessionValues == []
-
-    result.temporalBounding == expectedTemporalBounding
-
-    result.keywords == expectedKeywords
-    expectedGcmdKeywords.each { k, v ->
-      assert result[k] == v
-    }
-
-    result.responsibleParties == null
-    expectedResponsibleParties.each { k, v ->
-      assert result[k] == v
-    }
-  }
-
+  ////////////////////////////
+  // Validate Message Tests //
+  ////////////////////////////
   def "valid message passes validation check"() {
     expect:
     Indexer.validateMessage('dummy id', inputRecord)
   }
 
   def "invalid message fails validation check"() {
+    // FIXME not really checking all the validation steps here
     given:
     def titleAnalysis = TitleAnalysis.newBuilder(inputRecord.analysis.titles)
         .setTitleExists(false)
@@ -264,6 +196,11 @@ class IndexerTest extends Specification {
     !Indexer.validateMessage('dummy id', record)?.valid
   }
 
+
+  ///////////////////////////////
+  // XML To ParsedRecord Tests //
+  ///////////////////////////////
+  // FIXME remove this big test? should be in schemas not here
   def 'xml to ParsedRecord to staging doc (test from old MetadataParserSpec)'(){
     given:
     String expectedKeywords = JsonOutput.toJson([
@@ -335,21 +272,21 @@ class IndexerTest extends Specification {
         ]
     ]
     List expectedServices =[ [
-        title         : 'Multibeam Bathymetric Surveys ArcGIS Map Service',
-        alternateTitle: 'Alternate Title for Testing',
-        description   : "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green.",
-        date          : '2012-01-01',
-        dateType      : 'creation',
-        pointOfContact: [
-            individualName  : '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
-            organizationName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
-            positionName    : '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
-            role            : 'pointOfContact',
-            email           : 'TEMPLATE@EMAIL.GOV',
-            phone           : null
-        ],
-        operations    : serviceLinks
-    ]]
+                                 title         : 'Multibeam Bathymetric Surveys ArcGIS Map Service',
+                                 alternateTitle: 'Alternate Title for Testing',
+                                 description   : "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green.",
+                                 date          : '2012-01-01',
+                                 dateType      : 'creation',
+                                 pointOfContact: [
+                                     individualName  : '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+                                     organizationName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+                                     positionName    : '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+                                     role            : 'pointOfContact',
+                                     email           : 'TEMPLATE@EMAIL.GOV',
+                                     phone           : null
+                                 ],
+                                 operations    : serviceLinks
+                             ]]
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
@@ -412,13 +349,13 @@ class IndexerTest extends Specification {
     stagingDoc.spatialBounding  as String == [
         type:'Polygon',
         coordinates:[
-          [
-            [-180.0, -90.0],
-            [180.0, -90.0],
-            [180.0, 90.0],
-            [-180.0, 90.0],
-            [-180.0, -90.0]
-          ]
+            [
+                [-180.0, -90.0],
+                [180.0, -90.0],
+                [180.0, 90.0],
+                [-180.0, 90.0],
+                [-180.0, -90.0]
+            ]
         ]
     ] as String
 //    stagingDoc.isGlobal == true
@@ -589,17 +526,112 @@ class IndexerTest extends Specification {
     stagingDoc.services == ""
   }
 
-  def "CVE-2018-1000840 use external docs hack"() {
-    given: 'an xml which utilizes this vunerability'
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("attack.xml").text
+  def 'Valid XML file translated to valid ParsedRecord'() {
+    // TODO Simple happy case test; no need to check fields here
+  }
 
-    when: 'you attempt to parse the xml'
+  def 'Malformed XML throws error, no ParsedRecord created'() {
+    // TODO
+  }
 
-    def parsedXml = Indexer.xmlToParsedRecord(document)
+  def "When creating ParsedRecord from XML, record type is #type when #situation"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream(path).text
 
-    then: 'we throw an exception instead of parsing attack-vector xml'
-    parsedXml.error.title == 'Load request failed due to malformed XML.'
-    parsedXml.error.detail.contains('SAXParseException')
+    when:
+    def result = Indexer.xmlToParsedRecord(document)
+
+    then:
+    !result.containsKey('error')
+
+    and:
+    ParsedRecord parsedRecord = result.parsedRecord
+    parsedRecord.type == type
+
+    where:
+    type                  | path                             | situation
+    RecordType.granule    | 'test-iso-granule-type.xml'      | 'hlm is granule and pid present'
+    RecordType.collection | 'test-iso-collection-type-1.xml' | 'hlm is present but not granule'
+    RecordType.collection | 'test-iso-collection-type-2.xml' | 'hlm is null'
+    null                  | 'test-iso-error-type.xml'        | 'hlm is granule but no pid present'
+  }
+
+
+  ///////////////////////////////////////
+  // Reformat Message For Search Tests //
+  ///////////////////////////////////////
+
+  // FIXME less reliance on loading XML here; test with a ParsedRecord
+  def "Create GCMD keyword lists"() {
+    when:
+    Map parsedKeywords = Indexer.createGcmdKeyword(inputRecord.discovery)
+
+    then:
+    parsedKeywords.gcmdScienceServices == expectedGcmdKeywords.gcmdScienceServices
+    parsedKeywords.gcmdScience == expectedGcmdKeywords.gcmdScience
+    parsedKeywords.gcmdLocations == expectedGcmdKeywords.gcmdLocations
+    parsedKeywords.gcmdInstruments == expectedGcmdKeywords.gcmdInstruments
+    parsedKeywords.gcmdPlatforms == expectedGcmdKeywords.gcmdPlatforms
+    parsedKeywords.gcmdProjects == expectedGcmdKeywords.gcmdProjects
+    parsedKeywords.gcmdDataCenters == expectedGcmdKeywords.gcmdDataCenters
+    parsedKeywords.gcmdHorizontalResolution == expectedGcmdKeywords.gcmdHorizontalResolution
+    parsedKeywords.gcmdVerticalResolution == expectedGcmdKeywords.gcmdVerticalResolution
+    parsedKeywords.gcmdTemporalResolution == expectedGcmdKeywords.gcmdTemporalResolution
+
+    and: "should recreate keywords with out accession values"
+    parsedKeywords.keywords.namespace.every { it != 'NCEI ACCESSION NUMBER' }
+    parsedKeywords.keywords.size() == expectedKeywords.size()
+  }
+
+  def "Create contacts, publishers and creators from responsibleParties"() {
+    when:
+    Map partiesMap = Indexer.parseResponsibleParties(inputRecord.discovery.responsibleParties)
+
+    then:
+    partiesMap.contacts == expectedResponsibleParties.contacts
+    partiesMap.creators == expectedResponsibleParties.creators
+    partiesMap.publishers == expectedResponsibleParties.publishers
+  }
+
+  def "When #situation.description, expected temporal bounding generated"() {
+    when:
+    def newTimeMetadata = Indexer.readyDatesForSearch(situation.bounding, situation.analysis)
+
+    then:
+    newTimeMetadata == expectedResult
+
+    // Only include data that will be checked to cut down on size of below tables
+    where:
+    situation                | expectedResult
+    situations.instantDay   | [beginDate: '1999-12-31T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
+    situations.instantYear  | [beginDate: '1999-01-01T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
+    situations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000]
+    situations.instantNano  | [beginDate: '2008-04-01T00:00:00Z', endDate: '2008-04-01T00:00:00Z', beginYear: 2008, endYear: 2008]
+    situations.bounded      | [beginDate: '1900-01-01T00:00:00Z', endDate: '2009-12-31T23:59:59Z', beginYear: 1900, endYear: 2009]
+    situations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000]
+    situations.ongoing      | [beginDate: '1975-06-15T12:30:00Z', endDate: null, beginYear: 1975, endYear: null]
+    situations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null]
+  }
+
+  def "new record is ready for onestop"() {
+    when:
+    def result = Indexer.reformatMessageForSearch(inputRecord)
+
+    then:
+    result.serviceLinks == []
+    result.accessionValues == []
+
+    result.temporalBounding == expectedTemporalBounding
+
+    result.keywords == expectedKeywords
+    expectedGcmdKeywords.each { k, v ->
+      assert result[k] == v
+    }
+
+    result.responsibleParties == null
+    expectedResponsibleParties.each { k, v ->
+      assert result[k] == v
+    }
   }
 
   def "Temporal bounding is correctly parsed"() {
@@ -670,4 +702,20 @@ class IndexerTest extends Specification {
     stagingDoc.temporalBounding == [beginDate:null, endDate:null, beginYear:null, endYear:null]
   }
 
+
+  //////////////////////////
+  // Secure Parsing Tests //
+  //////////////////////////
+  def "CVE-2018-1000840 use external docs hack"() {
+    given: 'an xml which utilizes this vunerability'
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("attack.xml").text
+
+    when: 'you attempt to parse the xml'
+
+    def parsedXml = Indexer.xmlToParsedRecord(document)
+
+    then: 'we throw an exception instead of parsing attack-vector xml'
+    parsedXml.error.title == 'Load request failed due to malformed XML.'
+    parsedXml.error.detail.contains('SAXParseException')
+  }
 }

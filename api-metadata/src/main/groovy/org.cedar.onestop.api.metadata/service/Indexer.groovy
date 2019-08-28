@@ -88,7 +88,7 @@ class Indexer {
       String hierarchyLevelName = discovery.hierarchyLevelName
 
       RecordType type
-      if(hierarchyLevelName != 'granule') {
+      if(hierarchyLevelName == null || hierarchyLevelName != 'granule') {
         type = RecordType.collection
       }
       else {
@@ -129,6 +129,7 @@ class Indexer {
 
     Map discoveryMap = AvroUtils.avroToMap(discovery, true)
 
+    // FIXME this is not how we set this...
     discoveryMap.type = discoveryMap?.parentIdentifier ?
         ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
 
