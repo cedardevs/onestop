@@ -310,13 +310,7 @@ class IndexerTest extends Specification {
     stagingDoc.description == 'Wall of overly detailed, super informative, extra important text.'
     // Deep equality check
     generatedKeywords == expectedKeywords
-    //todo confirm this is what we want
     stagingDoc.accessionValues == []
-//    stagingDoc.accessionValues == [
-//        '0038924',
-//        '0038947',
-//        '0038970'
-//    ] as Set
     stagingDoc.topicCategories == ['environment', 'oceans']
     stagingDoc.gcmdLocations == [
         'Geographic Region',
@@ -358,9 +352,7 @@ class IndexerTest extends Specification {
             ]
         ]
     ] as String
-//    stagingDoc.isGlobal == true
-    //todo confirm change from metadataParser
-    stagingDoc.isGlobal == false
+    stagingDoc.isGlobal == true
     stagingDoc.acquisitionInstruments == [
         [
             instrumentIdentifier : 'SII > Super Important Instrument',
