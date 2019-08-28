@@ -11,3 +11,7 @@ logging:
   level:
     root: INFO
     org.springframework.web: ERROR
+
+topics:
+  num-partitions: 20
+  replication-factor: 3
