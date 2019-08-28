@@ -165,8 +165,8 @@ class IndexerTest extends Specification {
     Indexer.validateMessage('dummy id', inputRecord)
   }
 
+  // FIXME verify each validation check in isolation
   def "invalid message fails validation check"() {
-    // FIXME not really checking all the validation steps here
     given:
     def titleAnalysis = TitleAnalysis.newBuilder(inputRecord.analysis.titles)
         .setTitleExists(false)

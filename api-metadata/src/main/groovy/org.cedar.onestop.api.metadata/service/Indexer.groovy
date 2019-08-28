@@ -19,6 +19,8 @@ class Indexer {
 
   static Map validateMessage(String id, ParsedRecord messageMap) {
 
+    // FIXME Improve testability of failures by creating an Enum for invalid messages
+
     def failure = [title: 'Invalid record']
     List<String> details = []
 
