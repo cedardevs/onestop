@@ -71,11 +71,14 @@ class LoadKafkaMsgServiceTest extends Specification {
     def inputValue = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
     def inputRecord = new ConsumerRecord(testCollectionTopic, 0 , 0, inputKey, inputValue)
 
+    def expectedOutputStream = ClassLoader.systemClassLoader.getResourceAsStream('parsed-record-with-default-discovery.json')
+    def expectedOutputValue = AvroUtils.<ParsedRecord> jsonToAvro(expectedOutputStream, ParsedRecord.classSchema)
+
     when:
     consumerService.listen([inputRecord])
 
     then:
-    0 * mockMetadataService.loadParsedRecords([[id: inputKey, parsedRecord: inputValue]])
+    1 * mockMetadataService.loadParsedRecords([[id: inputKey, parsedRecord: expectedOutputValue]])
   }
 
 }
