@@ -29,7 +29,6 @@ features:
   cas: false
 
 config: |-
-  ---
   topics:
     num-partitions: 20
     replication-factor: 3
