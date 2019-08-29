@@ -75,7 +75,8 @@ public class ManagerConfig {
 
       // Note -- if anything other than "kafka" config values are in the yaml file, we are currently dropping them.
       return DataUtils.consolidateNestedKeysInMap(null, ".", (Map<String, Object>) configFileMap.get("kafka"));
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       log.error("Cannot open config file path [ " + filePath + " ]. Using defaults and/or system/environment variables.");
     }
     catch (Exception e) {
@@ -89,7 +90,7 @@ public class ManagerConfig {
     try {
       return System.getenv();
     }
-    catch(SecurityException e) {
+    catch (SecurityException e) {
       log.error("Application does not have permission to read environment variables. Using defaults.");
       return Collections.EMPTY_MAP;
     }
@@ -100,14 +101,11 @@ public class ManagerConfig {
     var combinedConfig = new LinkedHashMap<>(defaults);
 
     // merge in kafka props from environment
-    System.out.println("ENVIRONMENT VARIABLES:");
     environmentVariables.forEach((k, v) -> {
       mergeKafkaPropIntoCombinedConfig(combinedConfig, k, v);
     });
 
     // merge in kafka props from system properties
-    System.out.println("SYSTEM PROPERTIES:");
-
     systemProperties.forEach((k, v) -> {
       String key = k.toString();
       mergeKafkaPropIntoCombinedConfig(combinedConfig, key, v);
@@ -124,24 +122,19 @@ public class ManagerConfig {
         .filter(e -> validConfigNames.contains(e.getKey()))
         .forEach(e -> {
           internal.put(e.getKey(), e.getValue());
-          System.out.println("VALID CONFIG VALUES:");
-          log.debug("Key: " + e.getKey() + ", Value: " + e.getValue());
-          System.out.println("internal[" + e.getKey() + "] = " + internal.get(e.getKey()));
         });
 
     // Make sure schema registry url is included
     internal.put(SCHEMA_REGISTRY_URL_CONFIG, combinedConfig.get(SCHEMA_REGISTRY_URL_CONFIG));
-    System.out.println("Combined Config = " + internal);
+    log.info("Combined Config = " + internal);
   }
 
   private void mergeKafkaPropIntoCombinedConfig(Map<String, Object> combinedConfig, String key, Object value) {
-      String normalizedKey = normalizeKey(key);
-      if(normalizedKey != null && normalizedKey.startsWith("kafka")) {
-        normalizedKey = normalizedKey.replaceFirst("^kafka\\.", "");
-        combinedConfig.put(normalizedKey, value);
-        System.out.println("Key: " + key + ", Value: " + value + ", normalizedKey: " + normalizedKey);
-        System.out.println("combinedConfig[" + normalizedKey + "] = " + combinedConfig.get(normalizedKey));
-      }
+    String normalizedKey = normalizeKey(key);
+    if (normalizedKey != null && normalizedKey.startsWith("kafka")) {
+      normalizedKey = normalizedKey.replaceFirst("^kafka\\.", "");
+      combinedConfig.put(normalizedKey, value);
+    }
   }
 
   static private String normalizeKey(String key) {
@@ -153,16 +146,34 @@ public class ManagerConfig {
     return normalizedKey;
   }
 
-  public String bootstrapServers() { return (String) internal.get(BOOTSTRAP_SERVERS_CONFIG); }
-  public String schemaRegistryUrl() { return (String) internal.get(SCHEMA_REGISTRY_URL_CONFIG); }
-  public String compressionType() { return (String) internal.get(TopicConfig.COMPRESSION_TYPE_CONFIG); }
-  public Long cacheMaxBytes() { return (Long) internal.get(CACHE_MAX_BYTES_BUFFERING_CONFIG); }
-  public Long commitInterval() { return (Long) internal.get(COMMIT_INTERVAL_MS_CONFIG); }
-  public String autoOffsetReset() { return (String) internal.get(AUTO_OFFSET_RESET_CONFIG); }
+  public String bootstrapServers() {
+    return (String) internal.get(BOOTSTRAP_SERVERS_CONFIG);
+  }
+
+  public String schemaRegistryUrl() {
+    return (String) internal.get(SCHEMA_REGISTRY_URL_CONFIG);
+  }
+
+  public String compressionType() {
+    return (String) internal.get(TopicConfig.COMPRESSION_TYPE_CONFIG);
+  }
+
+  public Long cacheMaxBytes() {
+    return (Long) internal.get(CACHE_MAX_BYTES_BUFFERING_CONFIG);
+  }
+
+  public Long commitInterval() {
+    return (Long) internal.get(COMMIT_INTERVAL_MS_CONFIG);
+  }
+
+  public String autoOffsetReset() {
+    return (String) internal.get(AUTO_OFFSET_RESET_CONFIG);
+  }
 
   /**
    * Returns an unmodifiable map reflecting the current internal map in the ManagerConfig instance. Future changes to
    * the internal map will not be reflected here.
+   *
    * @return Map containing entries of ManagerConfig's map
    */
   public Map<String, Object> getCurrentConfigMap() {
