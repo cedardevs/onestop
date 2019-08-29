@@ -7,6 +7,7 @@ import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +16,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class DelayedPublisherTransformer implements Transformer<String, ParsedRecord, KeyValue<String, ParsedRecord>> {
   private static final Logger log = LoggerFactory.getLogger(DelayedPublisherTransformer.class);
 
   private ProcessorContext context;
   private KeyValueStore<Long, String> triggerTimesStore;
   private KeyValueStore<String, Long> triggerKeysStore;
-  private KeyValueStore<String, ParsedRecord> lookupStore;
+  private TimestampedKeyValueStore<String, ParsedRecord> lookupStore;
 
   private String triggerTimesStoreName;
   private String triggerKeysStoreName;
@@ -42,7 +44,7 @@ public class DelayedPublisherTransformer implements Transformer<String, ParsedRe
 
     triggerTimesStore = (KeyValueStore<Long, String>) this.context.getStateStore(triggerTimesStoreName);
     triggerKeysStore = (KeyValueStore<String, Long>) this.context.getStateStore(triggerKeysStoreName);
-    lookupStore = (KeyValueStore<String, ParsedRecord>) this.context.getStateStore(lookupStoreName);
+    lookupStore = (TimestampedKeyValueStore<String, ParsedRecord>) this.context.getStateStore(lookupStoreName);
 
     this.context.schedule(interval, PunctuationType.WALL_CLOCK_TIME, this::publishUpTo);
   }
@@ -80,11 +82,8 @@ public class DelayedPublisherTransformer implements Transformer<String, ParsedRe
   @Override
   public void close() {
     triggerKeysStore.flush();
-    triggerKeysStore.close();
     triggerTimesStore.flush();
-    triggerTimesStore.close();
     lookupStore.flush();
-    lookupStore.close();
   }
 
   void publishUpTo(long timestamp) {
@@ -96,7 +95,7 @@ public class DelayedPublisherTransformer implements Transformer<String, ParsedRe
       var triggerKeys = deserializeList(keyValue.value);
       triggerKeys.forEach( triggerKey -> {
         log.debug("found publish event for {}", keyValue);
-        var value = lookupStore.get(triggerKey);
+        var value = lookupStore.get(triggerKey).value();
         if (value != null) {
           log.debug("looked up existing state for {}: {}", triggerKey, value);
           var publishingInfo = value != null ? value.getPublishing() : null;

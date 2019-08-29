@@ -120,6 +120,7 @@ class DataUtilsSpec extends Specification {
 
     then:
     def expectedA = new ArrayList(Arrays.asList([b: "string1", c: 1234], [b: "string2", c: 5678], [b: "string3", c: 9012]))
+    result.a instanceof List
     result.a.size() == 3
     result.a.containsAll(expectedA)
   }
@@ -261,6 +262,37 @@ class DataUtilsSpec extends Specification {
     result.b.c == expected.b.c
     result.b.d.size() == 1
     result.b.d.containsAll(expected.b.d)
+  }
+
+  def "consolidateNestedKeysInMap returns a non-nested map"() {
+    given:
+    def inputMap = [
+        a: "a value",
+        b: [1, 2],
+        c: [
+            d: "c.d value",
+            e: "c.e value",
+            f: ["f1", "f2"],
+            g: [
+                h: "c.g.h value"
+            ]
+        ]
+    ]
+
+    def expected = [
+        a: "a value",
+        b: [1, 2],
+        "c.d": "c.d value",
+        "c.e": "c.e value",
+        "c.f": ["f1", "f2"],
+        "c.g.h": "c.g.h value"
+    ]
+
+    expect:
+    DataUtils.consolidateNestedKeysInMap(parentKey, ".", inputMap).equals(expected);
+
+    where:
+    parentKey << [new String(), "", null]
   }
 
   def "setValueOnPojo... does that"() {

@@ -1,5 +1,6 @@
 package org.cedar.psi.manager.stream;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
@@ -16,7 +17,6 @@ import org.cedar.schemas.analyze.Analyzers;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.RecordType;
 import org.cedar.schemas.avro.util.AvroUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,14 +88,9 @@ public class StreamManager {
     log.info("Building kafka streams appConfig for {}", appId);
     Properties streamsConfiguration = new Properties();
     streamsConfiguration.put(APPLICATION_ID_CONFIG, appId);
-    streamsConfiguration.put(BOOTSTRAP_SERVERS_CONFIG, config.bootstrapServers());
-    streamsConfiguration.put(SCHEMA_REGISTRY_URL_CONFIG, config.schemaRegistryUrl());
     streamsConfiguration.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     streamsConfiguration.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
-    streamsConfiguration.put(COMMIT_INTERVAL_MS_CONFIG, config.commitInterval());
-    streamsConfiguration.put(CACHE_MAX_BYTES_BUFFERING_CONFIG, config.cacheMaxBytes());
-    streamsConfiguration.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
-    streamsConfiguration.put(TopicConfig.COMPRESSION_TYPE_CONFIG, config.compressionType());
+    streamsConfiguration.putAll(config.getCurrentConfigMap());
     return streamsConfiguration;
   }
 }

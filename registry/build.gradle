@@ -19,40 +19,40 @@ configurations {
 }
 
 dependencies {
-  implementation('org.codehaus.groovy:groovy')
-  implementation('org.codehaus.groovy:groovy-json')
-  implementation('org.springframework.boot:spring-boot-starter-web')
-  implementation('org.apache.kafka:kafka-streams:2.1.0')
-  implementation('org.apache.kafka:kafka-clients:2.1.0')
-  implementation('io.confluent:kafka-streams-avro-serde:5.1.0')
+  implementation("org.codehaus.groovy:groovy")
+  implementation("org.codehaus.groovy:groovy-json")
+  implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
+  implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
+  implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
   implementation(project(':common'))
   implementation("org.json:json:20190722")
   
   // -- CAS Authentication --
-  implementation('org.springframework.boot:spring-boot-starter-security')
-  implementation('org.springframework.security:spring-security-cas')
-  testImplementation('org.springframework.security:spring-security-test')
+  implementation("org.springframework.boot:spring-boot-starter-security")
+  implementation("org.springframework.security:spring-security-cas")
+  testImplementation("org.springframework.security:spring-security-test")
   
   //used to copy schema definitions to generate openAPI 
   schemaDefinitions ("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
 
-  compileOnly('org.springframework.boot:spring-boot-starter-tomcat')
+  compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
 
-  runtime('org.springframework.boot:spring-boot-devtools')
+  runtime("org.springframework.boot:spring-boot-devtools")
 
-  testImplementation('org.springframework.boot:spring-boot-starter-test')
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.spockframework:spock-spring:${project.spockVersion}")
   testImplementation("org.spockframework:spock-core:${project.spockVersion}")
-  testImplementation('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
-  testImplementation('org.springframework.boot:spring-boot-starter-test')
-  testImplementation('org.springframework.kafka:spring-kafka-test:2.2.3.RELEASE')
-  testImplementation('org.apache.kafka:kafka-streams-test-utils:2.1.0')
-  testImplementation('org.apache.kafka:kafka-clients:2.1.0:test')
-  testImplementation('org.apache.kafka:kafka_2.12:2.1.0')
-  testImplementation('org.apache.kafka:kafka_2.12:2.1.0:test')
-  testImplementation('io.confluent:kafka-schema-registry:5.1.0')
-  testImplementation('io.confluent:kafka-schema-registry:5.1.0:tests')
-  testImplementation('com.github.java-json-tools:json-schema-validator:2.2.10')
+  testImplementation("org.codehaus.groovy.modules.http-builder:http-builder:0.7.1")
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.springframework.kafka:spring-kafka-test:2.2.7.RELEASE")
+  testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
+  testImplementation("com.github.java-json-tools:json-schema-validator:2.2.10")
   testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
 }
 

@@ -8,24 +8,6 @@ import spock.lang.Unroll
 @Unroll
 class TopicInitializerSpec extends Specification {
 
-  def 'sets replication factor automatically for #numNodes nodes'() {
-    def nodes = nodeList(numNodes)
-    def adminClient = new MockAdminClient(nodes, nodes.first())
-
-    when:
-    def initializer = new TopicInitializer(adminClient)
-
-    then:
-    initializer.replicationFactor == replicationFactor
-
-    where:
-    numNodes  | replicationFactor
-    1         | 1
-    2         | 2
-    3         | 2
-    5         | 2
-  }
-
   def 'can set partitions and replication explicitly'() {
     def nodes = nodeList(5)
     def adminClient = new MockAdminClient(nodes, nodes.first())

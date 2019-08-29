@@ -3,16 +3,15 @@ server:
   port: 8080
 management.endpoints.enabled-by-default: false
 
-kafka:
-  bootstrap:
-    servers: "localhost:9092"
-  compression:
-    type: "gzip"
-schema:
-  registry:
-    url: "localhost:8081"
+publishing:
+  interval:
+    ms: 300000
 
 logging:
   level:
     root: INFO
     org.springframework.web: ERROR
+
+topics:
+  num-partitions: 20
+  replication-factor: 3
