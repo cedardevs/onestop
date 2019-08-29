@@ -16,6 +16,9 @@
         "doi": {
           "type": "keyword"
         },
+        "parentIdentifier": {
+          "type": "keyword"
+        },
         "title": {
           "type": "text"
         },

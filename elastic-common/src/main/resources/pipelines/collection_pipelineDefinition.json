@@ -350,11 +350,6 @@
       }
     },
     {
-      "remove": {
-        "field": "parentIdentifier"
-      }
-    },
-    {
       "rename": {
         "field": "keywordValues",
         "target_field": "keywords",
