@@ -87,6 +87,7 @@ Either path is ingested, in this order:
 ***
 
 ### `hierarchyLevelName`
+This field must be present and have a value of "granule" (not case sensitive) in order for a record to be identified as such. Otherwise, it will be identified as a collection record.
 > /gmi:MI_Metadata/gmd:hierarchyLevelName/gco:CharacterString[1]
 
 ***
