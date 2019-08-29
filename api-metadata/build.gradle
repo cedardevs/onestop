@@ -36,7 +36,7 @@ dependencies {
   implementation("org.apache.kafka:kafka-clients:2.2.1")
   implementation("org.springframework.kafka:spring-kafka:2.2.8.RELEASE")
 
-  testImplementation("com.github.cedardevs.schemas:schemas-core:0.3.0:test")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:16-defaultParser-SNAPSHOT:test")
 
   testImplementation("io.confluent:kafka-schema-registry:5.2.1")
   testImplementation("io.confluent:kafka-schema-registry:5.2.1:tests")
