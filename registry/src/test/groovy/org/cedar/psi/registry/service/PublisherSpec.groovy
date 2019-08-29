@@ -118,12 +118,12 @@ class PublisherSpec extends Specification {
     then:
     0 * mockProducer.send(_)
 
-    
     where:
     type       |  contentType       | data
     granule    | 'application/json' | '{ "key": "Something "Name" something", "key2": "value2" }'
     granule    | 'application/json' | '{"collections":[{"key":"key2":"right"}]}' //json array
     granule    | 'application/xml'    | 'xml woooo....</text>'
+    granule    | 'application/whatever' | '{ "key": "value" }'
   }
 
   def 'publishes nothing for invalid type'() {
