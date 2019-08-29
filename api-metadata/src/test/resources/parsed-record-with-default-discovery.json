@@ -99,7 +99,9 @@
           "parentIdentifierExists": {
             "boolean": true
           },
-          "parentIdentifierString": "cb03311a-0ee0-4649-92d9-f8c3a28bcb29",
+          "parentIdentifierString": {
+            "string": "cb03311a-0ee0-4649-92d9-f8c3a28bcb29"
+          },
           "hierarchyLevelNameExists": {
             "boolean": true
           },
