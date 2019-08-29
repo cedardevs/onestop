@@ -99,17 +99,18 @@ public class ManagerConfig {
     // Starting with defaults, merge in order of least --> most preferred props (defaults, env, sys, file).
     var combinedConfig = new LinkedHashMap<>(defaults);
 
+    // merge in kafka props from environment
+    System.out.println("ENVIRONMENT VARIABLES:");
     environmentVariables.forEach((k, v) -> {
-      if(k.toLowerCase().startsWith("kafka")) {
-        combinedConfig.put(normalizeKey(k.substring(6)), v); // Trim "kafka" and first delimiter before normalizing
-      }
+      mergeKafkaPropIntoCombinedConfig(combinedConfig, k, v);
     });
+
+    // merge in kafka props from system properties
+    System.out.println("SYSTEM PROPERTIES:");
 
     systemProperties.forEach((k, v) -> {
       String key = k.toString();
-      if(key.toLowerCase().startsWith("kafka")) {
-        combinedConfig.put(normalizeKey(key.substring(6)), v); // Trim "kafka" and first delimiter before normalizing
-      }
+      mergeKafkaPropIntoCombinedConfig(combinedConfig, key, v);
     });
 
     combinedConfig.putAll(configFileProperties);
@@ -123,15 +124,34 @@ public class ManagerConfig {
         .filter(e -> validConfigNames.contains(e.getKey()))
         .forEach(e -> {
           internal.put(e.getKey(), e.getValue());
+          System.out.println("VALID CONFIG VALUES:");
+          log.debug("Key: " + e.getKey() + ", Value: " + e.getValue());
+          System.out.println("internal[" + e.getKey() + "] = " + internal.get(e.getKey()));
         });
+
     // Make sure schema registry url is included
     internal.put(SCHEMA_REGISTRY_URL_CONFIG, combinedConfig.get(SCHEMA_REGISTRY_URL_CONFIG));
+    System.out.println("Combined Config = " + internal);
   }
 
-  private String normalizeKey(String key) {
-    return key.toLowerCase().replaceAll("_", ".");
+  private void mergeKafkaPropIntoCombinedConfig(Map<String, Object> combinedConfig, String key, Object value) {
+      String normalizedKey = normalizeKey(key);
+      if(normalizedKey != null && normalizedKey.startsWith("kafka")) {
+        normalizedKey = normalizedKey.replaceFirst("^kafka\\.", "");
+        combinedConfig.put(normalizedKey, value);
+        System.out.println("Key: " + key + ", Value: " + value + ", normalizedKey: " + normalizedKey);
+        System.out.println("combinedConfig[" + normalizedKey + "] = " + combinedConfig.get(normalizedKey));
+      }
   }
 
+  static private String normalizeKey(String key) {
+    // lowercase the key ahead of time to start normalization
+    String normalizedKey = key.toLowerCase();
+    normalizedKey = normalizedKey.replace("_", ".");
+    normalizedKey = normalizedKey.replace("-", ".");
+
+    return normalizedKey;
+  }
 
   public String bootstrapServers() { return (String) internal.get(BOOTSTRAP_SERVERS_CONFIG); }
   public String schemaRegistryUrl() { return (String) internal.get(SCHEMA_REGISTRY_URL_CONFIG); }
@@ -139,7 +159,6 @@ public class ManagerConfig {
   public Long cacheMaxBytes() { return (Long) internal.get(CACHE_MAX_BYTES_BUFFERING_CONFIG); }
   public Long commitInterval() { return (Long) internal.get(COMMIT_INTERVAL_MS_CONFIG); }
   public String autoOffsetReset() { return (String) internal.get(AUTO_OFFSET_RESET_CONFIG); }
-
 
   /**
    * Returns an unmodifiable map reflecting the current internal map in the ManagerConfig instance. Future changes to
@@ -154,21 +173,17 @@ public class ManagerConfig {
     return internal.size();
   }
 
-
   public boolean isEmpty() {
     return internal.isEmpty();
   }
-
 
   public boolean containsKey(Object key) {
     return internal.containsKey(key);
   }
 
-
   public boolean containsValue(Object value) {
     return internal.containsValue(value);
   }
-
 
   public Object get(Object key) {
     return internal.get(key);
