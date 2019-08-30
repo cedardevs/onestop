@@ -7,10 +7,18 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.cedar.schemas.avro.psi.Input
 import org.cedar.schemas.avro.psi.Method
 import org.cedar.schemas.avro.psi.RecordType
+import org.json.JSONException
+import org.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.xml.sax.InputSource
+import org.xml.sax.SAXException
+import org.xml.sax.helpers.DefaultHandler
 
 import javax.servlet.http.HttpServletRequest
+import javax.xml.parsers.SAXParser
+import javax.xml.parsers.SAXParserFactory
 
 import static org.cedar.psi.common.constants.Topics.inputTopic
 
@@ -28,11 +36,19 @@ class Publisher {
   }
 
   Map publishMetadata(HttpServletRequest request, RecordType type, String data, String source, String id = null) {
+
+    MediaType contentType = MediaType.valueOf(request.contentType)
+
+    Map isValidContent = isContentValid(data, contentType)
+    if (!isValidContent.isValid) {
+      return isValidContent
+    }
+
     String topic = inputTopic(type, source)
     if (!topic) {
       return [
-          status: 404,
-          content: [errors:[[title: "Unsupported entity type: ${type}"]]]
+          status : 404,
+          content: [errors: [[title: "Unsupported entity type: ${type}"]]]
       ]
     }
     String key = id ?: UUID.randomUUID().toString()
@@ -41,9 +57,69 @@ class Publisher {
     log.debug("Publishing $type with id: ${id} from source: $source and method: $message.method")
     kafkaProducer.send(record)?.get()
     return [
-        status: 200,
+        status : 200,
         content: [id: key, type: type]
     ]
+  }
+
+  Map invalidContentError(String message, MediaType contentType) {
+    return [
+        status : 400,
+        content: [errors: [[title: "Malformed ${contentType.toString()} input: with error ${message} "]]]
+    ]
+  }
+
+  Map unknownContentTypeError(MediaType contentType) {
+    return [
+        status : 400,
+        content: [errors: [[title: "Content-Type of \"${contentType.toString()}\" is not supported. Use JSON or XML."]]]
+    ]
+  }
+
+  Map isContentValid(String content, MediaType contentType) {
+    // check for valid JSON based on MediaType
+    if (contentType == MediaType.APPLICATION_JSON) {
+      try {
+        new JSONObject(content) && content.startsWith("{") && content.endsWith("}")
+        return [isValid: true]
+      }
+      catch (JSONException ex) {
+        return invalidContentError(ex.message, contentType)
+      }
+    }
+    // check for valid XML based on MediaType
+    else if (contentType == MediaType.APPLICATION_XML) {
+      SAXParserFactory factory = SAXParserFactory.newInstance()
+      SAXParser saxParser = factory.newSAXParser()
+      DefaultHandler handler = new DefaultHandler()
+      try {
+        saxParser.parse(new InputSource(new StringReader(content)), handler)
+        return [isValid: true]
+      }
+      catch (SAXException e) {
+        return invalidContentError(e.message, contentType)
+      }
+    }
+    // somehow someone was able to publish an unsupported MediaType (check `consumes =` in controller)
+    else {
+      return unknownContentTypeError(contentType)
+    }
+  }
+
+  Map isXmlValid(String content) {
+    SAXParserFactory factory = SAXParserFactory.newInstance()
+    SAXParser saxParser = factory.newSAXParser()
+    DefaultHandler handler = new DefaultHandler()
+    try {
+      saxParser.parse(new InputSource(new StringReader(content)), handler)
+      return [isValid: true]
+    }
+    catch (SAXException e) {
+      return [
+          status : 400,
+          content: [errors: [[title: "Malformed xml input: with error ${e} "]]]
+      ]
+    }
   }
 
   Input buildInputTopicMessage(HttpServletRequest request, RecordType type, String data, String source, String id) {
