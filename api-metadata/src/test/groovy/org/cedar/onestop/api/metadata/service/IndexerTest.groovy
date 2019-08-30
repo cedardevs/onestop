@@ -542,10 +542,10 @@ class IndexerTest extends Specification {
 
     where:
     type                  | path                             | situation
-    RecordType.granule    | 'test-iso-granule-type.xml'      | 'hlm is granule and pid present'
-    RecordType.collection | 'test-iso-collection-type-1.xml' | 'hlm is present but not granule'
-    RecordType.collection | 'test-iso-collection-type-2.xml' | 'hlm is null'
-    null                  | 'test-iso-error-type.xml'        | 'hlm is granule but no pid present'
+    RecordType.granule    | 'test-iso-granule-type.xml'      | 'hln is granule and pid present'
+    RecordType.collection | 'test-iso-collection-type-1.xml' | 'hln is present but not granule'
+    RecordType.collection | 'test-iso-collection-type-2.xml' | 'hln is null'
+    null                  | 'test-iso-error-type.xml'        | 'hln is granule but no pid present'
   }
 
 
