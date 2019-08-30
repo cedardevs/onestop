@@ -44,9 +44,9 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 Form the Kafka URL. If Kafka is installed as part of this chart, use k8s service discovery,
 else use user-provided URL
 */}}
-{{- define "psi-registry.kafka.bootstrapServers" -}}
-{{- if .Values.kafka.bootstrapServers -}}
-{{- .Values.kafka.bootstrapServers -}}
+{{- define "psi-registry.kafka.bootstrap.servers" -}}
+{{- if .Values.kafka.bootstrap.servers -}}
+{{- .Values.kafka.bootstrap.servers -}}
 {{- else -}}
 {{- printf "PLAINTEXT://%s:9092" (include "psi-registry.cp-kafka-headless.fullname" .) -}}
 {{- end -}}
@@ -65,9 +65,9 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 Form the Schema Registry URL. If Schema Registry is installed as part of this chart, use k8s service discovery,
 else use user-provided URL
 */}}
-{{- define "psi-registry.cp-schema-registry.url" -}}
-{{- if (index .Values "cp-schema-registry" "url") -}}
-{{- printf "%s" (index .Values "cp-schema-registry" "url") -}}
+{{- define "psi-registry.kafka.schema.registry.url" -}}
+{{- if .Values.kafka.schema.registry.url -}}
+{{- printf "%s" .Values.kafka.schema.registry.url -}}
 {{- else -}}
 {{- printf "http://%s:8081" (include "psi-registry.cp-schema-registry.fullname" .) -}}
 {{- end -}}

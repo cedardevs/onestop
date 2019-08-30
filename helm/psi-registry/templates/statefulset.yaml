@@ -54,9 +54,9 @@ spec:
                   {{- end -}}
                   {{- join "," $active.profiles }}'
         - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "{{ include "psi-registry.kafka.bootstrapServers" . }}"
-        - name: SCHEMA_REGISTRY_URL
-          value: "{{ include "psi-registry.cp-schema-registry.url" . }}"
+          value: "{{ include "psi-registry.kafka.bootstrap.servers" . }}"
+        - name: KAFKA_SCHEMA_REGISTRY_URL
+          value: "{{ include "psi-registry.kafka.schema.registry.url" . }}"
         - name: STATE_DIR
           value: "/var/lib/registry/data"
         {{- if .Values.config }}
