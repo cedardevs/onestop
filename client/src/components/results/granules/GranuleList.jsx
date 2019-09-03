@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
 import GranuleListResultContainer from './GranuleListResultContainer'
-import {identifyProtocol} from '../../../utils/resultUtils'
 import {SiteColors} from '../../../style/defaultStyles'
 import Meta from '../../helmet/Meta'
 import _ from 'lodash'
@@ -123,18 +122,6 @@ export default class GranuleList extends React.Component {
 
     const {hovering} = this.state
 
-    // keep track of used protocols in results to avoid unnecessary legend keys
-    const usedProtocols = new Set()
-    _.forEach(results, value => {
-      //
-
-      _.forEach(value.links, link => {
-        // if(link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess') {
-        return usedProtocols.add(identifyProtocol(link))
-        // }
-      })
-    })
-
     const showMoreButton =
       returnedHits < totalHits ? (
         <Button
@@ -183,7 +170,6 @@ export default class GranuleList extends React.Component {
         />
 
         <div style={styleGranuleListWrapper}>
-          {/*<GranuleListLegend usedProtocols={usedProtocols} />*/}
           <ListView
             items={results}
             resultType="matching files"
