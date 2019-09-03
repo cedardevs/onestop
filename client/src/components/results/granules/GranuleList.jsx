@@ -177,7 +177,7 @@ export default class GranuleList extends React.Component {
     return (
       <div style={styleCenterContent}>
         <Meta
-          title={`Files for Collection ${collectionTitle}`}
+          title={`Files in Collection ${collectionTitle}`}
           formatTitle={true}
           robots="noindex"
         />
@@ -186,7 +186,7 @@ export default class GranuleList extends React.Component {
           {/*<GranuleListLegend usedProtocols={usedProtocols} />*/}
           <ListView
             items={results}
-            resultType="collection files"
+            resultType="matching files"
             shown={returnedHits}
             total={totalHits}
             onItemSelect={selectCollection}
