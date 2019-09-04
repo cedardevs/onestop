@@ -163,12 +163,17 @@ class ListResult extends React.Component {
   }
 
   renderServiceLinks = serviceLinks => {
-    const services = serviceLinks.map(service => {
-      return this.renderLinks(service.links)
-    })
+    const services = serviceLinks ? (
+      serviceLinks.map(service => {
+        return this.renderLinks(service.links)
+      })
+    ) : (
+      <div style={styleSectionContent}>None available</div>
+    )
+
     return (
       <div key={'ListResult::serviceLinks'}>
-        <h3 style={styleSectionHeader}>Service Links</h3>
+        <h3 style={styleSectionHeader}>Service Links:</h3>
         {services}
       </div>
     )
@@ -361,7 +366,7 @@ class ListResult extends React.Component {
         </div>
       )
     }
-    if (showLinks && item.serviceLinks) {
+    if (showLinks) {
       rightItems.push(this.renderServiceLinks(item.serviceLinks))
     }
     if (showTimeAndSpace) {
