@@ -31,6 +31,7 @@ export default class Layout extends React.Component {
       leftWidth,
       leftOpen,
       leftVisible,
+      leftStyle,
       middle,
       middleMaxWidth,
       right,
@@ -61,6 +62,7 @@ export default class Layout extends React.Component {
               leftWidth={leftWidth}
               leftOpen={leftOpen}
               leftVisible={leftVisible}
+              leftStyle={leftStyle}
               middle={middle}
               middleMaxWidth={middleMaxWidth}
               right={right}

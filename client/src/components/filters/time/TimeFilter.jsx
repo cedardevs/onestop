@@ -28,10 +28,6 @@ const styleTimeFilter = {
   ...{padding: '0.618em'},
 }
 
-const styleBreathingRoom = {
-  marginTop: '1em',
-}
-
 const styleForm = {
   display: 'flex',
   flexDirection: 'column',
@@ -68,7 +64,7 @@ const styleDayWrapper = {
 }
 
 const styleYear = {
-  width: '3.25em',
+  width: '2.618em',
   color: FilterColors.TEXT,
   height: '100%',
   margin: 0,
@@ -78,7 +74,7 @@ const styleYear = {
 }
 
 const styleMonth = {
-  width: '7.25em',
+  width: '7em',
   color: FilterColors.TEXT,
   height: '100%',
   margin: 0,
@@ -86,7 +82,7 @@ const styleMonth = {
   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
 }
 const styleDay = {
-  width: '1.75em',
+  width: '1.309em',
   color: FilterColors.TEXT,
   height: '100%',
   margin: 0,
@@ -99,12 +95,14 @@ const styleButtonRow = {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  justifyContent: 'space-around',
-  marginBottom: '0.5em',
+  justifyContent: 'center',
 }
 
 const styleButton = {
-  width: '35%',
+  width: '30.9%',
+  padding: '0.309em',
+  margin: '0 0.309em',
+  fontSize: '1.05em',
 }
 
 export default class TimeFilter extends React.Component {
@@ -418,7 +416,7 @@ export default class TimeFilter extends React.Component {
     const inputColumn = (
       <FlexColumn
         items={[
-          <div key="DateFilterInput::all" style={styleBreathingRoom}>
+          <div key="DateFilterInput::all">
             <form
               style={styleForm}
               onKeyDown={this.handleKeyDown}
@@ -457,7 +455,7 @@ export default class TimeFilter extends React.Component {
 
     return (
       <div style={styleTimeFilter}>
-        <fieldset>
+        <fieldset style={{padding: '0.618em'}}>
           <legend id="timeFilterInstructions">
             Provide a start date, end date, or both. Day and month are optional.
             Future dates are not accepted.

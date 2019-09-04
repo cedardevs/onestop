@@ -22,14 +22,13 @@ export const clearConfig = () => {
 }
 
 export const TOGGLE_FEATURES = 'TOGGLE_FEATURES'
-export const toggleFeatures = featuresList => {
-  const featuresEnabled = _.map(featuresList, toggle => toggle.featureName)
-  const headerDropdownMenuFeatureAvailable = featuresEnabled.some(f =>
+export const toggleFeatures = features => {
+  const headerDropdownMenuFeatureAvailable = features.some(f =>
     HEADER_DROPDOWN_FEATURES.includes(f)
   )
   return {
     type: TOGGLE_FEATURES,
-    featuresEnabled: featuresEnabled,
+    featuresEnabled: features,
     headerDropdownMenuFeatureAvailable: headerDropdownMenuFeatureAvailable,
   }
 }
@@ -53,7 +52,7 @@ export const fetchConfig = () => {
         if (json.auth) {
           dispatch(getUser(json.auth.userProfileEndpoint))
         }
-        dispatch(toggleFeatures(json.enabledFeatureToggles))
+        dispatch(toggleFeatures(json.features))
       })
       .catch(error => console.debug('no config file available'))
   }

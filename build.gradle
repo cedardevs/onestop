@@ -29,7 +29,7 @@ apply plugin: 'groovy'
 subprojects {
 
   project.ext {
-    esVersion = '6.7.1'
+    esVersion = '6.8.2'
     spockVersion = '1.2-groovy-2.5'
     testContainersVersion = '1.10.7'
     groovyVersion = '2.5.5'
@@ -49,9 +49,16 @@ subprojects {
     // override versions of dependencies with vulnerabilities
     configurations.all {
       resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'org.apache.santuario' && details.requested.name == 'xmlsec') {
+          if (details.requested.version.startsWith('2.0') && details.requested.version <= '2.1.4') {
+            details.useVersion '2.1.4'
+            details.because 'fixes CVE-2019-12400'
+          }
+        }
+
         if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
           if (details.requested.version.startsWith('2.9') && details.requested.version <= '2.9.9') {
-            details.useVersion '2.9.9.1'
+            details.useVersion '2.9.9.3'
             details.because 'fixes vulnerability in 2.9.9 and before'
           }
         }

@@ -58,12 +58,16 @@ class DocumentUtil {
         return hits.hits as List<Map>
     }
 
-    static String getId(Map document) {
-        return document._id
+    static int getCount(Map parsedResponse) {
+        return parsedResponse.count as int
     }
 
-    static String getScrollId(Map document) {
-        return document._scroll_id
+    static String getScrollId(Map parsedResponse) {
+        return parsedResponse._scroll_id
+    }
+
+    static String getId(Map document) {
+        return document._id
     }
 
     static String getIndex(Map document) {

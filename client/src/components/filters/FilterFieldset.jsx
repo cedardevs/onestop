@@ -8,8 +8,9 @@ const styleFieldset = {
     alignSelf: 'center',
     border: 'none',
     boxShadow: boxShadow,
-    marginBottom: '1em',
+    marginBottom: '0.618em',
     borderRadius: '0.309em',
+    padding: '0.618em',
   },
 }
 
@@ -43,12 +44,16 @@ const styleLegend = {
 
 export default class FilterFieldset extends React.Component {
   render() {
+    const fieldsetLegend = (
+      <legend style={styleLegend}>
+        <div style={mask} />
+        {this.props.legendText}
+      </legend>
+    )
+
     return (
       <fieldset style={styleFieldset}>
-        <legend style={styleLegend}>
-          <div style={mask} />
-          {this.props.legendText}
-        </legend>
+        {this.props.legendText ? fieldsetLegend : null}
         {this.props.children}
       </fieldset>
     )

@@ -6,6 +6,7 @@ import FlexRow from '../../common/ui/FlexRow'
 import Button from '../../common/input/Button'
 import FilterHeading from '../FilterHeading'
 
+import GranuleTextFilter from './GranuleTextFilter'
 import GranuleTimeFilterContainer from './GranuleTimeFilterContainer'
 import GranuleFacetFilterContainer from './GranuleFacetFilterContainer'
 import GranuleMapFilterContainer from './GranuleMapFilterContainer'
@@ -13,6 +14,7 @@ import GranuleMapFilterContainer from './GranuleMapFilterContainer'
 import mapFilterIcon from '../../../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../../../img/font-awesome/white/svg/calendar.svg'
 import facetFilterIcon from '../../../../img/font-awesome/white/svg/key.svg'
+import fileIcon from '../../../../img/font-awesome/white/svg/file-text-o.svg'
 
 import arrowLeft from '../../../../img/font-awesome/white/svg/arrow-left.svg'
 import {fontFamilySerif} from '../../../utils/styleUtils'
@@ -83,6 +85,17 @@ class GranuleFilters extends React.Component {
   createFilters = () => {
     return [
       {
+        name: 'text',
+        heading: <FilterHeading icon={fileIcon} text="Filename" />,
+        content: (
+          <GranuleTextFilter
+            clear={this.props.clear}
+            submit={this.props.submit}
+            query={this.props.queryString}
+          />
+        ),
+      },
+      {
         name: 'location',
         heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
         content: <GranuleMapFilterContainer isOpen={this.state.location} />,
@@ -132,14 +145,14 @@ class GranuleFilters extends React.Component {
 
     const heading = (
       <h2
-        key="filtersH1"
+        key="granuleFiltersHeader"
         tabIndex={-1}
         ref={header => (this.headerRef = header)}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         style={styleOverallHeadingApplied}
       >
-        Filters
+        File Filters
       </h2>
     )
 
@@ -175,6 +188,8 @@ class GranuleFilters extends React.Component {
         </div>
       )
     })
+
+    // const textQuery = <input key="textQuery" />
 
     return (
       <div>

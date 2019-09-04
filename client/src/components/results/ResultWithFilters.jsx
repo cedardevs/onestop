@@ -2,7 +2,6 @@ import React from 'react'
 
 const styleResult = {
   minHeight: '100vh',
-  paddingTop: '1ex',
 }
 
 export default class ResultWithFilters extends React.Component {

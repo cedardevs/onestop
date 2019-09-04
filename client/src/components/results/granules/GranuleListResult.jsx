@@ -18,10 +18,10 @@ import {granuleDownloadableLinks} from '../../../utils/cartUtils'
 
 const styleResult = {
   minHeight: '15.5em',
-  margin: '0 1.618em 1.618em 0',
+  margin: '0 1.618em 1em 0',
   padding: '0.618em',
   boxShadow: boxShadow,
-  borderRadius: '0 0.309em 0.309em 0',
+  borderRadius: '0.309em',
   backgroundColor: 'white',
   transition: '0.3s background-color ease',
 }
@@ -163,12 +163,17 @@ class ListResult extends React.Component {
   }
 
   renderServiceLinks = serviceLinks => {
-    const services = serviceLinks.map(service => {
-      return this.renderLinks(service.links)
-    })
+    const services = serviceLinks ? (
+      serviceLinks.map(service => {
+        return this.renderLinks(service.links)
+      })
+    ) : (
+      <div style={styleSectionContent}>None available</div>
+    )
+
     return (
       <div key={'ListResult::serviceLinks'}>
-        <h3 style={styleSectionHeader}>Service Links</h3>
+        <h3 style={styleSectionHeader}>Service Links:</h3>
         {services}
       </div>
     )
@@ -344,8 +349,8 @@ class ListResult extends React.Component {
       featuresEnabled.includes(FEATURE_CART) && granuleDownloadable ? (
         <Checkbox
           key={`checkbox-${itemId}`}
-          title={`Mark ${item.title} as file to download`}
-          label={`Mark as file to download`}
+          title={`Add ${item.title} to cart`}
+          label={`Add to cart`}
           id={itemId}
           checked={checkGranule}
           onChange={handleCheckboxChange(itemId, item)}
@@ -361,7 +366,7 @@ class ListResult extends React.Component {
         </div>
       )
     }
-    if (showLinks && item.serviceLinks) {
+    if (showLinks) {
       rightItems.push(this.renderServiceLinks(item.serviceLinks))
     }
     if (showTimeAndSpace) {

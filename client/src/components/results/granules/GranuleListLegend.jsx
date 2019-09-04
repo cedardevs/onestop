@@ -2,9 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {styleBadge, renderBadgeIcon} from '../../../utils/resultUtils'
 import {fontFamilySerif} from '../../../utils/styleUtils'
+import {identifyProtocol} from '../../../utils/resultUtils'
 
 const styleLegend = {
-  margin: '1.618em',
+  color: 'black',
+  margin: '0 1.618em 1.618em 1.618em',
 }
 
 const styleHeading = {
@@ -37,7 +39,17 @@ const styleLegendLabel = {
 
 export default class GranuleListLegend extends React.Component {
   render() {
-    const {usedProtocols} = this.props
+    // keep track of used protocols in results to avoid unnecessary legend keys
+    const usedProtocols = new Set()
+    _.forEach(this.props.results, value => {
+      //
+
+      _.forEach(value.links, link => {
+        // if(link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess') {
+        return usedProtocols.add(identifyProtocol(link))
+        // }
+      })
+    })
 
     const legendItems = _.chain(_.toArray(usedProtocols))
       .sortBy('id')
@@ -71,5 +83,5 @@ export default class GranuleListLegend extends React.Component {
 }
 
 GranuleListLegend.propTypes = {
-  usedProtocols: PropTypes.object.isRequired,
+  results: PropTypes.object.isRequired,
 }

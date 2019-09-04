@@ -24,20 +24,20 @@ const assertParam = (param, result, expected, fallback) => {
 
 const assertAllFilterParams = (results, values, defaults) => {
   assertParam('pageOffset', results, values, defaults)
-  // assertParam('queryText', results, values, defaults)
   assertParam('geoJSON', results, values, defaults)
   assertParam('startDateTime', results, values, defaults)
   assertParam('endDateTime', results, values, defaults)
   assertParam('selectedFacets', results, values, defaults)
   assertParam('excludeGlobal', results, values, defaults)
   assertParam('selectedCollectionIds', results, values, defaults)
+  assertParam('title', results, values, defaults)
 }
 
 describe('The granule filter reducer', function(){
   const nonInitialState = {
     // not a single default value
     pageOffset: 40,
-    queryText: 'demo',
+    title: 'demo',
     selectedCollectionIds: [ 'abc', '123' ],
     geoJSON: {
       type: 'Point',
@@ -49,6 +49,7 @@ describe('The granule filter reducer', function(){
     excludeGlobal: true,
   }
   const initialStateWithParentUuid = {
+    title: '',
     pageOffset: 0,
     selectedCollectionIds: [ 'parent-uuid' ],
     geoJSON: null,
@@ -69,6 +70,7 @@ describe('The granule filter reducer', function(){
       endDateTime: null,
       selectedFacets: {},
       excludeGlobal: null,
+      title: '',
     })
   })
 
@@ -153,6 +155,7 @@ describe('The granule filter reducer', function(){
           function: granuleNewSearchResetFiltersRequested,
           params: [ 'parent-uuid', {startDateTime: '2000-01-01T00:00:00Z'} ],
           expectedChanges: {
+            title: '',
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
@@ -176,6 +179,7 @@ describe('The granule filter reducer', function(){
             },
           ],
           expectedChanges: {
+            title: '',
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
@@ -194,13 +198,14 @@ describe('The granule filter reducer', function(){
           params: [
             'parent-uuid',
             {
-              queryText: 'new',
+              title: 'new',
               selectedFacets: {
                 science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
               },
             },
           ],
           expectedChanges: {
+            title: 'new',
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
@@ -240,6 +245,7 @@ describe('The granule filter reducer', function(){
             },
           ],
           expectedChanges: {
+            title: '',
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: {
@@ -397,7 +403,7 @@ describe('The granule filter reducer', function(){
         name: 'enable exclude global from false',
         initialState: {
           pageOffset: 0,
-          queryText: '',
+          title: '',
           geoJSON: null,
           startDateTime: null,
           endDateTime: null,

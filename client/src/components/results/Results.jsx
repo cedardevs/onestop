@@ -6,6 +6,8 @@ import CollectionsContainer from './collections/CollectionsContainer'
 import GranuleListContainer from './granules/GranuleListContainer'
 import CollectionAppliedFiltersContainer from '../filters/collections/CollectionAppliedFiltersContainer'
 import GranuleAppliedFiltersContainer from '../filters/granules/GranuleAppliedFiltersContainer'
+import GranuleListNavigationContainer from './granules/GranuleListNavigationContainer'
+import GranuleListLegendContainer from './granules/GranuleListLegendContainer'
 
 export default class Results extends React.Component {
   render() {
@@ -19,6 +21,8 @@ export default class Results extends React.Component {
         </Route>
         <Route path={ROUTE.granules.parameterized}>
           <ResultWithFilters>
+            <GranuleListNavigationContainer />
+            <GranuleListLegendContainer />
             <GranuleAppliedFiltersContainer />
             <GranuleListContainer />
           </ResultWithFilters>

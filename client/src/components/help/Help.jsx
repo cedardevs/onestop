@@ -36,16 +36,16 @@ const styleIcon = {
 
 const styleIconImg = {
   backgroundColor: '#3e7bad',
-  borderRadius: '0.105em',
+  borderRadius: '0.309em',
 
-  padding: '0 0.309em',
+  padding: '0.309em',
   position: 'relative',
   top: '0.15em',
-  maxWidth: '1.1em',
-  maxHeight: '1.1em',
+  maxWidth: '1em',
+  maxHeight: '1em',
 
-  height: '1.1em',
-  width: '1.1em',
+  height: '1em',
+  width: '1em',
 }
 
 const styleTipsListItem = {

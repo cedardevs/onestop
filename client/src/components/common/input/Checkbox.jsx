@@ -23,6 +23,13 @@ const styleDisabled = {
 
 const styleInput = {
   visibility: 'hidden',
+  width: '1px',
+  margin: 0,
+  padding: 0,
+}
+
+const styleLabelDefault = {
+  marginLeft: '0.618em',
 }
 
 const styleCheckmark = {
@@ -180,6 +187,11 @@ class Checkbox extends React.Component {
       ...(this.state.hovering ? styleCheckboxHover : {}),
     }
 
+    const styleLabel = {
+      ...styleLabelDefault,
+      ...this.props.styleLabel,
+    }
+
     return (
       <div style={styleContainer}>
         <div
@@ -211,7 +223,7 @@ class Checkbox extends React.Component {
           onChange={() => {}}
           style={styleInput}
         />
-        <label style={this.props.styleLabel} htmlFor={this.props.id}>
+        <label style={styleLabel} htmlFor={this.props.id}>
           {this.props.label}
         </label>
       </div>

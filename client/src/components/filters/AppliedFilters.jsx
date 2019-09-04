@@ -16,12 +16,23 @@ const Theme = {
     backgroundColor: '#422555',
     borderColor: '#7A2CAB',
   },
+  text: {
+    backgroundColor: '#0e274e',
+    borderColor: '#18478F',
+  },
 }
 
 const styleWrapper = {
   display: 'flex',
   flexFlow: 'row wrap',
-  padding: '0 2em 1em',
+  margin: '1.618em',
+  justifyContent: 'center',
+}
+
+const styleHidden = {
+  display: 'flex',
+  flexFlow: 'row wrap',
+  margin: '1.618em 0 0 0',
 }
 
 export default class AppliedFilters extends React.Component {
@@ -47,6 +58,28 @@ export default class AppliedFilters extends React.Component {
   unselectExcludeGlobal = () => {
     this.props.toggleExcludeGlobal()
     this.props.submit()
+  }
+
+  unselectText = () => {
+    this.props.clearFilterText()
+    this.props.submit()
+  }
+
+  buildTextBubbles = () => {
+    const {textFilter} = this.props
+    let bubbles = []
+    if (textFilter) {
+      bubbles.push(
+        <AppliedFilterBubble
+          backgroundColor={Theme.text.backgroundColor}
+          borderColor={Theme.text.borderColor}
+          text={`Filename Contains: ${textFilter}`}
+          key="appliedFilter::textFilter"
+          onUnselect={() => this.unselectText()}
+        />
+      )
+    }
+    return bubbles
   }
 
   buildFacetBubbles = () => {
@@ -131,14 +164,18 @@ export default class AppliedFilters extends React.Component {
   }
 
   render() {
+    const {showAppliedFilters} = this.props
+
     const appliedFilters = [
+      ...this.buildTextBubbles(),
       ...this.buildSpaceBubbles(),
       ...this.buildTimeBubbles(),
       ...this.buildFacetBubbles(),
     ]
-    if (this.props.showAppliedFilters) {
+
+    if (showAppliedFilters && appliedFilters.length !== 0) {
       return <div style={styleWrapper}>{appliedFilters}</div>
     }
-    return <div style={styleWrapper} />
+    return <div style={styleHidden} />
   }
 }

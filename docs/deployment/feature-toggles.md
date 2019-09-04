@@ -67,7 +67,7 @@ Unfortunately, we don’t currently have a way to dynamically determine where th
 
 There are two *new* sections to the search API UI config YML.
 
-1. If the cart feature is desired, simply add the `enableFeatureToggles` config section as seen below. Without it, the UI will default to not showing a cart feature.
+1. If the cart feature is desired, simply add the `features` config section as seen below. Without it, the UI will default to not showing a cart feature.
 
 1. Google Analytics can be configured by replacing the following parts with the appropriate IDs for the test and prod environments. When using multiple trackers, you **must** provide a name for additional trackers. There can only be one default (without a name), and the one without a name will only receive updates depending on `reactGaOptions.alwaysSendToDefaultTracker`. See Google Analytics and react-ga documentation for more details.   
     - `trackingId: 'UA-XXXXXXXXX-X'`
@@ -83,8 +83,8 @@ There are two *new* sections to the search API UI config YML.
             name: XXXXXXXXX
       reactGaOptions:
         alwaysSendToDefaultTracker: false
-    enabledFeatureToggles:
-      - featureName: cart
+    features:
+      - cart
     disclaimer:
       message: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
     featured:

@@ -38,6 +38,7 @@ class SearchRequestParserService {
     def requestQuery = [
         bool: [
             must  : assembleScoringContext(params.queries) ?: [:],
+
             filter: assembleFilteringContext(params.filters) ?: [:]
         ]
     ]
@@ -83,24 +84,47 @@ class SearchRequestParserService {
     return aggregations
   }
 
+  private List<Map> assembleTextFilterAsQuery(List<Map> filters) {
+    if (!filters) {
+      return null
+    }
+    def groupedFilters = filters.groupBy { it.type }
+    return groupedFilters.text.collect {
+      return [
+        query_string: [
+          query               : (it.value as String).trim(),
+          fields              : ["${(it.field as String).trim()}^1"],
+          phrase_slop         : config?.phraseSlop ?: 0,
+          tie_breaker         : config?.tieBreaker ?: 0,
+          minimum_should_match: config?.minimumShouldMatch ?: '75%',
+          lenient             : true
+        ]
+      ]
+    }
+  }
+
   private List<Map> assembleScoringContext(List<Map> queries) {
     if (!queries) {
       return null
     }
 
-    def groupedQueries = queries.groupBy { it.type }
-    def allTextQueries = groupedQueries.queryText.collect {
-      return [
-          query_string: [
-              query               : (it.value as String).trim(),
-              // FIXME: Test if default of _all is necessary; if so, we should control the fields in it. #190
-              fields              : config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: ['_all'],
-              phrase_slop         : config?.phraseSlop ?: 0,
-              tie_breaker         : config?.tieBreaker ?: 0,
-              minimum_should_match: config?.minimumShouldMatch ?: '75%',
-              lenient             : true
-          ]
-      ]
+    def allTextQueries = []
+
+    if(queries) {
+      def groupedQueries = queries.groupBy { it.type }
+      allTextQueries.add(groupedQueries.queryText.collect {
+        return [
+            query_string: [
+                query               : (it.value as String).trim(),
+                // FIXME: Test if default of _all is necessary; if so, we should control the fields in it. #190
+                fields              : config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: ['_all'],
+                phrase_slop         : config?.phraseSlop ?: 0,
+                tie_breaker         : config?.tieBreaker ?: 0,
+                minimum_should_match: config?.minimumShouldMatch ?: '75%',
+                lenient             : true
+            ]
+        ]
+      })
     }
 
     return [[

@@ -10,6 +10,22 @@ class SearchRequestParserServiceTest extends Specification {
   private slurper = new JsonSlurper()
   private requestParser = new SearchRequestParserService(null)
 
+  def "Request with text filter"() {
+    given:
+    def json = """{
+      "filters": [{"type":"text", "field": "title", "value":"foo"}]
+      }"""
+    def params = slurper.parseText(json)
+
+    when:
+    def queryResult = requestParser.assembleTextFilterAsQuery(params.filters)
+    def expectedQuery = [[query_string:[query:'foo', fields:['title^1'], phrase_slop:0, tie_breaker:0, minimum_should_match:'75%', lenient:true]]]
+
+    then:
+    queryResult == expectedQuery
+
+  }
+
   def "Request with zeros in #type filter #relative (#relation) creates valid elasticsearch request"() {
     // confirms a bug fix - 0s were causing no filter to be created
     given: 'datetime or year filters before/after 0'
@@ -88,7 +104,7 @@ class SearchRequestParserServiceTest extends Specification {
                     function_score: [
                         query             : [
                             bool: [
-                                must: [[
+                                must: [[[
                                            query_string: [
                                                query               : "winter",
                                                fields              : ["_all"],
@@ -96,7 +112,7 @@ class SearchRequestParserServiceTest extends Specification {
                                                tie_breaker         : 0,
                                                minimum_should_match: '75%',
                                                lenient             : true
-                                           ]]]]
+                                           ]]]]]
                         ],
                         field_value_factor: [
                             field   : 'dsmmAverage',
@@ -134,7 +150,7 @@ class SearchRequestParserServiceTest extends Specification {
                     function_score: [
                         query             : [
                             bool: [
-                                must: [[
+                                must: [[[
                                            query_string: [
                                                query               : "winter",
                                                fields              : ["title^4.0"],
@@ -142,7 +158,7 @@ class SearchRequestParserServiceTest extends Specification {
                                                tie_breaker         : 0,
                                                minimum_should_match: '75%',
                                                lenient             : true
-                                           ]]]]
+                                           ]]]]]
                         ],
                         field_value_factor: [
                             field   : 'dsmmAverage',
