@@ -39,7 +39,9 @@
   },
   "relationships": [
     {
-        "type": "COLLECTION",
+        "type": {
+          "org.cedar.schemas.avro.psi.RelationshipType": "COLLECTION"
+        },
         "id": "cb03311a-0ee0-4649-92d9-f8c3a28bcb29"
     }
   ],
