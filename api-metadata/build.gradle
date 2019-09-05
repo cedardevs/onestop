@@ -28,19 +28,15 @@ dependencies {
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
 
   // Kafka dependencies for connecting with PSI
-  implementation('com.github.cedardevs.schemas:schemas-core:16-defaultParser-SNAPSHOT')
-  implementation('com.github.cedardevs.schemas:schemas-parse:16-defaultParser-SNAPSHOT')
-  implementation('com.github.cedardevs.schemas:schemas-analyze:16-defaultParser-SNAPSHOT')
-//  implementation('com.github.cedardevs.schemas:schemas-core:0.4.0')
-//  implementation('com.github.cedardevs.schemas:schemas-parse:0.4.0')
-//  implementation('com.github.cedardevs.schemas:schemas-analyze:0.4.0')
+  implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
   implementation("io.confluent:kafka-streams-avro-serde:5.2.1")
 
   implementation("org.apache.kafka:kafka-clients:2.2.1")
   implementation("org.springframework.kafka:spring-kafka:2.2.8.RELEASE")
 
-  testImplementation("com.github.cedardevs.schemas:schemas-core:16-defaultParser-SNAPSHOT:test")
-  //  testImplementation("com.github.cedardevs.schemas:schemas-core:0.4.0:test")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
 
   testImplementation("io.confluent:kafka-schema-registry:5.2.1")
   testImplementation("io.confluent:kafka-schema-registry:5.2.1:tests")
