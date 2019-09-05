@@ -8,7 +8,7 @@ build:
       buildArgs:
         DATE: now
         VCS_REF: local
-        VERSION: 2.4.0
+        VERSION: 2.3.0
         WAR_NAME: onestop-metadata.war
   - image: cedardevs/onestop-api-search
     context: ./api-search
@@ -16,7 +16,7 @@ build:
       buildArgs:
         DATE: now
         VCS_REF: local
-        VERSION: 2.4.0
+        VERSION: 2.3.0
         WAR_NAME: onestop-search.war
 #  - image: cedardevs/onestop-client
 #    context: ./client
@@ -24,7 +24,7 @@ build:
 #      buildArgs:
 #        DATE: now
 #        VCS_REF: local
-#        VERSION: 2.4.0
+#        VERSION: 2.3.0
 #        TAR_NAME: onestop-client.tar.gz
 
 deploy:
