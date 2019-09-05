@@ -4,7 +4,7 @@
 # KIBANA
 ###############################################################################
 kibana:
-  enabled: false
+  enabled: true
   service:
     type: NodePort
     nodePort: 32001

@@ -8,7 +8,6 @@ import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.parse.ISOParser
 import org.xml.sax.SAXException
-import org.elasticsearch.Version
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 
 import java.time.temporal.ChronoUnit
@@ -16,55 +15,55 @@ import java.time.temporal.ChronoUnit
 import static org.cedar.schemas.avro.psi.ValidDescriptor.*
 
 @Slf4j
-class InventoryManagerToOneStopUtil {
+class Indexer {
 
   static Map validateMessage(String id, ParsedRecord messageMap) {
-    def discovery = messageMap?.discovery
-    def analysis = messageMap?.analysis
-    def titles = analysis?.titles
-    def identification = analysis?.identification
-    def temporal = analysis?.temporalBounding
+
+    // FIXME Improve testability of failures by creating an Enum for invalid messages
 
     def failure = [title: 'Invalid record']
     List<String> details = []
 
-    // Validate record
-    if (discovery == null) {
-      details << "Missing discovery metadata"
+    def discovery = messageMap?.discovery
+    if(discovery == null || discovery == Discovery.newBuilder().build()) {
+      details << "Discovery metadata missing. No metadata to load into OneStop."
     }
-    if (analysis == null) {
-      details << "Missing analysis metadata"
+    else {
+      def analysis = messageMap?.analysis
+      if(analysis == null || analysis == Analysis.newBuilder().build()) {
+        details << "Analysis metadata missing. Cannot verify metadata quality for OneStop."
+      }
+      else {
+        def titles = analysis.titles
+        def identification = analysis.identification
+        def temporal = analysis.temporalBounding
+        def spatial = analysis.spatialBounding
+
+        if (!identification?.fileIdentifierExists && !identification?.doiExists) {
+          details << "Missing identifier - record contains neither a fileIdentifier nor a DOI"
+        }
+        if(messageMap.type == null || !identification.matchesIdentifiers) {
+          details << "Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided OR type unknown."
+        }
+        if (!titles.titleExists) {
+          details << "Missing title"
+        }
+        if (temporal.beginDescriptor == INVALID) {
+          details << "Invalid beginDate"
+        }
+        if (temporal.endDescriptor == INVALID) {
+          details << "Invalid endDate"
+        }
+        if (temporal.beginDescriptor != UNDEFINED && temporal.endDescriptor != UNDEFINED && temporal.instantDescriptor == INVALID) {
+          details << "Invalid instant-only date"
+        }
+        if (spatial.spatialBoundingExists && !spatial.isValid) {
+          details << "Invalid geoJSON for spatial bounding"
+        }
+      }
+
     }
-    if (titles == null) {
-      details << "Missing title analysis"
-    }
-    if (identification == null) {
-      details << "Missing identification analysis"
-    }
-    if (temporal == null) {
-      details << "Missing temporal analysis"
-    }
-    if (identification && (!identification?.fileIdentifierExists && !identification?.doiExists)) {
-      details << "Missing identifier - record contains neither a fileIdentifier nor a DOI"
-    }
-    if (messageMap.type == RecordType.collection && (identification && identification?.parentIdentifierExists)) {
-      details << "Invalid record: a collection cannot contain a parentIdentifier"
-    }
-    if (titles && !titles.titleExists) {
-      details << "Missing title"
-    }
-    if (discovery && identification && discovery.hierarchyLevelName == 'granule' && !identification.parentIdentifierExists) {
-      details << "Mismatch between metadata type and identifiers detected"
-    }
-    if (temporal && temporal.beginDescriptor == INVALID) {
-      details << "Invalid beginDate"
-    }
-    if (temporal && temporal.endDescriptor == INVALID) {
-      details << "Invalid endDate"
-    }
-    if (temporal && temporal.beginDescriptor != UNDEFINED && temporal.endDescriptor != UNDEFINED && temporal.instantDescriptor == INVALID) {
-      details << "Invalid instant-only date"
-    }
+
     if (details.size() > 0 ) {
       log.info("INVALID RECORD [ $id ]. VALIDATION FAILURES:  $details ")
       failure.detail = details.join(', ')
@@ -76,16 +75,35 @@ class InventoryManagerToOneStopUtil {
     }
   }
 
-  static Map xmlToParsedRecord(String xmlDoc){
+  static Map xmlToParsedRecord(String xmlDoc) {
     Map result = [:]
     def parsedRecordBuilder = ParsedRecord.newBuilder()
     try {
+      // Convert XML to ParsedRecord -- Discovery and Analysis objects only
       log.debug('Parsing XML for discovery metadata')
       Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(xmlDoc)
       log.debug('Analyzing discovery metadata')
       Analysis analysis = Analyzers.analyze(discovery)
-      Map source = AvroUtils.avroToMap(discovery, true)
-      RecordType type = source.parentIdentifier ? RecordType.granule : RecordType.collection
+
+      // Determine RecordType (aka granule or collection) from Discovery & Analysis info
+      String parentIdentifier = discovery.parentIdentifier
+      String hierarchyLevelName = discovery.hierarchyLevelName
+
+      RecordType type
+      if(hierarchyLevelName == null || hierarchyLevelName != 'granule') {
+        type = RecordType.collection
+      }
+      else {
+        // Pro-tip: In Java 11 future, "null || isBlank()" will suffice...
+        if(parentIdentifier == null || parentIdentifier.isEmpty() || parentIdentifier.isAllWhitespace()) {
+          // Set to null rather than throwing an error so that this can be caught at the validation step
+          type = null
+        }
+        else {
+          type = RecordType.granule
+        }
+      }
+
       parsedRecordBuilder.setType(type)
       parsedRecordBuilder.setDiscovery(discovery)
       parsedRecordBuilder.setAnalysis(analysis)
@@ -107,13 +125,14 @@ class InventoryManagerToOneStopUtil {
     return result
   }
 
-  static Map reformatMessageForSearch(ParsedRecord record, Version version) {
+  static Map reformatMessageForSearch(ParsedRecord record) {
     Discovery discovery = record.discovery
     Analysis analysis = record.analysis
 
     Map discoveryMap = AvroUtils.avroToMap(discovery, true)
 
-    discoveryMap.type = discoveryMap?.parentIdentifier ?
+    // Records validated before getting to this point to no null record.type possible (always granule or collection)
+    discoveryMap.type = record.type == RecordType.granule ?
         ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION
 
     // create GCMD keywords

@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: docker.elastic.co/kibana/kibana
-  tag: 5.5.3
+  tag: 6.8.2
   pullPolicy: IfNotPresent
 
 service:

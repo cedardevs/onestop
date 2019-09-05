@@ -2,7 +2,9 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.parse.DefaultParser
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
@@ -30,11 +32,19 @@ class KafkaConsumerService {
     // Update collections & granules
     log.info("consuming message from kafka topic")
     try {
-      def validRecords = records.stream().filter({
-        it != null && InventoryManagerToOneStopUtil.validateMessage(it.key(), it.value())?.valid
-      }).map({
-        [id: it.key(), parsedRecord: it.value()]
-      }).collect(Collectors.toList())
+      def validRecords = records.stream()
+          .filter({ (it != null)} )
+          .map({
+            if(it.value().discovery == null && it.value().analysis == null) {
+              [id: it.key(), parsedRecord: Analyzers.addAnalysis(DefaultParser.addDiscoveryToParsedRecord(it.value()))]
+            }
+            else {
+              [id: it.key(), parsedRecord: it.value()]
+            }
+           })
+          .filter({Indexer.validateMessage(it.id, it.parsedRecord)?.valid})
+          .collect(Collectors.toList())
+
       if (validRecords.size() > 0) {
         metadataManagementService.loadParsedRecords(validRecords)
       }

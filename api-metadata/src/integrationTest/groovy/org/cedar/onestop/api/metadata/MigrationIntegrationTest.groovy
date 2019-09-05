@@ -9,7 +9,7 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
-import org.cedar.onestop.api.metadata.service.InventoryManagerToOneStopUtil
+import org.cedar.onestop.api.metadata.service.Indexer
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.springframework.beans.factory.annotation.Autowired
@@ -99,14 +99,14 @@ class MigrationIntegrationTest extends Specification {
     ])
 
     String collectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/C1.xml').text
-    ParsedRecord parsedCollection = InventoryManagerToOneStopUtil.xmlToParsedRecord(collectionXml).parsedRecord
+    ParsedRecord parsedCollection = Indexer.xmlToParsedRecord(collectionXml).parsedRecord
     String collectionKey1 = 'api_ingest_ABC'
     String collectionKey2 = 'kafka_ingest_XYZ'
     ProducerRecord collectionRecord = new ProducerRecord(collectionTopic, collectionKey1, parsedCollection)
     ProducerRecord collectionRecordUpdate = new ProducerRecord(collectionTopic, collectionKey2, parsedCollection)
 
     String granuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/G1.xml').text
-    ParsedRecord parsedGranule = InventoryManagerToOneStopUtil.xmlToParsedRecord(granuleXml).parsedRecord
+    ParsedRecord parsedGranule = Indexer.xmlToParsedRecord(granuleXml).parsedRecord
     String granuleKey1 = 'api_ingest_123'
     String granuleKey2  = 'kafka_ingest_789'
     ProducerRecord granuleRecord = new ProducerRecord(granuleTopic, granuleKey1, parsedGranule)

@@ -64,4 +64,35 @@ class LoadKafkaMsgServiceTest extends Specification {
     1 * mockMetadataService.loadParsedRecords({ it.size() == 1 && it[0].parsedRecord == validRecord.value() })
   }
 
+  def "appends default index-ready Discovery and Analysis to ParsedRecord"() {
+    given:
+    def inputKey = 'default123'
+    def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('parsed-record-no-discovery-or-analysis.json')
+    def inputValue = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
+    def inputRecord = new ConsumerRecord(testCollectionTopic, 0 , 0, inputKey, inputValue)
+
+    // since we are only testing that discovery and analysis get populated with default values, we don't need to
+    // compare an entire Avro object
+    // TODO: how do we compare when fields like `double` get converted (e.g. - 56.0 --> 55.60000000000001)
+    // if this is not a concern, we should eventually remove the unused `parsed-record-with-default-discovery.json`
+//    def expectedOutputStream = ClassLoader.systemClassLoader.getResourceAsStream('parsed-record-with-default-discovery.json')
+//    def expectedOutputValue = AvroUtils.<ParsedRecord> jsonToAvro(expectedOutputStream, ParsedRecord.classSchema)
+
+    when:
+    consumerService.listen([inputRecord])
+
+    then:
+    1 * mockMetadataService.loadParsedRecords({
+      String id = it[0]?.id as String
+      ParsedRecord record = it[0]?.parsedRecord as ParsedRecord
+
+      Boolean isCorrectNumberOfRecords = it.size() == 1
+      Boolean idMatchesInputKey = id == inputKey
+      Boolean discoveryExists = record.discovery != null
+      Boolean analysisExists = record.analysis != null
+
+      isCorrectNumberOfRecords && idMatchesInputKey && discoveryExists && analysisExists
+    })
+  }
+
 }

@@ -1,0 +1,240 @@
+{
+  "type": {
+    "org.cedar.schemas.avro.psi.RecordType": "granule"
+  },
+  "discovery": {
+    "org.cedar.schemas.avro.psi.Discovery": {
+      "fileIdentifier": {
+        "string": "testGranuleFile.nc"
+      },
+      "parentIdentifier": {
+        "string": "cb03311a-0ee0-4649-92d9-f8c3a28bcb29"
+      },
+      "hierarchyLevelName": {
+        "string": "granule"
+      },
+      "doi": null,
+      "purpose": null,
+      "status": null,
+      "credit": null,
+      "title": {
+        "string": "testGranuleFile.nc"
+      },
+      "alternateTitle": null,
+      "description": null,
+      "keywords": [],
+      "topicCategories": [],
+      "temporalBounding": null,
+      "spatialBounding": null,
+      "isGlobal": null,
+      "acquisitionInstruments": [],
+      "acquisitionOperations": [],
+      "acquisitionPlatforms": [],
+      "dataFormats": [
+        {
+          "name": {
+            "string": "NetCDF"
+          },
+          "version": null
+        }
+      ],
+      "links": [
+        {
+          "linkName": null,
+          "linkProtocol": {
+            "string": "cloud"
+          },
+          "linkUrl": {
+            "string": "https://granule-cloud-location.cloud/abc123"
+          },
+          "linkDescription": null,
+          "linkFunction": {
+            "string": "download"
+          }
+        }
+      ],
+      "responsibleParties": [],
+      "thumbnail": null,
+      "thumbnailDescription": null,
+      "creationDate": null,
+      "revisionDate": null,
+      "publicationDate": null,
+      "citeAsStatements": [],
+      "crossReferences": [],
+      "largerWorks": [],
+      "useLimitation": null,
+      "legalConstraints": [],
+      "accessFeeStatement": null,
+      "orderingInstructions": null,
+      "edition": null,
+      "dsmmAccessibility": 0,
+      "dsmmDataIntegrity": 0,
+      "dsmmDataQualityAssessment": 0,
+      "dsmmDataQualityAssurance": 0,
+      "dsmmDataQualityControlMonitoring": 0,
+      "dsmmPreservability": 0,
+      "dsmmProductionSustainability": 0,
+      "dsmmTransparencyTraceability": 0,
+      "dsmmUsability": 0,
+      "dsmmAverage": 0.0,
+      "updateFrequency": null,
+      "presentationForm": null,
+      "services": []
+    }
+  },
+  "analysis": {
+    "org.cedar.schemas.avro.psi.Analysis": {
+      "identification": {
+        "org.cedar.schemas.avro.psi.IdentificationAnalysis": {
+          "fileIdentifierExists": {
+            "boolean": true
+          },
+          "fileIdentifierString": {
+            "string": "testGranuleFile.nc"
+          },
+          "doiExists": {
+            "boolean": false
+          },
+          "doiString": null,
+          "parentIdentifierExists": {
+            "boolean": true
+          },
+          "parentIdentifierString": {
+            "string": "cb03311a-0ee0-4649-92d9-f8c3a28bcb29"
+          },
+          "hierarchyLevelNameExists": {
+            "boolean": true
+          },
+          "matchesIdentifiers": {
+            "boolean": true
+          }
+        }
+      },
+      "titles": {
+        "org.cedar.schemas.avro.psi.TitleAnalysis": {
+          "titleExists": {
+            "boolean": true
+          },
+          "titleCharacters": {
+            "int": 18
+          },
+          "alternateTitleExists": {
+            "boolean": false
+          },
+          "alternateTitleCharacters": {
+            "int": 0
+          },
+          "titleFleschReadingEaseScore": {
+            "double": -301.78
+          },
+          "titleFleschKincaidReadingGradeLevel": {
+            "double": 55.60
+          },
+          "alternateTitleFleschReadingEaseScore": null,
+          "alternateTitleFleschKincaidReadingGradeLevel": null
+        }
+      },
+      "description": {
+        "org.cedar.schemas.avro.psi.DescriptionAnalysis": {
+          "descriptionExists": {
+            "boolean": false
+          },
+          "descriptionCharacters": {
+            "int": 0
+          },
+          "descriptionFleschReadingEaseScore": null,
+          "descriptionFleschKincaidReadingGradeLevel": null
+        }
+      },
+      "dataAccess": {
+        "org.cedar.schemas.avro.psi.DataAccessAnalysis": {
+          "dataAccessExists": {
+            "boolean": true
+          }
+        }
+      },
+      "thumbnail": {
+        "org.cedar.schemas.avro.psi.ThumbnailAnalysis": {
+          "thumbnailExists": {
+            "boolean": false
+          }
+        }
+      },
+      "temporalBounding": {
+        "org.cedar.schemas.avro.psi.TemporalBoundingAnalysis": {
+          "beginDescriptor": null,
+          "beginPrecision": null,
+          "beginIndexable": null,
+          "beginZoneSpecified": null,
+          "beginUtcDateTimeString": null,
+          "endDescriptor": null,
+          "endPrecision": null,
+          "endIndexable": null,
+          "endZoneSpecified": null,
+          "endUtcDateTimeString": null,
+          "instantDescriptor": null,
+          "instantPrecision": null,
+          "instantIndexable": null,
+          "instantZoneSpecified": null,
+          "instantUtcDateTimeString": null,
+          "rangeDescriptor": null
+        }
+      },
+      "spatialBounding": {
+        "org.cedar.schemas.avro.psi.SpatialBoundingAnalysis": {
+          "spatialBoundingExists": {
+            "boolean": false
+          },
+          "isValid": {
+            "boolean": false
+          },
+          "validationError": {
+            "string": "Missing geographic bounding box"
+          }
+        }
+      }
+    }
+  },
+  "fileInformation": {
+    "org.cedar.schemas.avro.psi.FileInformation": {
+      "name": "testGranuleFile.nc",
+      "size": 108162440,
+      "checksums": [],
+      "format": {
+        "string": "NetCDF"
+      },
+      "headers": null,
+      "optionalAttributes": {}
+    }
+  },
+  "fileLocations": {
+    "https://granule-cloud-location.cloud/abc123": {
+      "uri": "https://granule-cloud-location.cloud/abc123",
+      "type": {
+        "org.cedar.schemas.avro.psi.FileLocationType": "ACCESS"
+      },
+      "deleted": false,
+      "restricted": false,
+      "asynchronous": false,
+      "locality": null,
+      "lastModified": null,
+      "serviceType": {
+        "string": "cloud"
+      },
+      "optionalAttributes": {}
+    }
+  },
+  "publishing": {
+    "isPrivate": false,
+    "until": null
+  },
+  "relationships": [
+    {
+      "type": {
+        "org.cedar.schemas.avro.psi.RelationshipType": "COLLECTION"
+      },
+      "id": "cb03311a-0ee0-4649-92d9-f8c3a28bcb29"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,49 @@
+{
+  "type": {
+    "org.cedar.schemas.avro.psi.RecordType": "granule"
+  },
+  "discovery": null,
+  "analysis": null,
+  "fileInformation": {
+    "org.cedar.schemas.avro.psi.FileInformation": {
+      "name": "testGranuleFile.nc",
+      "size": 108162440,
+      "checksums": [],
+      "format": {
+        "string": "NetCDF"
+      },
+      "headers": null,
+      "optionalAttributes": {}
+    }
+  },
+  "fileLocations": {
+    "https://granule-cloud-location.cloud/abc123": {
+      "uri": "https://granule-cloud-location.cloud/abc123",
+      "type": {
+        "org.cedar.schemas.avro.psi.FileLocationType": "ACCESS"
+      },
+      "deleted": false,
+      "restricted": false,
+      "asynchronous": false,
+      "locality": null,
+      "lastModified": null,
+      "serviceType": {
+        "string": "cloud"
+      },
+      "optionalAttributes": {}
+    }
+  },
+  "publishing": {
+    "isPrivate": false,
+    "until": null
+  },
+  "relationships": [
+    {
+        "type": {
+          "org.cedar.schemas.avro.psi.RelationshipType": "COLLECTION"
+        },
+        "id": "cb03311a-0ee0-4649-92d9-f8c3a28bcb29"
+    }
+  ],
+  "errors": []
+}

@@ -6,6 +6,10 @@ import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
+import org.cedar.schemas.analyze.Analyzers
+import org.cedar.schemas.avro.psi.Discovery
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.RecordType
 import org.elasticsearch.Version
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -309,6 +313,49 @@ class ETLIntegrationTests extends Specification {
     indexedFlatGranules.every({ it._version == 1 })
   }
 
+  def 'granule with collection\'s uuid as parentId found during etl'() {
+    setup:
+    def collectionUUID = 'COLLECTION_UUID'
+    def collectionBuilder = ParsedRecord.newBuilder()
+    def granuleBuilder = ParsedRecord.newBuilder()
+
+    collectionBuilder
+        .setType(RecordType.collection)
+        .setDiscoveryBuilder(Discovery.newBuilder()
+          .setFileIdentifier('collectionFileId')
+          .setTitle('collectionTitle'))
+
+    granuleBuilder
+        .setType(RecordType.granule)
+        .setDiscoveryBuilder(Discovery.newBuilder()
+          .setFileIdentifier('granuleFileId')
+          .setParentIdentifier(collectionUUID)
+          .setTitle('granuleTitle'))
+
+    def collection = Analyzers.addAnalysis(collectionBuilder.build())
+    def granule = Analyzers.addAnalysis(granuleBuilder.build())
+
+    def records = new ArrayList<Map<String, ?>>()
+    records.add([id: collectionUUID, parsedRecord: collection])
+    records.add([id: 'GRANULE_UUID', parsedRecord: granule])
+
+    insertParsedRecords(records)
+
+    when:
+    when:
+    etlService.updateSearchIndices() // runs the ETLs
+
+    then:
+    def collectionVersions = indexedCollectionVersions().keySet()
+    def granuleVersions = indexedGranuleVersions().keySet()
+    def flatGranuleVersions = indexedFlatGranuleVersions().keySet()
+
+    then:
+    collectionVersions == ['collectionFileId'] as Set
+    granuleVersions == ['granuleFileId'] as Set
+    flatGranuleVersions == ['granuleFileId'] as Set
+  }
+
 
   //---- Helper functions -----
 
@@ -318,6 +365,11 @@ class ETLIntegrationTests extends Specification {
 
   private void insertMetadata(String document) {
     metadataIndexService.loadMetadata(document)
+    elasticsearchService.refresh(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
+  }
+
+  private void insertParsedRecords(List<Map<String, ?>> records) {
+    metadataIndexService.loadParsedRecords(records)
     elasticsearchService.refresh(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
   }
 

@@ -29,6 +29,7 @@ apply plugin: 'groovy'
 subprojects {
 
   project.ext {
+    schemasVersion = '0.4.0'
     esVersion = '6.8.2'
     spockVersion = '1.2-groovy-2.5'
     testContainersVersion = '1.10.7'
