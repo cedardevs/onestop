@@ -11,6 +11,7 @@ defaultsDockerJDK11: &defaultsDockerJDK11
   docker:
     # specify the version you desire here
     - image: circleci/openjdk:11-jdk
+  working_directory: ~/repo
 
 env: &env
   environment:
