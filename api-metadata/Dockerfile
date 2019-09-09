@@ -1,4 +1,4 @@
-FROM tomcat:latest
+FROM tomcat:8.5.45-jdk11-openjdk
 
 ARG WAR_NAME
 ARG VCS_REF

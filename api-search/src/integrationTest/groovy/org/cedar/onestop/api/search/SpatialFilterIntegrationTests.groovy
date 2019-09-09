@@ -27,7 +27,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Unroll
 class SpatialFilterIntegrationTests extends Specification {
 
-  private final String SPATIAL_INDEX_ALIAS = 'spatial_filter'
+  static private final String SPATIAL_INDEX_ALIAS = 'spatial_filter'
 
   @Autowired
   RestClient restClient

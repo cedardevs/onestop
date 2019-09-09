@@ -2,8 +2,8 @@ apply plugin: 'org.springframework.boot' // version declared in top-level builds
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'groovy'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
   mavenCentral()

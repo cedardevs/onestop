@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:11
 
 LABEL org.label-schema.name="OneStop LogStash"
 LABEL org.label-schema.vendor=CEDAR
