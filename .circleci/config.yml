@@ -6,6 +6,12 @@
 defaults: &defaults
   machine: true
   working_directory: ~/repo
+  dependencies:
+    pre:
+      - sudo apt-get update
+      - sudo apt-get install oracle-java11-installer-local
+      - sudo apt-get install oracle-java11-set-default-local
+      - java -version
 
 defaultsDockerJDK11: &defaultsDockerJDK11
   docker:
