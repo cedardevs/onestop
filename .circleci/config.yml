@@ -7,6 +7,11 @@ defaults: &defaults
   machine: true
   working_directory: ~/repo
 
+defaultsDockerJDK11: &defaultsDockerJDK11
+  docker:
+    # specify the version you desire here
+    - image: circleci/openjdk:11-jdk
+
 env: &env
   environment:
     # Customize the JVM maximum heap limit
@@ -43,7 +48,7 @@ attachWorkspace: &attachWorkspace
 version: 2
 jobs:
   checkout:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
     steps:
       - checkout
       - persist_to_workspace:
@@ -52,7 +57,10 @@ jobs:
             - .
 
   search-build:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
+    dependencies:
+      pre:
+
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
@@ -69,7 +77,7 @@ jobs:
             - api-search/build
 
   client-build:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
@@ -87,7 +95,7 @@ jobs:
             - client/node_modules
 
   meta-build:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
@@ -104,7 +112,7 @@ jobs:
             - api-metadata/build
 
   meta-test:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
@@ -123,7 +131,7 @@ jobs:
             - api-metadata/build/reports/test
 
   search-test:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
@@ -146,7 +154,7 @@ jobs:
             - api-search/build/reports/test
 
   client-test:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
