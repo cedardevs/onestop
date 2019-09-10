@@ -9,7 +9,7 @@
     "kub": "webpack-dev-server --mode development --env.URL_API_SEARCH=http://localhost:30097/ --progress --config webpack.config.js --colors",
     "format": "find -f src test -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --config .prettierrc.json --write",
     "formatCheck": "find -f src test -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --config .prettierrc.json --list-different",
-    "test": "jest --config jest.config.js",
+    "test": "jest --maxWorkers=2 --config jest.config.js",
     "testFresh": "jest --no-cache --config jest.config.js",
     "build": "npm install && npm test && NODE_ENV=production ./node_modules/.bin/webpack --mode production -p",
     "clean": "rm -rf build && rm -rf coverage",
