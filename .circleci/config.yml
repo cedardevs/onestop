@@ -186,6 +186,14 @@ jobs:
       - <<: *esHeap
 
       - run:
+          name: Examine Java versions on this machine
+          command: ls $JAVA_HOME/../../..
+      - run:
+          name: get JAVA_HOME
+          command: echo "JAVA_HOME = $JAVA_HOME"
+      - run:
+          name:
+      - run:
           name: Api-Metadata Integration Tests
           command: ./gradlew api-metadata:integrationTest
 
