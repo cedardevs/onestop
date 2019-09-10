@@ -11,6 +11,15 @@ defaultsDockerJDK11: &defaultsDockerJDK11
   docker:
     # specify the version you desire here
     - image: circleci/openjdk:11-jdk
+    - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
+      environment:
+        - cluster.name: elasticsearch
+        - xpack.security.enabled: false
+        - transport.host: localhost
+        - network.host: 127.0.0.1
+        - http.port: 9200
+        - discovery.type: single-node
+        - ES_JAVA_OPTS: "-Xmx3200m" # Customize the JVM maximum heap limit
   working_directory: ~/repo
 
 env: &env
@@ -56,22 +65,6 @@ jobs:
           root: ~/repo
           paths:
             - .
-
-  elasticsearch:
-    docker:
-      - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
-        environment:
-          - cluster.name: elasticsearch
-          - xpack.security.enabled: false
-          - transport.host: localhost
-          - network.host: 127.0.0.1
-          - http.port: 9200
-          - discovery.type: single-node
-    steps:
-      - run:
-          name: Run shared Elasticsearch in background for other jobs.
-          command: echo $ES_ELASTICSEARCH_SERVICE_PORT
-          background: true
 
   search-build:
     <<: *defaultsDockerJDK11
@@ -401,7 +394,6 @@ workflows:
       - meta-integration-test:
           requires:
             - meta-build
-            - elasticsearch
       - meta-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
@@ -420,7 +412,6 @@ workflows:
       - search-integration-test:
           requires:
             - search-build
-            - elasticsearch
       - search-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
@@ -453,7 +444,6 @@ workflows:
             - client-build
             - meta-build
             - search-build
-            - elasticsearch
 
       - report-tests:
           requires:
