@@ -27,12 +27,6 @@ class LoadAndSearchTests extends Specification {
   static metadataApiBase = "http://localhost:8098/onestop-admin"
   static restTemplate = new RestTemplate()
 
-  LoadAndSearchTests() {
-    this.docker = new DockerComposeContainer(new File(dockerComposeFile()))
-        .withLocalCompose(true)
-        .withPull(false)
-  }
-
   static String dockerComposeFile() {
     String file = System.getenv("docker.compose.file")
     if(file == null) {
@@ -61,6 +55,11 @@ class LoadAndSearchTests extends Specification {
   }
 
   def setup() {
+    // run docker-compose test containers to be able to run e2e against
+    this.docker = new DockerComposeContainer(new File(dockerComposeFile()))
+        .withLocalCompose(true)
+        .withPull(false)
+
     // delete all indices between tests
     def deleteRequest = RequestEntity.delete("${esApiBase()}/_all".toURI()).build()
     def deleteResult = restTemplate.exchange(deleteRequest, Map)
