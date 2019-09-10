@@ -4,13 +4,13 @@
 #
 
 defaults: &defaults
-  machine: true
-  working_directory: ~/repo
-
-defaultsDockerJDK11: &defaultsDockerJDK11
   docker:
     # specify the version you desire here
     - image: circleci/openjdk:11-jdk
+  working_directory: ~/repo
+
+elasticsearchForAdmin: &elasticsearchForAdmin
+  docker:
     - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
       environment:
         - cluster.name: elasticsearch-test-admin
@@ -20,6 +20,9 @@ defaultsDockerJDK11: &defaultsDockerJDK11
         - http.port: 9200
         - discovery.type: single-node
         - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
+
+elasticsearchForSearch: &elasticsearchForSearch
+  docker:
     - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
       environment:
         - cluster.name: elasticsearch-test-search
@@ -30,7 +33,7 @@ defaultsDockerJDK11: &defaultsDockerJDK11
         - discovery.type: single-node
         - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
 
-  working_directory: ~/repo
+
 
 env: &env
   environment:
@@ -68,7 +71,7 @@ attachWorkspace: &attachWorkspace
 version: 2
 jobs:
   checkout:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
     steps:
       - checkout
       - persist_to_workspace:
@@ -77,7 +80,7 @@ jobs:
             - .
 
   search-build:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
 
     steps:
       - <<: *attachWorkspace
@@ -95,7 +98,7 @@ jobs:
             - api-search/build
 
   client-build:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
@@ -112,14 +115,14 @@ jobs:
             - client/build
             - client/node_modules
 
-  meta-build:
-    <<: *defaultsDockerJDK11
+  admin-build:
+    <<: *defaults
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
       - run:
-          name: Build Api-Metadata
+          name: Build Api-Admin
           command: ./gradlew api-metadata:assemble
 
       - <<: *saveCache
@@ -129,14 +132,14 @@ jobs:
           paths:
             - api-metadata/build
 
-  meta-test:
-    <<: *defaultsDockerJDK11
+  admin-test:
+    <<: *defaults
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
       - run:
-          name: Api-Metadata Unit Tests
+          name: Api-Admin Unit Tests
           command: ./gradlew api-metadata:test
 
       - <<: *saveCache
@@ -149,7 +152,7 @@ jobs:
             - api-metadata/build/reports/test
 
   search-test:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
@@ -172,7 +175,7 @@ jobs:
             - api-search/build/reports/test
 
   client-test:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
@@ -188,8 +191,9 @@ jobs:
           paths:
             - client/build
 
-  meta-integration-test:
-    <<: *defaultsDockerJDK11
+  admin-integration-test:
+    <<: *defaults
+    <<: *elasticsearchForAdmin
     <<: *env
     steps:
       - <<: *attachWorkspace
@@ -201,7 +205,7 @@ jobs:
           command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
-          name: Api-Metadata Integration Tests
+          name: Api-Admin Integration Tests
           command: ./gradlew api-metadata:integrationTest
 
       - <<: *saveCache
@@ -214,7 +218,8 @@ jobs:
             - api-metadata/build/reports/integrationTest
 
   search-integration-test:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
+    <<: *elasticsearchForSearch
     <<: *env
     steps:
       - <<: *attachWorkspace
@@ -240,7 +245,7 @@ jobs:
             - api-search/build/reports/integrationTest
 
   e2e:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
     <<: *env
     steps:
       - <<: *attachWorkspace
@@ -263,15 +268,15 @@ jobs:
           paths:
             - e2e-tests/build
 
-  meta-publish:
-    <<: *defaultsDockerJDK11
+  admin-publish:
+    <<: *defaults
 
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
       - run:
-          name: Api-Metadata Docker Image
+          name: Api-Admin Docker Image
           command: ./gradlew api-metadata:buildDockerImage
 
       - deploy:
@@ -279,7 +284,7 @@ jobs:
           command: ./gradlew api-metadata:publish -x BuildDockerImage
 
   search-publish:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
 
     steps:
       - <<: *attachWorkspace
@@ -294,7 +299,7 @@ jobs:
           command: ./gradlew api-search:publish -x BuildDockerImage
 
   client-publish:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
 
     steps:
       - <<: *attachWorkspace
@@ -309,7 +314,7 @@ jobs:
           command: ./gradlew client:publish -x BuildDockerImage
 
   client-checks:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
 
     steps:
       - <<: *attachWorkspace
@@ -324,7 +329,7 @@ jobs:
           command: ./gradlew client:retire
 
   report-tests:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
 
     steps:
       - <<: *attachWorkspace
@@ -363,7 +368,7 @@ jobs:
           path: ~/tests
 
   check-owasp-cve:
-    <<: *defaultsDockerJDK11
+    <<: *defaults
 
     steps:
       - <<: *attachWorkspace
@@ -394,24 +399,24 @@ workflows:
   build:
     jobs:
       - checkout
-      - meta-build:
+      - admin-build:
           requires:
             - checkout
-      - meta-test:
+      - admin-test:
           requires:
-            - meta-build
-      - meta-integration-test:
+            - admin-build
+      - admin-integration-test:
           requires:
-            - meta-build
-      - meta-publish:
+            - admin-build
+      - admin-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
               only:  # only branches matching the below regex filters will run
                 - master
                 - /release.*/
           requires:
-            - meta-test
-            - meta-integration-test
+            - admin-test
+            - admin-integration-test
       - search-build:
           requires:
             - checkout
@@ -451,13 +456,13 @@ workflows:
       - e2e:
           requires:
             - client-build
-            - meta-build
+            - admin-build
             - search-build
 
       - report-tests:
           requires:
-            - meta-test
-            - meta-integration-test
+            - admin-test
+            - admin-integration-test
             - search-test
             - search-integration-test
             - client-test
