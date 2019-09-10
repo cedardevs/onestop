@@ -48,8 +48,11 @@ attachWorkspace: &attachWorkspace
 
 installOpenJDK11: &installOpenJDK11
   - run:
+      name: apt-get update
+      command:  sudo apt-get update
+  - run:
       name: install java 11
-      command:  sudo apt install openjdk-11-jdk
+      command: sudo apt install openjdk-11-jdk
   - run:
       name: list java versions
       command: sudo update-alternatives --list java
