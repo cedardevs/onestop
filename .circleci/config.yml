@@ -67,11 +67,14 @@ jobs:
           - network.host: 127.0.0.1
           - http.port: 9200
           - discovery.type: single-node
+    steps:
+      - run:
+          name: Run shared Elasticsearch in background for other jobs.
+          command: echo $ES_ELASTICSEARCH_SERVICE_PORT
+          background: true
 
   search-build:
     <<: *defaultsDockerJDK11
-    dependencies:
-      pre:
 
     steps:
       - <<: *attachWorkspace
