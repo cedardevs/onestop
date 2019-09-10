@@ -19,7 +19,7 @@ defaultsWithElasticsearch: &defaultsWithElasticsearch
         - network.host: 127.0.0.1
         - http.port: 9200
         - discovery.type: single-node
-        - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
+        - ES_JAVA_OPTS: "-Xms1600m -Xmx3200m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
   working_directory: ~/repo
 
 defaultsE2E: &defaultsE2E
