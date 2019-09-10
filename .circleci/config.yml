@@ -384,7 +384,6 @@ workflows:
   build:
     jobs:
       - checkout
-      - elasticsearch
       - meta-build:
           requires:
             - checkout
