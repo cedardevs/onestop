@@ -20,6 +20,9 @@ defaultsDockerJDK11: &defaultsDockerJDK11
         - http.port: 9200
         - discovery.type: single-node
         - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
+        - ES_JAVA_OPTIONS: "-Xms750m -Xmx750m"
+        - _JAVA_OPTIONS: "-Xms750m -Xmx750m"
+
   working_directory: ~/repo
 
 env: &env
