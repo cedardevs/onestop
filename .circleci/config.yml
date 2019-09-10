@@ -57,6 +57,17 @@ jobs:
           paths:
             - .
 
+  elasticsearch:
+    docker:
+      - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
+        environment:
+          - cluster.name: elasticsearch
+          - xpack.security.enabled: false
+          - transport.host: localhost
+          - network.host: 127.0.0.1
+          - http.port: 9200
+          - discovery.type: single-node
+
   search-build:
     <<: *defaultsDockerJDK11
     dependencies:
@@ -161,34 +172,6 @@ jobs:
       - <<: *restoreCache
 
       - run:
-          name: apt-get update
-          command:  sudo apt-get update
-      - run:
-          name: install java 11
-          command: sudo apt install openjdk-11-jdk
-      - run:
-          name: list java versions
-          command: sudo update-alternatives --list java
-      - run:
-          name: list javac versions
-          command: sudo update-alternatives --list javac
-      - run:
-          name: set java version
-          command: sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-      - run:
-          name: set javac version
-          command: sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-      - run:
-          name: set JAVA_HOME
-          command: export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-      - run:
-          name: inspect java version
-          command: java -version
-      - run:
-          name: inspect JAVA_HOME
-          command: echo "JAVA_HOME = $JAVA_HOME"
-
-      - run:
           name: Client Unit Tests
           command: ./gradlew client:test
 
@@ -200,7 +183,7 @@ jobs:
             - client/build
 
   meta-integration-test:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
     <<: *env
     steps:
       - <<: *attachWorkspace
@@ -208,32 +191,8 @@ jobs:
       - <<: *esHeap
 
       - run:
-          name: apt-get update
-          command:  sudo apt-get update
-      - run:
-          name: install java 11
-          command: sudo apt install openjdk-11-jdk
-      - run:
-          name: list java versions
-          command: sudo update-alternatives --list java
-      - run:
-          name: list javac versions
-          command: sudo update-alternatives --list javac
-      - run:
-          name: set java version
-          command: sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-      - run:
-          name: set javac version
-          command: sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-      - run:
-          name: set JAVA_HOME
-          command: export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-      - run:
-          name: inspect java version
-          command: java -version
-      - run:
-          name: inspect JAVA_HOME
-          command: echo "JAVA_HOME = $JAVA_HOME"
+          name: Wait for Elasticsearch
+          command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
           name: Api-Metadata Integration Tests
@@ -249,7 +208,7 @@ jobs:
             - api-metadata/build/reports/integrationTest
 
   search-integration-test:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
     <<: *env
     steps:
       - <<: *attachWorkspace
@@ -258,32 +217,8 @@ jobs:
       - <<: *esHeap
 
       - run:
-          name: apt-get update
-          command:  sudo apt-get update
-      - run:
-          name: install java 11
-          command: sudo apt install openjdk-11-jdk
-      - run:
-          name: list java versions
-          command: sudo update-alternatives --list java
-      - run:
-          name: list javac versions
-          command: sudo update-alternatives --list javac
-      - run:
-          name: set java version
-          command: sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-      - run:
-          name: set javac version
-          command: sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-      - run:
-          name: set JAVA_HOME
-          command: export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-      - run:
-          name: inspect java version
-          command: java -version
-      - run:
-          name: inspect JAVA_HOME
-          command: echo "JAVA_HOME = $JAVA_HOME"
+          name: Wait for Elasticsearch
+          command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
           name: Api-Search Integration Tests
@@ -299,7 +234,7 @@ jobs:
             - api-search/build/reports/integrationTest
 
   e2e:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
     <<: *env
     steps:
       - <<: *attachWorkspace
@@ -308,32 +243,8 @@ jobs:
       - <<: *esHeap
 
       - run:
-          name: apt-get update
-          command:  sudo apt-get update
-      - run:
-          name: install java 11
-          command: sudo apt install openjdk-11-jdk
-      - run:
-          name: list java versions
-          command: sudo update-alternatives --list java
-      - run:
-          name: list javac versions
-          command: sudo update-alternatives --list javac
-      - run:
-          name: set java version
-          command: sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-      - run:
-          name: set javac version
-          command: sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-      - run:
-          name: set JAVA_HOME
-          command: export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-      - run:
-          name: inspect java version
-          command: java -version
-      - run:
-          name: inspect JAVA_HOME
-          command: echo "JAVA_HOME = $JAVA_HOME"
+          name: Wait for Elasticsearch
+          command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
           name: E2E tests
@@ -347,7 +258,7 @@ jobs:
             - e2e-tests/build
 
   meta-publish:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
 
     steps:
       - <<: *attachWorkspace
@@ -362,7 +273,7 @@ jobs:
           command: ./gradlew api-metadata:publish -x BuildDockerImage
 
   search-publish:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
 
     steps:
       - <<: *attachWorkspace
@@ -377,7 +288,7 @@ jobs:
           command: ./gradlew api-search:publish -x BuildDockerImage
 
   client-publish:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
 
     steps:
       - <<: *attachWorkspace
@@ -392,7 +303,7 @@ jobs:
           command: ./gradlew client:publish -x BuildDockerImage
 
   client-checks:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
 
     steps:
       - <<: *attachWorkspace
@@ -407,7 +318,7 @@ jobs:
           command: ./gradlew client:retire
 
   report-tests:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
 
     steps:
       - <<: *attachWorkspace
@@ -446,7 +357,7 @@ jobs:
           path: ~/tests
 
   check-owasp-cve:
-    <<: *defaults
+    <<: *defaultsDockerJDK11
 
     steps:
       - <<: *attachWorkspace
@@ -486,6 +397,7 @@ workflows:
       - meta-integration-test:
           requires:
             - meta-build
+            - elasticsearch
       - meta-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
@@ -504,6 +416,7 @@ workflows:
       - search-integration-test:
           requires:
             - search-build
+            - elasticsearch
       - search-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
@@ -536,6 +449,7 @@ workflows:
             - client-build
             - meta-build
             - search-build
+            - elasticsearch
 
       - report-tests:
           requires:
