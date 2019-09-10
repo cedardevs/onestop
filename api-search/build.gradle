@@ -167,7 +167,7 @@ task integrationTest(type: Test) {
       // the elasticsearch brought up by CircleCI (see `.circleci/config`) runs on localhost:9200
       // which is important when the `DefaultApplicationConfig` for both search/admin APIs connect via ES RestClient
       systemProperty 'elasticsearch.host', 'localhost'
-      systemProperty 'elasticsearch.port', '9250'
+      systemProperty 'elasticsearch.port', '9200'
     }
   }
 

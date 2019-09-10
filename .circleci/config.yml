@@ -8,12 +8,12 @@ defaults: &defaults
     - image: circleci/openjdk:11-jdk
   working_directory: ~/repo
 
-elasticsearchForAdmin: &elasticsearchForAdmin
+defaultsWithElasticsearch: &defaultsWithElasticsearch
   docker:
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
     - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
       environment:
-        - cluster.name: elasticsearch-test-admin
+        - cluster.name: elasticsearch-test
         - xpack.security.enabled: false
         - transport.host: localhost
         - network.host: 127.0.0.1
@@ -22,20 +22,25 @@ elasticsearchForAdmin: &elasticsearchForAdmin
         - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
   working_directory: ~/repo
 
-
-elasticsearchForSearch: &elasticsearchForSearch
-  docker:
-    - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
-    - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
-      environment:
-        - cluster.name: elasticsearch-test-search
-        - xpack.security.enabled: false
-        - transport.host: localhost
-        - network.host: 127.0.0.1
-        - http.port: 9250
-        - discovery.type: single-node
-        - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
+defaultsE2E: &defaultsE2E
+  machine:
+    docker_layer_caching: true
   working_directory: ~/repo
+
+
+#elasticsearchForSearch: &elasticsearchForSearch
+#  docker:
+#    - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
+#    - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
+#      environment:
+#        - cluster.name: elasticsearch-test-search
+#        - xpack.security.enabled: false
+#        - transport.host: localhost
+#        - network.host: 127.0.0.1
+#        - http.port: 9250
+#        - discovery.type: single-node
+#        - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
+#  working_directory: ~/repo
 
 env: &env
   environment:
@@ -194,7 +199,7 @@ jobs:
             - client/build
 
   admin-integration-test:
-    <<: *elasticsearchForAdmin
+    <<: *defaultsWithElasticsearch
     <<: *env
     steps:
       - <<: *attachWorkspace
@@ -219,7 +224,7 @@ jobs:
             - api-metadata/build/reports/integrationTest
 
   search-integration-test:
-    <<: *elasticsearchForSearch
+    <<: *defaultsWithElasticsearch
     <<: *env
     steps:
       - <<: *attachWorkspace
@@ -229,7 +234,7 @@ jobs:
 
       - run:
           name: Wait for Elasticsearch
-          command: dockerize -wait tcp://localhost:9250 -timeout 1m
+          command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
           name: Api-Search Integration Tests
@@ -245,7 +250,7 @@ jobs:
             - api-search/build/reports/integrationTest
 
   e2e:
-    <<: *defaults
+    <<: *defaultsE2E
     <<: *env
     steps:
       - <<: *attachWorkspace
@@ -253,9 +258,9 @@ jobs:
 
       #- <<: *esHeap
 
-      - run:
-          name: Wait for Elasticsearch
-          command: dockerize -wait tcp://localhost:9200 -timeout 1m
+#      - run:
+#          name: Wait for Elasticsearch
+#          command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
           name: E2E tests
@@ -426,6 +431,7 @@ workflows:
       - search-integration-test:
           requires:
             - search-build
+            - admin-integration-test
       - search-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
@@ -458,6 +464,7 @@ workflows:
             - client-build
             - admin-build
             - search-build
+            - search-integration-test
 
       - report-tests:
           requires:
