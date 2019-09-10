@@ -58,3 +58,18 @@ deploy:
         helm: {}
     - name: psi-dev
       chartPath: helm/psi-dev
+profiles:
+- name: registry
+  patches:
+  # remove the psi-manager from the build and deployment
+  - op: remove
+    path: /build/artifacts/1
+  - op: remove
+    path: /deploy/helm/releases/1
+- name: manager
+  patches:
+  # remove the psi-manager from the build and deployment
+  - op: remove
+    path: /build/artifacts/0
+  - op: remove
+    path: /deploy/helm/releases/0
