@@ -19,7 +19,7 @@ defaultsDockerJDK11: &defaultsDockerJDK11
         - network.host: 127.0.0.1
         - http.port: 9200
         - discovery.type: single-node
-        - ES_JAVA_OPTS: "-Xmx3200m" # Customize the JVM maximum heap limit
+        - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
   working_directory: ~/repo
 
 env: &env
