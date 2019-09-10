@@ -20,6 +20,7 @@ elasticsearchForAdmin: &elasticsearchForAdmin
         - http.port: 9200
         - discovery.type: single-node
         - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
+  working_directory: ~/repo
 
 
 elasticsearchForSearch: &elasticsearchForSearch
@@ -34,8 +35,7 @@ elasticsearchForSearch: &elasticsearchForSearch
         - http.port: 9250
         - discovery.type: single-node
         - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
-
-
+  working_directory: ~/repo
 
 env: &env
   environment:
