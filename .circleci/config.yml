@@ -46,35 +46,6 @@ attachWorkspace: &attachWorkspace
   - attach_workspace:
       at: ~/repo
 
-installOpenJDK11: &installOpenJDK11
-  - run:
-      name: apt-get update
-      command:  sudo apt-get update
-  - run:
-      name: install java 11
-      command: sudo apt install openjdk-11-jdk
-  - run:
-      name: list java versions
-      command: sudo update-alternatives --list java
-  - run:
-      name: list javac versions
-      command: sudo update-alternatives --list javac
-#  - run:
-#      name: set java version
-#      command: sudo update-alternatives --set java /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java
-#  - run:
-#      name: set javac version
-#      command: sudo update-alternatives --set javac /usr/lib/jvm/java-6-openjdk-amd64/bin/javac
-  - run:
-      name: inspect java version
-      command: java -version
-#  - run:
-#      name: set JAVA_HOME
-#      command: export JAVA_HOME=
-  - run:
-      name: inspect JAVA_HOME
-      command: echo "JAVA_HOME = $JAVA_HOME"
-
 version: 2
 jobs:
   checkout:
@@ -207,7 +178,25 @@ jobs:
       - <<: *attachWorkspace
       - <<: *restoreCache
       - <<: *esHeap
-      - <<: *installOpenJDK11
+
+      - run:
+          name: apt-get update
+          command:  sudo apt-get update
+      - run:
+          name: install java 11
+          command: sudo apt install openjdk-11-jdk
+      - run:
+          name: list java versions
+          command: sudo update-alternatives --list java
+      - run:
+          name: list javac versions
+          command: sudo update-alternatives --list javac
+      - run:
+          name: inspect java version
+          command: java -version
+      - run:
+          name: inspect JAVA_HOME
+          command: echo "JAVA_HOME = $JAVA_HOME"
 
       - run:
           name: Api-Metadata Integration Tests
