@@ -191,7 +191,7 @@ jobs:
 
   admin-integration-test:
     <<: *defaults
-      - <<: *elasticsearchForAdmin
+    - <<: *elasticsearchForAdmin
     <<: *env
     steps:
       - <<: *attachWorkspace
@@ -217,7 +217,7 @@ jobs:
 
   search-integration-test:
     <<: *defaults
-      - <<: *elasticsearchForSearch
+    - <<: *elasticsearchForSearch
     <<: *env
     steps:
       - <<: *attachWorkspace
