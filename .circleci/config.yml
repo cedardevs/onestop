@@ -185,11 +185,7 @@ jobs:
 
       - run:
           name: install java 11
-          command:  sudo apt-get install oracle-java11-installer-local
-
-      - run:
-          name: set java 11 to default
-          command:  sudo apt-get install oracle-java11-set-default-local
+          command:  sudo apt install openjdk-11-jdk
 
       - run:
           name: inspect java version
