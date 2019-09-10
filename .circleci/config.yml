@@ -6,12 +6,6 @@
 defaults: &defaults
   machine: true
   working_directory: ~/repo
-  dependencies:
-    pre:
-      - sudo apt-get update
-      - sudo apt-get install oracle-java11-installer-local
-      - sudo apt-get install oracle-java11-set-default-local
-      - java -version
 
 defaultsDockerJDK11: &defaultsDockerJDK11
   docker:
@@ -186,11 +180,25 @@ jobs:
       - <<: *esHeap
 
       - run:
-          name: Examine Java versions on this machine
-          command: ls $JAVA_HOME/../../..
+          name: apt-get update
+          command:  sudo apt-get update
+
       - run:
-          name: get JAVA_HOME
+          name: install java 11
+          command:  sudo apt-get install oracle-java11-installer-local
+
+      - run:
+          name: set java 11 to default
+          command:  sudo apt-get install oracle-java11-set-default-local
+
+      - run:
+          name: inspect java version
+          command: java -version
+
+      - run:
+          name: inspect JAVA_HOME
           command: echo "JAVA_HOME = $JAVA_HOME"
+
       - run:
           name: Api-Metadata Integration Tests
           command: ./gradlew api-metadata:integrationTest
