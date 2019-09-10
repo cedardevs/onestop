@@ -11,10 +11,6 @@ defaultsDockerJDK11: &defaultsDockerJDK11
   docker:
     # specify the version you desire here
     - image: circleci/openjdk:11-jdk
-      environment:
-        - elasticsearch.host: localhost
-        - elasticsearch.port: 9200
-        - spring.profiles.include: ci
     - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
       environment:
         - cluster.name: elasticsearch
