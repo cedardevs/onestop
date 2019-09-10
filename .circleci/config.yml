@@ -192,8 +192,6 @@ jobs:
           name: get JAVA_HOME
           command: echo "JAVA_HOME = $JAVA_HOME"
       - run:
-          name:
-      - run:
           name: Api-Metadata Integration Tests
           command: ./gradlew api-metadata:integrationTest
 
