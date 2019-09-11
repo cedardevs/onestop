@@ -22,7 +22,6 @@ class LoadAndSearchTests extends Specification {
   @ClassRule
   DockerComposeContainer docker
 
-//  static esApiBase = "http://localhost:9200"
   static searchApiBase = "http://localhost:8097/onestop-search"
   static metadataApiBase = "http://localhost:8098/onestop-admin"
   static restTemplate = new RestTemplate()
