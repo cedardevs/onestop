@@ -27,30 +27,10 @@ defaultsE2E: &defaultsE2E
     docker_layer_caching: true
   working_directory: ~/repo
 
-
-#elasticsearchForSearch: &elasticsearchForSearch
-#  docker:
-#    - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
-#    - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
-#      environment:
-#        - cluster.name: elasticsearch-test-search
-#        - xpack.security.enabled: false
-#        - transport.host: localhost
-#        - network.host: 127.0.0.1
-#        - http.port: 9250
-#        - discovery.type: single-node
-#        - ES_JAVA_OPTS: "-Xms750m -Xmx750m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
-#  working_directory: ~/repo
-
 env: &env
   environment:
     # Customize the JVM maximum heap limit
     JVM_OPTS: -Xmx3200m
-
-#esHeap: &esHeap
-#  run:
-#      name: Increase Virtual Memory Limits for Elasticsearch
-#      command: sudo sysctl -w vm.max_map_count=262144
 
 restoreCache: &restoreCache
   # Download and cache dependencies
@@ -66,7 +46,6 @@ saveCache: &saveCache
         - ~/.gradle/caches/
         - ~/.gradle/wrapper/
         - .gradle
-        # - buildSrc/.gradle
         - client/.gradle
         - client/node_modules
       key: onestop-cache-v5-{{ checksum "build.gradle" }}
@@ -204,7 +183,6 @@ jobs:
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
-      #- <<: *esHeap
 
       - run:
           name: Wait for Elasticsearch
@@ -230,8 +208,6 @@ jobs:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
-      #- <<: *esHeap
-
       - run:
           name: Wait for Elasticsearch
           command: dockerize -wait tcp://localhost:9200 -timeout 1m
@@ -255,13 +231,6 @@ jobs:
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
-
-      #- <<: *esHeap
-
-#      - run:
-#          name: Wait for Elasticsearch
-#          command: dockerize -wait tcp://localhost:9200 -timeout 1m
-
       - run:
           name: apt-get update
           command:  sudo apt-get update
@@ -289,7 +258,6 @@ jobs:
       - run:
           name: inspect JAVA_HOME
           command: echo "JAVA_HOME = $JAVA_HOME"
-
       - run:
           name: E2E tests
           command: ./gradlew e2e-tests:test
@@ -460,7 +428,6 @@ workflows:
       - search-integration-test:
           requires:
             - search-build
-            - admin-integration-test
       - search-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
@@ -493,7 +460,6 @@ workflows:
             - client-build
             - admin-build
             - search-build
-            - search-integration-test
 
       - report-tests:
           requires:
