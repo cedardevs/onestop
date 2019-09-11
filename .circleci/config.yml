@@ -486,11 +486,11 @@ workflows:
           requires:
             - checkout
       - meta-build:
-        requires:
-          - checkout
+          requires:
+            - checkout
       - search-build:
-        requires:
-          - checkout
+          requires:
+            - checkout
       - check-owasp-cve:
           requires:
             - checkout
