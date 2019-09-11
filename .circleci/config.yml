@@ -459,6 +459,8 @@ workflows:
             - client-build
             - admin-build
             - search-build
+            - search-integration-test
+            - admin-integration-test
 
       - report-tests:
           requires:
