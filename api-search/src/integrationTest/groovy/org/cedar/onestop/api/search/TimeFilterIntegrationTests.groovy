@@ -26,7 +26,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Unroll
 class TimeFilterIntegrationTests extends Specification {
 
-  private final String DATES_INDEX_ALIAS = 'time_filter'
+  static private final String DATES_INDEX_ALIAS = 'time_filter'
 
   @Autowired
   RestClient restClient

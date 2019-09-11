@@ -1,4 +1,4 @@
-FROM tomcat:alpine
+FROM tomcat:8.5.45-jdk11-openjdk
 
 ARG VCS_REF
 ARG VERSION

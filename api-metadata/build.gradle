@@ -9,8 +9,8 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
   mavenCentral()
@@ -180,6 +180,23 @@ sourceSets {
 }
 
 task integrationTest(type: Test) {
+
+  doFirst {
+    // `CI` env var is typically "true" inside CircleCI, Travis, and other CI environments.
+    // If you find it is not, the build cmds used within your CI config could also be prefixed like:
+    // `export CI=true && ./gradlew integrationTest ...`
+    Boolean ci = Boolean.valueOf(System.getenv('CI'))
+    if(ci) {
+      // the 'ci' profile disables creating runtime testcontainers (docker containers)
+      // in favor of an assumed background elasticsearch
+      systemProperty 'spring.profiles.include', 'ci'
+      // the elasticsearch brought up by CircleCI (see `.circleci/config`) runs on localhost:9200
+      // which is important when the `DefaultApplicationConfig` for both search/admin APIs connect via ES RestClient
+      systemProperty 'elasticsearch.host', 'localhost'
+      systemProperty 'elasticsearch.port', '9200'
+    }
+  }
+
   description = 'Runs the integration tests'
   group = 'verification'
   testClassesDirs = sourceSets.integrationTest.output.classesDirs

@@ -4,7 +4,27 @@
 #
 
 defaults: &defaults
-  machine: true
+  docker:
+    - image: circleci/openjdk:11-jdk
+  working_directory: ~/repo
+
+defaultsWithElasticsearch: &defaultsWithElasticsearch
+  docker:
+    - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
+    - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
+      environment:
+        - cluster.name: elasticsearch-test
+        - xpack.security.enabled: false
+        - transport.host: localhost
+        - network.host: 127.0.0.1
+        - http.port: 9200
+        - discovery.type: single-node
+        - ES_JAVA_OPTS: "-Xms160m -Xmx320m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
+  working_directory: ~/repo
+
+defaultsE2E: &defaultsE2E
+  machine:
+    docker_layer_caching: true
   working_directory: ~/repo
 
 env: &env
@@ -12,18 +32,13 @@ env: &env
     # Customize the JVM maximum heap limit
     JVM_OPTS: -Xmx3200m
 
-esHeap: &esHeap
-  run:
-      name: Increase Virtual Memory Limits for Elasticsearch
-      command: sudo sysctl -w vm.max_map_count=262144
-
 restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
       keys:
-      - onestop-cache-v4-{{ checksum "build.gradle" }}
+      - onestop-cache-v5-{{ checksum "build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v4-
+      - onestop-cache-v5-
 
 saveCache: &saveCache
   save_cache:
@@ -31,10 +46,9 @@ saveCache: &saveCache
         - ~/.gradle/caches/
         - ~/.gradle/wrapper/
         - .gradle
-        # - buildSrc/.gradle
         - client/.gradle
         - client/node_modules
-      key: onestop-cache-v4-{{ checksum "build.gradle" }}
+      key: onestop-cache-v5-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -53,6 +67,7 @@ jobs:
 
   search-build:
     <<: *defaults
+
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
@@ -86,14 +101,14 @@ jobs:
             - client/build
             - client/node_modules
 
-  meta-build:
+  admin-build:
     <<: *defaults
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
       - run:
-          name: Build Api-Metadata
+          name: Build Api-Admin
           command: ./gradlew api-metadata:assemble
 
       - <<: *saveCache
@@ -103,14 +118,14 @@ jobs:
           paths:
             - api-metadata/build
 
-  meta-test:
+  admin-test:
     <<: *defaults
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
       - run:
-          name: Api-Metadata Unit Tests
+          name: Api-Admin Unit Tests
           command: ./gradlew api-metadata:test
 
       - <<: *saveCache
@@ -162,16 +177,19 @@ jobs:
           paths:
             - client/build
 
-  meta-integration-test:
-    <<: *defaults
+  admin-integration-test:
+    <<: *defaultsWithElasticsearch
     <<: *env
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
-      - <<: *esHeap
 
       - run:
-          name: Api-Metadata Integration Tests
+          name: Wait for Elasticsearch
+          command: dockerize -wait tcp://localhost:9200 -timeout 1m
+
+      - run:
+          name: Api-Admin Integration Tests
           command: ./gradlew api-metadata:integrationTest
 
       - <<: *saveCache
@@ -184,13 +202,15 @@ jobs:
             - api-metadata/build/reports/integrationTest
 
   search-integration-test:
-    <<: *defaults
+    <<: *defaultsWithElasticsearch
     <<: *env
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
-      - <<: *esHeap
+      - run:
+          name: Wait for Elasticsearch
+          command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
           name: Api-Search Integration Tests
@@ -206,14 +226,38 @@ jobs:
             - api-search/build/reports/integrationTest
 
   e2e:
-    <<: *defaults
+    <<: *defaultsE2E
     <<: *env
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
-
-      - <<: *esHeap
-
+      - run:
+          name: apt-get update
+          command:  sudo apt-get update
+      - run:
+          name: install java 11
+          command: sudo apt install openjdk-11-jdk
+      - run:
+          name: list java versions
+          command: sudo update-alternatives --list java
+      - run:
+          name: list javac versions
+          command: sudo update-alternatives --list javac
+      - run:
+          name: set java version
+          command: sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+      - run:
+          name: set javac version
+          command: sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
+      - run:
+          name: set JAVA_HOME
+          command: export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+      - run:
+          name: inspect java version
+          command: java -version
+      - run:
+          name: inspect JAVA_HOME
+          command: echo "JAVA_HOME = $JAVA_HOME"
       - run:
           name: E2E tests
           command: ./gradlew e2e-tests:test
@@ -225,7 +269,7 @@ jobs:
           paths:
             - e2e-tests/build
 
-  meta-publish:
+  admin-publish:
     <<: *defaults
 
     steps:
@@ -233,7 +277,7 @@ jobs:
       - <<: *restoreCache
 
       - run:
-          name: Api-Metadata Docker Image
+          name: Api-Admin Docker Image
           command: ./gradlew api-metadata:buildDockerImage
 
       - deploy:
@@ -356,24 +400,24 @@ workflows:
   build:
     jobs:
       - checkout
-      - meta-build:
+      - admin-build:
           requires:
             - checkout
-      - meta-test:
+      - admin-test:
           requires:
-            - meta-build
-      - meta-integration-test:
+            - admin-build
+      - admin-integration-test:
           requires:
-            - meta-build
-      - meta-publish:
+            - admin-build
+      - admin-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
               only:  # only branches matching the below regex filters will run
                 - master
                 - /release.*/
           requires:
-            - meta-test
-            - meta-integration-test
+            - admin-test
+            - admin-integration-test
       - search-build:
           requires:
             - checkout
@@ -413,13 +457,15 @@ workflows:
       - e2e:
           requires:
             - client-build
-            - meta-build
+            - admin-build
             - search-build
+            - search-integration-test
+            - admin-integration-test
 
       - report-tests:
           requires:
-            - meta-test
-            - meta-integration-test
+            - admin-test
+            - admin-integration-test
             - search-test
             - search-integration-test
             - client-test

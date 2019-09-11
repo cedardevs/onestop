@@ -2,8 +2,8 @@ apply plugin: 'org.springframework.boot' // version declared in top-level builds
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'groovy'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
   mavenCentral()
@@ -23,8 +23,28 @@ dependencies {
 }
 
 test {
+
+  doFirst {
+    // the elasticsearch brought up by docker-compose is referenced as 'localhost' from the base 'machine';
+    // whereas, the docker compose sets the host env var for the search/admin APIs to 'elasticsearch' name to resolve it
+    // between docker containers
+    systemProperty 'elasticsearch.host', 'localhost'
+    systemProperty 'elasticsearch.port', '9200'
+    // in case we want to switch docker compose files based on environment, etc...
+    systemProperty 'docker.compose.file', 'src/test/resources/docker-compose-e2e.yml'
+  }
+
   dependsOn rootProject.getTasksByName('BuildDockerImage', true)
   mustRunAfter rootProject.getTasksByName('integrationTest', true)
+}
+
+processResources {
+  outputs.upToDateWhen { false }
+  filesMatching("**/docker-compose-e2e.yml") {
+    expand([
+        esVersion: project.esVersion
+    ])
+  }
 }
 
 bootJar {

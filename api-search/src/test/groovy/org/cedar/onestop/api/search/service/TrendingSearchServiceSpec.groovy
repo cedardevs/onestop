@@ -21,7 +21,7 @@ class TrendingSearchServiceSpec extends Specification {
     ]
   }
 
-  private final String esJson  = """{
+  static private final String esJson  = """{
   "took": 8,
   "timed_out": false,
   "_shards": {

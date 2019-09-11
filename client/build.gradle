@@ -69,18 +69,16 @@ npm_test {
     inputs.dir('test').skipWhenEmpty()
 }
 
-task formatCheck (type: Exec) {
-  executable = "bash"
-  args = ["-c", "npm run formatCheck"]
+task formatCheck(type: NpmTask) {
+  args = ['run', 'formatCheck',]
 }
 
 task test {
     dependsOn 'npm_test'
 }
 
-task retire(type: Exec) {
-  executable = "bash"
-  args = ["-c", "npm run retire"]
+task retire(type: NpmTask) {
+  args = ['run', 'retire']
 }
 
 check {

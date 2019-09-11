@@ -56,7 +56,9 @@ class DefaultApplicationConfig {
     return version
   }
 
-  @Profile("!integration")
+  // we dont' want this bean to be created when the tests use test containers,
+  // but in our CI environment, we have a separate Elasticsearch and so we can leverage this normal RestClient again
+  @Profile(["!integration", "ci"])
   @Bean(name = 'restClient', destroyMethod = 'close')
   RestClient restClient() {
     def hosts = []
