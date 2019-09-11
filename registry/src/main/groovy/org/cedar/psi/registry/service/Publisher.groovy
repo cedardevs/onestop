@@ -29,7 +29,6 @@ import static org.cedar.psi.common.constants.Topics.inputTopic
 class Publisher {
 
   private static final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance()
-
   private Producer<String, Input> kafkaProducer
 
   @Autowired
@@ -50,6 +49,7 @@ class Publisher {
           content: [errors: [[title: "Unsupported entity type: ${type}"]]]
       ]
     }
+
     String key = id ?: UUID.randomUUID().toString()
     def message = buildInputTopicMessage(request, type, data, source, key)
     def record = new ProducerRecord<String, Input>(topic, key, message)
@@ -58,20 +58,6 @@ class Publisher {
     return [
         status : 200,
         content: [id: key, type: type]
-    ]
-  }
-
-  Map invalidContentError(String message, MediaType contentType) {
-    return [
-        status : 400,
-        content: [errors: [[title: "Malformed ${contentType.toString()} input: with error ${message} "]]]
-    ]
-  }
-
-  Map unknownContentTypeError(MediaType contentType) {
-    return [
-        status : 400,
-        content: [errors: [[title: "Content-Type of \"${contentType.toString()}\" is not supported. Use JSON or XML."]]]
     ]
   }
 
@@ -112,6 +98,20 @@ class Publisher {
   boolean isValidJson(String content) {
     new JSONObject(content) && content.startsWith("{") && content.endsWith("}")
     return true
+  }
+
+  Map invalidContentError(String message, MediaType contentType) {
+    return [
+        status : 400,
+        content: [errors: [[title: "Malformed ${contentType.toString()} input: with error ${message} "]]]
+    ]
+  }
+
+  Map unknownContentTypeError(MediaType contentType) {
+    return [
+        status : 400,
+        content: [errors: [[title: "Content-Type of \"${contentType.toString()}\" is not supported. Use JSON or XML."]]]
+    ]
   }
 
   Input buildInputTopicMessage(HttpServletRequest request, RecordType type, String data, String source, String id) {
