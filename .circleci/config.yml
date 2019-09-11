@@ -36,9 +36,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
       keys:
-      - onestop-cache-v5-{{ checksum "build.gradle" }}
+      - onestop-cache-v6-{{ checksum "build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v5-
+      - onestop-cache-v6-
 
 saveCache: &saveCache
   save_cache:
@@ -48,7 +48,9 @@ saveCache: &saveCache
         - .gradle
         - client/.gradle
         - client/node_modules
-      key: onestop-cache-v5-{{ checksum "build.gradle" }}
+        - /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+        - /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
+      key: onestop-cache-v6-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -469,7 +471,6 @@ workflows:
             - search-test
             - search-integration-test
             - client-test
-            - e2e
 
   nightly:
     triggers:
@@ -481,6 +482,20 @@ workflows:
                 - master
     jobs:
       - checkout
+      - client-build:
+          requires:
+            - checkout
+      - meta-build:
+        requires:
+          - checkout
+      - search-build:
+        requires:
+          - checkout
       - check-owasp-cve:
           requires:
             - checkout
+      - e2e:
+          requires:
+            - client-build
+            - meta-build
+            - search-build
