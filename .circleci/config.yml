@@ -263,6 +263,34 @@ jobs:
 #          command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
+          name: apt-get update
+          command:  sudo apt-get update
+      - run:
+          name: install java 11
+          command: sudo apt install openjdk-11-jdk
+      - run:
+          name: list java versions
+          command: sudo update-alternatives --list java
+      - run:
+          name: list javac versions
+          command: sudo update-alternatives --list javac
+      - run:
+          name: set java version
+          command: sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+      - run:
+          name: set javac version
+          command: sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
+      - run:
+          name: set JAVA_HOME
+          command: export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+      - run:
+          name: inspect java version
+          command: java -version
+      - run:
+          name: inspect JAVA_HOME
+          command: echo "JAVA_HOME = $JAVA_HOME"
+
+      - run:
           name: E2E tests
           command: ./gradlew e2e-tests:test
 
