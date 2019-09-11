@@ -409,7 +409,6 @@ workflows:
       - admin-integration-test:
           requires:
             - admin-build
-            - client-test
       - admin-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
