@@ -255,65 +255,65 @@ class Indexer {
     }).collect({AvroUtils.avroToMap(it, true)})
 
     keywords.each { group ->
-      def it = group.namespace.toLowerCase() ?: ""
+      def namespace = group.namespace.toLowerCase() ?: ""
       def keywordsInGroup = group.values ?: null
-      if (it.contains('gcmd') || it.contains('global change master directory')) {
-        switch (it) {
-          case { it.contains('earth science services') }:
+      if (namespace.contains('gcmd') || namespace.contains('global change master directory')) {
+        switch (namespace) {
+          case { namespace.contains('science')}:
             keywordsInGroup.each { k ->
-              def text = normalizeHierarchyKeyword(k)
-              gcmdScienceServices.addAll(tokenizeHierarchyKeyword(text))
+              def keyword = k.toLowerCase()
+              if(keyword.startsWith('earth science services')) {
+                def text = normalizeHierarchyKeyword(k)
+                gcmdScienceServices.addAll(tokenizeHierarchyKeyword(text))
+              } else if (keyword.startsWith('earth science')) {
+                def text = normalizeHierarchyKeyword(k)
+                gcmdScience.addAll(tokenizeHierarchyKeyword(text))
+              }
             }
             break
-          case { it.contains('earth science') }:
-            keywordsInGroup.each { k ->
-              def text = normalizeHierarchyKeyword(k)
-              gcmdScience.addAll(tokenizeHierarchyKeyword(text))
-            }
-            break
-          case { it.contains('location') || it.contains('place') }:
+          case { namespace.contains('location') || namespace.contains('place') }:
             keywordsInGroup.each { k ->
               def text = normalizeHierarchyKeyword(k)
               gcmdLocations.addAll(tokenizeHierarchyKeyword(text))
             }
             break
-          case { it.contains('platform') }:
+          case { namespace.contains('platform') }:
             keywordsInGroup.each { k ->
               def text = normalizeNonHierarchicalKeyword(k)
               gcmdPlatforms.add(text)
             }
             break
-          case { it.contains('instrument') }:
+          case { namespace.contains('instrument') }:
             keywordsInGroup.each { k ->
               def text = normalizeNonHierarchicalKeyword(k)
               gcmdInstruments.add(text)
             }
             break
-          case { it.contains('data center') }:
+          case { namespace.contains('data center') }:
             keywordsInGroup.each { k ->
               def text = normalizeNonHierarchicalKeyword(k)
               gcmdDataCenters.add(text)
             }
             break
-          case { it.contains('horizontal data resolution') }:
+          case { namespace.contains('horizontal data resolution') }:
             keywordsInGroup.each { k ->
               def text = WordUtils.capitalizeFully(k, capitalizingDelimiters)
               gcmdHorizontalResolution.add(text)
             }
             break
-          case { it.contains('vertical data resolution') }:
+          case { namespace.contains('vertical data resolution') }:
             keywordsInGroup.each { k ->
               def text = WordUtils.capitalizeFully(k, capitalizingDelimiters)
               gcmdVerticalResolution.add(text)
             }
             break
-          case { it.contains('temporal data resolution') }:
+          case { namespace.contains('temporal data resolution') }:
             keywordsInGroup.each { k ->
               def text = WordUtils.capitalizeFully(k, capitalizingDelimiters)
               gcmdTemporalResolution.add(text)
             }
             break
-          case { it.contains('project') }:
+          case { namespace.contains('project') }:
             keywordsInGroup.each { k ->
               def text = normalizeNonHierarchicalKeyword(k)
               gcmdProjects.add(text)

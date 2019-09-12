@@ -3,17 +3,19 @@ package org.cedar.onestop.api.metadata.service
 import groovy.json.JsonOutput
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
+import org.cedar.schemas.parse.ISOParser
 import spock.lang.Specification
 import spock.lang.Unroll
-
 
 import static org.cedar.schemas.avro.util.TemporalTestData.situations
 
 @Unroll
 class IndexerTest extends Specification {
 
-  def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
+  def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json') // from schemas repo
   def inputRecord = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
+
+  def inputStreamKeywords = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-keywords.xml')
 
   def expectedResponsibleParties = [
       contacts  : [
@@ -104,27 +106,46 @@ class IndexerTest extends Specification {
       ]
   ]
 
+
+  def expectedKeywordsFromIso = [
+    science : [
+      'Atmosphere > Atmospheric Pressure',
+      'Atmosphere',
+      'Atmosphere > Atmospheric Temperature',
+      'Atmosphere > Atmospheric Water Vapor > Water Vapor Indicators > Humidity > Relative Humidity',
+      'Atmosphere > Atmospheric Water Vapor > Water Vapor Indicators > Humidity',
+      'Atmosphere > Atmospheric Water Vapor > Water Vapor Indicators',
+      'Atmosphere > Atmospheric Water Vapor',
+      'Atmosphere > Atmospheric Winds > Surface Winds > Wind Direction',
+      'Atmosphere > Atmospheric Winds > Surface Winds',
+      'Atmosphere > Atmospheric Winds',
+      'Atmosphere > Atmospheric Winds > Surface Winds > Wind Speed',
+      'Oceans > Bathymetry/Seafloor Topography > Seafloor Topography',
+      'Oceans > Bathymetry/Seafloor Topography',
+      'Oceans',
+      'Oceans > Bathymetry/Seafloor Topography > Bathymetry',
+      'Oceans > Bathymetry/Seafloor Topography > Water Depth',
+      'Land Surface > Topography > Terrain Elevation',
+      'Land Surface > Topography',
+      'Land Surface',
+      'Land Surface > Topography > Topographical Relief Maps',
+      'Oceans > Coastal Processes > Coastal Elevation',
+      'Oceans > Coastal Processes'
+      ] as Set,
+    scienceService : [
+      'Data Analysis And Visualization > Calibration/Validation > Calibration',
+      'Data Analysis And Visualization > Calibration/Validation',
+      'Data Analysis And Visualization'
+      ] as Set
+  ]
+
   def expectedGcmdKeywords = [
       gcmdScienceServices     : [
+      ] as Set,
+      gcmdScience             : [
           'Oceans',
           'Oceans > Ocean Temperature',
           'Oceans > Ocean Temperature > Sea Surface Temperature'
-      ] as Set,
-      gcmdScience             : [
-          'Atmosphere',
-          'Atmosphere > Atmospheric Temperature',
-          'Atmosphere > Atmospheric Temperature > Surface Temperature',
-          'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
-          'Oceans',
-          'Oceans > Salinity/Density',
-          'Oceans > Salinity/Density > Salinity',
-          'Spectral/Engineering',
-          'Spectral/Engineering > Microwave',
-          'Spectral/Engineering > Microwave > Brightness Temperature',
-          'Spectral/Engineering > Microwave > Temperature Anomalies',
-          'Volcanoes',
-          'Volcanoes > This Keyword',
-          'Volcanoes > This Keyword > Is Invalid'
       ] as Set,
       gcmdLocations           : [
           'Geographic Region',
@@ -548,6 +569,15 @@ class IndexerTest extends Specification {
     null                  | 'test-iso-error-type.xml'        | 'hln is granule but no pid present'
   }
 
+  def "science keywords are parsed as expected from iso" () {
+    when:
+    Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(inputStreamKeywords.text)
+    Map parsedKeywords = Indexer.createGcmdKeyword(discovery)
+
+    then:
+    parsedKeywords.gcmdScience == expectedKeywordsFromIso.science
+    parsedKeywords.gcmdScienceServices == expectedKeywordsFromIso.scienceService
+  }
 
   ///////////////////////////////////////
   // Reformat Message For Search Tests //
