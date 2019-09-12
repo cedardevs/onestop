@@ -4,6 +4,7 @@ import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.cedar.psi.common.constants.Topics
 import org.cedar.schemas.avro.psi.Method
+import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -140,6 +141,54 @@ class PublisherSpec extends Specification {
 
     then:
     0 * mockProducer.send(_)
+  }
+
+  def 'handle delete requests (no contentType and data)'() {
+    setup:
+    String id = '123'
+    RecordType type = granule
+    String data = null
+    String requestUri = "/metadata/$type/$id"
+    String method = 'DELETE'
+    def request = new MockHttpServletRequest(method,requestUri)
+    request.contentType = null
+
+    when:
+    publisher.publishMetadata(request, type, data, Topics.DEFAULT_SOURCE)
+
+    then:
+    1 * mockProducer.send({
+      it instanceof ProducerRecord &&
+          it.topic() == Topics.inputTopic(type, Topics.DEFAULT_SOURCE) &&
+          it.key() instanceof String &&
+          it.value().contentType == null &&
+          it.value().method == Method.valueOf(method) &&
+          it.value().content == null
+    }) >> Mock(Future)
+  }
+
+  def 'handle resurrection requests'() {
+    setup:
+    String id = '123'
+    RecordType type = granule
+    String data = null
+    String requestUri = "/metadata/$type/$id/resurrection"
+    String method = 'GET'
+    def request = new MockHttpServletRequest(method,requestUri)
+    request.contentType = null
+
+    when:
+    publisher.publishMetadata(request, type, data, Topics.DEFAULT_SOURCE)
+
+    then:
+    1 * mockProducer.send({
+      it instanceof ProducerRecord &&
+          it.topic() == Topics.inputTopic(type, Topics.DEFAULT_SOURCE) &&
+          it.key() instanceof String &&
+          it.value().contentType == null &&
+          it.value().method == Method.valueOf(method) &&
+          it.value().content == null
+    }) >> Mock(Future)
   }
 
 }

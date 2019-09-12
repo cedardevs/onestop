@@ -28,6 +28,7 @@ import static org.cedar.psi.common.constants.Topics.inputTopic
 @CompileStatic
 class Publisher {
 
+  private static final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance()
   private Producer<String, Input> kafkaProducer
 
   @Autowired
@@ -36,10 +37,7 @@ class Publisher {
   }
 
   Map publishMetadata(HttpServletRequest request, RecordType type, String data, String source, String id = null) {
-
-    MediaType contentType = MediaType.valueOf(request.contentType)
-
-    Map isValidContent = isContentValid(data, contentType)
+    Map isValidContent = isContentValid(data, request.contentType)
     if (!isValidContent.isValid) {
       return isValidContent
     }
@@ -51,6 +49,7 @@ class Publisher {
           content: [errors: [[title: "Unsupported entity type: ${type}"]]]
       ]
     }
+
     String key = id ?: UUID.randomUUID().toString()
     def message = buildInputTopicMessage(request, type, data, source, key)
     def record = new ProducerRecord<String, Input>(topic, key, message)
@@ -60,6 +59,45 @@ class Publisher {
         status : 200,
         content: [id: key, type: type]
     ]
+  }
+
+  Map isContentValid(String content, String contentType) {
+    if (content == null) {
+      // request has no content
+      return [isValid: true]
+    }
+    MediaType mediaType = contentType != null ? MediaType.valueOf(contentType) : null
+    // check for valid JSON based on MediaType
+    try {
+      if (mediaType == MediaType.APPLICATION_JSON) {
+        isValidJson(content)
+        return [isValid: true]
+      }
+      // check for valid XML based on MediaType
+      else if (mediaType == MediaType.APPLICATION_XML) {
+        isValidXml(content)
+        return [isValid: true]
+      }
+      // somehow someone was able to publish an unsupported MediaType (check `consumes =` in controller)
+      else {
+        return unknownContentTypeError(mediaType)
+      }
+    }
+    catch (JSONException | SAXException ex) {
+      return invalidContentError(ex.message, mediaType)
+    }
+  }
+
+  boolean isValidXml(String content) {
+    SAXParser saxParser = saxParserFactory.newSAXParser()
+    DefaultHandler handler = new DefaultHandler()
+    saxParser.parse(new InputSource(new StringReader(content)), handler)
+    return true
+  }
+
+  boolean isValidJson(String content) {
+    new JSONObject(content) && content.startsWith("{") && content.endsWith("}")
+    return true
   }
 
   Map invalidContentError(String message, MediaType contentType) {
@@ -74,52 +112,6 @@ class Publisher {
         status : 400,
         content: [errors: [[title: "Content-Type of \"${contentType.toString()}\" is not supported. Use JSON or XML."]]]
     ]
-  }
-
-  Map isContentValid(String content, MediaType contentType) {
-    // check for valid JSON based on MediaType
-    if (contentType == MediaType.APPLICATION_JSON) {
-      try {
-        new JSONObject(content) && content.startsWith("{") && content.endsWith("}")
-        return [isValid: true]
-      }
-      catch (JSONException ex) {
-        return invalidContentError(ex.message, contentType)
-      }
-    }
-    // check for valid XML based on MediaType
-    else if (contentType == MediaType.APPLICATION_XML) {
-      SAXParserFactory factory = SAXParserFactory.newInstance()
-      SAXParser saxParser = factory.newSAXParser()
-      DefaultHandler handler = new DefaultHandler()
-      try {
-        saxParser.parse(new InputSource(new StringReader(content)), handler)
-        return [isValid: true]
-      }
-      catch (SAXException e) {
-        return invalidContentError(e.message, contentType)
-      }
-    }
-    // somehow someone was able to publish an unsupported MediaType (check `consumes =` in controller)
-    else {
-      return unknownContentTypeError(contentType)
-    }
-  }
-
-  Map isXmlValid(String content) {
-    SAXParserFactory factory = SAXParserFactory.newInstance()
-    SAXParser saxParser = factory.newSAXParser()
-    DefaultHandler handler = new DefaultHandler()
-    try {
-      saxParser.parse(new InputSource(new StringReader(content)), handler)
-      return [isValid: true]
-    }
-    catch (SAXException e) {
-      return [
-          status : 400,
-          content: [errors: [[title: "Malformed xml input: with error ${e} "]]]
-      ]
-    }
   }
 
   Input buildInputTopicMessage(HttpServletRequest request, RecordType type, String data, String source, String id) {
