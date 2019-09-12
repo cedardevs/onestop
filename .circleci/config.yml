@@ -48,8 +48,6 @@ saveCache: &saveCache
         - .gradle
         - client/.gradle
         - client/node_modules
-        - /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-        - /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
       key: onestop-cache-v6-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace

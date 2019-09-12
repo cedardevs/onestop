@@ -41,6 +41,33 @@ subprojects {
     auth0JavaJWT = '3.4.1'
   }
 
+  // URL for the source code under version control from which this container image was built.
+  project.ext.getVcsUrl = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+      ignoreExitValue = true
+      workingDir '.'
+      executable = 'git'
+      args = ['config', '--get', 'remote.origin.url']
+      standardOutput = stdout
+    }
+    return stdout.toString().trim()
+  }
+
+  // Identifier for the version of the source code from which this image was built.
+  // For example if the version control system is git this is the SHA.
+  project.ext.getVcsRef = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+      ignoreExitValue = true
+      workingDir '.'
+      executable = 'git'
+      args = ['rev-parse', '--short', 'HEAD']
+      standardOutput = stdout
+    }
+    return stdout.toString().trim()
+  }
+
   afterEvaluate {
     repositories {
       mavenCentral()
@@ -167,7 +194,7 @@ group = 'org.cedar.onestop'
 subprojects.each {
   it.group = group
   it.version = version
-  it.ext.buildDate = "${new Date().format("YYYY-MM-dd", TimeZone.getTimeZone('UTC'))}"
+  it.ext.buildDate = "${new Date().format("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC'))}"
 }
 
 buildScan {

@@ -3,13 +3,8 @@ kind: Config
 build:
   artifacts:
   - image: cedardevs/onestop-api-metadata
-    context: ./api-metadata
-    docker:
-      buildArgs:
-        DATE: now
-        VCS_REF: local
-        VERSION: 2.3.0
-        WAR_NAME: onestop-metadata.war
+    jibGradle:
+      project: api-metadata
   - image: cedardevs/onestop-api-search
     context: ./api-search
     docker:

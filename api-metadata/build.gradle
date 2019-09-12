@@ -1,12 +1,12 @@
 plugins {
   id "io.forgo.keystoreplugin" version "1.1"
+  id 'com.google.cloud.tools.jib' version '1.4.0'
 }
 
 apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 sourceCompatibility = 11
@@ -135,9 +135,9 @@ keystore {
 // ./gradlew api-metadata:bootrun
 
 
-ext {
-  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all.war")
-}
+//ext {
+//  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all.war")
+//}
 
 war {
   enabled = true
@@ -147,17 +147,17 @@ war {
   // If the `archiveFileName` has not been explicitly set,
   // the pattern for the name is:
   // "${archiveBaseName}-${archiveAppendix}-${archiveVersion}-${archiveClassifier}.${archiveExtension}"
-  archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
+  archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}".toString())
 
-  finalizedBy bootWar
+  //finalizedBy bootWar
 }
 
-bootWar {
-  excludeDevtools = true
-  archiveClassifier.set("all")
-  launchScript()
-  onlyIf { !tasks.getByName('war').state.upToDate }
-}
+//bootWar {
+//  excludeDevtools = true
+//  archiveClassifier.set("all")
+//  launchScript()
+//  onlyIf { !tasks.getByName('war').state.upToDate }
+//}
 
 // Integration Test Build References:
 // http://griffon-framework.org/tutorials/6_minimalistic_build.html
@@ -209,23 +209,23 @@ task integrationTest(type: Test) {
 }
 check.dependsOn integrationTest
 
-task sourceJar(type: Jar) {
-  archiveClassifier.set("sources")
-  archiveBaseName.set("${rootProject.name}-${project.name}")
-  from "${projectDir}/src"
-}
+//task sourceJar(type: Jar) {
+//  archiveClassifier.set("sources")
+//  archiveBaseName.set("${rootProject.name}-${project.name}")
+//  from "${projectDir}/src"
+//}
+//
+//build.dependsOn sourceJar
 
-build.dependsOn sourceJar
-
-publishing {
-  publications {
-    main(MavenPublication) {
-      artifact war
-      artifactId "${rootProject.name}-${project.name}"
-      artifact tasks.sourceJar
-    }
-  }
-}
+//publishing {
+//  publications {
+//    main(MavenPublication) {
+//      artifact war
+//      artifactId "${rootProject.name}-${project.name}".toString()
+////      artifact tasks.sourceJar
+//    }
+//  }
+//}
 
 processResources {
   outputs.upToDateWhen { false }
@@ -238,11 +238,70 @@ processResources {
   }
 }
 
-docker {
-  additionalBuildArgs = [WAR_NAME: bootWar.outputs.files.singleFile.name]
-}
+//docker {
+//  additionalBuildArgs = [WAR_NAME: bootWar.outputs.files.singleFile.name]
+//}
+//
+//BuildDockerImage.dependsOn(bootWar)
+//// assemble.dependsOn(BuildDockerImage)
+//PublishDockerImage.dependsOn(BuildDockerImage)
+//publish.dependsOn PublishDockerImage
 
-BuildDockerImage.dependsOn(bootWar)
-// assemble.dependsOn(BuildDockerImage)
-PublishDockerImage.dependsOn(BuildDockerImage)
-publish.dependsOn PublishDockerImage
+// jib only copies by whole directories, and we only need the single war,
+// so we must do an intermediate copy into a separate directory to prevent
+// adding unnecessary files to our images
+//task setupExtraDir(type: Copy) {
+//  from file("${buildDir}/libs/${bootWar.outputs.files.singleFile.name}")
+//  into file("${buildDir}/extra-directory/onestop-admin.war")
+//
+//  from file('build/generated/files')
+//  into file('build/extra-directory/my/files')
+//}
+//tasks.jib.dependsOn(setupExtraDir)
+//tasks.jib.dependsOn(bootWar)
+
+//assemble.dependsOn(jibDockerBuild)
+//publish.dependsOn(jib)
+
+
+jib {
+  // derive image repository
+  String imageRegistryURL = "registry.hub.docker.com"
+  String imageNamespace = "cedardevs"
+  String imageName = "${rootProject.name}-${project.name}".toString()
+  // TODO: remove the `-jib` post-fix once we are sure everything is working smoothly with JIB
+  // this prevents us from clobbering things we already published to Docker Hub
+  String imageTag = "${project.version}-jib".toString()
+  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+
+  from {
+    // base image
+    image = 'tomcat:8.5.45-jdk11-openjdk'
+  }
+  to {
+    image = imageRepository
+    auth {
+      username = System.getenv('DOCKER_USER').toString().trim()
+      password = System.getenv('DOCKER_PASSWORD').toString().trim()
+    }
+  }
+  container {
+    // http://label-schema.org/rc1/
+    labels = [
+        'org.label-schema.build-date': project.buildDate.toString(),
+        'org.label-schema.name': imageName,
+        'org.label-schema.description': 'An administrative API for the OneStop search software.',
+        'org.label-schema.vcs-url': project.getVcsUrl().toString(),
+        'org.label-schema.vcs-ref': project.getVcsRef().toString(),
+        'org.label-schema.vendor': imageNamespace,
+        'org.label-schema.version': imageTag,
+        'org.label-schema.schema-version': '1.0',
+    ]
+    ports = ['8080'.toString()]
+
+    // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin#war-projects
+    // The `onestop-admin` dir is where our WAR will be exploded. Tomcat uses this directory to assume a context-path
+    // that overrides the Spring one, so they should match up to keep our assumptions about client proxying consistent
+    appRoot = "/usr/local/tomcat/webapps/onestop-admin".toString()
+  }
+}
