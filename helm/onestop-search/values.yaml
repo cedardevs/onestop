@@ -1,0 +1,147 @@
+# Default values for onestop-search.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: cedardevs/onestop-search
+  tag: 2.4.0
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+###############################################################################
+# FEATURE TOGGLES (SUBCHART DEFAULTS)
+###############################################################################
+# map of features to enable
+# if the features are not here, they will be disabled
+features:
+  login-gov: false
+
+###############################################################################
+# APPLICATION.YML ADDITIONAL SPRING CONFIG
+###############################################################################
+config: |-
+  ui:
+    googleAnalytics:
+      profiles:
+        - trackingId: 'UA-127993388-1'
+          gaOptions:
+            name: 127993388
+      reactGaOptions:
+        alwaysSendToDefaultTracker: false
+    features:
+      - cart
+    disclaimer:
+      message: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
+    featured:
+      - title: GOES Data
+        searchTerm: '"Gridded Satellite GOES"'
+        imageUrl: "https://www.ncdc.noaa.gov/gridsat/images/sample.png"
+      - title: Digital Elevation Models
+        searchTerm: '"digital elevation"'
+        imageUrl: "https://gis.ngdc.noaa.gov/arcgis/rest/services/DEM_global_mosaic_hillshade/ImageServer/exportImage?bbox=-170.95,-14.40,-170.45,-14.18&size=500,500&format=png32&interpolation=%20RSP_BilinearInterpolation&renderingRule=%7B%22rasterFunction%22:%22ColorHillshade%22%7D&f=image"
+      - title: NWLON and PORTS
+        searchTerm: +nwlon +ports
+        imageUrl: "https://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:NDBC-COOPS"
+      - title: Climate Data Record (CDR)
+        searchTerm: '"NOAA Climate Data Record"'
+        imageUrl: "https://www.ncdc.noaa.gov/sites/default/files/styles/cdr-full-width/public/cdr/AVHRRSurfaceReflectance.png"
+
+###############################################################################
+# SPRING ENV OVERRIDES
+###############################################################################
+env:
+  # elastic search env vars
+  ELASTICSEARCH_HOST: elasticsearch
+  ELASTICSEARCH_PORT: 9200
+  # sitemap env vars
+  ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute
+  # login gov env vars
+  LOGIN_GOV_CLIENT_ID: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_30000"
+  LOGIN_GOV_ALLOWED_ORIGIN: "http://localhost:30000"
+  LOGIN_GOV_LOGIN_SUCCESS_REDIRECT: "http://localhost:30000/onestop/"
+  LOGIN_GOV_LOGIN_FAILURE_REDIRECT: "http://localhost:30000/onestop/"
+  LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT: "http://localhost:30000/onestop/"
+  # ui auth endpoint env vars
+  UI_AUTH_LOGIN_ENDPOINT: "http://localhost:30000/onestop-search/login"
+  UI_AUTH_LOGOUT_ENDPOINT: "http://localhost:30000/onestop-search/logout"
+  UI_AUTH_USER_PROFILE_ENDPOINT: "http://localhost:30000/onestop-search/login_profile"
+
+###############################################################################
+# SECRET FILES AND ENVIRONMENT VARIABLES
+###############################################################################
+# The template can iterate through these secrets, intelligently mounting secret files
+# and assigning secret environment variables based on the `file` and `env` secret types below.
+# ---
+# `file` secret type => (e.g. - `kubectl create secret generic ${name} --from-file="/local/path/to/secret.txt"`)
+#     type:     file
+#     name:     [REQUIRED] k8s secret name (which contains this secret file as one of its keys)
+#     path:     [REQUIRED] where to mount secret in pod
+#     ---
+#     Result => Can handle _multiple_ secret file keys per secret.
+#               The secret key(s) == filename(s) when secret created (w/out the dir path)
+#               (e.g. - [secret] ${name}.'secret.txt' => [pod filesystem] ${path}/secret.txt
+#
+# `env` secret type => (e.g. - `kubectl create secret generic ${name} --from-literal=var-1="OurLittleSecret"`)
+#     type:     env
+#     name:     [REQUIRED] k8s secret name (which contains secret literals)
+#     prefix:   [OPTIONAL] prefix to apply to environment variables for uniqueness
+#     keys:     [REQUIRED] array of secret keys to be exported to env vars in pod
+#     ---
+#     Result => template replaces '-' and '.' in the key with '_' in the env var
+#               (e.g. - [secret] ${name}.VAR_1 => [env] ${prefix}VAR_1="OurLittleSecret")
+#
+#     Note: This conversion is Spring compatible. See: `org.springframework.core.envSystemEnvironmentPropertySource`
+secrets:
+  - type: file
+    name: login-gov-keystore              # k8s secret name
+    path: "/etc/onestop-search/"          # where to mount the secret's file(s)
+  - type: env
+    name: login-gov-keystore-credentials  # k8s secret name
+    prefix: LOGIN_GOV_                    # optional env var prefix to avoid collisions
+    keys:
+      - KEYSTORE_PASSWORD # [secret] login-gov-keystore-credentials.KEYSTORE_PASSWORD => [env] LOGIN_GOV_KEYSTORE_PASSWORD
+      - KEYSTORE_ALIAS    # [secret] login-gov-keystore-credentials.KEYSTORE_ALIAS    => [env] LOGIN_GOV_KEYSTORE_ALIAS
+      - KEY_PASSWORD      # [secret] login-gov-keystore-credentials.KEY_PASSWORD      => [env] LOGIN_GOV_KEY_PASSWORD
+
+keystoreFiles:
+  jks:
+    loginGov: "/etc/onestop-search/login-gov-keystore.jks"
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  paths: []
+  hosts:
+    - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

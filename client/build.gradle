@@ -1,5 +1,8 @@
+plugins {
+  id 'com.google.cloud.tools.jib' version '1.4.0'
+}
+
 apply plugin: "com.moowork.node"
-apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 node {

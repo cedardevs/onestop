@@ -2,11 +2,11 @@ apiVersion: skaffold/v1beta7
 kind: Config
 build:
   artifacts:
-  - image: cedardevs/onestop-api-admin
+  - image: cedardevs/onestop-admin
     jibGradle:
-      project: api-admin
-  - image: cedardevs/onestop-api-search
-    context: ./api-search
+      project: admin
+  - image: cedardevs/onestop-search
+    context: ./search
     docker:
       buildArgs:
         DATE: now
@@ -28,15 +28,15 @@ deploy:
     ###############################################################################
     # API ADMIN
     ###############################################################################
-    - name: api-admin
-      chartPath: helm/api-admin
+    - name: onestop-admin
+      chartPath: helm/onestop-admin
       values:
         # skaffold may not build/deploy w/the latest if this is not set here
-        image: cedardevs/onestop-api-admin
+        image: cedardevs/onestop-admin
       imageStrategy:
         helm: {}
       setValues:
-        # allows api-admin to be exposed outside the cluster in dev
+        # allows onestop-admin to be exposed outside the cluster in dev
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
         # all features default to "false" in base chart, unless otherwise overridden
         features.icam: false
@@ -59,17 +59,17 @@ deploy:
     ###############################################################################
     # API SEARCH
     ###############################################################################
-    - name: api-search
-      chartPath: helm/api-search
+    - name: onestop-search
+      chartPath: helm/onestop-search
       values:
         # skaffold may not build/deploy w/the latest if this is not set here
-        image: cedardevs/onestop-api-search
+        image: cedardevs/onestop-search
       imageStrategy:
         helm: {}
       setValues:
         service.type: NodePort
         service.nodePort: 30097
-        # allows api-search to be exposed outside the cluster in dev
+        # allows onestop-search to be exposed outside the cluster in dev
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
         # all features default to "false" in base chart, unless otherwise overridden
         features.login-gov: false
@@ -83,17 +83,17 @@ deploy:
     ###############################################################################
     # CLIENT
     ###############################################################################
-#    - name: client
-#      chartPath: helm/client
+#    - name: onestop-client
+#      chartPath: helm/onestop-client
 #      values:
 #        # skaffold may not build/deploy w/the latest if this is not set here
 #        image: cedardevs/onestop-client
 #      imageStrategy:
 #        helm: {}
 #      setValues:
-#        # allows api-search to be exposed outside the cluster in dev
+#        # allows onestop-search to be exposed outside the cluster in dev
 #        prefixPath: onestop
-#        apiSearch.endpoint: api-search:8080/onestop-search
+#        apiSearch.endpoint: onestop-search:8080/onestop-search
 
     ###############################################################################
     # ELASTICSEARCH

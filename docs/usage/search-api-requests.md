@@ -1,6 +1,6 @@
 # Search API Requests
 
-The OneStop API request schema can be viewed [here](https://github.com/cedardevs/onestop/blob/master/api-search/src/main/resources/onestop-request-schema.json). All available functionality and request format requirements are detailed at length in this document.
+The OneStop API request schema can be viewed [here](https://github.com/cedardevs/onestop/blob/master/search/src/main/resources/onestop-request-schema.json). All available functionality and request format requirements are detailed at length in this document.
 
 The API provides three Search endpoints for search and discovery of data. The following are some examples of well-formatted queries for interacting with the OneStop `/onestop-search/search/collection`, `/onestop-search/search/granule`, and `/onestop-search/search/flattened-granule` (version 2.1+) resource endpoints. Note that either a POST or GET request with a correctly formatted JSON request body will work.
 

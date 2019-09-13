@@ -208,12 +208,12 @@ class UploadTestDataTask extends DefaultTask {
   String apiAdminPort
 
   UploadTestDataTask() {
-    description = 'Uploads test data to OneStop api-admin.'
+    description = 'Uploads test data to OneStop admin API.'
     group = 'upload'
     apiAdminPort = 30098
   }
 
-  @Option(option = 'apiAdminPort', description = 'Set the port of api-admin to upload data to (default: 30098).')
+  @Option(option = 'apiAdminPort', description = 'Set the port of admin API to upload data to (default: 30098).')
   void setApiAdminPort(final String apiAdminPort) {
     this.apiAdminPort = apiAdminPort
   }
@@ -246,7 +246,7 @@ class UploadTestDataTask extends DefaultTask {
       throw new GradleException(message)
     }
 
-    // run the upload script against the testData directory and api-admin running locally
+    // run the upload script against the testData directory and admin API running locally
     def stdoutUpload = new ByteArrayOutputStream()
     def stderrUpload = new ByteArrayOutputStream()
     def resultUpload = project.exec(new Action<ExecSpec>() {

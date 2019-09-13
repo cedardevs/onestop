@@ -4,19 +4,19 @@ dependencies:
     version: ~0.1.0
     repository: file://../elasticsearch
     condition: elasticsearch.enabled,global.elasticsearch.enabled
-  - name: api-admin
+  - name: onestop-admin
     version: ~0.1.0
-    repository: file://../api-admin
-    conditions: api-admin.enabled,global.api-admin.enabled
-  - name: api-search
+    repository: file://../onestop-admin
+    conditions: onestop-admin.enabled,global.onestop-admin.enabled
+  - name: onestop-search
     version: ~0.1.0
-    repository: file://../api-search
-    conditions: api-search.enabled,global.api-search.enabled
-  # - name: api-user
+    repository: file://../onestop-search
+    conditions: onestop-search.enabled,global.onestop-search.enabled
+  # - name: onestop-user
   #   version: ~0.1.0
-  #   repository: file://../api-user
-  #   conditions: api-user.enabled,global.api-user.enabled
-  - name: client
+  #   repository: file://../onestop-user
+  #   conditions: onestop-user.enabled,global.onestop-user.enabled
+  - name: onestop-client
     version: ~0.1.0
-    repository: file://../client
-    conditions: client.enabled,global.client.enabled
+    repository: file://../onestop-client
+    conditions: onestop-client.enabled,global.onestop-client.enabled

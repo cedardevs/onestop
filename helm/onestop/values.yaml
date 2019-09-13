@@ -1,13 +1,13 @@
-api-admin:
+onestop-admin:
   keystore:
-    file: "/etc/api-admin/sciapps-keystore.jks"
+    file: "/etc/onestop-admin/sciapps-keystore.jks"
   spring:
     profiles:
       active: "securityenabled,kafkadisabled"
   logging.level: DEBUG
   etl.sitemap.delay.initial: "60000"
 
-api-search:
+onestop-search:
   auth:
     clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:SciAppsOneStop"
     allowedOrigin: "https://sciapps.colorado.edu"
@@ -15,7 +15,7 @@ api-search:
       loginSuccessRedirect: "/"
       loginFailureRedirect: "/"
       logoutSuccessRedirect: "/"
-    keystoreFile: "/etc/api-search/logingov.jks"
+    keystoreFile: "/etc/onestop-search/logingov.jks"
   # elasticsearch:
   #   host: "elasticsearch"
   #   port: "9200"

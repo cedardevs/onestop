@@ -12,7 +12,7 @@ The environment variable can contain multiple features by using a comma-delimite
 export SPRING_PROFILES_ACTIVE="sitemap,login-gov"
 ```
 
-### Admin Service (api-admin)
+### Admin Service (admin)
 
 | Spring Profile | Feature Description | Default Value |
 | --- | --- | --- |
@@ -21,11 +21,11 @@ export SPRING_PROFILES_ACTIVE="sitemap,login-gov"
 | kafka-ingest | Enables the KafkaConsumerService to upload metadata via PSI. This feature should never be enabled at the same time as the manual-upload feature as they are mutually exclusive approaches to metadata upload. | false |
 | sitemap | Enables the SitemapETLService to create the sitemap index and periodically refresh it. | false |
 
-### Search Service (api-search)
+### Search Service (search)
 
 | Spring Profile | Feature Description | Default Value |
 | --- | --- | --- |
-| login-gov |Enables a Spring security filter to enable OpenId authentication via login.gov. This also triggers the uiConfig endpoint to show an auth section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new api-user service with a PostgreSQL backing DB.
+| login-gov |Enables a Spring security filter to enable OpenId authentication via login.gov. This also triggers the uiConfig endpoint to show an auth section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new user service with a PostgreSQL backing DB.
 
 Requires a configured ICAM keystore and credentials at runtime! We don’t expect this feature to be enabled in 2.1 production, and the production environment would need to create and configure its own keystore as well as register its public key and other Service Provider (SP) metadata to login.gov. | false |
 | sitemap | Enables a the /sitemap.xml and /sitemap/{id}.txt public endpoints. | false |
@@ -34,7 +34,7 @@ Requires a configured ICAM keystore and credentials at runtime! We don’t expec
 
 The search API ultimately constructs the sitemap content by deriving information from Elasticsearch and constructing links to known routes in our OneStop browser client.
 
-To be enabled correctly, the sitemap feature must be enabled in both `api-search` and `api-admin`.
+To be enabled correctly, the sitemap feature must be enabled in both `search` and `admin`.
 
 Unfortunately, we don’t currently have a way to dynamically determine where the client is hosted (from the search API’s perspective). So this is left to a manual configuration via two additional environment variables (`SITEMAP_CLIENT_PATH` and `SITEMAP_API_PATH`) for the search API to consume.
 
@@ -51,7 +51,7 @@ Unfortunately, we don’t currently have a way to dynamically determine where th
 >
 > If it is determined the feature is inefficient with Elasticsearch resources during our trial runs in the test environment, we have two options:
 > 1. Configure the re-indexing delay, frequency, scroll size, and submap size of the sitemap
->     1. Update the api-admin config YML with
+>     1. Update the admin config YML with
 >         1. `etl.sitemap.delay.initial: <delay in ms>`
 >         1. `etl.sitemap.delay.fixed: <frequency in ms>`
 >         1. `etl.sitemap.scroll-size: <ES scroll size>`

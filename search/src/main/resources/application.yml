@@ -1,0 +1,51 @@
+---
+server:
+  port: 8097
+  servlet:
+    context-path: /onestop-search
+
+spring:
+  application:
+    name: onestop-search
+  jmx:
+    default-domain: onestop-search
+
+management.endpoints.enabled-by-default: false
+management.endpoint.info.enabled: true
+
+logging:
+  level:
+      org.cedar.onestop.api.search: INFO
+      org.gradle: WARN
+      org.apache.http: WARN
+      org.apache.http.wire: WARN
+      org.apache.http.headers: WARN
+      groovyx.net.http: WARN
+      groovyx.net.http.HttpURLClient: WARN
+      org.springframework: INFO
+      org.springframework.amqp: WARN
+      org.hibernate: WARN
+
+elasticsearch:
+  version: ${esVersion}
+  host: localhost
+  port: 9200
+
+search:
+  minimumShouldMatch: 75%
+  tieBreaker: 0
+  phraseSlop: 0
+  fields:
+    title: 4
+    description: 2
+    keywords: 3
+    fileIdentifier: 1
+    parentIdentifier: 1
+    doi: 1
+    beginDate: 1
+    endDate: 1
+    spatialBounding: 1
+    dsmmAverage: 1
+
+info.version: ${version}
+info.buildDate: ${buildDate}

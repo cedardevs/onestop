@@ -73,15 +73,15 @@ jobs:
       - <<: *restoreCache
 
       - run:
-          name: Build Api-Search
-          command: ./gradlew api-search:assemble
+          name: Build Search API
+          command: ./gradlew search:assemble
 
       - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-search/build
+            - search/build
 
   client-build:
     <<: *defaults
@@ -108,15 +108,15 @@ jobs:
       - <<: *restoreCache
 
       - run:
-          name: Build Api-Admin
-          command: ./gradlew api-admin:assemble
+          name: Build Admin API
+          command: ./gradlew admin:assemble
 
       - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-admin/build
+            - admin/build
 
   admin-test:
     <<: *defaults
@@ -125,17 +125,17 @@ jobs:
       - <<: *restoreCache
 
       - run:
-          name: Api-Admin Unit Tests
-          command: ./gradlew api-admin:test
+          name: Admin API Unit Tests
+          command: ./gradlew admin:test
 
       - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-admin/build/jacoco/test.exec
-            - api-admin/build/test-results/test
-            - api-admin/build/reports/test
+            - admin/build/jacoco/test.exec
+            - admin/build/test-results/test
+            - admin/build/reports/test
 
   search-test:
     <<: *defaults
@@ -148,17 +148,17 @@ jobs:
           command: ./gradlew jks
 
       - run:
-          name: Api-Search Unit Tests
-          command: ./gradlew api-search:test
+          name: Search API Unit Tests
+          command: ./gradlew search:test
 
       - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-search/build/jacoco/test.exec
-            - api-search/build/test-results/test
-            - api-search/build/reports/test
+            - search/build/jacoco/test.exec
+            - search/build/test-results/test
+            - search/build/reports/test
 
   client-test:
     <<: *defaults
@@ -189,17 +189,17 @@ jobs:
           command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
-          name: Api-Admin Integration Tests
-          command: ./gradlew api-admin:integrationTest
+          name: Admin API Integration Tests
+          command: ./gradlew admin:integrationTest
 
       - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-admin/build/jacoco/integrationTest.exec
-            - api-admin/build/test-results/integrationTest
-            - api-admin/build/reports/integrationTest
+            - admin/build/jacoco/integrationTest.exec
+            - admin/build/test-results/integrationTest
+            - admin/build/reports/integrationTest
 
   search-integration-test:
     <<: *defaultsWithElasticsearch
@@ -213,17 +213,17 @@ jobs:
           command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
-          name: Api-Search Integration Tests
-          command: ./gradlew api-search:integrationTest
+          name: Search Integration Tests
+          command: ./gradlew search:integrationTest
 
       - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-search/build/jacoco/integrationTest.exec
-            - api-search/build/test-results/integrationTest
-            - api-search/build/reports/integrationTest
+            - search/build/jacoco/integrationTest.exec
+            - search/build/test-results/integrationTest
+            - search/build/reports/integrationTest
 
   e2e:
     <<: *defaultsMachine
@@ -277,12 +277,12 @@ jobs:
       - <<: *restoreCache
 
       - run:
-          name: Api-Admin Docker Image
-          command: ./gradlew api-admin:buildDockerImage
+          name: Admin API Docker Image
+          command: ./gradlew admin:buildDockerImage
 
       - deploy:
-          name: Publish Images
-          command: ./gradlew api-admin:publish -x BuildDockerImage
+          name: Publish Admin Image(s)
+          command: ./gradlew admin:publish -x BuildDockerImage
 
   search-publish:
     <<: *defaultsMachine
@@ -292,12 +292,12 @@ jobs:
       - <<: *restoreCache
 
       - run:
-          name: Api-Search Docker Image
-          command: ./gradlew api-search:buildDockerImage
+          name: Search API Docker Image
+          command: ./gradlew search:buildDockerImage
 
       - deploy:
-          name: Publish Images
-          command: ./gradlew api-search:publish -x BuildDockerImage
+          name: Publish Search API Image(s)
+          command: ./gradlew search:publish -x BuildDockerImage
 
   client-publish:
     <<: *defaultsMachine
@@ -311,7 +311,7 @@ jobs:
           command: ./gradlew client:buildDockerImage
 
       - deploy:
-          name: Publish Images
+          name: Publish Client Image(s)
           command: ./gradlew client:publish -x BuildDockerImage
 
   client-checks:
@@ -383,10 +383,10 @@ jobs:
       - run:
           name: Save coverage results
           command: |
-            mkdir -p ~/owasp/api-admin/
-            find . -type d -regex "api-admin/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/api-admin/ \;
-            mkdir -p ~/owasp/api-search/
-            find . -type d -regex "api-search/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/api-search/ \;
+            mkdir -p ~/owasp/admin/
+            find . -type d -regex "admin/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/admin/ \;
+            mkdir -p ~/owasp/search/
+            find . -type d -regex "search/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/search/ \;
           when: always
 
       - store_test_results:

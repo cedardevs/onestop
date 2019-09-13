@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "onestop-client.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "onestop-client.name" . }}
+    helm.sh/chart: {{ include "onestop-client.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    # If the service type was overriden from the default ClusterIP to NodePort
+    # (and we've also specified nodePort), nodePort will be exposed outside the cluster.
+    # This is simple switch for non-production environments to allow for easier debugging.
+    {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.nodePort))) }}
+      nodePort: {{ .Values.service.nodePort }}
+    {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "onestop-client.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

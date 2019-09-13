@@ -192,7 +192,7 @@ class LoadAndSearchTests extends Specification {
     def expectedJson = (new JsonSlurper()).parseText( ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.json").text)
 
     // TODO - Next time we come through here, think about consolidating all our matching xml and json
-    // TODO - test files into this subproject and then sharing with api-admin and api-search
+    // TODO - test files into this subproject and then sharing with admin and search APIs
 
     then:
     resultWithoutId == expectedJson

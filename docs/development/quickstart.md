@@ -21,8 +21,8 @@ Table of Contents
  * [Feature Toggles](#feature-toggles)
    * [Keystores and Credentials](#keystores-and-credentials)
    * [Spring Profiles](#spring-profiles)
-     * [api-admin](#api-admin)
-     * [api-search](#api-search)
+     * [admin](#admin)
+     * [search](#search)
    * [Changing &amp; Overriding Profiles](#changing--overriding-profiles)
 
 ## Quick Start
@@ -48,15 +48,15 @@ Table of Contents
   </summary>
   <br/>
   <p>For individual components:</p>
-<pre>./gradlew api-admin:build
-./gradlew api-search:build
+<pre>./gradlew admin:build
+./gradlew search:build
 ./gradlew client:build</pre>
 </details>
 
 ### Run
 ```
-./gradlew api-admin:bootrun
-./gradlew api-search:bootrun
+./gradlew admin:bootrun
+./gradlew search:bootrun
 cd client && npm run dev
 ```
 
@@ -180,9 +180,9 @@ helm dependency list
 helm dependency update
 
 helm delete elasticsearch --purge
-helm delete api-admin --purge
-helm delete api-search --purge
-helm delete client --purge
+helm delete onestop-admin --purge
+helm delete onestop-search --purge
+helm delete onestop-client --purge
 
 skaffold delete
 ```
@@ -212,7 +212,7 @@ OneStop APIs are written in Spring. Currently, the APIs utilize different authen
 
 OneStop leverages these profiles to enact certain feature toggles. The features available to the different APIs are documented below.
 
-##### api-admin
+##### admin
 
 | Spring Profile | Feature Description | Default Value |
 | --- | --- | --- |
@@ -221,16 +221,16 @@ OneStop leverages these profiles to enact certain feature toggles. The features 
 | <pre><code>kafka-ingest</code></pre> | Enables the `KafkaConsumerService` to upload metadata via PSI. This feature should never be enabled at the same time as the `manual-upload` feature as they are mutually exclusive approaches to metadata upload.  | *false* |
 | <pre><code>sitemap</code></pre> | Enables the `SitemapETLService` to create the sitemap index and periodically refresh it. | *false* |
 
-##### api-search
+##### search
 
 | Spring Profile | Feature Description | Default Value |
 | --- | --- | --- |
-| <pre><code>login-gov</code></pre> | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `api-user` service with a PostgreSQL backing DB. | *false* |
+| <pre><code>login-gov</code></pre> | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `onestop-user` service with a PostgreSQL backing DB. | *false* |
 | <pre><code>sitemap</code></pre> | Enables a the `/sitemap.xml` and `/sitemap/{id}.txt` public endpoints. | *false* |
 
 ### Changing & Overriding Profiles
 
-If you are deploying without Kubernetes, Helm, and Skaffold, and running an API directly with `./gradlew api-search:bootrun` (for example), then you can toggle active profiles with an environment variable:
+If you are deploying without Kubernetes, Helm, and Skaffold, and running an API directly with `./gradlew search:bootrun` (for example), then you can toggle active profiles with an environment variable:
 
 `export SPRING_PROFILES_ACTIVE=login-gov`
 
@@ -239,14 +239,14 @@ If there were any profiles defaulted to `true`, you would need to make sure they
 Otherwise, using Skaffold, these environment variables are managed for you. You simply need to toggle the features listed in the `skaffold.yaml` file under the `deploy.helm.releases` section where it applies. For example:
 
 ```
-- name: api-search
+- name: onestop-search
   ...
   setValues:
     features.login-gov: true
   ...
 ```
 
-There is currently no configmap in the `api-admin` deployment to make changes to the security configuration (such as adding yourself as an admin). If you need to add one, see the api-search config for how to add a configmap. The configuration needed is:
+There is currently no configmap in the `onestop-admin` deployment to make changes to the security configuration (such as adding yourself as an admin). If you need to add one, see the search API config for how to add a configmap. The configuration needed is:
 ```
 ---
 spring:
