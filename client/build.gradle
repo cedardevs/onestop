@@ -2,6 +2,7 @@ plugins {
   id 'com.google.cloud.tools.jib' version '1.4.0'
 }
 
+apply plugin: 'java'
 apply plugin: "com.moowork.node"
 apply from: "${rootDir}/gradle/publishing.gradle"
 
@@ -12,13 +13,12 @@ node {
 
 clean {
     doFirst {
-      npm_clean
+      npmClean
     }
 }
 
-task npm_clean(type: Exec) {
-  executable = "bash"
-  args = ["-c", "npm run clean"]
+task npmClean(type: NpmTask) {
+  args = ['run', 'clean']
 }
 
 def sourceDirs = ['node_modules', 'img', 'src']
@@ -40,18 +40,22 @@ task compile(type: NodeTask) {
     }
 }
 
-task start(type: Exec) {
-  executable = "bash"
-  args = ["-c", "npm run dev"]
+task npmRunDev(type: NpmTask) {
+  args = ['run', 'dev']
+}
+
+task npmRunKub(type: NpmTask) {
+  args = ['run', 'kub']
 }
 
 task tarResults(type: Tar) {
-  dependsOn 'compile'
+  dependsOn { ['compile', 'npmInstall'] }
+
 
   from "${buildDir}/dist"
-  archiveBaseName.set("onestop-client")
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   archiveExtension.set("tar.gz")
-  version = '' //project.version
+  archiveVersion.set("")
 
   // If the `archiveFileName` has not been explicitly set,
   // the pattern for the name is:
@@ -76,9 +80,7 @@ task formatCheck(type: NpmTask) {
   args = ['run', 'formatCheck',]
 }
 
-task test {
-    dependsOn 'npm_test'
-}
+test.dependsOn(npm_test)
 
 task retire(type: NpmTask) {
   args = ['run', 'retire']
@@ -91,32 +93,71 @@ check {
 }
 
 build {
-    dependsOn 'assemble', 'check', 'sourceJar'
+    dependsOn 'assemble', 'check', 'tarResults'
 }
 
-task sourceJar(type: Jar) {
-  archiveClassifier.set("sources")
-  archiveBaseName.set("${rootProject.name}-${project.name}")
-  from "${projectDir}/src"
+task copyUnpackedTar(type: Copy) {
+  from tarTree(file("${buildDir}/libs/${rootProject.name}-${project.name}.tar.gz".toString()))
+  into file("${buildDir}/jib-dir/usr/app/client".toString())
 }
+tasks.copyUnpackedTar.dependsOn tarResults
+task copyEntrypoint(type: Copy) {
+  from file("docker/entrypoint.sh".toString())
+  into file("${buildDir}/jib-dir/usr/app".toString())
+}
+task copyHttpConf(type: Copy) {
+  from file("docker/httpd.conf".toString())
+  into file("${buildDir}/jib-dir/usr/local/apache2/conf".toString())
+}
+tasks.jib.dependsOn copyUnpackedTar
+tasks.jib.dependsOn copyEntrypoint
+tasks.jib.dependsOn copyHttpConf
 
-publishing {
-    publications {
-        main(MavenPublication) {
-            artifact tarResults.outputs.files.singleFile, {
-                extension 'tar.gz'
-            }
-            artifactId "${rootProject.name}-${project.name}"
-            artifact tasks.sourceJar
-        }
+
+jib {
+  extraDirectories {
+    // copy all files within the `${buildDir}/jib-dir`` folder to the image's root directory,
+    // maintaining the same structure (this is why we had to custom copy items before the jib task
+    // jib-dir/
+    // - /usr/app/client/onestop-client.tar.gz
+    // - /usr/app/entrypoint.sh
+    // - /usr/local/apache2/conf/httpd.conf
+    paths = ["${buildDir}/jib-dir".toString()]
+  }
+
+  // derive image repository
+  String imageRegistryURL = "registry.hub.docker.com"
+  String imageNamespace = "cedardevs"
+  String imageName = "${rootProject.name}-${project.name}".toString()
+  // TODO: remove the `-jib` post-fix once we are sure everything is working smoothly with JIB
+  // this prevents us from clobbering things we already published to Docker Hub
+  String imageTag = "${project.version}-jib".toString()
+  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+
+  from {
+    // base image
+    image = 'httpd:latest'
+  }
+  to {
+    image = imageRepository
+    auth {
+      username = System.getenv('DOCKER_USER').toString().trim()
+      password = System.getenv('DOCKER_PASSWORD').toString().trim()
     }
+  }
+  container {
+    // http://label-schema.org/rc1/
+    labels = [
+        'org.label-schema.build-date': project.buildDate.toString(),
+        'org.label-schema.name': imageName,
+        'org.label-schema.description': 'A search API for the OneStop search software.',
+        'org.label-schema.vcs-url': project.getVcsUrl().toString(),
+        'org.label-schema.vcs-ref': project.getVcsRef().toString(),
+        'org.label-schema.vendor': imageNamespace,
+        'org.label-schema.version': imageTag,
+        'org.label-schema.schema-version': '1.0',
+    ]
+    ports = ['80'.toString()]
+    entrypoint = ["sh", "/usr/app/entrypoint.sh"]
+  }
 }
-
-docker {
-  additionalBuildArgs = [TAR_NAME: tarResults.outputs.files.singleFile.name]
-}
-
-BuildDockerImage.dependsOn(tarResults)
-// assemble.dependsOn(BuildDockerImage)
-PublishDockerImage.dependsOn(BuildDockerImage)
-publish.dependsOn PublishDockerImage

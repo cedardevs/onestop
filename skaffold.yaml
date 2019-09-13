@@ -6,21 +6,11 @@ build:
     jibGradle:
       project: admin
   - image: cedardevs/onestop-search
-    context: ./search
-    docker:
-      buildArgs:
-        DATE: now
-        VCS_REF: local
-        VERSION: 2.4.0
-        WAR_NAME: onestop-search.war
-#  - image: cedardevs/onestop-client
-#    context: ./client
-#    docker:
-#      buildArgs:
-#        DATE: now
-#        VCS_REF: local
-#        VERSION: 2.4.0
-#        TAR_NAME: onestop-client.tar.gz
+    jibGradle:
+      project: search
+  - image: cedardevs/onestop-client
+    jibGradle:
+      project: client
 
 deploy:
   helm:
@@ -83,17 +73,17 @@ deploy:
     ###############################################################################
     # CLIENT
     ###############################################################################
-#    - name: onestop-client
-#      chartPath: helm/onestop-client
-#      values:
-#        # skaffold may not build/deploy w/the latest if this is not set here
-#        image: cedardevs/onestop-client
-#      imageStrategy:
-#        helm: {}
-#      setValues:
-#        # allows onestop-search to be exposed outside the cluster in dev
-#        prefixPath: onestop
-#        apiSearch.endpoint: onestop-search:8080/onestop-search
+    - name: onestop-client
+      chartPath: helm/onestop-client
+      values:
+        # skaffold may not build/deploy w/the latest if this is not set here
+        image: cedardevs/onestop-client
+      imageStrategy:
+        helm: {}
+      setValues:
+        # allows onestop-search to be exposed outside the cluster in dev
+        prefixPath: onestop
+        apiSearch.endpoint: onestop-search:8080/onestop-search
 
     ###############################################################################
     # ELASTICSEARCH

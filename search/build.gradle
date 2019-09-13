@@ -69,8 +69,6 @@ dependencies {
 }
 
 ext {
-  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
-
   /*
    * "bootrun" login.gov configurations
    * -- IMPORTANT:
@@ -188,9 +186,7 @@ check.dependsOn integrationTest
 war {
   dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
   enabled = true
-  // TODO disabled dynamic project-based name for #827, plan to re-enable in #828
-  // archiveBaseName.set("${rootProject.name}-${project.name}")
-  archiveBaseName.set("onestop-search")
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   // If the `archiveFileName` has not been explicitly set,
   // the pattern for the name is:
   // "${archiveBaseName}-${archiveAppendix}-${archiveVersion}-${archiveClassifier}.${archiveExtension}"
@@ -210,8 +206,6 @@ bootRun {
 test {
   environment project.envVars as Map<String, ?>
 }
-
-build.dependsOn sourceJar
 
 // copy schema dir to tmp
 task setupOpenapiGenPart1(type: Copy) {
