@@ -23,7 +23,7 @@ class LoadAndSearchTests extends Specification {
   DockerComposeContainer docker
 
   static searchApiBase = "http://localhost:8097/onestop-search"
-  static metadataApiBase = "http://localhost:8098/onestop-admin"
+  static adminApiBase = "http://localhost:8098/onestop-admin"
   static restTemplate = new RestTemplate()
 
   static String dockerComposeFile() {
@@ -49,7 +49,7 @@ class LoadAndSearchTests extends Specification {
     pollingConditions.within(60, {
       restTemplate.exchange(RequestEntity.get(esApiBase().toURI()).build(), Map).statusCode == HttpStatus.OK
       restTemplate.exchange(RequestEntity.get("${searchApiBase}/actuator/info".toURI()).build(), Map).statusCode == HttpStatus.OK
-      restTemplate.exchange(RequestEntity.get("${metadataApiBase}/actuator/info".toURI()).build(), Map).statusCode == HttpStatus.OK
+      restTemplate.exchange(RequestEntity.get("${adminApiBase}/actuator/info".toURI()).build(), Map).statusCode == HttpStatus.OK
     })
   }
 
@@ -81,7 +81,7 @@ class LoadAndSearchTests extends Specification {
     ]
     def body = new LinkedMultiValueMap<String, Object>()
     paths.each { body.add("files", new ClassPathResource(it)) }
-    def loadRequest = RequestEntity.post("${metadataApiBase}/metadata".toURI())
+    def loadRequest = RequestEntity.post("${adminApiBase}/metadata".toURI())
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .body(body)
     def loadResult = restTemplate.exchange(loadRequest, Map)
@@ -90,7 +90,7 @@ class LoadAndSearchTests extends Specification {
     loadResult.statusCode == HttpStatus.MULTI_STATUS
 
     when:
-    def updateRequest = RequestEntity.get("${metadataApiBase}/admin/index/search/update".toURI()).build()
+    def updateRequest = RequestEntity.get("${adminApiBase}/admin/index/search/update".toURI()).build()
     def updateResult = restTemplate.exchange(updateRequest, Map)
 
     then:
@@ -125,7 +125,7 @@ class LoadAndSearchTests extends Specification {
     granuleData.size() == 2
 
     when:
-    def deleteRequest = RequestEntity.delete("${metadataApiBase}/metadata/${coopsCollection.id}".toURI()).build()
+    def deleteRequest = RequestEntity.delete("${adminApiBase}/metadata/${coopsCollection.id}".toURI()).build()
     def deleteResult = restTemplate.exchange(deleteRequest, Map)
 
     then:
@@ -158,11 +158,11 @@ class LoadAndSearchTests extends Specification {
     ]
     def body = new LinkedMultiValueMap<String, Object>()
     paths.each { body.add("files", new ClassPathResource(it)) }
-    def loadRequest = RequestEntity.post("${metadataApiBase}/metadata".toURI())
+    def loadRequest = RequestEntity.post("${adminApiBase}/metadata".toURI())
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .body(body)
     def loadResult = restTemplate.exchange(loadRequest, Map)
-    def updateRequest = RequestEntity.get("${metadataApiBase}/admin/index/search/update".toURI()).build()
+    def updateRequest = RequestEntity.get("${adminApiBase}/admin/index/search/update".toURI()).build()
     def updateResult = restTemplate.exchange(updateRequest, Map)
 
     then:
@@ -192,7 +192,7 @@ class LoadAndSearchTests extends Specification {
     def expectedJson = (new JsonSlurper()).parseText( ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.json").text)
 
     // TODO - Next time we come through here, think about consolidating all our matching xml and json
-    // TODO - test files into this subproject and then sharing with api-metadata and api-search
+    // TODO - test files into this subproject and then sharing with api-admin and api-search
 
     then:
     resultWithoutId == expectedJson

@@ -246,7 +246,7 @@ class UploadTestDataTask extends DefaultTask {
       throw new GradleException(message)
     }
 
-    // run the upload script against the testData directory and api-metadata running locally
+    // run the upload script against the testData directory and api-admin running locally
     def stdoutUpload = new ByteArrayOutputStream()
     def stderrUpload = new ByteArrayOutputStream()
     def resultUpload = project.exec(new Action<ExecSpec>() {

@@ -109,14 +109,14 @@ jobs:
 
       - run:
           name: Build Api-Admin
-          command: ./gradlew api-metadata:assemble
+          command: ./gradlew api-admin:assemble
 
       - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-metadata/build
+            - api-admin/build
 
   admin-test:
     <<: *defaults
@@ -126,16 +126,16 @@ jobs:
 
       - run:
           name: Api-Admin Unit Tests
-          command: ./gradlew api-metadata:test
+          command: ./gradlew api-admin:test
 
       - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-metadata/build/jacoco/test.exec
-            - api-metadata/build/test-results/test
-            - api-metadata/build/reports/test
+            - api-admin/build/jacoco/test.exec
+            - api-admin/build/test-results/test
+            - api-admin/build/reports/test
 
   search-test:
     <<: *defaults
@@ -190,16 +190,16 @@ jobs:
 
       - run:
           name: Api-Admin Integration Tests
-          command: ./gradlew api-metadata:integrationTest
+          command: ./gradlew api-admin:integrationTest
 
       - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-metadata/build/jacoco/integrationTest.exec
-            - api-metadata/build/test-results/integrationTest
-            - api-metadata/build/reports/integrationTest
+            - api-admin/build/jacoco/integrationTest.exec
+            - api-admin/build/test-results/integrationTest
+            - api-admin/build/reports/integrationTest
 
   search-integration-test:
     <<: *defaultsWithElasticsearch
@@ -278,11 +278,11 @@ jobs:
 
       - run:
           name: Api-Admin Docker Image
-          command: ./gradlew api-metadata:buildDockerImage
+          command: ./gradlew api-admin:buildDockerImage
 
       - deploy:
           name: Publish Images
-          command: ./gradlew api-metadata:publish -x BuildDockerImage
+          command: ./gradlew api-admin:publish -x BuildDockerImage
 
   search-publish:
     <<: *defaultsMachine
@@ -383,8 +383,8 @@ jobs:
       - run:
           name: Save coverage results
           command: |
-            mkdir -p ~/owasp/api-metadata/
-            find . -type d -regex "api-metadata/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/api-metadata/ \;
+            mkdir -p ~/owasp/api-admin/
+            find . -type d -regex "api-admin/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/api-admin/ \;
             mkdir -p ~/owasp/api-search/
             find . -type d -regex "api-search/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/api-search/ \;
           when: always

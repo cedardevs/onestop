@@ -12,7 +12,7 @@ The environment variable can contain multiple features by using a comma-delimite
 export SPRING_PROFILES_ACTIVE="sitemap,login-gov"
 ```
 
-### Admin Service (api-metadata)
+### Admin Service (api-admin)
 
 | Spring Profile | Feature Description | Default Value |
 | --- | --- | --- |
@@ -34,7 +34,7 @@ Requires a configured ICAM keystore and credentials at runtime! We don’t expec
 
 The search API ultimately constructs the sitemap content by deriving information from Elasticsearch and constructing links to known routes in our OneStop browser client.
 
-To be enabled correctly, the sitemap feature must be enabled in both `api-search` and `api-metadata`.
+To be enabled correctly, the sitemap feature must be enabled in both `api-search` and `api-admin`.
 
 Unfortunately, we don’t currently have a way to dynamically determine where the client is hosted (from the search API’s perspective). So this is left to a manual configuration via two additional environment variables (`SITEMAP_CLIENT_PATH` and `SITEMAP_API_PATH`) for the search API to consume.
 
@@ -51,7 +51,7 @@ Unfortunately, we don’t currently have a way to dynamically determine where th
 >
 > If it is determined the feature is inefficient with Elasticsearch resources during our trial runs in the test environment, we have two options:
 > 1. Configure the re-indexing delay, frequency, scroll size, and submap size of the sitemap
->     1. Update the api-metadata config YML with
+>     1. Update the api-admin config YML with
 >         1. `etl.sitemap.delay.initial: <delay in ms>`
 >         1. `etl.sitemap.delay.fixed: <frequency in ms>`
 >         1. `etl.sitemap.scroll-size: <ES scroll size>`

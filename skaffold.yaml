@@ -2,9 +2,9 @@ apiVersion: skaffold/v1beta7
 kind: Config
 build:
   artifacts:
-  - image: cedardevs/onestop-api-metadata
+  - image: cedardevs/onestop-api-admin
     jibGradle:
-      project: api-metadata
+      project: api-admin
   - image: cedardevs/onestop-api-search
     context: ./api-search
     docker:
@@ -32,7 +32,7 @@ deploy:
       chartPath: helm/api-admin
       values:
         # skaffold may not build/deploy w/the latest if this is not set here
-        image: cedardevs/onestop-api-metadata
+        image: cedardevs/onestop-api-admin
       imageStrategy:
         helm: {}
       setValues:
@@ -48,7 +48,7 @@ deploy:
         env.KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://psi-dev-cp-kafka:9092
         config: |-
           ---
-          logging.level.org.cedar.onestop.api.metadata: DEBUG
+          logging.level.org.cedar.onestop.api.admin: DEBUG
           ---
           spring:
             profiles: sitemap

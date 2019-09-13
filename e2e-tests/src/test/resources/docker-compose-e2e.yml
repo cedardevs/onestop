@@ -21,8 +21,8 @@ services:
       - elasticsearch.port=9200
       - logging_level_org.cedar.onestop.api=DEBUG
 
-  api-metadata:
-    image: cedardevs/onestop-api-metadata:latest
+  api-admin:
+    image: cedardevs/onestop-api-admin:latest
     ports:
       - 8098:8080
     depends_on:

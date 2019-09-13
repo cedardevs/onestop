@@ -36,17 +36,17 @@ the `fileIdentifier` OR the `doi` of the parent record verbatim. For example:
 ```
 
 These documents can be uploaded, retrieved, and deleted from the system using REST-style
-requests around the `/onestop/api/metadata` resource endpoint.
+requests around the `/onestop-admin/metadata` resource endpoint.
 
 HTTP Method | Endpoint                                  | Body      | Action
 ------------|-------------------------------------------|-----------|--------------------------
-POST        | /onestop/api/metadata                     | ISO XML   | Upload a metadata record <sup>[1](#postfootnote)</sup>
-GET         | /onestop/api/metadata/[internal-id]       | (none)    | Retrieve a metadata record <sup>[2](#idfootnote)</sup>
-GET         | /onestop/api/metadata?fileIdentifier={value};doi={value}   | (none)   | Retrieve a metadata record <sup>[3](#paramfootnote)</sup>
-DELETE      | /onestop/api/metadata/[internal-id]       | (none)    | Delete a metadata record <sup>[2](#idfootnote)</sup><sup>,</sup> <sup>[4](#delfootnote)</sup>
-DELETE      | /onestop/api/metadata?fileIdentifier={value};doi={value}      | (none)    | Delete a metadata record <sup>[3](#paramfootnote)</sup><sup>,</sup> <sup>[4](#delfootnote)</sup>
+POST        | /onestop-admin/metadata                     | ISO XML   | Upload a metadata record <sup>[1](#postfootnote)</sup>
+GET         | /onestop-admin/metadata/[internal-id]       | (none)    | Retrieve a metadata record <sup>[2](#idfootnote)</sup>
+GET         | /onestop-admin/metadata?fileIdentifier={value};doi={value}   | (none)   | Retrieve a metadata record <sup>[3](#paramfootnote)</sup>
+DELETE      | /onestop-admin/metadata/[internal-id]       | (none)    | Delete a metadata record <sup>[2](#idfootnote)</sup><sup>,</sup> <sup>[4](#delfootnote)</sup>
+DELETE      | /onestop-admin/metadata?fileIdentifier={value};doi={value}      | (none)    | Delete a metadata record <sup>[3](#paramfootnote)</sup><sup>,</sup> <sup>[4](#delfootnote)</sup>
 
 - <a href="postfootnote">1</a>: Note that POSTing an XML record with the same fileIdentifier or DOI as a previously-POSTed record will result in replacing that record.
 - <a href="idfootnote">2</a>: The response to POSTing a record will include an internal ID which is used in these requests.
 - <a href="paramfootnote">3</a>: Records can also be retrieved or deleted by providing the associated fileIdentifier and/or DOI value(s) as request parameters. If fileIdentifier and DOI provided match multiple records, *all found records will be returned or deleted*.
-- <a href="delfootnote">4</a>: Note that DELETEing a collection-level metadata record will result in the deletion of all associated granules too UNLESS there is an included `recursive=false` in the query string (e.g, `DELETE {...}/onestop/api/metadata/123?recursive=false`). Use of this endpoint for facilitating collection-level metadata updates should be limited to breaking changes that require a re-upload of granules -- such as a fileIdentifier change.
+- <a href="delfootnote">4</a>: Note that DELETEing a collection-level metadata record will result in the deletion of all associated granules too UNLESS there is an included `recursive=false` in the query string (e.g, `DELETE {...}/onestop-admin/metadata/123?recursive=false`). Use of this endpoint for facilitating collection-level metadata updates should be limited to breaking changes that require a re-upload of granules -- such as a fileIdentifier change.

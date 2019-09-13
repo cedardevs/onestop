@@ -1,6 +1,6 @@
 rootProject.name = 'onestop'
 
-include 'api-metadata'
+include 'api-admin'
 include 'api-search'
 include 'client'
 include 'e2e-tests'
