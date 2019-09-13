@@ -229,10 +229,15 @@ node {
   download = true
 }
 
+task ensureRequestSchemaPath(type: Task) {
+  File requestSchemaPath = new File("${buildDir}/resources/main")
+  requestSchemaPath.mkdirs()
+}
+
 // NOTE: The 'buildRequest' task defined in package.json generates json dereference
 task generateJsonSchema(type: NpmTask) {
   outputs.upToDateWhen { false }
-  dependsOn 'npmInstall'
+  dependsOn { [ 'ensureRequestSchemaPath', 'npmInstall' ] }
   args = ['run', 'buildRequest']
 }
 
@@ -241,7 +246,7 @@ task generateOpenApi(type: NpmTask) {
   outputs.upToDateWhen { false }
   dependsOn { ['npmInstall', 'processResources', 'setupOpenapiGenPart2'] }
   args = ['run', 'build']
-  outputs.file("$buildDir/resources/main/static/docs/openapi.yaml")
+  outputs.file("${buildDir}/resources/main/static/docs/openapi.yaml")
 }
 
 // NOTE: The 'testSchemas' task defined in package.json generates json dereference for test
