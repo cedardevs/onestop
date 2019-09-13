@@ -270,49 +270,37 @@ jobs:
             - e2e-tests/build
 
   admin-publish:
-    <<: *defaultsMachine
+    <<: *defaults
 
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
-      - run:
-          name: Admin API Docker Image
-          command: ./gradlew admin:buildDockerImage
-
       - deploy:
-          name: Publish Admin Image(s)
-          command: ./gradlew admin:publish -x BuildDockerImage
+          name: Build/Publish Admin Image(s)
+          command: ./gradlew admin:jib
 
   search-publish:
-    <<: *defaultsMachine
+    <<: *defaults
 
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
-      - run:
-          name: Search API Docker Image
-          command: ./gradlew search:buildDockerImage
-
       - deploy:
-          name: Publish Search API Image(s)
-          command: ./gradlew search:publish -x BuildDockerImage
+          name: Build/Publish Search API Image(s)
+          command: ./gradlew search:jib
 
   client-publish:
-    <<: *defaultsMachine
+    <<: *defaults
 
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
-      - run:
-          name: Client Docker Image
-          command: ./gradlew client:buildDockerImage
-
       - deploy:
-          name: Publish Client Image(s)
-          command: ./gradlew client:publish -x BuildDockerImage
+          name: Build/Publish Client Image(s)
+          command: ./gradlew client:jib
 
   client-checks:
     <<: *defaults
