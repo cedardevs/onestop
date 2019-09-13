@@ -36,9 +36,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
       keys:
-      - onestop-cache-v6-{{ checksum "build.gradle" }}
+      - onestop-cache-v7-{{ checksum "build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v6-
+      - onestop-cache-v7-
 
 saveCache: &saveCache
   save_cache:
@@ -48,7 +48,7 @@ saveCache: &saveCache
         - .gradle
         - client/.gradle
         - client/node_modules
-      key: onestop-cache-v6-{{ checksum "build.gradle" }}
+      key: onestop-cache-v7-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
