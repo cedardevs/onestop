@@ -191,7 +191,6 @@ war {
   // the pattern for the name is:
   // "${archiveBaseName}-${archiveAppendix}-${archiveVersion}-${archiveClassifier}.${archiveExtension}"
   archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
-  finalizedBy bootWar
 }
 
 // these environment variables would normally be set by kubernetes objects;
@@ -269,6 +268,8 @@ processResources {
     ])
   }
 }
+
+tasks.jib.dependsOn generateJsonSchema
 
 jib {
   // derive image repository
