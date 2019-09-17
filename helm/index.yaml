@@ -2,12 +2,12 @@ apiVersion: v1
 entries:
   psi:
   - apiVersion: v1
-    appVersion: 1.1.1-SNAPSHOT
-    created: "2019-09-05T19:48:57.800855-06:00"
+    appVersion: 1.1.2-SNAPSHOT
+    created: "2019-09-16T14:41:23.307076-06:00"
     description: A Helm chart for the Persistent Streaming Inventory system
-    digest: 1e2655e3273ada25682e486c8c1f4be06683544cbf128516ff3d8f7f1987de1c
+    digest: 106352660fe7706a59ad81e1bab3bfd1ff3b224db71e6ce3ce9eefc57aa0df08
     name: psi
     urls:
     - psi-0.2.0.tgz
     version: 0.2.0
-generated: "2019-09-05T19:48:57.796628-06:00"
+generated: "2019-09-16T14:41:23.303194-06:00"
