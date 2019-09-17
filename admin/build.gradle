@@ -1,6 +1,6 @@
 plugins {
   id "io.forgo.keystoreplugin" version "1.1"
-  id 'com.google.cloud.tools.jib' version '1.4.0'
+  id 'com.google.cloud.tools.jib' version '1.6.1'
 }
 
 apply plugin: 'war'
@@ -245,5 +245,7 @@ jib {
     // The `onestop-admin` dir is where our WAR will be exploded. Tomcat uses this directory to assume a context-path
     // that overrides the Spring one, so they should match up to keep our assumptions about client proxying consistent
     appRoot = "/usr/local/tomcat/webapps/onestop-admin".toString()
+
+    creationTime = project.buildDate.toString()
   }
 }

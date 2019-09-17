@@ -1,5 +1,5 @@
 plugins {
-  id 'com.google.cloud.tools.jib' version '1.4.0'
+  id 'com.google.cloud.tools.jib' version '1.6.1'
 }
 
 apply plugin: 'java'
@@ -159,5 +159,6 @@ jib {
     ]
     ports = ['80'.toString()]
     entrypoint = ["sh", "/usr/app/entrypoint.sh"]
+    creationTime = project.buildDate.toString()
   }
 }

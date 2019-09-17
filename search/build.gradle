@@ -6,7 +6,7 @@ plugins {
   id 'org.springframework.boot' // version declared in top-level buildscript
   id 'io.spring.dependency-management'
   id "com.moowork.node"
-  id 'com.google.cloud.tools.jib' version '1.4.0'
+  id 'com.google.cloud.tools.jib' version '1.6.1'
 }
 
 apply from: "${rootDir}/gradle/publishing.gradle"
@@ -315,5 +315,7 @@ jib {
     // The `onestop-admin` dir is where our WAR will be exploded. Tomcat uses this directory to assume a context-path
     // that overrides the Spring one, so they should match up to keep our assumptions about client proxying consistent
     appRoot = "/usr/local/tomcat/webapps/onestop-search".toString()
+
+    creationTime = project.buildDate.toString()
   }
 }
