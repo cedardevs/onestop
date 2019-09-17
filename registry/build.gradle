@@ -144,6 +144,7 @@ jib {
     }
   }
   container {
+    creationTime = project.buildDate.toString()
     // http://label-schema.org/rc1/
     labels = [
         'org.label-schema.build-date': project.buildDate.toString(),
@@ -153,7 +154,7 @@ jib {
         'org.label-schema.vcs-ref': project.getVcsRef().toString(),
         'org.label-schema.vendor': imageNamespace,
         'org.label-schema.version': imageTag,
-        'org.label-schema.schema-version': '1.0',
+        'org.label-schema.schema-version': '1.0'
     ]
     ports = ['8080'.toString()]
   }
