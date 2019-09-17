@@ -114,7 +114,7 @@ jobs:
           name: Publish
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ] || [ "${CIRCLE_BRANCH}" == "release/*" ]; then
-              ./gradlew publish -x BuildDockerImage
+              ./gradlew jib
             fi
 
 ### configure via the ui

@@ -8,6 +8,12 @@ buildscript {
   dependencies {
     classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
   }
+  // jib uses its own version of guava, so we remove it from our
+  // build configuration to prevent using our project-specified version of guava
+  // refer to this issue: https://github.com/spotbugs/spotbugs-gradle-plugin/issues/120
+  configurations.classpath {
+    exclude group: 'com.google.guava', module: 'guava'
+  }
 }
 
 plugins {
@@ -68,13 +74,6 @@ subprojects {
       maven { url "https://repo.spring.io/milestone" }
       maven { url 'https://packages.confluent.io/maven/' }
       maven { url "https://jitpack.io" }
-    }
-
-    if (project.plugins.hasPlugin('org.cedar.dockerplugin')) {
-      docker {
-        username = System.getenv('DOCKER_USER')
-        password = System.getenv('DOCKER_PASSWORD')
-      }
     }
 
     if (project.plugins.hasPlugin('jacoco')) {
