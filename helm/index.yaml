@@ -2,8 +2,17 @@ apiVersion: v1
 entries:
   onestop:
   - apiVersion: v1
+    appVersion: 2.4.0
+    created: "2019-09-18T16:22:55.061251-06:00"
+    description: A Helm chart for the OneStop system
+    digest: a9197d9c0755e216a4816bea9c08c0851a1529789fa0e6f7f562e44ad1e37846
+    name: onestop
+    urls:
+    - onestop-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v1
     appVersion: 2.2.0
-    created: 2019-06-28T16:06:35.73021-06:00
+    created: "2019-09-18T16:22:55.060049-06:00"
     description: A Helm chart for the OneStop system
     digest: a38e89b18d2fdb850b206cceb3525fb36a0ed6ef78a10765eda3b0b2cc3f7895
     name: onestop
@@ -12,7 +21,7 @@ entries:
     version: 0.2.1
   - apiVersion: v1
     appVersion: 2.2.0
-    created: 2019-06-28T16:06:35.729346-06:00
+    created: "2019-09-18T16:22:55.05803-06:00"
     description: A Helm chart for the OneStop system
     digest: 965fd23b5088778b98daec5564c03db77261bf8b1f7077bef8b53ddd0bbb76b8
     name: onestop
@@ -21,11 +30,11 @@ entries:
     version: 0.2.0
   - apiVersion: v1
     appVersion: 2.1.0
-    created: 2019-06-28T16:06:35.728467-06:00
+    created: "2019-09-18T16:22:55.054951-06:00"
     description: A Helm chart for the OneStop system
     digest: 0b792e2abf7c8c66bbf4f663cbda50d85b6fa23ca8bd2acdfa34d87f3a61317f
     name: onestop
     urls:
     - onestop-0.1.0.tgz
     version: 0.1.0
-generated: 2019-06-28T16:06:35.726637-06:00
+generated: "2019-09-18T16:22:55.042698-06:00"
