@@ -112,8 +112,9 @@ task copyHttpConf(type: Copy) {
 tasks.jib.dependsOn copyUnpackedTar
 tasks.jib.dependsOn copyEntrypoint
 tasks.jib.dependsOn copyHttpConf
-
-
+tasks.jibDockerBuild.dependsOn copyUnpackedTar
+tasks.jibDockerBuild.dependsOn copyEntrypoint
+tasks.jibDockerBuild.dependsOn copyHttpConf
 jib {
   extraDirectories {
     // copy all files within the `${buildDir}/jib-dir`` folder to the image's root directory,
