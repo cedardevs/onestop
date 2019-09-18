@@ -2,7 +2,7 @@ plugins {
   id 'groovy'
   id 'application'
   id 'jacoco'
-  id 'org.cedar.dockerplugin' version '1.0.3'
+  id 'com.google.cloud.tools.jib' version '1.6.1'
   id "com.github.johnrengelman.shadow" version "4.0.3"
 }
 
@@ -28,7 +28,7 @@ dependencies {
   compile("org.slf4j:slf4j-api:1.7.25")
   compile("ch.qos.logback:logback-classic:1.2.3")
   compile('org.yaml:snakeyaml:1.24')
-  
+
   compile("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
   compile("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
 
@@ -66,12 +66,41 @@ task sourceJar(type: Jar) {
   from "${projectDir}/src"
 }
 
-docker {
-  additionalBuildArgs = [JAR_NAME: shadowJar.outputs.files.singleFile.name]
-}
-
-BuildDockerImage.dependsOn(shadowJar)
-assemble.dependsOn(BuildDockerImage)
 assemble.dependsOn(sourceJar)
-PublishDockerImage.dependsOn(BuildDockerImage)
-task publish { dependsOn PublishDockerImage }
+
+jib {
+  // derive image repository
+  String imageRegistryURL = "registry.hub.docker.com"
+  String imageNamespace = "cedardevs"
+  String imageName = "${rootProject.name}-${project.name}".toString()
+  // TODO: remove the `-jib` post-fix once we are sure everything is working smoothly with JIB
+  // this prevents us from clobbering things we already published to Docker Hub
+  String imageTag = "${project.version}-jib".toString()
+  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+
+  from {
+    //base image
+    image = 'gcr.io/distroless/java:11'
+  }
+  to {
+    image = imageRepository
+    auth {
+      username = System.getenv('DOCKER_USER').toString().trim()
+      password = System.getenv('DOCKER_PASSWORD').toString().trim()
+    }
+  }
+  container {
+    creationTime = project.buildDate.toString()
+    // http://label-schema.org/rc1/
+    labels = [
+        'org.label-schema.build-date': project.buildDate.toString(),
+        'org.label-schema.name': imageName,
+        'org.label-schema.description': 'A stream manager API for PSI.',
+        'org.label-schema.vcs-url': project.getVcsUrl().toString(),
+        'org.label-schema.vcs-ref': project.getVcsRef().toString(),
+        'org.label-schema.vendor': imageNamespace,
+        'org.label-schema.version': imageTag,
+        'org.label-schema.schema-version': '1.0'
+    ]
+  }
+}

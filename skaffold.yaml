@@ -3,21 +3,12 @@ kind: Config
 build:
   artifacts:
   - image: cedardevs/psi-registry
-    context: ./registry
-    docker:
-      buildArgs:
-        DATE: now
-        JAR_NAME: psi-registry-1.1.2-SNAPSHOT-all.jar
-        VCS_REF: local
-        VERSION: 1.1.2-SNAPSHOT
+    jibGradle:
+      project: registry
   - image: cedardevs/psi-stream-manager
-    context: ./stream-manager
-    docker:
-      buildArgs:
-        DATE: now
-        JAR_NAME: psi-stream-manager-1.1.2-SNAPSHOT-all.jar
-        VCS_REF: local
-        VERSION: 1.1.2-SNAPSHOT
+    jibGradle:
+      project: stream-manager
+
 deploy:
   helm:
     releases:

@@ -1,10 +1,9 @@
 plugins {
-  id 'war'
   id 'groovy'
   id 'jacoco'
   id "org.springframework.boot" version "2.1.6.RELEASE"
   id "io.spring.dependency-management" version "1.0.8.RELEASE"
-  id 'org.cedar.dockerplugin' version '1.0.3'
+  id 'com.google.cloud.tools.jib' version '1.6.1'
   id "com.moowork.node"
 }
 
@@ -81,18 +80,6 @@ task integrationTest(type: Test) {
 
 check.dependsOn integrationTest
 
-war {
-  dependsOn { 'generateOpenApi' }
-  enabled = true // build a deployable war in addition to the executable one
-  classpath -= files(configurations.compileOnly)
-  baseName = "${rootProject.name}-${project.name}"
-}
-
-bootWar {
-  // we're building a regular war and bootable jar, don't need a bootable war as well
-  enabled = false
-}
-
 bootJar {
   dependsOn { 'generateOpenApi' }
   classifier = 'all' // add a classifier to distinguish the executable jar
@@ -132,13 +119,43 @@ task generateOpenApi(type: NpmTask) {
   outputs.file("$buildDir/resources/main/static/openapi.yaml")
 }
 
-docker {
-  additionalBuildArgs = [JAR_NAME: bootJar.outputs.files.singleFile.name]
-}
-
-BuildDockerImage.dependsOn(bootJar)
-assemble.dependsOn(BuildDockerImage)
 assemble.dependsOn(sourceJar)
 assemble.dependsOn(bootJar)
-PublishDockerImage.dependsOn(BuildDockerImage)
-task publish { dependsOn PublishDockerImage }
+
+jib {
+  // derive image repository
+  String imageRegistryURL = "registry.hub.docker.com"
+  String imageNamespace = "cedardevs"
+  String imageName = "${rootProject.name}-${project.name}".toString()
+  // TODO: remove the `-jib` post-fix once we are sure everything is working smoothly with JIB
+  // this prevents us from clobbering things we already published to Docker Hub
+  String imageTag = "${project.version}-jib".toString()
+  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+
+  from {
+    //base image
+    image = 'gcr.io/distroless/java:11'
+  }
+  to {
+    image = imageRepository
+    auth {
+      username = System.getenv('DOCKER_USER').toString().trim()
+      password = System.getenv('DOCKER_PASSWORD').toString().trim()
+    }
+  }
+  container {
+    creationTime = project.buildDate.toString()
+    // http://label-schema.org/rc1/
+    labels = [
+        'org.label-schema.build-date': project.buildDate.toString(),
+        'org.label-schema.name': imageName,
+        'org.label-schema.description': 'A registry API for PSI.',
+        'org.label-schema.vcs-url': project.getVcsUrl().toString(),
+        'org.label-schema.vcs-ref': project.getVcsRef().toString(),
+        'org.label-schema.vendor': imageNamespace,
+        'org.label-schema.version': imageTag,
+        'org.label-schema.schema-version': '1.0'
+    ]
+    ports = ['8080'.toString()]
+  }
+}
