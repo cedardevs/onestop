@@ -133,7 +133,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] The DSMM shows 2.5 stars
 1. Search for `water`. (There are over 300 results.)
     - [ ] **mouse** Using location filter, expand the map, draw a bounding box over the Mediterranean region. A new search triggers automatically. (There are less than 50 results - approximately 30)
-    - [ ] **keyboard** In bounding box text fields, enter: -32,-1,120,60. (Similar number of results to above search, plus or minus a few).
+    - [ ] **keyboard** In bounding box text fields, enter: -32, -1, 120, 60. (Similar number of results to above search, plus or minus a few).
     - [ ] The applied filter bubble updates the coordinates from the previous search to this one.
     - [ ] **keyboard** Apply the `Exclude Global` filter. This drops the result total by about half.
     - [ ] **mouse** Uncheck the `Exclude Global` checkbox.
@@ -178,6 +178,16 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] each granule has a map with a point shown
     - [ ] each granule has FTP, HTTP, and several THREDDS links
     - [ ] granules in both 2016 and 2017 are listed
+    - [ ] filter granules with search `177000*` and `1770000`. Both should match 2 files. Applied filter bubble should read `Filename Contains: [search term]`.
+    - [ ] filter granules with search `177000` - should match zero files.
+    - clear the filters
+    - [ ] apply location: 166, -25, -135, 35 - (18 results)
+    - [ ] draw on the location filter a box containing all of the pacific ocean - it should match all 22 results (or draw it smaller to get various subsets)
+    - clear the filters
+    - [ ] apply the facet Link Protocols `UNIDATA:THREDDS` (20 results)
+    - clear the filters
+    - [ ] apply the facet Data Center - `Tidesandcurrents.Noaa.Gov` (2 results)
+    - [ ] above the granule list is a link back to the collection. click it. It should take you back to the details page with no filters applied
 1. Search `ghrsst viirs ACSPO`. The first or 2nd result should be "GHRSST GDS2 Level 2P Global Skin Sea Surface Temperature from the Visible Infrared Imaging Radiometer Suite (VIIRS) on the Suomi NPP satellite created by the NOAA Advanced Clear-Sky Processor for Ocean (ACSPO) (GDS version 2)" (orange image)
     - this result can also be found with `fileIdentifier:"gov.noaa.nodc:GHRSST-VIIRS_NPP-OSPO-L2P"`
     - Select this collection
