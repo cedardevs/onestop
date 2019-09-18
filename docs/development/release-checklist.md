@@ -107,8 +107,8 @@ Follow these steps to confirm that core behavior is working as expected, as well
 1. **mouse** Click `Show All` button underneath "Instruments".
     - [ ] All three keywords from the above filtering steps are displayed with the same formatting
 1. Go back to the search results and expand the themes and instruments filters again.
-    - [ ] *mouse* remove one of the filters by clicking the `x` on the filter bubble
-    - [ ] *keyboard* tab to another filter bubble and remove it
+    - [ ] **mouse** remove one of the filters by clicking the `x` on the filter bubble
+    - [ ] **keyboard** tab to another filter bubble and remove it
     - [ ] remove the last filter by unselecting the checkbox in the left-hand filter menu
     - [ ] the instruments list expands to include more options
     - [ ] toggle the `U/V Wind Components` filter on and off to see it grey out some instruments, then re-enable them when the filter is removed
@@ -184,9 +184,9 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] **keyboard** Select the show matching files link
     - [ ] Files with a variety of bounding boxes appear
     - [ ] Access Protocols show Download, FTP, OPeNDAP, THREDDS and Web
-1. Search `DEM`. One of those should be "Hilo, Hawaii 1/3 arc-second DEM" 
+1. Search `DEM`. One of those should be "Hilo, Hawaii 1/3 arc-second DEM"
     - Select this collection
-    - [ ] In the dev tools network tab, look for the last GET to /onestop-search/collection/<ID>. 
+    - [ ] In the dev tools network tab, look for the last GET to /onestop-search/collection/<ID>.
     - [ ] The response should include `serviceLinks`
     - [ ] Future feature: display in UI
 1. In the search box:
