@@ -120,11 +120,13 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] Results are filtered down to 3
 1. Enter the start year 2010 and apply the filter
     - [ ] A validation error displays
+1. Clear the filters. Select `Pago Pago, American Samoa Tsunami Forecast Grids for MOST Model`
+    - [ ] on the Access tab, Information (and Download Data) says `No links in metadata.`
 1. In the header search bar, search for `"southern alaska coastal relief"`. (There should be 1 result)
 1. **keyboard** Select this result
     - [ ] In the summary tab, location is "Bounding box covering 170°, 48.5°, 230°, 66.5° (W, N, E, S)."
     - [ ] In the map, the box is drawn around Alaska. (This renders across the dateline)
-    - [ ] Access Tab should have sections Information (no links), Download Data, Distribution Format. Note Search Data is not listed.
+    - [ ] Access Tab should have sections Information, Download Data, Distribution Format. Note Search Data is not listed.
 1. Search for `"GHRSST Level 4 ODYSSEA Mediterranean Sea Regional Foundation Sea Surface Temperature Analysis (GDS version 1)"` and select the result.
     - [ ] Location reads "Bounding box covering -18.5°, 30°, 36.5°, 46.5° (W, N, E, S)."
     - [ ] Map image shows enclosed area of Mediterranean region in Europe. (This renders across the prime meridian)
