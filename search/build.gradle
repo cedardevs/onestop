@@ -1,0 +1,322 @@
+plugins {
+  // https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
+  id "io.forgo.keystoreplugin" version "1.1"
+  id 'war'
+  id 'groovy'
+  id 'org.springframework.boot' // version declared in top-level buildscript
+  id 'io.spring.dependency-management'
+  id "com.moowork.node"
+  id 'com.google.cloud.tools.jib' version '1.6.1'
+}
+
+apply from: "${rootDir}/gradle/publishing.gradle"
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+  mavenCentral()
+}
+
+configurations {
+  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+}
+
+dependencies {
+  implementation(project(':elastic-common'))
+  testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
+
+  implementation "org.codehaus.groovy:groovy:${project.groovyVersion}"
+  implementation "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
+  implementation "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
+
+  implementation "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
+  implementation "org.elasticsearch.client:transport:${project.esVersion}"
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'org.springframework.boot:spring-boot-starter-actuator'
+  implementation 'org.springframework.boot:spring-boot-devtools'
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+
+  implementation 'org.springframework.security:spring-security-core'
+  implementation 'org.springframework.security:spring-security-config'
+  implementation 'org.springframework.security:spring-security-oauth2-client'
+  implementation 'org.springframework.security:spring-security-oauth2-jose'
+
+  implementation "com.auth0:java-jwt:${project.auth0JavaJWT}"
+
+  implementation 'com.github.java-json-tools:json-schema-validator:2.2.8'
+  implementation 'org.apache.commons:commons-lang3:3.7'
+  implementation 'org.apache.lucene:lucene-expressions:7.2.1'
+  implementation 'javax.xml.bind:jaxb-api:2.3.1' // Java 9/10 deprecates, 11 removes javax.xml.bind.DatatypeConverter
+
+  // version to override another library's dependency to solve a CVE:
+  implementation 'com.google.guava:guava:27.0.1-jre'
+
+  // fix CVE-2019-0232, CVE-2019-0232 by forcing a higher version of the tomcat websocket dependency
+  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.19'
+  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.19'
+
+  runtime 'org.springframework.boot:spring-boot-devtools'
+
+  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+  testImplementation "org.spockframework:spock-spring:${project.spockVersion}"
+  testImplementation "org.spockframework:spock-core:${project.spockVersion}"
+  testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation "org.testcontainers:testcontainers:${project.testContainersVersion}"
+  testImplementation "org.testcontainers:elasticsearch:${project.testContainersVersion}"
+}
+
+ext {
+  /*
+   * "bootrun" login.gov configurations
+   * -- IMPORTANT:
+   *    -> individual developers testing with bootrun w/out skaffold need to run the `./gradlew search:jks` task
+   *       to generate a working keystore to sign JWTs in the login process
+   *
+   *    -> this will require you to copy the contents of the generated `.keystore/logingov.crt` public key
+   *    into the login.gov Dashboard test app (matching the clientId being used below). This will break
+   *    other developer's workflow who are testing against the same clientId because the public key will no longer match
+   *    the private key they are using to sign their JWTs. If you wish to work in parallel, it is better to use a
+   *    constant configuration via skaffold or sciapps. Otherwise, you may wish to register your own test app with
+   *    login.gov. Just remember NOT to check in your custom clientId to this build file!
+   */
+  boolean testWithOneStop = false
+
+  envVars = [:] as Map<String, ?>
+
+  if (testWithOneStop) {
+    // local testing with frontend client proxying from 8080
+    // -- use these values if you want to test logging in via OneStop running on 8080
+    envVars.LOGIN_GOV_CLIENT_ID = "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8080"
+    envVars.LOGIN_GOV_ALLOWED_ORIGIN = "http://localhost:8080"
+    envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8080/onestop"
+    envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8080/onestop"
+    envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8080/onestop"
+  } else {
+    // local testing with standalone search api on port 8097
+    // -- use these values if you want to test logging in directly against onestop-search on 8097
+    envVars.LOGIN_GOV_CLIENT_ID = "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8097"
+    envVars.LOGIN_GOV_ALLOWED_ORIGIN = "http://localhost:8097"
+    envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
+    envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
+    envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
+  }
+
+  // login.gov keystore configuration (for JWT signing on token request)
+  keystoreOutputDir = ".keystore"
+  keystoreFile = "logingov.jks"
+
+  envVars.LOGIN_GOV_KEYSTORE_FILE = "${keystoreOutputDir}/${keystoreFile}"
+  envVars.LOGIN_GOV_KEYSTORE_ALIAS = "logingov"
+  envVars.LOGIN_GOV_KEYSTORE_PASSWORD = "password"
+}
+
+// keystore plugin readme:
+// https://github.com/forgo/keystore-gradle-plugin/blob/master/README.md
+keystore {
+  outputDir = "${project.keystoreOutputDir}"
+
+  keyFile = "logingov.key"
+  keyPassword = "${project.envVars.LOGIN_GOV_KEYSTORE_PASSWORD}"
+
+  certFile = "logingov.crt"
+
+  pkcs12File = "logingov.pkcs12"
+  pkcs12Password = "${project.envVars.LOGIN_GOV_KEYSTORE_PASSWORD}"
+
+  jksFile = "${project.keystoreFile}"
+  jksPassword = "${project.envVars.LOGIN_GOV_KEYSTORE_PASSWORD}"
+  alias = "${project.envVars.LOGIN_GOV_KEYSTORE_ALIAS}"
+}
+
+// Integration Test Build References:
+// http://griffon-framework.org/tutorials/6_minimalistic_build.html
+// https://spin.atomicobject.com/2018/07/18/gradle-integration-tests/
+configurations {
+  // fix for vulnerability warning
+  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+
+  integrationTestImplementation.extendsFrom testImplementation
+  integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+sourceSets {
+  integrationTest {
+    compileClasspath += sourceSets.main.output + sourceSets.test.output
+    runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+    groovy.srcDir file('src/integrationTest/groovy')
+    resources.srcDir file('src/integrationTest/resources')
+  }
+}
+
+task integrationTest(type: Test) {
+
+  doFirst {
+    // `CI` env var is typically "true" inside CircleCI, Travis, and other CI environments.
+    // If you find it is not, the build cmds used within your CI config could also be prefixed like:
+    // `export CI=true && ./gradlew integrationTest ...`
+    Boolean ci = Boolean.valueOf(System.getenv('CI'))
+    if(ci) {
+      // the 'ci' profile disables creating runtime testcontainers (docker containers)
+      // in favor of an assumed background elasticsearch
+      systemProperty 'spring.profiles.include', 'ci'
+      // the elasticsearch brought up by CircleCI (see `.circleci/config`) runs on localhost:9200
+      // which is important when the `DefaultApplicationConfig` for both search/admin APIs connect via ES RestClient
+      systemProperty 'elasticsearch.host', 'localhost'
+      systemProperty 'elasticsearch.port', '9200'
+    }
+  }
+
+  description = 'Runs the integration tests'
+  group = 'verification'
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  outputs.upToDateWhen { false }
+  shouldRunAfter test
+
+  reports.junitXml.destination = file("${buildDir}/integration-test-results")
+  reports.html.destination = file("${buildDir}/reports/integrationTests")
+  environment project.envVars as Map<String, ?>
+  dependsOn 'generateJsonSchema'
+}
+check.dependsOn integrationTest
+
+war {
+  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
+  enabled = true
+  archiveBaseName.set("${rootProject.name}-${project.name}")
+  // If the `archiveFileName` has not been explicitly set,
+  // the pattern for the name is:
+  // "${archiveBaseName}-${archiveAppendix}-${archiveVersion}-${archiveClassifier}.${archiveExtension}"
+  archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
+}
+
+// these environment variables would normally be set by kubernetes objects;
+// however, this is problematic running via gradle tasks (build, test, bootRun...) -- where these environment
+// variables are not set and can require different values (e.g. - keystore path/file)
+//task environmentVariables(type: Exec) {
+bootRun {
+  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
+  environment project.envVars as Map<String, ?>
+}
+
+test {
+  environment project.envVars as Map<String, ?>
+}
+
+// copy schema dir to tmp
+task setupOpenapiGenPart1(type: Copy) {
+  from "schema"
+  into "${buildDir}/tmp/schema"
+}
+
+// override the actual geometry so that the openApi is valid
+task setupOpenapiGenPart2(type: Copy) {
+  dependsOn "setupOpenapiGenPart1"
+  from "schema/components"
+  include "override-geometry.json"
+  into "${buildDir}/tmp/schema/components"
+  rename { filename ->
+    filename.replace 'override-geometry', 'geometry'
+  }
+}
+
+node {
+  version = '10.15.3'
+  npmVersion = '6.1.0'
+  download = true
+}
+
+task ensureRequestSchemaPath(type: Task) {
+  File requestSchemaPath = new File("${buildDir}/resources/main")
+  requestSchemaPath.mkdirs()
+}
+
+// NOTE: The 'buildRequest' task defined in package.json generates json dereference
+task generateJsonSchema(type: NpmTask) {
+  outputs.upToDateWhen { false }
+  dependsOn { [ 'ensureRequestSchemaPath', 'npmInstall' ] }
+  args = ['run', 'buildRequest']
+}
+
+// NOTE: The 'build' task defined in package.json pipes the output directly to the output file
+task generateOpenApi(type: NpmTask) {
+  outputs.upToDateWhen { false }
+  dependsOn { ['npmInstall', 'processResources', 'setupOpenapiGenPart2'] }
+  args = ['run', 'build']
+  outputs.file("${buildDir}/resources/main/static/docs/openapi.yaml")
+}
+
+// NOTE: The 'testSchemas' task defined in package.json generates json dereference for test
+task generateTestSchemas(type: NpmTask) {
+  dependsOn { ['copyPartialSchemas', 'npmInstall'] }
+  args = ['run', 'testSchemas']
+}
+
+// copy schemas for testing
+task copyPartialSchemas(type: Copy) {
+  from 'schema/'
+  into "${buildDir}/resources/test/schema/"
+}
+
+test.dependsOn 'generateTestSchemas', 'generateJsonSchema'
+
+processResources {
+  outputs.upToDateWhen { false }
+  filesMatching("**/application*.yml") {
+    expand([
+        esVersion: project.esVersion,
+        version  : project.version,
+        buildDate: project.buildDate,
+    ])
+  }
+}
+
+tasks.jib.dependsOn generateJsonSchema
+tasks.jibDockerBuild.dependsOn generateJsonSchema
+
+jib {
+  // derive image repository
+  String imageRegistryURL = "registry.hub.docker.com"
+  String imageNamespace = "cedardevs"
+  String imageName = "${rootProject.name}-${project.name}".toString()
+  // TODO: remove the `-jib` post-fix once we are sure everything is working smoothly with JIB
+  // this prevents us from clobbering things we already published to Docker Hub
+  String imageTag = "${project.version}-jib".toString()
+  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+
+  from {
+    // base image
+    image = 'tomcat:8.5.45-jdk11-openjdk'
+  }
+  to {
+    image = imageRepository
+    auth {
+      username = System.getenv('DOCKER_USER').toString().trim()
+      password = System.getenv('DOCKER_PASSWORD').toString().trim()
+    }
+  }
+  container {
+    // http://label-schema.org/rc1/
+    labels = [
+        'org.label-schema.build-date': project.buildDate.toString(),
+        'org.label-schema.name': imageName,
+        'org.label-schema.description': 'A search API for the OneStop search software.',
+        'org.label-schema.vcs-url': project.getVcsUrl().toString(),
+        'org.label-schema.vcs-ref': project.getVcsRef().toString(),
+        'org.label-schema.vendor': imageNamespace,
+        'org.label-schema.version': imageTag,
+        'org.label-schema.schema-version': '1.0',
+    ]
+    ports = ['8080'.toString()]
+
+    // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin#war-projects
+    // The `onestop-admin` dir is where our WAR will be exploded. Tomcat uses this directory to assume a context-path
+    // that overrides the Spring one, so they should match up to keep our assumptions about client proxying consistent
+    appRoot = "/usr/local/tomcat/webapps/onestop-search".toString()
+
+    creationTime = project.buildDate.toString()
+  }
+}

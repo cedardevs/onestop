@@ -1,0 +1,14 @@
+{{- if .Values.config }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "onestop-search.configname" . }}
+  labels:
+    app.kubernetes.io/name: {{ template "onestop-search.name" . }}
+    helm.sh/chart: {{ template "onestop-search.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  application.yml: {{ .Values.config | toYaml | indent 4 }}
+  {{- end }}

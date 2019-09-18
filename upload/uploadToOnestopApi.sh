@@ -7,7 +7,7 @@ if [ $# != 2 ]; then
   echo "  rootDir        The base directory to recursively upload xml files from."
   echo "  loadEndpoint   The full URL of the metadata upload endpoint."
   echo "                 Should be structured like: <host>[:port]/<contextPath>/metadata"
-  echo "                 e.g. for a locally-running API hosted by tomcat: http://localhost:8080/onestop-api/metadata"
+  echo "                 e.g. for a locally-running API hosted by tomcat: http://localhost:8080/onestop-admin/metadata"
   echo
   exit 1
 fi

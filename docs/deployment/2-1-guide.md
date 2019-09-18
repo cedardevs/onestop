@@ -14,7 +14,7 @@ While it was possible to configure a web server to distinguish requests to the A
 | API | 2.0 (old) | 2.1 (new) |
 | --- | --------- | --------- |
 | Search Service (api-search) | `/onestop/api` | `/onestop-search` |
-| Admin Service (api-metadata) | `/onestop/admin` | `/onestop-admin` |
+| Admin Service (api-admin) | `/onestop/admin` | `/onestop-admin` |
 
 
 ### Apache Configuration

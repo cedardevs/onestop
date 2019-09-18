@@ -1,0 +1,251 @@
+plugins {
+  id "io.forgo.keystoreplugin" version "1.1"
+  id 'com.google.cloud.tools.jib' version '1.6.1'
+}
+
+apply plugin: 'war'
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
+apply plugin: 'io.spring.dependency-management'
+apply from: "${rootDir}/gradle/publishing.gradle"
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+  mavenCentral()
+
+  // opensaml repo
+  maven { url "https://build.shibboleth.net/nexus/content/repositories/releases" }
+  // avro serdes from confluent
+  maven { url 'https://packages.confluent.io/maven/' }
+  // for shared avro schemas from https://github.com/cedardevs/schemas
+  maven { url "https://jitpack.io" }
+}
+
+dependencies {
+  implementation(project(':elastic-common'))
+  testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
+
+  // Kafka dependencies for connecting with PSI
+  implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
+  implementation("io.confluent:kafka-streams-avro-serde:5.2.1")
+
+  implementation("org.apache.kafka:kafka-clients:2.2.1")
+  implementation("org.springframework.kafka:spring-kafka:2.2.8.RELEASE")
+
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
+
+  testImplementation("io.confluent:kafka-schema-registry:5.2.1")
+  testImplementation("io.confluent:kafka-schema-registry:5.2.1:tests")
+
+  testImplementation("org.apache.kafka:kafka_2.12:2.2.1")
+  testImplementation("org.apache.kafka:kafka_2.12:2.2.1:test")
+  testImplementation("org.apache.kafka:kafka-clients:2.2.1:test")
+  implementation("org.springframework.kafka:spring-kafka-test:2.2.8.RELEASE")
+
+  // opensaml
+  implementation("org.opensaml:opensaml-core:${project.openSAMLVersion}")
+  implementation("org.opensaml:opensaml-saml-api:${project.openSAMLVersion}")
+  implementation("org.opensaml:opensaml-saml-impl:${project.openSAMLVersion}")
+  implementation("org.opensaml:opensaml-messaging-api:${project.openSAMLVersion}")
+  implementation("org.opensaml:opensaml-messaging-impl:${project.openSAMLVersion}")
+  implementation("org.opensaml:opensaml-soap-api:${project.openSAMLVersion}")
+  implementation("org.opensaml:opensaml-soap-impl:${project.openSAMLVersion}")
+
+  // logback
+  implementation("ch.qos.logback:logback-core:${project.logbackVersion}")
+  implementation("ch.qos.logback:logback-classic:${project.logbackVersion}")
+
+  // javax servlet
+  implementation("javax.servlet:javax.servlet-api:${project.javaxServletAPIVersion}")
+
+  // junit
+  testImplementation("junit:junit:${project.junitVersion}")
+  testImplementation("org.springframework.security:spring-security-test")
+
+
+  implementation "org.codehaus.groovy:groovy:${project.groovyVersion}"
+  implementation "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
+  implementation "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
+  implementation "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
+  implementation "org.elasticsearch.client:transport:${project.esVersion}"
+  implementation "org.springframework.boot:spring-boot-starter-web"
+  implementation "org.springframework.boot:spring-boot-starter-actuator"
+  implementation "org.springframework.boot:spring-boot-starter-security"
+  implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+  implementation "org.springframework.boot:spring-boot-devtools"
+  implementation 'com.github.java-json-tools:json-schema-validator:2.2.8'
+  implementation 'org.apache.commons:commons-text:1.2'
+  implementation 'org.apache.lucene:lucene-expressions:7.2.1'
+
+  // Authorization Services
+  implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+  runtime group: 'org.hsqldb', name: 'hsqldb', version: '2.4.1'
+  // version to override another library's dependency to solve a CVE:
+  implementation 'com.google.guava:guava:27.0.1-jre'
+  implementation 'commons-collections:commons-collections:3.2.2'
+
+  // fix CVE-2019-0232, CVE-2019-0232 by forcing a higher version of the tomcat websocket dependency
+  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.19'
+  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.19'
+
+  runtime 'org.springframework.boot:spring-boot-devtools'
+
+  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+  testImplementation "org.spockframework:spock-spring:${project.spockVersion}"
+  testImplementation "org.spockframework:spock-core:${project.spockVersion}"
+  testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation "org.testcontainers:testcontainers:1.10.7"
+  testImplementation "org.testcontainers:elasticsearch:1.10.7"
+  testImplementation 'net.bytebuddy:byte-buddy:1.7.11'
+}
+
+keystore {
+  // resetOutputDir task defaults
+  outputDir = ".keystore"
+
+  // sslKey task defaults
+  keyFile = "debug.key"
+  keyPassword = "password"
+
+  // sslCert task defaults (depends on: sslKey)
+  certFile = "debug.crt"
+
+  // pkcs12 task defaults (depends on: sslCert)
+  pkcs12File = "debug.pkcs12"
+  pkcs12Password = "password"
+
+  // jks task defaults (depends on: pkcs12)
+  jksFile = "debug.jks"
+  jksPassword = "password"
+  alias = "debug"
+}
+
+// Example of running Bootrun with a debug keystore generated with `./gradlew admin:jks`
+//export SPRING_PROFILES_ACTIVE="icam,manual-upload" && \
+// export SCIAPPS_KEYSTORE_ALIAS="debug" && \
+// export SCIAPPS_KEYSTORE_PASSWORD="password" && \
+// export SCIAPPS_KEY_PASSWORD="password" && \
+// cp ~/Documents/GitHub/onestop/admin/.keystore/debug.jks /etc/admin/keystore.jks && \
+// ./gradlew admin:bootrun
+
+war {
+  enabled = true
+  // TODO disabled dynamic project-based name for #827, plan to re-enable in #828
+  // archiveBaseName.set("${rootProject.name}-${project.name}")
+  archiveBaseName.set("onestop-admin")
+  // If the `archiveFileName` has not been explicitly set,
+  // the pattern for the name is:
+  // "${archiveBaseName}-${archiveAppendix}-${archiveVersion}-${archiveClassifier}.${archiveExtension}"
+  archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}".toString())
+}
+
+// Integration Test Build References:
+// http://griffon-framework.org/tutorials/6_minimalistic_build.html
+// https://spin.atomicobject.com/2018/07/18/gradle-integration-tests/
+configurations {
+  // fix for vulnerability warning
+  implementation.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+
+  integrationTestImplementation.extendsFrom testImplementation
+  integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+sourceSets {
+  integrationTest {
+    compileClasspath += sourceSets.main.output + sourceSets.test.output
+    runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+    groovy.srcDir file('src/integrationTest/groovy')
+    resources.srcDir file('src/integrationTest/resources')
+  }
+}
+
+task integrationTest(type: Test) {
+
+  doFirst {
+    // `CI` env var is typically "true" inside CircleCI, Travis, and other CI environments.
+    // If you find it is not, the build cmds used within your CI config could also be prefixed like:
+    // `export CI=true && ./gradlew integrationTest ...`
+    Boolean ci = Boolean.valueOf(System.getenv('CI'))
+    if(ci) {
+      // the 'ci' profile disables creating runtime testcontainers (docker containers)
+      // in favor of an assumed background elasticsearch
+      systemProperty 'spring.profiles.include', 'ci'
+      // the elasticsearch brought up by CircleCI (see `.circleci/config`) runs on localhost:9200
+      // which is important when the `DefaultApplicationConfig` for both search/admin APIs connect via ES RestClient
+      systemProperty 'elasticsearch.host', 'localhost'
+      systemProperty 'elasticsearch.port', '9200'
+    }
+  }
+
+  description = 'Runs the integration tests'
+  group = 'verification'
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  outputs.upToDateWhen { false }
+  shouldRunAfter test
+
+  reports.junitXml.destination = file("${buildDir}/integration-test-results")
+  reports.html.destination = file("${buildDir}/reports/integrationTests")
+}
+check.dependsOn integrationTest
+
+processResources {
+  outputs.upToDateWhen { false }
+  filesMatching("**/application*.yml") {
+    expand([
+        esVersion: project.esVersion,
+        version  : project.version,
+        buildDate: project.buildDate,
+    ])
+  }
+}
+
+jib {
+  // derive image repository
+  String imageRegistryURL = "registry.hub.docker.com"
+  String imageNamespace = "cedardevs"
+  String imageName = "${rootProject.name}-${project.name}".toString()
+  // TODO: remove the `-jib` post-fix once we are sure everything is working smoothly with JIB
+  // this prevents us from clobbering things we already published to Docker Hub
+  String imageTag = "${project.version}-jib".toString()
+  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+
+  from {
+    // base image
+    image = 'tomcat:8.5.45-jdk11-openjdk'
+  }
+  to {
+    image = imageRepository
+    auth {
+      username = System.getenv('DOCKER_USER').toString().trim()
+      password = System.getenv('DOCKER_PASSWORD').toString().trim()
+    }
+  }
+  container {
+    // http://label-schema.org/rc1/
+    labels = [
+        'org.label-schema.build-date': project.buildDate.toString(),
+        'org.label-schema.name': imageName,
+        'org.label-schema.description': 'An administrative API for the OneStop search software.',
+        'org.label-schema.vcs-url': project.getVcsUrl().toString(),
+        'org.label-schema.vcs-ref': project.getVcsRef().toString(),
+        'org.label-schema.vendor': imageNamespace,
+        'org.label-schema.version': imageTag,
+        'org.label-schema.schema-version': '1.0',
+    ]
+    ports = ['8080'.toString()]
+
+    // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin#war-projects
+    // The `onestop-admin` dir is where our WAR will be exploded. Tomcat uses this directory to assume a context-path
+    // that overrides the Spring one, so they should match up to keep our assumptions about client proxying consistent
+    appRoot = "/usr/local/tomcat/webapps/onestop-admin".toString()
+
+    creationTime = project.buildDate.toString()
+  }
+}

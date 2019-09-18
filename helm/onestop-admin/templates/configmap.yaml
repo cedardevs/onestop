@@ -1,0 +1,14 @@
+{{- if .Values.config }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "onestop-admin.configname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "onestop-admin.name" . }}
+    helm.sh/chart: {{ include "onestop-admin.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  application.yml: {{ .Values.config | toYaml | indent 4 }}
+{{- end }}

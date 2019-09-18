@@ -4,8 +4,8 @@
 
 OneStop contains two separate APIs.
 
-- `api-metadata` is the write-enabled endpoints, used for administrative tasks.
-- `api-search` is the read-only search and client-specific endpoints, and is intended to be public facing.
+- `admin` is the write-enabled endpoints, used for administrative tasks.
+- `search` is the read-only search and client-specific endpoints, and is intended to be public facing.
 
 ### Dependencies
 
@@ -61,7 +61,7 @@ but that these endpoints are potentially destructive and should likely not be ex
 ## The Configuration Process
 Configuring OneStop to run for development, testing, and production purposes is predominantly done via a configuration file.
 
-Since OneStop is a Spring Boot application, it can easily take advantage of this externalized configuration. Spring will look for properties files, YAML files, environment variables, and command-line arguments in the order specified [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html). The compiled OneStop API applications include an application.yml file ([Search API's default config values](/api-search/src/main/resources/application.yml) and [Metadata API's default config values](/api-metadata/src/main/resources/application.yml)) that contains the default values. However, if Spring encounters additional configuration parameters in its step-through of specified locations, any or all of these parameters can be overwritten or added to. Likewise, previously unspecified values may be added.
+Since OneStop is a Spring Boot application, it can easily take advantage of this externalized configuration. Spring will look for properties files, YAML files, environment variables, and command-line arguments in the order specified [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html). The compiled OneStop API applications include an application.yml file ([Search API's default config values](/search/src/main/resources/application.yml) and [Metadata API's default config values](/admin/src/main/resources/application.yml)) that contains the default values. However, if Spring encounters additional configuration parameters in its step-through of specified locations, any or all of these parameters can be overwritten or added to. Likewise, previously unspecified values may be added.
 
 The [2.1 Deployment Guide](/docs/deployment/2-1-guide.md) has a more in-depth discussion of configuration values around feature toggles.
 
@@ -82,8 +82,8 @@ Elasticsearch configuration should be set the same in both APIs. Otherwise admin
 Depending on how you have Elasticsearch setup, some or all of the available configuration values here may be of interest to you:
 - **Host and port** (`elasticsearch.host`, `elasticsearch.port`): Comma-separated list (no spaces) of hosts to connect to the Elasticsearch cluster, and port (i.e., if you have configured it to be something other than the default)
 - **Index prefix** (`elasticsearch.index.prefix` - optional): If, for example, your Shield credentials only provide access to a set of prefixed indices in your cluster, include said prefix here. All indexes and aliases used by OneStop will automatically start with this prefix.
-- **Max Tasks** (`elasticsearch.max-tasks`): This applies to api-metadata only. This limits the number of granule-reindexing tasks allowed to run in parallel on the cluster. The default value is 10. It is HIGHLY encouraged to not reduce this default as it will result in a large increase in time to reindex new/updated metadata. With a large cluster, a reindexing time improvement is plausible by increasing this number.
-- **Requests Per Second** (`elasticsearch.requests-per-second`): This applies to api-metadata only. This limits the number of requests per second that the cluster can execute during reindexing tasks. The default is unset, meaning that the cluster will auto-throttle requests on its own based on memory and CPU consumption at any given moment. It is HIGHLY encouraged to not set this number unless reindexing results in severe search degradation and the cluster absolutely cannot be given extra nodes. Providing this number WILL greatly increase the time required to reindex records. *A more robust cluster should be the preferred choice in the event of search or reindexing degradation!*
+- **Max Tasks** (`elasticsearch.max-tasks`): This applies to admin only. This limits the number of granule-reindexing tasks allowed to run in parallel on the cluster. The default value is 10. It is HIGHLY encouraged to not reduce this default as it will result in a large increase in time to reindex new/updated metadata. With a large cluster, a reindexing time improvement is plausible by increasing this number.
+- **Requests Per Second** (`elasticsearch.requests-per-second`): This applies to admin only. This limits the number of requests per second that the cluster can execute during reindexing tasks. The default is unset, meaning that the cluster will auto-throttle requests on its own based on memory and CPU consumption at any given moment. It is HIGHLY encouraged to not set this number unless reindexing results in severe search degradation and the cluster absolutely cannot be given extra nodes. Providing this number WILL greatly increase the time required to reindex records. *A more robust cluster should be the preferred choice in the event of search or reindexing degradation!*
 
 ### Logging Values
 Logging output is quite customizable and all possible configuration settings allowed by Spring boot (see [reference](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-logging.html)) can be used.

@@ -1,3 +1,5 @@
+// TODO: do we actually need to publish to maven?
+// we aren't doing anything with these plugins, it seems
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 

@@ -6,12 +6,12 @@ services:
     ports:
       - 8080:80
     depends_on:
-      - api-search
+      - search
     environment:
-      - "ONESTOP_SEARCH_API_ENDPOINT=api-search:8097"
+      - "ONESTOP_SEARCH_API_ENDPOINT=search:8097"
 
-  api-search:
-    image: cedardevs/onestop-api-search:latest
+  search:
+    image: cedardevs/onestop-search:latest
     ports:
       - 8097:8080
     depends_on:
@@ -21,8 +21,8 @@ services:
       - elasticsearch.port=9200
       - logging_level_org.cedar.onestop.api=DEBUG
 
-  api-metadata:
-    image: cedardevs/onestop-api-metadata:latest
+  admin:
+    image: cedardevs/onestop-admin:latest
     ports:
       - 8098:8080
     depends_on:

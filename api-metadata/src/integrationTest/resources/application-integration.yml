@@ -1,4 +1,0 @@
----
-logging.level.org.springframework.boot.autoconfigure: ERROR
-logging.level.org.cedar.onestop.elastic.common: DEBUG
-logging.level.org.cedar.onestop.api.metadata: DEBUG
