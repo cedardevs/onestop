@@ -114,7 +114,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] toggle the `U/V Wind Components` filter on and off to see it grey out some instruments, then re-enable them when the filter is removed
 1. Go back to the landing page. Search for `Tutuila`. (There should be 4 results)
 1. Using the time filter, enter the start year 2010. (**mouse** click on the `Apply` button).
-    - [ ] Results are filtered down to 1
+    - [ ] Results are filtered down to 2
 1. Remove the filter using the `Clear` button in the time filter form.
 1. **keyboard** Enter the end date 1990 April 9.
     - [ ] Results are filtered down to 3
@@ -122,7 +122,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] A validation error displays
 1. In the header search bar, search for `"southern alaska coastal relief"`. (There should be 1 result)
 1. **keyboard** Select this result
-    - [ ] In the summary tab, location is "Bounding box covering 170°, 48.5°, -130°, 66.5° (W, N, E, S)."
+    - [ ] In the summary tab, location is "Bounding box covering 170°, 48.5°, 230°, 66.5° (W, N, E, S)."
     - [ ] In the map, the box is drawn around Alaska. (This renders across the dateline)
     - [ ] Access Tab should have sections Information (no links), Download Data, Distribution Format. Note Search Data is not listed.
 1. Search for `"GHRSST Level 4 ODYSSEA Mediterranean Sea Regional Foundation Sea Surface Temperature Analysis (GDS version 1)"` and select the result.
