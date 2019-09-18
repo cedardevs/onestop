@@ -188,9 +188,8 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] Access Protocols show Download, FTP, OPeNDAP, THREDDS and Web
 1. Search `DEM`. One of those should be "Hilo, Hawaii 1/3 arc-second DEM"
     - Select this collection
-    - [ ] In the dev tools network tab, look for the last GET to /onestop-search/collection/<ID>.
-    - [ ] The response should include `serviceLinks`
-    - [ ] Future feature: display in UI
+    - [ ] On the Access Tab, there should be a 'Services' section. It has 3 categories with  map services (2 links), "Model Global Mosaic ArcGIS" image services (3 links), and "MHW Mosaic ArcGIS" image service (1 link) respectively.
+
 1. In the search box:
     - [ ] Enter a search with blank text field (disallowed)
     - [ ] Enter a search starting with `*` (disallowed)
