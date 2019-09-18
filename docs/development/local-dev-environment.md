@@ -57,7 +57,7 @@ From there you can do things like upload some metadata to test the system:
 curl -X PUT\
      -H "Content-Type: application/xml" \
      http://localhost/registry/metadata/collection \
-     --data-binary @regsitry/src/test/resources/dscovr_fc1.xml
+     --data-binary @registry/src/test/resources/dscovr_fc1.xml
 ```
 
 ### Persistent Storage
