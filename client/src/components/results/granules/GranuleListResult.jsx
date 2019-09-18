@@ -150,11 +150,11 @@ class ListResult extends React.Component {
   ) {
     return (
       <div key={'ListResult::timeAndSpace'}>
-        <h3 style={styleSectionHeader}>Time Period:</h3>
+        <h4 style={styleSectionHeader}>Time Period:</h4>
         <div style={styleSectionContent}>
           {util.buildTimePeriodString(beginDate, beginYear, endDate, endYear)}
         </div>
-        <h3 style={styleSectionHeader}>Bounding Coordinates:</h3>
+        <h4 style={styleSectionHeader}>Bounding Coordinates:</h4>
         <div style={styleSectionContent}>
           {util.buildCoordinatesString(spatialBounding)}
         </div>
@@ -173,7 +173,7 @@ class ListResult extends React.Component {
 
     return (
       <div key={'ListResult::serviceLinks'}>
-        <h3 style={styleSectionHeader}>Service Links:</h3>
+        <h4 style={styleSectionHeader}>Service Links:</h4>
         {services}
       </div>
     )
@@ -329,7 +329,7 @@ class ListResult extends React.Component {
     }
 
     const title = (
-      <h2
+      <h3
         id={`ListResult::title::${itemId}`}
         key={`ListResult::title::${itemId}`}
         tabIndex={-1}
@@ -341,7 +341,7 @@ class ListResult extends React.Component {
         style={styleOverallHeadingApplied}
       >
         {item.title}
-      </h2>
+      </h3>
     )
 
     const granuleDownloadable = granuleDownloadableLinks([ item ]).length > 0
@@ -361,7 +361,7 @@ class ListResult extends React.Component {
     if (showLinks) {
       rightItems.push(
         <div key={'ListResult::accessLinks'}>
-          <h3 style={styleSectionHeader}>Data Access Links:</h3>
+          <h4 style={styleSectionHeader}>Data Access Links:</h4>
           <ul style={util.styleProtocolList}>{this.renderLinks(item.links)}</ul>
         </div>
       )
