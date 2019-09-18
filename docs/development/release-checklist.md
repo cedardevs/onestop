@@ -146,7 +146,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
 1. Search for `tree rings`. Select any of the paleo results.
     - [ ] The begin date shows with a negative year (eg -0106-01-01)
 1. Search for `"NOAA/WDS Paleoclimatology - A global planktic foraminifer census data set for the Pliocene ocean"`. Select the result.
-    - [ ] The date displays as "-617905000 to -1601050-01-01"
+    - [ ] The date displays as "-617905000 to -1601050-12-31"
 1. Search `glacier`. Select the first result (*not* the Digital Elevation Model).
     - [ ] Point geometry is rendered as "Point at -49.815°, 69.222° (longitude, latitude)"
     - [ ] Map displays a point in Greenland on the map
