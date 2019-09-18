@@ -275,6 +275,7 @@ processResources {
 }
 
 tasks.jib.dependsOn generateJsonSchema
+tasks.jibDockerBuild.dependsOn generateJsonSchema
 
 jib {
   // derive image repository
