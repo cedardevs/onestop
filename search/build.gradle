@@ -183,33 +183,10 @@ task integrationTest(type: Test) {
 }
 check.dependsOn integrationTest
 
-war {
-  enabled = false
-//  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
-//  enabled = true
-//  archiveBaseName.set("${rootProject.name}-${project.name}")
-//  // If the `archiveFileName` has not been explicitly set,
-//  // the pattern for the name is:
-//  // "${archiveBaseName}-${archiveAppendix}-${archiveVersion}-${archiveClassifier}.${archiveExtension}"
-//  archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
-}
-
 bootWar {
   dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
-
-  excludeDevtools = true
-
-
-  enabled = true
   archiveBaseName.set("${rootProject.name}-${project.name}")
-  // If the `archiveFileName` has not been explicitly set,
-  // the pattern for the name is:
-  // "${archiveBaseName}-${archiveAppendix}-${archiveVersion}-${archiveClassifier}.${archiveExtension}"
   archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
-
-//  classifier = 'all'
-//  launchScript()
-//  onlyIf { !tasks.getByName('war').state.upToDate }
 }
 
 // these environment variables would normally be set by kubernetes objects;
