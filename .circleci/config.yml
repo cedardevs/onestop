@@ -68,10 +68,11 @@ jobs:
           name: Setup Gradle
           command: ./gradlew help
       - persist_to_workspace:
-          root: ~/repo
+          root: ~
           paths:
             - .
-            - ~/.gradle
+            - .gradle
+            - repo
 
   search-build:
     <<: *defaults
