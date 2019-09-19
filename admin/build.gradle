@@ -134,12 +134,11 @@ keystore {
 // cp ~/Documents/GitHub/onestop/admin/.keystore/debug.jks /etc/admin/keystore.jks && \
 // ./gradlew admin:bootrun
 
-war {
-  enabled = true
+bootWar {
   // TODO: use below line once feds are okay renaming the war from onestop-metadata.war to onestop-admin.war
   // archiveBaseName.set("${rootProject.name}-${project.name}")
   archiveBaseName.set("onestop-metadata")
-  archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}".toString())
+  archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
 }
 
 // Integration Test Build References:

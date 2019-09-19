@@ -36,9 +36,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
       keys:
-      - onestop-cache-v9-{{ checksum "build.gradle" }}
+      - onestop-cache-v10-{{ checksum "build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v9-
+      - onestop-cache-v10-
 
 saveCache: &saveCache
   save_cache:
@@ -51,7 +51,7 @@ saveCache: &saveCache
         - client/build
         - admin/build
         - search/build
-      key: onestop-cache-v9-{{ checksum "build.gradle" }}
+      key: onestop-cache-v10-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -60,6 +60,7 @@ attachWorkspace: &attachWorkspace
 version: 2
 jobs:
   checkout:
+    <<: *restoreCache
     <<: *defaults
     steps:
       - checkout
@@ -73,13 +74,10 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Build Search API
           command: ./gradlew search:assemble
-
-      - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
@@ -90,13 +88,10 @@ jobs:
     <<: *defaults
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Build Client
           command: ./gradlew client:assemble
-
-      - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
@@ -108,13 +103,10 @@ jobs:
     <<: *defaults
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Build Admin API
           command: ./gradlew admin:assemble
-
-      - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
@@ -125,13 +117,10 @@ jobs:
     <<: *defaults
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Admin API Unit Tests
           command: ./gradlew admin:test
-
-      - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
@@ -144,7 +133,6 @@ jobs:
     <<: *defaults
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Generate Dummy Keystore
@@ -153,8 +141,6 @@ jobs:
       - run:
           name: Search API Unit Tests
           command: ./gradlew search:test
-
-      - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
@@ -167,13 +153,10 @@ jobs:
     <<: *defaults
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Client Unit Tests
           command: ./gradlew client:test
-
-      - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
@@ -185,7 +168,6 @@ jobs:
     <<: *env
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Wait for Elasticsearch
@@ -194,8 +176,6 @@ jobs:
       - run:
           name: Admin API Integration Tests
           command: ./gradlew admin:integrationTest
-
-      - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
@@ -209,7 +189,6 @@ jobs:
     <<: *env
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Wait for Elasticsearch
@@ -218,8 +197,6 @@ jobs:
       - run:
           name: Search Integration Tests
           command: ./gradlew search:integrationTest
-
-      - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
@@ -233,7 +210,6 @@ jobs:
     <<: *env
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
       - run:
           name: apt-get update
           command:  sudo apt-get update
@@ -277,7 +253,6 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - deploy:
           name: Build/Publish Admin Image(s)
@@ -288,7 +263,6 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - deploy:
           name: Build/Publish Search API Image(s)
@@ -299,7 +273,6 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - deploy:
           name: Build/Publish Client Image(s)
@@ -310,7 +283,6 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Client Check Formatting
@@ -325,7 +297,6 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Test Reports
@@ -364,7 +335,6 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
 
       - run:
           name: Run OWASP Check
