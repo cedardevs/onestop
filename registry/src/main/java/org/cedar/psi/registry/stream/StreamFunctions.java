@@ -88,17 +88,26 @@ public class StreamFunctions {
     return builder.build();
   };
 
-  public static AggregatedInput updateDeleted(TimestampedValue<Input> input, AggregatedInput aggregate) {
-    if (aggregate == null) {
+  public static AggregatedInput updateDeleted(TimestampedValue<Input> input, AggregatedInput currentState) {
+    if (currentState == null) {
+      // Don't "update" a record that doesn't exist
       return null;
     }
     var data = input != null ? input.data : null;
     var method = data != null ? input.data.getMethod() : null;
     var deleted = method != null && method.equals(DELETE);
-    return AggregatedInput.newBuilder(aggregate)
-        .setDeleted(deleted)
-        .setEvents(DataUtils.addOrInit(aggregate.getEvents(), buildEventRecord(input)))
-        .build();
+    var builder = AggregatedInput.newBuilder(currentState);
+
+    if(currentState.getDeleted() == deleted) {
+      // Don't append to the events list if nothing is changing
+      return builder.build();
+    }
+    else {
+      return builder
+          .setDeleted(deleted)
+          .setEvents(DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input)))
+          .build();
+    }
   }
 
   public static Map updateRawJson(AggregatedInput.Builder builder, Input input, OperationType operationType) {
