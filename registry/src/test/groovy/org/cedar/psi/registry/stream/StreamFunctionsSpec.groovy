@@ -254,7 +254,7 @@ class StreamFunctionsSpec extends Specification {
     result.rawJson == input.content
   }
 
-  def 'aggregate input with DELETE method'() {
+  def 'aggregate input with DELETE method that deletes a record'() {
     def currentAggregate = new AggregatedInput([
         type: RecordType.granule,
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
@@ -278,7 +278,7 @@ class StreamFunctionsSpec extends Specification {
     result.rawJson == currentAggregate.rawJson
   }
 
-  def 'aggregate input with GET method'() {
+  def 'aggregate input with GET method that resurrects a record'() {
     def currentAggregate = new AggregatedInput([
         type: RecordType.granule,
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
@@ -299,6 +299,54 @@ class StreamFunctionsSpec extends Specification {
     result.initialSource == currentAggregate.initialSource
     result.deleted == false // <--
     result.events.size() == 2
+    result.rawJson == currentAggregate.rawJson
+  }
+
+  def 'aggregate input with DELETE method on already deleted record'() {
+    def currentAggregate = new AggregatedInput([
+        type: RecordType.granule,
+        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        initialSource: 'test',
+        deleted: true,
+        events: [new InputEvent(null, Method.POST, 'test', null)]
+    ])
+    def input = new Input([
+        method: Method.DELETE,
+    ])
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
+
+    then:
+    result.type == currentAggregate.type
+    result.initialSource == currentAggregate.initialSource
+    result.deleted == true
+    result.events.size() == 1 // <--
+    result.rawJson == currentAggregate.rawJson
+  }
+
+  def 'aggregate input with GET method on record that is not deleted'() {
+    def currentAggregate = new AggregatedInput([
+        type: RecordType.granule,
+        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        initialSource: 'test',
+        deleted: false,
+        events: [new InputEvent(null, Method.POST, 'test', null)]
+    ])
+    def input = new Input([
+        method: Method.GET,
+    ])
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
+
+    then:
+    result.type == currentAggregate.type
+    result.initialSource == currentAggregate.initialSource
+    result.deleted == false
+    result.events.size() == 1 // <--
     result.rawJson == currentAggregate.rawJson
   }
 
