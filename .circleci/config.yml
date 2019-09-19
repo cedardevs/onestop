@@ -116,8 +116,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - .gradle
-            - admin/build
+            - .
 
   admin-test:
     <<: *defaults
@@ -131,10 +130,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - .gradle
-            - admin/build/jacoco/test.exec
-            - admin/build/test-results/test
-            - admin/build/reports/test
+            - .
 
   search-test:
     <<: *defaults
@@ -188,10 +184,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - .gradle
-            - admin/build/jacoco/integrationTest.exec
-            - admin/build/test-results/integrationTest
-            - admin/build/reports/integrationTest
+            - .
 
   search-integration-test:
     <<: *defaultsWithElasticsearch
@@ -380,7 +373,7 @@ workflows:
             - admin-build
       - admin-integration-test:
           requires:
-            - admin-build
+            - admin-test
       - admin-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
@@ -388,7 +381,7 @@ workflows:
                 - master
                 - /release.*/
           requires:
-            - admin-test
+            # - admin-test
             - admin-integration-test
       # - search-build:
       #     requires:
