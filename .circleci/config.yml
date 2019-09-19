@@ -36,9 +36,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
       keys:
-      - onestop-cache-v10-{{ checksum "build.gradle" }}
+      - onestop-cache-v11-{{ checksum "build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v10-
+      - onestop-cache-v11-
 
 saveCache: &saveCache
   save_cache:
@@ -51,7 +51,7 @@ saveCache: &saveCache
         - client/build
         - admin/build
         - search/build
-      key: onestop-cache-v10-{{ checksum "build.gradle" }}
+      key: onestop-cache-v11-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -64,10 +64,14 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run:
+          name: Setup Gradle
+          command: ./gradlew help
       - persist_to_workspace:
           root: ~/repo
           paths:
             - .
+            - ~/.gradle
 
   search-build:
     <<: *defaults
@@ -82,6 +86,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
+            - .gradle
             - search/build
 
   client-build:
@@ -96,6 +101,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
+            - .gradle
             - client/build
             - client/node_modules
 
@@ -111,6 +117,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
+            - .gradle
             - admin/build
 
   admin-test:
@@ -125,6 +132,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
+            - .gradle
             - admin/build/jacoco/test.exec
             - admin/build/test-results/test
             - admin/build/reports/test
@@ -145,6 +153,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
+            - .gradle
             - search/build/jacoco/test.exec
             - search/build/test-results/test
             - search/build/reports/test
@@ -180,6 +189,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
+            - .gradle
             - admin/build/jacoco/integrationTest.exec
             - admin/build/test-results/integrationTest
             - admin/build/reports/integrationTest
@@ -201,6 +211,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
+            - .gradle
             - search/build/jacoco/integrationTest.exec
             - search/build/test-results/integrationTest
             - search/build/reports/integrationTest
@@ -246,6 +257,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
+            - .gradle
             - e2e-tests/build
 
   admin-publish:
