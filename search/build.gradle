@@ -277,6 +277,7 @@ processResources {
   }
 }
 
+tasks.jib.dependsOn bootWar
 tasks.jib.dependsOn generateJsonSchema
 tasks.jibDockerBuild.dependsOn generateJsonSchema
 //tasks.jib.dependsOnWar
