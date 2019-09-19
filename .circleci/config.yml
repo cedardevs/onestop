@@ -292,7 +292,7 @@ jobs:
 
       - deploy:
           name: Build/Publish Search API Image(s)
-          command: ./gradlew --debug search:jib
+          command: ./gradlew search:jib
 
   client-publish:
     <<: *defaults

@@ -185,6 +185,12 @@ check.dependsOn integrationTest
 
 bootWar {
   dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
+
+  from("${buildDir}/resources/main") {
+    include "onestop-request-schema.json"
+    into 'WEB-INF/classes'
+  }
+
   archiveBaseName.set("${rootProject.name}-${project.name}")
   archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
 }
