@@ -36,26 +36,30 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
       keys:
-      - onestop-cache-v11-{{ checksum "build.gradle" }}
+      - onestop-cache-v12-{{ checksum "build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v11-
+      - onestop-cache-v12-
 
 saveCache: &saveCache
   save_cache:
       paths:
-        - ~/.gradle/caches/
-        - ~/.gradle/wrapper/
+        - .gradle_home
         - .gradle
-        - client/.gradle
-        - client/node_modules
-        - client/build
+        - build
         - admin/build
         - search/build
-      key: onestop-cache-v11-{{ checksum "build.gradle" }}
+        - client/node_modules
+        - client/.gradle
+        - client/build
+
+      key: onestop-cache-v12-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
       at: ~/repo
+  - run:
+      name: Set Gradle Home
+      command: export GRADLE_USER_HOME=~/repo/.gradle_home
 
 version: 2
 jobs:
