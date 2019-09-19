@@ -188,7 +188,7 @@ bootWar {
 
   from("${buildDir}/resources/main") {
     include "onestop-request-schema.json"
-    into 'WEB-INF/classes'
+    into "WEB-INF/classes"
   }
 
   archiveBaseName.set("${rootProject.name}-${project.name}")
