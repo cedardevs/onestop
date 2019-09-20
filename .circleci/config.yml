@@ -257,16 +257,13 @@ jobs:
         no_output_timeout: 30m
 
     - run:
-        name: Save coverage results
+        name: Save OWASP results
         command: |
           mkdir -p ~/owasp/admin/
-          find . -type d -regex "admin/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/admin/ \;
+          find . -type d -regex "admin/build/reports/dependency-check-report.html" -exec cp -r {} ~/owasp/admin/ \;
           mkdir -p ~/owasp/search/
-          find . -type d -regex "search/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/search/ \;
+          find . -type d -regex "search/build/reports/dependency-check-report.html" -exec cp -r {} ~/owasp/search/ \;
         when: always
-
-    - store_test_results:
-        path: ~/owasp
 
     - store_artifacts:
         path: ~/owasp
@@ -306,14 +303,7 @@ jobs:
       - run:
           name: E2E tests
           command: ./gradlew e2e-tests:test
-
       - <<: *saveCache
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - e2e-tests/build
 
 workflows:
   version: 2

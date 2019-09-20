@@ -25,7 +25,8 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
-import static org.cedar.onestop.elastic.common.DocumentUtil.*
+import static org.cedar.onestop.elastic.common.DocumentUtil.getFileIdentifier
+import static org.cedar.onestop.elastic.common.DocumentUtil.getInternalParentIdentifier
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @DirtiesContext
@@ -41,7 +42,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
     webEnvironment = RANDOM_PORT
 )
 @Slf4j
-@TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
+@TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}', 'elasticsearch.index.prefix=MigrationIntegrationTest'])
 class MigrationIntegrationTest extends Specification {
 
   @LocalServerPort
