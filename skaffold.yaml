@@ -30,8 +30,8 @@ deploy:
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
         # all features default to "false" in base chart, unless otherwise overridden
         features.icam: false
-        features.manual-upload: false
-        features.kafka-ingest: true
+        features.manual-upload: true
+        features.kafka-ingest: false
         features.sitemap: true
         # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
         env.SCHEMA_REGISTRY_URL: http://psi-dev-cp-schema-registry:8081

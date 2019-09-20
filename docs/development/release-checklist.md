@@ -107,31 +107,33 @@ Follow these steps to confirm that core behavior is working as expected, as well
 1. **mouse** Click `Show All` button underneath "Instruments".
     - [ ] All three keywords from the above filtering steps are displayed with the same formatting
 1. Go back to the search results and expand the themes and instruments filters again.
-    - [ ] *mouse* remove one of the filters by clicking the `x` on the filter bubble
-    - [ ] *keyboard* tab to another filter bubble and remove it
+    - [ ] **mouse** remove one of the filters by clicking the `x` on the filter bubble
+    - [ ] **keyboard** tab to another filter bubble and remove it
     - [ ] remove the last filter by unselecting the checkbox in the left-hand filter menu
     - [ ] the instruments list expands to include more options
     - [ ] toggle the `U/V Wind Components` filter on and off to see it grey out some instruments, then re-enable them when the filter is removed
 1. Go back to the landing page. Search for `Tutuila`. (There should be 4 results)
 1. Using the time filter, enter the start year 2010. (**mouse** click on the `Apply` button).
-    - [ ] Results are filtered down to 1
+    - [ ] Results are filtered down to 2
 1. Remove the filter using the `Clear` button in the time filter form.
 1. **keyboard** Enter the end date 1990 April 9.
     - [ ] Results are filtered down to 3
 1. Enter the start year 2010 and apply the filter
     - [ ] A validation error displays
+1. Clear the filters. Select `Pago Pago, American Samoa Tsunami Forecast Grids for MOST Model`
+    - [ ] on the Access tab, Information (and Download Data) says `No links in metadata.`
 1. In the header search bar, search for `"southern alaska coastal relief"`. (There should be 1 result)
 1. **keyboard** Select this result
-    - [ ] In the summary tab, location is "Bounding box covering 170°, 48.5°, -130°, 66.5° (W, N, E, S)."
+    - [ ] In the summary tab, location is "Bounding box covering 170°, 48.5°, 230°, 66.5° (W, N, E, S)."
     - [ ] In the map, the box is drawn around Alaska. (This renders across the dateline)
-    - [ ] Access Tab should have sections Information (no links), Download Data, Distribution Format. Note Search Data is not listed.
+    - [ ] Access Tab should have sections Information, Download Data, Distribution Format. Note Search Data is not listed.
 1. Search for `"GHRSST Level 4 ODYSSEA Mediterranean Sea Regional Foundation Sea Surface Temperature Analysis (GDS version 1)"` and select the result.
     - [ ] Location reads "Bounding box covering -18.5°, 30°, 36.5°, 46.5° (W, N, E, S)."
     - [ ] Map image shows enclosed area of Mediterranean region in Europe. (This renders across the prime meridian)
     - [ ] The DSMM shows 2.5 stars
 1. Search for `water`. (There are over 300 results.)
     - [ ] **mouse** Using location filter, expand the map, draw a bounding box over the Mediterranean region. A new search triggers automatically. (There are less than 50 results - approximately 30)
-    - [ ] **keyboard** In bounding box text fields, enter: -32,-1,120,60. (Similar number of results to above search, plus or minus a few).
+    - [ ] **keyboard** In bounding box text fields, enter: -32, -1, 120, 60. (Similar number of results to above search, plus or minus a few).
     - [ ] The applied filter bubble updates the coordinates from the previous search to this one.
     - [ ] **keyboard** Apply the `Exclude Global` filter. This drops the result total by about half.
     - [ ] **mouse** Uncheck the `Exclude Global` checkbox.
@@ -144,7 +146,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
 1. Search for `tree rings`. Select any of the paleo results.
     - [ ] The begin date shows with a negative year (eg -0106-01-01)
 1. Search for `"NOAA/WDS Paleoclimatology - A global planktic foraminifer census data set for the Pliocene ocean"`. Select the result.
-    - [ ] The date displays as "-617905000 to -1601050-01-01"
+    - [ ] The date displays as "-617905000 to -1601050-12-31"
 1. Search `glacier`. Select the first result (*not* the Digital Elevation Model).
     - [ ] Point geometry is rendered as "Point at -49.815°, 69.222° (longitude, latitude)"
     - [ ] Map displays a point in Greenland on the map
@@ -176,6 +178,16 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] each granule has a map with a point shown
     - [ ] each granule has FTP, HTTP, and several THREDDS links
     - [ ] granules in both 2016 and 2017 are listed
+    - [ ] filter granules with search `177000*` and `1770000`. Both should match 2 files. Applied filter bubble should read `Filename Contains: [search term]`.
+    - [ ] filter granules with search `177000` - should match zero files.
+    - clear the filters
+    - [ ] apply location: 166, -25, -135, 35 - (18 results)
+    - [ ] draw on the location filter a box containing all of the pacific ocean - it should match all 22 results (or draw it smaller to get various subsets)
+    - clear the filters
+    - [ ] apply the facet Link Protocols `UNIDATA:THREDDS` (20 results)
+    - clear the filters
+    - [ ] apply the facet Data Center - `Tidesandcurrents.Noaa.Gov` (2 results)
+    - [ ] above the granule list is a link back to the collection. click it. It should take you back to the details page with no filters applied
 1. Search `ghrsst viirs ACSPO`. The first or 2nd result should be "GHRSST GDS2 Level 2P Global Skin Sea Surface Temperature from the Visible Infrared Imaging Radiometer Suite (VIIRS) on the Suomi NPP satellite created by the NOAA Advanced Clear-Sky Processor for Ocean (ACSPO) (GDS version 2)" (orange image)
     - this result can also be found with `fileIdentifier:"gov.noaa.nodc:GHRSST-VIIRS_NPP-OSPO-L2P"`
     - Select this collection
@@ -184,11 +196,10 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] **keyboard** Select the show matching files link
     - [ ] Files with a variety of bounding boxes appear
     - [ ] Access Protocols show Download, FTP, OPeNDAP, THREDDS and Web
-1. Search `DEM`. One of those should be "Hilo, Hawaii 1/3 arc-second DEM" 
+1. Search `DEM`. One of those should be "Hilo, Hawaii 1/3 arc-second DEM"
     - Select this collection
-    - [ ] In the dev tools network tab, look for the last GET to /onestop-search/collection/<ID>. 
-    - [ ] The response should include `serviceLinks`
-    - [ ] Future feature: display in UI
+    - [ ] On the Access Tab, there should be a 'Services' section. It has 3 categories with  map services (2 links), "Model Global Mosaic ArcGIS" image services (3 links), and "MHW Mosaic ArcGIS" image service (1 link) respectively.
+
 1. In the search box:
     - [ ] Enter a search with blank text field (disallowed)
     - [ ] Enter a search starting with `*` (disallowed)
