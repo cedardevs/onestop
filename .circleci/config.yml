@@ -76,22 +76,39 @@ jobs:
           paths:
             - .
 
-  search-build:
-    <<: *defaults
+  search:
+    <<: *defaultsWithElasticsearch
+    <<: *env
 
     steps:
-      - <<: *attachWorkspace
+    - <<: *attachWorkspace
 
-      - run:
-          name: Build Search API
-          command: ./gradlew search:assemble
+    - run:
+        name: Assemble, Check, Test
+        command: ./gradlew --parallel search:assemble search:check search:test
 
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - search/build
-            - elastic-common/build
+    - run:
+        name: Wait for Elasticsearch
+        command: dockerize -wait tcp://localhost:9200 -timeout 1m
+
+    - run:
+        name: Search Integration Tests
+        command: ./gradlew search:integrationTest
+
+    - deploy:
+        name: Build/Publish Search API Image(s)
+        command: |
+          echo "${CIRCLE_BRANCH}"
+          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+            echo ./gradlew search:jib
+          else
+            echo "Skipping publishing"
+          fi
+
+    - persist_to_workspace:
+        root: ~/repo
+        paths:
+        - search/build
 
   client-build:
     <<: *defaults
@@ -141,24 +158,7 @@ jobs:
             - .gradle
             - admin/build
 
-  search-test:
-    <<: *defaults
-    steps:
-      - <<: *attachWorkspace
 
-      - run:
-          name: Generate Dummy Keystore
-          command: ./gradlew jks
-
-      - run:
-          name: Search API Unit Tests
-          command: ./gradlew search:test
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - search/build
 
   client-test:
     <<: *defaults
@@ -195,25 +195,7 @@ jobs:
 #            - .gradle
             - admin/build
 
-  search-integration-test:
-    <<: *defaultsWithElasticsearch
-    <<: *env
-    steps:
-      - <<: *attachWorkspace
 
-      - run:
-          name: Wait for Elasticsearch
-          command: dockerize -wait tcp://localhost:9200 -timeout 1m
-
-      - run:
-          name: Search Integration Tests
-          command: ./gradlew search:integrationTest
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-#            - .gradle
-            - search/build
 
   e2e:
     <<: *defaultsMachine
@@ -269,15 +251,7 @@ jobs:
           name: Build/Publish Admin Image(s)
           command: ./gradlew admin:jib
 
-  search-publish:
-    <<: *defaults
 
-    steps:
-      - <<: *attachWorkspace
-
-      - deploy:
-          name: Build/Publish Search API Image(s)
-          command: ./gradlew search:jib
 
   client-publish:
     <<: *defaults
@@ -303,7 +277,7 @@ jobs:
           name: Client RetireJS
           command: ./gradlew client:retire
 
-  report-tests:
+  finalize:
     <<: *defaults
 
     steps:
@@ -341,6 +315,8 @@ jobs:
       - store_artifacts:
           path: ~/tests
 
+      - <<: *saveCache
+
   check-owasp-cve:
     <<: *defaults
 
@@ -372,57 +348,45 @@ workflows:
   build:
     jobs:
       - checkout
-      - admin-build:
+      - search:
           requires:
-            - checkout
-      - admin-test:
-          requires:
-            - admin-build
-      - admin-integration-test:
-          requires:
-            - admin-test
-      - admin-publish:
-          filters:  # using regex filters requires the entire branch to match
-            branches:
-              only:  # only branches matching the below regex filters will run
-                - master
-                - /release.*/
-          requires:
-            - admin-integration-test
-      - search-build:
-          requires:
-            - checkout
-      - search-test:
-          requires:
-            - search-build
-      - search-integration-test:
-          requires:
-            - search-test
-      - search-publish:
-          filters:  # using regex filters requires the entire branch to match
-            branches:
-              only:  # only branches matching the below regex filters will run
-                - master
-                - /release.*/
-          requires:
-            - search-integration-test
-      - client-build:
-          requires:
-            - checkout
-      - client-test:
-          requires:
-            - client-build
-      - client-publish:
-          filters:  # using regex filters requires the entire branch to match
-            branches:
-              only:  # only branches matching the below regex filters will run
-                - master
-                - /release.*/
-          requires:
-            - client-test
-      - client-checks:
-          requires:
-            - client-build
+          - checkout
+#      - admin-build:
+#          requires:
+#            - checkout
+#      - admin-test:
+#          requires:
+#            - admin-build
+#      - admin-integration-test:
+#          requires:
+#            - admin-test
+#      - admin-publish:
+#          filters:  # using regex filters requires the entire branch to match
+#            branches:
+#              only:  # only branches matching the below regex filters will run
+#                - master
+#                - /release.*/
+#          requires:
+#            - admin-integration-test
+#
+#
+#      - client-build:
+#          requires:
+#            - checkout
+#      - client-test:
+#          requires:
+#            - client-build
+#      - client-publish:
+#          filters:  # using regex filters requires the entire branch to match
+#            branches:
+#              only:  # only branches matching the below regex filters will run
+#                - master
+#                - /release.*/
+#          requires:
+#            - client-test
+#      - client-checks:
+#          requires:
+#            - client-build
 
 #      - e2e:
 #          requires:
@@ -430,12 +394,11 @@ workflows:
 #            - search-integration-test
 #            - admin-integration-test
 
-      - report-tests:
+      - finalize:
           requires:
-#            - e2e
-            - client-test
-            - search-integration-test
-            - admin-integration-test
+#            - admin
+#            - client
+            - search
 
   nightly:
     triggers:
