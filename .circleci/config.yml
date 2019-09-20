@@ -38,14 +38,14 @@ env: &env
 
 restoreCache: &restoreCache
   # Download and cache dependencies
-  restore_cache:
+  - restore_cache:
       keys:
       - onestop-cache-v12-{{ checksum "build.gradle" }}
       # fallback to using the latest cache if no exact match is found
       - onestop-cache-v12-
 
 saveCache: &saveCache
-  save_cache:
+  - save_cache:
       paths:
         - .gradle_home
         - .gradle
@@ -54,7 +54,6 @@ saveCache: &saveCache
         - client/build
         - client/node_modules
         - search/build
-
       key: onestop-cache-v12-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
@@ -121,7 +120,7 @@ jobs:
         command: |
           echo "${CIRCLE_BRANCH}"
           if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-            echo ./gradlew search:jib
+            ./gradlew search:jib
           else
             echo "Skipping publishing"
           fi
@@ -176,7 +175,7 @@ jobs:
         command: |
           echo "${CIRCLE_BRANCH}"
           if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-            echo ./gradlew search:jib
+            ./gradlew search:jib
           else
             echo "Skipping publishing"
           fi
@@ -199,8 +198,8 @@ jobs:
         name: Publish Image(s)
         command: |
           echo "${CIRCLE_BRANCH}"
-          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == experiment* ]]; then
-            echo ./gradlew client:jib
+          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+            ./gradlew client:jib
           else
             echo "Skipping publishing"
           fi
