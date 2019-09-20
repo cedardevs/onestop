@@ -52,6 +52,7 @@ saveCache: &saveCache
     - build
     - admin/build
     - client/build
+    - client/.gradle
     - client/node_modules
     - search/build
     key: onestop-cache-v12-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "search/build.gradle" }}
@@ -87,9 +88,7 @@ jobs:
     - persist_to_workspace:
         root: ~/repo
         paths:
-        - .gradle_home
-        - .gradle
-        - elastic-common/build
+        - .
 
   admin:
     <<: *defaultsWithElasticsearch
