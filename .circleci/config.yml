@@ -38,23 +38,23 @@ env: &env
 
 restoreCache: &restoreCache
   # Download and cache dependencies
-  - restore_cache:
-      keys:
-      - onestop-cache-v12-{{ checksum "build.gradle" }}
-      # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v12-
+  restore_cache:
+    keys:
+    - onestop-cache-v12-{{ checksum "build.gradle" }}
+    # fallback to using the latest cache if no exact match is found
+    - onestop-cache-v12-
 
 saveCache: &saveCache
-  - save_cache:
-      paths:
-        - .gradle_home
-        - .gradle
-        - build
-        - admin/build
-        - client/build
-        - client/node_modules
-        - search/build
-      key: onestop-cache-v12-{{ checksum "build.gradle" }}
+  save_cache:
+    paths:
+    - .gradle_home
+    - .gradle
+    - build
+    - admin/build
+    - client/build
+    - client/node_modules
+    - search/build
+    key: onestop-cache-v12-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -63,9 +63,9 @@ attachWorkspace: &attachWorkspace
 version: 2
 jobs:
   checkout:
-    <<: *restoreCache
     <<: *defaults
     steps:
+      - <<: *restoreCache
       - checkout
       - run:
           name: Build shared resources
