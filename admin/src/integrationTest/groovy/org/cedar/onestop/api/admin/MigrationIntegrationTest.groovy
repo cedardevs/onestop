@@ -42,7 +42,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
     webEnvironment = RANDOM_PORT
 )
 @Slf4j
-@TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}', 'elasticsearch.index.prefix=MigrationIntegrationTest'])
+@TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
 class MigrationIntegrationTest extends Specification {
 
   @LocalServerPort
