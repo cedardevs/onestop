@@ -65,14 +65,28 @@ jobs:
   checkout:
     <<: *defaults
     steps:
-      - <<: *restoreCache
-      - checkout
-      - run:
-          name: Build shared resources
-          command: ./gradlew --parallel elastic-common:build
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
+    - restore_cache:
+        keys:
+        - source-v1-{{ .Branch }}-{{ .Revision }}
+        - source-v1-{{ .Branch }}-
+        - source-v1-
+
+    - checkout
+
+    - save_cache:
+        key: source-v1-{{ .Branch }}-{{ .Revision }}
+        paths:
+        - ".git"
+
+    - <<: *restoreCache
+
+    - run:
+        name: Build shared resources
+        command: ./gradlew --parallel elastic-common:build
+
+    - persist_to_workspace:
+        root: ~/repo
+        paths:
             - .
 
   admin:
