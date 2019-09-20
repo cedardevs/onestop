@@ -91,6 +91,7 @@ jobs:
           paths:
             - .gradle
             - search/build
+            - elastic-common/build
 
   client-build:
     <<: *defaults
@@ -107,6 +108,7 @@ jobs:
             - .gradle
             - client/build
             - client/node_modules
+            - elastic-common/build
 
   admin-build:
     <<: *defaults
@@ -122,6 +124,7 @@ jobs:
           paths:
             - .gradle
             - admin/build
+            - elastic-common/build
 
   admin-test:
     <<: *defaults
