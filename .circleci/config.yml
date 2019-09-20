@@ -133,7 +133,7 @@ jobs:
           command: |
             echo "${CIRCLE_BRANCH}"
             if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew search:jib
+              ./gradlew admin:jib
             else
               echo "Skipping publishing"
             fi
