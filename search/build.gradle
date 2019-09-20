@@ -152,6 +152,7 @@ sourceSets {
 }
 
 task integrationTest(type: Test) {
+  dependsOn { jks }
 
   doFirst {
     // `CI` env var is typically "true" inside CircleCI, Travis, and other CI environments.
