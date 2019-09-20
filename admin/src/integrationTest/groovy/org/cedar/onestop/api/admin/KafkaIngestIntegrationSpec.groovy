@@ -43,7 +43,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         ElasticsearchTestConfig,
     ],
     webEnvironment = RANDOM_PORT,
-    properties = ["elasticsearch.index.prefix=kafka_"]
+    properties = ["elasticsearch.index.prefix=admin_kafka_"]
 )
 @TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
 class KafkaIngestIntegrationSpec extends Specification {

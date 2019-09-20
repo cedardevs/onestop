@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
@@ -18,6 +19,7 @@ import spock.lang.Unroll
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
+@DirtiesContext
 @ActiveProfiles(["integration"])
 @SpringBootTest(
     classes = [
@@ -28,7 +30,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         // - `RestClient` 'restClient' bean via test containers
         ElasticsearchTestConfig,
     ],
-    webEnvironment = RANDOM_PORT
+    webEnvironment = RANDOM_PORT,
+    properties = ["elasticsearch.index.prefix=search_controller_"]
 )
 @Unroll
 class SearchControllerIntegrationTests extends Specification {
@@ -69,16 +72,16 @@ class SearchControllerIntegrationTests extends Specification {
     result.statusCode == expectedStatusCode
 
     where:
-    desc | requestString | contentType | expectedStatusCode
-    'post xml' | """{"search":"name","value":"spy"}""" | MediaType.APPLICATION_XML | HttpStatus.UNSUPPORTED_MEDIA_TYPE
+    desc                         | requestString                         | contentType                     | expectedStatusCode
+    'post xml'                   | """{"search":"name","value":"spy"}""" | MediaType.APPLICATION_XML       | HttpStatus.UNSUPPORTED_MEDIA_TYPE
     'attack xml in request body' | """<?xml version="1.0" encoding="ISO-8859-1"?>
     <!DOCTYPE a [
     <!ENTITY % remote_dtd SYSTEM "http://localhost:8000/xxe-test.dtd"> %remote_dtd; ]>
     <body>
       <data>&attack;</data>
       <data>Whatever</data>
-    </body>""" | MediaType.APPLICATION_JSON_UTF8 | HttpStatus.BAD_REQUEST
-    'any xml in request body' | """<?xml version="1.0" encoding="UTF-8" ?>
+    </body>"""                     | MediaType.APPLICATION_JSON_UTF8 | HttpStatus.BAD_REQUEST
+    'any xml in request body'    | """<?xml version="1.0" encoding="UTF-8" ?>
     <root>
    <queries>
       <element>
@@ -86,7 +89,7 @@ class SearchControllerIntegrationTests extends Specification {
          <value>temperature</value>
       </element>
    </queries>
-</root>""" | MediaType.APPLICATION_JSON_UTF8 | HttpStatus.BAD_REQUEST
+</root>"""                         | MediaType.APPLICATION_JSON_UTF8 | HttpStatus.BAD_REQUEST
   }
 
   def '#type info endpoint reports #type count'() {
@@ -104,13 +107,13 @@ class SearchControllerIntegrationTests extends Specification {
     result.headers.getContentType() == contentType
     data.size() == 1
     data[0] == [
-        type: 'count',
-        id: type,
+        type : 'count',
+        id   : type,
         count: count
     ]
 
     where:
-    type                | count
+    type                                       | count
     ElasticsearchConfig.TYPE_COLLECTION        | 7
     ElasticsearchConfig.TYPE_GRANULE           | 2
     ElasticsearchConfig.TYPE_FLATTENED_GRANULE | 2
@@ -162,11 +165,12 @@ class SearchControllerIntegrationTests extends Specification {
     and: "Result found"
     assert data
 
-    and: "Result is COOPS ${type}"
+    and:
+    "Result is COOPS ${type}"
     firstFileIdentifier == fileIdentifier
 
     where:
-    type                | idPath                                     | fileIdentifier
+    type                                       | idPath                                              | fileIdentifier
     ElasticsearchConfig.TYPE_GRANULE           | TestUtil.testData.COOPS.C1.granules.G1.id           | 'CO-OPS.NOS_8638614_201602_D1_v00'
     ElasticsearchConfig.TYPE_FLATTENED_GRANULE | TestUtil.testData.COOPS.C1.flattenedGranules.FG2.id | 'CO-OPS.NOS_9410170_201503_D1_v00'
   }

@@ -33,7 +33,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         ElasticsearchTestConfig,
     ],
     webEnvironment = RANDOM_PORT,
-    properties = ["elasticsearch.index.prefix=load_"]
+    properties = ["elasticsearch.index.prefix=admin_load_"]
 )
 @Unroll
 class LoadIntegrationTests extends Specification {

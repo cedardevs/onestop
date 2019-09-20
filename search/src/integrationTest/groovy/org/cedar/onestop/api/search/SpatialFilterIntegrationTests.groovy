@@ -6,12 +6,14 @@ import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
+@DirtiesContext
 @ActiveProfiles(["integration"])
 @SpringBootTest(
     classes = [
@@ -22,7 +24,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         // - `RestClient` 'restClient' bean via test containers
         ElasticsearchTestConfig,
     ],
-    webEnvironment = RANDOM_PORT
+    webEnvironment = RANDOM_PORT,
+    properties = ["elasticsearch.index.prefix=search_spatial_filter_"]
 )
 @Unroll
 class SpatialFilterIntegrationTests extends Specification {
@@ -48,10 +51,10 @@ class SpatialFilterIntegrationTests extends Specification {
     given:
     def requestParams = [
         filters: [[
-                      type: 'geometry',
+                      type    : 'geometry',
                       relation: relation,
                       geometry: [
-                          type: 'Point',
+                          type       : 'Point',
                           coordinates: [-60, 47]
                       ]
                   ]],
@@ -82,9 +85,9 @@ class SpatialFilterIntegrationTests extends Specification {
     given:
     def requestParams = [
         filters: [[
-            type: 'excludeGlobal',
-            value: true
-        ]],
+                      type : 'excludeGlobal',
+                      value: true
+                  ]],
         summary: false
     ]
 

@@ -6,12 +6,14 @@ import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
+@DirtiesContext
 @ActiveProfiles(["integration"])
 @SpringBootTest(
     classes = [
@@ -21,7 +23,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         // - `RestClient` 'restClient' bean via test containers
         ElasticsearchTestConfig,
     ],
-    webEnvironment = RANDOM_PORT
+    webEnvironment = RANDOM_PORT,
+    properties = ["elasticsearch.index.prefix=search_time_filter_"]
 )
 @Unroll
 class TimeFilterIntegrationTests extends Specification {
@@ -46,13 +49,13 @@ class TimeFilterIntegrationTests extends Specification {
     given:
     def requestParams = [
         filters: [[
-            type: "datetime",
-            relation: relation,
-            after: "1995-01-01"
-        ]],
+                      type    : "datetime",
+                      relation: relation,
+                      after   : "1995-01-01"
+                  ]],
         summary: false,
-        page: [
-            max: 20,
+        page   : [
+            max   : 20,
             offset: 0
         ]
     ]
@@ -72,23 +75,23 @@ class TimeFilterIntegrationTests extends Specification {
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | ['15','16']
-    'disjoint'   | ['4','10']
-    'intersects' | ['1','2','3','5','6','7','8','9','11','12','13','14','15','16','17', '18', '19']
-    'within'     | ['1','3','7','8','9','16','17','18','19']
+    'contains'   | ['15', '16']
+    'disjoint'   | ['4', '10']
+    'intersects' | ['1', '2', '3', '5', '6', '7', '8', '9', '11', '12', '13', '14', '15', '16', '17', '18', '19']
+    'within'     | ['1', '3', '7', '8', '9', '16', '17', '18', '19']
   }
 
   def 'Datetime filter with q: (-∞, y) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
-            type: "datetime",
-            relation: relation,
-            before: "2012-01-01"
-        ]],
+                      type    : "datetime",
+                      relation: relation,
+                      before  : "2012-01-01"
+                  ]],
         summary: false,
-        page: [
-            max: 20,
+        page   : [
+            max   : 20,
             offset: 0
         ]
     ]
@@ -108,24 +111,24 @@ class TimeFilterIntegrationTests extends Specification {
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | ['13','14']
-    'disjoint'   | ['7','19']
-    'intersects' | ['1','2','3','4','5','6','8','9','10','11','12','13','14','15','16','17','18']
-    'within'     | ['1','3','4','5','6','10','11','12','13']
+    'contains'   | ['13', '14']
+    'disjoint'   | ['7', '19']
+    'intersects' | ['1', '2', '3', '4', '5', '6', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']
+    'within'     | ['1', '3', '4', '5', '6', '10', '11', '12', '13']
   }
 
   def 'Datetime filter with q: (x, y) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
-            type: "datetime",
-            relation: relation,
-            after: "1995-01-01",
-            before: "2012-01-01"
-        ]],
+                      type    : "datetime",
+                      relation: relation,
+                      after   : "1995-01-01",
+                      before  : "2012-01-01"
+                  ]],
         summary: false,
-        page: [
-            max: 20,
+        page   : [
+            max   : 20,
             offset: 0
         ]
     ]
@@ -145,19 +148,19 @@ class TimeFilterIntegrationTests extends Specification {
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | ['2','3','13','14','15','16']
-    'disjoint'   | ['4','7','10','19']
-    'intersects' | ['1','2','3','5','6','8','9','11','12','13','14','15','16','17','18']
-    'within'     | ['1','3']
+    'contains'   | ['2', '3', '13', '14', '15', '16']
+    'disjoint'   | ['4', '7', '10', '19']
+    'intersects' | ['1', '2', '3', '5', '6', '8', '9', '11', '12', '13', '14', '15', '16', '17', '18']
+    'within'     | ['1', '3']
   }
 
   def 'Year filter with q: (x, +∞) (with x in Paleo range) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
-                      type: "year",
+                      type    : "year",
                       relation: relation,
-                      after: -1000000000
+                      after   : -1000000000
                   ]],
         summary: false
     ]
@@ -187,9 +190,9 @@ class TimeFilterIntegrationTests extends Specification {
     given:
     def requestParams = [
         filters: [[
-                      type: "year",
+                      type    : "year",
                       relation: relation,
-                      before: -1100000000
+                      before  : -1100000000
                   ]],
         summary: false
     ]
@@ -219,10 +222,10 @@ class TimeFilterIntegrationTests extends Specification {
     given:
     def requestParams = [
         filters: [[
-                      type: "year",
+                      type    : "year",
                       relation: relation,
-                      after: -1500000000,
-                      before: -100000
+                      after   : -1500000000,
+                      before  : -100000
                   ]],
         summary: false
     ]

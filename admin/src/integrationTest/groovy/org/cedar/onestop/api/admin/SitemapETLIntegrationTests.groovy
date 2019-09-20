@@ -31,7 +31,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         ElasticsearchTestConfig,
     ],
     webEnvironment = RANDOM_PORT,
-    properties = ["elasticsearch.index.prefix=sitemap_etl_"]
+    properties = ["elasticsearch.index.prefix=admin_sitemap_etl_"]
 )
 @Unroll
 class SitemapETLIntegrationTests extends Specification {

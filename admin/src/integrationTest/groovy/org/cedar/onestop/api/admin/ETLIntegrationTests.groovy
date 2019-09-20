@@ -34,7 +34,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         ElasticsearchTestConfig,
     ],
     webEnvironment = RANDOM_PORT,
-    properties = ["elasticsearch.index.prefix=etl_"]
+    properties = ["elasticsearch.index.prefix=admin_etl_"]
 )
 @Unroll
 @Slf4j

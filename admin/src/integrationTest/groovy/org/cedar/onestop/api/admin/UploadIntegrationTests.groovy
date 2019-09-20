@@ -38,7 +38,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         ElasticsearchTestConfig,
     ],
     webEnvironment = RANDOM_PORT,
-    properties = ["elasticsearch.index.prefix=upload_"]
+    properties = ["elasticsearch.index.prefix=admin_upload_"]
 )
 @Unroll
 class UploadIntegrationTests extends Specification {
