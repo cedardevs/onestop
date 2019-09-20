@@ -11,11 +11,12 @@ defaults: &defaults
   working_directory: ~/repo
 
 defaultsWithElasticsearch: &defaultsWithElasticsearch
+  environment:
+    - GRADLE_USER_HOME: ~/repo/.gradle_home
   docker:
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
     - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
       environment:
-        - GRADLE_USER_HOME: ~/repo/.gradle_home
         - cluster.name: elasticsearch-test
         - xpack.security.enabled: false
         - transport.host: localhost
@@ -38,24 +39,23 @@ env: &env
 restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
-      keys:
-      - onestop-cache-v12-{{ checksum "build.gradle" }}
+    keys:
+      - onestop-cache-v12-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "search/build.gradle" }}
       # fallback to using the latest cache if no exact match is found
       - onestop-cache-v12-
 
 saveCache: &saveCache
   save_cache:
-      paths:
-        - .gradle_home
-        - .gradle
-        - build
-        - admin/build
-        - search/build
-        - client/node_modules
-        - client/.gradle
-        - client/build
-
-      key: onestop-cache-v12-{{ checksum "build.gradle" }}
+    paths:
+      - .gradle_home
+      - .gradle
+      - build
+      - admin/build
+      - client/build
+      - client/.gradle
+      - client/node_modules
+      - search/build
+    key: onestop-cache-v12-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "search/build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -64,160 +64,209 @@ attachWorkspace: &attachWorkspace
 version: 2
 jobs:
   checkout:
-    <<: *restoreCache
     <<: *defaults
     steps:
+      - restore_cache:
+          keys:
+            - source-v1-{{ .Branch }}-{{ .Revision }}
+            - source-v1-{{ .Branch }}-
+            - source-v1-
+
       - checkout
+
+      - save_cache:
+          key: source-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+
+      - <<: *restoreCache
+
       - run:
-          name: Setup Gradle
-          command: ./gradlew help
+          name: Build shared resources
+          command: ./gradlew --parallel elastic-common:build
+
       - persist_to_workspace:
           root: ~/repo
           paths:
             - .
 
-  search-build:
-    <<: *defaults
-
-    steps:
-      - <<: *attachWorkspace
-
-      - run:
-          name: Build Search API
-          command: ./gradlew search:assemble
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - search/build
-
-  client-build:
-    <<: *defaults
-    steps:
-      - <<: *attachWorkspace
-
-      - run:
-          name: Build Client
-          command: ./gradlew client:assemble
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - client/build
-            - client/node_modules
-
-  admin-build:
-    <<: *defaults
-    steps:
-      - <<: *attachWorkspace
-
-      - run:
-          name: Build Admin API
-          command: ./gradlew admin:assemble
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - admin/build
-
-  admin-test:
-    <<: *defaults
-    steps:
-      - <<: *attachWorkspace
-
-      - run:
-          name: Admin API Unit Tests
-          command: ./gradlew admin:test
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - admin/build/jacoco/test.exec
-            - admin/build/test-results/test
-            - admin/build/reports/test
-
-  search-test:
-    <<: *defaults
-    steps:
-      - <<: *attachWorkspace
-
-      - run:
-          name: Generate Dummy Keystore
-          command: ./gradlew jks
-
-      - run:
-          name: Search API Unit Tests
-          command: ./gradlew search:test
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - search/build/jacoco/test.exec
-            - search/build/test-results/test
-            - search/build/reports/test
-
-  client-test:
-    <<: *defaults
-    steps:
-      - <<: *attachWorkspace
-
-      - run:
-          name: Client Unit Tests
-          command: ./gradlew client:test
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - client/build
-
-  admin-integration-test:
+  admin:
     <<: *defaultsWithElasticsearch
     <<: *env
+
     steps:
       - <<: *attachWorkspace
+
+      - run:
+          name: Assemble, Check (sans integration tests)
+          command: ./gradlew --parallel admin:assemble admin:check -x integrationTest
 
       - run:
           name: Wait for Elasticsearch
           command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
-          name: Admin API Integration Tests
+          name: Integration Tests
           command: ./gradlew admin:integrationTest
 
+      - run:
+          name: Test Reports
+          command: ./gradlew jacocoTestReport -x test
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/tests/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex ".*/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
+          when: always
+
+      - store_test_results:
+          path: ~/tests
+
+      - store_artifacts:
+          path: ~/tests
+
+      - deploy:
+          name: Publish Image(s)
+          command: |
+            echo "${CIRCLE_BRANCH}"
+            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+              ./gradlew search:jib
+            else
+              echo "Skipping publishing"
+            fi
+
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - .gradle
-            - admin/build/jacoco/integrationTest.exec
-            - admin/build/test-results/integrationTest
-            - admin/build/reports/integrationTest
+            - admin/build
 
-  search-integration-test:
+  search:
     <<: *defaultsWithElasticsearch
     <<: *env
+
     steps:
       - <<: *attachWorkspace
+
+      - run:
+          name: Assemble, Check (sans integration tests)
+          command: ./gradlew --parallel search:assemble search:check -x integrationTest
 
       - run:
           name: Wait for Elasticsearch
           command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
       - run:
-          name: Search Integration Tests
+          name: Integration Tests
           command: ./gradlew search:integrationTest
+
+      - run:
+          name: Test Reports
+          command: ./gradlew jacocoTestReport -x test
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/tests/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex ".*/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
+          when: always
+
+      - store_test_results:
+          path: ~/tests
+
+      - store_artifacts:
+          path: ~/tests
+
+      - deploy:
+          name: Publish Image(s)
+          command: |
+            echo "${CIRCLE_BRANCH}"
+            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+              ./gradlew search:jib
+            else
+              echo "Skipping publishing"
+            fi
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - .gradle
-            - search/build/jacoco/integrationTest.exec
-            - search/build/test-results/integrationTest
-            - search/build/reports/integrationTest
+            - search/build
+
+  client:
+    <<: *defaults
+    steps:
+      - <<: *attachWorkspace
+
+      - run:
+          name: Assemble, Check
+          command: ./gradlew --parallel client:assemble client:check
+
+      - deploy:
+          name: Publish Image(s)
+          command: |
+            echo "${CIRCLE_BRANCH}"
+            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+              ./gradlew client:jib
+            else
+              echo "Skipping publishing"
+            fi
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - client/build
+            - client/node_modules
+            -
+  finalize:
+    <<: *defaults
+
+    steps:
+      - <<: *attachWorkspace
+
+      - run:
+          name: Save coverage results
+          command: |
+            mkdir -p ~/tests/coverage/
+            find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/coverage/ \;
+            find . -type d -regex ".*/build/coverage/lcov-report/" -exec cp -r {} ~/tests/coverage/ \;
+          when: always
+
+      - store_artifacts:
+          path: ~/tests/coverage
+
+      - run:
+          name: Post coverage results to codecov
+          command: |
+            bash <(curl -s https://codecov.io/bash)
+
+      - <<: *saveCache
+
+  check-owasp-cve:
+    <<: *defaults
+
+    steps:
+      - <<: *attachWorkspace
+
+      - run:
+          name: Run OWASP Check
+          command: ./gradlew dependencyCheckAnalyze
+          no_output_timeout: 30m
+
+      - run:
+          name: Save OWASP results
+          command: |
+            mkdir -p ~/owasp/admin/
+            find . -type d -regex "admin/build/reports/dependency-check-report.html" -exec cp -r {} ~/owasp/admin/ \;
+            mkdir -p ~/owasp/search/
+            find . -type d -regex "search/build/reports/dependency-check-report.html" -exec cp -r {} ~/owasp/search/ \;
+          when: always
+
+      - store_artifacts:
+          path: ~/owasp
 
   e2e:
     <<: *defaultsMachine
@@ -255,196 +304,25 @@ jobs:
           name: E2E tests
           command: ./gradlew e2e-tests:test
 
-      - <<: *saveCache
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - e2e-tests/build
-
-  admin-publish:
-    <<: *defaults
-
-    steps:
-      - <<: *attachWorkspace
-
-      - deploy:
-          name: Build/Publish Admin Image(s)
-          command: ./gradlew admin:jib
-
-  search-publish:
-    <<: *defaults
-
-    steps:
-      - <<: *attachWorkspace
-
-      - deploy:
-          name: Build/Publish Search API Image(s)
-          command: ./gradlew search:jib
-
-  client-publish:
-    <<: *defaults
-
-    steps:
-      - <<: *attachWorkspace
-
-      - deploy:
-          name: Build/Publish Client Image(s)
-          command: ./gradlew client:jib
-
-  client-checks:
-    <<: *defaults
-
-    steps:
-      - <<: *attachWorkspace
-
-      - run:
-          name: Client Check Formatting
-          command: ./gradlew client:formatCheck
-
-      - run:
-          name: Client RetireJS
-          command: ./gradlew client:retire
-
-  report-tests:
-    <<: *defaults
-
-    steps:
-      - <<: *attachWorkspace
-
-      - run:
-          name: Test Reports
-          command: ./gradlew jacocoTestReport -x test
-
-      - run:
-          name: Save test results
-          command: |
-            mkdir -p ~/tests/junit/
-            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex ".*/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
-          when: always
-
-      - run:
-          name: Save coverage results
-          command: |
-            mkdir -p ~/tests/coverage/
-            find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/coverage/ \;
-            find . -type d -regex ".*/build/coverage/lcov-report/" -exec cp -r {} ~/tests/coverage/ \;
-          when: always
-
-      - run:
-          name: Post coverage results to codecov
-          command: |
-            bash <(curl -s https://codecov.io/bash)
-
-      - store_test_results:
-          path: ~/tests
-
-      - store_artifacts:
-          path: ~/tests
-
-  check-owasp-cve:
-    <<: *defaults
-
-    steps:
-      - <<: *attachWorkspace
-
-      - run:
-          name: Run OWASP Check
-          command: ./gradlew dependencyCheckAnalyze
-          no_output_timeout: 30m
-
-      - run:
-          name: Save coverage results
-          command: |
-            mkdir -p ~/owasp/admin/
-            find . -type d -regex "admin/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/admin/ \;
-            mkdir -p ~/owasp/search/
-            find . -type d -regex "search/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/search/ \;
-          when: always
-
-      - store_test_results:
-          path: ~/owasp
-
-      - store_artifacts:
-          path: ~/owasp
-
 workflows:
   version: 2
   build:
     jobs:
       - checkout
-      - admin-build:
+      - admin:
           requires:
             - checkout
-      - admin-test:
-          requires:
-            - admin-build
-      - admin-integration-test:
-          requires:
-            - admin-build
-      - admin-publish:
-          filters:  # using regex filters requires the entire branch to match
-            branches:
-              only:  # only branches matching the below regex filters will run
-                - master
-                - /release.*/
-          requires:
-            - admin-test
-            - admin-integration-test
-      - search-build:
+      - client:
           requires:
             - checkout
-      - search-test:
-          requires:
-            - search-build
-      - search-integration-test:
-          requires:
-            - search-build
-      - search-publish:
-          filters:  # using regex filters requires the entire branch to match
-            branches:
-              only:  # only branches matching the below regex filters will run
-                - master
-                - /release.*/
-          requires:
-            - search-test
-            - search-integration-test
-      - client-build:
+      - search:
           requires:
             - checkout
-      - client-test:
+      - finalize:
           requires:
-            - client-build
-      - client-publish:
-          filters:  # using regex filters requires the entire branch to match
-            branches:
-              only:  # only branches matching the below regex filters will run
-                - master
-                - /release.*/
-          requires:
-            - client-test
-      - client-checks:
-          requires:
-            - client-build
-
-      - e2e:
-          requires:
-            - client-build
-            - admin-build
-            - search-build
-            - search-integration-test
-            - admin-integration-test
-
-      - report-tests:
-          requires:
-            - admin-test
-            - admin-integration-test
-            - search-test
-            - search-integration-test
-            - client-test
+            - admin
+            - client
+            - search
 
   nightly:
     triggers:
@@ -456,20 +334,9 @@ workflows:
                 - master
     jobs:
       - checkout
-      - client-build:
-          requires:
-            - checkout
-      - meta-build:
-          requires:
-            - checkout
-      - search-build:
-          requires:
-            - checkout
       - check-owasp-cve:
           requires:
             - checkout
       - e2e:
           requires:
-            - client-build
-            - meta-build
-            - search-build
+            - checkout
