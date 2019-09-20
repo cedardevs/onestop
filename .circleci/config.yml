@@ -121,13 +121,11 @@ jobs:
           find . -type f -regex ".*/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
         when: always
 
-    - run:
-        name: Save coverage results
-        command: |
-          mkdir -p ~/tests/coverage/
-          find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/coverage/ \;
-          find . -type d -regex ".*/build/coverage/lcov-report/" -exec cp -r {} ~/tests/coverage/ \;
-        when: always
+    - store_test_results:
+        path: ~/tests
+
+    - store_artifacts:
+        path: ~/tests
 
     - deploy:
         name: Publish Image(s)
@@ -176,13 +174,11 @@ jobs:
           find . -type f -regex ".*/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
         when: always
 
-    - run:
-        name: Save coverage results
-        command: |
-          mkdir -p ~/tests/coverage/
-          find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/coverage/ \;
-          find . -type d -regex ".*/build/coverage/lcov-report/" -exec cp -r {} ~/tests/coverage/ \;
-        when: always
+    - store_test_results:
+        path: ~/tests
+
+    - store_artifacts:
+        path: ~/tests
 
     - deploy:
         name: Publish Image(s)
@@ -229,6 +225,17 @@ jobs:
 
     steps:
     - <<: *attachWorkspace
+
+    - run:
+        name: Save coverage results
+        command: |
+          mkdir -p ~/tests/coverage/
+          find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/coverage/ \;
+          find . -type d -regex ".*/build/coverage/lcov-report/" -exec cp -r {} ~/tests/coverage/ \;
+        when: always
+
+    - store_artifacts:
+        path: ~/tests/coverage
 
     - run:
         name: Post coverage results to codecov
