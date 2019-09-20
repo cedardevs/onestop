@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
@@ -20,17 +21,19 @@ import spock.lang.Unroll
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
+@DirtiesContext
 @ActiveProfiles(["integration"])
 @SpringBootTest(
-        classes = [
-            Application,
-            DefaultApplicationConfig,
+    classes = [
+        Application,
+        DefaultApplicationConfig,
 
-            // provides:
-            // - `RestClient` 'restClient' bean via test containers
-            ElasticsearchTestConfig,
-        ],
-        webEnvironment = RANDOM_PORT
+        // provides:
+        // - `RestClient` 'restClient' bean via test containers
+        ElasticsearchTestConfig,
+    ],
+    webEnvironment = RANDOM_PORT,
+    properties = ["elasticsearch.index.prefix=admin_load_"]
 )
 @Unroll
 class LoadIntegrationTests extends Specification {
@@ -246,9 +249,9 @@ class LoadIntegrationTests extends Specification {
 
   private buildLoadRequest(String content) {
     RequestEntity.post(metadataURI.toURI())
-            .contentType(MediaType.APPLICATION_XML)
-            .header(HttpHeaders.USER_AGENT, "Spring's RestTemplate") // value can be whatever
-            .body(new ClassPathResource(content))
+        .contentType(MediaType.APPLICATION_XML)
+        .header(HttpHeaders.USER_AGENT, "Spring's RestTemplate") // value can be whatever
+        .body(new ClassPathResource(content))
   }
 
 }

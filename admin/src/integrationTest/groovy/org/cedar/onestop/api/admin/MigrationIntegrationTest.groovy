@@ -39,7 +39,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         KafkaConsumerConfig,
         MigrationIntegrationConfig
     ],
-    webEnvironment = RANDOM_PORT
+    webEnvironment = RANDOM_PORT,
+    properties = ["elasticsearch.index.prefix=admin_migration_"]
 )
 @Slf4j
 @TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
@@ -109,7 +110,7 @@ class MigrationIntegrationTest extends Specification {
     String granuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/G1.xml').text
     ParsedRecord parsedGranule = Indexer.xmlToParsedRecord(granuleXml).parsedRecord
     String granuleKey1 = 'api_ingest_123'
-    String granuleKey2  = 'kafka_ingest_789'
+    String granuleKey2 = 'kafka_ingest_789'
     ProducerRecord granuleRecord = new ProducerRecord(granuleTopic, granuleKey1, parsedGranule)
     ProducerRecord granuleRecordUpdate = new ProducerRecord(granuleTopic, granuleKey2, parsedGranule)
 
@@ -181,7 +182,7 @@ class MigrationIntegrationTest extends Specification {
     getFileIdentifier(reindexedGranule) == 'CO-OPS.NOS_8638614_201602_D1_v00'
     reindexedCollection._id == collectionKey2
 
-  //THIS IS THE BIG ONE!
+    //THIS IS THE BIG ONE!
     getInternalParentIdentifier(reindexedGranule) == collectionKey2
 
     and:

@@ -11,6 +11,7 @@ import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -18,17 +19,19 @@ import spock.lang.Unroll
 import static org.cedar.onestop.elastic.common.DocumentUtil.*
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
+@DirtiesContext
 @ActiveProfiles(["integration", "sitemap"])
 @SpringBootTest(
-        classes = [
-            Application,
-            DefaultApplicationConfig,
+    classes = [
+        Application,
+        DefaultApplicationConfig,
 
-            // provides:
-            // - `RestClient` 'restClient' bean via test containers
-            ElasticsearchTestConfig,
-        ],
-        webEnvironment = RANDOM_PORT
+        // provides:
+        // - `RestClient` 'restClient' bean via test containers
+        ElasticsearchTestConfig,
+    ],
+    webEnvironment = RANDOM_PORT,
+    properties = ["elasticsearch.index.prefix=admin_sitemap_etl_"]
 )
 @Unroll
 class SitemapETLIntegrationTests extends Specification {
@@ -118,7 +121,7 @@ class SitemapETLIntegrationTests extends Specification {
 
     and:
     Set submapSizes = [submapIds1.size(), submapIds2.size()]
-    submapSizes == [6,1] as Set
+    submapSizes == [6, 1] as Set
 
     and:
     Set submapIds = submapIds1 + submapIds2
@@ -139,7 +142,9 @@ class SitemapETLIntegrationTests extends Specification {
 
   private Map documentsByType(String collectionIndex, String granuleIndex, String flatGranuleIndex = null) {
     elasticsearchService.refresh(collectionIndex, granuleIndex)
-    if(flatGranuleIndex) { elasticsearchService.refresh(flatGranuleIndex) }
+    if (flatGranuleIndex) {
+      elasticsearchService.refresh(flatGranuleIndex)
+    }
     def endpoint = "${collectionIndex},${granuleIndex}${flatGranuleIndex ? ",$flatGranuleIndex" : ''}/_search"
     def request = [version: true]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
@@ -149,7 +154,7 @@ class SitemapETLIntegrationTests extends Specification {
   // TODO: remove this function
   private Map searchCollection() {
     def requestBody = [
-            _source: ["lastUpdatedDate",]
+        _source: ["lastUpdatedDate",]
     ]
     String searchEndpoint = "${esConfig.COLLECTION_SEARCH_INDEX_ALIAS}/_search"
     def searchCollectionResponse = elasticsearchService.performRequest('GET', searchEndpoint, requestBody)
@@ -159,19 +164,19 @@ class SitemapETLIntegrationTests extends Specification {
 
   private Map searchSitemap() {
     def requestBody = [
-      _source: ["lastUpdatedDate",]
+        _source: ["lastUpdatedDate",]
     ]
     String searchSitemapEndpoint = "${esConfig.SITEMAP_INDEX_ALIAS}/_search"
-    def searchSitemapResponse = elasticsearchService.performRequest('GET', searchSitemapEndpoint, requestBody )
+    def searchSitemapResponse = elasticsearchService.performRequest('GET', searchSitemapEndpoint, requestBody)
 
     def result = [
-      data: getDocuments(searchSitemapResponse).collect {
-        [id: getId(it), type: esConfig.TYPE, attributes: getSource(it)]
-      },
-      meta: [
-          took : getTook(searchSitemapResponse),
-          total: getHitsTotal(searchSitemapResponse)
-      ]
+        data: getDocuments(searchSitemapResponse).collect {
+          [id: getId(it), type: esConfig.TYPE, attributes: getSource(it)]
+        },
+        meta: [
+            took : getTook(searchSitemapResponse),
+            total: getHitsTotal(searchSitemapResponse)
+        ]
     ]
     return result
   }
@@ -188,8 +193,7 @@ class SitemapETLIntegrationTests extends Specification {
                      attributes: getSource(response)
                  ]]
       ]
-    }
-    else {
+    } else {
       return [
           status: HttpStatus.NOT_FOUND.value(),
           title : 'No such document',

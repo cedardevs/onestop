@@ -42,7 +42,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         // - `RestClient` 'restClient' bean via test containers
         ElasticsearchTestConfig,
     ],
-    webEnvironment = RANDOM_PORT
+    webEnvironment = RANDOM_PORT,
+    properties = ["elasticsearch.index.prefix=admin_kafka_"]
 )
 @TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
 class KafkaIngestIntegrationSpec extends Specification {

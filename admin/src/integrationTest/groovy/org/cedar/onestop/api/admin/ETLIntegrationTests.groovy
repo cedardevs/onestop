@@ -14,6 +14,7 @@ import org.elasticsearch.Version
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -21,6 +22,7 @@ import spock.lang.Unroll
 import static org.cedar.onestop.elastic.common.DocumentUtil.*
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
+@DirtiesContext
 @ActiveProfiles(["integration"])
 @SpringBootTest(
     classes = [
@@ -31,7 +33,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         // - `RestClient` 'restClient' bean via test containers
         ElasticsearchTestConfig,
     ],
-    webEnvironment = RANDOM_PORT
+    webEnvironment = RANDOM_PORT,
+    properties = ["elasticsearch.index.prefix=admin_etl_"]
 )
 @Unroll
 @Slf4j
@@ -322,15 +325,15 @@ class ETLIntegrationTests extends Specification {
     collectionBuilder
         .setType(RecordType.collection)
         .setDiscoveryBuilder(Discovery.newBuilder()
-          .setFileIdentifier('collectionFileId')
-          .setTitle('collectionTitle'))
+            .setFileIdentifier('collectionFileId')
+            .setTitle('collectionTitle'))
 
     granuleBuilder
         .setType(RecordType.granule)
         .setDiscoveryBuilder(Discovery.newBuilder()
-          .setFileIdentifier('granuleFileId')
-          .setParentIdentifier(collectionUUID)
-          .setTitle('granuleTitle'))
+            .setFileIdentifier('granuleFileId')
+            .setParentIdentifier(collectionUUID)
+            .setTitle('granuleTitle'))
 
     def collection = Analyzers.addAnalysis(collectionBuilder.build())
     def granule = Analyzers.addAnalysis(granuleBuilder.build())
