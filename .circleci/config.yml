@@ -6,9 +6,13 @@
 defaults: &defaults
   docker:
     - image: circleci/openjdk:11-jdk
+  environment:
+    - GRADLE_USER_HOME: ~/repo/.gradle_home
   working_directory: ~/repo
 
 defaultsWithElasticsearch: &defaultsWithElasticsearch
+  environment:
+    - GRADLE_USER_HOME: ~/repo/.gradle_home
   docker:
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
     - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
@@ -36,22 +40,22 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
       keys:
-      - onestop-cache-v11-{{ checksum "build.gradle" }}
+      - onestop-cache-v12-{{ checksum "build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v11-
+      - onestop-cache-v12-
 
 saveCache: &saveCache
   save_cache:
       paths:
-        - ~/.gradle/caches/
-        - ~/.gradle/wrapper/
+        - .gradle_home
         - .gradle
-        - client/.gradle
-        - client/node_modules
-        - client/build
+        - build
         - admin/build
+        - client/build
+        - client/node_modules
         - search/build
-      key: onestop-cache-v11-{{ checksum "build.gradle" }}
+
+      key: onestop-cache-v12-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -116,7 +120,8 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - .
+            - .gradle
+            - admin/build
 
   admin-test:
     <<: *defaults
@@ -130,7 +135,8 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - .
+            - .gradle
+            - admin/build
 
   search-test:
     <<: *defaults
@@ -149,9 +155,7 @@ jobs:
           root: ~/repo
           paths:
             - .gradle
-            - search/build/jacoco/test.exec
-            - search/build/test-results/test
-            - search/build/reports/test
+            - search/build
 
   client-test:
     <<: *defaults
@@ -165,6 +169,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
+#            - .gradle
             - client/build
 
   admin-integration-test:
@@ -184,7 +189,8 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - .
+#            - .gradle
+            - admin/build
 
   search-integration-test:
     <<: *defaultsWithElasticsearch
@@ -203,10 +209,8 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - .gradle
-            - search/build/jacoco/integrationTest.exec
-            - search/build/test-results/integrationTest
-            - search/build/reports/integrationTest
+#            - .gradle
+            - search/build
 
   e2e:
     <<: *defaultsMachine
@@ -381,59 +385,54 @@ workflows:
                 - master
                 - /release.*/
           requires:
-            # - admin-test
             - admin-integration-test
-      # - search-build:
-      #     requires:
-      #       - checkout
-      # - search-test:
-      #     requires:
-      #       - search-build
-      # - search-integration-test:
-      #     requires:
-      #       - search-build
-      # - search-publish:
-      #     filters:  # using regex filters requires the entire branch to match
-      #       branches:
-      #         only:  # only branches matching the below regex filters will run
-      #           - master
-      #           - /release.*/
-      #     requires:
-      #       - search-test
-      #       - search-integration-test
-      # - client-build:
-      #     requires:
-      #       - checkout
-      # - client-test:
-      #     requires:
-      #       - client-build
-      # - client-publish:
-      #     filters:  # using regex filters requires the entire branch to match
-      #       branches:
-      #         only:  # only branches matching the below regex filters will run
-      #           - master
-      #           - /release.*/
-      #     requires:
-      #       - client-test
-      # - client-checks:
-      #     requires:
-      #       - client-build
-      #
-      # - e2e:
-      #     requires:
-      #       - client-build
-      #       - admin-build
-      #       - search-build
-      #       - search-integration-test
-      #       - admin-integration-test
-      #
-      # - report-tests:
-      #     requires:
-      #       - admin-test
-      #       - admin-integration-test
-      #       - search-test
-      #       - search-integration-test
-      #       - client-test
+      - search-build:
+          requires:
+            - checkout
+      - search-test:
+          requires:
+            - search-build
+      - search-integration-test:
+          requires:
+            - search-test
+      - search-publish:
+          filters:  # using regex filters requires the entire branch to match
+            branches:
+              only:  # only branches matching the below regex filters will run
+                - master
+                - /release.*/
+          requires:
+            - search-integration-test
+      - client-build:
+          requires:
+            - checkout
+      - client-test:
+          requires:
+            - client-build
+      - client-publish:
+          filters:  # using regex filters requires the entire branch to match
+            branches:
+              only:  # only branches matching the below regex filters will run
+                - master
+                - /release.*/
+          requires:
+            - client-test
+      - client-checks:
+          requires:
+            - client-build
+
+#      - e2e:
+#          requires:
+#            - client-test
+#            - search-integration-test
+#            - admin-integration-test
+
+      - report-tests:
+          requires:
+#            - e2e
+            - client-test
+            - search-integration-test
+            - admin-integration-test
 
   nightly:
     triggers:
