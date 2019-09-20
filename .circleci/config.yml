@@ -303,7 +303,6 @@ jobs:
       - run:
           name: E2E tests
           command: ./gradlew e2e-tests:test
-      - <<: *saveCache
 
 workflows:
   version: 2
