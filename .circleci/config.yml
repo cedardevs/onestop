@@ -359,36 +359,12 @@ workflows:
     - search:
         requires:
         - checkout
-#
-#      - client-build:
-#          requires:
-#            - checkout
-#      - client-test:
-#          requires:
-#            - client-build
-#      - client-publish:
-#          filters:  # using regex filters requires the entire branch to match
-#            branches:
-#              only:  # only branches matching the below regex filters will run
-#                - master
-#                - /release.*/
-#          requires:
-#            - client-test
-#      - client-checks:
-#          requires:
-#            - client-build
 
-#      - e2e:
-#          requires:
-#            - client-test
-#            - search-integration-test
-#            - admin-integration-test
-
-      - finalize:
-          requires:
-            - admin
-#            - client
-            - search
+    - finalize:
+        requires:
+        - admin
+#        - client
+        - search
 
   nightly:
     triggers:
