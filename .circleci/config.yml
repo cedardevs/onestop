@@ -69,12 +69,46 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Setup Gradle
-          command: ./gradlew help
+          name: Build shared resources
+          command: ./gradlew --parallel elastic-common:build
       - persist_to_workspace:
           root: ~/repo
           paths:
             - .
+
+  admin:
+    <<: *defaultsWithElasticsearch
+    <<: *env
+
+    steps:
+    - <<: *attachWorkspace
+
+    - run:
+        name: Assemble, Check (sans integration tests)
+        command: ./gradlew --parallel admin:assemble admin:check -x integrationTest
+
+    - run:
+        name: Wait for Elasticsearch
+        command: dockerize -wait tcp://localhost:9200 -timeout 1m
+
+    - run:
+        name: Integration Tests
+        command: ./gradlew admin:integrationTest
+
+    - deploy:
+        name: Build/Publish Admin API Image(s)
+        command: |
+          echo "${CIRCLE_BRANCH}"
+          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == experiment* ]]; then
+            echo ./gradlew search:jib
+          else
+            echo "Skipping publishing"
+          fi
+
+    - persist_to_workspace:
+        root: ~/repo
+        paths:
+        - admin/build
 
   search:
     <<: *defaultsWithElasticsearch
@@ -84,15 +118,15 @@ jobs:
     - <<: *attachWorkspace
 
     - run:
-        name: Assemble, Check, Test
-        command: ./gradlew --parallel search:assemble search:check search:test
+        name: Assemble, Check (sans integration tests)
+        command: ./gradlew --parallel search:assemble search:check -x integrationTest
 
     - run:
         name: Wait for Elasticsearch
         command: dockerize -wait tcp://localhost:9200 -timeout 1m
 
     - run:
-        name: Search Integration Tests
+        name: Integration Tests
         command: ./gradlew search:integrationTest
 
     - deploy:
@@ -127,36 +161,7 @@ jobs:
             - client/node_modules
             - elastic-common/build
 
-  admin-build:
-    <<: *defaults
-    steps:
-      - <<: *attachWorkspace
 
-      - run:
-          name: Build Admin API
-          command: ./gradlew admin:assemble
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - admin/build
-            - elastic-common/build
-
-  admin-test:
-    <<: *defaults
-    steps:
-      - <<: *attachWorkspace
-
-      - run:
-          name: Admin API Unit Tests
-          command: ./gradlew admin:test
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .gradle
-            - admin/build
 
 
 
@@ -347,28 +352,13 @@ workflows:
   version: 2
   build:
     jobs:
-      - checkout
-      - search:
-          requires:
-          - checkout
-#      - admin-build:
-#          requires:
-#            - checkout
-#      - admin-test:
-#          requires:
-#            - admin-build
-#      - admin-integration-test:
-#          requires:
-#            - admin-test
-#      - admin-publish:
-#          filters:  # using regex filters requires the entire branch to match
-#            branches:
-#              only:  # only branches matching the below regex filters will run
-#                - master
-#                - /release.*/
-#          requires:
-#            - admin-integration-test
-#
+    - checkout
+    - admin:
+        requires:
+        - checkout
+    - search:
+        requires:
+        - checkout
 #
 #      - client-build:
 #          requires:
@@ -396,7 +386,7 @@ workflows:
 
       - finalize:
           requires:
-#            - admin
+            - admin
 #            - client
             - search
 
