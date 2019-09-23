@@ -214,7 +214,7 @@ export default class CartItem extends React.Component {
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges
 
     return (
-      <div>
+      <div key={'CartItem::accessLinks'}>
         <h3 style={styleSectionHeadingTop}>Data Access Links:</h3>
         <ul style={util.styleProtocolList}>{badgesElement}</ul>
       </div>
@@ -239,14 +239,14 @@ export default class CartItem extends React.Component {
     const dataAccessLinks = this.renderLinks(item.links)
 
     const timePeriod = (
-      <div>
+      <div key={'CartItem::timePeriod'}>
         <h3 style={styleSectionHeading}>Time Period:</h3>
         <TimeSummary item={item} />
       </div>
     )
 
     const boundingCoordinates = (
-      <div>
+      <div key={'CartItem::boundingCoordinates'}>
         <h3 style={styleSectionHeading}>Bounding Coordinates:</h3>
         <SpatialSummary item={item} />
       </div>
