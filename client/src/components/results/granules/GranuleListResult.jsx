@@ -15,6 +15,7 @@ import {FEATURE_CART} from '../../../utils/featureUtils'
 import {play_circle_o, SvgIcon} from '../../common/SvgIcon'
 import VideoTray from './VideoTray'
 import {granuleDownloadableLinks} from '../../../utils/cartUtils'
+const pattern = require('../../../../img/topography.png')
 
 const styleResult = {
   minHeight: '15.5em',
@@ -30,10 +31,22 @@ const styleResultFocus = {
   backgroundColor: 'rgb(140, 185, 216)',
 }
 
+const styleLeft = {
+  width: '38.2%',
+  background: `url(${pattern}) repeat`,
+  backgroundSize: '30em',
+}
+
+const styleRight = {
+  marginLeft: '1.618em',
+  width: '61.8%'
+}
+
 const styleImageContainer = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  height: '100%'
 }
 
 const styleImage = {
@@ -384,7 +397,7 @@ class ListResult extends React.Component {
     const left = (
       <FlexColumn
         key={'ListResult::leftColumn'}
-        style={{width: '38.2%'}}
+        style={styleLeft}
         items={[
           this.renderDisplayImage(item.thumbnail, item.spatialBounding),
         ]}
@@ -394,7 +407,7 @@ class ListResult extends React.Component {
     const right = (
       <FlexColumn
         key={'ListResult::rightColumn'}
-        style={{marginLeft: '1.618em', width: '61.8%'}}
+        style={styleRight}
         items={rightItems}
       />
     )
