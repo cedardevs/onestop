@@ -130,9 +130,7 @@ jib {
   String imageRegistryURL = "registry.hub.docker.com"
   String imageNamespace = "cedardevs"
   String imageName = "${rootProject.name}-${project.name}".toString()
-  // TODO: remove the `-jib` post-fix once we are sure everything is working smoothly with JIB
-  // this prevents us from clobbering things we already published to Docker Hub
-  String imageTag = "${project.version}-jib".toString()
+  String imageTag = "${project.version}".toString()
   String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
 
   from {
