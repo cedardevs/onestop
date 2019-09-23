@@ -39,6 +39,7 @@ const styleImageContainer = {
 const styleImage = {
   width: '100%',
   height: '15.5em',
+  objectFit: 'contain'
 }
 
 const styleMap = {
@@ -383,7 +384,7 @@ class ListResult extends React.Component {
     const left = (
       <FlexColumn
         key={'ListResult::leftColumn'}
-        style={{width: '50%'}}
+        style={{width: '38.2%'}}
         items={[
           this.renderDisplayImage(item.thumbnail, item.spatialBounding),
         ]}
@@ -393,7 +394,7 @@ class ListResult extends React.Component {
     const right = (
       <FlexColumn
         key={'ListResult::rightColumn'}
-        style={{marginLeft: '1.618em', width: '50%'}}
+        style={{marginLeft: '1.618em', width: '61.8%'}}
         items={rightItems}
       />
     )

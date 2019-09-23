@@ -60,12 +60,12 @@ const styleLeftRightFlexRow = {
 
 const styleLeft = {
   flex: '1 1 auto',
-  width: '50%',
+  width: '38.2%',
 }
 
 const styleRight = {
   flex: '1 1 auto',
-  width: '50%',
+  width: '61.8%',
   marginLeft: '1.618em',
 }
 
