@@ -51,13 +51,13 @@ const styleImageContainer = {
 
 const styleImage = {
   width: '100%',
-  height: '15.5em',
+  height: '16em',
   objectFit: 'contain'
 }
 
 const styleMap = {
   width: '100%',
-  height: '15.5em',
+  height: '16em',
 }
 
 const styleTitle = {
