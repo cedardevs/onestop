@@ -35,24 +35,25 @@ const styleLeft = {
   width: '38.2%',
   background: `url(${pattern}) repeat`,
   backgroundSize: '30em',
+  justifyContent: 'center',
 }
 
 const styleRight = {
   marginLeft: '1.618em',
-  width: '61.8%'
+  width: '61.8%',
 }
 
 const styleImageContainer = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: '100%'
+  height: '100%',
 }
 
 const styleImage = {
   width: '100%',
   height: '16em',
-  objectFit: 'contain'
+  objectFit: 'contain',
 }
 
 const styleMap = {

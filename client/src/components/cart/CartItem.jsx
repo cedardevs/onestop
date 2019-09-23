@@ -10,8 +10,8 @@ import MapThumbnail from '../common/MapThumbnail'
 import * as util from '../../utils/resultUtils'
 import {boxShadow} from '../../style/defaultStyles'
 import ActionPane from './ActionPane'
-import FlexColumn from "../common/ui/FlexColumn";
-import {processUrl} from "../../utils/urlUtils";
+import FlexColumn from '../common/ui/FlexColumn'
+import {processUrl} from '../../utils/urlUtils'
 const pattern = require('../../../img/topography.png')
 
 const styleWrapper = {
@@ -33,13 +33,13 @@ const styleImageContainer = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: '100%'
+  height: '100%',
 }
 
 const styleImage = {
   width: '100%',
   height: '16em',
-  objectFit: 'contain'
+  objectFit: 'contain',
 }
 
 const styleExpandableHeading = open => {
@@ -79,6 +79,7 @@ const styleLeft = {
   width: '38.2%',
   background: `url(${pattern}) repeat`,
   backgroundSize: '30em',
+  justifyContent: 'center',
 }
 
 const styleRight = {
@@ -253,7 +254,7 @@ export default class CartItem extends React.Component {
 
     const left = (
       <FlexColumn
-        key={"overview-left"}
+        key={'overview-left'}
         style={styleLeft}
         items={[
           this.renderDisplayImage(item.thumbnail, item.spatialBounding),
@@ -263,9 +264,9 @@ export default class CartItem extends React.Component {
 
     const right = (
       <FlexColumn
-        key={"overview-right"}
+        key={'overview-right'}
         style={styleRight}
-        items={[dataAccessLinks, timePeriod, boundingCoordinates]}
+        items={[ dataAccessLinks, timePeriod, boundingCoordinates ]}
       />
     )
 
