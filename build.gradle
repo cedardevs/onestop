@@ -84,8 +84,8 @@ subprojects {
 
         if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
           if (details.requested.version.startsWith('2.9') && details.requested.version <= '2.9.9') {
-            details.useVersion '2.9.9.3'
-            details.because 'fixes vulnerability in 2.9.9 and before'
+            details.useVersion '2.10.0.pr3'
+            details.because 'fixes vulnerability before 2.9.10'
           }
         }
         if (details.requested.group == 'org.bouncycastle' && details.requested.name == 'bcprov-jdk15on') {
