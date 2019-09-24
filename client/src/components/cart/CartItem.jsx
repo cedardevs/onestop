@@ -10,6 +10,9 @@ import MapThumbnail from '../common/MapThumbnail'
 import * as util from '../../utils/resultUtils'
 import {boxShadow} from '../../style/defaultStyles'
 import ActionPane from './ActionPane'
+import FlexColumn from '../common/ui/FlexColumn'
+import {processUrl} from '../../utils/urlUtils'
+const pattern = require('../../../img/topography.png')
 
 const styleWrapper = {
   margin: '0 1.618em 0.618em 0',
@@ -24,6 +27,19 @@ const styleExpandableWrapper = {
 const styleExpandableHeadingFocused = {
   textDecoration: 'underline',
   outline: '2px dashed black',
+}
+
+const styleImageContainer = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+}
+
+const styleImage = {
+  width: '100%',
+  height: '16em',
+  objectFit: 'contain',
 }
 
 const styleExpandableHeading = open => {
@@ -60,12 +76,15 @@ const styleLeftRightFlexRow = {
 
 const styleLeft = {
   flex: '1 1 auto',
-  width: '50%',
+  width: '38.2%',
+  background: `url(${pattern}) repeat`,
+  backgroundSize: '30em',
+  justifyContent: 'center',
 }
 
 const styleRight = {
   flex: '1 1 auto',
-  width: '50%',
+  width: '61.8%',
   marginLeft: '1.618em',
 }
 
@@ -82,8 +101,9 @@ const styleSectionHeadingTop = {
   marginTop: '0em',
 }
 
-const stylePreviewMap = {
+const styleMap = {
   zIndex: 4,
+  width: '100%',
   height: '16em',
   paddingTop: '0.25em',
 }
@@ -118,6 +138,35 @@ export default class CartItem extends React.Component {
         expanded: !!event.open,
       }
     })
+  }
+
+  renderDisplayImage(thumbnail, geometry) {
+    const imgUrl = processUrl(thumbnail)
+    if (imgUrl && !imgUrl.includes('maps.googleapis.com')) {
+      // Stick to leaflet maps
+      return (
+        <div key={'CartItem::image'} style={styleImageContainer}>
+          <img
+            style={styleImage}
+            src={imgUrl}
+            alt=""
+            aria-hidden="true"
+            width="100px"
+            height="100px"
+          />
+        </div>
+      )
+    }
+    else {
+      // Return map image of spatial bounding or, if none, world map
+      return (
+        <div key={'CartItem::map'} aria-hidden={true}>
+          <div style={styleMap}>
+            <MapThumbnail geometry={geometry} interactive={true} />
+          </div>
+        </div>
+      )
+    }
   }
 
   renderBadge = (link, itemId, item) => {
@@ -165,7 +214,7 @@ export default class CartItem extends React.Component {
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges
 
     return (
-      <div>
+      <div key={'CartItem::accessLinks'}>
         <h3 style={styleSectionHeadingTop}>Data Access Links:</h3>
         <ul style={util.styleProtocolList}>{badgesElement}</ul>
       </div>
@@ -187,42 +236,38 @@ export default class CartItem extends React.Component {
       </div>
     )
 
-    const mapView = (
-      <div aria-hidden={true}>
-        <div style={stylePreviewMap}>
-          <MapThumbnail geometry={item.spatialBounding} interactive={true} />
-        </div>
-      </div>
-    )
-
-    const left = (
-      <div key="overview-left" style={styleLeft}>
-        {mapView}
-      </div>
-    )
-
     const dataAccessLinks = this.renderLinks(item.links)
 
     const timePeriod = (
-      <div>
+      <div key={'CartItem::timePeriod'}>
         <h3 style={styleSectionHeading}>Time Period:</h3>
         <TimeSummary item={item} />
       </div>
     )
 
     const boundingCoordinates = (
-      <div>
+      <div key={'CartItem::boundingCoordinates'}>
         <h3 style={styleSectionHeading}>Bounding Coordinates:</h3>
         <SpatialSummary item={item} />
       </div>
     )
 
+    const left = (
+      <FlexColumn
+        key={'overview-left'}
+        style={styleLeft}
+        items={[
+          this.renderDisplayImage(item.thumbnail, item.spatialBounding),
+        ]}
+      />
+    )
+
     const right = (
-      <div key="overview-right" style={styleRight}>
-        {dataAccessLinks}
-        {timePeriod}
-        {boundingCoordinates}
-      </div>
+      <FlexColumn
+        key={'overview-right'}
+        style={styleRight}
+        items={[ dataAccessLinks, timePeriod, boundingCoordinates ]}
+      />
     )
 
     const detailView = (
