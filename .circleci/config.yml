@@ -307,21 +307,33 @@ jobs:
 workflows:
   version: 2
   build:
-    filters:  # in theory this means it will build on all branches *and* all tags
-      tags:
-        only: /.*/
     jobs:
-      - checkout
+      - checkout:
+          filters:  # in theory this means it will build on all branches *and* all tags
+            tags:
+              only: /.*/
       - admin:
+          filters:  # in theory this means it will build on all branches *and* all tags
+            tags:
+              only: /.*/
           requires:
             - checkout
       - client:
+          filters:  # in theory this means it will build on all branches *and* all tags
+            tags:
+              only: /.*/
           requires:
             - checkout
       - search:
+          filters:  # in theory this means it will build on all branches *and* all tags
+            tags:
+              only: /.*/
           requires:
             - checkout
       - finalize:
+          filters:  # in theory this means it will build on all branches *and* all tags
+            tags:
+              only: /.*/
           requires:
             - admin
             - client
