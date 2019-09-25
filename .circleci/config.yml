@@ -307,6 +307,9 @@ jobs:
 workflows:
   version: 2
   build:
+    filters:  # in theory this means it will build on all branches *and* all tags
+      tags:
+        only: /.*/
     jobs:
       - checkout
       - admin:
