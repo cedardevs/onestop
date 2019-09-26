@@ -79,6 +79,7 @@ class StreamFunctionsSpec extends Specification {
     result.events[0].method == input.method
     result.events[0].operation == input.operation
     result.events[0].timestamp == timestampedInput.timestampMs
+    result.events[0].failedState == false
     result.errors instanceof List
     result.errors.size() == 0
   }
@@ -148,7 +149,7 @@ class StreamFunctionsSpec extends Specification {
         type: RecordType.granule,
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        events: [new InputEvent(null, Method.POST, 'test', null)]
+        events: [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = Input.newBuilder()
         .setType(RecordType.granule)
@@ -175,7 +176,7 @@ class StreamFunctionsSpec extends Specification {
         type: RecordType.granule,
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        events: [new InputEvent(null, Method.POST, 'test', null)]
+        events: [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = Input.newBuilder()
         .setType(RecordType.granule)
@@ -203,7 +204,7 @@ class StreamFunctionsSpec extends Specification {
         type: RecordType.granule,
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        events: [new InputEvent(null, Method.POST, 'test', null)]
+        events: [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = Input.newBuilder()
         .setType(RecordType.granule)
@@ -231,7 +232,7 @@ class StreamFunctionsSpec extends Specification {
         type: RecordType.granule,
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        events: [new InputEvent(null, Method.POST, 'test', null)]
+        events: [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = new Input([
         type: RecordType.granule,
@@ -260,7 +261,7 @@ class StreamFunctionsSpec extends Specification {
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
         deleted: false,
-        events: [new InputEvent(null, Method.POST, 'test', null)]
+        events: [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = new Input([
         method: Method.DELETE,
@@ -284,7 +285,7 @@ class StreamFunctionsSpec extends Specification {
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
         deleted: true,
-        events: [new InputEvent(null, Method.POST, 'test', null)]
+        events: [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = new Input([
         method: Method.GET,
@@ -308,7 +309,7 @@ class StreamFunctionsSpec extends Specification {
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
         deleted: true,
-        events: [new InputEvent(null, Method.POST, 'test', null)]
+        events: [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = new Input([
         method: Method.DELETE,
@@ -332,7 +333,7 @@ class StreamFunctionsSpec extends Specification {
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
         deleted: false,
-        events: [new InputEvent(null, Method.POST, 'test', null)]
+        events: [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = new Input([
         method: Method.GET,
@@ -350,4 +351,89 @@ class StreamFunctionsSpec extends Specification {
     result.rawJson == currentAggregate.rawJson
   }
 
+  def 'most recent input event indicates success when successful'() {
+    def key = 'ABC'
+    def input = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
+        content: '{"fileInformation":{"size":1500},"fileLocations":{"test:one":{"uri":"test:one"}}}',
+        contentType: 'application/json',
+        source: 'test',
+        operation: null
+    ])
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def aggregate = AggregatedInput.newBuilder().build()
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply(key, timestampedInput, aggregate)
+
+    then:
+    result.errors instanceof List
+    result.errors.size() == 0
+
+    and:
+    result.events instanceof List
+    result.events.size() == 1
+    result.events[0].failedState == false
+  }
+
+  def 'most recent input event indicates failure when failed'() {
+    def key = 'ABC'
+    def input = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
+        content: '{"fileInformation":{"size":"THIS IS NOT A NUMBER!!"},"fileLocations":{"test:one":{"uri":"test:one"}}}',
+        contentType: 'application/json',
+        source: 'test',
+        operation: null
+    ])
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def aggregate = AggregatedInput.newBuilder().build()
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply(key, timestampedInput, aggregate)
+
+    then:
+    result.errors instanceof List
+    result.errors.size() == 1
+
+    and:
+    result.events instanceof List
+    result.events.size() == 1
+    result.events[0].failedState == true
+  }
+
+  def 'null initial input received is totally ignored'() {
+    def key = 'ABC'
+    def input = null
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def aggregate = StreamFunctions.aggregatedInputInitializer.apply()
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply(key, timestampedInput, aggregate)
+
+    then:
+    result == null
+  }
+
+  def 'null update input received doesn\'t modify existing record and is ignored'() {
+    def currentAggregate = new AggregatedInput([
+        type: RecordType.granule,
+        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        initialSource: 'test',
+        events: [new InputEvent(null, Method.POST, 'test', null, false)]
+    ])
+    def input = null
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
+
+    then:
+    result.type == currentAggregate.type
+    result.initialSource == currentAggregate.initialSource
+    result.deleted == false
+    result.events.size() == 1
+    result.rawJson == '{"trackingId":"ABC","message":"this is a test","answer": 42}'
+  }
 }

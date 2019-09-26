@@ -37,10 +37,20 @@ public class StreamFunctions {
 
   public static Aggregator<String, TimestampedValue<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, currentState) -> {
     var input = timestampedInput.data;
-    log.debug("Aggregating input for key {} with method {}", key, input.getMethod());
+
     if (input == null) {
-      // TODO - ??
+      // Note: null input can only occur if something ends up on the topic without going through the registry api
+      if (currentState != null) {
+        // Nothing to be changed on an existing record
+        return AggregatedInput.newBuilder(currentState).build();
+      }
+      else {
+        // Don't "update" a record that doesn't exist
+        return null;
+      }
     }
+
+    log.debug("Aggregating input for key {} with method {}", key, input.getMethod());
 
     var method = input.getMethod();
     if (method == DELETE || method == GET) {
@@ -52,17 +62,16 @@ public class StreamFunctions {
         AggregatedInput.newBuilder(currentState) :
         AggregatedInput.newBuilder();
 
+    if(builder.getType() != null && builder.getType() != input.getType()) {
+      // Ignore attempts to change the type of a record
+      return builder.build();
+    }
+
     if (builder.getType() == null) {
       builder.setType(input.getType());
     }
-    else if (builder.getType() != input.getType()) {
-      var error = ErrorEvent.newBuilder()
-          .setTitle("Mismatched types")
-          .setDetail("Input attempted to change the type of an entity from ["
-              + builder.getType() + "] to [" + input.getType() + "]")
-          .build();
-      return builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error)).build();
-    }
+
+    var failedState = false;
 
     if (builder.getInitialSource() == null) {
       builder.setInitialSource(input.getSource());
@@ -76,15 +85,20 @@ public class StreamFunctions {
         // filter the merged map so we don't overwrite the entire AggregatedInput
         var fieldsToParse = List.of("fileInformation", "fileLocations", "publishing", "relationships");
         DataUtils.updateDerivedFields(builder, mergedMap, fieldsToParse);
+        var errors = builder.getErrors();
+        if (errors != null && !errors.isEmpty()) {
+          failedState = true;
+        }
       }
     }
     if (contentType.equals("application/xml") || contentType.equals("text/xml")) {
       builder.setRawXml(input.getContent());
     }
 
-    // note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
+
+    // Note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
     var currentEvents = currentState != null ? currentState.getEvents() : null;
-    builder.setEvents(DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput)));
+    builder.setEvents(DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput, failedState)));
     return builder.build();
   };
 
@@ -105,7 +119,7 @@ public class StreamFunctions {
     else {
       return builder
           .setDeleted(deleted)
-          .setEvents(DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input)))
+          .setEvents(DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false)))
           .build();
     }
   }
@@ -134,12 +148,13 @@ public class StreamFunctions {
     }
   }
 
-  public static InputEvent buildEventRecord(TimestampedValue<Input> input) {
+  public static InputEvent buildEventRecord(TimestampedValue<Input> input, boolean failedState) {
     return InputEvent.newBuilder()
         .setMethod(input.data.getMethod())
         .setOperation(input.data.getOperation())
         .setSource(input.data.getSource())
         .setTimestamp(input.timestampMs)
+        .setFailedState(failedState)
         .build();
   }
 
