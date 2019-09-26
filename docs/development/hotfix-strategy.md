@@ -32,7 +32,7 @@ git commit -m "test"
 
 ## Tagging a hotfix release
 
-Once a hotfix and incremented patched version number has been merged to the release branch, tag it. 
+Once a hotfix and incremented patched version number has been merged to the release branch, tag it.
  ```
  git tag <tag>
  git push origin <tag>
@@ -42,3 +42,7 @@ Write the release notes on GitHub:
  * [Draft the release][draft release] from the corresponding tag on the `master` branch.
  * Have at least one team member review the release notes.
  * Publish the [release](https://github.com/cedardevs/onestop/releases) on GitHub.
+
+## Manually publishing with jib
+
+`(export DOCKER_USER=<user>; export DOCKER_PASSWORD=<password>; ./gradlew jib)`
