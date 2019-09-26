@@ -1,7 +1,7 @@
 buildscript {
   ext {
     spockVersion = '1.1-groovy-2.4'
-    schemasVersion = '0.4.0'
+    schemasVersion = '19-event_success-SNAPSHOT'
     confluentVersion = '5.3.1'
     kafkaVersion = '2.3.0'
   }
