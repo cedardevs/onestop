@@ -1,18 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
+import GranuleAccessLink from './GranuleAccessLink'
 import MapThumbnail from '../../common/MapThumbnail'
 import {processUrl, isGovExternal} from '../../../utils/urlUtils'
 import * as util from '../../../utils/resultUtils'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
-import defaultStyles, {boxShadow} from '../../../style/defaultStyles'
-import A from '../../common/link/Link'
-import Button from '../../common/input/Button'
+import {boxShadow} from '../../../style/defaultStyles'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import Checkbox from '../../common/input/Checkbox'
 import {FEATURE_CART} from '../../../utils/featureUtils'
-import {play_circle_o, SvgIcon} from '../../common/SvgIcon'
 import VideoTray from './VideoTray'
 import {granuleDownloadableLinks} from '../../../utils/cartUtils'
 const pattern = require('../../../../img/topography.png')
@@ -84,17 +82,6 @@ const styleFocusDefault = {
   outline: 'none',
   // border: '.1em dashed white',
   textDecoration: 'underline',
-}
-
-const styleBadgeLink = {
-  textDecoration: 'none',
-  display: 'inline-flex',
-  paddingRight: '0.309em',
-}
-
-const styleBadgeLinkFocused = {
-  outline: '2px dashed white',
-  outlineOffset: '0.105em',
 }
 
 const stylePlayButton = {
@@ -194,80 +181,6 @@ class ListResult extends React.Component {
     )
   }
 
-  renderBadge = link => {
-    const {itemId, item} = this.props
-    const {protocol, url, displayName, linkProtocol} = link
-    const linkText = displayName ? displayName : protocol.label
-    const accessibleProtocolText = displayName
-      ? `protocol: ${protocol.label} for ${item.title}`
-      : ` for ${item.title}` // prevent duplicate reading of protocol.label if that is also used as the linkText
-    let focusRef = null
-    const allowVideo =
-      linkProtocol === 'video:youtube' ||
-      (url.includes('.mp4') && !isGovExternal(url))
-    const videoPlay =
-      protocol.label === 'Video' && allowVideo ? (
-        <Button
-          key={`video-play-button-${url}`}
-          styleHover={styleHoverPlayButton}
-          style={stylePlayButton}
-          ref={ref => {
-            focusRef = ref
-          }}
-          onClick={() => {
-            this.props.showGranuleVideo(this.props.itemId)
-            this.setState(prevState => {
-              return {
-                ...prevState,
-                videoPlaying: {
-                  protocol: linkProtocol,
-                  url: url,
-                  returnFocusRef: focusRef,
-                },
-              }
-            })
-          }}
-          title={`Play ${linkText}`}
-        >
-          <SvgIcon size="1em" path={play_circle_o} />
-        </Button>
-      ) : null
-    return (
-      <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
-        <div
-          title={protocol.label}
-          style={util.styleBadge(protocol)}
-          aria-hidden="true"
-        >
-          {util.renderBadgeIcon(protocol)}
-        </div>
-        <A
-          href={url}
-          key={url}
-          target="_blank"
-          style={styleBadgeLink}
-          styleFocus={styleBadgeLinkFocused}
-        >
-          <div
-            id={`ListResult::Link::${url}`}
-            style={{
-              ...{
-                textDecoration: 'underline',
-                margin: '0.6em 0',
-              },
-            }}
-          >
-            {linkText}{' '}
-            <span style={defaultStyles.hideOffscreen}>
-              {accessibleProtocolText}
-            </span>
-          </div>
-        </A>
-        {videoPlay}
-      </li>
-    )
-  }
-
   renderLinks(links) {
     const badges = _.chain(links)
       // .filter(link => link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess')
@@ -281,7 +194,13 @@ class ListResult extends React.Component {
       }))
       .sortBy(info => info.protocol.id)
       .map(link => {
-        return this.renderBadge(link)
+        return (
+          <GranuleAccessLink
+            link={link}
+            item={this.props.item}
+            itemId={this.props.itemId}
+          />
+        )
       })
       .value()
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges

@@ -6,6 +6,7 @@ import A from '../common/link/Link'
 import TimeSummary from '../collections/detail/TimeSummary'
 import {fontFamilySerif} from '../../utils/styleUtils'
 import SpatialSummary from '../collections/detail/SpatialSummary'
+import GranuleAccessLink from '../results//granules/GranuleAccessLink'
 import MapThumbnail from '../common/MapThumbnail'
 import * as util from '../../utils/resultUtils'
 import {boxShadow} from '../../style/defaultStyles'
@@ -169,33 +170,6 @@ export default class CartItem extends React.Component {
     }
   }
 
-  renderBadge = (link, itemId, item) => {
-    const {protocol, url, displayName} = link
-    const linkText = displayName ? displayName : protocol.label
-
-    const ariaTitle = displayName
-      ? `${linkText} ${protocol.label} ${item.title}`
-      : `${linkText} ${item.title}`
-
-    return (
-      <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
-        <A
-          href={url}
-          key={url}
-          title={ariaTitle}
-          target="_blank"
-          style={styleBadgeLink}
-          styleFocus={styleBadgeLinkFocused}
-        >
-          <div style={util.styleBadge(protocol)} aria-hidden="true">
-            {util.renderBadgeIcon(protocol)}
-          </div>
-          <div style={styleLinkText}>{linkText}</div>
-        </A>
-      </li>
-    )
-  }
-
   renderLinks = links => {
     const badges = _.chain(links)
       // .filter(link => link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess')
@@ -208,7 +182,13 @@ export default class CartItem extends React.Component {
       }))
       .sortBy(info => info.protocol.id)
       .map(link => {
-        return this.renderBadge(link, this.props.itemId, this.props.item)
+        return (
+          <GranuleAccessLink
+            link={link}
+            item={this.props.item}
+            itemId={this.props.itemId}
+          />
+        )
       })
       .value()
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges
