@@ -35,7 +35,7 @@ public class StreamFunctions {
 
   public static Initializer<AggregatedInput> aggregatedInputInitializer = () -> null;
 
-  public static Aggregator<String, TimestampedValue<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, aggregate) -> {
+  public static Aggregator<String, TimestampedValue<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, currentState) -> {
     var input = timestampedInput.data;
     log.debug("Aggregating input for key {} with method {}", key, input.getMethod());
     if (input == null) {
@@ -44,12 +44,12 @@ public class StreamFunctions {
 
     var method = input.getMethod();
     if (method == DELETE || method == GET) {
-      return updateDeleted(timestampedInput, aggregate);
+      return updateDeleted(timestampedInput, currentState);
     }
 
     // if we're PATCHing then build on top of the existing state, else create a new state
-    var builder = method == PATCH && aggregate instanceof AggregatedInput ?
-        AggregatedInput.newBuilder(aggregate) :
+    var builder = method == PATCH && currentState instanceof AggregatedInput ?
+        AggregatedInput.newBuilder(currentState) :
         AggregatedInput.newBuilder();
 
     if (builder.getType() == null) {
@@ -83,22 +83,30 @@ public class StreamFunctions {
     }
 
     // note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
-    var currentEvents = aggregate != null ? aggregate.getEvents() : null;
+    var currentEvents = currentState != null ? currentState.getEvents() : null;
     builder.setEvents(DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput)));
     return builder.build();
   };
 
-  public static AggregatedInput updateDeleted(TimestampedValue<Input> input, AggregatedInput aggregate) {
-    if (aggregate == null) {
+  public static AggregatedInput updateDeleted(TimestampedValue<Input> input, AggregatedInput currentState) {
+    if (currentState == null) {
+      // Don't "update" a record that doesn't exist
       return null;
     }
     var data = input != null ? input.data : null;
     var method = data != null ? input.data.getMethod() : null;
     var deleted = method != null && method.equals(DELETE);
-    return AggregatedInput.newBuilder(aggregate)
-        .setDeleted(deleted)
-        .setEvents(DataUtils.addOrInit(aggregate.getEvents(), buildEventRecord(input)))
-        .build();
+
+    if (currentState.getDeleted() == deleted) {
+      // Don't append to the events list if nothing is changing
+      return currentState;
+    }
+    else {
+      return AggregatedInput.newBuilder(currentState)
+          .setDeleted(deleted)
+          .setEvents(DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input)))
+          .build();
+    }
   }
 
   public static Map updateRawJson(AggregatedInput.Builder builder, Input input, OperationType operationType) {
