@@ -6,7 +6,7 @@ import {processUrl, isGovExternal} from '../../../utils/urlUtils'
 import * as util from '../../../utils/resultUtils'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
-import {boxShadow} from '../../../style/defaultStyles'
+import defaultStyles, {boxShadow} from '../../../style/defaultStyles'
 import A from '../../common/link/Link'
 import Button from '../../common/input/Button'
 import {fontFamilySerif} from '../../../utils/styleUtils'
@@ -197,11 +197,11 @@ class ListResult extends React.Component {
   renderBadge = (link, itemId) => {
     const {protocol, url, displayName, linkProtocol} = link
     const linkText = displayName ? displayName : protocol.label
-    const labelledBy = displayName
-      ? // title the link with references to elements: linkText, protocolLegend, granuleTitle
-        `ListResult::Link::${url} protocol::legend::${protocol.id}  ListResult::title::${itemId}`
-      : // linkText is the same as protocol, so only include one of the two
-        `protocol::legend::${protocol.id} ListResult::title::${itemId}`
+    // const labelledBy = displayName
+    //   ? // title the link with references to elements: linkText, protocolLegend, granuleTitle
+    //     `ListResult::Link::${url} ListResult::protocol::${itemId} ListResult::title::${itemId}`
+    //   : // linkText is the same as protocol, so only include one of the two
+    //     `ListResult::protocol::${itemId} ListResult::title::${itemId}`
     let focusRef = null
     const allowVideo =
       linkProtocol === 'video:youtube' ||
@@ -238,7 +238,6 @@ class ListResult extends React.Component {
         <A
           href={url}
           key={url}
-          aria-labelledby={labelledBy}
           target="_blank"
           style={styleBadgeLink}
           styleFocus={styleBadgeLinkFocused}
@@ -255,7 +254,8 @@ class ListResult extends React.Component {
               },
             }}
           >
-            {linkText}
+            {linkText} <span
+            style={defaultStyles.hideOffscreen}>{protocol.label}</span>
           </div>
         </A>
         {videoPlay}

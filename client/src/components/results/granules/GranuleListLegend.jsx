@@ -70,15 +70,15 @@ export default class GranuleListLegend extends React.Component {
         )
       })
       .value()
-
-    return (
-      <div style={styleLegend}>
-        <h2 style={styleHeading} aria-label="Access Protocols Legend">
-          Access Protocols:
-        </h2>
-        <ul style={styleLegendList}>{legendItems}</ul>
-      </div>
-    )
+      return null // TODO remove this whole file!
+    // return (
+    //   <div style={styleLegend}>
+    //     <h2 style={styleHeading} aria-label="Access Protocols Legend">
+    //       Access Protocols:
+    //     </h2>
+    //     <ul style={styleLegendList}>{legendItems}</ul>
+    //   </div>
+    // )
   }
 }
 
