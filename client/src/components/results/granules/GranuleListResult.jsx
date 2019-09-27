@@ -250,8 +250,10 @@ class ListResult extends React.Component {
               },
             }}
           >
-            {linkText} <span
-            style={defaultStyles.hideOffscreen}>{accessibleProtocolText}</span>
+            {linkText}{' '}
+            <span style={defaultStyles.hideOffscreen}>
+              {accessibleProtocolText}
+            </span>
           </div>
         </A>
         {videoPlay}
