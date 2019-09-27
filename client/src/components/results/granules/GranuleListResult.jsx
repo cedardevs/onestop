@@ -197,11 +197,7 @@ class ListResult extends React.Component {
   renderBadge = (link, itemId) => {
     const {protocol, url, displayName, linkProtocol} = link
     const linkText = displayName ? displayName : protocol.label
-    // const labelledBy = displayName
-    //   ? // title the link with references to elements: linkText, protocolLegend, granuleTitle
-    //     `ListResult::Link::${url} ListResult::protocol::${itemId} ListResult::title::${itemId}`
-    //   : // linkText is the same as protocol, so only include one of the two
-    //     `ListResult::protocol::${itemId} ListResult::title::${itemId}`
+    const accessibleProtocolText = displayName ? protocol.label : '' // prevent duplicate reading of protocol.label if that is also used as the linkText
     let focusRef = null
     const allowVideo =
       linkProtocol === 'video:youtube' ||
@@ -255,7 +251,7 @@ class ListResult extends React.Component {
             }}
           >
             {linkText} <span
-            style={defaultStyles.hideOffscreen}>{protocol.label}</span>
+            style={defaultStyles.hideOffscreen}>{accessibleProtocolText}</span>
           </div>
         </A>
         {videoPlay}
