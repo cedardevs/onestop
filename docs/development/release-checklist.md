@@ -199,6 +199,12 @@ Follow these steps to confirm that core behavior is working as expected, as well
 1. Search `DEM`. One of those should be "Hilo, Hawaii 1/3 arc-second DEM"
     - Select this collection
     - [ ] On the Access Tab, there should be a 'Services' section. It has 3 categories with  map services (2 links), "Model Global Mosaic ArcGIS" image services (3 links), and "MHW Mosaic ArcGIS" image service (1 link) respectively.
+1. Search `Constructed` and look for the test data.
+    - Navigate through to the granules page.
+    - The granule "Test Accessible Access Protocols and Links" has 4 links
+    - [ ] for all links, the protocol name is displayed on mouse hover
+    - [ ] using a screen reader, or ANDI, verify the link titles match the format "[link text] protocol [protocol name] for [granule title]" if the link has a name rendered (2 links), or "[protocol name] for [granule title]" if the link has no name and uses the protocol as a fallback (2 links)
+        - One each of the HTTPS and Cloud links matches each format. The two different examples of protocols used verifies the badge works correctly for both letter abbreviations ("H") rendered with a span, and svg badges.
 
 1. In the search box:
     - [ ] Enter a search with blank text field (disallowed)
