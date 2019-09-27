@@ -110,14 +110,13 @@ public class StreamFunctions {
     var data = input != null ? input.data : null;
     var method = data != null ? input.data.getMethod() : null;
     var deleted = method != null && method.equals(DELETE);
-    var builder = AggregatedInput.newBuilder(currentState);
 
-    if(currentState.getDeleted() == deleted) {
+    if (currentState.getDeleted() == deleted) {
       // Don't append to the events list if nothing is changing
-      return builder.build();
+      return currentState;
     }
     else {
-      return builder
+      return AggregatedInput.newBuilder(currentState)
           .setDeleted(deleted)
           .setEvents(DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false)))
           .build();
