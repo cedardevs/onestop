@@ -194,10 +194,13 @@ class ListResult extends React.Component {
     )
   }
 
-  renderBadge = (link, itemId) => {
+  renderBadge = link => {
+    const {itemId, item} = this.props
     const {protocol, url, displayName, linkProtocol} = link
     const linkText = displayName ? displayName : protocol.label
-    const accessibleProtocolText = displayName ? protocol.label : '' // prevent duplicate reading of protocol.label if that is also used as the linkText
+    const accessibleProtocolText = displayName
+      ? `protocol: ${protocol.label} for ${item.title}`
+      : ` for ${item.title}` // prevent duplicate reading of protocol.label if that is also used as the linkText
     let focusRef = null
     const allowVideo =
       linkProtocol === 'video:youtube' ||
@@ -231,6 +234,13 @@ class ListResult extends React.Component {
       ) : null
     return (
       <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
+        <div
+          title={protocol.label}
+          style={util.styleBadge(protocol)}
+          aria-hidden="true"
+        >
+          {util.renderBadgeIcon(protocol)}
+        </div>
         <A
           href={url}
           key={url}
@@ -238,9 +248,6 @@ class ListResult extends React.Component {
           style={styleBadgeLink}
           styleFocus={styleBadgeLinkFocused}
         >
-          <div style={util.styleBadge(protocol)} aria-hidden="true">
-            {util.renderBadgeIcon(protocol)}
-          </div>
           <div
             id={`ListResult::Link::${url}`}
             style={{
@@ -274,7 +281,7 @@ class ListResult extends React.Component {
       }))
       .sortBy(info => info.protocol.id)
       .map(link => {
-        return this.renderBadge(link, this.props.itemId)
+        return this.renderBadge(link)
       })
       .value()
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges
