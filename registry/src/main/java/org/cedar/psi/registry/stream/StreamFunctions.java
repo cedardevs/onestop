@@ -39,15 +39,7 @@ public class StreamFunctions {
     var input = timestampedInput.data;
 
     if (input == null) {
-      // Note: null input can only occur if something ends up on the topic without going through the registry api
-      if (currentState != null) {
-        // Nothing to be changed on an existing record
-        return AggregatedInput.newBuilder(currentState).build();
-      }
-      else {
-        // Don't "update" a record that doesn't exist
-        return null;
-      }
+      return null; // Tombstone
     }
 
     log.debug("Aggregating input for key {} with method {}", key, input.getMethod());
@@ -63,15 +55,16 @@ public class StreamFunctions {
         AggregatedInput.newBuilder();
 
     if(builder.getType() != null && builder.getType() != input.getType()) {
-      // Ignore attempts to change the type of a record
+      // Don't accept attempts to change the type of a record (and don't put the record in an error state based on
+      // this attempt) but log an error if it happens
+      log.error("Input attempted to change the type of an entity from ["
+          + builder.getType() + "] to [" + input.getType() + "]");
       return builder.build();
     }
 
     if (builder.getType() == null) {
       builder.setType(input.getType());
     }
-
-    var failedState = false;
 
     if (builder.getInitialSource() == null) {
       builder.setInitialSource(input.getSource());
@@ -85,16 +78,14 @@ public class StreamFunctions {
         // filter the merged map so we don't overwrite the entire AggregatedInput
         var fieldsToParse = List.of("fileInformation", "fileLocations", "publishing", "relationships");
         DataUtils.updateDerivedFields(builder, mergedMap, fieldsToParse);
-        var errors = builder.getErrors();
-        if (errors != null && !errors.isEmpty()) {
-          failedState = true;
-        }
       }
     }
     if (contentType.equals("application/xml") || contentType.equals("text/xml")) {
       builder.setRawXml(input.getContent());
     }
 
+    var errors = builder.getErrors();
+    var failedState = errors != null && !errors.isEmpty();
 
     // Note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
     var currentEvents = currentState != null ? currentState.getEvents() : null;
