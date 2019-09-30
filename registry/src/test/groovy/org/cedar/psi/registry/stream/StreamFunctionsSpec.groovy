@@ -403,7 +403,7 @@ class StreamFunctionsSpec extends Specification {
     result.events[0].failedState == true
   }
 
-  def 'null initial input received is totally ignored'() {
+  def 'null initial input received is ignored'() {
     def key = 'ABC'
     def input = null
     def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
@@ -416,7 +416,7 @@ class StreamFunctionsSpec extends Specification {
     result == null
   }
 
-  def 'null update input received doesn\'t modify existing record and is ignored'() {
+  def 'null update input received results in tombstone'() {
     def currentAggregate = new AggregatedInput([
         type: RecordType.granule,
         rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
@@ -430,10 +430,6 @@ class StreamFunctionsSpec extends Specification {
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
 
     then:
-    result.type == currentAggregate.type
-    result.initialSource == currentAggregate.initialSource
-    result.deleted == false
-    result.events.size() == 1
-    result.rawJson == '{"trackingId":"ABC","message":"this is a test","answer": 42}'
+    result == null
   }
 }
