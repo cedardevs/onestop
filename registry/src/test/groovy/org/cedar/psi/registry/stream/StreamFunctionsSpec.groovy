@@ -432,4 +432,37 @@ class StreamFunctionsSpec extends Specification {
     then:
     result == null
   }
+
+  def 'errors reset on new input'() {
+    def currentAggregate = new AggregatedInput([
+        type: RecordType.granule,
+        rawJson: '{"fileInformation":{"size":"THIS IS NOT A NUMBER!!"},"fileLocations":{"test:one":{"uri":"test:one"}}}',
+        initialSource: 'test',
+        events: [new InputEvent(null, Method.POST, 'test', null, true)],
+        errors: [ErrorEvent.newBuilder().setTitle("Failed to parse field [fileInformation.size]").setDetail("Expected a Number but found a String").build()]
+    ])
+    def input = Input.newBuilder()
+        .setType(RecordType.granule)
+        .setMethod(Method.PATCH)
+        .setContent('{"fileInformation":{"size":"THIS IS NOT A NUMBER!!"}}')
+        .setContentType('application/json')
+        .setSource('test')
+        .setOperation(OperationType.REMOVE)
+        .build()
+    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+
+    when:
+    def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
+
+    then:
+    result.type == currentAggregate.type
+    result.initialSource == currentAggregate.initialSource
+    result.deleted == false
+    result.events.size() == 2
+    result.events[0].failedState == true
+    result.events[1].failedState == false
+    result.errors instanceof List
+    result.errors.isEmpty()
+    result.rawJson == '{"fileInformation":{},"fileLocations":{"test:one":{"uri":"test:one"}}}'
+  }
 }

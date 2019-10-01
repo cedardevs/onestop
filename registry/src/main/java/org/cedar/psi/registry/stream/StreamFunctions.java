@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.cedar.schemas.avro.psi.Method.*;
 
@@ -61,6 +58,9 @@ public class StreamFunctions {
           + builder.getType() + "] to [" + input.getType() + "]");
       return builder.build();
     }
+
+    // Reset the errors on the builder so they're always current
+    builder.clearErrors();
 
     if (builder.getType() == null) {
       builder.setType(input.getType());
