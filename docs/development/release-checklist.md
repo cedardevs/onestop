@@ -177,6 +177,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] 20 granules are shown, with a "show more" button at the bottom to load the rest
     - [ ] each granule has a map with a point shown
     - [ ] each granule has FTP, HTTP, and several THREDDS links
+    - [ ] each granule has service links listed
     - [ ] granules in both 2016 and 2017 are listed
     - [ ] filter granules with search `177000*` and `1770000`. Both should match 2 files. Applied filter bubble should read `Filename Contains: [search term]`.
     - [ ] filter granules with search `177000` - should match zero files.
@@ -207,6 +208,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
         - One each of the HTTPS and Cloud links matches each format. The two different examples of protocols used verifies the badge works correctly for both letter abbreviations ("H") rendered with a span, and svg badges.
 1. Search `OKEANOS EXPLORER` and select the ROV dive-related multimedia and information collection. Go to the granules page.
     - [ ] Granules allow you to play the preview video inline.
+    - [ ] each granule has service links "None available"
     - [ ] If added to the cart, the granules do not show the preview video ability.
 1. In the search box:
     - [ ] Enter a search with blank text field (disallowed)
@@ -226,8 +228,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
 #### Data we should identify or add to the test set:
 
 - No time range (in normal fields)
-- Hazard image granules
-- OER videos
+- Hazard image granules (it is in the test set, add it to the checklist)
 
 #### Future Features?
 
