@@ -1,10 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react'
 
-// import {isGovExternal} from '../../../utils/urlUtils'
+import {isGovExternal} from '../../../utils/urlUtils'
 import * as util from '../../../utils/resultUtils'
 import defaultStyles from '../../../style/defaultStyles'
 import A from '../../common/link/Link'
-// import Button from '../../common/input/Button'
+import Button from '../../common/input/Button'
+import {play_circle_o, SvgIcon} from '../../common/SvgIcon'
 
 const styleBadgeLink = {
   textDecoration: 'none',
@@ -16,45 +17,41 @@ const styleBadgeLinkFocused = {
   outline: '2px dashed white',
   outlineOffset: '0.105em',
 }
-/*
-  // TODO this is the video link thing - need to go relocate my test data for this and make it work with hooks
-   renderBadge = link => {
-     ...
 
-     let focusRef = null
-     const allowVideo =
-       linkProtocol === 'video:youtube' ||
-       (url.includes('.mp4') && !isGovExternal(url))
-     const videoPlay =
-       protocol.label === 'Video' && allowVideo ? (
-         <Button
-           key={`video-play-button-${url}`}
-           styleHover={styleHoverPlayButton}
-           style={stylePlayButton}
-           ref={ref => {
-             focusRef = ref
-           }}
-           onClick={() => {
-             this.props.showGranuleVideo(this.props.itemId)
-             this.setState(prevState => {
-               return {
-                 ...prevState,
-                 videoPlaying: {
-                   protocol: linkProtocol,
-                   url: url,
-                   returnFocusRef: focusRef,
-                 },
-               }
-             })
-           }}
-           title={`Play ${linkText}`}
-         >
-           <SvgIcon size="1em" path={play_circle_o} />
-         </Button>
-       ) : null
-     ...
-   }
-*/
+const stylePlayButton = {
+  alignSelf: 'center',
+  background: 'none',
+  border: 'none',
+  outline: 'none',
+  padding: '0.309',
+}
+
+const styleHoverPlayButton = {
+  background: 'none',
+  fill: 'blue',
+}
+
+const videoPlayButton = (
+  linkText,
+  linkProtocol,
+  url,
+  videoRef,
+  playFunction
+) => {
+  return (
+    <Button
+      key={`video-play-button-${url}`}
+      styleHover={styleHoverPlayButton}
+      style={stylePlayButton}
+      ref={videoRef}
+      onClick={playFunction}
+      title={`Play ${linkText}`}
+    >
+      <SvgIcon size="1em" path={play_circle_o} />
+    </Button>
+  )
+}
+
 const GranuleAccessLink = props => {
   const {link, item, itemId} = props
   const {protocol, url, displayName, linkProtocol} = link
@@ -62,7 +59,19 @@ const GranuleAccessLink = props => {
   const accessibleProtocolText = displayName
     ? `protocol: ${protocol.label} for ${item.title}`
     : ` for ${item.title}` // prevent duplicate reading of protocol.label if that is also used as the linkText
-  const videoPlay = null // TODO!!!
+  const videoRef = useRef(null)
+
+  const allowVideo =
+    (linkProtocol === 'video:youtube' ||
+      (url.includes('.mp4') && !isGovExternal(url))) &&
+    props.showGranuleVideo
+  const videoPlay =
+    protocol.label === 'Video' && allowVideo
+      ? videoPlayButton(linkText, linkProtocol, url, videoRef, () => {
+          props.showGranuleVideo(linkProtocol, url, videoRef.current, itemId)
+        })
+      : null
+
   return (
     <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
       <div

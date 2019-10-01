@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import GranuleAccessLink from './GranuleAccessLink'
 import MapThumbnail from '../../common/MapThumbnail'
-import {processUrl, isGovExternal} from '../../../utils/urlUtils'
+import {processUrl} from '../../../utils/urlUtils'
 import * as util from '../../../utils/resultUtils'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
@@ -82,19 +82,6 @@ const styleFocusDefault = {
   outline: 'none',
   // border: '.1em dashed white',
   textDecoration: 'underline',
-}
-
-const stylePlayButton = {
-  alignSelf: 'center',
-  background: 'none',
-  border: 'none',
-  outline: 'none',
-  padding: '0.309',
-}
-
-const styleHoverPlayButton = {
-  background: 'none',
-  fill: 'blue',
 }
 
 const styleFlexRowR2L = {
@@ -199,6 +186,19 @@ class ListResult extends React.Component {
             link={link}
             item={this.props.item}
             itemId={this.props.itemId}
+            showGranuleVideo={(linkProtocol, url, focusRef, itemId) => {
+              this.props.showGranuleVideo(itemId)
+              this.setState(prevState => {
+                return {
+                  ...prevState,
+                  videoPlaying: {
+                    protocol: linkProtocol,
+                    url: url,
+                    returnFocusRef: focusRef,
+                  },
+                }
+              })
+            }}
           />
         )
       })
