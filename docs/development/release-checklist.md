@@ -206,6 +206,13 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] for all links, the protocol name is displayed on mouse hover
     - [ ] using a screen reader, or ANDI, verify the link titles match the format "[link text] protocol [protocol name] for [granule title]" if the link has a name rendered (2 links), or "[protocol name] for [granule title]" if the link has no name and uses the protocol as a fallback (2 links)
         - One each of the HTTPS and Cloud links matches each format. The two different examples of protocols used verifies the badge works correctly for both letter abbreviations ("H") rendered with a span, and svg badges.
+    - Add this granule to the cart. Assuming it's the only granule in the cart, the select should have:
+        - Under HTTPS:
+            - [ ] Link with title (1 link)
+            - [ ] HTTP/HTTPS (1 link)
+        - Under CLOUD:
+            - [ ] Cloud link with title (1 link)
+            - [ ] Cloud File Access (1 link)
 1. Search `OKEANOS EXPLORER` and select the ROV dive-related multimedia and information collection. Go to the granules page.
     - [ ] Granules allow you to play the preview video inline.
     - [ ] each granule has service links "None available"
