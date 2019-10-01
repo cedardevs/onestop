@@ -73,7 +73,7 @@ const GranuleAccessLink = props => {
       : null
 
   return (
-    <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
+    <li style={util.styleProtocolListItem}>
       <div
         title={protocol.label}
         style={util.styleBadge(protocol)}

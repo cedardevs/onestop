@@ -181,9 +181,10 @@ export default class CartItem extends React.Component {
           : link.linkDescription ? link.linkDescription : null,
       }))
       .sortBy(info => info.protocol.id)
-      .map(link => {
+      .map((link, index) => {
         return (
           <GranuleAccessLink
+            key={`accessLink::${this.props.itemId}::${index}`}
             link={link}
             item={this.props.item}
             itemId={this.props.itemId}
