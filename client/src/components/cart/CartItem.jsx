@@ -109,22 +109,6 @@ const styleMap = {
   paddingTop: '0.25em',
 }
 
-const styleBadgeLink = {
-  textDecoration: 'none',
-  display: 'inline-flex',
-  paddingRight: '0.309em',
-}
-
-const styleBadgeLinkFocused = {
-  outline: '2px dashed black',
-  outlineOffset: '0.105em',
-}
-
-const styleLinkText = {
-  textDecoration: 'underline',
-  margin: '0.6em 0',
-}
-
 export default class CartItem extends React.Component {
   constructor(props) {
     super(props)
