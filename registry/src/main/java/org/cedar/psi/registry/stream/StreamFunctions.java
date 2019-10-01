@@ -37,10 +37,12 @@ public class StreamFunctions {
 
   public static Aggregator<String, TimestampedValue<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, currentState) -> {
     var input = timestampedInput.data;
-    log.debug("Aggregating input for key {} with method {}", key, input.getMethod());
+
     if (input == null) {
-      // TODO - ??
+      return null; // Tombstone
     }
+
+    log.debug("Aggregating input for key {} with method {}", key, input.getMethod());
 
     var method = input.getMethod();
     if (method == DELETE || method == GET) {
@@ -52,16 +54,16 @@ public class StreamFunctions {
         AggregatedInput.newBuilder(currentState) :
         AggregatedInput.newBuilder();
 
+    if(builder.getType() != null && builder.getType() != input.getType()) {
+      // Don't accept attempts to change the type of a record (and don't put the record in an error state based on
+      // this attempt) but log an error if it happens
+      log.error("Input attempted to change the type of an entity from ["
+          + builder.getType() + "] to [" + input.getType() + "]");
+      return builder.build();
+    }
+
     if (builder.getType() == null) {
       builder.setType(input.getType());
-    }
-    else if (builder.getType() != input.getType()) {
-      var error = ErrorEvent.newBuilder()
-          .setTitle("Mismatched types")
-          .setDetail("Input attempted to change the type of an entity from ["
-              + builder.getType() + "] to [" + input.getType() + "]")
-          .build();
-      return builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error)).build();
     }
 
     if (builder.getInitialSource() == null) {
@@ -82,9 +84,12 @@ public class StreamFunctions {
       builder.setRawXml(input.getContent());
     }
 
-    // note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
+    var errors = builder.getErrors();
+    var failedState = errors != null && !errors.isEmpty();
+
+    // Note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
     var currentEvents = currentState != null ? currentState.getEvents() : null;
-    builder.setEvents(DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput)));
+    builder.setEvents(DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput, failedState)));
     return builder.build();
   };
 
@@ -104,7 +109,7 @@ public class StreamFunctions {
     else {
       return AggregatedInput.newBuilder(currentState)
           .setDeleted(deleted)
-          .setEvents(DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input)))
+          .setEvents(DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false)))
           .build();
     }
   }
@@ -133,12 +138,13 @@ public class StreamFunctions {
     }
   }
 
-  public static InputEvent buildEventRecord(TimestampedValue<Input> input) {
+  public static InputEvent buildEventRecord(TimestampedValue<Input> input, boolean failedState) {
     return InputEvent.newBuilder()
         .setMethod(input.data.getMethod())
         .setOperation(input.data.getOperation())
         .setSource(input.data.getSource())
         .setTimestamp(input.timestampMs)
+        .setFailedState(failedState)
         .build();
   }
 
