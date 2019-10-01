@@ -6,7 +6,7 @@ import A from '../common/link/Link'
 import TimeSummary from '../collections/detail/TimeSummary'
 import {fontFamilySerif} from '../../utils/styleUtils'
 import SpatialSummary from '../collections/detail/SpatialSummary'
-import GranuleAccessLink from '../results//granules/GranuleAccessLink'
+import GranuleAccessLink from '../results/granules/GranuleAccessLink'
 import MapThumbnail from '../common/MapThumbnail'
 import * as util from '../../utils/resultUtils'
 import {boxShadow} from '../../style/defaultStyles'
@@ -195,7 +195,7 @@ export default class CartItem extends React.Component {
 
     return (
       <div key={'CartItem::accessLinks'}>
-        <h3 style={styleSectionHeadingTop}>Data Access Links:</h3>
+        <h4 style={styleSectionHeadingTop}>Data Access Links:</h4>
         <ul style={util.styleProtocolList}>{badgesElement}</ul>
       </div>
     )
@@ -220,14 +220,14 @@ export default class CartItem extends React.Component {
 
     const timePeriod = (
       <div key={'CartItem::timePeriod'}>
-        <h3 style={styleSectionHeading}>Time Period:</h3>
+        <h4 style={styleSectionHeading}>Time Period:</h4>
         <TimeSummary item={item} />
       </div>
     )
 
     const boundingCoordinates = (
       <div key={'CartItem::boundingCoordinates'}>
-        <h3 style={styleSectionHeading}>Bounding Coordinates:</h3>
+        <h4 style={styleSectionHeading}>Bounding Coordinates:</h4>
         <SpatialSummary item={item} />
       </div>
     )
