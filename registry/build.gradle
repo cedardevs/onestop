@@ -122,6 +122,15 @@ task generateOpenApi(type: NpmTask) {
 assemble.dependsOn(sourceJar)
 assemble.dependsOn(bootJar)
 
+task BuildDockerImage {
+  group "jib"
+  dependsOn jibDockerBuild
+}
+task PublishDockerImage {
+  group "jib"
+  dependsOn jib
+}
+
 jib {
   // derive image repository
   String imageRegistryURL = "registry.hub.docker.com"
