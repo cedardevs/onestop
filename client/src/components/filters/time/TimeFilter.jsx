@@ -54,19 +54,8 @@ const styleLabel = {
   marginBottom: '0.25em',
 }
 
-const styleWrapper = {
-  // height: '2em',
-}
-// const styleYearWrapper = {
-//   height: '2em',
-// }
-//
-// const styleMonthWrapper = {
-//   height: '2em',
-// }
-//
-// const styleDayWrapper = {
-//   height: '2em',
+// const styleWrapper = {
+// height: '2em',
 // }
 
 const styleField = {
@@ -76,33 +65,6 @@ const styleField = {
   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
 }
-// const styleYear = {
-//   width: '2.618em',
-//   color: FilterColors.TEXT,
-//   height: '100%',
-//   margin: 0,
-//   padding: '0 0.309em',
-//   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
-//   borderRadius: '0.309em',
-// }
-
-// const styleMonth = {
-//   width: '7em',
-//   color: FilterColors.TEXT,
-//   height: '100%',
-//   margin: 0,
-//   padding: 0,
-//   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
-// }
-// const styleDay = {
-//   width: '1.309em',
-//   color: FilterColors.TEXT,
-//   height: '100%',
-//   margin: 0,
-//   padding: '0 0.309em',
-//   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
-//   borderRadius: '0.309em',
-// }
 
 const styleButtonRow = {
   display: 'flex',
@@ -300,94 +262,6 @@ export default class TimeFilter extends React.Component {
       />
     )
   }
-  //
-  // createYearField = (name, value, onChange) => {
-  //   const id = `${name}DateYear`
-  //   const label = `year ${name}`
-  //   return (
-  //     <div style={styleField}>
-  //       <label style={styleLabel} htmlFor={id}>
-  //         Year
-  //       </label>
-  //       <div style={styleYearWrapper}>
-  //         <input
-  //           type="text"
-  //           id={id}
-  //           name={id}
-  //           placeholder="YYYY"
-  //           aria-placeholder="Y Y Y Y"
-  //           value={value}
-  //           onChange={onChange}
-  //           maxLength="4"
-  //           style={styleYear}
-  //           aria-label={label}
-  //         />
-  //       </div>
-  //     </div>
-  //   )
-  // }
-
-  // createMonthField = (name, value, onChange) => {
-  //   const id = `${name}DateMonth`
-  //   const label = `month ${name}`
-  //   return (
-  //     <div style={styleField}>
-  //       <label style={styleLabel} htmlFor={id}>
-  //         Month
-  //       </label>
-  //       <div style={styleMonthWrapper}>
-  //         <select
-  //           id={id}
-  //           name={id}
-  //           value={value}
-  //           onChange={onChange}
-  //           style={styleMonth}
-  //           aria-label={label}
-  //         >
-  //           <option value="">(none)</option>
-  //           <option value="0">January</option>
-  //           <option value="1">February</option>
-  //           <option value="2">March</option>
-  //           <option value="3">April</option>
-  //           <option value="4">May</option>
-  //           <option value="5">June</option>
-  //           <option value="6">July</option>
-  //           <option value="7">August</option>
-  //           <option value="8">September</option>
-  //           <option value="9">October</option>
-  //           <option value="10">November</option>
-  //           <option value="11">December</option>
-  //         </select>
-  //       </div>
-  //     </div>
-  //   )
-  // }
-
-  // createDayField = (name, value, onChange) => {
-  //   const id = `${name}DateDay`
-  //   const label = `day ${name}`
-  //   return (
-  //     <div style={styleField}>
-  //       <label style={styleLabel} htmlFor={id}>
-  //         Day
-  //       </label>
-  //       <div style={styleDayWrapper}>
-  //         <input
-  //           type="text"
-  //           id={id}
-  //           name={id}
-  //           placeholder="DD"
-  //           aria-placeholder="D D"
-  //           value={value}
-  //           onChange={onChange}
-  //           maxLength="2"
-  //           style={styleDay}
-  //           aria-label={label}
-  //         />
-  //       </div>
-  //     </div>
-  //   )
-  // }
 
   createDateFieldset = (name, year, month, day, valid) => {
     const legendText = `${_.capitalize(name)} Date:`
@@ -399,9 +273,30 @@ export default class TimeFilter extends React.Component {
     return (
       <FilterFieldset legendText={legendText}>
         <div style={styleDate}>
-          <YearField name={name} value={year} onChange={onDateChange} styleLayout={styleLayout} styleLabel={styleLabel} styleWrapper={styleWrapper} styleField={styleField}/>
-          <MonthField name={name} value={month} onChange={onDateChange} styleLayout={styleLayout} styleField={styleField} styleLabel={styleLabel} styleWrapper={styleWrapper}/>
-          <DayField name={name} value={day} onChange={onDateChange} styleLayout={styleLayout} styleField={styleField} styleLabel={styleLabel} styleWrapper={styleWrapper}/>
+          <YearField
+            name={name}
+            value={year}
+            onChange={onDateChange}
+            styleLayout={styleLayout}
+            styleLabel={styleLabel}
+            styleField={styleField}
+          />
+          <MonthField
+            name={name}
+            value={month}
+            onChange={onDateChange}
+            styleLayout={styleLayout}
+            styleLabel={styleLabel}
+            styleField={styleField}
+          />
+          <DayField
+            name={name}
+            value={day}
+            onChange={onDateChange}
+            styleLayout={styleLayout}
+            styleLabel={styleLabel}
+            styleField={styleField}
+          />
 
           <div style={styleLayout}>
             <span />
