@@ -3,16 +3,16 @@ package org.cedar.psi.registry.service
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.state.QueryableStoreTypes
-import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
+import org.apache.kafka.streams.state.HostInfo
+import org.apache.kafka.streams.state.StreamsMetadata
 import org.cedar.schemas.avro.psi.AggregatedInput
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-
-import static org.cedar.psi.common.constants.Topics.inputStore
-import static org.cedar.psi.common.constants.Topics.parsedStore
+import org.springframework.web.client.RestClientException
+import org.springframework.web.client.RestTemplate
 
 @Slf4j
 @Service
@@ -20,15 +20,21 @@ import static org.cedar.psi.common.constants.Topics.parsedStore
 class MetadataStore {
 
   private KafkaStreams streamsApp
+  private final MetadataService metadataService
+  private HostInfo hostInfo
+  private RestTemplate restTemplate
 
   @Autowired
-  MetadataStore(KafkaStreams streamsApp) {
+  MetadataStore(KafkaStreams streamsApp, final HostInfo hostInfo) {
     this.streamsApp = streamsApp
+    this.metadataService = new MetadataService(streamsApp)
+    this.hostInfo = hostInfo
+    this.restTemplate = new RestTemplate()
   }
 
-  ParsedRecord retrieveParsed(RecordType type, String source, String id) {
+  ParsedRecord retrieveLocalParsed(RecordType type, String source, String id) {
     try {
-      def parsedValue = getParsedStore(type)?.get(id)
+      def parsedValue = metadataService.getParsedStore(type)?.get(id)
       return parsedValue ?: null
     }
     catch (Exception e) {
@@ -37,9 +43,10 @@ class MetadataStore {
     }
   }
 
-  AggregatedInput retrieveInput(RecordType type, String source, String id) {
+  AggregatedInput retrieveLocalInput(RecordType type, String source, String id) {
     try {
-      def inputValue = getInputStore(type, source)?.get(id)
+      def inputValue = metadataService.getInputStore(type, source)?.get(id)
+
       return inputValue ?: null
     }
     catch (Exception e) {
@@ -48,12 +55,45 @@ class MetadataStore {
     }
   }
 
-  ReadOnlyKeyValueStore<String, AggregatedInput> getInputStore(RecordType type, String source) {
-    streamsApp?.store(inputStore(type, source), QueryableStoreTypes.keyValueStore())
+  Map getRemoteStoreState(StreamsMetadata metadata, String path, String id) {
+    log.info("get remote instance value: " + metadata)
+    ResponseEntity<Map> responseEntity
+    String url = "http://" + metadata.host() + ":" + metadata.port() + path
+    try {
+      responseEntity = restTemplate.getForEntity(url, Map.class)
+      if (responseEntity.getStatusCode().value() != 200) {
+        log.error("error service failed with status code " + responseEntity.getStatusCode().value())
+        return [
+            links : url,
+            errors: [
+                [
+                    status: responseEntity.getStatusCodeValue(),
+                    title : responseEntity.notFound().toString(),
+                    detail: "No parsed values exist for id [${id}]]" as String
+                ]
+            ]
+        ]
+      }
+      if (log.isTraceEnabled()) {
+        log.trace("services details: " + responseEntity.getBody())
+      }
+      return responseEntity.getBody()
+    } catch (RestClientException e) {
+      log.error("error in calling service details: ", e)
+      return [
+          links : url,
+          errors: [
+              [
+                  detail: "No parsed values exist for id [${e.message}]]" as String
+              ]
+          ]
+      ]
+    }
   }
 
-  ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(RecordType type) {
-    streamsApp?.store(parsedStore(type), QueryableStoreTypes.keyValueStore())
+  boolean thisHost(final StreamsMetadata metadata) {
+    return metadata.host().equals(hostInfo.host()) &&
+        metadata.port() == hostInfo.port()
   }
 
 }
