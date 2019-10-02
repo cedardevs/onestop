@@ -1,7 +1,12 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
+import moment from 'moment/moment'
 
 import {FilterColors, SiteColors} from '../../../style/defaultStyles'
+import {
+  ymdToDateMap,
+  isValidDate,
+} from '../../../utils/inputUtils'
 
 import FilterFieldset from '../FilterFieldset'
 import YearField from './YearField'
@@ -45,10 +50,40 @@ const styleInputValidity = isValid => {
   }
 }
 
-const DateFieldset = props => {
-  // TODO can we move state for year month day valid values into DateFieldset?
-  const {name, year, month, day, valid, onDateChange} = props
+const DateFieldset = ({name, date, onDateChange}) => {
   const legendText = `${_.capitalize(name)} Date:`
+
+  const [ year, setYear ] = useState('')
+  const [ month, setMonth ] = useState('')
+  const [ day, setDay ] = useState('')
+  const [ valid, setValid ] = useState(true)
+
+  useEffect(
+    () => {
+      if (date != null) {
+        let dateObj = moment(date).utc()
+        setYear(dateObj.year().toString())
+        setMonth(dateObj.month().toString())
+        setDay(dateObj.date().toString())
+      }
+      else {
+        setYear('')
+        setMonth('')
+        setDay('')
+      }
+    },
+    [ date ] // when props date / redux store changes, update fields
+  )
+
+  useEffect(
+    () => {
+      let validValue = isValidDate(year, month, day)
+      setValid(validValue)
+      // TODO valid hasn't actually been updated when we send onDateChange! sent the local variable instead
+      onDateChange(name, ymdToDateMap(year, month, day), validValue)
+    },
+    [ year, month, day ]
+  )
 
   return (
     <FilterFieldset legendText={legendText}>
@@ -56,7 +91,7 @@ const DateFieldset = props => {
         <YearField
           name={name}
           value={year}
-          onChange={onDateChange}
+          onChange={e => setYear(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
@@ -64,7 +99,7 @@ const DateFieldset = props => {
         <MonthField
           name={name}
           value={month}
-          onChange={onDateChange}
+          onChange={e => setMonth(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
@@ -72,7 +107,7 @@ const DateFieldset = props => {
         <DayField
           name={name}
           value={day}
-          onChange={onDateChange}
+          onChange={e => setDay(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}

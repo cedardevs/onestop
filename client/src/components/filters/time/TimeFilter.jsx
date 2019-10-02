@@ -49,55 +49,14 @@ export default class TimeFilter extends React.Component {
 
   initialState() {
     return {
-      startDateYear: '',
-      startDateMonth: '',
-      startDateDay: '',
-      endDateYear: '',
-      endDateMonth: '',
-      endDateDay: '',
-      startValueValid: true,
-      endValueValid: true,
+      start: {
+        valid: true,
+        date: {},
+      },
+      end: {valid: true, date: {}},
       dateRangeValid: true,
       warning: '',
     }
-  }
-
-  componentWillMount() {
-    this.mapPropsToState(this.props)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.mapPropsToState(nextProps)
-  }
-
-  mapPropsToState = props => {
-    let startDate = moment(props.startDateTime).utc()
-    let endDate = moment(props.endDateTime).utc()
-
-    let startDateGiven = startDate.isValid()
-    let endDateGiven = endDate.isValid()
-
-    // Set fields as strings to avoid incorrect falsey in isValidDate if any fields are changed (January == 0 for moments)
-    this.setState({
-      startDateYear: startDateGiven
-        ? startDate.year().toString()
-        : this.initialState().startDateYear,
-      startDateMonth: startDateGiven
-        ? startDate.month().toString()
-        : this.initialState().startDateMonth,
-      startDateDay: startDateGiven
-        ? startDate.date().toString()
-        : this.initialState().startDateDay,
-      endDateYear: endDateGiven
-        ? endDate.year().toString()
-        : this.initialState().endDateYear,
-      endDateMonth: endDateGiven
-        ? endDate.month().toString()
-        : this.initialState().endDateMonth,
-      endDateDay: endDateGiven
-        ? endDate.date().toString()
-        : this.initialState().endDateDay,
-    })
   }
 
   warningStyle() {
@@ -117,36 +76,16 @@ export default class TimeFilter extends React.Component {
     }
   }
 
-  onChange = (field, value) => {
+  onChange = (field, date, valid) => {
     let stateClone = {...this.state}
-    stateClone[field] = value
+    stateClone[field] = {date: date, valid: valid}
 
     this.setState({
-      [field]: value,
+      [field]: {date: date, valid: valid},
       warning: '',
-      startValueValid: isValidDate(
-        // TODO this step can hopefully be moved into dateFieldset?
-        stateClone.startDateYear,
-        stateClone.startDateMonth,
-        stateClone.startDateDay
-      ),
-      endValueValid: isValidDate(
-        stateClone.endDateYear,
-        stateClone.endDateMonth,
-        stateClone.endDateDay
-      ),
       dateRangeValid: isValidDateRange(
-        // Note: this cannot tho (see above TODO)
-        ymdToDateMap(
-          stateClone.startDateYear,
-          stateClone.startDateMonth,
-          stateClone.startDateDay
-        ),
-        ymdToDateMap(
-          stateClone.endDateYear,
-          stateClone.endDateMonth,
-          stateClone.endDateDay
-        )
+        stateClone.start.date,
+        stateClone.end.date
       ),
     })
   }
@@ -167,33 +106,18 @@ export default class TimeFilter extends React.Component {
   }
 
   applyDates = () => {
-    const {startValueValid, endValueValid, dateRangeValid} = this.state
-    if (!startValueValid || !endValueValid || !dateRangeValid) {
+    const {start, end, dateRangeValid} = this.state
+    if (!start.valid || !end.valid || !dateRangeValid) {
       this.setState({
-        warning: this.createWarning(
-          startValueValid,
-          endValueValid,
-          dateRangeValid
-        ),
+        warning: this.createWarning(start.valid, end.valid, dateRangeValid),
       })
     }
     else {
-      let startDate = ymdToDateMap(
-        this.state.startDateYear,
-        this.state.startDateMonth,
-        this.state.startDateDay
-      )
-      let endDate = ymdToDateMap(
-        this.state.endDateYear,
-        this.state.endDateMonth,
-        this.state.endDateDay
-      )
-
-      let startDateString = !_.every(startDate, _.isNull)
-        ? moment(startDate).utc().startOf('day').format()
+      let startDateString = !_.every(start.date, _.isNull)
+        ? moment(start.date).utc().startOf('day').format()
         : null
-      let endDateString = !_.every(endDate, _.isNull)
-        ? moment(endDate).utc().startOf('day').format()
+      let endDateString = !_.every(end.date, _.isNull)
+        ? moment(end.date).utc().startOf('day').format()
         : null
 
       this.props.updateDateRange(startDateString, endDateString)
@@ -237,10 +161,6 @@ export default class TimeFilter extends React.Component {
 
     const clearButton = this.createClearButton()
 
-    const onDateChange = event => {
-      this.onChange(event.target.name, event.target.value)
-    }
-
     const inputColumn = (
       <FlexColumn
         items={[
@@ -252,19 +172,13 @@ export default class TimeFilter extends React.Component {
             >
               <DateFieldset
                 name="start"
-                year={this.state.startDateYear}
-                month={this.state.startDateMonth}
-                day={this.state.startDateDay}
-                valid={this.state.startValueValid}
-                onDateChange={onDateChange}
+                date={this.props.startDateTime}
+                onDateChange={this.onChange}
               />
               <DateFieldset
                 name="end"
-                year={this.state.endDateYear}
-                month={this.state.endDateMonth}
-                day={this.state.endDateDay}
-                valid={this.state.endValueValid}
-                onDateChange={onDateChange}
+                date={this.props.endDateTime}
+                onDateChange={this.onChange}
               />
             </form>
           </div>,
