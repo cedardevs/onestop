@@ -26,7 +26,7 @@ deploy:
           server.servlet.context-path: /registry
           kafka.commit.interval: 1000
           topics:
-            num-partitions: 20
+            num-partitions: 2
             replication-factor: 1
         # env values
         kafka.schema.registry.url: http://psi-dev-cp-schema-registry:8081
