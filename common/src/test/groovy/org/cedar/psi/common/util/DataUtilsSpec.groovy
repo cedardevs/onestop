@@ -1,5 +1,6 @@
 package org.cedar.psi.common.util
 
+import org.cedar.schemas.avro.psi.InputEvent
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -11,10 +12,13 @@ class DataUtilsSpec extends Specification {
     DataUtils.addOrInit(inList, inItem) == out
 
     where:
-    inList | inItem | out
-    null   | 'a'    | ['a']
-    []     | 'a'    | ['a']
-    ['x']  | 'a'    | ['x', 'a']
+    inList | inItem  | out
+    null   | 'a'     | ['a']
+    []     | 'a'     | ['a']
+    ['x']  | 'a'     | ['x', 'a']
+    null   | null    | []
+    []     | null    | []
+    ['x']  | null    | ['x']
   }
 
   def "parseJsonMap works for good json"() {
@@ -295,6 +299,40 @@ class DataUtilsSpec extends Specification {
     parentKey << [new String(), "", null]
   }
 
+  def "trimMapKeys... does that"() {
+    def original = [
+        trimA: "A string",
+        trimB: 123,
+        C: [1, 2, 3]
+    ]
+    def trimString = 'trim'
+
+    when:
+    def result = DataUtils.trimMapKeys(trimString, original)
+
+    then:
+    result == [
+        A: "A string",
+        B: 123,
+        C: [1, 2, 3]
+    ]
+  }
+
+  // Note: Most behavior of updateDerivedFields actually tested in registry StreamFunctionsSpec
+
+  def "updateDerivedFields throws up if given an unrecognized builder type"() {
+    def fieldData = [
+        rawJson: '{"hello":"world","list":[1,2]}'
+    ]
+    def fieldsToParse = ['rawJson']
+
+    when:
+    DataUtils.updateDerivedFields(InputEvent.newBuilder(), fieldData, fieldsToParse)
+
+    then:
+    thrown(ClassCastException)
+  }
+
   def "setValueOnPojo... does that"() {
     def pojo = new TestPojo()
     def fieldName = 'testField'
@@ -320,8 +358,21 @@ class DataUtilsSpec extends Specification {
     thrown(UnsupportedOperationException)
   }
 
+  def "setValueOnPojo throws up if it tries to set a field it can't"() {
+    def pojo = new TestPojo()
+    def fieldName = 'hiddenField'
+    def value = 'super great test string'
+
+    when:
+    def result = DataUtils.setValueOnPojo(pojo, fieldName, value)
+
+    then:
+    thrown(UnsupportedOperationException)
+  }
+
   class TestPojo {
     private String testField;
+    private String hiddenField = "hidden"
     TestPojo() {}
     void setTestField(String s) { testField = s }
     String getTestField() { return testField; }

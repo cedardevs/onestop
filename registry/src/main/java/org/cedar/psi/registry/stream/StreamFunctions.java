@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.cedar.schemas.avro.psi.Method.*;
 
@@ -35,33 +32,38 @@ public class StreamFunctions {
 
   public static Initializer<AggregatedInput> aggregatedInputInitializer = () -> null;
 
-  public static Aggregator<String, TimestampedValue<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, aggregate) -> {
+  public static Aggregator<String, TimestampedValue<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, currentState) -> {
     var input = timestampedInput.data;
-    log.debug("Aggregating input for key {} with method {}", key, input.getMethod());
+
     if (input == null) {
-      // TODO - ??
+      return null; // Tombstone
     }
+
+    log.debug("Aggregating input for key {} with method {}", key, input.getMethod());
 
     var method = input.getMethod();
     if (method == DELETE || method == GET) {
-      return updateDeleted(timestampedInput, aggregate);
+      return updateDeleted(timestampedInput, currentState);
     }
 
     // if we're PATCHing then build on top of the existing state, else create a new state
-    var builder = method == PATCH && aggregate instanceof AggregatedInput ?
-        AggregatedInput.newBuilder(aggregate) :
+    var builder = method == PATCH && currentState instanceof AggregatedInput ?
+        AggregatedInput.newBuilder(currentState) :
         AggregatedInput.newBuilder();
+
+    if(builder.getType() != null && builder.getType() != input.getType()) {
+      // Don't accept attempts to change the type of a record (and don't put the record in an error state based on
+      // this attempt) but log an error if it happens
+      log.error("Input attempted to change the type of an entity from ["
+          + builder.getType() + "] to [" + input.getType() + "]");
+      return builder.build();
+    }
+
+    // Reset the errors on the builder so they're always current
+    builder.clearErrors();
 
     if (builder.getType() == null) {
       builder.setType(input.getType());
-    }
-    else if (builder.getType() != input.getType()) {
-      var error = ErrorEvent.newBuilder()
-          .setTitle("Mismatched types")
-          .setDetail("Input attempted to change the type of an entity from ["
-              + builder.getType() + "] to [" + input.getType() + "]")
-          .build();
-      return builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error)).build();
     }
 
     if (builder.getInitialSource() == null) {
@@ -82,23 +84,34 @@ public class StreamFunctions {
       builder.setRawXml(input.getContent());
     }
 
-    // note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
-    var currentEvents = aggregate != null ? aggregate.getEvents() : null;
-    builder.setEvents(DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput)));
+    var errors = builder.getErrors();
+    var failedState = errors != null && !errors.isEmpty();
+
+    // Note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
+    var currentEvents = currentState != null ? currentState.getEvents() : null;
+    builder.setEvents(DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput, failedState)));
     return builder.build();
   };
 
-  public static AggregatedInput updateDeleted(TimestampedValue<Input> input, AggregatedInput aggregate) {
-    if (aggregate == null) {
+  public static AggregatedInput updateDeleted(TimestampedValue<Input> input, AggregatedInput currentState) {
+    if (currentState == null) {
+      // Don't "update" a record that doesn't exist
       return null;
     }
     var data = input != null ? input.data : null;
     var method = data != null ? input.data.getMethod() : null;
     var deleted = method != null && method.equals(DELETE);
-    return AggregatedInput.newBuilder(aggregate)
-        .setDeleted(deleted)
-        .setEvents(DataUtils.addOrInit(aggregate.getEvents(), buildEventRecord(input)))
-        .build();
+
+    if (currentState.getDeleted() == deleted) {
+      // Don't append to the events list if nothing is changing
+      return currentState;
+    }
+    else {
+      return AggregatedInput.newBuilder(currentState)
+          .setDeleted(deleted)
+          .setEvents(DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false)))
+          .build();
+    }
   }
 
   public static Map updateRawJson(AggregatedInput.Builder builder, Input input, OperationType operationType) {
@@ -125,12 +138,13 @@ public class StreamFunctions {
     }
   }
 
-  public static InputEvent buildEventRecord(TimestampedValue<Input> input) {
+  public static InputEvent buildEventRecord(TimestampedValue<Input> input, boolean failedState) {
     return InputEvent.newBuilder()
         .setMethod(input.data.getMethod())
         .setOperation(input.data.getOperation())
         .setSource(input.data.getSource())
         .setTimestamp(input.timestampMs)
+        .setFailedState(failedState)
         .build();
   }
 

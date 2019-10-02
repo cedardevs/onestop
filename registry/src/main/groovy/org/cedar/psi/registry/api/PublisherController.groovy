@@ -26,7 +26,7 @@ class PublisherController {
   Publisher publisher
 
   @RequestMapping(value = "/{type}/{source}/{id}", method = [POST, PUT], consumes = ["application/xml", "application/json"], produces = 'application/json')
-  Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) String data, @PathVariable String type, @PathVariable String source, @PathVariable UUID id) throws Exception {
+  Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type, @PathVariable String source, @PathVariable UUID id) throws Exception {
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def result = publisher.publishMetadata(request, recordType, data, source, id as String)
     response.status = result.status as Integer
@@ -39,17 +39,17 @@ class PublisherController {
   }
 
   @RequestMapping(value = "/{type}/{id}", method = [POST, PUT], consumes = ["application/xml", "application/json"], produces = 'application/json')
-  Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) String data, @PathVariable String type, @PathVariable UUID id) throws Exception {
+  Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type, @PathVariable UUID id) throws Exception {
     receiveContent(request, response, data, type, Topics.DEFAULT_SOURCE, id)
   }
 
   @RequestMapping(value = "/{type}/{id}", method = PATCH, consumes = "application/json", produces = 'application/json')
-  Map patchContent(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) String data, @PathVariable String type, @PathVariable UUID id) throws Exception {
+  Map patchContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type, @PathVariable UUID id) throws Exception {
     receiveContent(request, response, data, type, Topics.DEFAULT_SOURCE, id)
   }
 
   @RequestMapping(value = "/{type}/{source}/{id}", method = PATCH, consumes = "application/json", produces = 'application/json')
-  Map patchContent(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) String data, @PathVariable String type, @PathVariable String source, @PathVariable UUID id) throws Exception {
+  Map patchContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type, @PathVariable String source, @PathVariable UUID id) throws Exception {
     receiveContent(request, response, data, type, source, id)
   }
 

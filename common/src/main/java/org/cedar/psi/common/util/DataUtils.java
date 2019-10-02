@@ -159,13 +159,14 @@ public class DataUtils {
    * @param builderType   type of schema builder either ParsedRecord or AggregatedInput, otherwise error out
    * @param fieldData     parsed or input metadata values
    * @param fieldsToParse list of schema fields that only support merged map
+   *
+   * @throws ClassCastException if builderType is not of ParsedRecord.Builder or AggregatedInput.Builder
    */
   public static void updateDerivedFields(Object builderType, Map<String, Object> fieldData, List fieldsToParse) {
     // 1. identify the builder type
-    var AggregatedSchemaType = builderType instanceof AggregatedInput.Builder;
-    var parsedSchemaType = builderType instanceof ParsedRecord.Builder;
-    var schema = AggregatedSchemaType ? AggregatedInput.getClassSchema() : ParsedRecord.getClassSchema();
-    var builder = AggregatedSchemaType ? (AggregatedInput.Builder) builderType : (ParsedRecord.Builder) builderType;
+    var aggregatedSchemaType = builderType instanceof AggregatedInput.Builder;
+    var schema = aggregatedSchemaType ? AggregatedInput.getClassSchema() : ParsedRecord.getClassSchema();
+    var builder = aggregatedSchemaType ? (AggregatedInput.Builder) builderType : (ParsedRecord.Builder) builderType;
 
     fieldData
         .entrySet()
@@ -173,28 +174,24 @@ public class DataUtils {
         .filter(e -> fieldsToParse.contains(e.getKey()))
         .forEach(e -> {
           try {
-            // 2. coerce the value to its AggregatedInput field value and apply it to the builder
+            // 2. coerce the value to its field value and apply it to the builder
             var field = schema.getField(e.getKey());
             var coerced = AvroUtils.coerceValueForSchema(e.getValue(), field.schema());
             setValueOnPojo(builder, field.name(), coerced);
           }
           catch (Exception ex) {
-            // 3. if it fails attach an error to the AggregatedInput, but continue with remaining fields
+            // 3. if it fails attach an error to the builder, but continue with remaining fields
             var error = ErrorEvent.newBuilder()
                 .setTitle("Failed to parse field [" + e.getKey() + "]")
                 .setDetail(ex.getMessage())
                 .build();
-            if (AggregatedSchemaType) {
+            if (aggregatedSchemaType) {
               var aggregatedInputBuilder = (AggregatedInput.Builder) builder;
               aggregatedInputBuilder.setErrors(addOrInit(aggregatedInputBuilder.getErrors(), error));
             }
-            else if(parsedSchemaType) {
+            else {
               var parsedBuilder = (ParsedRecord.Builder) builder;
               parsedBuilder.setErrors(addOrInit(parsedBuilder.getErrors(), error));
-            }
-            else {
-              throw new UnsupportedOperationException("Unable to set error value [" + error +
-                  "] on builder [" + builder + "]");
             }
           }
         });
