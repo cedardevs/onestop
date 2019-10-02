@@ -2,7 +2,10 @@ package org.cedar.psi.registry.api
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.apache.kafka.common.serialization.Serdes
 import org.cedar.psi.common.constants.Topics
+
+import org.cedar.psi.registry.service.MetadataService
 import org.cedar.psi.registry.service.MetadataStore
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+import static org.cedar.psi.common.constants.Topics.inputStore
 import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD
 
@@ -24,11 +28,15 @@ class MetadataRestController {
 
   private MetadataStore metadataStore
   private ApiRootGenerator apiLinkGenerator
+  private MetadataService metadataService
 
   @Autowired
-  MetadataRestController(MetadataStore metadataStore, ApiRootGenerator apiLinkGenerator) {
+  MetadataRestController(MetadataStore metadataStore,
+                         ApiRootGenerator apiLinkGenerator,
+                         MetadataService metadataService) {
     this.metadataStore = metadataStore
     this.apiLinkGenerator = apiLinkGenerator
+    this.metadataService = metadataService
   }
 
   @RequestMapping(path = '/metadata/{type}/{id}', method = [GET, HEAD], produces = 'application/json')
@@ -48,50 +56,58 @@ class MetadataRestController {
       HttpServletRequest request,
       HttpServletResponse response) {
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
-    def result = metadataStore.retrieveInput(recordType, source, id)
-    def links = buildLinks(request, type, source, id)
-    links.self = links.remove('input')
+    String storeName = inputStore(recordType, source).toString()
+    def metadata = metadataService.streamsMetadataForStoreAndKey(storeName, id, Serdes.String().serializer())
+    String path = "/registry/metadata/${type}/${source}/${id}"
 
-    if (result) {
-      if (result.deleted) {
+    if(!metadataStore.thisHost(metadata)){
+      log.info("remote instance : " + metadata)
+      return metadataStore.getRemoteStoreState(metadata, path, id)
+    }
+    else {
+      def result = metadataStore.retrieveLocalInput(recordType, source, id)
+      def links = buildLinks(request, type, source, id)
+      links.self = links.remove('input')
+
+      if (result) {
+        if (result.deleted) {
+          response.status = HttpStatus.NOT_FOUND.value()
+          links.remove('parsed')
+          links.resurrection = buildResurrectionLink(request, type, source, id)
+          return [
+              links : links,
+              errors: [
+                  [
+                      status: HttpStatus.NOT_FOUND.value(),
+                      title : HttpStatus.NOT_FOUND.toString(),
+                      detail: "DELETE processed for ${type} with id [${id}] from source [${source}]" as String
+                  ]
+              ]
+          ]
+        } else {
+          return [
+              links: links,
+              data : [
+                  id        : id,
+                  type      : type,
+                  attributes: result
+              ]
+          ]
+        }
+      } else {
         response.status = HttpStatus.NOT_FOUND.value()
         links.remove('parsed')
-        links.resurrection = buildResurrectionLink(request, type, source, id)
         return [
             links : links,
             errors: [
                 [
                     status: HttpStatus.NOT_FOUND.value(),
                     title : HttpStatus.NOT_FOUND.toString(),
-                    detail: "DELETE processed for ${type} with id [${id}] from source [${source}]" as String
+                    detail: "No input exists for ${type} with id [${id}] from source [${source}]" as String
                 ]
             ]
         ]
       }
-      else {
-        return [
-            links: links,
-            data : [
-                id        : id,
-                type      : type,
-                attributes: result
-            ]
-        ]
-      }
-    }
-    else {
-      response.status = HttpStatus.NOT_FOUND.value()
-      links.remove('parsed')
-      return [
-          links : links,
-          errors: [
-              [
-                  status: HttpStatus.NOT_FOUND.value(),
-                  title : HttpStatus.NOT_FOUND.toString(),
-                  detail: "No input exists for ${type} with id [${id}] from source [${source}]" as String
-              ]
-          ]
-      ]
     }
   }
 
@@ -113,40 +129,48 @@ class MetadataRestController {
       HttpServletResponse response) {
 
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
-    def result = metadataStore.retrieveParsed(recordType, source, id)
+    String storeName = inputStore(recordType, source).toString()
+    def metadata = metadataService.streamsMetadataForStoreAndKey(storeName, id, Serdes.String().serializer())
     def links = buildLinks(request, type, source, id)
-    links.self = links.remove('parsed')
+    String path =  "/registry/metadata/${type}/${source}/${id}/parsed"
 
-    if (result) {
-      if (result?.errors?.size() > 0) {
+    if (!metadataStore.thisHost(metadata)) {
+      log.info("remote instance : " + metadata)
+
+      return metadataStore.getRemoteStoreState(metadata, path, id)
+    } else {
+      def result = metadataStore.retrieveLocalParsed(recordType, source, id)
+      links.self = links.remove('parsed')
+
+      if (result) {
+        if (result?.errors?.size() > 0) {
+          return [
+              links : links,
+              errors: result.errors
+          ]
+        } else {
+          return [
+              links: links,
+              data : [
+                  id        : id,
+                  type      : type,
+                  attributes: result
+              ]
+          ]
+        }
+      } else {
+        response.status = HttpStatus.NOT_FOUND.value()
         return [
             links : links,
-            errors: result.errors
-        ]
-      }
-      else {
-        return [
-            links: links,
-            data : [
-                id        : id,
-                type      : type,
-                attributes: result
+            errors: [
+                [
+                    status: HttpStatus.NOT_FOUND.value(),
+                    title : HttpStatus.NOT_FOUND.toString(),
+                    detail: "No parsed values exist for ${type} with id [${id}] from source [${source}]" as String
+                ]
             ]
         ]
       }
-    }
-    else {
-      response.status = HttpStatus.NOT_FOUND.value()
-      return [
-          links : links,
-          errors: [
-              [
-                  status: HttpStatus.NOT_FOUND.value(),
-                  title : HttpStatus.NOT_FOUND.toString(),
-                  detail: "No parsed values exist for ${type} with id [${id}] from source [${source}]" as String
-              ]
-          ]
-      ]
     }
   }
 
