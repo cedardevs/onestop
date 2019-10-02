@@ -18,6 +18,8 @@ import static org.cedar.schemas.avro.psi.Method.*;
 public class StreamFunctions {
   private static final Logger log = LoggerFactory.getLogger(StreamFunctions.class);
 
+  private static final int eventListLimit = 20;
+
   public static Reducer identityReducer = (aggregate, nextValue) -> nextValue;
 
   public static Reducer<Set> setReducer = (aggregate, nextValue) -> {
@@ -87,9 +89,10 @@ public class StreamFunctions {
     var errors = builder.getErrors();
     var failedState = errors != null && !errors.isEmpty();
 
-    // Note: we always preserve existing events, hence aggregate.getEvents() instead of builder.getEvents()
+    // Note: we always preserve existing events, hence currentState.getEvents() instead of builder.getEvents()
     var currentEvents = currentState != null ? currentState.getEvents() : null;
-    builder.setEvents(DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput, failedState)));
+    var mergedEvents = DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput, failedState));
+    builder.setEvents(DataUtils.truncateList(mergedEvents, eventListLimit, true));
     return builder.build();
   };
 
@@ -107,9 +110,10 @@ public class StreamFunctions {
       return currentState;
     }
     else {
+      var mergedEvents = DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false));
       return AggregatedInput.newBuilder(currentState)
           .setDeleted(deleted)
-          .setEvents(DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false)))
+          .setEvents(DataUtils.truncateList(mergedEvents, eventListLimit, true))
           .build();
     }
   }
