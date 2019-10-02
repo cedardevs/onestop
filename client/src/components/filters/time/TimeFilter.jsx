@@ -9,22 +9,12 @@ import {
   isValidDate,
   isValidDateRange,
 } from '../../../utils/inputUtils'
-import FilterFieldset from '../FilterFieldset'
 import {
   FilterColors,
   FilterStyles,
   SiteColors,
 } from '../../../style/defaultStyles'
-import YearField from './YearField'
-import MonthField from './MonthField'
-import DayField from './DayField'
-
-const styleInputValidity = isValid => {
-  return {
-    paddingLeft: '5px',
-    color: isValid ? SiteColors.VALID : SiteColors.WARNING,
-  }
-}
+import DateFieldset from './DateFieldset'
 
 const styleTimeFilter = {
   ...FilterStyles.MEDIUM,
@@ -34,36 +24,6 @@ const styleTimeFilter = {
 const styleForm = {
   display: 'flex',
   flexDirection: 'column',
-}
-
-const styleDate = {
-  display: 'flex',
-  flexDirection: 'row',
-}
-
-const styleLayout = {
-  margin: '2px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'space-around',
-  marginBottom: '0.25em',
-}
-
-const styleLabel = {
-  marginBottom: '0.25em',
-}
-
-// const styleWrapper = {
-// height: '2em',
-// }
-
-const styleField = {
-  color: FilterColors.TEXT,
-  // height: '100%', // TODO is getting rid of styleWrapper this way ok?
-  height: '2em',
-  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
-  borderRadius: '0.309em',
 }
 
 const styleButtonRow = {
@@ -165,6 +125,7 @@ export default class TimeFilter extends React.Component {
       [field]: value,
       warning: '',
       startValueValid: isValidDate(
+        // TODO this step can hopefully be moved into dateFieldset?
         stateClone.startDateYear,
         stateClone.startDateMonth,
         stateClone.startDateDay
@@ -175,6 +136,7 @@ export default class TimeFilter extends React.Component {
         stateClone.endDateDay
       ),
       dateRangeValid: isValidDateRange(
+        // Note: this cannot tho (see above TODO)
         ymdToDateMap(
           stateClone.startDateYear,
           stateClone.startDateMonth,
@@ -263,52 +225,6 @@ export default class TimeFilter extends React.Component {
     )
   }
 
-  createDateFieldset = (name, year, month, day, valid) => {
-    const legendText = `${_.capitalize(name)} Date:`
-
-    const onDateChange = event => {
-      this.onChange(event.target.name, event.target.value)
-    }
-
-    return (
-      <FilterFieldset legendText={legendText}>
-        <div style={styleDate}>
-          <YearField
-            name={name}
-            value={year}
-            onChange={onDateChange}
-            styleLayout={styleLayout}
-            styleLabel={styleLabel}
-            styleField={styleField}
-          />
-          <MonthField
-            name={name}
-            value={month}
-            onChange={onDateChange}
-            styleLayout={styleLayout}
-            styleLabel={styleLabel}
-            styleField={styleField}
-          />
-          <DayField
-            name={name}
-            value={day}
-            onChange={onDateChange}
-            styleLayout={styleLayout}
-            styleLabel={styleLabel}
-            styleField={styleField}
-          />
-
-          <div style={styleLayout}>
-            <span />
-            <span aria-hidden="true" style={styleInputValidity(valid)}>
-              {valid ? '✓' : '✖'}
-            </span>
-          </div>
-        </div>
-      </FilterFieldset>
-    )
-  }
-
   handleKeyDown = event => {
     if (event.keyCode === Key.ENTER) {
       event.preventDefault()
@@ -321,6 +237,10 @@ export default class TimeFilter extends React.Component {
 
     const clearButton = this.createClearButton()
 
+    const onDateChange = event => {
+      this.onChange(event.target.name, event.target.value)
+    }
+
     const inputColumn = (
       <FlexColumn
         items={[
@@ -330,20 +250,22 @@ export default class TimeFilter extends React.Component {
               onKeyDown={this.handleKeyDown}
               aria-describedby="timeFilterInstructions"
             >
-              {this.createDateFieldset(
-                'start',
-                this.state.startDateYear,
-                this.state.startDateMonth,
-                this.state.startDateDay,
-                this.state.startValueValid
-              )}
-              {this.createDateFieldset(
-                'end',
-                this.state.endDateYear,
-                this.state.endDateMonth,
-                this.state.endDateDay,
-                this.state.endValueValid
-              )}
+              <DateFieldset
+                name="start"
+                year={this.state.startDateYear}
+                month={this.state.startDateMonth}
+                day={this.state.startDateDay}
+                valid={this.state.startValueValid}
+                onDateChange={onDateChange}
+              />
+              <DateFieldset
+                name="end"
+                year={this.state.endDateYear}
+                month={this.state.endDateMonth}
+                day={this.state.endDateDay}
+                valid={this.state.endValueValid}
+                onDateChange={onDateChange}
+              />
             </form>
           </div>,
           <div key="DateFilter::InputColumn::Buttons" style={styleButtonRow}>
