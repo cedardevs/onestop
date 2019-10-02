@@ -66,6 +66,13 @@ class SecurityEnabledConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
 
+    // non-browser clients recommended to disable CSRF
+    // we're using a python script to hit write operation endpoints
+    // CAS is locking down write operations, and the browser is used for read-only GET purposes
+    // if this behavior changes in the future (browser based admin utility is created), we may want to re-address this
+    // see: https://docs.spring.io/autorepo/docs/spring-security/5.0.3.BUILD-SNAPSHOT/reference/html/csrf.html#when-to-use-csrf-protection
+    http.csrf().disable()
+
     http.addFilter(casAuthenticationFilter())
 
     http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(new AccessDeniedHandler() {
