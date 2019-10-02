@@ -68,6 +68,15 @@ task sourceJar(type: Jar) {
 
 assemble.dependsOn(sourceJar)
 
+task BuildDockerImage {
+  group "jib"
+  dependsOn jibDockerBuild
+}
+task PublishDockerImage {
+  group "jib"
+  dependsOn jib
+}
+
 jib {
   // derive image repository
   String imageRegistryURL = "registry.hub.docker.com"
