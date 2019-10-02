@@ -57,7 +57,7 @@ spec:
           value: "{{ include "psi-registry.kafka.bootstrap.servers" . }}"
         - name: KAFKA_SCHEMA_REGISTRY_URL
           value: "{{ include "psi-registry.kafka.schema.registry.url" . }}"
-        - name: STATE_DIR
+        - name: KAFKA_STATE_DIR
           value: "/var/lib/registry/data"
         {{- if .Values.config }}
         - name: spring.config.additional-location
