@@ -139,6 +139,7 @@ class MetadataRestController {
 
       return metadataStore.getRemoteStoreState(metadata, path, id)
     } else {
+      log.info("remote instance : " + metadata)
       def result = metadataStore.retrieveLocalParsed(recordType, source, id)
       links.self = links.remove('parsed')
 

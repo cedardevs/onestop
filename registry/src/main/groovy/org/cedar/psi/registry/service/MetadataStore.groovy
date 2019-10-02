@@ -20,7 +20,7 @@ import org.springframework.web.client.RestTemplate
 class MetadataStore {
 
   private KafkaStreams streamsApp
-  private final MetadataService metadataService
+  private MetadataService metadataService
   private HostInfo hostInfo
   private RestTemplate restTemplate
 
@@ -84,7 +84,7 @@ class MetadataStore {
           links : url,
           errors: [
               [
-                  detail: "No parsed values exist for id [${e.message}]]" as String
+                  detail: "error in calling service details:[${e.message}]]" as String
               ]
           ]
       ]
