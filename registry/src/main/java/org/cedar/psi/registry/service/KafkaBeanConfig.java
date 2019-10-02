@@ -14,15 +14,19 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.state.HostInfo;
 import org.cedar.psi.registry.stream.TopicInitializer;
 import org.cedar.psi.registry.stream.TopologyBuilders;
 import org.cedar.schemas.avro.psi.Input;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -40,6 +44,7 @@ public class KafkaBeanConfig {
   static {
     defaults.put(BOOTSTRAP_SERVERS_CONFIG, "http://localhost:9092");
     defaults.put(SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
+    defaults.put(APPLICATION_SERVER_CONFIG, "http://localhost:8084");
     defaults.put(TopicConfig.COMPRESSION_TYPE_CONFIG, "gzip");
     defaults.put(CACHE_MAX_BYTES_BUFFERING_CONFIG, 104857600L); // 100 MiB
     defaults.put(COMMIT_INTERVAL_MS_CONFIG, 30000L); // 30 sec
@@ -82,6 +87,21 @@ public class KafkaBeanConfig {
     props.putAll(kafkaProps);
 
     return props;
+  }
+
+  @Bean
+  HostInfo hostInfo(Properties streamsConfig){
+    String applicationServer = streamsConfig.getProperty(APPLICATION_SERVER_CONFIG);
+    try {
+      URL url = new URL(applicationServer);
+      String restEndpointHostname = url.getHost();
+      int restEndpointPort = url.getPort();
+
+      return new HostInfo(restEndpointHostname, restEndpointPort);
+    }
+    catch (MalformedURLException e) {
+      throw new BeanCreationException("Failed to create a HostInfo", e);
+    }
   }
 
   @Bean(destroyMethod = "close")
