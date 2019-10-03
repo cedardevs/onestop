@@ -3,10 +3,7 @@ import _ from 'lodash'
 import moment from 'moment/moment'
 
 import {FilterColors, SiteColors} from '../../../style/defaultStyles'
-import {
-  ymdToDateMap,
-  isValidDate,
-} from '../../../utils/inputUtils'
+import {ymdToDateMap, isValidDate} from '../../../utils/inputUtils'
 
 import FilterFieldset from '../FilterFieldset'
 import YearField from './YearField'
