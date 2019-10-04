@@ -7,19 +7,20 @@ const styleYear = {
 }
 
 const YearField = props => {
-  const {name, value, onChange, styleLayout, styleLabel, styleField} = props
+  const {name, value, onChange, label, styleLayout, styleLabel, styleField, maxLength} = props
   const styleFieldApplied = {
     ...styleYear,
     ...styleField,
   }
 
   const id = `${name}DateYear`
-  const label = `year ${name}`
+  const ariaLabel = `year ${name}`
+  const labelText = label ? label : 'Year'
 
   return (
     <div style={styleLayout}>
       <label style={styleLabel} htmlFor={id}>
-        Year
+        {labelText}
       </label>
       <input
         type="text"
@@ -29,9 +30,9 @@ const YearField = props => {
         aria-placeholder="Y Y Y Y"
         value={value}
         onChange={onChange}
-        maxLength="4"
+        maxLength={maxLength | 4}
         style={styleFieldApplied}
-        aria-label={label}
+        aria-label={ariaLabel}
       />
     </div>
   )

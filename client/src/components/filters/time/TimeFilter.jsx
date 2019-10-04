@@ -1,5 +1,6 @@
 import React from 'react'
 import DateTimeFilter from './DateTimeFilter'
+import GeologicTimeFilter from './GeologicTimeFilter'
 
 export default class TimeFilter extends React.Component {
 
@@ -13,7 +14,7 @@ export default class TimeFilter extends React.Component {
       submit,
     } = this.props
     return (
-      <DateTimeFilter
+      <GeologicTimeFilter
         startDateTime={startDateTime}
         endDateTime={endDateTime}
         updateDateRange={updateDateRange}
