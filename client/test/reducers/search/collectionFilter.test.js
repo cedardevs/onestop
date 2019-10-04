@@ -6,6 +6,8 @@ import {
 import {
   collectionUpdateDateRange,
   collectionRemoveDateRange,
+  collectionUpdateYearRange,
+  collectionRemoveYearRange,
   collectionUpdateGeometry,
   collectionRemoveGeometry,
   collectionToggleExcludeGlobal,
@@ -28,6 +30,8 @@ const assertAllFilterParams = (results, values, defaults) => {
   assertParam('geoJSON', results, values, defaults)
   assertParam('startDateTime', results, values, defaults)
   assertParam('endDateTime', results, values, defaults)
+  assertParam('startYear', results, values, defaults)
+  assertParam('endYear', results, values, defaults)
   assertParam('selectedFacets', results, values, defaults)
   assertParam('excludeGlobal', results, values, defaults)
 }
@@ -43,6 +47,8 @@ describe('The collection filter reducer', function(){
     },
     startDateTime: '2000-01-01T00:00:00Z',
     endDateTime: '3000-01-01T00:00:00Z',
+    startYear: -30000,
+    endYear: -3000,
     selectedFacets: {science: [ 'Oceans', 'Oceans > Ocean Temperature' ]},
     excludeGlobal: true,
   }
@@ -56,6 +62,8 @@ describe('The collection filter reducer', function(){
       geoJSON: null,
       startDateTime: null,
       endDateTime: null,
+      startYear: null,
+      endYear: null,
       selectedFacets: {},
       excludeGlobal: null,
     })
@@ -133,6 +141,8 @@ describe('The collection filter reducer', function(){
             geoJSON: null,
             startDateTime: null,
             endDateTime: null,
+            startYear: null,
+            endYear: null,
             selectedFacets: {},
             excludeGlobal: null,
           },
@@ -155,6 +165,8 @@ describe('The collection filter reducer', function(){
             geoJSON: null,
             startDateTime: null,
             endDateTime: null,
+            startYear: null,
+            endYear: null,
             selectedFacets: {
               science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
             },
@@ -174,15 +186,15 @@ describe('The collection filter reducer', function(){
             },
           ],
           expectedChanges: {
-            pageOffset: 0,
+            // pageOffset: 0,
             queryText: 'new',
-            geoJSON: null,
-            startDateTime: null,
-            endDateTime: null,
+            // geoJSON: null,
+            // startDateTime: null,
+            // endDateTime: null,
             selectedFacets: {
               science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
             },
-            excludeGlobal: null,
+            // excludeGlobal: null,
           },
         },
         {
@@ -206,6 +218,8 @@ describe('The collection filter reducer', function(){
               },
               startDateTime: '1998-01-01T00:00:00Z',
               endDateTime: '2020-01-01T00:00:00Z',
+              startYear: -100000000,
+              endYear: -90000000,
               selectedFacets: {
                 science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
               },
@@ -229,6 +243,8 @@ describe('The collection filter reducer', function(){
             },
             startDateTime: '1998-01-01T00:00:00Z',
             endDateTime: '2020-01-01T00:00:00Z',
+            startYear: -100000000,
+            endYear: -90000000,
             selectedFacets: {
               science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
             },
@@ -293,6 +309,20 @@ describe('The collection filter reducer', function(){
         expectedChanges: {endDateTime: '2017-01-01T00:00:00Z'},
       },
       {
+        name: 'sets start year',
+        initialState: initialState,
+        function: collectionUpdateYearRange,
+        params: [ -1000000, null ],
+        expectedChanges: {startYear: -1000000},
+      },
+      {
+        name: 'sets end year',
+        initialState: initialState,
+        function: collectionUpdateYearRange,
+        params: [ null, -1000000 ],
+        expectedChanges: {endYear: -1000000},
+      },
+      {
         name: 'sets date range',
         initialState: nonInitialState,
         function: collectionUpdateDateRange,
@@ -303,10 +333,26 @@ describe('The collection filter reducer', function(){
         },
       },
       {
+        name: 'sets year range',
+        initialState: nonInitialState,
+        function: collectionUpdateYearRange,
+        params: [ -1000000, -900000 ],
+        expectedChanges: {
+          startYear: -1000000,
+          endYear: -900000,
+        },
+      },
+      {
         name: 'unsets date range',
         initialState: nonInitialState,
         function: collectionRemoveDateRange,
         expectedChanges: {startDateTime: null, endDateTime: null},
+      },
+      {
+        name: 'unsets year range',
+        initialState: nonInitialState,
+        function: collectionRemoveYearRange,
+        expectedChanges: {startYear: null, endYear: null},
       },
       {
         name: 'sets geometry',
@@ -374,6 +420,8 @@ describe('The collection filter reducer', function(){
           geoJSON: null,
           startDateTime: null,
           endDateTime: null,
+          startYear: null,
+          endYear: null,
           selectedFacets: {},
           excludeGlobal: false,
         },

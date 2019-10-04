@@ -49,7 +49,7 @@ const styleInputValidity = isValid => {
 }
 
 const GeologicFieldset = ({startYear, endYear, onDateChange}) => {
-  const legendText = 'Geologic'//`${_.capitalize(name)} Year:`
+  const legendText = 'Geologic' //`${_.capitalize(name)} Year:`
 
   const [ start, setStart ] = useState('')
   const [ end, setEnd ] = useState('')
@@ -104,7 +104,7 @@ const GeologicFieldset = ({startYear, endYear, onDateChange}) => {
     <FilterFieldset legendText={legendText}>
       <div style={styleDate}>
         <YearField
-          name='end'
+          name="end"
           label="Start:"
           maxLength={14}
           value={start}
@@ -114,16 +114,16 @@ const GeologicFieldset = ({startYear, endYear, onDateChange}) => {
           styleField={styleField}
         />
 
-              <div style={styleLayout}>
-                <span />
-                <span aria-hidden="true" style={styleInputValidity(startValid)}>
-                  {startValid ? '✓' : '✖'}
-                </span>
-              </div>
-            </div>
-            <div style={styleDate}>
+        <div style={styleLayout}>
+          <span />
+          <span aria-hidden="true" style={styleInputValidity(startValid)}>
+            {startValid ? '✓' : '✖'}
+          </span>
+        </div>
+      </div>
+      <div style={styleDate}>
         <YearField
-          name='end'
+          name="end"
           label="End:"
           maxLength={14}
           value={end}

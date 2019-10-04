@@ -73,7 +73,7 @@ const DateTimeFilter = props => {
   const clearDates = () => {
     props.removeDateRange()
     props.submit()
-    etStart({date: {}, valid: true})
+    setStart({date: {}, valid: true})
     setEnd({date: {}, valid: true})
     setDateRangeValid(true)
     setWarning('')

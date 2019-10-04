@@ -4,6 +4,8 @@ import {
   COLLECTION_REMOVE_GEOMETRY,
   COLLECTION_UPDATE_DATE_RANGE,
   COLLECTION_REMOVE_DATE_RANGE,
+  COLLECTION_UPDATE_YEAR_RANGE,
+  COLLECTION_REMOVE_YEAR_RANGE,
   COLLECTION_TOGGLE_FACET,
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
   COLLECTION_NEW_SEARCH_REQUESTED,
@@ -18,6 +20,8 @@ export const initialState = Immutable({
   geoJSON: null,
   startDateTime: null,
   endDateTime: null,
+  startYear: null,
+  endYear: null,
   selectedFacets: {},
   excludeGlobal: null,
   pageOffset: 0,
@@ -37,10 +41,22 @@ export const collectionFilter = (state = initialState, action) => {
         endDateTime: action.endDate,
       })
 
+    case COLLECTION_UPDATE_YEAR_RANGE:
+      return Immutable.merge(state, {
+        startYear: action.startYear,
+        endYear: action.endYear,
+      })
+
     case COLLECTION_REMOVE_DATE_RANGE:
       return Immutable.merge(state, {
         startDateTime: initialState.startDateTime,
         endDateTime: initialState.endDateTime,
+      })
+
+    case COLLECTION_REMOVE_YEAR_RANGE:
+      return Immutable.merge(state, {
+        startYear: initialState.startYear,
+        endYear: initialState.endYear,
       })
 
     case COLLECTION_TOGGLE_FACET:

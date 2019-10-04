@@ -7,7 +7,16 @@ const styleYear = {
 }
 
 const YearField = props => {
-  const {name, value, onChange, label, styleLayout, styleLabel, styleField, maxLength} = props
+  const {
+    name,
+    value,
+    onChange,
+    label,
+    styleLayout,
+    styleLabel,
+    styleField,
+    maxLength,
+  } = props
   const styleFieldApplied = {
     ...styleYear,
     ...styleField,

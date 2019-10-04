@@ -50,6 +50,11 @@ export default class AppliedFilters extends React.Component {
     this.props.submit()
   }
 
+  unselectYearAndSubmitSearch = (start, end) => {
+    this.props.updateYearRange(start, end)
+    this.props.submit()
+  }
+
   unselectMapAndSubmitSearch = () => {
     this.props.removeGeometry()
     this.props.submit()
@@ -103,7 +108,7 @@ export default class AppliedFilters extends React.Component {
   }
 
   buildTimeBubbles = () => {
-    const {startDateTime, endDateTime} = this.props
+    const {startDateTime, endDateTime, startYear, endYear} = this.props
     const removeZeroTime = dateTime => dateTime.replace('T00:00:00Z', '')
     let timeBubbles = []
     if (startDateTime) {
@@ -127,6 +132,28 @@ export default class AppliedFilters extends React.Component {
           key="appliedFilter::end"
           onUnselect={() =>
             this.unselectDateTimeAndSubmitSearch(startDateTime, null)}
+        />
+      )
+    }
+    if (startYear) {
+      timeBubbles.push(
+        <AppliedFilterBubble
+          backgroundColor={Theme.time.backgroundColor}
+          borderColor={Theme.time.borderColor}
+          text={`After: ${startYear}`}
+          key="appliedFilter::startYear"
+          onUnselect={() => this.unselectYearAndSubmitSearch(null, endYear)}
+        />
+      )
+    }
+    if (endYear) {
+      timeBubbles.push(
+        <AppliedFilterBubble
+          backgroundColor={Theme.time.backgroundColor}
+          borderColor={Theme.time.borderColor}
+          text={`Before: ${endYear}`}
+          key="appliedFilter::endYear"
+          onUnselect={() => this.unselectYearAndSubmitSearch(startYear, null)}
         />
       )
     }

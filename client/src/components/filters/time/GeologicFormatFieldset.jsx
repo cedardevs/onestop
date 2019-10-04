@@ -51,7 +51,7 @@ const styleInputValidity = isValid => {
 const GeologicFormatFieldset = ({geologicFormat, onFormatChange}) => {
   const legendText = 'Year Format'
 
-  const [ format, setFormat] = useState('CE')
+  const [ format, setFormat ] = useState('CE')
 
   useEffect(
     () => {
@@ -69,16 +69,31 @@ const GeologicFormatFieldset = ({geologicFormat, onFormatChange}) => {
   useEffect(
     () => {
       onFormatChange(format)
-    }, [ format ]
+    },
+    [ format ]
   )
 
   return (
     <FilterFieldset legendText={legendText}>
       <div style={styleDate}>
         <label htmlFor="CE">CE</label>
-        <input type="radio" id="CE" name="format" value="CE" checked={format == 'CE'} onChange={e => setFormat(e.target.value)}/>
+        <input
+          type="radio"
+          id="CE"
+          name="format"
+          value="CE"
+          checked={format == 'CE'}
+          onChange={e => setFormat(e.target.value)}
+        />
         <label htmlFor="BP">BP (0 = 1950 CE)</label>
-        <input type="radio" id="BP" name="format" value="BP" checked={format == 'BP'} onChange={e => setFormat(e.target.value)}/>
+        <input
+          type="radio"
+          id="BP"
+          name="format"
+          value="BP"
+          checked={format == 'BP'}
+          onChange={e => setFormat(e.target.value)}
+        />
       </div>
     </FilterFieldset>
   )
