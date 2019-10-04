@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import _ from 'lodash'
 
+import moment from 'moment/moment'
 import FlexColumn from '../../common/ui/FlexColumn'
 import Button from '../../common/input/Button'
 import {Key} from '../../../utils/keyboardUtils'
