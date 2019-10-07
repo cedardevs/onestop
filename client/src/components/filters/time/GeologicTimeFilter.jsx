@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
 import FlexColumn from '../../common/ui/FlexColumn'
@@ -115,8 +115,8 @@ const GeologicTimeFilter = props => {
   const clearDates = () => {
     props.removeYearRange()
     props.submit()
-    setStart({year: {}, valid: true})
-    setEnd({year: {}, valid: true})
+    setStart({year: null, valid: true})
+    setEnd({year: null, valid: true})
     setDateRangeValid(true)
     setWarning('')
   }
@@ -238,6 +238,66 @@ const GeologicTimeFilter = props => {
 
   const [ preset, setPreset ] = useState('') // TODO tons of stuff to do with this widget
 
+  const presetValues = [
+    {index: 0, label: 'Holocene', start: 1950 - 11700, end: null},
+    {
+      index: 1,
+      label: 'Last Deglaciation',
+      start: 1950 - 19000,
+      end: 1950 - 11700,
+    },
+    {
+      index: 2,
+      label: 'Last Glacial Period',
+      start: 1950 - 115000,
+      end: 1950 - 11700,
+    },
+    {
+      index: 3,
+      label: 'Last Interglacial',
+      start: 1950 - 130000,
+      end: 1950 - 115000,
+    },
+    {index: 4, label: 'Pliocene', start: 1950 - 5300000, end: 1950 - 2600000},
+    {
+      index: 5,
+      label: 'Paleocene-Eocene Thermal Maximum (PETM)',
+      start: 1950 - 56000000,
+      end: 1950 - 55000000,
+    },
+  ]
+
+  useEffect(
+    () => {
+      let pv = presetValues[preset] // TODO clear form should also reset the presets to (none)
+      console.log('found', pv, 'from', preset)
+      if (pv) {
+        // setStart({year: pv.start, valid: true})
+        // setEnd({year: pv.end, valid: true})
+        // setDateRangeValid(true)
+        // // TODO try activating this widget with keyboard to see if we need a preventDefault in there anywhere
+        // applyDates()
+        props.updateYearRange(pv.start, pv.end)
+        props.submit()
+      }
+    },
+    [ preset ]
+  )
+
+  const options = [
+    <option key="era::none" value="">
+      (none)
+    </option>,
+  ]
+
+  _.each(presetValues, (pv, k) => {
+    options.push(
+      <option key={`era::${pv.label}`} value={k}>
+        {pv.label}
+      </option>
+    )
+  })
+
   const presets = (
     <div key="GeologicDateFilter::InputColumn::Presets" style={styleLayout}>
       <label style={styleLabel} htmlFor="presets">
@@ -253,15 +313,7 @@ const GeologicTimeFilter = props => {
         style={styleField}
         aria-label="Era Presets"
       >
-        <option value="">(none)</option>
-        <option value="0">Holocene 11,700 to present</option>
-        <option value="1">Last Deglaciation 19000 11700</option>
-        <option value="2">Last Glacial Period 115000 11700</option>
-        <option value="3">Last Interglacial 130000 115000</option>
-        <option value="4">Pliocene 5300000 2600000</option>
-        <option value="5">
-          Paleocene-Eocene Thermal Maximum (PETM) 56000000 55000000
-        </option>
+        {options}
       </select>
     </div>
   )
