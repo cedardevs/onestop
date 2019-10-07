@@ -124,8 +124,24 @@ const GeologicTimeFilter = props => {
       setWarning(createWarning(start.valid, end.valid, dateRangeValid))
     }
     else {
-      // TODO convert into CE here!
-      props.updateYearRange(textToNumber(start.year), textToNumber(end.year))
+      // TODO convert into CE here! (but also in individual validation steps)
+      if (format == 'CE') {
+        props.updateYearRange(textToNumber(start.year), textToNumber(end.year))
+      }
+      else if (format == 'BP') {
+        console.log(
+          textToNumber(start.year),
+          'to',
+          1950 - textToNumber(start.year)
+        )
+        props.updateYearRange(
+          1950 - textToNumber(start.year),
+          1950 - textToNumber(end.year)
+        )
+      }
+      else {
+        return
+      }
       props.submit()
     }
   }
@@ -145,11 +161,12 @@ const GeologicTimeFilter = props => {
     }
   }
 
-  const geoFormat = 'CE' // TODO add to redux state!
+  // const geoFormat = 'CE' // TODO add to redux state!
   const onFormatChange = f => {
     console.log('Format changed to f')
     // TODO do stuff!
     // TODO ie: change placeholder value to -YYYYYYYYY vs YYYYYYYY ?
+    setFormat(f)
   }
 
   const legendText = 'Geologic'
@@ -161,12 +178,13 @@ const GeologicTimeFilter = props => {
         aria-describedby="geologicTimeFilterInstructions"
       >
         <GeologicFormatFieldset
-          geologicFormat={geoFormat}
+          geologicFormat={format}
           onFormatChange={onFormatChange}
         />
         <GeologicFieldset
           startYear={props.startYear}
           endYear={props.endYear}
+          format={format}
           updateStartYear={updateStartYear}
           updateEndYear={updateEndYear}
         />

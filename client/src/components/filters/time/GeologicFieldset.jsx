@@ -52,6 +52,7 @@ const GeologicFieldset = ({
   endYear,
   updateStartYear,
   updateEndYear,
+  format,
 }) => {
   const legendText = 'Geologic' //`${_.capitalize(name)} Year:`
 
@@ -63,31 +64,43 @@ const GeologicFieldset = ({
   useEffect(
     () => {
       if (startYear != null) {
-        setStart(`${startYear}`) // internal to component, values should be string. expected startYear format is integer
+        // internal to component, values should be string. expected startYear format is integer
+        if (format == 'BP') {
+          setStart(`${1950 - startYear}`)
+        }
+        else {
+          setStart(`${startYear}`)
+        }
       }
       else {
         setStart('')
       }
     },
-    [ startYear ] // when props date / redux store changes, update fields
+    [ startYear, format ] // when props date / redux store changes, update fields
   )
   useEffect(
     () => {
       if (endYear != null) {
-        setEnd(`${endYear}`) // internal to component, values should be string. expected startYear format is integer
+        // internal to component, values should be string. expected startYear format is integer
+        if (format == 'BP') {
+          setEnd(`${1950 - endYear}`)
+        }
+        else {
+          setEnd(`${endYear}`)
+        }
       }
       else {
         setEnd('')
       }
     },
-    [ endYear ] // when props date / redux store changes, update fields
+    [ endYear, format ] // when props date / redux store changes, update fields
   )
 
   useEffect(
     // TODO this component or GeologicTimeFilter needs to validate start < end
     // validate start
     () => {
-      let validValue = isValidYear(start)
+      let validValue = isValidYear(start, format)
       setStartValid(validValue) // update UI
       // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
       updateStartYear(start, validValue)
@@ -98,7 +111,7 @@ const GeologicFieldset = ({
   useEffect(
     // validate end
     () => {
-      let validValue = isValidYear(end)
+      let validValue = isValidYear(end, format)
       setEndValid(validValue) // update UI
       // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
       updateEndYear(end, validValue)

@@ -18,7 +18,7 @@ export const ymdToDateMap = (year, month, day) => {
   }
 }
 
-export const isValidYear = year => {
+export const isValidYear = (year, format) => {
   // TODO add unit tests!
 
   // No date given is technically valid (since a complete range is unnecessary)
@@ -31,7 +31,13 @@ export const isValidYear = year => {
   }
 
   const now = moment()
-  return textToNumber(year) <= now.year()
+
+  if (format == 'CE') {
+    return textToNumber(year) <= now.year()
+  }
+  if (format == 'BP') {
+    return textToNumber(year) >= 1950 - now.year() // TODO stop scattering (1950 - year ) all over the code!
+  }
 }
 
 export const isValidDate = (year, month, day) => {
