@@ -7,7 +7,9 @@ Install go - https://golang.org/doc/install
 
 ## Usage
 `cd cli`
+
 `go install`
+
 `onestop-cli --help`
 
 ## Troubleshoot 
