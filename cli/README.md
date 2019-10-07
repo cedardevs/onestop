@@ -40,5 +40,6 @@ Search collections by date -
 `onestop-cli searchcollection filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} --verbose`
 
 ## Troubleshoot 
-from onestop/cli/
+from onestop/cli/ - 
+
 `go get -u https://github.com/danielgtaylor/openapi-cli-generator`
