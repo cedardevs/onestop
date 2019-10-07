@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
-import moment from 'moment/moment'
 
 import {FilterColors, SiteColors} from '../../../style/defaultStyles'
-import {ymdToDateMap, isValidDate} from '../../../utils/inputUtils'
+import {isValidYear} from '../../../utils/inputUtils'
 
 import FilterFieldset from '../FilterFieldset'
 import YearField from './YearField'
@@ -64,7 +63,6 @@ const GeologicFieldset = ({
   useEffect(
     () => {
       if (startYear != null) {
-        // TODO validate that date is an integer value in string format
         setStart(startYear)
       }
       else {
@@ -76,7 +74,6 @@ const GeologicFieldset = ({
   useEffect(
     () => {
       if (endYear != null) {
-        // TODO validate that date is an integer value in string format
         setEnd(endYear)
       }
       else {
@@ -87,17 +84,21 @@ const GeologicFieldset = ({
   )
 
   useEffect(
+    // TODO this component or GeologicTimeFilter needs to validate start < end
+    // validate start
     () => {
-      let validValue = true // TODO validate that a valid year integer was entered
+      let validValue = isValidYear(start)
       setStartValid(validValue) // update UI
       // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
       updateStartYear(start, validValue)
     },
     [ start ]
   )
+
   useEffect(
+    // validate end
     () => {
-      let validValue = true // TODO validate that a valid year integer was entered
+      let validValue = isValidYear(end)
       setEndValid(validValue) // update UI
       // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
       updateEndYear(end, validValue)

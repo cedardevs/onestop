@@ -18,6 +18,22 @@ export const ymdToDateMap = (year, month, day) => {
   }
 }
 
+export const isValidYear = year => {
+  // TODO add unit tests!
+
+  // No date given is technically valid (since a complete range is unnecessary)
+  if (_.isEmpty(year)) {
+    return true
+  }
+
+  if (!Number.isInteger(textToNumber(year))) {
+    return false
+  }
+
+  const now = moment()
+  return textToNumber(year) <= now.year()
+}
+
 export const isValidDate = (year, month, day) => {
   // No date given is technically valid (since a complete range is unnecessary)
   if (_.isEmpty(year) && _.isEmpty(month) && _.isEmpty(day)) {
