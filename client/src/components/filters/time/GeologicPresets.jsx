@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
+import FilterFieldset from '../FilterFieldset'
+
 const presetValues = [
   {index: 0, label: 'Holocene', start: 1950 - 11700, end: null},
   {
@@ -39,6 +41,7 @@ const GeologicPresets = ({
   styleLabel,
   styleField,
 }) => {
+  const legendText = 'Eras'
   const [ preset, setPreset ] = useState('') // TODO tons of stuff to do with this widget
 
   useEffect(
@@ -84,23 +87,22 @@ const GeologicPresets = ({
   })
 
   return (
-    <div key="GeologicDateFilter::InputColumn::Presets" style={styleLayout}>
-      <label style={styleLabel} htmlFor="presets">
-        Eras
-      </label>
-      <select
-        id="presets"
-        name="presets"
-        value={preset}
-        onChange={e => {
-          setPreset(e.target.value)
-        }}
-        style={styleField}
-        aria-label="Era Presets"
-      >
-        {options}
-      </select>
-    </div>
+    <FilterFieldset legendText={legendText}>
+      <div key="GeologicDateFilter::InputColumn::Presets" style={styleLayout}>
+        <select
+          id="presets"
+          name="presets"
+          value={preset}
+          onChange={e => {
+            setPreset(e.target.value)
+          }}
+          style={styleField}
+          aria-label="Era Presets"
+        >
+          {options}
+        </select>
+      </div>
+    </FilterFieldset>
   )
 }
 export default GeologicPresets

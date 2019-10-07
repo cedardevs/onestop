@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
 import FlexColumn from '../../common/ui/FlexColumn'
+// import FlexRow from '../../common/ui/FlexColumn'
 import Button from '../../common/input/Button'
 import {Key} from '../../../utils/keyboardUtils'
 import {isValidDateRange, textToNumber} from '../../../utils/inputUtils'
@@ -11,6 +12,7 @@ import {
   SiteColors,
 } from '../../../style/defaultStyles'
 import FilterFieldset from '../FilterFieldset'
+import FormSeparator from '../FormSeparator'
 import DateFieldset from './DateFieldset'
 import GeologicFieldset from './GeologicFieldset'
 import GeologicFormatFieldset from './GeologicFormatFieldset'
@@ -207,22 +209,36 @@ const GeologicTimeFilter = props => {
     </div>
   )
 
+  // <FlexRow style={{
+  //
+  // display: 'flex',
+  // flexDirection: 'row', margin: '0.618em 0',}} items = {[ (<hr key='OR::LINEBREAK::BEFORE' style={{flexGrow: 1,
+  // marginTop: 'auto',
+  // marginBottom: 'auto', borderStyle: 'dashed', borderColor: FilterColors.LIGHT_SHADOW}}/>), (<div key='OR::SEPARATOR' style={{...styleLayout, ...{margin: '0 0.613em'}}}>OR</div> ), (<hr key='OR::LINEBREAK::AFTER' style={{flexGrow: 1,
+  // marginTop: 'auto',
+  // marginBottom: 'auto', borderStyle: 'dashed', borderColor: FilterColors.LIGHT_SHADOW}}/>)]}/>
   const presets = (
-    <GeologicPresets
-      startYear={props.startYear}
-      endYear={props.endYear}
-      updateYearRange={props.updateYearRange}
-      submit={props.submit}
-      styleLayout={styleLayout}
-      styleLabel={styleLabel}
-      styleField={styleField}
-    />
+    <div>
+      <FormSeparator text="OR" />
+
+      <GeologicPresets
+        startYear={props.startYear}
+        endYear={props.endYear}
+        updateYearRange={props.updateYearRange}
+        submit={props.submit}
+        styleLayout={styleLayout}
+        styleLabel={styleLabel}
+        styleField={styleField}
+      />
+    </div>
   )
 
   // TODO no enforcement of that 'future dates are not accepted' thing here
   return (
     <div style={styleTimeFilter}>
-      <fieldset style={{padding: '0.618em'}}>
+      <fieldset
+        style={{borderColor: FilterColors.LIGHT_SHADOW, padding: '0.618em'}}
+      >
         <legend id="geologicTimeFilterInstructions">
           Provide a start date, end date, or both. Future dates are not
           accepted.
