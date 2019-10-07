@@ -40,7 +40,18 @@ const GeologicPresets = ({
   styleField,
 }) => {
   const [ preset, setPreset ] = useState('') // TODO tons of stuff to do with this widget
-  // TODO if startYear and endYear change and match a preset, set the preset value to match!!
+
+  useEffect(
+    () => {
+      // if startYear and endYear match a preset, show the name of the Era in the dropdown (ie: when reloading the page)
+      let matchingPreset = _.find(presetValues, (pv, k) => {
+        return pv.start == startYear && pv.end == endYear
+      })
+      setPreset(matchingPreset.index)
+    },
+    [ startYear, endYear ]
+  )
+
   useEffect(
     () => {
       let pv = presetValues[preset] // TODO clear form should also reset the presets to (none)

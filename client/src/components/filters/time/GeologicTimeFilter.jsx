@@ -209,6 +209,8 @@ const GeologicTimeFilter = props => {
 
   const presets = (
     <GeologicPresets
+      startYear={props.startYear}
+      endYear={props.endYear}
       updateYearRange={props.updateYearRange}
       submit={props.submit}
       styleLayout={styleLayout}
