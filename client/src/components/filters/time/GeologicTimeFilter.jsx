@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
 import FlexColumn from '../../common/ui/FlexColumn'
-// import FlexRow from '../../common/ui/FlexColumn'
 import Button from '../../common/input/Button'
 import {Key} from '../../../utils/keyboardUtils'
 import {isValidDateRange, textToNumber} from '../../../utils/inputUtils'
@@ -209,14 +208,6 @@ const GeologicTimeFilter = props => {
     </div>
   )
 
-  // <FlexRow style={{
-  //
-  // display: 'flex',
-  // flexDirection: 'row', margin: '0.618em 0',}} items = {[ (<hr key='OR::LINEBREAK::BEFORE' style={{flexGrow: 1,
-  // marginTop: 'auto',
-  // marginBottom: 'auto', borderStyle: 'dashed', borderColor: FilterColors.LIGHT_SHADOW}}/>), (<div key='OR::SEPARATOR' style={{...styleLayout, ...{margin: '0 0.613em'}}}>OR</div> ), (<hr key='OR::LINEBREAK::AFTER' style={{flexGrow: 1,
-  // marginTop: 'auto',
-  // marginBottom: 'auto', borderStyle: 'dashed', borderColor: FilterColors.LIGHT_SHADOW}}/>)]}/>
   const presets = (
     <div>
       <FormSeparator text="OR" />

@@ -3,7 +3,7 @@ import _ from 'lodash'
 
 import FilterFieldset from '../FilterFieldset'
 
-const presetValues = [
+const ERAS = [
   {index: 0, label: 'Holocene', start: 1950 - 11700, end: null},
   {
     index: 1,
@@ -42,34 +42,34 @@ const GeologicPresets = ({
   styleField,
 }) => {
   const legendText = 'Eras'
-  const [ preset, setPreset ] = useState('') // TODO tons of stuff to do with this widget
+  const [ presetIndex, setPresetIndex ] = useState('') // TODO tons of stuff to do with this widget
 
   useEffect(
     () => {
       // if startYear and endYear match a preset, show the name of the Era in the dropdown (ie: when reloading the page)
-      let matchingPreset = _.find(presetValues, (pv, k) => {
-        return pv.start == startYear && pv.end == endYear
+      let matchingPreset = _.find(ERAS, (preset, index) => {
+        return preset.start == startYear && preset.end == endYear
       })
-      setPreset(matchingPreset.index)
+      setPresetIndex(matchingPreset.index)
     },
     [ startYear, endYear ]
   )
 
   useEffect(
     () => {
-      let pv = presetValues[preset] // TODO clear form should also reset the presets to (none)
-      console.log('found', pv, 'from', preset)
-      if (pv) {
-        // setStart({year: pv.start, valid: true})
-        // setEnd({year: pv.end, valid: true})
+      let preset = ERAS[presetIndex] // TODO clear form should also reset the presets to (none)
+      console.log('found', preset, 'from', presetIndex)
+      if (preset) {
+        // setStart({year: preset.start, valid: true})
+        // setEnd({year: preset.end, valid: true})
         // setDateRangeValid(true)
         // // TODO try activating this widget with keyboard to see if we need a preventDefault in there anywhere
         // applyDates()
-        updateYearRange(pv.start, pv.end)
+        updateYearRange(preset.start, preset.end)
         submit()
       }
     },
-    [ preset ]
+    [ presetIndex ]
   )
 
   const options = [
@@ -78,10 +78,10 @@ const GeologicPresets = ({
     </option>,
   ]
 
-  _.each(presetValues, (pv, k) => {
+  _.each(ERAS, (preset, index) => {
     options.push(
-      <option key={`era::${pv.label}`} value={k}>
-        {pv.label}
+      <option key={`era::${preset.label}`} value={index}>
+        {preset.label}
       </option>
     )
   })
@@ -92,9 +92,9 @@ const GeologicPresets = ({
         <select
           id="presets"
           name="presets"
-          value={preset}
+          value={presetIndex}
           onChange={e => {
-            setPreset(e.target.value)
+            setPresetIndex(e.target.value)
           }}
           style={styleField}
           aria-label="Era Presets"
