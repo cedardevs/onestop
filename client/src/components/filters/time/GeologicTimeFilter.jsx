@@ -15,6 +15,7 @@ import DateFieldset from './DateFieldset'
 import GeologicFieldset from './GeologicFieldset'
 import GeologicFormatFieldset from './GeologicFormatFieldset'
 import YearField from './YearField'
+import GeologicPresets from './GeologicPresets'
 
 const styleTimeFilter = {
   // TODO duplicate from DateTimeFilter
@@ -177,36 +178,6 @@ const GeologicTimeFilter = props => {
     </div>
   )
 
-  // <label for="CE">CE</label>
-  // <input type="radio" id="CE" name="format" value="CE" checked={true} onChange={()=>{}}/>
-  // <label for="BP">BP (0 = 1950 CE)</label>
-  // <input type="radio" id="BP" name="format" value="BP" checked={false} onChange={()=>{}}/>
-
-  //   <FilterFieldset legendText={legendText}>
-  //     <div style={styleDate}>
-  //       <YearField
-  //         name="start"
-  //         label="Start"
-  //         value={start.year}
-  //         onChange={e => setYear(e.target.value)}
-  //         maxLength={14}
-  //         styleLayout={styleLayout}
-  //         styleLabel={styleLabel}
-  //         styleField={styleField}
-  //       />
-  //       <YearField
-  //         name="end"
-  //         label="End"
-  //         value={end.year}
-  //         onChange={e => setYear(e.target.value)}
-  //         maxLength={14}
-  //         styleLayout={styleLayout}
-  //         styleLabel={styleLabel}
-  //         styleField={styleField}
-  //       />
-  //   </div>
-  // </FilterFieldset>
-
   const buttons = (
     <div key="GeologicDateFilter::InputColumn::Buttons" style={styleButtonRow}>
       <Button
@@ -236,86 +207,14 @@ const GeologicTimeFilter = props => {
     </div>
   )
 
-  const [ preset, setPreset ] = useState('') // TODO tons of stuff to do with this widget
-
-  const presetValues = [
-    {index: 0, label: 'Holocene', start: 1950 - 11700, end: null},
-    {
-      index: 1,
-      label: 'Last Deglaciation',
-      start: 1950 - 19000,
-      end: 1950 - 11700,
-    },
-    {
-      index: 2,
-      label: 'Last Glacial Period',
-      start: 1950 - 115000,
-      end: 1950 - 11700,
-    },
-    {
-      index: 3,
-      label: 'Last Interglacial',
-      start: 1950 - 130000,
-      end: 1950 - 115000,
-    },
-    {index: 4, label: 'Pliocene', start: 1950 - 5300000, end: 1950 - 2600000},
-    {
-      index: 5,
-      label: 'Paleocene-Eocene Thermal Maximum (PETM)',
-      start: 1950 - 56000000,
-      end: 1950 - 55000000,
-    },
-  ]
-
-  useEffect(
-    () => {
-      let pv = presetValues[preset] // TODO clear form should also reset the presets to (none)
-      console.log('found', pv, 'from', preset)
-      if (pv) {
-        // setStart({year: pv.start, valid: true})
-        // setEnd({year: pv.end, valid: true})
-        // setDateRangeValid(true)
-        // // TODO try activating this widget with keyboard to see if we need a preventDefault in there anywhere
-        // applyDates()
-        props.updateYearRange(pv.start, pv.end)
-        props.submit()
-      }
-    },
-    [ preset ]
-  )
-
-  const options = [
-    <option key="era::none" value="">
-      (none)
-    </option>,
-  ]
-
-  _.each(presetValues, (pv, k) => {
-    options.push(
-      <option key={`era::${pv.label}`} value={k}>
-        {pv.label}
-      </option>
-    )
-  })
-
   const presets = (
-    <div key="GeologicDateFilter::InputColumn::Presets" style={styleLayout}>
-      <label style={styleLabel} htmlFor="presets">
-        Eras
-      </label>
-      <select
-        id="presets"
-        name="presets"
-        value={preset}
-        onChange={e => {
-          setPreset(e.target.value)
-        }}
-        style={styleField}
-        aria-label="Era Presets"
-      >
-        {options}
-      </select>
-    </div>
+    <GeologicPresets
+      updateYearRange={props.updateYearRange}
+      submit={props.submit}
+      styleLayout={styleLayout}
+      styleLabel={styleLabel}
+      styleField={styleField}
+    />
   )
 
   // TODO no enforcement of that 'future dates are not accepted' thing here
