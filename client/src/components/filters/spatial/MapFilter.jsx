@@ -11,6 +11,7 @@ import {
 } from '../../../utils/geoUtils'
 import {fontFamilyMonospace} from '../../../utils/styleUtils'
 import FilterFieldset from '../FilterFieldset'
+import FormSeparator from '../FormSeparator'
 import {
   FilterColors,
   FilterStyles,
@@ -39,7 +40,6 @@ const styleApplyClearButtonRow = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'center',
-  marginBottom: '0.618em',
 }
 
 const styleApplyButton = {
@@ -338,6 +338,7 @@ export default class MapFilter extends React.Component {
           >
             {this.state.warning}
           </div>,
+          <FormSeparator key="MapFilter::InputColumn::OR" text="OR" />,
           buttonShowMap,
         ]}
       />
@@ -356,7 +357,9 @@ export default class MapFilter extends React.Component {
 
     return (
       <div style={styleMapFilter}>
-        <fieldset style={{padding: '0.618em'}}>
+        <fieldset
+          style={{borderColor: FilterColors.LIGHT_SHADOW, padding: '0.618em'}}
+        >
           <legend id="mapFilterInstructions" style={styleDescription}>
             Type coordinates or draw on the map. Use the Clear button to reset
             the location filter.

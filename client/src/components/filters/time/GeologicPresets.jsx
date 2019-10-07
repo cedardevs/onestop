@@ -91,7 +91,7 @@ const GeologicPresets = ({
   })
 
   return (
-    <FilterFieldset legendText={legendText}>
+    <FilterFieldset legendText={legendText} styleFieldset={{marginBottom: 0}}>
       <div key="GeologicDateFilter::InputColumn::Presets" style={styleLayout}>
         <select
           id="presets"

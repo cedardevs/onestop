@@ -160,7 +160,9 @@ const DateTimeFilter = props => {
 
   return (
     <div style={styleTimeFilter}>
-      <fieldset style={{padding: '0.618em'}}>
+      <fieldset
+        style={{borderColor: FilterColors.LIGHT_SHADOW, padding: '0.618em'}}
+      >
         <legend id="timeFilterInstructions">
           Provide a start date, end date, or both. Day and month are optional.
           Future dates are not accepted.
