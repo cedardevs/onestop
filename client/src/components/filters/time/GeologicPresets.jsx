@@ -42,7 +42,7 @@ const GeologicPresets = ({
   styleField,
 }) => {
   const legendText = 'Eras'
-  const [ presetIndex, setPresetIndex ] = useState('') // TODO tons of stuff to do with this widget
+  const [ presetIndex, setPresetIndex ] = useState('')
 
   useEffect(
     () => {
@@ -53,14 +53,16 @@ const GeologicPresets = ({
       if (matchingPreset) {
         setPresetIndex(matchingPreset.index)
       }
+      else {
+        setPresetIndex('') // reset to "None" if nothing matches
+      }
     },
     [ startYear, endYear ]
   )
 
   useEffect(
     () => {
-      let preset = ERAS[presetIndex] // TODO clear form should also reset the presets to (none)
-      console.log('found', preset, 'from', presetIndex)
+      let preset = ERAS[presetIndex]
       if (preset) {
         // setStart({year: preset.start, valid: true})
         // setEnd({year: preset.end, valid: true})
