@@ -125,7 +125,6 @@ const GeologicTimeFilter = props => {
     }
     else {
       // TODO convert into CE here!
-      console.log('submitting', start.year, end.year)
       props.updateYearRange(textToNumber(start.year), textToNumber(end.year))
       props.submit()
     }

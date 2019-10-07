@@ -62,7 +62,7 @@ const DateTimeFilter = props => {
     setDateRangeValid(isValidDateRange(date, end))
   }
   const updateEndDate = (date, valid) => {
-    setEnd({date: date, valid: valid}) // TODO how does this verify it's not a future date?
+    setEnd({date: date, valid: valid})
     setWarning('')
     setDateRangeValid(isValidDateRange(start, date))
   }

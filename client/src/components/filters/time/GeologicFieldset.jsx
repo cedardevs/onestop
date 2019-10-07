@@ -63,7 +63,7 @@ const GeologicFieldset = ({
   useEffect(
     () => {
       if (startYear != null) {
-        setStart(startYear)
+        setStart(`${startYear}`) // internal to component, values should be string. expected startYear format is integer
       }
       else {
         setStart('')
@@ -74,7 +74,7 @@ const GeologicFieldset = ({
   useEffect(
     () => {
       if (endYear != null) {
-        setEnd(endYear)
+        setEnd(`${endYear}`) // internal to component, values should be string. expected startYear format is integer
       }
       else {
         setEnd('')

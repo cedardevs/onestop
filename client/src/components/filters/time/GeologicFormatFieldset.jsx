@@ -28,14 +28,9 @@ const styleLabel = {
   marginBottom: '0.25em',
 }
 
-// const styleWrapper = {
-// height: '2em',
-// }
-
 const styleField = {
   width: '7em', // TODO only non-duplicate from DateFieldset // TODO sync up max length and width - they are just guesses for now
   color: FilterColors.TEXT,
-  // height: '100%', // TODO is getting rid of styleWrapper this way ok?
   height: '2em',
   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',

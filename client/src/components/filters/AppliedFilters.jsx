@@ -135,7 +135,7 @@ export default class AppliedFilters extends React.Component {
         />
       )
     }
-    if (startYear) {
+    if (startYear != null) {
       timeBubbles.push(
         <AppliedFilterBubble
           backgroundColor={Theme.time.backgroundColor}
@@ -146,7 +146,7 @@ export default class AppliedFilters extends React.Component {
         />
       )
     }
-    if (endYear) {
+    if (endYear != null) {
       timeBubbles.push(
         <AppliedFilterBubble
           backgroundColor={Theme.time.backgroundColor}
