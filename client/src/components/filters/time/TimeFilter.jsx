@@ -15,7 +15,15 @@ export default class TimeFilter extends React.Component {
       removeYearRange,
       submit,
     } = this.props
-    console.log('? function', updateYearRange)
+    // return (
+    //   <DateTimeFilter
+    //     startDateTime={startDateTime}
+    //     endDateTime={endDateTime}
+    //     updateDateRange={updateDateRange}
+    //     removeDateRange={removeDateRange}
+    //     submit={submit}
+    //     />
+    // )
     return (
       <GeologicTimeFilter
         startYear={startYear}

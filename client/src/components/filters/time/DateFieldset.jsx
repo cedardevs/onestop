@@ -70,9 +70,9 @@ const DateFieldset = ({name, date, onDateChange}) => {
   useEffect(
     () => {
       let validValue = isValidDate(year, month, day)
-      setValid(validValue)
-      // TODO valid hasn't actually been updated when we send onDateChange! sent the local variable instead
-      onDateChange(name, ymdToDateMap(year, month, day), validValue)
+      setValid(validValue) // update UI
+      // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
+      onDateChange(ymdToDateMap(year, month, day), validValue)
     },
     [ year, month, day ]
   )

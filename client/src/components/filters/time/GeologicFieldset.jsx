@@ -48,7 +48,12 @@ const styleInputValidity = isValid => {
   }
 }
 
-const GeologicFieldset = ({startYear, endYear, onDateChange}) => {
+const GeologicFieldset = ({
+  startYear,
+  endYear,
+  updateStartYear,
+  updateEndYear,
+}) => {
   const legendText = 'Geologic' //`${_.capitalize(name)} Year:`
 
   const [ start, setStart ] = useState('')
@@ -84,18 +89,18 @@ const GeologicFieldset = ({startYear, endYear, onDateChange}) => {
   useEffect(
     () => {
       let validValue = true // TODO validate that a valid year integer was entered
-      setStartValid(validValue)
-      // TODO valid hasn't actually been updated when we send onDateChange! sent the local variable instead
-      onDateChange('start', start, validValue)
+      setStartValid(validValue) // update UI
+      // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
+      updateStartYear(start, validValue)
     },
     [ start ]
   )
   useEffect(
     () => {
       let validValue = true // TODO validate that a valid year integer was entered
-      setEndValid(validValue)
-      // TODO valid hasn't actually been updated when we send onDateChange! sent the local variable instead
-      onDateChange('end', end, validValue)
+      setEndValid(validValue) // update UI
+      // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
+      updateEndYear(end, validValue)
     },
     [ end ]
   )

@@ -56,18 +56,15 @@ const DateTimeFilter = props => {
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
 
-  const onChange = (field, date, valid) => {
-    // TODO just make 2 separate functions instead of passing both through this, then change the args to not need to send 'field'
-    if (field == 'start') {
-      setStart({date: date, valid: valid})
-      setWarning('')
-      setDateRangeValid(isValidDateRange(date, end))
-    }
-    if (field == 'end') {
-      setEnd({date: date, valid: valid})
-      setWarning('')
-      setDateRangeValid(isValidDateRange(start, date))
-    }
+  const updateStartDate = (date, valid) => {
+    setStart({date: date, valid: valid})
+    setWarning('')
+    setDateRangeValid(isValidDateRange(date, end))
+  }
+  const updateEndDate = (date, valid) => {
+    setEnd({date: date, valid: valid})
+    setWarning('')
+    setDateRangeValid(isValidDateRange(start, date))
   }
 
   const clearDates = () => {
@@ -121,12 +118,12 @@ const DateTimeFilter = props => {
         <DateFieldset
           name="start"
           date={props.startDateTime}
-          onDateChange={onChange}
+          onDateChange={updateStartDate}
         />
         <DateFieldset
           name="end"
           date={props.endDateTime}
-          onDateChange={onChange}
+          onDateChange={updateEndDate}
         />
       </form>
     </div>

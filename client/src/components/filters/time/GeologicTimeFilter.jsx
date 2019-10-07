@@ -99,19 +99,15 @@ const GeologicTimeFilter = props => {
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
 
-  const onChange = (field, year, valid) => {
-    // TODO just make 2 separate functions instead of passing both through this, then change the args to not need to send 'field'
-    console.log(field, year)
-    if (field == 'start') {
-      setStart({year: year, valid: valid})
-      setWarning('')
-      setDateRangeValid(isValidDateRange(year, end))
-    }
-    if (field == 'end') {
-      setEnd({year: year, valid: valid})
-      setWarning('')
-      setDateRangeValid(isValidDateRange(start, year))
-    }
+  const updateStartYear = (year, valid) => {
+    setStart({year: year, valid: valid})
+    setWarning('')
+    setDateRangeValid(isValidDateRange(year, end))
+  }
+  const updateEndYear = (year, valid) => {
+    setEnd({year: year, valid: valid})
+    setWarning('')
+    setDateRangeValid(isValidDateRange(start, year))
   }
 
   const clearDates = () => {
@@ -150,7 +146,6 @@ const GeologicTimeFilter = props => {
     }
   }
 
-  // const [year, setYear] = useState(1993) // TODO bleh
   const geoFormat = 'CE' // TODO add to redux state!
   const onFormatChange = f => {
     console.log('Format changed to f')
@@ -173,7 +168,8 @@ const GeologicTimeFilter = props => {
         <GeologicFieldset
           startYear={props.startYear}
           endYear={props.endYear}
-          onDateChange={onChange}
+          updateStartYear={updateStartYear}
+          updateEndYear={updateEndYear}
         />
       </form>
     </div>
