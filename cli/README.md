@@ -9,6 +9,8 @@ Install go - https://golang.org/doc/install
 ## Install
 `cd cli`
 
+maybe - `go get -u https://github.com/danielgtaylor/openapi-cli-generator`
+
 `go run . --help`
 
 or 
@@ -39,7 +41,9 @@ Search collections by date -
 `onestop-cli searchcollection filters[]{ type:datetime, after:2017-01-01T00:00:00Z}`
 `onestop-cli searchcollection filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} --verbose`
 
-## Troubleshoot 
-from onestop/cli/ - 
+Search collections with a geometry filter - 
+`onestop-cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522`
 
-`go get -u https://github.com/danielgtaylor/openapi-cli-generator`
+
+## For complex query and filter structure, refer to these docs- 
+Short hand documentation - https://github.com/danielgtaylor/openapi-cli-generator/tree/master/shorthand
