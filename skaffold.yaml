@@ -31,6 +31,9 @@ deploy:
         # env values
         kafka.schema.registry.url: http://psi-dev-cp-schema-registry:8081
         kafka.bootstrap.servers: PLAINTEXT://psi-dev-cp-kafka:9092
+#        autoscaler.enabled: true
+#        autoscaler.maxReplicas: 2
+#        autoscaler.cpu.averageValue: 150m
       imageStrategy:
         helm: {}
     - name: psi-manager
@@ -45,6 +48,9 @@ deploy:
         # Env values
         kafka.schema.registry.url: http://psi-dev-cp-schema-registry:8081
         kafka.bootstrap.servers: PLAINTEXT://psi-dev-cp-kafka:9092
+#        autoscaler.enabled: true
+#        autoscaler.maxReplicas: 2
+#        autoscaler.cpu.averageValue: 150m
       imageStrategy:
         helm: {}
     - name: psi-dev
