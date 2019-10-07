@@ -28,13 +28,8 @@ const styleLabel = {
   marginBottom: '0.25em',
 }
 
-// const styleWrapper = {
-// height: '2em',
-// }
-
 const styleField = {
   color: FilterColors.TEXT,
-  // height: '100%', // TODO is getting rid of styleWrapper this way ok?
   height: '2em',
   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',

@@ -14,6 +14,7 @@ const styleLineSeparator = {
   flexGrow: 1,
   marginTop: 'auto',
   marginBottom: 'auto',
+  height: '0px', // fix for IE
   borderStyle: 'dashed',
   borderColor: FilterColors.LIGHT_SHADOW,
 }

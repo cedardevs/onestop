@@ -50,7 +50,9 @@ const GeologicPresets = ({
       let matchingPreset = _.find(ERAS, (preset, index) => {
         return preset.start == startYear && preset.end == endYear
       })
-      setPresetIndex(matchingPreset.index)
+      if (matchingPreset) {
+        setPresetIndex(matchingPreset.index)
+      }
     },
     [ startYear, endYear ]
   )
