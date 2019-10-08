@@ -18,13 +18,13 @@ import static org.cedar.psi.common.constants.Topics.inputStore;
 import static org.cedar.psi.common.constants.Topics.parsedStore;
 
 @Service
-public class MetadataService {
-  private static final Logger log = LoggerFactory.getLogger(org.cedar.psi.registry.service.MetadataService.class);
+public class StreamsStateService {
+  private static final Logger log = LoggerFactory.getLogger(org.cedar.psi.registry.service.StreamsStateService.class);
 
   private final KafkaStreams streamsApp;
 
   @Autowired
-  public MetadataService(final KafkaStreams streamsApp) {
+  public StreamsStateService(final KafkaStreams streamsApp) {
     this.streamsApp = streamsApp;
   }
 
@@ -34,13 +34,12 @@ public class MetadataService {
    * @param key     The key to find
    * @return {@link StreamsMetadata}
    */
-  public <K> StreamsMetadata streamsMetadataForStoreAndKey(final String store, final K key,
-                                                         final Serializer<K> serializer) {
+  public <K> StreamsMetadata metadataForStoreAndKey(final String store, final K key,
+                                                    final Serializer<K> serializer) {
     final StreamsMetadata metadata = streamsApp.metadataForKey(store, key, serializer);
     if (metadata == null) {
       throw new RuntimeException("Unable to retrieve metadata for store [" + store + "] and key [" + key +"]");
     }
-
     return metadata;
   }
 

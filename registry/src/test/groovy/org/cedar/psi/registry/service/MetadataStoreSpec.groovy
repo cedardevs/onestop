@@ -19,7 +19,7 @@ class MetadataStoreSpec extends Specification {
   StreamsMetadata localStreamsMetadata = new StreamsMetadata(localHostInfo, Collections.emptySet(), Collections.emptySet())
   StreamsMetadata remoteStreamsMetadata = new StreamsMetadata(remoteHostInfo, Collections.emptySet(), Collections.emptySet())
 
-  MetadataService mockMetadataService
+  StreamsStateService mockStreamsStateService
   ReadOnlyKeyValueStore mockInputStore
   ReadOnlyKeyValueStore mockParsedStore
 
@@ -31,9 +31,9 @@ class MetadataStoreSpec extends Specification {
   def setup() {
     mockInputStore = Mock(ReadOnlyKeyValueStore)
     mockParsedStore = Mock(ReadOnlyKeyValueStore)
-    mockMetadataService = Mock(MetadataService)
+    mockStreamsStateService = Mock(StreamsStateService)
 
-    metadataStore = new MetadataStore(mockMetadataService, localHostInfo)
+    metadataStore = new MetadataStore(mockStreamsStateService, localHostInfo)
   }
 
   def 'returns null for unknown types'() {
@@ -48,8 +48,8 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveInput(testType, testSource, testId)
 
     then:
-    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockMetadataService.getInputStore(testType, testSource) >> null
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getInputStore(testType, testSource) >> null
     0 * mockInputStore.get(testId)
 
     and:
@@ -63,8 +63,8 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockMetadataService.getParsedStore(_) >> mockParsedStore
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getParsedStore(_) >> mockParsedStore
     1 * mockParsedStore.get(testId) >> null
 
     and:
@@ -78,8 +78,8 @@ class MetadataStoreSpec extends Specification {
     metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockMetadataService.getParsedStore(_) >> {
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getParsedStore(_) >> {
       throw new InvalidStateStoreException('test')
     }
 
@@ -96,8 +96,8 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveInput(testType, testSource, testId)
 
     then:
-    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockMetadataService.getInputStore(_, _) >> mockInputStore
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getInputStore(_, _) >> mockInputStore
     1 * mockInputStore.get(testId) >> testAggInput
 
     and:
@@ -111,8 +111,8 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockMetadataService.getParsedStore(_) >> mockParsedStore
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getParsedStore(_) >> mockParsedStore
     1 * mockParsedStore.get(testId) >> testParsed
 
     and:
@@ -126,8 +126,8 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockMetadataService.getParsedStore(_) >> mockParsedStore
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getParsedStore(_) >> mockParsedStore
     1 * mockParsedStore.get(testId) >> testErrorRecord
 
     and:

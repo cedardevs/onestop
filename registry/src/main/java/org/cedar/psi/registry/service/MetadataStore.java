@@ -28,13 +28,13 @@ public class MetadataStore {
   private static final Logger log = LoggerFactory.getLogger(org.cedar.psi.registry.service.MetadataStore.class);
   private static final DecoderFactory decoderFactory = DecoderFactory.get();
 
-  private MetadataService metadataService;
+  private StreamsStateService streamsStateService;
   private HostInfo hostInfo;
   private RestTemplate restTemplate; // TODO - is this thread-safe?
 
   @Autowired
-  MetadataStore(final MetadataService metadataService, final HostInfo hostInfo) {
-    this.metadataService = metadataService;
+  MetadataStore(final StreamsStateService streamsStateService, final HostInfo hostInfo) {
+    this.streamsStateService = streamsStateService;
     this.hostInfo = hostInfo;
     this.restTemplate = new RestTemplate();
   }
@@ -43,9 +43,9 @@ public class MetadataStore {
     if (type != null) {
       String storeName = parsedStore(type);
       try {
-        var metadata = metadataService.streamsMetadataForStoreAndKey(storeName, id, Serdes.String().serializer());
+        var metadata = streamsStateService.metadataForStoreAndKey(storeName, id, Serdes.String().serializer());
         if (thisHost(metadata)) {
-          var store = metadataService.getParsedStore(type);
+          var store = streamsStateService.getParsedStore(type);
           return store != null ? store.get(id) : null;
         }
         else {
@@ -67,9 +67,9 @@ public class MetadataStore {
     if (type != null) {
       String storeName = inputStore(type, source);
       try {
-        var metadata = metadataService.streamsMetadataForStoreAndKey(storeName, id, Serdes.String().serializer());
+        var metadata = streamsStateService.metadataForStoreAndKey(storeName, id, Serdes.String().serializer());
         if (thisHost(metadata)) {
-          var store = metadataService.getInputStore(type, source);
+          var store = streamsStateService.getInputStore(type, source);
           return store != null ? store.get(id) : null;
         }
         else {
