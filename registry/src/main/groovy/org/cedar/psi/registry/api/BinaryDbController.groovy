@@ -19,13 +19,13 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 class BinaryDbController {
 
+  private static final EncoderFactory encoderFactory = EncoderFactory.get()
   private MetadataService metadataService
 
   @Autowired
   BinaryDbController(MetadataService metadataService) {
     this.metadataService = metadataService
   }
-
 
   @RequestMapping(path = '/db/{table}/{key}', method = [RequestMethod.GET], produces = 'application/octet-stream')
   void retrieve(@PathVariable String table, @PathVariable String key, HttpServletResponse response) {
@@ -34,10 +34,10 @@ class BinaryDbController {
     def result = store?.get(key)
     if (result != null) {
       def schema = result.getSchema()
-      def encoder = EncoderFactory.get().binaryEncoder(response.outputStream, null)
+      def encoder = encoderFactory.binaryEncoder(response.outputStream, null)
       def writer = new SpecificDatumWriter<SpecificRecord>(schema)
       writer.write(result, encoder)
-      response.outputStream.flush()
+      encoder.flush()
     }
     else {
       response.sendError(404)
