@@ -22,7 +22,7 @@ class MetadataStoreSpec extends Specification {
   ReadOnlyKeyValueStore mockInputStore
   ReadOnlyKeyValueStore mockParsedStore
   MetadataStore mockMetadataStore
-  HostInfo mockHostInfo;
+  HostInfo mockHostInfo
 
   def testType = RecordType.granule
   def testSource = 'class'
@@ -37,14 +37,14 @@ class MetadataStoreSpec extends Specification {
 
   def 'returns null for unknown types'() {
     expect:
-    mockMetadataStore.retrieveLocalInput(null, 'notarealsource', 'notarealid') == null
+    mockMetadataStore.retrieveInput(null, 'notarealsource', 'notarealid') == null
   }
 
   def 'returns null for a nonexistent store'() {
     def testId = 'notarealid'
 
     when:
-    def result = mockMetadataStore.retrieveLocalInput(testType, testSource, testId)
+    def result = mockMetadataStore.retrieveInput(testType, testSource, testId)
 
     then:
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> null
@@ -58,7 +58,7 @@ class MetadataStoreSpec extends Specification {
     def testId = 'notarealid'
 
     when:
-    def result = mockMetadataStore.retrieveLocalParsed(testType, testSource, testId)
+    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
@@ -72,7 +72,7 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    mockMetadataStore.retrieveLocalParsed(testType, testSource, testId)
+    mockMetadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> {
@@ -89,7 +89,7 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    def result = mockMetadataStore.retrieveLocalInput(testType, testSource, testId)
+    def result = mockMetadataStore.retrieveInput(testType, testSource, testId)
 
     then:
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
@@ -103,7 +103,7 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    def result = mockMetadataStore.retrieveLocalParsed(testType, testSource, testId)
+    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
@@ -117,7 +117,7 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    def result = mockMetadataStore.retrieveLocalParsed(testType, testSource, testId)
+    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
@@ -126,7 +126,6 @@ class MetadataStoreSpec extends Specification {
     and:
     result == testErrorRecord
   }
-
 
   private static testAggInput = AggregatedInput.newBuilder()
       .setType(RecordType.collection)
