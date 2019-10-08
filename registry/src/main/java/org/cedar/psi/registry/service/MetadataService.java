@@ -2,6 +2,7 @@ package org.cedar.psi.registry.service;
 
 import groovy.transform.CompileStatic;
 import groovy.util.logging.Slf4j;
+import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
@@ -58,6 +59,10 @@ public class MetadataService {
    */
   ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(RecordType type) {
     return streamsApp.store(parsedStore(type), QueryableStoreTypes.keyValueStore());
+  }
+
+  public ReadOnlyKeyValueStore<String, SpecificRecord> getAvroStore(String storeName) {
+    return streamsApp.store(storeName, QueryableStoreTypes.keyValueStore());
   }
 
 }

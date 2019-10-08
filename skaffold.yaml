@@ -20,6 +20,7 @@ deploy:
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
         # all features default to "false" in base chart, unless otherwise overridden
         features.cas: false
+        replicaCount: 2
         config: |-
           ---
           logging.level.org.cedar: DEBUG
@@ -31,6 +32,9 @@ deploy:
         # env values
         kafka.schema.registry.url: http://psi-dev-cp-schema-registry:8081
         kafka.bootstrap.servers: PLAINTEXT://psi-dev-cp-kafka:9092
+#        autoscaler.enabled: true
+#        autoscaler.maxReplicas: 2
+#        autoscaler.cpu.averageValue: 150m
       imageStrategy:
         helm: {}
     - name: psi-manager
@@ -45,6 +49,9 @@ deploy:
         # Env values
         kafka.schema.registry.url: http://psi-dev-cp-schema-registry:8081
         kafka.bootstrap.servers: PLAINTEXT://psi-dev-cp-kafka:9092
+#        autoscaler.enabled: true
+#        autoscaler.maxReplicas: 2
+#        autoscaler.cpu.averageValue: 150m
       imageStrategy:
         helm: {}
     - name: psi-dev

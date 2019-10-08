@@ -91,7 +91,8 @@ public class KafkaBeanConfig {
 
   @Bean
   HostInfo hostInfo(Properties streamsConfig){
-    String applicationServer = streamsConfig.getProperty(APPLICATION_SERVER_CONFIG);
+    // TODO - get http vs https from spring environment?
+    String applicationServer = "http://" + streamsConfig.getProperty(APPLICATION_SERVER_CONFIG);
     try {
       URL url = new URL(applicationServer);
       String restEndpointHostname = url.getHost();
