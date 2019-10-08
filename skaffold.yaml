@@ -20,6 +20,7 @@ deploy:
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
         # all features default to "false" in base chart, unless otherwise overridden
         features.cas: false
+        replicaCount: 2
         config: |-
           ---
           logging.level.org.cedar: DEBUG
