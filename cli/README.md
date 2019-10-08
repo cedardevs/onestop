@@ -39,6 +39,7 @@ Search granule with regex -
 Search collections by date -  
 
 `onestop-cli searchcollection filters[]{ type:datetime, after:2017-01-01T00:00:00Z}`
+
 `onestop-cli searchcollection filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} --verbose`
 
 Search collections with a geometry filter - 
