@@ -68,7 +68,7 @@ class MetadataStore {
       }
       else {
         log.info("remote instance : " + metadata)
-        return (AggregatedInput) getRemoteStoreState(metadata, storeName, id, ParsedRecord.getClassSchema())
+        return (AggregatedInput) getRemoteStoreState(metadata, storeName, id, AggregatedInput.getClassSchema())
       }
     }
     catch (Exception e) {
@@ -78,7 +78,8 @@ class MetadataStore {
   }
 
   public <T extends SpecificRecord> T getRemoteStoreState(StreamsMetadata metadata, String store, String id, Schema schema) {
-    String url = "http://" + metadata.host() + ":" + metadata.port() + '/db/' + store + '/' + id
+    // TODO - get http vs https and context path from spring environment
+    String url = "http://" + metadata.host() + ":" + metadata.port() + '/registry/db/' + store + '/' + id
     log.info("getting remote avro from: " + url)
     ResponseEntity<byte[]> responseEntity = restTemplate.getForEntity(url, byte[].class)
     if (responseEntity.getStatusCode().value() != 200) {

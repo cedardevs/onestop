@@ -37,6 +37,7 @@ class BinaryDbController {
       def encoder = EncoderFactory.get().binaryEncoder(response.outputStream, null)
       def writer = new SpecificDatumWriter<SpecificRecord>(schema)
       writer.write(result, encoder)
+      response.outputStream.flush()
     }
     else {
       response.sendError(404)
