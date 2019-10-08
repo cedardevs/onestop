@@ -5,7 +5,6 @@ import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.state.HostInfo;
 import org.apache.kafka.streams.state.StreamsMetadata;
 import org.cedar.schemas.avro.psi.AggregatedInput;
@@ -27,14 +26,15 @@ import static org.cedar.psi.common.constants.Topics.parsedStore;
 @Service
 public class MetadataStore {
   private static final Logger log = LoggerFactory.getLogger(org.cedar.psi.registry.service.MetadataStore.class);
+  private static final DecoderFactory decoderFactory = DecoderFactory.get();
 
   private MetadataService metadataService;
   private HostInfo hostInfo;
-  private RestTemplate restTemplate;
+  private RestTemplate restTemplate; // TODO - is this thread-safe?
 
   @Autowired
-  MetadataStore(KafkaStreams streamsApp, final HostInfo hostInfo) {
-    this.metadataService = new MetadataService(streamsApp);
+  MetadataStore(final MetadataService metadataService, final HostInfo hostInfo) {
+    this.metadataService = metadataService;
     this.hostInfo = hostInfo;
     this.restTemplate = new RestTemplate();
   }
@@ -45,10 +45,11 @@ public class MetadataStore {
       try {
         var metadata = metadataService.streamsMetadataForStoreAndKey(storeName, id, Serdes.String().serializer());
         if (thisHost(metadata)) {
-          return metadataService.getParsedStore(type).get(id);
+          var store = metadataService.getParsedStore(type);
+          return store != null ? store.get(id) : null;
         }
         else {
-          log.info("remote instance : " + metadata);
+          log.info("remote instance: " + metadata);
           return (ParsedRecord) getRemoteStoreState(metadata, storeName, id, ParsedRecord.getClassSchema());
         }
       }
@@ -68,7 +69,8 @@ public class MetadataStore {
       try {
         var metadata = metadataService.streamsMetadataForStoreAndKey(storeName, id, Serdes.String().serializer());
         if (thisHost(metadata)) {
-          return metadataService.getInputStore(type, source).get(id);
+          var store = metadataService.getInputStore(type, source);
+          return store != null ? store.get(id) : null;
         }
         else {
           log.info("remote instance : " + metadata);
@@ -93,7 +95,7 @@ public class MetadataStore {
     if (responseEntity.getStatusCode().value() != 200) {
       return null;
     }
-    var decoder = DecoderFactory.get().binaryDecoder(Objects.requireNonNull(responseEntity.getBody()), null);
+    var decoder = decoderFactory.binaryDecoder(Objects.requireNonNull(responseEntity.getBody()), null);
     var reader = new SpecificDatumReader<T>(schema);
     var result = reader.read(null, decoder);
     return result;

@@ -1,10 +1,9 @@
 package org.cedar.psi.registry.service
 
-import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.HostInfo
-import org.apache.kafka.streams.state.QueryableStoreType
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
+import org.apache.kafka.streams.state.StreamsMetadata
 import org.cedar.schemas.avro.psi.AggregatedInput
 import org.cedar.schemas.avro.psi.ErrorEvent
 import org.cedar.schemas.avro.psi.ParsedRecord
@@ -12,42 +11,45 @@ import org.cedar.schemas.avro.psi.RecordType
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static org.cedar.psi.common.constants.Topics.inputStore
-import static org.cedar.psi.common.constants.Topics.parsedStore
-
 @Unroll
 class MetadataStoreSpec extends Specification {
 
-  KafkaStreams mockStreamsApp
+  HostInfo localHostInfo = new HostInfo("local", 8080)
+  HostInfo remoteHostInfo = new HostInfo("remote", 9090)
+  StreamsMetadata localStreamsMetadata = new StreamsMetadata(localHostInfo, Collections.emptySet(), Collections.emptySet())
+  StreamsMetadata remoteStreamsMetadata = new StreamsMetadata(remoteHostInfo, Collections.emptySet(), Collections.emptySet())
+
+  MetadataService mockMetadataService
   ReadOnlyKeyValueStore mockInputStore
   ReadOnlyKeyValueStore mockParsedStore
-  MetadataStore mockMetadataStore
-  HostInfo mockHostInfo
+
+  MetadataStore metadataStore
 
   def testType = RecordType.granule
   def testSource = 'class'
 
   def setup() {
-    mockStreamsApp = Mock(KafkaStreams)
-    mockHostInfo = Mock(HostInfo)
     mockInputStore = Mock(ReadOnlyKeyValueStore)
     mockParsedStore = Mock(ReadOnlyKeyValueStore)
-    mockMetadataStore = new MetadataStore(mockStreamsApp, mockHostInfo)
+    mockMetadataService = Mock(MetadataService)
+
+    metadataStore = new MetadataStore(mockMetadataService, localHostInfo)
   }
 
   def 'returns null for unknown types'() {
     expect:
-    mockMetadataStore.retrieveInput(null, 'notarealsource', 'notarealid') == null
+    metadataStore.retrieveInput(null, 'notarealsource', 'notarealid') == null
   }
 
   def 'returns null for a nonexistent store'() {
     def testId = 'notarealid'
 
     when:
-    def result = mockMetadataStore.retrieveInput(testType, testSource, testId)
+    def result = metadataStore.retrieveInput(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> null
+    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockMetadataService.getInputStore(testType, testSource) >> null
     0 * mockInputStore.get(testId)
 
     and:
@@ -58,10 +60,11 @@ class MetadataStoreSpec extends Specification {
     def testId = 'notarealid'
 
     when:
-    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
+    def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
+    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockMetadataService.getParsedStore(_) >> mockParsedStore
     1 * mockParsedStore.get(testId) >> null
 
     and:
@@ -72,10 +75,11 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    mockMetadataStore.retrieveParsed(testType, testSource, testId)
+    metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> {
+    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockMetadataService.getParsedStore(_) >> {
       throw new InvalidStateStoreException('test')
     }
 
@@ -89,10 +93,11 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    def result = mockMetadataStore.retrieveInput(testType, testSource, testId)
+    def result = metadataStore.retrieveInput(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
+    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockMetadataService.getInputStore(_, _) >> mockInputStore
     1 * mockInputStore.get(testId) >> testAggInput
 
     and:
@@ -103,10 +108,11 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
+    def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
+    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockMetadataService.getParsedStore(_) >> mockParsedStore
     1 * mockParsedStore.get(testId) >> testParsed
 
     and:
@@ -117,10 +123,11 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
+    def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
+    1 * mockMetadataService.streamsMetadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockMetadataService.getParsedStore(_) >> mockParsedStore
     1 * mockParsedStore.get(testId) >> testErrorRecord
 
     and:

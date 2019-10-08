@@ -1,7 +1,5 @@
 package org.cedar.psi.registry.service;
 
-import groovy.transform.CompileStatic;
-import groovy.util.logging.Slf4j;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.KafkaStreams;
@@ -11,17 +9,21 @@ import org.apache.kafka.streams.state.StreamsMetadata;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static org.cedar.psi.common.constants.Topics.inputStore;
 import static org.cedar.psi.common.constants.Topics.parsedStore;
 
-@Slf4j
 @Service
-@CompileStatic
 public class MetadataService {
+  private static final Logger log = LoggerFactory.getLogger(org.cedar.psi.registry.service.MetadataService.class);
+
   private final KafkaStreams streamsApp;
 
+  @Autowired
   public MetadataService(final KafkaStreams streamsApp) {
     this.streamsApp = streamsApp;
   }
@@ -36,7 +38,7 @@ public class MetadataService {
                                                          final Serializer<K> serializer) {
     final StreamsMetadata metadata = streamsApp.metadataForKey(store, key, serializer);
     if (metadata == null) {
-      throw new Error();
+      throw new RuntimeException("Unable to retrieve metadata for store [" + store + "] and key [" + key +"]");
     }
 
     return metadata;
@@ -48,7 +50,7 @@ public class MetadataService {
    * @param source metadata source
    * @return  Aggregated input of the (type and source) store
    */
-  ReadOnlyKeyValueStore<String, AggregatedInput> getInputStore(RecordType type, String source) {
+  public ReadOnlyKeyValueStore<String, AggregatedInput> getInputStore(RecordType type, String source) {
    return streamsApp.store(inputStore(type, source), QueryableStoreTypes.keyValueStore());
   }
 
@@ -57,7 +59,7 @@ public class MetadataService {
    * @param type record type of the store
    * @return Parsed record of the source
    */
-  ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(RecordType type) {
+  public ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(RecordType type) {
     return streamsApp.store(parsedStore(type), QueryableStoreTypes.keyValueStore());
   }
 
