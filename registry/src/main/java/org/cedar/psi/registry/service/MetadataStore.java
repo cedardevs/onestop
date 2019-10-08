@@ -54,7 +54,7 @@ public class MetadataStore {
         }
       }
       catch (Exception e) {
-        log.error("Failed to retrieve [${type}] parsed value from source [${source}] with id [${id}]", e);
+        log.error("Failed to retrieve [" + type + "] parsed value from source [" + source + "] with id [" + id + "]", e);
         throw e;
       }
     }
@@ -78,7 +78,7 @@ public class MetadataStore {
         }
       }
       catch (Exception e) {
-        log.error("Failed to retrieve [${type}] input value from source [${source}] with id [${id}]", e);
+        log.error("Failed to retrieve [" + type + "] input value from source [" + source + "] with id [" + id + "]", e);
         throw e;
       }
     }
@@ -102,6 +102,7 @@ public class MetadataStore {
   }
 
   private boolean thisHost(final StreamsMetadata metadata) {
+    log.debug("checking if " + metadata.hostInfo() + " is the local host: " + hostInfo);
     return metadata.host().equals(hostInfo.host()) &&
         metadata.port() == hostInfo.port();
   }
