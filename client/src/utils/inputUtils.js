@@ -19,8 +19,9 @@ export const ymdToDateMap = (year, month, day) => {
 }
 
 export const convertYearToCE = (year, format) => {
-  // RETURNS A STRING!
+  // EXPECTS A STRING!! RETURNS A STRING!
   if (_.isEmpty(year)) {
+    //TODO isEmpty check will be wrong if an int is passed in here!
     return ''
   }
   let value = year
@@ -51,7 +52,7 @@ export const convertYearToCE = (year, format) => {
 }
 
 export const isValidYear = year => {
-  // assumes year is in CE!
+  // assumes year is in CE! also assumes it is a STRING TODO isEmpty check will be wrong if an int is passed in here!
   // TODO add unit tests!
 
   // No date given is technically valid (since a complete range is unnecessary)
@@ -59,28 +60,13 @@ export const isValidYear = year => {
     return true
   }
 
-  // let value = year
-  //
-  // if (year.endsWith('ka')) { // TODO make these case insensitive!
-  //   value = textToNumber(year.split('ka')[0])*1000
-  // } else if (year.endsWith('Ma')){ // TODO make these case insensitive!
-  //   value = textToNumber(year.split('Ma')[0])*1000000
-  // } else if (year.endsWith('Ga')){ // TODO make these case insensitive!
-  //   value = textToNumber(year.split('Ga')[0])*1000000000
-  // }
-
   if (!Number.isInteger(textToNumber(year))) {
     return false
   }
 
   const now = moment()
 
-  // if (format == 'CE') {
   return textToNumber(year) <= now.year()
-  // }
-  // if (format == 'BP') {
-  //   return textToNumber(year) >= 1950 - now.year() // TODO stop scattering (1950 - year ) all over the code!
-  // }
 }
 
 export const isValidDate = (year, month, day) => {

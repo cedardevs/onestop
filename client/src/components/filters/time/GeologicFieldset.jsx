@@ -27,10 +27,6 @@ const styleLabel = {
   marginBottom: '0.25em',
 }
 
-// const styleWrapper = {
-// height: '2em',
-// }
-
 const styleField = {
   width: '7em', // TODO only non-duplicate from DateFieldset // TODO sync up max length and width - they are just guesses for now
   color: FilterColors.TEXT,
@@ -66,7 +62,7 @@ const GeologicFieldset = ({
       if (startYear != null) {
         // internal to component, values should be string. expected startYear format is integer
         if (format == 'BP') {
-          setStart(`${1950 - startYear}`)
+          setStart(convertYearToCE(`${startYear}`, 'BP')) //`${1950 - startYear}`)
         }
         else {
           setStart(`${startYear}`)
@@ -83,7 +79,7 @@ const GeologicFieldset = ({
       if (endYear != null) {
         // internal to component, values should be string. expected startYear format is integer
         if (format == 'BP') {
-          setEnd(`${1950 - endYear}`)
+          setEnd(convertYearToCE(`${endYear}`, 'BP')) //setEnd(`${1950 - endYear}`)
         }
         else {
           setEnd(`${endYear}`)
