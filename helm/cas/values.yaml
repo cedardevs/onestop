@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: org.apereo.cas/cas
-  tag: latest
+  repository: cedardevs/cas
+  tag: "1.0"
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -20,7 +20,7 @@ service:
 ingress:
   enabled: true
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: "AJP"
+    # nginx.ingress.kubernetes.io/backend-protocol: "AJP"
     # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     # nginx.ingress.kubernetes.io/ssl-redirect: "false"
     # kubernetes.io/ingress.class: nginx

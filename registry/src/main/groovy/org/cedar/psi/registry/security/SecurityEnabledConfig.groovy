@@ -1,101 +1,28 @@
 package org.cedar.psi.registry.security
 
 import groovy.util.logging.Slf4j
-import org.jasig.cas.client.session.SingleSignOutFilter
+import org.pac4j.core.config.Config
+import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import org.springframework.http.HttpMethod
-import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.authentication.ProviderManager
-import org.springframework.security.cas.ServiceProperties
-import org.springframework.security.cas.authentication.CasAuthenticationProvider
-import org.springframework.security.cas.web.CasAuthenticationFilter
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.web.AuthenticationEntryPoint
-import org.springframework.security.web.access.AccessDeniedHandler
-import org.springframework.security.web.authentication.logout.LogoutFilter
-
-import javax.servlet.ServletException
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Slf4j
-@Profile("cas")
-@EnableWebSecurity
-class SecurityEnabledConfig extends WebSecurityConfigurerAdapter {
-
-  private AuthenticationProvider authenticationProvider
-  private AuthenticationEntryPoint authenticationEntryPoint
-  private SingleSignOutFilter singleSignOutFilter
-  private LogoutFilter logoutFilter
-  private CASConfigurationProperties props
+@Profile('cas')
+@Configuration
+@ComponentScan(basePackages = "org.pac4j.springframework.web")
+class SecurityEnabledConfig implements WebMvcConfigurer {
 
   @Autowired
-  SecurityEnabledConfig(CasAuthenticationProvider casAuthenticationProvider, AuthenticationEntryPoint eP, LogoutFilter lF, SingleSignOutFilter ssF, CASConfigurationProperties props) {
-    this.authenticationProvider = casAuthenticationProvider
-    this.authenticationEntryPoint = eP
-    this.logoutFilter = lF
-    this.singleSignOutFilter = ssF
-    this.props = props
-  }
+  private Config config
 
   @Override
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.authenticationProvider(authenticationProvider)
+  void addInterceptors(InterceptorRegistry registry) {
+    SecurityInterceptor interceptor = new SecurityInterceptor(config, "CasRestBasicAuthClient")
+    registry.addInterceptor(interceptor).addPathPatterns("/*")
   }
 
-  @Override
-  protected AuthenticationManager authenticationManager() throws Exception {
-    return new ProviderManager(Arrays.asList(authenticationProvider))
-  }
-
-  @Bean
-  CasAuthenticationFilter casAuthenticationFilter(ServiceProperties sP) throws Exception {
-    CasAuthenticationFilter filter = new CasAuthenticationFilter()
-    filter.setServiceProperties(sP)
-    filter.setAuthenticationManager(authenticationManager())
-    return filter
-  }
-
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-
-    // non-browser clients recommended to disable CSRF
-    // we're using a python script to hit write operation endpoints
-    // CAS is locking down write operations, and the browser is used for read-only GET purposes
-    // if this behavior changes in the future (browser based admin utility is created), we may want to re-address this
-    // see: https://docs.spring.io/autorepo/docs/spring-security/5.0.3.BUILD-SNAPSHOT/reference/html/csrf.html#when-to-use-csrf-protection
-    http.csrf().disable()
-
-    http.addFilter(casAuthenticationFilter())
-
-    http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(new AccessDeniedHandler() {
-      @Override
-      void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Authorization Failed : " + accessDeniedException.getMessage())
-      }
-    })
-
-    http.logout().permitAll().logoutSuccessUrl("/logout")
-
-    http.authenticationProvider(authenticationProvider).authorizeRequests()
-
-      // secured endpoints
-      .antMatchers(HttpMethod.POST, "/metadata/**").hasRole("ADMIN")
-      .antMatchers(HttpMethod.PUT, "/metadata/**").hasRole("ADMIN")
-      .antMatchers(HttpMethod.PATCH, "/metadata/**").hasRole("ADMIN")
-      .antMatchers(HttpMethod.DELETE, "/metadata/**").hasRole("ADMIN")
-      .antMatchers(HttpMethod.GET, "/metadata/**/resurrection").hasRole("ADMIN")
-
-      .antMatchers("/login/cas","/login").authenticated()
-
-      // everything else is publicly accessible
-      .antMatchers("/**").permitAll()
-  }
 }
