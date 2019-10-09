@@ -2,10 +2,8 @@ package org.cedar.psi.registry.api
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.apache.avro.io.EncoderFactory
-import org.apache.avro.specific.SpecificDatumWriter
-import org.apache.avro.specific.SpecificRecord
 import org.cedar.psi.registry.service.StreamsStateService
+import org.cedar.psi.registry.util.AvroTransformers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -19,7 +17,6 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 class BinaryDbController {
 
-  private static final EncoderFactory encoderFactory = EncoderFactory.get()
   private StreamsStateService streamsStateService
 
   @Autowired
@@ -33,16 +30,11 @@ class BinaryDbController {
     def store = streamsStateService.getAvroStore(table)
     def result = store?.get(key)
     if (result != null) {
-      def schema = result.getSchema()
-      def encoder = encoderFactory.binaryEncoder(response.outputStream, null)
-      def writer = new SpecificDatumWriter<SpecificRecord>(schema)
-      writer.write(result, encoder)
-      encoder.flush()
+      AvroTransformers.avroToByteStream(result, response.outputStream)
     }
     else {
       response.sendError(404)
     }
-    return
   }
 
 }

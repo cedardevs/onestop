@@ -1,24 +1,24 @@
 package org.cedar.psi.registry.service;
 
 import org.apache.avro.Schema;
-import org.apache.avro.io.DecoderFactory;
-import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.state.HostInfo;
 import org.apache.kafka.streams.state.StreamsMetadata;
+import org.cedar.psi.registry.util.AvroTransformers;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static org.cedar.psi.common.constants.Topics.inputStore;
 import static org.cedar.psi.common.constants.Topics.parsedStore;
@@ -26,16 +26,18 @@ import static org.cedar.psi.common.constants.Topics.parsedStore;
 @Service
 public class MetadataStore {
   private static final Logger log = LoggerFactory.getLogger(org.cedar.psi.registry.service.MetadataStore.class);
-  private static final DecoderFactory decoderFactory = DecoderFactory.get();
 
   private StreamsStateService streamsStateService;
   private HostInfo hostInfo;
-  private RestTemplate restTemplate; // TODO - is this thread-safe?
+  private String contextPath;
+  private RestTemplate restTemplate;
 
   @Autowired
-  MetadataStore(final StreamsStateService streamsStateService, final HostInfo hostInfo) {
+  MetadataStore(final StreamsStateService streamsStateService, final HostInfo hostInfo,
+      final @Value("server.servlet.context-path:") String contextPath) {
     this.streamsStateService = streamsStateService;
     this.hostInfo = hostInfo;
+    this.contextPath = contextPath;
     this.restTemplate = new RestTemplate();
   }
 
@@ -88,17 +90,16 @@ public class MetadataStore {
   }
 
   private <T extends SpecificRecord> T getRemoteStoreState(StreamsMetadata metadata, String store, String id, Schema schema) throws IOException {
-    // TODO - get http vs https and context path from spring environment
-    String url = "http://" + metadata.host() + ":" + metadata.port() + "/registry/db/" + store + '/' + id;
-    log.info("getting remote avro from: " + url);
-    ResponseEntity<byte[]> responseEntity = restTemplate.getForEntity(url, byte[].class);
-    if (responseEntity.getStatusCode().value() != 200) {
+    // TODO - can we determine http vs https dynamically?
+    String url = "http://" + metadata.host() + ":" + metadata.port() + contextPath + "/db/" + store + '/' + id;
+    log.debug("getting remote avro from: " + url);
+    try {
+      ResponseEntity<byte[]> responseEntity = restTemplate.getForEntity(url, byte[].class);
+      return AvroTransformers.bytesToAvro(responseEntity.getBody(), schema);
+    }
+    catch (HttpClientErrorException.NotFound e) {
       return null;
     }
-    var decoder = decoderFactory.binaryDecoder(Objects.requireNonNull(responseEntity.getBody()), null);
-    var reader = new SpecificDatumReader<T>(schema);
-    var result = reader.read(null, decoder);
-    return result;
   }
 
   private boolean thisHost(final StreamsMetadata metadata) {
