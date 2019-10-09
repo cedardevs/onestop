@@ -4,9 +4,9 @@ dependencies:
   version: 0.1.0
 - name: psi-registry
   repository: file://../psi-registry
-  version: 0.2.0
+  version: 0.3.0
 - name: psi-manager
   repository: file://../psi-manager
-  version: 0.2.0
-digest: sha256:583b3a4bd1d605846622421553e650bbfb303519e6f53f1a723610fab11d762f
-generated: "2019-09-04T14:14:28.705878-06:00"
+  version: 0.3.0
+digest: sha256:4e12f394946e9b7439eb2b1968c7bba2a43a60df45037cd8aa374b70f85d4fd6
+generated: "2019-10-08T16:08:48.069853-06:00"
