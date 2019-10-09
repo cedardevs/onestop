@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
 import {FilterColors, SiteColors} from '../../../style/defaultStyles'
-import {isValidYear} from '../../../utils/inputUtils'
+import {isValidYear, convertYearToCE} from '../../../utils/inputUtils'
 
 import FilterFieldset from '../FilterFieldset'
 import YearField from './YearField'
@@ -100,10 +100,10 @@ const GeologicFieldset = ({
     // TODO this component or GeologicTimeFilter needs to validate start < end
     // validate start
     () => {
-      let validValue = isValidYear(start, format)
+      let yearCE = convertYearToCE(start, format)
+      let validValue = isValidYear(yearCE)
       setStartValid(validValue) // update UI
-      // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
-      updateStartYear(start, validValue)
+      updateStartYear(yearCE, validValue) // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
     },
     [ start ]
   )
@@ -111,10 +111,10 @@ const GeologicFieldset = ({
   useEffect(
     // validate end
     () => {
-      let validValue = isValidYear(end, format)
+      let yearCE = convertYearToCE(end, format)
+      let validValue = isValidYear(yearCE)
       setEndValid(validValue) // update UI
-      // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
-      updateEndYear(end, validValue)
+      updateEndYear(yearCE, validValue) // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
     },
     [ end ]
   )

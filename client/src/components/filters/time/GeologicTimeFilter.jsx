@@ -124,24 +124,8 @@ const GeologicTimeFilter = props => {
       setWarning(createWarning(start.valid, end.valid, dateRangeValid))
     }
     else {
-      // TODO convert into CE here! (but also in individual validation steps)
-      if (format == 'CE') {
-        props.updateYearRange(textToNumber(start.year), textToNumber(end.year))
-      }
-      else if (format == 'BP') {
-        console.log(
-          textToNumber(start.year),
-          'to',
-          1950 - textToNumber(start.year)
-        )
-        props.updateYearRange(
-          1950 - textToNumber(start.year),
-          1950 - textToNumber(end.year)
-        )
-      }
-      else {
-        return
-      }
+      // assumes value has been returned in CE always!
+      props.updateYearRange(textToNumber(start.year), textToNumber(end.year))
       props.submit()
     }
   }
@@ -163,9 +147,6 @@ const GeologicTimeFilter = props => {
 
   // const geoFormat = 'CE' // TODO add to redux state!
   const onFormatChange = f => {
-    console.log('Format changed to f')
-    // TODO do stuff!
-    // TODO ie: change placeholder value to -YYYYYYYYY vs YYYYYYYY ?
     setFormat(f)
   }
 
@@ -237,15 +218,14 @@ const GeologicTimeFilter = props => {
     </div>
   )
 
-  // TODO no enforcement of that 'future dates are not accepted' thing here
   return (
     <div style={styleTimeFilter}>
       <fieldset
         style={{borderColor: FilterColors.LIGHT_SHADOW, padding: '0.618em'}}
       >
         <legend id="geologicTimeFilterInstructions">
-          Provide a start date, end date, or both. Future dates are not
-          accepted.
+          Provide a start year, end year, or both. Future dates are not
+          accepted. Values can be entered in SI (ka, Ma, Ga).
         </legend>
         <FlexColumn items={[ form, buttons, warningMessage, presets ]} />
       </fieldset>

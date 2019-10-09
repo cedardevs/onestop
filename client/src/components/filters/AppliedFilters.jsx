@@ -140,7 +140,7 @@ export default class AppliedFilters extends React.Component {
         <AppliedFilterBubble
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
-          text={`After: ${startYear}`}
+          text={`After: ${startYear} CE`}
           key="appliedFilter::startYear"
           onUnselect={() => this.unselectYearAndSubmitSearch(null, endYear)}
         />
@@ -151,7 +151,7 @@ export default class AppliedFilters extends React.Component {
         <AppliedFilterBubble
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
-          text={`Before: ${endYear}`}
+          text={`Before: ${endYear} CE`}
           key="appliedFilter::endYear"
           onUnselect={() => this.unselectYearAndSubmitSearch(startYear, null)}
         />

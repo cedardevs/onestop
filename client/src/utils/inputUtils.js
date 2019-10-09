@@ -18,7 +18,40 @@ export const ymdToDateMap = (year, month, day) => {
   }
 }
 
-export const isValidYear = (year, format) => {
+export const convertYearToCE = (year, format) => {
+  // RETURNS A STRING!
+  if (_.isEmpty(year)) {
+    return ''
+  }
+  let value = year
+
+  // check for SI year values:
+  if (year.endsWith('ka')) {
+    // TODO make these case insensitive!
+    value = textToNumber(year.split('ka')[0]) * 1000
+  }
+  else if (year.endsWith('Ma')) {
+    // TODO make these case insensitive!
+    value = textToNumber(year.split('Ma')[0]) * 1000000
+  }
+  else if (year.endsWith('Ga')) {
+    // TODO make these case insensitive!
+    value = textToNumber(year.split('Ga')[0]) * 1000000000
+  }
+  if (!Number.isInteger(textToNumber(value))) {
+    return ''
+  }
+  value = textToNumber(value)
+  if (format == 'CE') {
+    return `${value}`
+  }
+  if (format == 'BP') {
+    return `${1950 - value}`
+  }
+}
+
+export const isValidYear = year => {
+  // assumes year is in CE!
   // TODO add unit tests!
 
   // No date given is technically valid (since a complete range is unnecessary)
@@ -26,18 +59,28 @@ export const isValidYear = (year, format) => {
     return true
   }
 
+  // let value = year
+  //
+  // if (year.endsWith('ka')) { // TODO make these case insensitive!
+  //   value = textToNumber(year.split('ka')[0])*1000
+  // } else if (year.endsWith('Ma')){ // TODO make these case insensitive!
+  //   value = textToNumber(year.split('Ma')[0])*1000000
+  // } else if (year.endsWith('Ga')){ // TODO make these case insensitive!
+  //   value = textToNumber(year.split('Ga')[0])*1000000000
+  // }
+
   if (!Number.isInteger(textToNumber(year))) {
     return false
   }
 
   const now = moment()
 
-  if (format == 'CE') {
-    return textToNumber(year) <= now.year()
-  }
-  if (format == 'BP') {
-    return textToNumber(year) >= 1950 - now.year() // TODO stop scattering (1950 - year ) all over the code!
-  }
+  // if (format == 'CE') {
+  return textToNumber(year) <= now.year()
+  // }
+  // if (format == 'BP') {
+  //   return textToNumber(year) >= 1950 - now.year() // TODO stop scattering (1950 - year ) all over the code!
+  // }
 }
 
 export const isValidDate = (year, month, day) => {
