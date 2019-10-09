@@ -18,7 +18,7 @@ import static org.cedar.schemas.avro.psi.Method.*;
 public class StreamFunctions {
   private static final Logger log = LoggerFactory.getLogger(StreamFunctions.class);
 
-  private static final int eventListLimit = 20;
+  private static final int eventListLimit = 10;
 
   public static Reducer identityReducer = (aggregate, nextValue) -> nextValue;
 
@@ -110,6 +110,7 @@ public class StreamFunctions {
       return currentState;
     }
     else {
+      assert input != null;
       var mergedEvents = DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false));
       return AggregatedInput.newBuilder(currentState)
           .setDeleted(deleted)
