@@ -1,6 +1,6 @@
 import React from 'react'
-import DateTimeFilter from './DateTimeFilter'
-import GeologicTimeFilter from './GeologicTimeFilter'
+import DateTimeFilter from './standard/DateTimeFilter'
+import GeologicTimeFilter from './geologic/GeologicTimeFilter'
 
 export default class TimeFilter extends React.Component {
   render() {
@@ -15,23 +15,23 @@ export default class TimeFilter extends React.Component {
       removeYearRange,
       submit,
     } = this.props
-    // return (
-    //   <DateTimeFilter
-    //     startDateTime={startDateTime}
-    //     endDateTime={endDateTime}
-    //     updateDateRange={updateDateRange}
-    //     removeDateRange={removeDateRange}
-    //     submit={submit}
-    //     />
-    // )
     return (
-      <GeologicTimeFilter
-        startYear={startYear}
-        endYear={endYear}
-        updateYearRange={updateYearRange}
-        removeYearRange={removeYearRange}
+      <DateTimeFilter
+        startDateTime={startDateTime}
+        endDateTime={endDateTime}
+        updateDateRange={updateDateRange}
+        removeDateRange={removeDateRange}
         submit={submit}
       />
     )
+    // return (
+    //   <GeologicTimeFilter
+    //     startYear={startYear}
+    //     endYear={endYear}
+    //     updateYearRange={updateYearRange}
+    //     removeYearRange={removeYearRange}
+    //     submit={submit}
+    //   />
+    // )
   }
 }

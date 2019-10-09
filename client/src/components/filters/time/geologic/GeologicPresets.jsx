@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
-import FilterFieldset from '../FilterFieldset'
+import FilterFieldset from '../../FilterFieldset'
 
-import {convertYearToCE, textToNumber} from '../../../utils/inputUtils'
+import {convertYearToCE, textToNumber} from '../../../../utils/inputUtils'
 
 const ERAS = [
   // years defined in BP!

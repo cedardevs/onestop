@@ -1,21 +1,18 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
-import FlexColumn from '../../common/ui/FlexColumn'
-import Button from '../../common/input/Button'
-import {Key} from '../../../utils/keyboardUtils'
-import {isValidDateRange, textToNumber} from '../../../utils/inputUtils'
+import FlexColumn from '../../../common/ui/FlexColumn'
+import Button from '../../../common/input/Button'
+import {Key} from '../../../../utils/keyboardUtils'
+import {isValidDateRange, textToNumber} from '../../../../utils/inputUtils'
 import {
   FilterColors,
   FilterStyles,
   SiteColors,
-} from '../../../style/defaultStyles'
-import FilterFieldset from '../FilterFieldset'
-import FormSeparator from '../FormSeparator'
-import DateFieldset from './DateFieldset'
+} from '../../../../style/defaultStyles'
+import FormSeparator from '../../FormSeparator'
 import GeologicFieldset from './GeologicFieldset'
 import GeologicFormatFieldset from './GeologicFormatFieldset'
-import YearField from './YearField'
 import GeologicPresets from './GeologicPresets'
 
 const styleTimeFilter = {

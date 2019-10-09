@@ -2,11 +2,15 @@ import React, {useState} from 'react'
 import _ from 'lodash'
 
 import moment from 'moment/moment'
-import FlexColumn from '../../common/ui/FlexColumn'
-import Button from '../../common/input/Button'
-import {Key} from '../../../utils/keyboardUtils'
-import {isValidDateRange} from '../../../utils/inputUtils'
-import {FilterStyles, SiteColors} from '../../../style/defaultStyles'
+import FlexColumn from '../../../common/ui/FlexColumn'
+import Button from '../../../common/input/Button'
+import {Key} from '../../../../utils/keyboardUtils'
+import {isValidDateRange} from '../../../../utils/inputUtils'
+import {
+  FilterStyles,
+  FilterColors,
+  SiteColors,
+} from '../../../../style/defaultStyles'
 import DateFieldset from './DateFieldset'
 
 const styleTimeFilter = {

@@ -1,13 +1,11 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
-import {FilterColors, SiteColors} from '../../../style/defaultStyles'
-import {isValidYear, convertYearToCE} from '../../../utils/inputUtils'
+import {FilterColors, SiteColors} from '../../../../style/defaultStyles'
+import {isValidYear, convertYearToCE} from '../../../../utils/inputUtils'
 
-import FilterFieldset from '../FilterFieldset'
-import YearField from './YearField'
-import MonthField from './MonthField'
-import DayField from './DayField'
+import FilterFieldset from '../../FilterFieldset'
+import YearField from '../standard/YearField'
 
 const styleDate = {
   display: 'flex',
