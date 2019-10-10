@@ -36,13 +36,12 @@ export default class TimeFilter extends React.Component {
       />
     )
 
-
     const VIEW_OPTIONS = [
       {
         value: 'standard',
         label: 'Datetime',
         view: standardView,
-        description: 'Show standard date time filter.',  // used in aria for 508, and title for slightly expanded instructions to sighted users on hover
+        description: 'Show standard date time filter.', // used in aria for 508, and title for slightly expanded instructions to sighted users on hover
       },
       {
         value: 'geologic',

@@ -51,7 +51,7 @@ const styleHideInput = {
 `options` should be an array. Each option in the array should be a map with label, value, and description.
 <RadioButtonTabs options={[{label: 'First', value: 1, description: 'Accessible description indicating side effects.'}, {label: 'Next', value: 2, description: 'Also shows on mouse hover.'}]}
 */
-const RadioButtonTabs = ({name, options, callback}) => {
+const RadioButtonTabs = ({name, options, onSelectionChange, tabPanel}) => {
   const DEFAULT = options[0].value
 
   const [ selectedValue, setSelectedValue ] = useState(DEFAULT)
@@ -59,7 +59,7 @@ const RadioButtonTabs = ({name, options, callback}) => {
 
   useEffect(
     () => {
-      callback(selectedValue)
+      onSelectionChange(selectedValue)
     },
     [ selectedValue ]
   )
@@ -75,24 +75,37 @@ const RadioButtonTabs = ({name, options, callback}) => {
     const last = index == options.length - 1
     const middle = !first && !last
 
-    const style = {
-      ...styleRadioTab,
-      ...(selected ? styleSelected : {}),
-      ...(focused ? styleFocused : {}),
-      ...(first ? styleFirst : {}),
-      ...(middle ? styleMiddle : {}),
-      ...(last ? styleLast : {}),
-    }
+    const styleLabel = tabPanel
+      ? {
+          ...styleRadioTab,
+          ...(selected ? styleSelected : {}), // TODO rename all these styles to styleTabSelected, etc
+          ...(focused ? styleFocused : {}),
+          ...(first ? styleFirst : {}),
+          ...(middle ? styleMiddle : {}),
+          ...(last ? styleLast : {}),
+        }
+      : {
+          ...(middle ? {marginLeft: '0.618em'} : {}), // TODO name these styles
+          ...(last ? {marginLeft: '0.618em'} : {}),
+        }
+
+    const styleInput = tabPanel ? styleHideInput : {}
     // TODO make sure onBlur junk works correctly for other browsers!
+    // TODO test out desc + label as aria value instead of just desc!!
     radioButtons.push(
       <div key={`RadioButton::${name}::${option.value}`}>
-        <label htmlFor={id} style={style} title={option.description} aria-label={option.description}>
+        <label
+          htmlFor={id}
+          style={styleLabel}
+          title={option.description}
+          aria-label={`${option.description} ${option.label}`}
+        >
           {option.label}
         </label>
         <input
           type="radio"
           id={id}
-          style={styleHideInput}
+          style={styleInput}
           name={name}
           value={option.value}
           checked={selected}

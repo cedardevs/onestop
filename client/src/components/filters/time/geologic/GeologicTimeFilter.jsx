@@ -215,6 +215,7 @@ const GeologicTimeFilter = props => {
     </div>
   )
 
+  // TODO the SI and abbreviations don't place nice in screen reader.
   return (
     <div style={styleTimeFilter}>
       <fieldset

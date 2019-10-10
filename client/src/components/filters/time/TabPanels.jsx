@@ -8,11 +8,11 @@ import RadioButtonTabs from './RadioButtonTabs'
 */
 const TabPanels = ({options, name}) => {
   const [ view, setView ] = useState(null)
-  const callback = selectedValue => { // TODO rename callback to onSelectionChange or something?
+  const onSelectionChange = selectedValue => {
     let selected = _.find(options, (option, index) => {
       return option.value == selectedValue
     })
-    if(selected) {
+    if (selected) {
       setView(selected.view)
     }
   }
@@ -22,9 +22,10 @@ const TabPanels = ({options, name}) => {
       <RadioButtonTabs
         name={name}
         options={options}
-        callback={callback}
+        onSelectionChange={onSelectionChange}
+        tabPanel={true}
       />
-    {view}
+      {view}
     </div>
   )
 }
