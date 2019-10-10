@@ -99,7 +99,6 @@ const GeologicTimeFilter = props => {
   const updateStartYear = (year, valid) => {
     setStart({year: year, valid: valid})
     setWarning('')
-    console.log('date range valid?', year, end, isValidYearRange(year, end.year))
     setDateRangeValid(isValidYearRange(year, end.year))
   }
   const updateEndYear = (year, valid) => {

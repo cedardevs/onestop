@@ -82,7 +82,6 @@ const GeologicPresets = ({
       let preset = ERAS[presetIndex]
       if (preset) {
         // // TODO try activating this widget with keyboard to see if we need a preventDefault in there anywhere
-        console.log('updateing preset value to', preset, textToNumber(convertYearToCE(`${preset.start}`, 'BP')))
         updateYearRange(
           textToNumber(convertYearToCE(`${preset.start}`, 'BP')),
           textToNumber(convertYearToCE(`${preset.end}`, 'BP'))

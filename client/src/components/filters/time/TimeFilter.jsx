@@ -60,6 +60,6 @@ export default class TimeFilter extends React.Component {
     // putting the view as direct properties didn't help - maybe make each view an oldschool container to wire in the redux props? although that sux, since the granule and collection each have a different set of properties...
 
     // return <TabPanels name="timeFilter" options={VIEW_OPTIONS} standard={standardView} geologic={geologicView}/>
-        return <TabPanels name="timeFilter" options={VIEW_OPTIONS} />
+    return <TabPanels name="timeFilter" options={VIEW_OPTIONS} />
   }
 }

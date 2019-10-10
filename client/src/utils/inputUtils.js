@@ -71,9 +71,7 @@ export const isValidYear = year => {
 
 export const isValidYearRange = (start, end) => {
   // assumes year is a STRING in CE!! TODO eeeep if not
-  console.log('is valid?', start, end)
   if (_.isEmpty(start) || _.isEmpty(end)) {
-    console.log('they are "empty"')
     return true
   }
 
