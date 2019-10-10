@@ -7,6 +7,7 @@ import RadioButtonTabs from './RadioButtonTabs'
 <RadioButtonTabs options={[{label: 'First', value: 1, description: 'accessible', view: <div>...</div>}, {label: 'Next', value: 2, description: 'etc', view: <Button/>}]}
 */
 const TabPanels = ({options, name}) => {
+  // const {options, name} = props
   const [ view, setView ] = useState(null)
   const onSelectionChange = selectedValue => {
     let selected = _.find(options, (option, index) => {
@@ -14,6 +15,7 @@ const TabPanels = ({options, name}) => {
     })
     if (selected) {
       setView(selected.view)
+      // setView(props[selected.value])
     }
   }
 

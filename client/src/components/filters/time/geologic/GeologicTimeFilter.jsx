@@ -147,6 +147,8 @@ const GeologicTimeFilter = props => {
     setFormat(f)
   }
 
+  console.log('???? this should rerender ya?', props.startYear)
+
   const legendText = 'Geologic'
   const form = (
     <div key="GeologicDateFilterInput::all">
@@ -216,6 +218,7 @@ const GeologicTimeFilter = props => {
   )
 
   // TODO the SI and abbreviations don't place nice in screen reader.
+  // TODO that's probably true of the 'CE' in the applied filter bubbles too...
   return (
     <div style={styleTimeFilter}>
       <fieldset

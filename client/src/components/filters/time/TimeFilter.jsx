@@ -56,7 +56,10 @@ export default class TimeFilter extends React.Component {
       //   description: 'Show periodic time filter.',
       // },
     ]
+    console.log('wtf?', startYear) // Somehow this is correct, but it's not showing up in the console log inside geologicView. I think moving that into a const and passing it to tab panels borked it somehow...?
+    // putting the view as direct properties didn't help - maybe make each view an oldschool container to wire in the redux props? although that sux, since the granule and collection each have a different set of properties...
 
-    return <TabPanels name="timeFilter" options={VIEW_OPTIONS} />
+    // return <TabPanels name="timeFilter" options={VIEW_OPTIONS} standard={standardView} geologic={geologicView}/>
+        return <TabPanels name="timeFilter" options={VIEW_OPTIONS} />
   }
 }

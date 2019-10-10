@@ -55,10 +55,12 @@ const GeologicFieldset = ({
   const [ startValid, setStartValid ] = useState(true)
   const [ endValid, setEndValid ] = useState(true)
 
+  console.log('if that rerendered... this should to?', startYear)
   useEffect(
     () => {
       if (startYear != null) {
         // internal to component, values should be string. expected startYear format is integer
+        console.log('???', startYear, format, convertYearToCE(`${startYear}`, 'BP'))
         if (format == 'BP') {
           setStart(convertYearToCE(`${startYear}`, 'BP')) //`${1950 - startYear}`)
         }
