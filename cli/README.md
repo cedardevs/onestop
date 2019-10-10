@@ -50,5 +50,23 @@ Complex collections search with a query text, spatial, and temporal filter -
 
 `onestop-cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522,  queries[]{type:queryText, value:satellite}  --verbose`
 
+## SCDR CLI interface 
+
+Type - 
+
+`go run . scdr-files --type="gov.noaa.nodc:NDBC-COOPS" --verbose`
+
+Date - 
+
+`go run . scdr-files --date=2010-10-01 --verbose`
+
+and without year (defaults to current year)- 
+
+`go run . scdr-files --date=10-01 --verbose` 
+
+Area- 
+
+`go run . scdr-files --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"`
+
 ## For complex query and filter structure, refer to these docs- 
 Short hand documentation - https://github.com/danielgtaylor/openapi-cli-generator/tree/master/shorthand
