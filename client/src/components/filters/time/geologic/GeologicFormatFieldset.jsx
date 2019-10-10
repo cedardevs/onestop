@@ -39,19 +39,32 @@ const styleInputValidity = isValid => {
   }
 }
 
+const FORMAT_OPTIONS = [
+  {
+    value: 'CE',
+    label: 'CE',
+  },
+  {
+    value: 'BP',
+    label: 'BP (0 = 1950 CE)',
+  },
+]
+
+const DEFAULT_FORMAT = FORMAT_OPTIONS[0].value
+
 const GeologicFormatFieldset = ({geologicFormat, onFormatChange}) => {
   const legendText = 'Year Format'
 
-  const [ format, setFormat ] = useState('CE')
+  const [ format, setFormat ] = useState(DEFAULT_FORMAT)
 
   useEffect(
     () => {
       if (geologicFormat != null) {
-        // TODO validate that format is 'CE' or 'BP'
+        // TODO validate that format is 'CE' or 'BP' (something from FORMAT_OPTIONS)
         setFormat(geologicFormat)
       }
       else {
-        setFormat('CE')
+        setFormat(DEFAULT_FORMAT)
       }
     },
     [ geologicFormat ] // when props date / redux store changes, update fields
@@ -64,28 +77,30 @@ const GeologicFormatFieldset = ({geologicFormat, onFormatChange}) => {
     [ format ]
   )
 
+  const radioButtons = []
+  _.each(FORMAT_OPTIONS, option => {
+    const id = `TimeFilter${option.value}`
+    radioButtons.push(
+      <label key={`TimeFilter::Format::Label::${option.value}`} htmlFor={id}>
+        {option.label}
+      </label>
+    )
+    radioButtons.push(
+      <input
+        key={`TimeFilter::Format::Input::${option.value}`}
+        type="radio"
+        id={id}
+        name="format"
+        value={option.value}
+        checked={format == option.value}
+        onChange={e => setFormat(e.target.value)}
+      />
+    )
+  })
+
   return (
     <FilterFieldset legendText={legendText}>
-      <div style={styleDate}>
-        <label htmlFor="CE">CE</label>
-        <input
-          type="radio"
-          id="CE"
-          name="format"
-          value="CE"
-          checked={format == 'CE'}
-          onChange={e => setFormat(e.target.value)}
-        />
-        <label htmlFor="BP">BP (0 = 1950 CE)</label>
-        <input
-          type="radio"
-          id="BP"
-          name="format"
-          value="BP"
-          checked={format == 'BP'}
-          onChange={e => setFormat(e.target.value)}
-        />
-      </div>
+      <div style={styleDate}>{radioButtons}</div>
     </FilterFieldset>
   )
 }

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import _ from 'lodash'
 
 import FlexColumn from '../../../common/ui/FlexColumn'
@@ -200,7 +200,7 @@ const GeologicTimeFilter = props => {
   )
 
   const presets = (
-    <div>
+    <div key="GeologicDateFilter::InputColumn::Presets">
       <FormSeparator text="OR" />
 
       <GeologicPresets
