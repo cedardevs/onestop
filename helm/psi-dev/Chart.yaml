@@ -2,4 +2,4 @@ apiVersion: v1
 appVersion: "1.1.2-SNAPSHOT"
 description: A Helm chart to spin up development tools for the PSI project
 name: psi-dev
-version: 0.2.0
+version: 0.3.0

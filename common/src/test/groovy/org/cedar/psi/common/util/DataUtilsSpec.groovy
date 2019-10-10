@@ -21,6 +21,29 @@ class DataUtilsSpec extends Specification {
     ['x']  | null    | ['x']
   }
 
+  def "truncateList works"() {
+    expect:
+    DataUtils.truncateList(inList, listSize, tailEnd) == outList
+
+    where:
+    inList    | listSize | tailEnd | outList
+    null      | 2        | true    | []
+    []        | 2        | true    | []
+    [1, 2, 3] | 2        | true    | [2, 3]
+    [1, 2, 3] | 2        | false   | [1, 2]
+    [1, 2, 3] | 5        | false   | [1, 2, 3]
+  }
+
+  def "trucateList throws error on bad listSize value"() {
+    when:
+    def list = new ArrayList()
+    list.addAll([1, 2, 3])
+    def result = DataUtils.truncateList(list, -1, true)
+
+    then:
+    thrown(IllegalArgumentException)
+  }
+
   def "parseJsonMap works for good json"() {
     when:
     def result = DataUtils.parseJsonMap('{"hello":"world","list":[1,2]}')
