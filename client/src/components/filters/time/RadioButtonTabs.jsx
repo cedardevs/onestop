@@ -3,6 +3,7 @@ import FlexRow from '../../common/ui/FlexRow'
 import {FilterColors} from '../../../style/defaultStyles'
 
 const styleRadioTab = {
+  cursor: 'pointer',
   display: 'inline-block',
   backgroundColor: '#277CB2',
   padding: '0.309em 0.618em',
@@ -47,11 +48,11 @@ const styleHideInput = {
 }
 
 /*
-OPTIONS should be an array of maps with a value and a label.
-<RadioButtonTabs OPTIONS={[{label: 'First', value: 1}, {label: 'Next', value: 2}]}
+`options` should be an array. Each option in the array should be a map with label, value, and description.
+<RadioButtonTabs options={[{label: 'First', value: 1, description: 'Accessible description indicating side effects.'}, {label: 'Next', value: 2, description: 'Also shows on mouse hover.'}]}
 */
-const RadioButtonTabs = ({inputName, OPTIONS, callback}) => {
-  const DEFAULT = OPTIONS[0].value
+const RadioButtonTabs = ({name, options, callback}) => {
+  const DEFAULT = options[0].value
 
   const [ selectedValue, setSelectedValue ] = useState(DEFAULT)
   const [ focus, setFocus ] = useState(null)
@@ -64,14 +65,14 @@ const RadioButtonTabs = ({inputName, OPTIONS, callback}) => {
   )
 
   const radioButtons = []
-  _.each(OPTIONS, (option, index) => {
-    const id = `RadioButton${inputName}${option.value}`
+  _.each(options, (option, index) => {
+    const id = `RadioButton${name}${option.value}`
     const selected = selectedValue == option.value
     const focused = focus == option.value
 
     // styling works with 2+ options
     const first = index == 0
-    const last = index == OPTIONS.length - 1
+    const last = index == options.length - 1
     const middle = !first && !last
 
     const style = {
@@ -84,15 +85,15 @@ const RadioButtonTabs = ({inputName, OPTIONS, callback}) => {
     }
     // TODO make sure onBlur junk works correctly for other browsers!
     radioButtons.push(
-      <div key={`RadioButton::${inputName}::${option.value}`}>
-        <label htmlFor={id} style={style}>
+      <div key={`RadioButton::${name}::${option.value}`}>
+        <label htmlFor={id} style={style} title={option.description} aria-label={option.description}>
           {option.label}
         </label>
         <input
           type="radio"
           id={id}
           style={styleHideInput}
-          name={inputName}
+          name={name}
           value={option.value}
           checked={selected}
           onChange={e => setSelectedValue(e.target.value)}

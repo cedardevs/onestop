@@ -1,7 +1,7 @@
 import React from 'react'
 import DateTimeFilter from './standard/DateTimeFilter'
 import GeologicTimeFilter from './geologic/GeologicTimeFilter'
-import TimeSwitcher from './TimeSwitcher'
+import TabPanels from './TabPanels'
 
 export default class TimeFilter extends React.Component {
   render() {
@@ -35,6 +35,29 @@ export default class TimeFilter extends React.Component {
         submit={submit}
       />
     )
-    return <TimeSwitcher standard={standardView} geologic={geologicView} />
+
+
+    const VIEW_OPTIONS = [
+      {
+        value: 'standard',
+        label: 'Datetime',
+        view: standardView,
+        description: 'Show standard date time filter.',  // used in aria for 508, and title for slightly expanded instructions to sighted users on hover
+      },
+      {
+        value: 'geologic',
+        label: 'Geologic',
+        view: geologicView,
+        description: 'Show geologic year filter.',
+      },
+      // {
+      //   value: 'periodic',
+      //   label: 'Periodic',
+      //   view: null,
+      //   description: 'Show periodic time filter.',
+      // },
+    ]
+
+    return <TabPanels name="timeFilter" options={VIEW_OPTIONS} />
   }
 }
