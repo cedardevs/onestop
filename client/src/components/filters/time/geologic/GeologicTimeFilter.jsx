@@ -4,7 +4,7 @@ import _ from 'lodash'
 import FlexColumn from '../../../common/ui/FlexColumn'
 import Button from '../../../common/input/Button'
 import {Key} from '../../../../utils/keyboardUtils'
-import {isValidDateRange, textToNumber} from '../../../../utils/inputUtils'
+import {isValidYearRange, textToNumber} from '../../../../utils/inputUtils'
 import {
   FilterColors,
   FilterStyles,
@@ -99,12 +99,13 @@ const GeologicTimeFilter = props => {
   const updateStartYear = (year, valid) => {
     setStart({year: year, valid: valid})
     setWarning('')
-    setDateRangeValid(isValidDateRange(year, end))
+    console.log('date range valid?', year, end, isValidYearRange(year, end.year))
+    setDateRangeValid(isValidYearRange(year, end.year))
   }
   const updateEndYear = (year, valid) => {
     setEnd({year: year, valid: valid})
     setWarning('')
-    setDateRangeValid(isValidDateRange(start, year))
+    setDateRangeValid(isValidYearRange(start.year, year))
   }
 
   const clearDates = () => {
