@@ -1,7 +1,6 @@
 package org.cedar.psi.registry.service;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import io.undertow.Undertow;
 import org.apache.avro.Schema;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
@@ -15,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
+import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -24,6 +23,8 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import reactor.netty.DisposableServer;
+import reactor.netty.http.server.HttpServer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -41,7 +42,7 @@ public class MetadataStore {
   private HostInfo hostInfo;
   private int port;
   private WebClient webClient;
-  private Undertow server;
+  private DisposableServer server;
   private SpecificAvroSerde<SpecificRecord> serde;
 
   @Autowired
@@ -53,18 +54,17 @@ public class MetadataStore {
     this.hostInfo = hostInfo;
     this.port = port;
     this.webClient = WebClient.create();
-    this.server = buildServer();
     this.serde = buildSerde(schemaRegistryUrl);
   }
 
   @PostConstruct
   public void start() {
-    this.server.start();
+    this.server = buildServer().bindNow();
   }
 
   @PreDestroy
   public void stop() {
-    this.server.stop();
+    this.server.disposeNow();
   }
 
   public ParsedRecord retrieveParsed(RecordType type, String source, String id) throws IOException {
@@ -97,11 +97,10 @@ public class MetadataStore {
     }
   }
 
-  private Undertow buildServer() {
-    // TODO - we could support https by taking a config value and using addHttpsListener here
-    return Undertow.builder()
-        .addHttpListener(port, "0.0.0.0")
-        .setHandler(new UndertowHttpHandlerAdapter(buildRoutes())).build();
+  private HttpServer buildServer() {
+    // TODO - we could support https by taking a config value and using .secure() here
+    ReactorHttpHandlerAdapter adapter = new ReactorHttpHandlerAdapter(buildRoutes());
+    return HttpServer.create().host("0.0.0.0").port(port).handle(adapter);
   }
 
   private HttpHandler buildRoutes() {
