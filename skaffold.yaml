@@ -21,7 +21,7 @@ deploy:
         # all features default to "false" in base chart, unless otherwise overridden
         features.cas: false
         # if true, `kubectl port-forward psi-registry-0 5005:5005` to expose JDWP for debugging
-        # then,
+        # then, create a "Remote" Debug Configuration in intelliJ (Host: 127.0.0.1, Port: 5005)
         debug: false
         config: |-
           ---
