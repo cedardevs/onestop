@@ -144,6 +144,7 @@ public class MetadataStore {
 
   private SpecificAvroSerde<SpecificRecord> buildSerde(String schemaRegistryUrl) {
     var config = Map.of("schema.registry.url", schemaRegistryUrl,
+        // since there is no topic name to use in this context, name the registered schemas after the record types
         "value.subject.name.strategy", "io.confluent.kafka.serializers.subject.RecordNameStrategy");
     var serde = new SpecificAvroSerde<SpecificRecord>();
     serde.configure(config, false);
