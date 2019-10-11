@@ -4,8 +4,6 @@
 package main
 
 import (
-	"strings"
-	"fmt"
 	"github.com/danielgtaylor/openapi-cli-generator/cli"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -117,45 +115,5 @@ func scdrRegister(subcommand bool) {
 		}
 
 	}()
-
-
-func() {
-	params := viper.New()
-
-	var examples string
-
-	cmd := &cobra.Command{
-		Use:     "checkJson",
-		Short:   "Search granules with a bounding box filter",
-		Long:    cli.Markdown("Retrietve granule metadata records matching the spatial filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    description: filters applied to the search\n    items:\n      oneOf:\n  - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n"),
-		Example: examples,
-		Args:    cobra.MinimumNArgs(0),
-		Run: func(cmd *cobra.Command, args []string) {
-			// body, err := cli.GetBody("application/json", args[0:])
-			// fmt.Println("cmd")
-			// fmt.Println(cmd)
-			// fmt.Println("args")
-			// fmt.Println(args)
-			if len(args) > 0 {
-				bodyInput := strings.Join(args, " ")
-				fmt.Println(bodyInput)
-				// result, e := shorthand.ParseAndBuild("stdin", bodyInput)
-				body, err := cli.GetBody("application/json", args[0:])
-				if err != nil {
-					log.Fatal().Err(err).Msg("Unable to get body")
-				}
-				fmt.Println(body)
-			}
-		},
-	}
-	root.AddCommand(cmd)
-
-	cli.SetCustomFlags(cmd)
-
-	if cmd.Flags().HasFlags() {
-		params.BindPFlags(cmd.Flags())
-	}
-
-}()
 
 }
