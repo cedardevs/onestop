@@ -23,7 +23,7 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
   @Override
   void addInterceptors(InterceptorRegistry registry) {
     SecurityInterceptor interceptor = new SecurityInterceptor(config, "CasRestBasicAuthClient", "admin")
-    registry.addInterceptor(interceptor).addPathPatterns("/*")
+    registry.addInterceptor(interceptor)
   }
 
 }
