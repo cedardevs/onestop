@@ -95,12 +95,12 @@ const DateTimeFilter = ({
   const updateStartDate = (date, valid) => {
     setStart({date: date, valid: valid})
     setWarning('')
-    setDateRangeValid(isValidDateRange(date, end))
+    setDateRangeValid(isValidDateRange(date, end.date))
   }
   const updateEndDate = (date, valid) => {
     setEnd({date: date, valid: valid})
     setWarning('')
-    setDateRangeValid(isValidDateRange(start, date))
+    setDateRangeValid(isValidDateRange(start.date, date))
   }
 
   const clearDates = () => {
