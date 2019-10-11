@@ -95,7 +95,11 @@ export const isValidDate = (year, month, day) => {
   const now = moment()
   const givenDate = moment(dateMap)
 
-  let validYear = year && dateMap.year !== null && dateMap.year <= now.year()
+  let validYear =
+    year &&
+    dateMap.year !== null &&
+    dateMap.year <= now.year() &&
+    dateMap.year >= 0
   let validMonth = month
     ? dateMap.month !== null &&
       dateMap.year !== null &&

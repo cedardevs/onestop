@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from 'react'
+import _ from 'lodash'
+
 import FlexRow from '../../common/ui/FlexRow'
 import {FilterColors} from '../../../style/defaultStyles'
 
