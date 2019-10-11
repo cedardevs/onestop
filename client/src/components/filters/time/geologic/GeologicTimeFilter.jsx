@@ -1,7 +1,8 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
 import FlexColumn from '../../../common/ui/FlexColumn'
+import FlexRow from '../../../common/ui/FlexRow'
 import Button from '../../../common/input/Button'
 import {Key} from '../../../../utils/keyboardUtils'
 import {isValidYearRange, textToNumber} from '../../../../utils/inputUtils'
@@ -14,6 +15,8 @@ import FormSeparator from '../../FormSeparator'
 import GeologicFieldset from './GeologicFieldset'
 import GeologicFormatFieldset from './GeologicFormatFieldset'
 import GeologicPresets from './GeologicPresets'
+
+import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
 
 const styleTimeFilter = {
   // TODO duplicate from DateTimeFilter
@@ -89,12 +92,41 @@ const warningStyle = warning => {
   }
 }
 
-const GeologicTimeFilter = props => {
+const alertStyle = alert => {
+  if (_.isEmpty(alert)) {
+    return {
+      display: 'none',
+    }
+  }
+  else {
+    return {
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: FilterColors.TEXT,
+      backgroundColor: '#f3f38e',
+      borderRadius: '0.618em',
+      textAlign: 'center',
+      marginBottom: '0.618em',
+      fontSize: '1.15em',
+      padding: '0.309em',
+    }
+  }
+}
+
+const GeologicTimeFilter = ({
+  startYear,
+  endYear,
+  startDateTime,
+  endDateTime,
+  clear,
+  applyFilter,
+}) => {
   const [ start, setStart ] = useState({year: null, valid: true})
   const [ end, setEnd ] = useState({year: null, valid: true})
   const [ format, setFormat ] = useState('CE')
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
+  const [ alert, setAlert ] = useState('')
 
   const updateStartYear = (year, valid) => {
     setStart({year: year, valid: valid})
@@ -108,8 +140,7 @@ const GeologicTimeFilter = props => {
   }
 
   const clearDates = () => {
-    props.removeYearRange()
-    props.submit()
+    clear()
     setStart({year: null, valid: true})
     setEnd({year: null, valid: true})
     setDateRangeValid(true)
@@ -121,11 +152,21 @@ const GeologicTimeFilter = props => {
       setWarning(createWarning(start.valid, end.valid, dateRangeValid))
     }
     else {
-      // assumes value has been returned in CE always!
-      props.updateYearRange(textToNumber(start.year), textToNumber(end.year))
-      props.submit()
+      // TODO assumes value has been returned in CE always!
+      applyFilter(textToNumber(start.year), textToNumber(end.year))
     }
   }
+
+  useEffect(
+    () => {
+      if (!_.isEmpty(startDateTime) || !_.isEmpty(endDateTime))
+        setAlert(
+          'Datetime filters are automatically removed by geologic filters.'
+        )
+      else setAlert('')
+    },
+    [ startDateTime, endDateTime ]
+  )
 
   const createWarning = (startValueValid, endValueValid, dateRangeValid) => {
     if (!startValueValid && !endValueValid) return 'Invalid start and end date.'
@@ -160,8 +201,8 @@ const GeologicTimeFilter = props => {
           onFormatChange={onFormatChange}
         />
         <GeologicFieldset
-          startYear={props.startYear}
-          endYear={props.endYear}
+          startYear={startYear}
+          endYear={endYear}
           format={format}
           updateStartYear={updateStartYear}
           updateEndYear={updateEndYear}
@@ -189,6 +230,23 @@ const GeologicTimeFilter = props => {
     </div>
   )
 
+  const alertMessage = (
+    <FlexRow
+      key="GeologicDateFilter::InputColumn::Alert"
+      style={alertStyle(alert)}
+      role="alert"
+      items={[
+        <SvgIcon
+          key="alert::icon"
+          size="1.4em"
+          style={{marginLeft: '0.309em'}}
+          path={exclamation_triangle}
+        />,
+        <span key="alert::message">{alert}</span>,
+      ]}
+    />
+  )
+
   const warningMessage = (
     <div
       key="GeologicDateFilter::InputColumn::Warning"
@@ -204,10 +262,9 @@ const GeologicTimeFilter = props => {
       <FormSeparator text="OR" />
 
       <GeologicPresets
-        startYear={props.startYear}
-        endYear={props.endYear}
-        updateYearRange={props.updateYearRange}
-        submit={props.submit}
+        startYear={startYear}
+        endYear={endYear}
+        applyFilter={applyFilter}
         styleLayout={styleLayout}
         styleLabel={styleLabel}
         styleField={styleField}
@@ -226,7 +283,9 @@ const GeologicTimeFilter = props => {
           Provide a start year, end year, or both. Future dates are not
           accepted. Values can be entered in SI (ka, Ma, Ga).
         </legend>
-        <FlexColumn items={[ form, buttons, warningMessage, presets ]} />
+        <FlexColumn
+          items={[ alertMessage, form, buttons, warningMessage, presets ]}
+        />
       </fieldset>
     </div>
   )

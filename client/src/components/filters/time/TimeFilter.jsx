@@ -30,9 +30,17 @@ export default class TimeFilter extends React.Component {
       <GeologicTimeFilter
         startYear={startYear}
         endYear={endYear}
-        updateYearRange={updateYearRange}
-        removeYearRange={removeYearRange}
-        submit={submit}
+        startDateTime={startDateTime}
+        endDateTime={endDateTime}
+        applyFilter={(startYear, endYear) => {
+          removeDateRange()
+          updateYearRange(startYear, endYear)
+          submit()
+        }}
+        clear={() => {
+          removeYearRange()
+          submit()
+        }}
       />
     )
 

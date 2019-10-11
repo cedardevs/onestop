@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
-import RadioButtonTabs from './RadioButtonTabs'
+import RadioButtonTabs from './RadioButtonTabs' // TODO move radiobuttontabs and this component to common!
 
 /*
 `options` should be an array. Each option in the array should be a map with label, value, description and a view. (Same as RadioButtonTabs requirements, plus `view`.)

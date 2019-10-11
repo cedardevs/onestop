@@ -48,8 +48,7 @@ const ERAS = [
 const GeologicPresets = ({
   startYear,
   endYear,
-  updateYearRange,
-  submit,
+  applyFilter,
   styleLayout,
   styleLabel,
   styleField,
@@ -82,11 +81,10 @@ const GeologicPresets = ({
       let preset = ERAS[presetIndex]
       if (preset) {
         // // TODO try activating this widget with keyboard to see if we need a preventDefault in there anywhere
-        updateYearRange(
+        applyFilter(
           textToNumber(convertYearToCE(`${preset.start}`, 'BP')),
           textToNumber(convertYearToCE(`${preset.end}`, 'BP'))
         )
-        submit()
       }
     },
     [ presetIndex ]
