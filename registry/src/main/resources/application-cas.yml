@@ -1,29 +1,25 @@
 ---
 # -- allows for better security logs for debugging --
-#logging.level.org.springframework.security: DEBUG
+#logging.level.org.pac4j.springframework.web: DEBUG
+#logging.level.org.pac4j.core.engine: DEBUG
+#logging.level.org.pac4j.cas: DEBUG
+#logging.level.org.cedar: DEBUG
 
 # -- point to the actual CAS server --
 # -- note: will require actually registering service in the future...
 #cas:
-#  service: 'http://localhost/registry/login/cas'
-#  serverUrlPrefix: 'https://auth.ncdc.noaa.gov/cas'
-
+#  prefixUrl: 'https://auth.ncdc.noaa.gov/cas'
 
 # -- point to the local dev CAS server built from the CAS Overlay --
 # -- note: uses our own baked-in JSON registry to know of this service
 cas:
-  service: 'http://localhost/registry/login/cas'
-  serverUrlPrefix: 'http://psi-dev-cas:8080/cas'
-
+  prefixUrl: 'http://psi-dev-cas:8080/cas'
 
 authorization:
   roles:
-    ADMIN:
+    ROLE_ADMIN:
       - casuser
       - elliott.richerson
 
-logging.level.org.cedar: DEBUG
 
-logging.level.org.pac4j.springframework.web: TRACE
-logging.level.org.pac4j.core.engine: TRACE
-logging.level.org.pac4j.cas: TRACE
+
