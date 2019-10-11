@@ -2,6 +2,7 @@ package org.cedar.psi.registry.security
 
 import groovy.util.logging.Slf4j
 import org.pac4j.core.config.Config
+import org.pac4j.springframework.annotation.CommonAspect
 import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.ComponentScan
@@ -21,7 +22,7 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
 
   @Override
   void addInterceptors(InterceptorRegistry registry) {
-    SecurityInterceptor interceptor = new SecurityInterceptor(config, "CasRestBasicAuthClient")
+    SecurityInterceptor interceptor = new SecurityInterceptor(config, "CasRestBasicAuthClient", "admin")
     registry.addInterceptor(interceptor).addPathPatterns("/*")
   }
 

@@ -20,6 +20,16 @@ volume:
   size: 1Gi
   storageClass:
 
+autoscaler:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: ## Required when enabled
+  cpu:
+    ## At least one of the following metrics to scale on is required when enabled
+    ## If both are provided, both will be used to trigger scaling
+    averageValue:
+    averageUtilization: ## Note: utilization is based on resources.requests.cpu and resources.limits.cpu
+
 debug: false
 
 ###############################################################################

@@ -132,3 +132,7 @@ grafana:
   dashboardsConfigMaps:
     default: "dashboards"
     psi: "dashboards"
+
+metrics-server:
+  args:
+  - --kubelet-insecure-tls

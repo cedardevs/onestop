@@ -65,8 +65,14 @@ spec:
           value: "{{ include "psi-registry.kafka.bootstrap.servers" . }}"
         - name: KAFKA_SCHEMA_REGISTRY_URL
           value: "{{ include "psi-registry.kafka.schema.registry.url" . }}"
-        - name: STATE_DIR
+        - name: KAFKA_STATE_DIR
           value: "/var/lib/registry/data"
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: KAFKA_APPLICATION_SERVER
+          value: "${POD_IP}:8080"
         {{- if .Values.config }}
         - name: spring.config.additional-location
           value: /etc/conf/application.yaml
