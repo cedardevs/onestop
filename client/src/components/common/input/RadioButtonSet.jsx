@@ -21,24 +21,24 @@ const stylePanel = {
   justifyContent: 'center',
 }
 
-const styleFocused = {
+const styleTabFocused = {
   textDecoration: 'underline',
 }
 
-const styleSelected = {
+const styleTabSelected = {
   backgroundColor: FilterColors.DARK,
 }
 
-const styleFirst = {
+const styleTabFirst = {
   borderRight: '0',
   borderRadius: '0.309em 0 0 0.309em',
 }
 
-const styleLast = {
+const styleTabLast = {
   borderRadius: '0 0.309em 0.309em 0',
 }
 
-const styleMiddle = {
+const styleTabMiddle = {
   borderRight: '0',
 }
 
@@ -48,6 +48,8 @@ const styleHideInput = {
   position: 'fixed',
   width: 0,
 }
+
+const styleRadioButton = {marginLeft: '0.618em'}
 
 /*
 `options` should be an array. Each option in the array should be a map with label, value, and description.
@@ -86,20 +88,18 @@ const RadioButtonTabs = ({
     const styleLabel = tabPanel
       ? {
           ...styleRadioTab,
-          ...(selected ? styleSelected : {}), // TODO rename all these styles to styleTabSelected, etc
-          ...(focused ? styleFocused : {}),
-          ...(first ? styleFirst : {}),
-          ...(middle ? styleMiddle : {}),
-          ...(last ? styleLast : {}),
+          ...(selected ? styleTabSelected : {}),
+          ...(focused ? styleTabFocused : {}),
+          ...(first ? styleTabFirst : {}),
+          ...(middle ? styleTabMiddle : {}),
+          ...(last ? styleTabLast : {}),
         }
       : {
-          ...(middle ? {marginLeft: '0.618em'} : {}), // TODO name these styles
-          ...(last ? {marginLeft: '0.618em'} : {}),
+          ...(middle ? styleRadioButton : {}),
+          ...(last ? styleRadioButton : {}),
         }
 
     const styleInput = tabPanel ? styleHideInput : {}
-    // TODO make sure onBlur junk works correctly for other browsers!
-    // TODO test out desc + label as aria value instead of just desc!!
     radioButtons.push(
       <div key={`RadioButton::${name}::${option.value}`}>
         <label
