@@ -1,12 +1,12 @@
 package org.cedar.psi.registry.service;
 
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.undertow.Undertow;
 import org.apache.avro.Schema;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.state.HostInfo;
 import org.apache.kafka.streams.state.StreamsMetadata;
-import org.cedar.psi.registry.util.AvroTransformers;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
@@ -28,6 +28,7 @@ import reactor.core.publisher.Mono;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.util.Map;
 
 import static org.cedar.psi.common.constants.Topics.inputStore;
 import static org.cedar.psi.common.constants.Topics.parsedStore;
@@ -41,15 +42,19 @@ public class MetadataStore {
   private int port;
   private WebClient webClient;
   private Undertow server;
+  private SpecificAvroSerde<SpecificRecord> serde;
 
   @Autowired
-  public MetadataStore(final StreamsStateService streamsStateService, final HostInfo hostInfo,
-      final @Value("${db.server.port:9090}") int port) {
+  public MetadataStore(final StreamsStateService streamsStateService,
+                       final HostInfo hostInfo,
+                       final @Value("${db.server.port:9090}") int port,
+                       final @Value("${kafka.schema.registry.url}") String schemaRegistryUrl) {
     this.streamsStateService = streamsStateService;
     this.hostInfo = hostInfo;
     this.port = port;
     this.webClient = WebClient.create();
     this.server = buildServer();
+    this.serde = buildSerde(schemaRegistryUrl);
   }
 
   @PostConstruct
@@ -110,7 +115,7 @@ public class MetadataStore {
       var table = request.pathVariable("table");
       var key = request.pathVariable("key");
       var record = getRecordFromTable(table, key, SpecificRecord.class);
-      var bytes = record != null ? AvroTransformers.avroToBytes(record) : null;
+      var bytes = record != null ? serde.serializer().serialize(null, record) : null;
       return bytes != null ?
           ServerResponse.ok().contentLength(bytes.length).syncBody(bytes) :
           ServerResponse.notFound().build();
@@ -125,7 +130,7 @@ public class MetadataStore {
     log.debug("getting remote avro from: " + url);
     try {
       var bytes = webClient.get().uri(url).retrieve().bodyToMono(byte[].class).block();
-      return AvroTransformers.bytesToAvro(bytes, schema);
+      return (T) serde.deserializer().deserialize(null, bytes);
     }
     catch (WebClientResponseException.NotFound e) {
       return null;
@@ -135,6 +140,14 @@ public class MetadataStore {
   private boolean thisHost(final StreamsMetadata metadata) {
     log.debug("checking if " + metadata.hostInfo() + " is the local host: " + hostInfo);
     return hostInfo.equals(metadata != null ? metadata.hostInfo() : null);
+  }
+
+  private SpecificAvroSerde<SpecificRecord> buildSerde(String schemaRegistryUrl) {
+    var config = Map.of("schema.registry.url", schemaRegistryUrl,
+        "value.subject.name.strategy", "io.confluent.kafka.serializers.subject.RecordNameStrategy");
+    var serde = new SpecificAvroSerde<SpecificRecord>();
+    serde.configure(config, false);
+    return serde;
   }
 
 }

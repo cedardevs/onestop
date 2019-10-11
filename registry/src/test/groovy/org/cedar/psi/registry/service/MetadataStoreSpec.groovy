@@ -4,8 +4,8 @@ import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.HostInfo
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
 import org.apache.kafka.streams.state.StreamsMetadata
-import org.cedar.psi.registry.util.AvroTransformers
 import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
 import org.springframework.web.reactive.function.client.WebClient
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -18,12 +18,18 @@ class MetadataStoreSpec extends Specification {
 
   StreamsStateService mockStreamsStateService = Mock(StreamsStateService)
   ReadOnlyKeyValueStore mockAvroStore = Mock(ReadOnlyKeyValueStore)
+  MockSchemaRegistrySerde mockSerde = new MockSchemaRegistrySerde()
 
   def testType = RecordType.granule
   def testSource = 'class'
   def testPort = 9090
 
-  MetadataStore metadataStore = new MetadataStore(mockStreamsStateService, localHostInfo, testPort)
+  MetadataStore metadataStore = new MetadataStore(mockStreamsStateService, localHostInfo, testPort, 'http://dummyurl')
+
+  def setup() {
+    // override the internal serde with one that uses a MockSchemaRegistryClient
+    metadataStore.serde = mockSerde
+  }
 
   def 'returns null for unknown types'() {
     expect:
@@ -131,21 +137,28 @@ class MetadataStoreSpec extends Specification {
 
     when:
     def bytes = WebClient.create().get()
-        .uri("http://localhost:9090/db/$table/$key")
+        .uri("http://localhost:$testPort/db/$table/$key")
         .retrieve().bodyToMono(byte[].class).block()
 
     then:
     1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
     1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
-    1 * mockAvroStore.get(key) >> testParsed
+    1 * mockAvroStore.get(key) >> testRecord
 
     and:
-    def expected = AvroTransformers.avroToBytes(testParsed)
+    def expected = mockSerde.serializer().serialize(null, testRecord)
     bytes.length == expected.length
     bytes == expected
 
     cleanup:
     metadataStore.stop()
+
+    where:
+    testRecord << [
+        testAggInput,
+        testErrorRecord,
+        testParsed,
+    ]
   }
 
   def 'retrieves a remote entity'() {
@@ -218,9 +231,6 @@ class MetadataStoreSpec extends Specification {
 
   private static testErrorRecord = ParsedRecord.newBuilder()
       .setType(RecordType.collection)
-      .setPublishing()
-      .setDiscovery()
-      .setAnalysis()
       .setErrors([testError])
       .build()
 
