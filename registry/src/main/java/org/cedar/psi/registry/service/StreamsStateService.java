@@ -6,16 +6,10 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.apache.kafka.streams.state.StreamsMetadata;
-import org.cedar.schemas.avro.psi.AggregatedInput;
-import org.cedar.schemas.avro.psi.ParsedRecord;
-import org.cedar.schemas.avro.psi.RecordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static org.cedar.psi.common.constants.Topics.inputStore;
-import static org.cedar.psi.common.constants.Topics.parsedStore;
 
 @Service
 public class StreamsStateService {
@@ -44,24 +38,10 @@ public class StreamsStateService {
   }
 
   /**
-   * query Aggregated input StateStore
-   * @param type record type of the store
-   * @param source metadata source
-   * @return  Aggregated input of the (type and source) store
+   * Retrieve a state store which holds Avro SpecificRecords from the KafkaStreams application
+   * @param storeName The name of the store
+   * @return The store
    */
-  public ReadOnlyKeyValueStore<String, AggregatedInput> getInputStore(RecordType type, String source) {
-   return streamsApp.store(inputStore(type, source), QueryableStoreTypes.keyValueStore());
-  }
-
-  /**
-   * query Parsed record StateStore
-   * @param type record type of the store
-   * @return Parsed record of the source
-   */
-  public ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(RecordType type) {
-    return streamsApp.store(parsedStore(type), QueryableStoreTypes.keyValueStore());
-  }
-
   public ReadOnlyKeyValueStore<String, SpecificRecord> getAvroStore(String storeName) {
     return streamsApp.store(storeName, QueryableStoreTypes.keyValueStore());
   }
