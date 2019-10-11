@@ -3,7 +3,6 @@
 #logging.level.org.pac4j.springframework.web: DEBUG
 #logging.level.org.pac4j.core.engine: DEBUG
 #logging.level.org.pac4j.cas: DEBUG
-#logging.level.org.cedar: DEBUG
 
 # -- point to the actual CAS server --
 # -- note: will require actually registering service in the future...
