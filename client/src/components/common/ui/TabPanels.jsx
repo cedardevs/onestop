@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
-import RadioButtonTabs from './RadioButtonTabs' // TODO move radiobuttontabs and this component to common!
+import RadioButtonSet from '../input/RadioButtonSet'
 
 /*
-`options` should be an array. Each option in the array should be a map with label, value, description and a view. (Same as RadioButtonTabs requirements, plus `view`.)
-<RadioButtonTabs options={[{label: 'First', value: 1, description: 'accessible', view: <div>...</div>}, {label: 'Next', value: 2, description: 'etc', view: <Button/>}]}
+`options` should be an array. Each option in the array should be a map with label, value, description and a view. (Same as RadioButtonSet requirements, plus `view`.)
+<RadioButtonSet options={[{label: 'First', value: 1, description: 'accessible', view: <div>...</div>}, {label: 'Next', value: 2, description: 'etc', view: <Button/>}]}
 props.selected is the default value, so no need to wire up things to when it changes.
 */
 const TabPanels = ({options, name, selected}) => {
@@ -35,7 +35,7 @@ const TabPanels = ({options, name, selected}) => {
 
   return (
     <div>
-      <RadioButtonTabs
+      <RadioButtonSet
         name={name}
         options={options}
         onSelectionChange={onSelectionChange}

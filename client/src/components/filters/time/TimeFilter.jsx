@@ -2,7 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import DateTimeFilter from './standard/DateTimeFilter'
 import GeologicTimeFilter from './geologic/GeologicTimeFilter'
-import TabPanels from './TabPanels'
+import TabPanels from '../../common/ui/TabPanels'
 
 export default class TimeFilter extends React.Component {
   render() {

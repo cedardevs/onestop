@@ -6,7 +6,7 @@ import {FilterColors, SiteColors} from '../../../../style/defaultStyles'
 
 import FilterFieldset from '../../FilterFieldset'
 
-import RadioButtonTabs from '../RadioButtonTabs'
+import RadioButtonSet from '../../../common/input/RadioButtonSet'
 
 const styleDate = {
   display: 'flex',
@@ -32,7 +32,7 @@ const GeologicFormatFieldset = ({geologicFormat, onFormatChange}) => {
   return (
     <FilterFieldset legendText={legendText}>
       <div style={styleDate}>
-        <RadioButtonTabs
+        <RadioButtonSet
           name="yearformat"
           options={FORMAT_OPTIONS}
           onSelectionChange={onFormatChange}
