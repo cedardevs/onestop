@@ -19,16 +19,13 @@ deploy:
       setValues:
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
         # all features default to "false" in base chart, unless otherwise overridden
-        features.cas: true
+        features.cas: false
         # if true, `kubectl port-forward psi-registry-0 5005:5005` to expose JDWP for debugging
         # then,
-        debug: true
+        debug: false
         config: |-
           ---
           logging.level.org.cedar: DEBUG
-          logging.level.org.pac4j.springframework.web: TRACE
-          logging.level.org.pac4j.core.engine: TRACE
-          logging.level.org.pac4j.cas: TRACE
           server.servlet.context-path: /registry
           kafka.commit.interval: 1000
           topics:

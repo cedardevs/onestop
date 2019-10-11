@@ -24,7 +24,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.*
 @CompileStatic
 @RestController
 @RequestMapping(value = "/metadata")
-@Import([ ComponentConfig.class, AnnotationConfig.class ])
 class PublisherController {
 
   @Autowired
