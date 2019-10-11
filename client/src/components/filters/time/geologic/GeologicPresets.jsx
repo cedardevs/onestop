@@ -80,7 +80,6 @@ const GeologicPresets = ({
     () => {
       let preset = ERAS[presetIndex]
       if (preset) {
-        // // TODO try activating this widget with keyboard to see if we need a preventDefault in there anywhere
         applyFilter(
           textToNumber(convertYearToCE(`${preset.start}`, 'BP')),
           textToNumber(convertYearToCE(`${preset.end}`, 'BP'))
@@ -106,7 +105,7 @@ const GeologicPresets = ({
 
   return (
     <FilterFieldset legendText={legendText} styleFieldset={{marginBottom: 0}}>
-      <div key="GeologicDateFilter::InputColumn::Presets" style={styleLayout}>
+      <form key="GeologicDateFilter::InputColumn::Presets" style={styleLayout}>
         <select
           id="presets"
           name="presets"
@@ -119,7 +118,7 @@ const GeologicPresets = ({
         >
           {options}
         </select>
-      </div>
+      </form>
     </FilterFieldset>
   )
 }
