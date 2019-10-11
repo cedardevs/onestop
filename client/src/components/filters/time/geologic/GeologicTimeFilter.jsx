@@ -147,8 +147,6 @@ const GeologicTimeFilter = props => {
     setFormat(f)
   }
 
-  console.log('???? this should rerender ya?', props.startYear)
-
   const legendText = 'Geologic'
   const form = (
     <div key="GeologicDateFilterInput::all">

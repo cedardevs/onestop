@@ -55,7 +55,6 @@ const GeologicFieldset = ({
   const [ startValid, setStartValid ] = useState(true)
   const [ endValid, setEndValid ] = useState(true)
 
-  console.log('if that rerendered... this should to?', startYear)
   useEffect(
     () => {
       if (startYear != null) {
