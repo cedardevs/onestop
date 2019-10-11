@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import _ from 'lodash'
 
 import moment from 'moment/moment'
@@ -39,28 +39,6 @@ const styleButton = {
   fontSize: '1.05em',
 }
 
-const alertStyle = alert => {
-  // TODO duplicated between filters!
-  if (_.isEmpty(alert)) {
-    return {
-      display: 'none',
-    }
-  }
-  else {
-    return {
-      alignItems: 'center', // TODO make the box styling (curved corners) and padding/margins match the fieldset better
-      justifyContent: 'center',
-      color: FilterColors.TEXT,
-      backgroundColor: '#f3f38e',
-      borderRadius: '0.618em',
-      textAlign: 'center',
-      marginBottom: '0.618em',
-      fontSize: '1.15em',
-      padding: '0.309em',
-    }
-  }
-}
-
 const warningStyle = warning => {
   if (_.isEmpty(warning)) {
     return {
@@ -78,19 +56,11 @@ const warningStyle = warning => {
   }
 }
 
-const DateTimeFilter = ({
-  startYear,
-  endYear,
-  startDateTime,
-  endDateTime,
-  clear,
-  applyFilter,
-}) => {
+const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
   const [ start, setStart ] = useState({date: {}, valid: true})
   const [ end, setEnd ] = useState({date: {}, valid: true})
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
-  const [ alert, setAlert ] = useState('')
 
   const updateStartDate = (date, valid) => {
     setStart({date: date, valid: valid})
@@ -126,22 +96,6 @@ const DateTimeFilter = ({
       applyFilter(startDateString, endDateString)
     }
   }
-
-  useEffect(
-    () => {
-      if (
-        startYear != null ||
-        endYear != null ||
-        !_.isEmpty(startYear) ||
-        !_.isEmpty(endYear) // TODO make sure this isn't confused by ints vs strings
-      )
-        setAlert(
-          'Geologic filters are automatically removed by datetime filters.'
-        )
-      else setAlert('')
-    },
-    [ startYear, endYear ]
-  )
 
   const createWarning = (startValueValid, endValueValid, dateRangeValid) => {
     if (!startValueValid && !endValueValid) return 'Invalid start and end date.'
@@ -199,23 +153,6 @@ const DateTimeFilter = ({
     </div>
   )
 
-  const alertMessage = ( // TODO duplicated!
-    <FlexRow
-      key="TimeFilter::InputColumn::Alert"
-      style={alertStyle(alert)}
-      role="alert"
-      items={[
-        <SvgIcon
-          key="alert::icon"
-          size="1.4em"
-          style={{marginLeft: '0.309em'}}
-          path={exclamation_triangle}
-        />,
-        <span key="alert::message">{alert}</span>,
-      ]}
-    />
-  )
-
   const warningMessage = (
     <div
       key="DateFilter::InputColumn::Warning"
@@ -235,7 +172,7 @@ const DateTimeFilter = ({
           Provide a start date, end date, or both. Day and month are optional.
           Future dates are not accepted.
         </legend>
-        <FlexColumn items={[ alertMessage, form, buttons, warningMessage ]} />
+        <FlexColumn items={[ form, buttons, warningMessage ]} />
       </fieldset>
     </div>
   )

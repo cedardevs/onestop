@@ -60,9 +60,9 @@ const RadioButtonTabs = ({
   options,
   onSelectionChange,
   tabPanel,
-  selected,
+  defaultSelection,
 }) => {
-  const DEFAULT = selected || options[0].value
+  const DEFAULT = defaultSelection || options[0].value
 
   const [ selectedValue, setSelectedValue ] = useState(DEFAULT)
   const [ focus, setFocus ] = useState(null)
@@ -117,6 +117,7 @@ const RadioButtonTabs = ({
           name={name}
           value={option.value}
           checked={selected}
+          aria-expanded={tabPanel && selected}
           onChange={e => setSelectedValue(e.target.value)}
           onFocus={e => setFocus(e.target.value)}
           onBlur={e => setFocus(null)}

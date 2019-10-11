@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import _ from 'lodash'
 
 import FlexColumn from '../../../common/ui/FlexColumn'
@@ -92,41 +92,12 @@ const warningStyle = warning => {
   }
 }
 
-const alertStyle = alert => {
-  if (_.isEmpty(alert)) {
-    return {
-      display: 'none',
-    }
-  }
-  else {
-    return {
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: FilterColors.TEXT,
-      backgroundColor: '#f3f38e',
-      borderRadius: '0.618em',
-      textAlign: 'center',
-      marginBottom: '0.618em',
-      fontSize: '1.15em',
-      padding: '0.309em',
-    }
-  }
-}
-
-const GeologicTimeFilter = ({
-  startYear,
-  endYear,
-  startDateTime,
-  endDateTime,
-  clear,
-  applyFilter,
-}) => {
+const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
   const [ start, setStart ] = useState({year: null, valid: true})
   const [ end, setEnd ] = useState({year: null, valid: true})
   const [ format, setFormat ] = useState('CE')
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
-  const [ alert, setAlert ] = useState('')
 
   const updateStartYear = (year, valid) => {
     setStart({year: year, valid: valid})
@@ -156,17 +127,6 @@ const GeologicTimeFilter = ({
       applyFilter(textToNumber(start.year), textToNumber(end.year))
     }
   }
-
-  useEffect(
-    () => {
-      if (!_.isEmpty(startDateTime) || !_.isEmpty(endDateTime))
-        setAlert(
-          'Datetime filters are automatically removed by geologic filters.'
-        )
-      else setAlert('')
-    },
-    [ startDateTime, endDateTime ]
-  )
 
   const createWarning = (startValueValid, endValueValid, dateRangeValid) => {
     if (!startValueValid && !endValueValid) return 'Invalid start and end date.'
@@ -230,23 +190,6 @@ const GeologicTimeFilter = ({
     </div>
   )
 
-  const alertMessage = (
-    <FlexRow
-      key="GeologicDateFilter::InputColumn::Alert"
-      style={alertStyle(alert)}
-      role="alert"
-      items={[
-        <SvgIcon
-          key="alert::icon"
-          size="1.4em"
-          style={{marginLeft: '0.309em'}}
-          path={exclamation_triangle}
-        />,
-        <span key="alert::message">{alert}</span>,
-      ]}
-    />
-  )
-
   const warningMessage = (
     <div
       key="GeologicDateFilter::InputColumn::Warning"
@@ -283,9 +226,7 @@ const GeologicTimeFilter = ({
           Provide a start year, end year, or both. Future dates are not
           accepted. Values can be entered in SI (ka, Ma, Ga).
         </legend>
-        <FlexColumn
-          items={[ alertMessage, form, buttons, warningMessage, presets ]}
-        />
+        <FlexColumn items={[ form, buttons, warningMessage, presets ]} />
       </fieldset>
     </div>
   )

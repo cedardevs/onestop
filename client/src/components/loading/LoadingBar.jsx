@@ -32,6 +32,8 @@ export class LoadingBar extends React.Component {
       <InlineError errors={this.props.errors} />
     ) : null
 
+    // TODO should this be aria-atomic true?
+
     return (
       <Switch>
         <Route path="/" exact />
