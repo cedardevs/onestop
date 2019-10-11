@@ -32,13 +32,16 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
 
   class Authorization {
     private Map<String, List<String>> roles
+
     Map<String, List<String>> getRoles() {
       return roles
     }
+
     void setRoles(Map<String, List<String>> roles) {
       this.roles = roles
     }
   }
+
   @Bean
   @ConfigurationProperties(prefix = 'authorization')
   Authorization authz() {
@@ -54,7 +57,7 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
 
   @Bean
   Config config() {
-    CasConfiguration casConfiguration = new CasConfiguration(CAS_PREFIX_URL+"/login", CAS_PREFIX_URL)
+    CasConfiguration casConfiguration = new CasConfiguration(CAS_PREFIX_URL + "/login", CAS_PREFIX_URL)
     CasRestBasicAuthClient casRestBasicAuthClient = new CasRestBasicAuthClient()
     casRestBasicAuthClient.setConfiguration(casConfiguration)
     casRestBasicAuthClient.setName(CAS_REST_CLIENT)
@@ -62,7 +65,7 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
       @Override
       CasRestProfile generate(WebContext context, CasRestProfile profile) {
         authz().getRoles().each { String role, List<String> authorizedUsers ->
-          if(authorizedUsers.contains(profile.id)) {
+          if (authorizedUsers.contains(profile.id)) {
             profile.addRole(role)
           }
         }
@@ -77,7 +80,7 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
     Authorizer<CasRestProfile> authorizerAdmin = new RequireAnyRoleAuthorizer<>(ROLE_ADMIN)
     config.addAuthorizer(AUTHORIZER_ADMIN, authorizerAdmin)
 
-    /* "matcher"s defines whether the security must apply on the security filter */
+    // "matcher"s defines whether the security must apply on the security filter
     // - all POST/PUT/PATCH/DELETE endpoints should be secured, and this matcher allows us to intercept them
     config.addMatcher(MATCHER_HTTP_METHOD_SECURE, new HttpMethodMatcher(
         HttpConstants.HTTP_METHOD.POST,
