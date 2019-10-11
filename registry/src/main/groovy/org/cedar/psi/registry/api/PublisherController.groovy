@@ -5,11 +5,7 @@ import groovy.util.logging.Slf4j
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.Publisher
 import org.cedar.schemas.avro.psi.RecordType
-import org.pac4j.springframework.annotation.AnnotationConfig
-import org.pac4j.springframework.annotation.ws.RequireAnyRole
-import org.pac4j.springframework.component.ComponentConfig
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
