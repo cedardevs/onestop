@@ -50,7 +50,7 @@ Complex collections search with a query text, spatial, and temporal filter -
 
 `onestop-cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522,  queries[]{type:queryText, value:satellite}  --verbose`
 
-## SCDR CLI interface 
+## SCDR CLI 
 
 Type - 
 
