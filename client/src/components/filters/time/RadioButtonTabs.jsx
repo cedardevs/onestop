@@ -51,8 +51,14 @@ const styleHideInput = {
 `options` should be an array. Each option in the array should be a map with label, value, and description.
 <RadioButtonTabs options={[{label: 'First', value: 1, description: 'Accessible description indicating side effects.'}, {label: 'Next', value: 2, description: 'Also shows on mouse hover.'}]}
 */
-const RadioButtonTabs = ({name, options, onSelectionChange, tabPanel}) => {
-  const DEFAULT = options[0].value
+const RadioButtonTabs = ({
+  name,
+  options,
+  onSelectionChange,
+  tabPanel,
+  selected,
+}) => {
+  const DEFAULT = selected || options[0].value
 
   const [ selectedValue, setSelectedValue ] = useState(DEFAULT)
   const [ focus, setFocus ] = useState(null)

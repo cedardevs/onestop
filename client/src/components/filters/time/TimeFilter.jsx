@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 import DateTimeFilter from './standard/DateTimeFilter'
 import GeologicTimeFilter from './geologic/GeologicTimeFilter'
 import TabPanels from './TabPanels'
@@ -19,11 +20,19 @@ export default class TimeFilter extends React.Component {
 
     const standardView = (
       <DateTimeFilter
+        startYear={startYear}
+        endYear={endYear}
         startDateTime={startDateTime}
         endDateTime={endDateTime}
-        updateDateRange={updateDateRange}
-        removeDateRange={removeDateRange}
-        submit={submit}
+        applyFilter={(startDate, endDate) => {
+          removeYearRange()
+          updateDateRange(startDate, endDate)
+          submit()
+        }}
+        clear={() => {
+          removeDateRange()
+          submit()
+        }}
       />
     )
     const geologicView = (
@@ -65,6 +74,13 @@ export default class TimeFilter extends React.Component {
       // },
     ]
 
-    return <TabPanels name="timeFilter" options={VIEW_OPTIONS} />
+    let selected = null
+    if (!_.isEmpty(startDateTime) || !_.isEmpty(endDateTime))
+      selected = 'standard'
+    else if (startYear != null || endYear != null) selected = 'geologic'
+
+    return (
+      <TabPanels name="timeFilter" options={VIEW_OPTIONS} selected={selected} />
+    )
   }
 }
