@@ -1,0 +1,25 @@
+plugins {
+  id 'com.github.blindpirate.gogradle' version '0.11.4'
+}
+
+golang {
+  packagePath = 'github.com/cedardevs/onestop/cli' // go import path of project to be built, NOT local file system path!
+}
+
+//task golint(type: com.github.blindpirate.gogradle.Go) {
+//    dependsOn goVendor // make this task depend on vendor task to guarantee all dependency packages are installed into vendor
+//    run 'golint github.com/onestop/cli' // specify the command in task
+//}
+//
+//goCheck.dependsOn golint
+
+dependencies {
+    golang {
+        build(['name':'github.com/danielgtaylor/openapi-cli-generator'])
+        build(['name':'github.com/pkg/errors'])
+        build(['name':'github.com/rs/zerolog'])
+        build(['name':'github.com/spf13/cobra'])
+        build(['name':'github.com/spf13/viper'])
+        build(['name':'gopkg.in/h2non/gentleman.v2'])
+    }
+}
