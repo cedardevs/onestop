@@ -12,11 +12,11 @@ import (
 	"strings"
 )
 
-func parseDate(params *viper.Viper) string {
+func parseDate(params *viper.Viper) []string {
 	//parse date flags, add filter
 	date := params.GetString("date")
 	if len(date) == 0 {
-		return ""
+		return []string{}
 	}
 	layout := "2006-01-02"
 	t, err := time.Parse(layout, date)
@@ -32,29 +32,29 @@ func parseDate(params *viper.Viper) string {
 	beginDateTime := t.Format("2006-01-01T00:00:00Z")
 	endDateTime := t.AddDate(0,0,1).Format("2006-01-01T00:00:00Z")
 
-	return "{\"type\":\"datetime\", \"after\" :\""+ beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"
+	return []string{"{\"type\":\"datetime\", \"after\" :\""+ beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
-func parseParentIdentifier(params *viper.Viper) string {
+func parseParentIdentifier(params *viper.Viper) []string {
 	parentId := params.GetString("type")
 	if len(parentId) == 0 {
-		return ""
+		return []string{}
 	}
-	return "{\"type\":\"queryText\", \"value\":\"parentIdentifier:\\\"" + parentId + "\\\"\"}"
+	return []string{"{\"type\":\"queryText\", \"value\":\"parentIdentifier:\\\"" + parentId + "\\\"\"}"}
 }
 
-func parseFileIdentifier(params *viper.Viper) string {
+func parseFileIdentifier(params *viper.Viper) []string {
 	fileId := params.GetString("file")
 	if len(fileId) == 0 {
-		return ""
+		return []string{}
 	}
-	return "{\"type\":\"queryText\", \"value\":\"fileIdentifier:\\\"" + fileId + "\\\"\"}"
+	return []string{"{\"type\":\"queryText\", \"value\":\"fileIdentifier:\\\"" + fileId + "\\\"\"}"}
 }
 
-func parsePolygon(params *viper.Viper) string {
+func parsePolygon(params *viper.Viper) []string {
 	polygon := params.GetString("area")
 	if len(polygon) == 0 {
-		return ""
+		return []string{}
 	}
 	polygon = strings.ReplaceAll(polygon, "POLYGON((", "")
 	polygon = strings.ReplaceAll(polygon, "))", "")
@@ -70,7 +70,7 @@ func parsePolygon(params *viper.Viper) string {
 		}
 		geospatialFilter = append(geospatialFilter, "[" + coord[0] + "," + coord[1] +"]" + end)
 	}
-	return "{\"geometry\": { \"coordinates\": [[" + strings.Join(geospatialFilter, "") + "]], \"type\": \"Polygon\"}, \"type\": \"geometry\"}"
+	return []string{"{\"geometry\": { \"coordinates\": [[" + strings.Join(geospatialFilter, "") + "]], \"type\": \"Polygon\"}, \"type\": \"geometry\"}"}
 }
 
 func main() {
@@ -93,21 +93,13 @@ func main() {
 		filters := []string{}
 		queries := []string{}
 		dateTimeFilter := parseDate(params)
-		if len(dateTimeFilter) >0 {
-			filters = append(filters, dateTimeFilter)
-		}
-		geoSpatialFilter := parsePolygon(params)
-		if len(geoSpatialFilter) > 0 {
-			filters = append(filters, geoSpatialFilter)
-		}
-		parentIdentifierQuery := parseParentIdentifier(params)
-		if len(parentIdentifierQuery) > 0 {
-			queries = append(queries, parentIdentifierQuery)
-		}
-		fileIdentifierQuery := parseFileIdentifier(params)
-		if len(fileIdentifierQuery) > 0 {
-			queries = append(queries, fileIdentifierQuery)
-		}
+        filters = append(filters, dateTimeFilter...)
+        geoSpatialFilter := parsePolygon(params)
+        filters = append(filters, geoSpatialFilter...)
+        parentIdentifierQuery := parseParentIdentifier(params)
+        queries = append(queries, parentIdentifierQuery...)
+        fileIdentifierQuery := parseFileIdentifier(params)
+        queries = append(queries, fileIdentifierQuery...)
 
 
 		req.AddHeader("content-type", "application/json")
