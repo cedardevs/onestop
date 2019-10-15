@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -99,15 +100,29 @@ public class KafkaBeanConfig {
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
     var app = new KafkaStreams(streamsTopology, streamsConfig);
     topicInitializer.initialize();
+
+    var killSwitch = new CompletableFuture<KafkaStreams.State>();
+    app.setStateListener((newState, oldState) -> {
+      if(killSwitch.isDone()) {
+        return;
+      }
+      if(newState == KafkaStreams.State.ERROR || newState == KafkaStreams.State.NOT_RUNNING) {
+        killSwitch.complete(newState);
+      }
+    });
+
     app.start();
+
+    killSwitch.thenAcceptAsync((state) -> {
+      throw new IllegalStateException("KafkaStreams app entered bad state: " + state);
+    });
 
     return app;
   }
 
   @Bean
   Properties adminConfig(Map kafkaProps) {
-    var props = kafkaPropertiesBuilder(kafkaProps, AdminClientConfig.configNames());
-    return props;
+    return kafkaPropertiesBuilder(kafkaProps, AdminClientConfig.configNames());
   }
 
   @Bean(destroyMethod = "close")
