@@ -12,9 +12,11 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.HttpClientErrorException
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
+@Unroll
 @DirtiesContext
 @EmbeddedKafka
 @ActiveProfiles(['integration', 'cas'])
@@ -33,16 +35,22 @@ class SecurityIntegrationSpec extends Specification {
   @Shared
   String granuleTrackingId
 
+  @Shared
+  String granuleEndpoint
+
+  def setupSpec() {
+    granulePayload = ClassLoader.systemClassLoader.getResourceAsStream('test_granule.json').text
+    Map granuleMap = new JsonSlurper().parseText(granulePayload) as Map
+    granuleTrackingId = granuleMap.trackingId
+    granuleEndpoint = "metadata/granule/common-ingest/${granuleTrackingId}"
+  }
+
   def 'secure endpoints return 401 without authorization header'() {
     given:
     String baseUrl = "http://localhost:${port}/${contextPath}"
     TestRestTemplate restTemplate = new TestRestTemplate()
     // HttpComponentsClientHttpRequestFactory allows for PATCH
     restTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
-    granulePayload = ClassLoader.systemClassLoader.getResourceAsStream('test_granule.json').text
-    Map granuleMap = new JsonSlurper().parseText(granulePayload) as Map
-    granuleTrackingId = granuleMap.trackingId
 
     when:
     URI uri = new URI("${baseUrl}${testCase.endpoint}")
@@ -71,12 +79,12 @@ class SecurityIntegrationSpec extends Specification {
 
     where:
     testCase << [
-        [method: HttpMethod.GET, endpoint: "metadata/granule/common-ingest/${granuleTrackingId}/resurrection", status: HttpStatus.UNAUTHORIZED],
-        [method: HttpMethod.POST, endpoint: "metadata/granule/common-ingest/${granuleTrackingId}", payload: granulePayload, contentType: MediaType.APPLICATION_JSON, status: HttpStatus.UNAUTHORIZED],
-        [method: HttpMethod.PUT, endpoint: "metadata/granule/common-ingest/${granuleTrackingId}", payload: granulePayload, contentType: MediaType.APPLICATION_JSON, status: HttpStatus.UNAUTHORIZED],
-        [method: HttpMethod.PATCH, endpoint: "metadata/granule/common-ingest/${granuleTrackingId}", payload: granulePayload, contentType: MediaType.APPLICATION_JSON, status: HttpStatus.UNAUTHORIZED],
-        [method: HttpMethod.DELETE, endpoint: "metadata/granule/common-ingest/${granuleTrackingId}", payload: granulePayload, contentType: MediaType.APPLICATION_JSON, status: HttpStatus.UNAUTHORIZED],
-        [method: HttpMethod.GET, endpoint: "metadata/granule/common-ingest/${granuleTrackingId}", status: HttpStatus.NOT_FOUND],
+        [method: HttpMethod.GET, endpoint: "${granuleEndpoint}/resurrection", status: HttpStatus.UNAUTHORIZED],
+        [method: HttpMethod.POST, endpoint: granuleEndpoint, payload: granulePayload, contentType: MediaType.APPLICATION_JSON, status: HttpStatus.UNAUTHORIZED],
+        [method: HttpMethod.PUT, endpoint: granuleEndpoint, payload: granulePayload, contentType: MediaType.APPLICATION_JSON, status: HttpStatus.UNAUTHORIZED],
+        [method: HttpMethod.PATCH, endpoint: granuleEndpoint, payload: granulePayload, contentType: MediaType.APPLICATION_JSON, status: HttpStatus.UNAUTHORIZED],
+        [method: HttpMethod.DELETE, endpoint: granuleEndpoint, payload: granulePayload, contentType: MediaType.APPLICATION_JSON, status: HttpStatus.UNAUTHORIZED],
+        [method: HttpMethod.GET, endpoint: granuleEndpoint, status: HttpStatus.NOT_FOUND],
     ]
   }
 }
