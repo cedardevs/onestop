@@ -40,7 +40,7 @@ export const convertYearToCE = (year, format) => {
     value = textToNumber(year.split('Ga')[0]) * 1000000000
   }
   if (!Number.isInteger(textToNumber(value))) {
-    return ''
+    return value // otherwise we'll always validate against empty string...
   }
   value = textToNumber(value)
   if (format == 'CE') {
