@@ -2,7 +2,6 @@ package org.cedar.psi.manager.stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -22,18 +21,40 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
-import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.*;
 import static org.cedar.psi.common.constants.Topics.*;
-
 
 public class StreamManager {
   private static final Logger log = LoggerFactory.getLogger(StreamManager.class);
 
+  public static void buildAndStartStream(ManagerConfig appConfig) {
+    var streams = buildStreamsApp(appConfig);
+    var stateFuture = new CompletableFuture<>();
+    streams.setStateListener((newState, oldState) -> {
+      log.info("State changing to {} from {}", newState, oldState);
+      if(stateFuture.isDone()) {
+        return;
+      }
 
-  public static KafkaStreams buildStreamsApp(ManagerConfig config) {
+      if(newState == KafkaStreams.State.NOT_RUNNING || newState == KafkaStreams.State.ERROR) {
+        stateFuture.complete(newState);
+      }
+    });
+
+    //Starting stream
+    streams.start();
+
+    stateFuture.thenAcceptAsync((state) -> {
+      throw new IllegalStateException("KafkaStreams app entered bad state: " + state);
+    });
+
+    // Add shutdown hook to respond to SIGTERM and gracefully close Kafka Streams
+    Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+  }
+
+  private static KafkaStreams buildStreamsApp(ManagerConfig config) {
     var topology = buildTopology();
     var streamsConfig = streamsConfig(StreamsApps.MANAGER_ID, config);
     return new KafkaStreams(topology, streamsConfig);
@@ -49,7 +70,7 @@ public class StreamManager {
     return builder.build();
   }
 
-  static StreamsBuilder addTopologyForType(StreamsBuilder builder, RecordType type) {
+  private static void addTopologyForType(StreamsBuilder builder, RecordType type) {
     var inputStream = builder.<String, AggregatedInput>stream(inputChangelogTopics(StreamsApps.REGISTRY_ID, type));
 
     inputStream
@@ -71,10 +92,9 @@ public class StreamManager {
         .mapValues(Analyzers::addAnalysis)
         .to(parsedTopic(type));
 
-    return builder;
   }
 
-  static String toJsonOrNull(Object o) {
+  private static String toJsonOrNull(Object o) {
     try {
       return new ObjectMapper().writeValueAsString(o);
     }
