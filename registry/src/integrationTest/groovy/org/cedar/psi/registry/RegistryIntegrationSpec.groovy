@@ -43,7 +43,7 @@ class RegistryIntegrationSpec extends Specification {
 
     @Bean(initMethod = 'start')
     RestApp schemaRegistryRestApp() {
-      new RestApp(8081, zkConnect, '_schemas')
+      new RestApp(8091, zkConnect, '_schemas')
     }
 
     @Bean
