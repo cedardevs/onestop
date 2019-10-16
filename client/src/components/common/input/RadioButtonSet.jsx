@@ -3,6 +3,13 @@ import _ from 'lodash'
 
 import FlexRow from '../ui/FlexRow'
 import {FilterColors} from '../../../style/defaultStyles'
+import RadioButton from './RadioButton'
+
+import {Key} from '../../../utils/keyboardUtils'
+
+const styleHideFocus = {
+  outline: 'none', // The focused state is being passed to a child component to display
+}
 
 const styleRadioTab = {
   cursor: 'pointer',
@@ -28,6 +35,9 @@ const styleTabFocused = {
 const styleTabSelected = {
   backgroundColor: FilterColors.DARK,
 }
+// const styleRadioFocused = {
+//   outline: 'solid red 1px',
+// }
 
 const styleTabFirst = {
   borderRight: '0',
@@ -53,9 +63,9 @@ const styleRadioButton = {marginLeft: '0.618em'}
 
 /*
 `options` should be an array. Each option in the array should be a map with label, value, and description.
-<RadioButtonTabs options={[{label: 'First', value: 1, description: 'Accessible description indicating side effects.'}, {label: 'Next', value: 2, description: 'Also shows on mouse hover.'}]}
+<RadioButtonSet options={[{label: 'First', value: 1, description: 'Accessible description indicating side effects.'}, {label: 'Next', value: 2, description: 'Also shows on mouse hover.'}]}
 */
-const RadioButtonTabs = ({
+const RadioButtonSet = ({
   name,
   options,
   onSelectionChange,
@@ -74,11 +84,44 @@ const RadioButtonTabs = ({
     [ selectedValue ]
   )
 
+  const onKeyUp = e => {
+    if (e.keyCode === Key.LEFT) {
+      e.stopPropagation()
+      let index = _.findIndex(options, function(option){
+        return option.value == selectedValue
+      })
+      if (index > 0) setSelectedValue(options[index - 1].value)
+    }
+    if (e.keyCode === Key.RIGHT) {
+      e.stopPropagation()
+      let index = _.findIndex(options, function(option){
+        return option.value == selectedValue
+      })
+      if (index < options.length - 1) setSelectedValue(options[index + 1].value)
+    }
+    // TODO doesn't currently allow vertical orientation
+    // TODO suppress default on up/down (weird scrolling behavior? also double check space)
+  }
+
+  const onKeyDown = e => {
+    // prevent the default behavior for control keys
+    const controlKeys = [ Key.SPACE, Key.ENTER ]
+    if (
+      !e.metaKey &&
+      !e.shiftKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      controlKeys.includes(e.keyCode)
+    ) {
+      e.preventDefault()
+    }
+  }
+
   const radioButtons = []
   _.each(options, (option, index) => {
     const id = `RadioButton${name}${option.value}`
     const selected = selectedValue == option.value
-    const focused = focus == option.value
+    // const focused = focus == option.value
 
     // styling works with 2+ options
     const first = index == 0
@@ -89,7 +132,7 @@ const RadioButtonTabs = ({
       ? {
           ...styleRadioTab,
           ...(selected ? styleTabSelected : {}),
-          ...(focused ? styleTabFocused : {}),
+          ...(focus && selected ? styleTabFocused : {}),
           ...(first ? styleTabFirst : {}),
           ...(middle ? styleTabMiddle : {}),
           ...(last ? styleTabLast : {}),
@@ -99,33 +142,42 @@ const RadioButtonTabs = ({
           ...(last ? styleRadioButton : {}),
         }
 
-    const styleInput = tabPanel ? styleHideInput : {}
+    const styleInput = {
+      ...(tabPanel ? styleHideInput : {}),
+    }
+
     radioButtons.push(
-      <div key={`RadioButton::${name}::${option.value}`}>
-        <label
-          htmlFor={id}
-          style={styleLabel}
-          title={option.description}
-          aria-label={`${option.description} ${option.label}`}
-        >
-          {option.label}
-        </label>
-        <input
-          type="radio"
-          id={id}
-          style={styleInput}
-          name={name}
-          value={option.value}
-          checked={selected}
-          aria-expanded={tabPanel && selected}
-          onChange={e => setSelectedValue(e.target.value)}
-          onFocus={e => setFocus(e.target.value)}
-          onBlur={e => setFocus(null)}
-        />
-      </div>
+      <RadioButton
+        key={`RadioButton::${name}::${option.value}`}
+        id={id}
+        name={name}
+        description={option.description}
+        label={option.label}
+        value={option.value}
+        selected={selected}
+        ariaExpanded={tabPanel && selected}
+        labelGetsFocus={tabPanel}
+        setSelection={setSelectedValue}
+        styleInput={styleInput}
+        styleLabel={styleLabel}
+        setFocusing={setFocus}
+        focusing={focus}
+      />
     )
   })
 
-  return <FlexRow style={stylePanel} items={radioButtons} />
+  return (
+    <div
+      style={styleHideFocus}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
+      tabIndex={0}
+      onBlur={() => setFocus(false)}
+      onFocus={() => setFocus(true)}
+    >
+      {' '}
+      <FlexRow style={stylePanel} items={radioButtons} />
+    </div>
+  )
 }
-export default RadioButtonTabs
+export default RadioButtonSet
