@@ -30,6 +30,8 @@ autoscaler:
     averageValue:
     averageUtilization: ## Note: utilization is based on resources.requests.cpu and resources.limits.cpu
 
+debug: false
+
 ###############################################################################
 # FEATURE TOGGLES (SUBCHART DEFAULTS)
 ###############################################################################

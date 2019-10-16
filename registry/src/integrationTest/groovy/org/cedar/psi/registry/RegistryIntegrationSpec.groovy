@@ -11,12 +11,9 @@ import io.confluent.kafka.schemaregistry.RestApp
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.streams.KafkaStreams
 import org.cedar.psi.common.constants.Topics
-import org.cedar.psi.registry.stream.TopicInitializer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
@@ -35,22 +32,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles('integration')
 @SpringBootTest(classes = [MetadataRegistryMain], webEnvironment = RANDOM_PORT)
 class RegistryIntegrationSpec extends Specification {
-
-  @Configuration
-  static class IntegrationConfig {
-    @Value('${spring.embedded.zookeeper.connect}')
-    String zkConnect
-
-    @Bean(initMethod = 'start')
-    RestApp schemaRegistryRestApp() {
-      new RestApp(8081, zkConnect, '_schemas')
-    }
-
-    @Bean
-    TopicInitializer topicInitializer(AdminClient adminClient) {
-      new TopicInitializer(adminClient, 1, 1 as short)
-    }
-  }
 
   @Value('${local.server.port}')
   String port

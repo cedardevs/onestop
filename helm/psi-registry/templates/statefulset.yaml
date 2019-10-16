@@ -42,6 +42,10 @@ spec:
         - name: http
           containerPort: 8080
           protocol: TCP
+        {{- if .Values.debug }}
+        - name: jdwp
+          containerPort: 5005
+        {{- end }}
         env:
         # EXPORT ACTIVE SPRING PROFILES TO TELL SPRING WHICH FEATURES TO ENABLE
         # the loop is making a comma delimited list for multi-feature handling
@@ -53,6 +57,10 @@ spec:
                     {{- end -}}
                   {{- end -}}
                   {{- join "," $active.profiles }}'
+        {{- if .Values.debug }}
+        - name: JAVA_TOOL_OPTIONS
+          value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+        {{- end }}
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: "{{ include "psi-registry.kafka.bootstrap.servers" . }}"
         - name: KAFKA_SCHEMA_REGISTRY_URL

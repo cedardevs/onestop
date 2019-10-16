@@ -1,101 +1,108 @@
 package org.cedar.psi.registry.security
 
 import groovy.util.logging.Slf4j
-import org.jasig.cas.client.session.SingleSignOutFilter
-import org.springframework.beans.factory.annotation.Autowired
+import org.pac4j.cas.client.rest.CasRestBasicAuthClient
+import org.pac4j.cas.config.CasConfiguration
+import org.pac4j.cas.profile.CasRestProfile
+import org.pac4j.core.authorization.authorizer.Authorizer
+import org.pac4j.core.authorization.authorizer.RequireAnyRoleAuthorizer
+import org.pac4j.core.authorization.generator.AuthorizationGenerator
+import org.pac4j.core.client.Clients
+import org.pac4j.core.config.Config
+import org.pac4j.core.context.HttpConstants
+import org.pac4j.core.context.WebContext
+import org.pac4j.core.matching.HttpMethodMatcher
+import org.pac4j.springframework.web.SecurityInterceptor
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import org.springframework.http.HttpMethod
-import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.authentication.ProviderManager
-import org.springframework.security.cas.ServiceProperties
-import org.springframework.security.cas.authentication.CasAuthenticationProvider
-import org.springframework.security.cas.web.CasAuthenticationFilter
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.web.AuthenticationEntryPoint
-import org.springframework.security.web.access.AccessDeniedHandler
-import org.springframework.security.web.authentication.logout.LogoutFilter
-
-import javax.servlet.ServletException
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Slf4j
-@Profile("cas")
-@EnableWebSecurity
-class SecurityEnabledConfig extends WebSecurityConfigurerAdapter {
+@Profile('cas')
+@Configuration
+@ComponentScan(basePackages = "org.pac4j.springframework.web")
+class SecurityEnabledConfig implements WebMvcConfigurer {
 
-  private AuthenticationProvider authenticationProvider
-  private AuthenticationEntryPoint authenticationEntryPoint
-  private SingleSignOutFilter singleSignOutFilter
-  private LogoutFilter logoutFilter
-  private CASConfigurationProperties props
+  static final String ROLE_ADMIN = "ROLE_ADMIN"
 
-  @Autowired
-  SecurityEnabledConfig(CasAuthenticationProvider casAuthenticationProvider, AuthenticationEntryPoint eP, LogoutFilter lF, SingleSignOutFilter ssF, CASConfigurationProperties props) {
-    this.authenticationProvider = casAuthenticationProvider
-    this.authenticationEntryPoint = eP
-    this.logoutFilter = lF
-    this.singleSignOutFilter = ssF
-    this.props = props
-  }
+  class Authorization {
+    private Map<String, List<String>> roles
 
-  @Override
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.authenticationProvider(authenticationProvider)
-  }
+    Map<String, List<String>> getRoles() {
+      return roles
+    }
 
-  @Override
-  protected AuthenticationManager authenticationManager() throws Exception {
-    return new ProviderManager(Arrays.asList(authenticationProvider))
+    void setRoles(Map<String, List<String>> roles) {
+      this.roles = roles
+    }
   }
 
   @Bean
-  CasAuthenticationFilter casAuthenticationFilter(ServiceProperties sP) throws Exception {
-    CasAuthenticationFilter filter = new CasAuthenticationFilter()
-    filter.setServiceProperties(sP)
-    filter.setAuthenticationManager(authenticationManager())
-    return filter
+  @ConfigurationProperties(prefix = 'authorization')
+  Authorization authz() {
+    return new Authorization()
+  }
+
+  // Pac4J Configuration
+  @Value('${cas.prefixUrl}')
+  private String CAS_PREFIX_URL
+  static final String CAS_REST_CLIENT = "CasRestBasicAuthClient"
+  static final String AUTHORIZER_ADMIN = "admin"
+  static final String MATCHER_HTTP_METHOD_SECURE = "http-methods-secure"
+
+  @Bean
+  Config config() {
+    CasConfiguration casConfiguration = new CasConfiguration(CAS_PREFIX_URL + "/login", CAS_PREFIX_URL)
+    CasRestBasicAuthClient casRestBasicAuthClient = new CasRestBasicAuthClient()
+    casRestBasicAuthClient.setConfiguration(casConfiguration)
+    casRestBasicAuthClient.setName(CAS_REST_CLIENT)
+    AuthorizationGenerator<CasRestProfile> authGen = new AuthorizationGenerator<CasRestProfile>() {
+      @Override
+      CasRestProfile generate(WebContext context, CasRestProfile profile) {
+        authz().getRoles().each { String role, List<String> authorizedUsers ->
+          if (authorizedUsers.contains(profile.id)) {
+            profile.addRole(role)
+          }
+        }
+        return profile
+      }
+    }
+    casRestBasicAuthClient.addAuthorizationGenerator(authGen)
+    Clients clients = new Clients(casRestBasicAuthClient)
+    final Config config = new Config(clients)
+
+    // "authorizer"s are meant to check authorizations on the authenticated user profile(s) or on the current web context
+    Authorizer<CasRestProfile> authorizerAdmin = new RequireAnyRoleAuthorizer<>(ROLE_ADMIN)
+    config.addAuthorizer(AUTHORIZER_ADMIN, authorizerAdmin)
+
+    // "matcher"s defines whether the security must apply on the security filter
+    // - all POST/PUT/PATCH/DELETE endpoints should be secured, and this matcher allows us to intercept them
+    config.addMatcher(MATCHER_HTTP_METHOD_SECURE, new HttpMethodMatcher(
+        HttpConstants.HTTP_METHOD.POST,
+        HttpConstants.HTTP_METHOD.PUT,
+        HttpConstants.HTTP_METHOD.PATCH,
+        HttpConstants.HTTP_METHOD.DELETE
+    ))
+
+    return config
   }
 
   @Override
-  protected void configure(HttpSecurity http) throws Exception {
+  void addInterceptors(InterceptorRegistry registry) {
 
-    // non-browser clients recommended to disable CSRF
-    // we're using a python script to hit write operation endpoints
-    // CAS is locking down write operations, and the browser is used for read-only GET purposes
-    // if this behavior changes in the future (browser based admin utility is created), we may want to re-address this
-    // see: https://docs.spring.io/autorepo/docs/spring-security/5.0.3.BUILD-SNAPSHOT/reference/html/csrf.html#when-to-use-csrf-protection
-    http.csrf().disable()
+    SecurityInterceptor interceptorHttpMethodsSecure = new SecurityInterceptor(config(), CAS_REST_CLIENT, AUTHORIZER_ADMIN, MATCHER_HTTP_METHOD_SECURE)
+    SecurityInterceptor interceptorResurrection = new SecurityInterceptor(config(), CAS_REST_CLIENT, AUTHORIZER_ADMIN)
 
-    http.addFilter(casAuthenticationFilter())
+    // this will intercept and secure all POST/PUT/PATCH/DELETE requests
+    registry.addInterceptor(interceptorHttpMethodsSecure).addPathPatterns("/metadata/**")
 
-    http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(new AccessDeniedHandler() {
-      @Override
-      void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Authorization Failed : " + accessDeniedException.getMessage())
-      }
-    })
-
-    http.logout().permitAll().logoutSuccessUrl("/logout")
-
-    http.authenticationProvider(authenticationProvider).authorizeRequests()
-
-      // secured endpoints
-      .antMatchers(HttpMethod.POST, "/metadata/**").hasRole("ADMIN")
-      .antMatchers(HttpMethod.PUT, "/metadata/**").hasRole("ADMIN")
-      .antMatchers(HttpMethod.PATCH, "/metadata/**").hasRole("ADMIN")
-      .antMatchers(HttpMethod.DELETE, "/metadata/**").hasRole("ADMIN")
-      .antMatchers(HttpMethod.GET, "/metadata/**/resurrection").hasRole("ADMIN")
-
-      .antMatchers("/login/cas","/login").authenticated()
-
-      // everything else is publicly accessible
-      .antMatchers("/**").permitAll()
+    // because the above interceptor will not catch the GET `/metadata/**/resurrection` endpoints
+    registry.addInterceptor(interceptorResurrection).addPathPatterns("/metadata/**/resurrection")
   }
+
 }
