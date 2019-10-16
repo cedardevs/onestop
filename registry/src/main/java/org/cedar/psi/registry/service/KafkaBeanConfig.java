@@ -14,6 +14,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.state.HostInfo;
 import org.cedar.psi.registry.stream.TopicInitializer;
 import org.cedar.psi.registry.stream.TopologyBuilders;
 import org.cedar.schemas.avro.psi.Input;
@@ -24,10 +25,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
+import static org.apache.kafka.streams.KafkaStreams.State.ERROR;
+import static org.apache.kafka.streams.KafkaStreams.State.NOT_RUNNING;
 import static org.apache.kafka.streams.StreamsConfig.*;
 import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID;
 
@@ -40,6 +44,7 @@ public class KafkaBeanConfig {
   static {
     defaults.put(BOOTSTRAP_SERVERS_CONFIG, "http://localhost:9092");
     defaults.put(SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
+    defaults.put(APPLICATION_SERVER_CONFIG, "localhost:8080");
     defaults.put(TopicConfig.COMPRESSION_TYPE_CONFIG, "gzip");
     defaults.put(CACHE_MAX_BYTES_BUFFERING_CONFIG, 104857600L); // 100 MiB
     defaults.put(COMMIT_INTERVAL_MS_CONFIG, 30000L); // 30 sec
@@ -84,20 +89,37 @@ public class KafkaBeanConfig {
     return props;
   }
 
-  @Bean(destroyMethod = "close")
+  @Bean
+  HostInfo hostInfo(Properties streamsConfig){
+    var appServerConfigParts = streamsConfig.getProperty(APPLICATION_SERVER_CONFIG).split(":");
+    var host = appServerConfigParts[0];
+    var port = Integer.parseInt(appServerConfigParts[1]);
+    return new HostInfo(host, port);
+  }
+
+  @Bean(initMethod = "start", destroyMethod = "close")
   KafkaStreams streamsApp(Properties streamsConfig, TopicInitializer topicInitializer) throws InterruptedException, ExecutionException {
+    topicInitializer.initialize();
+
+    var killSwitch = new CompletableFuture<KafkaStreams.State>();
+    killSwitch.thenAcceptAsync((state) -> {
+      throw new IllegalStateException("KafkaStreams app entered bad state: " + state);
+    });
+    KafkaStreams.StateListener killSwitchListener = (newState, oldState) -> {
+      if (!killSwitch.isDone() && (newState == ERROR || newState == NOT_RUNNING)) {
+        killSwitch.complete(newState);
+      }
+    };
+
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
     var app = new KafkaStreams(streamsTopology, streamsConfig);
-    topicInitializer.initialize();
-    app.start();
-
+    app.setStateListener(killSwitchListener);
     return app;
   }
 
   @Bean
   Properties adminConfig(Map kafkaProps) {
-    var props = kafkaPropertiesBuilder(kafkaProps, AdminClientConfig.configNames());
-    return props;
+    return kafkaPropertiesBuilder(kafkaProps, AdminClientConfig.configNames());
   }
 
   @Bean(destroyMethod = "close")

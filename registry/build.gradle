@@ -21,6 +21,7 @@ dependencies {
   implementation("org.codehaus.groovy:groovy")
   implementation("org.codehaus.groovy:groovy-json")
   implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
   implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
   implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
@@ -162,6 +163,6 @@ jib {
         'org.label-schema.version': imageTag,
         'org.label-schema.schema-version': '1.0'
     ]
-    ports = ['8080'.toString()]
+    ports = ['8080', '9090']
   }
 }

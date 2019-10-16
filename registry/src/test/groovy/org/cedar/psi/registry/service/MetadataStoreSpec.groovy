@@ -1,51 +1,51 @@
 package org.cedar.psi.registry.service
 
-import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.errors.InvalidStateStoreException
-import org.apache.kafka.streams.state.QueryableStoreType
+import org.apache.kafka.streams.state.HostInfo
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
-import org.cedar.schemas.avro.psi.AggregatedInput
-import org.cedar.schemas.avro.psi.ErrorEvent
-import org.cedar.schemas.avro.psi.ParsedRecord
-import org.cedar.schemas.avro.psi.RecordType
+import org.apache.kafka.streams.state.StreamsMetadata
+import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
+import org.springframework.web.reactive.function.client.WebClient
 import spock.lang.Specification
 import spock.lang.Unroll
-
-import static org.cedar.psi.common.constants.Topics.inputStore
-import static org.cedar.psi.common.constants.Topics.parsedStore
 
 @Unroll
 class MetadataStoreSpec extends Specification {
 
-  KafkaStreams mockStreamsApp
-  ReadOnlyKeyValueStore mockInputStore
-  ReadOnlyKeyValueStore mockParsedStore
-  MetadataStore mockMetadataStore
+  HostInfo localHostInfo = new HostInfo("thetesthost", 8080)
+  StreamsMetadata localStreamsMetadata = new StreamsMetadata(localHostInfo, Collections.emptySet(), Collections.emptySet())
+
+  StreamsStateService mockStreamsStateService = Mock(StreamsStateService)
+  ReadOnlyKeyValueStore mockAvroStore = Mock(ReadOnlyKeyValueStore)
+  MockSchemaRegistrySerde mockSerde = new MockSchemaRegistrySerde()
 
   def testType = RecordType.granule
   def testSource = 'class'
+  def testPort = 9090
+
+  MetadataStore metadataStore = new MetadataStore(mockStreamsStateService, localHostInfo, testPort, 'http://dummyurl')
 
   def setup() {
-    mockStreamsApp = Mock(KafkaStreams)
-    mockInputStore = Mock(ReadOnlyKeyValueStore)
-    mockParsedStore = Mock(ReadOnlyKeyValueStore)
-    mockMetadataStore = new MetadataStore(mockStreamsApp)
+    // override the internal serde with one that uses a MockSchemaRegistryClient
+    metadataStore.serde = mockSerde
   }
 
   def 'returns null for unknown types'() {
     expect:
-    mockMetadataStore.retrieveInput(null, 'notarealsource', 'notarealid') == null
+    metadataStore.retrieveInput(null, 'notarealsource', 'notarealid') == null
   }
 
   def 'returns null for a nonexistent store'() {
     def testId = 'notarealid'
 
     when:
-    def result = mockMetadataStore.retrieveInput(testType, testSource, testId)
+    def result = metadataStore.retrieveInput(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> null
-    0 * mockInputStore.get(testId)
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getAvroStore(_) >> null
+    0 * mockAvroStore.get(testId)
 
     and:
     result == null
@@ -55,11 +55,12 @@ class MetadataStoreSpec extends Specification {
     def testId = 'notarealid'
 
     when:
-    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
+    def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
-    1 * mockParsedStore.get(testId) >> null
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockAvroStore.get(testId) >> null
 
     and:
     result == null
@@ -69,61 +70,148 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    mockMetadataStore.retrieveParsed(testType, testSource, testId)
+    metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> {
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getAvroStore(_) >> {
       throw new InvalidStateStoreException('test')
     }
 
-    0 * mockParsedStore.get(testId)
+    0 * mockAvroStore.get(testId)
 
     and:
     thrown(InvalidStateStoreException)
   }
 
-  def 'retrieves an input record by type and id'() {
+  def 'retrieves a local input record by type and id'() {
     def testId = '123'
 
     when:
-    def result = mockMetadataStore.retrieveInput(testType, testSource, testId)
+    def result = metadataStore.retrieveInput(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
-    1 * mockInputStore.get(testId) >> testAggInput
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockAvroStore.get(testId) >> testAggInput
 
     and:
     result ==  testAggInput
   }
 
-  def 'retrieves a parsed record by type and id'() {
+  def 'retrieves a local parsed record by type and id'() {
     def testId = '123'
 
     when:
-    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
+    def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
-    1 * mockParsedStore.get(testId) >> testParsed
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockAvroStore.get(testId) >> testParsed
 
     and:
     result == testParsed
   }
 
-  def 'retrieves a record with errors'() {
+  def 'retrieves a local record with errors'() {
     def testId = '123'
 
     when:
-    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
+    def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
-    1 * mockParsedStore.get(testId) >> testErrorRecord
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockAvroStore.get(testId) >> testErrorRecord
 
     and:
     result == testErrorRecord
   }
 
+  def 'hosts binary db endpoint on embedded server'() {
+    setup:
+    def table = 'test-table'
+    def key = '123'
+    metadataStore.start()
+
+    when:
+    def bytes = WebClient.create().get()
+        .uri("http://localhost:$testPort/db/$table/$key")
+        .retrieve().bodyToMono(byte[].class).block()
+
+    then:
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockAvroStore.get(key) >> testRecord
+
+    and:
+    def expected = mockSerde.serializer().serialize(null, testRecord)
+    bytes.length == expected.length
+    bytes == expected
+
+    cleanup:
+    metadataStore.stop()
+
+    where:
+    testRecord << [
+        testAggInput,
+        testErrorRecord,
+        testParsed,
+    ]
+  }
+
+  def 'retrieves a remote entity'() {
+    metadataStore.start()
+    def testId = '123'
+
+    // NOTE: the "remote" metadata actually points to the location where the embedded server is running
+    def remoteHostInfo = new HostInfo("localhost", testPort)
+    def remoteStreamsMetadata = new StreamsMetadata(remoteHostInfo, null, null)
+
+    when:
+    def result = metadataStore.retrieveInput(testType, testSource, testId)
+
+    then:
+    // first kafka metadata lookup indicates remote, subsequent lookups indicate local
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> remoteStreamsMetadata
+    _ * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockAvroStore.get(_) >> testAggInput
+
+    and:
+    // comparing toStrings because deep equal comparisons on avro objects don't work when they have maps in them
+    result.toString() == testAggInput.toString()
+
+    cleanup:
+    metadataStore.stop()
+  }
+
+  def 'returns null when a remote entity is not found'() {
+    setup:
+    metadataStore.start()
+    def testId = '123'
+
+    // NOTE: the "remote" metadata actually points to the location where the embedded server is running
+    def remoteHostInfo = new HostInfo("localhost", testPort)
+    def remoteStreamsMetadata = new StreamsMetadata(remoteHostInfo, null, null)
+
+    when:
+    def result = metadataStore.retrieveParsed(testType, testSource, testId)
+
+    then:
+    // first kafka metadata lookup indicates remote, subsequent lookups indicate local
+    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> remoteStreamsMetadata
+    _ * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockAvroStore.get(_) >> null
+
+    and:
+    result == null
+
+    cleanup:
+    metadataStore.stop()
+  }
 
   private static testAggInput = AggregatedInput.newBuilder()
       .setType(RecordType.collection)
@@ -131,7 +219,10 @@ class MetadataStoreSpec extends Specification {
       .setInitialSource('test')
       .build()
 
-  private static testParsed = ParsedRecord.newBuilder().setType(RecordType.collection).build()
+  private static testParsed = ParsedRecord.newBuilder()
+      .setType(RecordType.collection)
+      .setRelationships([Relationship.newBuilder().setId('abc').setType(RelationshipType.COLLECTION).build()])
+      .build()
 
   private static testError = ErrorEvent.newBuilder()
       .setTitle('this is a test')
@@ -140,9 +231,6 @@ class MetadataStoreSpec extends Specification {
 
   private static testErrorRecord = ParsedRecord.newBuilder()
       .setType(RecordType.collection)
-      .setPublishing()
-      .setDiscovery()
-      .setAnalysis()
       .setErrors([testError])
       .build()
 

@@ -20,12 +20,16 @@ deploy:
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
         # all features default to "false" in base chart, unless otherwise overridden
         features.cas: false
+        replicaCount: 2
         # if true, `kubectl port-forward psi-registry-0 5005:5005` to expose JDWP for debugging
         # then, create a "Remote" Debug Configuration in intelliJ (Host: 127.0.0.1, Port: 5005)
         debug: false
         config: |-
           ---
-          logging.level.org.cedar: DEBUG
+          logging:
+            level:
+              org.cedar: DEBUG
+              org.cedar.schemas.avro.util: INFO
           server.servlet.context-path: /registry
           kafka.commit.interval: 1000
           topics:
@@ -52,7 +56,10 @@ deploy:
       setValues:
         config: |-
           ---
-          logging.level.org.cedar: DEBUG
+          logging:
+            level:
+              org.cedar: DEBUG
+              org.cedar.schemas.avro.util: INFO
           kafka.commit.interval: 1000
         # Env values
         kafka.schema.registry.url: http://psi-dev-cp-schema-registry:8081

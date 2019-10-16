@@ -42,6 +42,9 @@ spec:
         - name: http
           containerPort: 8080
           protocol: TCP
+        - name: db
+          containerPort: 9090
+          protocol: TCP
         {{- if .Values.debug }}
         - name: jdwp
           containerPort: 5005
@@ -72,7 +75,7 @@ spec:
             fieldRef:
               fieldPath: status.podIP
         - name: KAFKA_APPLICATION_SERVER
-          value: "${POD_IP}:8080"
+          value: "${POD_IP}:9090"
         {{- if .Values.config }}
         - name: spring.config.additional-location
           value: /etc/conf/application.yaml

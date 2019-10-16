@@ -26,7 +26,8 @@ class MetadataRestController {
   private ApiRootGenerator apiLinkGenerator
 
   @Autowired
-  MetadataRestController(MetadataStore metadataStore, ApiRootGenerator apiLinkGenerator) {
+  MetadataRestController(MetadataStore metadataStore,
+                         ApiRootGenerator apiLinkGenerator) {
     this.metadataStore = metadataStore
     this.apiLinkGenerator = apiLinkGenerator
   }
@@ -47,6 +48,7 @@ class MetadataRestController {
       @PathVariable String id,
       HttpServletRequest request,
       HttpServletResponse response) {
+
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def result = metadataStore.retrieveInput(recordType, source, id)
     def links = buildLinks(request, type, source, id)
@@ -93,6 +95,7 @@ class MetadataRestController {
           ]
       ]
     }
+
   }
 
   @RequestMapping(path = '/metadata/{type}/{id}/parsed', method = [GET, HEAD], produces = 'application/json')
@@ -113,8 +116,8 @@ class MetadataRestController {
       HttpServletResponse response) {
 
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
-    def result = metadataStore.retrieveParsed(recordType, source, id)
     def links = buildLinks(request, type, source, id)
+    def result = metadataStore.retrieveParsed(recordType, source, id)
     links.self = links.remove('parsed')
 
     if (result) {
