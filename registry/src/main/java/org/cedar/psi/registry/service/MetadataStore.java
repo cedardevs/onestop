@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 import reactor.netty.DisposableServer;
 import reactor.netty.http.server.HttpServer;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Map;
@@ -75,6 +76,7 @@ public class MetadataStore {
     return getRecordFromTable(storeName, id);
   }
 
+  @SuppressWarnings("unchecked")
   private <T extends SpecificRecord> T getRecordFromTable(String table, String key) {
     if (table == null || key == null) {
       return null;
@@ -107,6 +109,7 @@ public class MetadataStore {
             .route(RequestPredicates.GET("/db/{table}/{key}"), this::remoteRecordHandler));
   }
 
+  @Nonnull
   private Mono<ServerResponse> remoteRecordHandler(ServerRequest request) {
     try {
       var table = request.pathVariable("table");
@@ -122,6 +125,7 @@ public class MetadataStore {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private <T extends SpecificRecord> T getRemoteStoreState(StreamsMetadata metadata, String store, String id) {
     String url = "http://" + metadata.host() + ":" + metadata.port() + "/db/" + store + '/' + id;
     log.debug("getting remote avro from: " + url);
