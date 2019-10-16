@@ -31,6 +31,12 @@ deploy:
           topics:
             num-partitions: 2
             replication-factor: 1
+          cas:
+            prefixUrl: 'http://psi-dev-cas:8080/cas'
+          authorization:
+            roles:
+              ROLE_ADMIN:
+                - casuser
         # env values
         kafka.schema.registry.url: http://psi-dev-cp-schema-registry:8081
         kafka.bootstrap.servers: PLAINTEXT://psi-dev-cp-kafka:9092
@@ -58,6 +64,8 @@ deploy:
         helm: {}
     - name: psi-dev
       chartPath: helm/psi-dev
+      setValues:
+        cas.enabled: false
 profiles:
 - name: registry
   patches:
@@ -73,3 +81,11 @@ profiles:
     path: /build/artifacts/0
   - op: remove
     path: /deploy/helm/releases/0
+- name: cas
+  patches:
+  - op: replace
+    path: /deploy/helm/releases/0/setValues/features.cas
+    value: "true"
+  - op: replace
+    path: /deploy/helm/releases/2/setValues/cas.enabled
+    value: "true"

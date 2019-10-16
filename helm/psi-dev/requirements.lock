@@ -17,5 +17,5 @@ dependencies:
 - name: cas
   repository: file://../cas
   version: 0.1.0
-digest: sha256:eca656dc460fa8ab7df787095b31235d258847ed76c1bad98ee6ece890131622
-generated: "2019-10-10T16:33:01.553536-06:00"
+digest: sha256:0a5725c6c2d11a83dbf098a6d218c0912d7a5da2d0787c8e6dcc201dd19648a8
+generated: "2019-10-15T18:29:45.674985-06:00"

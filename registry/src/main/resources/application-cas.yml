@@ -1,24 +1,21 @@
 ---
+# Example of config that can be applied when the "cas" spring profile is active
+######
+
 # -- allows for better security logs for debugging --
 #logging.level.org.pac4j.springframework.web: DEBUG
 #logging.level.org.pac4j.core.engine: DEBUG
 #logging.level.org.pac4j.cas: DEBUG
 
-# -- point to the actual CAS server --
+# -- The prefix URL of the CAS server --
 # -- note: will require actually registering service in the future...
 #cas:
-#  prefixUrl: 'https://auth.ncdc.noaa.gov/cas'
+#  prefixUrl: 'https://my.cas.domain/cas'
 
-# -- point to the local dev CAS server built from the CAS Overlay --
-# -- note: uses our own baked-in JSON registry to know of this service
-cas:
-  prefixUrl: 'http://psi-dev-cas:8080/cas'
-
-authorization:
-  roles:
-    ROLE_ADMIN:
-      - casuser
-      - elliott.richerson
-
-
-
+# Configure the list of CAS users which have the ROLE_ADMIN
+# and therefore can access admin endpoints
+#authorization:
+#  roles:
+#    ROLE_ADMIN:
+#      - user.one
+#      - user.two

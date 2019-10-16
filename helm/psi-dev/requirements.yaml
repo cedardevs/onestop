@@ -18,3 +18,4 @@ dependencies:
 - name: cas
   version: ~0.1.0
   repository: file://../cas
+  condition: cas.enabled
