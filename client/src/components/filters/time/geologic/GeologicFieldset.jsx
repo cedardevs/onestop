@@ -117,7 +117,7 @@ const GeologicFieldset = ({
     <FilterFieldset legendText={legendText}>
       <div style={styleDate}>
         <YearField
-          name="end"
+          name="startyear"
           label="Start:"
           maxLength={14}
           value={start}
@@ -136,7 +136,7 @@ const GeologicFieldset = ({
       </div>
       <div style={styleDate}>
         <YearField
-          name="end"
+          name="endyear"
           label="End:"
           maxLength={14}
           value={end}

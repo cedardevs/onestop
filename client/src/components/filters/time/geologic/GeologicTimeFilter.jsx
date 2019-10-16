@@ -67,12 +67,12 @@ const styleLabel = {
 //
 const styleField = {
   width: '15em',
-  margin: 0,
-  padding: 0, // TODO only non-duplicate from DateFieldset // TODO sync up max length and width - they are just guesses for now
-  color: FilterColors.TEXT,
-  height: '2em',
-  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
-  borderRadius: '0.309em',
+  // margin: 0,
+  // padding: 0, // TODO only non-duplicate from DateFieldset // TODO sync up max length and width - they are just guesses for now
+  // color: FilterColors.TEXT,
+  // height: '2em',
+  // border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
+  // borderRadius: '0.309em',
 }
 
 const warningStyle = warning => {

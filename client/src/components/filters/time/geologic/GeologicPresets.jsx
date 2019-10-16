@@ -1,48 +1,70 @@
 import React, {useState, useEffect} from 'react'
+import Immutable from 'seamless-immutable' // TODO is immutable actually needed?
+
 import _ from 'lodash'
+
+import Select from 'react-select'
+
+import {FilterColors} from '../../../../style/defaultStyles'
 
 import FilterFieldset from '../../FilterFieldset'
 
 import {convertYearToCE, textToNumber} from '../../../../utils/inputUtils'
 
+const selectTheme = theme => {
+  return {
+    ...theme,
+    borderRadius: '0.309em',
+    colors: {
+      ...theme.colors,
+      primary: FilterColors.DARKEST,
+      primary75: FilterColors.DARK,
+      primary50: FilterColors.MEDIUM,
+      primary25: FilterColors.LIGHT,
+      danger: '#277CB2',
+      dangerLight: '#277CB2',
+    },
+  }
+}
+
 const ERAS = [
   // years defined in BP!
-  {
-    index: 0,
+  Immutable({
+    value: 0,
     label: 'Holocene',
     start: 11700,
     end: null,
-  },
-  {
-    index: 1,
+  }),
+  Immutable({
+    value: 1,
     label: 'Last Deglaciation',
     start: 19000,
     end: 11700,
-  },
-  {
-    index: 2,
+  }),
+  Immutable({
+    value: 2,
     label: 'Last Glacial Period',
     start: 115000,
     end: 11700,
-  },
-  {
-    index: 3,
+  }),
+  Immutable({
+    value: 3,
     label: 'Last Interglacial',
     start: 130000,
     end: 115000,
-  },
-  {
-    index: 4,
+  }),
+  Immutable({
+    value: 4,
     label: 'Pliocene',
     start: 5300000,
     end: 2600000,
-  },
-  {
-    index: 5,
+  }),
+  Immutable({
+    value: 5,
     label: 'Paleocene-Eocene Thermal Maximum (PETM)',
     start: 56000000,
     end: 55000000,
-  },
+  }),
 ]
 
 const GeologicPresets = ({
@@ -54,7 +76,7 @@ const GeologicPresets = ({
   styleField,
 }) => {
   const legendText = 'Eras'
-  const [ presetIndex, setPresetIndex ] = useState('')
+  const [ selectedPreset, setSelectedPreset ] = useState(null)
 
   useEffect(
     () => {
@@ -67,10 +89,10 @@ const GeologicPresets = ({
         )
       })
       if (matchingPreset) {
-        setPresetIndex(matchingPreset.index)
+        setSelectedPreset(matchingPreset)
       }
       else {
-        setPresetIndex('') // reset to "None" if nothing matches
+        setSelectedPreset(null) // reset to "None" if nothing matches
       }
     },
     [ startYear, endYear ]
@@ -78,46 +100,33 @@ const GeologicPresets = ({
 
   useEffect(
     () => {
-      let preset = ERAS[presetIndex]
-      if (preset) {
+      if (selectedPreset) {
         applyFilter(
-          textToNumber(convertYearToCE(`${preset.start}`, 'BP')),
-          textToNumber(convertYearToCE(`${preset.end}`, 'BP'))
+          textToNumber(convertYearToCE(`${selectedPreset.start}`, 'BP')),
+          textToNumber(convertYearToCE(`${selectedPreset.end}`, 'BP'))
         )
       }
     },
-    [ presetIndex ]
+    [ selectedPreset ]
   )
-
-  const options = [
-    <option key="era::none" value="">
-      (none)
-    </option>,
-  ]
-
-  _.each(ERAS, (preset, index) => {
-    options.push(
-      <option key={`era::${preset.label}`} value={index}>
-        {preset.label}
-      </option>
-    )
-  })
 
   return (
     <FilterFieldset legendText={legendText} styleFieldset={{marginBottom: 0}}>
       <form key="GeologicDateFilter::InputColumn::Presets" style={styleLayout}>
-        <select
+        <Select
           id="presets"
           name="presets"
-          value={presetIndex}
-          onChange={e => {
-            setPresetIndex(e.target.value)
+          aria-label="Era Preset Filter"
+          placeholder="Select Era Filter"
+          theme={selectTheme}
+          value={selectedPreset}
+          options={ERAS}
+          menuPlacement="auto"
+          styles={{control: styles => ({...styles, ...styleField})}}
+          onChange={preset => {
+            setSelectedPreset(preset)
           }}
-          style={styleField}
-          aria-label="Era Presets"
-        >
-          {options}
-        </select>
+        />
       </form>
     </FilterFieldset>
   )
