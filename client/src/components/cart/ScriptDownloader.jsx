@@ -9,6 +9,7 @@ import FlexRow from '../common/ui/FlexRow'
 import {granuleDownloadableLinks} from '../../utils/cartUtils'
 import {info_circle, SvgIcon} from '../common/SvgIcon'
 import ScriptDownloaderInfo from './ScriptDownloaderInfo'
+import * as util from '../../utils/resultUtils'
 
 const styleLinksButton = {
   fontSize: '1em',
@@ -121,7 +122,9 @@ export default class ScriptDownloader extends React.Component {
             const count = this.countLinks(curr.source, curr.protocol)
             const label = curr.source
             if (count > 0) {
-              acc.push({value: currIndex, label: label, count: count})
+              const functionalLabel =
+                label || util.identifyProtocol({linkProtocol: protocol}).label
+              acc.push({value: currIndex, label: functionalLabel, count: count})
             }
           }
           return acc

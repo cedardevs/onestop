@@ -177,6 +177,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] 20 granules are shown, with a "show more" button at the bottom to load the rest
     - [ ] each granule has a map with a point shown
     - [ ] each granule has FTP, HTTP, and several THREDDS links
+    - [ ] each granule has service links listed
     - [ ] granules in both 2016 and 2017 are listed
     - [ ] filter granules with search `177000*` and `1770000`. Both should match 2 files. Applied filter bubble should read `Filename Contains: [search term]`.
     - [ ] filter granules with search `177000` - should match zero files.
@@ -199,7 +200,23 @@ Follow these steps to confirm that core behavior is working as expected, as well
 1. Search `DEM`. One of those should be "Hilo, Hawaii 1/3 arc-second DEM"
     - Select this collection
     - [ ] On the Access Tab, there should be a 'Services' section. It has 3 categories with  map services (2 links), "Model Global Mosaic ArcGIS" image services (3 links), and "MHW Mosaic ArcGIS" image service (1 link) respectively.
-
+1. Search `Constructed` and look for the test data.
+    - Navigate through to the granules page.
+    - The granule "Test Accessible Access Protocols and Links" has 4 links
+    - [ ] for all links, the protocol name is displayed on mouse hover
+    - [ ] using a screen reader, or ANDI, verify the link titles match the format "[link text] protocol [protocol name] for [granule title]" if the link has a name rendered (2 links), or "[protocol name] for [granule title]" if the link has no name and uses the protocol as a fallback (2 links)
+        - One each of the HTTPS and Cloud links matches each format. The two different examples of protocols used verifies the badge works correctly for both letter abbreviations ("H") rendered with a span, and svg badges.
+    - Add this granule to the cart. Assuming it's the only granule in the cart, the select should have:
+        - Under HTTPS:
+            - [ ] Link with title (1 link)
+            - [ ] HTTP/HTTPS (1 link)
+        - Under CLOUD:
+            - [ ] Cloud link with title (1 link)
+            - [ ] Cloud File Access (1 link)
+1. Search `OKEANOS EXPLORER` and select the ROV dive-related multimedia and information collection. Go to the granules page.
+    - [ ] Granules allow you to play the preview video inline.
+    - [ ] each granule has service links "None available"
+    - [ ] If added to the cart, the granules do not show the preview video ability.
 1. In the search box:
     - [ ] Enter a search with blank text field (disallowed)
     - [ ] Enter a search starting with `*` (disallowed)
@@ -218,8 +235,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
 #### Data we should identify or add to the test set:
 
 - No time range (in normal fields)
-- Hazard image granules
-- OER videos
+- Hazard image granules (it is in the test set, add it to the checklist)
 
 #### Future Features?
 
