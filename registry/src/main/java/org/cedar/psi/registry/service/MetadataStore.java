@@ -137,8 +137,9 @@ public class MetadataStore {
   }
 
   private boolean thisHost(final StreamsMetadata metadata) {
-    log.debug("checking if " + metadata.hostInfo() + " is the local host: " + hostInfo);
-    return hostInfo.equals(metadata != null ? metadata.hostInfo() : null);
+    var otherHostInfo = metadata != null ? metadata.hostInfo() : null;
+    log.debug("checking if " + otherHostInfo + " is the local host: " + hostInfo);
+    return hostInfo.equals(otherHostInfo);
   }
 
   private SpecificAvroSerde<SpecificRecord> buildSerde(String schemaRegistryUrl) {
