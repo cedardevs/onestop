@@ -6,15 +6,11 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.apache.kafka.streams.state.StreamsMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StreamsStateService {
-  private static final Logger log = LoggerFactory.getLogger(org.cedar.psi.registry.service.StreamsStateService.class);
-
   private final KafkaStreams streamsApp;
 
   @Autowired

@@ -1,7 +1,6 @@
 package org.cedar.psi.registry.service;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import org.apache.avro.Schema;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.state.HostInfo;
@@ -28,7 +27,6 @@ import reactor.netty.http.server.HttpServer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.IOException;
 import java.util.Map;
 
 import static org.cedar.psi.common.constants.Topics.inputStore;
@@ -67,17 +65,17 @@ public class MetadataStore {
     this.server.disposeNow();
   }
 
-  public ParsedRecord retrieveParsed(RecordType type, String source, String id) throws IOException {
+  public ParsedRecord retrieveParsed(RecordType type, String source, String id) {
     String storeName = type != null ? parsedStore(type) : null;
-    return getRecordFromTable(storeName, id, ParsedRecord.class);
+    return getRecordFromTable(storeName, id);
   }
 
-  public AggregatedInput retrieveInput(RecordType type, String source, String id) throws IOException {
+  public AggregatedInput retrieveInput(RecordType type, String source, String id) {
     String storeName = type != null && id != null ? inputStore(type, source) : null;
-    return getRecordFromTable(storeName, id, AggregatedInput.class);
+    return getRecordFromTable(storeName, id);
   }
 
-  private <T extends SpecificRecord> T getRecordFromTable(String table, String key, Class<T> type) throws IOException {
+  private <T extends SpecificRecord> T getRecordFromTable(String table, String key) {
     if (table == null || key == null) {
       return null;
     }
@@ -88,7 +86,7 @@ public class MetadataStore {
         return store != null ? (T) store.get(key) : null;
       }
       else {
-        return (T) getRemoteStoreState(metadata, table, key, AggregatedInput.getClassSchema());
+        return (T) getRemoteStoreState(metadata, table, key);
       }
     }
     catch (Exception e) {
@@ -113,7 +111,7 @@ public class MetadataStore {
     try {
       var table = request.pathVariable("table");
       var key = request.pathVariable("key");
-      var record = getRecordFromTable(table, key, SpecificRecord.class);
+      var record = getRecordFromTable(table, key);
       var bytes = record != null ? serde.serializer().serialize(null, record) : null;
       return bytes != null ?
           ServerResponse.ok().contentLength(bytes.length).syncBody(bytes) :
@@ -124,7 +122,7 @@ public class MetadataStore {
     }
   }
 
-  private <T extends SpecificRecord> T getRemoteStoreState(StreamsMetadata metadata, String store, String id, Schema schema) throws IOException {
+  private <T extends SpecificRecord> T getRemoteStoreState(StreamsMetadata metadata, String store, String id) {
     String url = "http://" + metadata.host() + ":" + metadata.port() + "/db/" + store + '/' + id;
     log.debug("getting remote avro from: " + url);
     try {
