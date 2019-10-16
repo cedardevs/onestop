@@ -22,8 +22,6 @@ dependencies {
   implementation("org.codehaus.groovy:groovy-json")
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
-  implementation("io.undertow:undertow-core")
-  implementation("io.undertow:undertow-servlet")
   implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
   implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
   implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
