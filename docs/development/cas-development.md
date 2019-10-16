@@ -22,7 +22,8 @@ During our development, we discovered that the CAS [REST Protocol](https://apere
 ```
 dependencies {
     ...
-    compile "org.apereo.cas:cas-server-support-rest:${project.'cas.version'}"
+    // support CAS REST Protocol
+    compile "org.apereo.cas:cas-server-support-rest:${casServerVersion}"
     ...
 }
 ```
@@ -33,7 +34,8 @@ Regardless of the federal mechanism that will be used to register CAS client ser
 ```
 dependencies {
     ...
-    compile "org.apereo.cas:cas-server-support-json-service-registry:${project.'cas.version'}"
+    // support registering services via json
+    compile "org.apereo.cas:cas-server-support-json-service-registry:${casServerVersion}"
     ...
 }
 ```
@@ -42,7 +44,13 @@ dependencies {
 The CAS overlay project's `etc/cas/config/cas.properties` is an important configuration built into the CAS server image. See the example additions to this file below which configure the JSON Registry, Tomcat behind a proxy (we leverage an [NGINX Kubernetes Ingress](https://github.com/kubernetes/ingress-nginx)), and additional endpoints used for development:
 
 ```
-...
+# psi-dev-cas is our k8s CAS service reference for internal traffic
+cas.server.name=http://psi-dev-cas:8080
+cas.server.prefix=${cas.server.name}/cas
+
+logging.config: file:/etc/cas/config/log4j2.xml
+
+# cas.authn.accept.users=
 
 # initialize registry from JSON files
 cas.serviceRegistry.json.location=file:/etc/cas/services
@@ -53,8 +61,9 @@ server.port=8080
 server.ssl.enabled=false
 cas.server.tomcat.http.enabled=false
 cas.server.tomcat.httpProxy.enabled=true
+cas.server.tomcat.httpProxy.protocol=HTTP/1.1
 cas.server.tomcat.httpProxy.secure=true
-cas.server.tomcat.httpProxy.scheme=https
+cas.server.tomcat.httpProxy.scheme=http
 
 # admin endpoints
 management.endpoints.web.exposure.include=status,health,info
@@ -78,7 +87,7 @@ If the JSON Registry is included and and configured properly, the `etc/cas/servi
 ```
 {
     "@class" : "org.apereo.cas.services.RegexRegisteredService",
-    "serviceId" : "^http://localhost/registry/login/cas",
+    "serviceId" : "^http",
     "name" : "PSI Registry",
     "description": "The PSI Registry uses CAS Server to add authentication to publishing endpoints.",
     "id" : 19991,
@@ -86,7 +95,9 @@ If the JSON Registry is included and and configured properly, the `etc/cas/servi
 }
 ```
 
-The `serviceId` here should match the `service` in the client's CAS configuration. A separate registration and ids would be needed for a service deployed to a different environment. For example, if you were developing and testing authentication on `sciapps.colorado.edu`, you might use `"serviceId" : "^http://sciapps.colorado.edu/registry/login/cas".
+For development CAS, we loosely define our `serviceId` regex to be anything starting with `^http`, so that we don't need to worry about CAS denying new development services or changing endpoints.
+
+Ideally (in production -- if and when they decide to use a more strict registration enforcement), `serviceId` here should match the `service` in the client's CAS configuration. A separate registration and ids would be needed for a service deployed to a different environment. For example, if you were developing and testing authentication on `sciapps.colorado.edu`, you might use `"serviceId" : "^http://sciapps.colorado.edu/registry/login/cas".
 
 
 ### Building Development CAS Server from Overlay
