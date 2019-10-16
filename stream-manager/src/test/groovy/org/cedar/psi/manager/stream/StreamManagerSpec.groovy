@@ -2,6 +2,7 @@ package org.cedar.psi.manager.stream
 
 import groovy.json.JsonOutput
 import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
@@ -184,6 +185,19 @@ class StreamManagerSpec extends Specification {
     record.key() == key
     record.value() instanceof ParsedRecord
     record.value().errors.size() == 1
+  }
+
+  def "streams app throws exception when transitioning to bad state #state"() {
+    def streamsApp = StreamManager.buildStreamsApp(new ManagerConfig())
+
+    when:
+    streamsApp.setState(state)
+
+    then:
+    thrown(IllegalStateException)
+
+    where:
+    state << [KafkaStreams.State.NOT_RUNNING, KafkaStreams.State.ERROR]
   }
 
   private static inputDefaults = [

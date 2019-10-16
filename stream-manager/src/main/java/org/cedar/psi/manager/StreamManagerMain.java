@@ -25,6 +25,8 @@ public class StreamManagerMain {
     }
 
     log.info("Starting stream with bootstrap servers {}", appConfig.bootstrapServers());
-    StreamManager.buildAndStartStream(appConfig);
+    var streamsApp = StreamManager.buildStreamsApp(appConfig);
+    Runtime.getRuntime().addShutdownHook(new Thread(streamsApp::close));
+    streamsApp.start();
   }
 }

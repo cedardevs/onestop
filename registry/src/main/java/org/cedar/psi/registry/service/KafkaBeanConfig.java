@@ -30,6 +30,8 @@ import java.util.concurrent.ExecutionException;
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
+import static org.apache.kafka.streams.KafkaStreams.State.ERROR;
+import static org.apache.kafka.streams.KafkaStreams.State.NOT_RUNNING;
 import static org.apache.kafka.streams.StreamsConfig.*;
 import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID;
 
@@ -95,28 +97,23 @@ public class KafkaBeanConfig {
     return new HostInfo(host, port);
   }
 
-  @Bean(destroyMethod = "close")
+  @Bean(initMethod = "start", destroyMethod = "close")
   KafkaStreams streamsApp(Properties streamsConfig, TopicInitializer topicInitializer) throws InterruptedException, ExecutionException {
-    var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
-    var app = new KafkaStreams(streamsTopology, streamsConfig);
     topicInitializer.initialize();
 
     var killSwitch = new CompletableFuture<KafkaStreams.State>();
-    app.setStateListener((newState, oldState) -> {
-      if(killSwitch.isDone()) {
-        return;
-      }
-      if(newState == KafkaStreams.State.ERROR || newState == KafkaStreams.State.NOT_RUNNING) {
-        killSwitch.complete(newState);
-      }
-    });
-
-    app.start();
-
     killSwitch.thenAcceptAsync((state) -> {
       throw new IllegalStateException("KafkaStreams app entered bad state: " + state);
     });
+    KafkaStreams.StateListener killSwitchListener = (newState, oldState) -> {
+      if (!killSwitch.isDone() && (newState == ERROR || newState == NOT_RUNNING)) {
+        killSwitch.complete(newState);
+      }
+    };
 
+    var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
+    var app = new KafkaStreams(streamsTopology, streamsConfig);
+    app.setStateListener(killSwitchListener);
     return app;
   }
 

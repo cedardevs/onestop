@@ -23,41 +23,30 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
+import static org.apache.kafka.streams.KafkaStreams.State.ERROR;
+import static org.apache.kafka.streams.KafkaStreams.State.NOT_RUNNING;
 import static org.apache.kafka.streams.StreamsConfig.*;
 import static org.cedar.psi.common.constants.Topics.*;
 
 public class StreamManager {
   private static final Logger log = LoggerFactory.getLogger(StreamManager.class);
 
-  public static void buildAndStartStream(ManagerConfig appConfig) {
-    var streams = buildStreamsApp(appConfig);
-    var stateFuture = new CompletableFuture<>();
-    streams.setStateListener((newState, oldState) -> {
-      log.info("State changing to {} from {}", newState, oldState);
-      if(stateFuture.isDone()) {
-        return;
-      }
-
-      if(newState == KafkaStreams.State.NOT_RUNNING || newState == KafkaStreams.State.ERROR) {
-        stateFuture.complete(newState);
-      }
-    });
-
-    //Starting stream
-    streams.start();
-
-    stateFuture.thenAcceptAsync((state) -> {
+  public static KafkaStreams buildStreamsApp(ManagerConfig config) {
+    var killSwitch = new CompletableFuture<KafkaStreams.State>();
+    killSwitch.thenAcceptAsync((state) -> {
       throw new IllegalStateException("KafkaStreams app entered bad state: " + state);
     });
+    KafkaStreams.StateListener killSwitchListener = (newState, oldState) -> {
+      if (!killSwitch.isDone() && (newState == ERROR || newState == NOT_RUNNING)) {
+        killSwitch.complete(newState);
+      }
+    };
 
-    // Add shutdown hook to respond to SIGTERM and gracefully close Kafka Streams
-    Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
-  }
-
-  private static KafkaStreams buildStreamsApp(ManagerConfig config) {
     var topology = buildTopology();
     var streamsConfig = streamsConfig(StreamsApps.MANAGER_ID, config);
-    return new KafkaStreams(topology, streamsConfig);
+    var app = new KafkaStreams(topology, streamsConfig);
+    app.setStateListener(killSwitchListener);
+    return app;
   }
 
   static Topology buildTopology() {
