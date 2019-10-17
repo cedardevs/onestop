@@ -1,13 +1,4 @@
 import React, {useState, useEffect} from 'react'
-import _ from 'lodash'
-import {FilterColors} from '../../../style/defaultStyles'
-
-const styleInputHidden = {
-  visibility: 'hidden',
-  width: '1px',
-  margin: 0,
-  padding: 0,
-}
 
 // do not call this directly, it is expected to be managed by RadioButtonSet
 const RadioButton = ({
@@ -16,18 +7,21 @@ const RadioButton = ({
   id,
   name,
   label,
+  description,
   value,
   setSelection,
-  labelGetsFocus,
-  styleLabel,
-  styleInput,
-  description,
   ariaExpanded,
+  styleContainer,
+  styleLabel,
+  styleLabelSelected,
+  styleLabelFocused,
+  styleInput,
 }) => {
   const [ focusing, setFocusing ] = useState(false)
-  const [ checked, setChecked ] = useState(selected) // selected is boolean
+  const [ checked, setChecked ] = useState(selected)
 
   useEffect(
+    // update internal checked value from props
     () => {
       setChecked(selected)
     },
@@ -44,18 +38,17 @@ const RadioButton = ({
   }
 
   const styleLabelApplied = {
-    ...{display: 'inline-block'}, //, outline: 'none'},
-    ...styleLabel,
-    ...(labelGetsFocus && focusing
-      ? {
-          textDecoration: 'underline',
-        }
-      : {}),
+    ...{display: 'inline-block'},
+    ...(styleLabel ? styleLabel : {}),
+    ...(focusing && styleLabelFocused ? styleLabelFocused : {}),
+    ...(checked && styleLabelSelected ? styleLabelSelected : {}),
   }
 
-  // TODO labelGetsFocus overloaded to hide input TODO also figure out why this TODO isn't displaying correctly in my editor
   return (
-    <div onClick={onClick} style={{display: 'flex'}}>
+    <div
+      onClick={onClick}
+      style={{...{display: 'flex'}, ...(styleContainer ? styleContainer : {})}}
+    >
       <label
         htmlFor={id}
         style={styleLabelApplied}

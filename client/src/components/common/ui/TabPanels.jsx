@@ -1,6 +1,59 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
+
 import RadioButtonSet from '../input/RadioButtonSet'
+
+import {FilterColors} from '../../../style/defaultStyles'
+import {consolidateStyles} from '../../../utils/styleUtils'
+
+const styleTabPanel = {justifyContent: 'center'}
+
+const styleTab = {
+  cursor: 'pointer',
+  display: 'inline-block',
+  backgroundColor: '#277CB2',
+  padding: '0.309em 0.618em',
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  borderColor: FilterColors.DARK,
+  color: FilterColors.INVERSE_TEXT,
+}
+
+const styleTabSelected = {
+  backgroundColor: FilterColors.DARK,
+}
+const styleTabFocused = {
+  textDecoration: 'underline',
+}
+
+const styleTabFirst = isFirst => {
+  return isFirst
+    ? {
+        borderRight: '0',
+        borderRadius: '0.309em 0 0 0.309em',
+      }
+    : {}
+}
+
+const styleTabLast = isLast => {
+  return isLast ? {borderRadius: '0 0.309em 0.309em 0'} : {}
+}
+
+const styleTabMiddle = isMiddle => {
+  return isMiddle
+    ? {
+        borderRight: '0',
+      }
+    : {}
+}
+
+const styleHideInput = {
+  // keeps hidden without messing up 508 considerations
+  // in practice, the input will still have focus, but can be used to style the label when combined with styleLabelFocused on the option
+  opacity: 0,
+  position: 'fixed',
+  width: 0,
+}
 
 /*
 `options` should be an array. Each option in the array should be a map with label, value, description and a view. (Same as RadioButtonSet requirements, plus `view`.)
@@ -9,14 +62,46 @@ props.defaultSelection is the default value, so no need to wire up things to whe
 */
 const TabPanels = ({options, name, defaultSelection, onSelectionChanged}) => {
   const [ selectedValue, setSelectedValue ] = useState(null)
+  // const [ internalOptions, setInternalOptions ] = useState([])
+
+  // useEffect(
+  //   ()=>{
+  //     // expand basic radio options to include tab-specific styling instructions
+  //     setInternalOptions(
+  let internalOptions = _.map(options, (option, index) => {
+    const first = index == 0
+    const last = index == options.length - 1
+    const middle = !first && !last
+    return {
+      ...option,
+      ...{
+        styleLabel: consolidateStyles(
+          styleTab,
+          styleTabFirst(first),
+          styleTabMiddle(middle),
+          styleTabLast(last)
+        ),
+        // {...styleTab,
+        //       ...(first ? styleTabFirst : {}),
+        //       ...(middle ? styleTabMiddle : {}),
+        //       ...(last ? styleTabLast : {}),},
+        styleLabelSelected: styleTabSelected,
+        styleLabelFocused: styleTabFocused,
+        styleInput: styleHideInput,
+      },
+    }
+  })
+  //   )
+  //   }, [options]
+  // )
 
   const onSelectionChange = selectedValue => {
     let selected = _.find(options, (option, index) => {
       return option.value == selectedValue
     })
     if (selected) {
-      setSelectedValue(selected.value)
-      onSelectionChanged(selected.value)
+      setSelectedValue(selected.value) // set primary control for which tab is selected
+      onSelectionChanged(selected.value) // callback for side effects
     }
   }
 
@@ -38,10 +123,15 @@ const TabPanels = ({options, name, defaultSelection, onSelectionChanged}) => {
     <div>
       <RadioButtonSet
         name={name}
-        options={options}
+        options={internalOptions}
         onSelectionChange={onSelectionChange}
-        tabPanel={true}
+        showLabelsOnly={true}
+        ariaExpanded={selected => {
+          return selected
+        }}
         defaultSelection={defaultSelection}
+        stylePanel={styleTabPanel}
+        interItemPadding={0}
       />
       {views}
     </div>
