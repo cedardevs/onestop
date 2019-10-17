@@ -1,0 +1,21 @@
+---
+# Example of config that can be applied when the "cas" spring profile is active
+######
+
+# -- allows for better security logs for debugging --
+#logging.level.org.pac4j.springframework.web: DEBUG
+#logging.level.org.pac4j.core.engine: DEBUG
+#logging.level.org.pac4j.cas: DEBUG
+
+# -- The prefix URL of the CAS server --
+# -- note: will require actually registering service in the future...
+#cas:
+#  prefixUrl: 'https://my.cas.domain/cas'
+
+# Configure the list of CAS users which have the ROLE_ADMIN
+# and therefore can access admin endpoints
+#authorization:
+#  roles:
+#    ROLE_ADMIN:
+#      - user.one
+#      - user.two
