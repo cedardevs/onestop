@@ -7,10 +7,38 @@ One of the subcommands, `scdr-files`, was added to demonstrate how the OneStop A
 Find the OneStop OpenAPI spec here- https://app.swaggerhub.com/apis/cedardevs/one-stop_search_api/2.0.0
 The `onstop-cli/openapi.go` file was generated using this project- https://github.com/danielgtaylor/openapi-cli-generator
 
+## Install and run using a docker container (go not required locally)
+
+`docker build -t cedardevs/onestop-cli ./cli`
+
+And then run commands after like so -
+
+`docker run cedardevs/onestop-cli <CMD>`
+
+e.g.
+
+`docker run cedardevs/onestop-cli ./onestop-cli searchcollection --q="satellite"`
+
 ## Requirements
 Install go - https://golang.org/doc/install
 
 ## Quick start
+
+Quickly install and use -
+`go get  github.com/cedardevs/onestop/cli`
+
+`cli --help`
+
+to get from branch
+
+`go get  github.com/cedardevs/onestop/cli@1020-OneStopCLI`
+
+or use the image -
+
+`docker build -t onestop-cli ./cli`
+`docker run `
+
+or run it locally -
 
 `cd cli`
 
@@ -18,11 +46,10 @@ Install go - https://golang.org/doc/install
 
 `go run . --help`
 
-or
+or install it locally -
+`cd cli`
 
 `go install`
-
-Go installs the tool under $GOBIN/cli. To use it, substitute `go run .` with `cli`
 
 `cli --help`
 
@@ -67,7 +94,7 @@ Search collections with a geometry filter -
 
 Complex collections search with a query text, spatial, and temporal filter -
 
-`cli  searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --q="satellite"`
+`cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --q="satellite"`
 
 `cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522,  queries[]{type:queryText, value:satellite}  --verbose`
 
