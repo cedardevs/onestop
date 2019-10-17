@@ -27,16 +27,18 @@ apply plugin: 'groovy'
 subprojects {
 
   project.ext {
-    schemasVersion = '0.4.0'
+    schemasVersion = '0.4.1'
     esVersion = '6.8.2'
     spockVersion = '1.2-groovy-2.5'
     testContainersVersion = '1.10.7'
-    groovyVersion = '2.5.5'
+    groovyVersion = '2.5.8'
     openSAMLVersion = '3.4.3'
     logbackVersion = '1.2.3'
     javaxServletAPIVersion = '4.0.1'
     junitVersion = '4.12'
     auth0JavaJWT = '3.4.1'
+    confluentVersion = '5.3.1'
+    kafkaVersion = '2.3.0'
   }
 
   // URL for the source code under version control from which this container image was built.
@@ -70,6 +72,8 @@ subprojects {
     repositories {
       mavenCentral()
       maven { url "https://repo.spring.io/milestone" }
+      maven { url 'https://packages.confluent.io/maven/' }
+      maven { url "https://www.jitpack.io" }
     }
 
     // override versions of dependencies with vulnerabilities
@@ -170,7 +174,7 @@ gradle.taskGraph.beforeTask { Task task ->
 gradle.taskGraph.afterTask { Task task, TaskState state ->
   Instant then = task.ext.startTime as Instant
   Instant now = Instant.now()
-  println task.name + " took " + Duration.between(then, now).toSeconds() + " seconds"
+  println task.name + " took " + Duration.between(then, now).getSeconds() + " seconds"
 }
 
 task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
