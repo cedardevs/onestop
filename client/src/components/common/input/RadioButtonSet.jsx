@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import _ from 'lodash'
 
 import FlexRow from '../ui/FlexRow'
@@ -7,9 +7,9 @@ import RadioButton from './RadioButton'
 
 import {Key} from '../../../utils/keyboardUtils'
 
-const styleHideFocus = {
-  outline: 'none', // The focused state is being passed to a child component to display
-}
+// const styleHideFocus = {
+//   outline: 'none', // The focused state is being passed to a child component to display
+// }
 
 const styleRadioTab = {
   cursor: 'pointer',
@@ -28,9 +28,9 @@ const stylePanel = {
   justifyContent: 'center',
 }
 
-const styleTabFocused = {
-  textDecoration: 'underline',
-}
+// // const styleTabFocused = {
+//   textDecoration: 'underline',
+// }
 
 const styleTabSelected = {
   backgroundColor: FilterColors.DARK,
@@ -75,7 +75,6 @@ const RadioButtonSet = ({
   const DEFAULT = defaultSelection || options[0].value
 
   const [ selectedValue, setSelectedValue ] = useState(DEFAULT)
-  const [ focus, setFocus ] = useState(null)
 
   useEffect(
     () => {
@@ -83,39 +82,6 @@ const RadioButtonSet = ({
     },
     [ selectedValue ]
   )
-
-  const onKeyUp = e => {
-    if (e.keyCode === Key.LEFT) {
-      e.stopPropagation()
-      let index = _.findIndex(options, function(option){
-        return option.value == selectedValue
-      })
-      if (index > 0) setSelectedValue(options[index - 1].value)
-    }
-    if (e.keyCode === Key.RIGHT) {
-      e.stopPropagation()
-      let index = _.findIndex(options, function(option){
-        return option.value == selectedValue
-      })
-      if (index < options.length - 1) setSelectedValue(options[index + 1].value)
-    }
-    // TODO doesn't currently allow vertical orientation
-    // TODO suppress default on up/down (weird scrolling behavior? also double check space)
-  }
-
-  const onKeyDown = e => {
-    // prevent the default behavior for control keys
-    const controlKeys = [ Key.SPACE, Key.ENTER ]
-    if (
-      !e.metaKey &&
-      !e.shiftKey &&
-      !e.ctrlKey &&
-      !e.altKey &&
-      controlKeys.includes(e.keyCode)
-    ) {
-      e.preventDefault()
-    }
-  }
 
   const radioButtons = []
   _.each(options, (option, index) => {
@@ -131,8 +97,8 @@ const RadioButtonSet = ({
     const styleLabel = tabPanel
       ? {
           ...styleRadioTab,
-          ...(selected ? styleTabSelected : {}),
-          ...(focus && selected ? styleTabFocused : {}),
+          ...(selected ? styleTabSelected : {}), // TODO migrate tab styling to parameters passed by TabPanels
+          // ...(focus && selected ? styleTabFocused : {}),
           ...(first ? styleTabFirst : {}),
           ...(middle ? styleTabMiddle : {}),
           ...(last ? styleTabLast : {}),
@@ -160,22 +126,12 @@ const RadioButtonSet = ({
         setSelection={setSelectedValue}
         styleInput={styleInput}
         styleLabel={styleLabel}
-        setFocusing={setFocus}
-        focusing={focus}
       />
     )
   })
 
   return (
-    <div
-      style={styleHideFocus}
-      onKeyDown={onKeyDown}
-      onKeyUp={onKeyUp}
-      tabIndex={0}
-      onBlur={() => setFocus(false)}
-      onFocus={() => setFocus(true)}
-    >
-      {' '}
+    <div>
       <FlexRow style={stylePanel} items={radioButtons} />
     </div>
   )
