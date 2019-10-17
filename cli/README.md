@@ -15,7 +15,7 @@ And then run commands after like so -
 
 `docker run cedardevs/onestop-cli <CMD>`
 
-e.g.
+For example- 
 
 `docker run cedardevs/onestop-cli ./onestop-cli searchcollection --q="satellite"`
 
