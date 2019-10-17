@@ -4,6 +4,7 @@ export const consolidateStyles = (...args) => {
   return _.reduce(
     args,
     (result, arg) => {
+      if (arg == null) return result
       return {...result, ...arg}
     },
     {}

@@ -4,11 +4,21 @@ import _ from 'lodash'
 import FlexRow from '../ui/FlexRow'
 import RadioButton from './RadioButton'
 
+import {consolidateStyles} from '../../../utils/styleUtils'
+
 const stylePanelDefault = {
   margin: '0.309em auto',
   padding: '0.309em',
 }
 
+const styleContainer = (index, interItemPadding) => {
+  const first = index == 0
+  return !first
+    ? interItemPadding != null
+      ? {marginLeft: interItemPadding}
+      : {marginLeft: '0.618em'}
+    : {}
+}
 /*
 `options` should be an array. Each option in the array should be a map with label, value, and description.
 
@@ -21,7 +31,7 @@ const RadioButtonSet = ({
   options,
   onSelectionChange,
   showLabelsOnly,
-  ariaExpanded, // function (selected) => ...
+  ariaExpanded, // function (selected) => true/false
   defaultSelection,
   stylePanel,
   interItemPadding, // allows override of default margin between items
@@ -42,8 +52,6 @@ const RadioButtonSet = ({
     const id = `RadioButton${name}${option.value}`
     const selected = selectedValue == option.value
 
-    const first = index == 0 // for interItemPadding
-
     radioButtons.push(
       <RadioButton
         key={`RadioButton::${name}::${option.value}`}
@@ -55,32 +63,19 @@ const RadioButtonSet = ({
         selected={selected}
         ariaExpanded={ariaExpanded ? ariaExpanded(selected) : null}
         setSelection={setSelectedValue}
-        styleContainer={
-          !first ? interItemPadding != null ? (
-            {marginLeft: interItemPadding}
-          ) : (
-            {marginLeft: '0.618em'}
-          ) : (
-            {}
-          )
-        }
-        styleLabel={option.styleLabel ? option.styleLabel : {}}
-        styleLabelSelected={
-          option.styleLabelSelected ? option.styleLabelSelected : {}
-        }
-        styleLabelFocused={
-          option.styleLabelFocused ? option.styleLabelFocused : {}
-        }
-        styleInput={option.styleInput ? option.styleInput : {}}
+        styleContainer={styleContainer(index, interItemPadding)}
+        styleLabel={option.styleLabel}
+        styleLabelSelected={option.styleLabelSelected}
+        styleLabelFocused={option.styleLabelFocused}
+        styleInput={option.styleInput}
       />
-      // TODO just pass through option.styleLabel directly without ?: operator and let RadioButton handle it?
     )
   })
 
   return (
     <div>
       <FlexRow
-        style={{...stylePanelDefault, ...(stylePanel ? stylePanel : {})}}
+        style={consolidateStyles(stylePanelDefault, stylePanel)}
         items={radioButtons}
       />
     </div>

@@ -1,5 +1,11 @@
 import React, {useState, useEffect} from 'react'
 
+import {consolidateStyles} from '../../../utils/styleUtils'
+
+const styleContainerDefault = {display: 'flex'}
+
+const styleLabelDefault = {display: 'inline-block'}
+
 // do not call this directly, it is expected to be managed by RadioButtonSet
 const RadioButton = ({
   selected,
@@ -37,18 +43,20 @@ const RadioButton = ({
     setSelection(value)
   }
 
-  const styleLabelApplied = {
-    ...{display: 'inline-block'},
-    ...(styleLabel ? styleLabel : {}),
-    ...(focusing && styleLabelFocused ? styleLabelFocused : {}),
-    ...(checked && styleLabelSelected ? styleLabelSelected : {}),
-  }
+  const styleLabelApplied = consolidateStyles(
+    styleLabelDefault,
+    styleLabel,
+    focusing && styleLabelFocused ? styleLabelFocused : null,
+    checked && styleLabelSelected ? styleLabelSelected : null
+  )
+
+  const styleContainerApplied = consolidateStyles(
+    styleContainerDefault,
+    styleContainer
+  )
 
   return (
-    <div
-      onClick={onClick}
-      style={{...{display: 'flex'}, ...(styleContainer ? styleContainer : {})}}
-    >
+    <div onClick={onClick} style={styleContainerApplied}>
       <label
         htmlFor={id}
         style={styleLabelApplied}

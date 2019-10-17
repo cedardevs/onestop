@@ -22,6 +22,7 @@ const styleTab = {
 const styleTabSelected = {
   backgroundColor: FilterColors.DARK,
 }
+
 const styleTabFocused = {
   textDecoration: 'underline',
 }
@@ -32,11 +33,11 @@ const styleTabFirst = isFirst => {
         borderRight: '0',
         borderRadius: '0.309em 0 0 0.309em',
       }
-    : {}
+    : null
 }
 
 const styleTabLast = isLast => {
-  return isLast ? {borderRadius: '0 0.309em 0.309em 0'} : {}
+  return isLast ? {borderRadius: '0 0.309em 0.309em 0'} : null
 }
 
 const styleTabMiddle = isMiddle => {
@@ -44,7 +45,7 @@ const styleTabMiddle = isMiddle => {
     ? {
         borderRight: '0',
       }
-    : {}
+    : null
 }
 
 const styleHideInput = {
@@ -62,12 +63,8 @@ props.defaultSelection is the default value, so no need to wire up things to whe
 */
 const TabPanels = ({options, name, defaultSelection, onSelectionChanged}) => {
   const [ selectedValue, setSelectedValue ] = useState(null)
-  // const [ internalOptions, setInternalOptions ] = useState([])
 
-  // useEffect(
-  //   ()=>{
-  //     // expand basic radio options to include tab-specific styling instructions
-  //     setInternalOptions(
+  // expand basic radio options to include tab-specific styling instructions
   let internalOptions = _.map(options, (option, index) => {
     const first = index == 0
     const last = index == options.length - 1
@@ -81,19 +78,12 @@ const TabPanels = ({options, name, defaultSelection, onSelectionChanged}) => {
           styleTabMiddle(middle),
           styleTabLast(last)
         ),
-        // {...styleTab,
-        //       ...(first ? styleTabFirst : {}),
-        //       ...(middle ? styleTabMiddle : {}),
-        //       ...(last ? styleTabLast : {}),},
         styleLabelSelected: styleTabSelected,
         styleLabelFocused: styleTabFocused,
         styleInput: styleHideInput,
       },
     }
   })
-  //   )
-  //   }, [options]
-  // )
 
   const onSelectionChange = selectedValue => {
     let selected = _.find(options, (option, index) => {
