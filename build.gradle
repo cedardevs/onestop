@@ -88,7 +88,7 @@ subprojects {
 
         if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
           if (details.requested.version.startsWith('2.9') && details.requested.version <= '2.9.9') {
-            details.useVersion '2.9.10'
+            details.useVersion '2.9.9.3'
             details.because 'fixes vulnerability in 2.9.9 and before'
           }
         }
@@ -163,18 +163,6 @@ subprojects {
         }
       }
     }
-}
-
-import java.time.*
-
-gradle.taskGraph.beforeTask { Task task ->
-  task.ext.setProperty("startTime", Instant.now())
-}
-
-gradle.taskGraph.afterTask { Task task, TaskState state ->
-  Instant then = task.ext.startTime as Instant
-  Instant now = Instant.now()
-  println task.name + " took " + Duration.between(then, now).getSeconds() + " seconds"
 }
 
 task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
