@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 
 const styleYear = {
   width: '2.618em',
@@ -16,6 +17,8 @@ const YearField = props => {
     styleLabel,
     styleField,
     maxLength,
+    placeholder,
+    ariaPlaceholder,
   } = props
   const styleFieldApplied = {
     ...styleYear,
@@ -35,8 +38,10 @@ const YearField = props => {
         type="text"
         id={id}
         name={id}
-        placeholder="YYYY"
-        aria-placeholder="Y Y Y Y"
+        placeholder={_.isEmpty(placeholder) ? 'YYYY' : placeholder}
+        aria-placeholder={
+          _.isEmpty(ariaPlaceholder) ? 'Y Y Y Y' : ariaPlaceholder
+        }
         value={value}
         onChange={onChange}
         maxLength={maxLength | 4}
