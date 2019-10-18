@@ -26,11 +26,19 @@ const FormSeparator = ({text}) => {
     <FlexRow
       style={styleSeparator}
       items={[
-        <hr key="SEPARATOR::BEFORE" style={styleLineSeparator} />,
+        <hr
+          aria-hidden={true}
+          key="SEPARATOR::BEFORE"
+          style={styleLineSeparator}
+        />,
         <div key="SEPARATOR::TEXT" style={styleText}>
           {text}
         </div>,
-        <hr key="SEPARATOR::AFTER" style={styleLineSeparator} />,
+        <hr
+          aria-hidden={true}
+          key="SEPARATOR::AFTER"
+          style={styleLineSeparator}
+        />,
       ]}
     />
   )

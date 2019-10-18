@@ -26,7 +26,7 @@ const styleLabel = {
 }
 
 const styleField = {
-  width: '7em', // TODO only non-duplicate from DateFieldset // TODO sync up max length and width - they are just guesses for now
+  width: '8em', // only non-duplicate from DateFieldset
   color: FilterColors.TEXT,
   height: '2em',
   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
