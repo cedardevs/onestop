@@ -17,8 +17,6 @@ const FORMAT_OPTIONS = [
   {
     value: 'CE',
     label: <abbr title="Current Era">CE</abbr>,
-    // label: 'CE',
-    // description: 'Current Era',
   },
   {
     value: 'BP',
@@ -28,8 +26,6 @@ const FORMAT_OPTIONS = [
         <abbr title="Current Era">CE</abbr>)
       </span>
     ),
-    // label: 'BP (0 = 1950 CE)',
-    // description: 'Before Present',
   },
 ]
 

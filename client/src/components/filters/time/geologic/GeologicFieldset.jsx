@@ -28,7 +28,6 @@ const styleLabel = {
 const styleField = {
   width: '7em', // TODO only non-duplicate from DateFieldset // TODO sync up max length and width - they are just guesses for now
   color: FilterColors.TEXT,
-  // height: '100%', // TODO is getting rid of styleWrapper this way ok?
   height: '2em',
   border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
@@ -48,7 +47,7 @@ const GeologicFieldset = ({
   updateEndYear,
   format,
 }) => {
-  const legendText = 'Geologic' //`${_.capitalize(name)} Year:`
+  const legendText = 'Geologic'
 
   const [ start, setStart ] = useState('')
   const [ end, setEnd ] = useState('')
@@ -60,7 +59,7 @@ const GeologicFieldset = ({
       if (startYear != null) {
         // internal to component, values should be string. expected startYear format is integer
         if (format == 'BP') {
-          setStart(convertYearToCE(`${startYear}`, 'BP')) //`${1950 - startYear}`)
+          setStart(convertYearToCE(`${startYear}`, 'BP'))
         }
         else {
           setStart(`${startYear}`)
@@ -77,7 +76,7 @@ const GeologicFieldset = ({
       if (endYear != null) {
         // internal to component, values should be string. expected startYear format is integer
         if (format == 'BP') {
-          setEnd(convertYearToCE(`${endYear}`, 'BP')) //setEnd(`${1950 - endYear}`)
+          setEnd(convertYearToCE(`${endYear}`, 'BP'))
         }
         else {
           setEnd(`${endYear}`)
@@ -91,8 +90,6 @@ const GeologicFieldset = ({
   )
 
   useEffect(
-    // TODO this component or GeologicTimeFilter needs to validate start < end
-    // validate start
     () => {
       let yearCE = convertYearToCE(start, format)
       let validValue = isValidYear(yearCE)
