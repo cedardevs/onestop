@@ -39,6 +39,7 @@ subprojects {
     auth0JavaJWT = '3.4.1'
     confluentVersion = '5.3.1'
     kafkaVersion = '2.3.0'
+    springKafkaVersion = '2.3.1.RELEASE'
   }
 
   // URL for the source code under version control from which this container image was built.
