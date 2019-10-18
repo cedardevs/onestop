@@ -13,7 +13,6 @@ const RadioButton = ({
   id,
   name,
   label,
-  description,
   value,
   setSelection,
   ariaExpanded,
@@ -57,12 +56,7 @@ const RadioButton = ({
 
   return (
     <div onClick={onClick} style={styleContainerApplied}>
-      <label
-        htmlFor={id}
-        style={styleLabelApplied}
-        title={description}
-        aria-label={`${description} ${label}`}
-      >
+      <label htmlFor={id} style={styleLabelApplied}>
         {label}
       </label>
       <input

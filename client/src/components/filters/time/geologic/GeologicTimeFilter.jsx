@@ -151,14 +151,14 @@ const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
     </div>
   )
 
-  // TODO the SI and abbreviations don't place nice in screen reader.
-  // TODO that's probably true of the 'CE' in the applied filter bubbles too...
   return (
     <div style={styleFilterPanel}>
       <fieldset style={styleFieldsetBorder}>
         <legend id="geologicTimeFilterInstructions">
           Provide a start year, end year, or both. Future dates are not
-          accepted. Values can be entered in SI (ka, Ma, Ga).
+          accepted. Values can be entered in{' '}
+          <abbr title="International System of Units">SI</abbr> (<abbr title="kiloannum">ka</abbr>,{' '}
+          <abbr title="megaannum">Ma</abbr>, <abbr title="gigaannum">Ga</abbr>).
         </legend>
         <FlexColumn items={[ form, buttons, warningMessage, presets ]} />
       </fieldset>

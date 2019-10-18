@@ -82,13 +82,13 @@ const TimeFilter = ({
       value: 'standard',
       label: 'Datetime',
       view: standardView,
-      description: 'Show standard date time filter.', // used in aria for 508, and title for slightly expanded instructions to sighted users on hover
+      // TODO() I removed support for this because of regular radio buttons )description: 'Show standard date time filter.', // used in aria for 508, and title for slightly expanded instructions to sighted users on hover
     },
     {
       value: 'geologic',
       label: 'Geologic',
       view: geologicView,
-      description: 'Show geologic year filter.',
+      // description: 'Show geologic year filter.',
     },
     // {
     //   value: 'periodic',

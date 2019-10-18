@@ -98,3 +98,7 @@ label {
   -moz-osx-font-smoothing: grayscale;
   cursor: pointer;
 }
+
+abbr {
+  text-decoration: none;
+}

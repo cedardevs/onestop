@@ -91,7 +91,12 @@ export default class AppliedFilters extends React.Component {
     const {selectedFacets} = this.props
     return _.flatMap(selectedFacets, (terms, category) => {
       return _.map(terms, term => {
-        const name = term.split('>').pop().trim() || 'DNE'
+        const name = term.split('>').pop().trim() || (
+          <abbr title="Does Not Exist">DNE</abbr>
+        ) // TODO verify the title is handled correctly for these
+        const title = term.split('>').pop().trim()
+          ? null
+          : 'Remove Does Not Exist Filter'
         const key = `appliedFilter::${term}`
 
         return (
@@ -99,6 +104,7 @@ export default class AppliedFilters extends React.Component {
             backgroundColor={Theme.facet.backgroundColor}
             borderColor={Theme.facet.borderColor}
             text={name}
+            title={title}
             key={key}
             onUnselect={() => this.unselectFacetAndSubmitSearch(category, term)}
           />
@@ -136,22 +142,34 @@ export default class AppliedFilters extends React.Component {
       )
     }
     if (startYear != null) {
+      let startYearText = (
+        <span>
+          After: {startYear} <abbr title="Current Era">CE</abbr>
+        </span>
+      )
       timeBubbles.push(
         <AppliedFilterBubble
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
-          text={`After: ${startYear} CE`}
+          text={startYearText}
+          title={`Remove After ${startYear} Current Era Filter`}
           key="appliedFilter::startYear"
           onUnselect={() => this.unselectYearAndSubmitSearch(null, endYear)}
         />
       )
     }
     if (endYear != null) {
+      let endYearText = (
+        <span>
+          Before: {endYear} <abbr title="Current Era">CE</abbr>
+        </span>
+      )
       timeBubbles.push(
         <AppliedFilterBubble
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
-          text={`Before: ${endYear} CE`}
+          text={endYearText}
+          title={`Remove Before ${endYear} Current Era Filter`}
           key="appliedFilter::endYear"
           onUnselect={() => this.unselectYearAndSubmitSearch(startYear, null)}
         />

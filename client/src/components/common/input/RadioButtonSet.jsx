@@ -20,11 +20,11 @@ const styleContainer = (index, interItemPadding) => {
     : {}
 }
 /*
-`options` should be an array. Each option in the array should be a map with label, value, and description.
+`options` should be an array. Each option in the array should be a map with label, value.
 
 Each option may also specify: styleLabel, styleLabelSelected, styleLabelFocused, styleInput
 
-<RadioButtonSet options={[{label: 'First', value: 1, description: 'Accessible description indicating side effects.'}, {label: 'Next', value: 2, description: 'Also shows on mouse hover.'}]}
+<RadioButtonSet options={[{label: 'First', value: 1, }, {label: <abbr title="full description">acroynm</abbr>, value: 2}]}
 */
 const RadioButtonSet = ({
   name,
@@ -57,7 +57,6 @@ const RadioButtonSet = ({
         key={`RadioButton::${name}::${option.value}`}
         id={id}
         name={name}
-        description={option.description}
         label={option.label}
         value={option.value}
         selected={selected}
