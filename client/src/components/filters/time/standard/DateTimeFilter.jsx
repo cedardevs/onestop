@@ -15,29 +15,12 @@ import {
 import DateFieldset from './DateFieldset'
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
 
-const styleTimeFilter = {
-  ...FilterStyles.MEDIUM,
-  ...{padding: '0.618em'},
-}
-
-const styleForm = {
-  display: 'flex',
-  flexDirection: 'column',
-}
-
-const styleButtonRow = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-}
-
-const styleButton = {
-  width: '30.9%',
-  padding: '0.309em',
-  margin: '0 0.309em',
-  fontSize: '1.05em',
-}
+import {
+  styleFilterPanel,
+  styleFieldsetBorder,
+  styleForm,
+} from '../../common/styleFilters'
+import ApplyClearRow from '../../common/ApplyClearRow'
 
 const warningStyle = warning => {
   if (_.isEmpty(warning)) {
@@ -133,24 +116,14 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
     </div>
   )
 
+  // TODO annoying inconsistency in keys: DateFilter vs TimeFilter
   const buttons = (
-    // TODO annoying inconsistency in keys: DateFilter vs TimeFilter
-    <div key="DateFilter::InputColumn::Buttons" style={styleButtonRow}>
-      <Button
-        key="TimeFilter::apply"
-        text="Apply"
-        title="Apply time filters"
-        onClick={applyDates}
-        style={styleButton}
-      />
-      <Button
-        key="TimeFilter::clear"
-        text="Clear"
-        title="Clear time filters"
-        onClick={clearDates}
-        style={styleButton}
-      />
-    </div>
+    <ApplyClearRow
+      key="DateFilter::InputColumn::Buttons"
+      ariaActionDescription="time filters"
+      applyAction={applyDates}
+      clearAction={clearDates}
+    />
   )
 
   const warningMessage = (
@@ -164,10 +137,8 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
   )
 
   return (
-    <div style={styleTimeFilter}>
-      <fieldset
-        style={{borderColor: FilterColors.LIGHT_SHADOW, padding: '0.618em'}}
-      >
+    <div style={styleFilterPanel}>
+      <fieldset style={styleFieldsetBorder}>
         <legend id="timeFilterInstructions">
           Provide a start date, end date, or both. Day and month are optional.
           Future dates are not accepted.

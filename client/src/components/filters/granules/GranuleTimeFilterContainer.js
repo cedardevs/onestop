@@ -5,6 +5,7 @@ import {
   granuleRemoveDateRange,
   granuleUpdateDateRange,
   granuleUpdateYearRange,
+  granuleRemoveYearRange,
 } from '../../../actions/routing/GranuleSearchStateActions'
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 

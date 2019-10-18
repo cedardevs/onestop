@@ -18,46 +18,21 @@ import GeologicPresets from './GeologicPresets'
 
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
 
-const styleTimeFilter = {
-  // TODO duplicate from DateTimeFilter
-  ...FilterStyles.MEDIUM,
-  ...{padding: '0.618em'},
-}
+import {
+  styleFilterPanel,
+  styleFieldsetBorder,
+  styleForm,
+} from '../../common/styleFilters'
+import ApplyClearRow from '../../common/ApplyClearRow'
 
-const styleForm = {
-  // TODO duplicate from DateTimeFilter
-  display: 'flex',
-  flexDirection: 'column',
-}
-
-const styleButtonRow = {
-  // TODO duplicate from DateTimeFilter
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-}
-
-const styleButton = {
-  // TODO duplicate from DateTimeFilter
-  width: '30.9%',
-  padding: '0.309em',
-  margin: '0 0.309em',
-  fontSize: '1.05em',
-}
-
-// const styleDate = { // TODO duplicate from DateFieldset
-//   display: 'flex',
-//   flexDirection: 'row',
-// }
 const styleLayout = {
-  // TODO duplicate from DateFieldset
-  margin: '2px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'space-around',
-  marginBottom: '0.25em',
+  ...styleForm, // TODO is this even needed?
+  ...{
+    margin: '2px',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    marginBottom: '0.25em',
+  },
 }
 //
 const styleLabel = {
@@ -172,22 +147,12 @@ const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
   )
 
   const buttons = (
-    <div key="GeologicDateFilter::InputColumn::Buttons" style={styleButtonRow}>
-      <Button
-        key="TimeFilter::apply"
-        text="Apply"
-        title="Apply time filters"
-        onClick={applyDates}
-        style={styleButton}
-      />
-      <Button
-        key="TimeFilter::clear"
-        text="Clear"
-        title="Clear time filters"
-        onClick={clearDates}
-        style={styleButton}
-      />
-    </div>
+    <ApplyClearRow
+      key="GeologicDateFilter::InputColumn::Buttons"
+      ariaActionDescription="time filters"
+      applyAction={applyDates}
+      clearAction={clearDates}
+    />
   )
 
   const warningMessage = (
@@ -218,10 +183,8 @@ const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
   // TODO the SI and abbreviations don't place nice in screen reader.
   // TODO that's probably true of the 'CE' in the applied filter bubbles too...
   return (
-    <div style={styleTimeFilter}>
-      <fieldset
-        style={{borderColor: FilterColors.LIGHT_SHADOW, padding: '0.618em'}}
-      >
+    <div style={styleFilterPanel}>
+      <fieldset style={styleFieldsetBorder}>
         <legend id="geologicTimeFilterInstructions">
           Provide a start year, end year, or both. Future dates are not
           accepted. Values can be entered in SI (ka, Ma, Ga).
