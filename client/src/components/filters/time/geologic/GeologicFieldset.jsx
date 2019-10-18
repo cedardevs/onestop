@@ -125,6 +125,10 @@ const GeologicFieldset = ({
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
+          placeholder={format == 'BP' ? 'YYYYYYYYY' : '-YYYYYYYYY'}
+          ariaPlaceholder={
+            format == 'BP' ? 'Y Y Y Y Y Y Y Y Y' : 'negative Y Y Y Y Y Y Y Y Y'
+          }
         />
 
         <div style={styleLayout}>
