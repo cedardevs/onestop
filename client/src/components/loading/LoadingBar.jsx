@@ -5,6 +5,7 @@ import './LoadingBar.css'
 import InlineError from '../error/InlineError'
 import defaultStyles from '../../style/defaultStyles'
 import {Route, Switch} from 'react-router'
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 
 export class LoadingBar extends React.Component {
   constructor(props) {
@@ -17,6 +18,9 @@ export class LoadingBar extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState(prevState => {
+      let newText = !_.isEqual(this.props.loadingText, nextProps.loadingText)
+        ? nextProps.loadingText
+        : ''
       return {
         ...prevState,
         loadingText: !_.isEqual(this.props.loadingText, nextProps.loadingText)
@@ -26,26 +30,25 @@ export class LoadingBar extends React.Component {
     })
   }
 
+  // TODO note no longer using this.props.loadingAlertId. Nuke that?
   render() {
     const {loading, loadingText, style, error} = this.props
     const displayErrors = !_.isEmpty(error) ? (
       <InlineError errors={this.props.errors} />
     ) : null
 
-    // TODO should this be aria-atomic true?
-
     return (
       <Switch>
         <Route path="/" exact />
         <Route path="/">
           <div style={style}>
-            <div
-              aria-live="polite"
-              aria-atomic="false"
-              style={defaultStyles.hideOffscreen}
-            >
-              <div id={this.props.loadingAlertId}>{this.state.loadingText}</div>
-            </div>
+            <LiveAnnouncer>
+              <LiveMessage
+                message={this.state.loadingText}
+                aria-live="polite"
+                style={defaultStyles.hideOffscreen}
+              />
+            </LiveAnnouncer>
             <div className={loading ? 'loadingContainer' : null} />
             {displayErrors}
           </div>

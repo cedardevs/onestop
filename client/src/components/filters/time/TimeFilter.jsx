@@ -1,32 +1,24 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 import DateTimeFilter from './standard/DateTimeFilter'
 import GeologicTimeFilter from './geologic/GeologicTimeFilter'
 import TabPanels from '../../common/ui/TabPanels'
 
 import FlexRow from '../../common/ui/FlexRow'
+import Drawer from '../../layout/Drawer'
 import {exclamation_triangle, SvgIcon} from '../../common/SvgIcon'
-import {FilterColors} from '../../../style/defaultStyles'
+import defaultStyles, {FilterColors} from '../../../style/defaultStyles'
 
-const alertStyle = alert => {
-  if (_.isEmpty(alert)) {
-    return {
-      display: 'none',
-    }
-  }
-  else {
-    return {
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: FilterColors.TEXT,
-      backgroundColor: '#f3f38e',
-      borderRadius: '0.618em',
-      textAlign: 'center',
-      margin: '0.618em',
-      fontSize: '1.15em',
-      padding: '0.309em',
-    }
-  }
+const alertStyle = {
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: FilterColors.TEXT,
+  backgroundColor: '#f3f38e',
+  borderRadius: '0.618em',
+  textAlign: 'center',
+  margin: '0.618em',
+  fontSize: '1.15em',
+  padding: '0.309em',
 }
 
 const TimeFilter = ({
@@ -40,7 +32,10 @@ const TimeFilter = ({
   removeYearRange,
   submit,
 }) => {
+  // TODO it might be worth extracting the alert states, drawer, etc, if we want to reuse the same visual+508 alert elsewhere. Or change to using react-aria-live (just added for LoadingBar)
   const [ alert, setAlert ] = useState('')
+  const [ showAlert, setShowAlert ] = useState(false)
+  const [ alertDisplay, setAlertDisplay ] = useState('') // TODO rename to a11y alert or alertAnnouncement or something
 
   const standardView = (
     <DateTimeFilter
@@ -50,12 +45,10 @@ const TimeFilter = ({
         removeYearRange()
         updateDateRange(startDate, endDate)
         submit()
-        setAlert('')
       }}
       clear={() => {
         removeDateRange()
         submit()
-        setAlert('')
       }}
     />
   )
@@ -67,12 +60,10 @@ const TimeFilter = ({
         removeDateRange()
         updateYearRange(startYear, endYear)
         submit()
-        setAlert('')
       }}
       clear={() => {
         removeYearRange()
         submit()
-        setAlert('')
       }}
     />
   )
@@ -80,21 +71,20 @@ const TimeFilter = ({
   const VIEW_OPTIONS = [
     {
       value: 'standard',
-      label: 'Datetime',
+      label: (
+        <div aria-label="Show standard datetime filter tab.">Datetime</div>
+      ),
       view: standardView,
-      // TODO() I removed support for this because of regular radio buttons )description: 'Show standard date time filter.', // used in aria for 508, and title for slightly expanded instructions to sighted users on hover
     },
     {
       value: 'geologic',
-      label: 'Geologic',
+      label: <div aria-label="Show geologic year filter tab.">Geologic</div>,
       view: geologicView,
-      // description: 'Show geologic year filter.',
     },
     // {
     //   value: 'periodic',
     //   label: 'Periodic',
     //   view: null,
-    //   description: 'Show periodic time filter.',
     // },
   ]
 
@@ -103,27 +93,51 @@ const TimeFilter = ({
   if (!_.isEmpty(startDateTime) || !_.isEmpty(endDateTime))
     defaultSelection = 'standard'
   else if (startYear != null || endYear != null) defaultSelection = 'geologic'
+  const [ currentTab, setCurrentTab ] = useState(defaultSelection) // note! this is not the master state of the tab, but used for computing the alert message internal to this component only
 
-  const onSelectionChanged = selection => {
-    setAlert('')
+  const setAlertStatus = () => {
+    let shouldShowAlert = false
+    let alertText = ''
+    let selection = currentTab
+
     if (
       selection == 'geologic' &&
       (!_.isEmpty(startDateTime) || !_.isEmpty(endDateTime))
-    )
-      setAlert(
+    ) {
+      alertText =
         'Datetime filters will be automatically removed by geologic filters.'
-      )
-    if (selection == 'standard' && (startYear != null || endYear != null))
-      setAlert(
+      shouldShowAlert = true
+    }
+    if (selection == 'standard' && (startYear != null || endYear != null)) {
+      alertText =
         'Geologic filters will be automatically removed by datetime filters.'
-      )
+      shouldShowAlert = true
+    }
+
+    if (shouldShowAlert) {
+      setShowAlert(true)
+      setAlert(alertText)
+    }
+    else {
+      setShowAlert(false)
+    }
   }
 
-  // TODO this alert is too aggressive, but I can't get polite to work better (it prevents the screen reader from announcing the selection when shifting views.) Try using Elliott's drawer to animate the warning open and use the delay time to see if that helps?
+  useEffect(
+    () => {
+      setAlertStatus()
+    },
+    [ currentTab, startDateTime, endDateTime, startYear, endYear ]
+  )
+
+  const onSelectionChanged = selection => {
+    setCurrentTab(selection)
+  }
+
   const alertMessage = (
     <FlexRow
       key="GeologicDateFilter::InputColumn::Alert"
-      style={alertStyle(alert)}
+      style={alertStyle}
       items={[
         <SvgIcon
           key="alert::icon"
@@ -131,15 +145,40 @@ const TimeFilter = ({
           style={{marginLeft: '0.309em'}}
           path={exclamation_triangle}
         />,
-        <div key="alert::message" role="alert">
+        <div key="alert::message" aria-hidden="true">
           {alert}
+        </div>,
+        <div
+          key="alert::annoucement"
+          aria-live="polite"
+          aria-atomic="true"
+          style={defaultStyles.hideOffscreen}
+        >
+          {alertDisplay}
         </div>,
       ]}
     />
   )
+
+  const onAlertOpen = () => {
+    // change this *after* it opens so that announcment doesn't interupt tab change information in a screen reader
+    setAlertDisplay(alert)
+  }
+
+  const onAlertClose = () => {
+    // set these back when closed so that announcements reannounce when they reappear (screen reader only announces it the first time it changes otherwise)
+    setAlert('')
+    setAlertDisplay('')
+  }
+
   return (
     <div>
-      {alertMessage}
+      <Drawer
+        content={alertMessage}
+        open={showAlert}
+        onOpen={onAlertOpen}
+        onClose={onAlertClose}
+      />
       <TabPanels
         name="timeFilter"
         options={VIEW_OPTIONS}
