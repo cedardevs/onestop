@@ -19,41 +19,44 @@ export const ymdToDateMap = (year, month, day) => {
 }
 
 export const convertYearToCE = (year, format) => {
-  // EXPECTS A STRING!! RETURNS A STRING!
+  // expects and returns a string
+  if (typeof year != 'string') {
+    return year
+  } // TODO really bad if an int, because it won't convert it
+
   if (_.isEmpty(year)) {
-    //TODO isEmpty check will be wrong if an int is passed in here!
     return ''
   }
   let value = year
 
   // check for SI year values:
-  if (year.endsWith('ka')) {
-    // TODO make these case insensitive!
-    value = textToNumber(year.split('ka')[0]) * 1000
+  let yearSI = year.toLowerCase()
+  if (yearSI.endsWith('ka')) {
+    value = textToNumber(yearSI.split('ka')[0]) * 1000
   }
-  else if (year.endsWith('Ma')) {
-    // TODO make these case insensitive!
-    value = textToNumber(year.split('Ma')[0]) * 1000000
+  else if (yearSI.endsWith('ma')) {
+    value = textToNumber(yearSI.split('ma')[0]) * 1000000
   }
-  else if (year.endsWith('Ga')) {
-    // TODO make these case insensitive!
-    value = textToNumber(year.split('Ga')[0]) * 1000000000
+  else if (yearSI.endsWith('ga')) {
+    value = textToNumber(yearSI.split('ga')[0]) * 1000000000
   }
   if (!Number.isInteger(textToNumber(value))) {
-    return value // otherwise we'll always validate against empty string...
+    return year // otherwise we'll always validate against empty string...
   }
+
   value = textToNumber(value)
+
   if (format == 'CE') {
     return `${value}`
   }
   if (format == 'BP') {
     return `${1950 - value}`
   }
+  return year
 }
 
 export const isValidYear = year => {
   // assumes year is in CE! also assumes it is a STRING TODO isEmpty check will be wrong if an int is passed in here!
-  // TODO add unit tests!
 
   // No date given is technically valid (since a complete range is unnecessary)
   if (_.isEmpty(year)) {
