@@ -9,22 +9,30 @@ The `onstop-cli/openapi.go` file was generated using this project- https://githu
 
 ## Install and run using a docker container (go not required locally)
 
-`docker build -t cedardevs/onestop-cli ./cli`
+`./gradlew cli:build`
 
 And then run commands after like so -
 
-`docker run cedardevs/onestop-cli <CMD>`
+`docker run cedardevs/onestop-cli:2.4.0 <CMD>`
 
-For example- 
+For example-
 
-`docker run cedardevs/onestop-cli ./onestop-cli searchcollection --q="satellite"`
+`docker run cedardevs/onestop-cli searchcollection --q="satellite"`
 
-## Requirements
-Install go - https://golang.org/doc/install
+For more commands and flags -
 
-## Quick start
+`docker run cedardevs/onestop-cli <CMD> --help`
 
-Quickly install and use -
+## Download and use as Go package
+(requires go and the following environemt)
+
+```
+export PATH=$PATH:/usr/local/go/bin \ export GOPATH=$HOME/go
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:$GOBIN
+export GO111MODULE=on
+```
+
 `go get  github.com/cedardevs/onestop/cli`
 
 `cli --help`
@@ -33,12 +41,7 @@ to get from branch
 
 `go get  github.com/cedardevs/onestop/cli@1020-OneStopCLI`
 
-or use the image -
-
-`docker build -t onestop-cli ./cli`
-`docker run `
-
-or run it locally -
+or use `go run` -
 
 `cd cli`
 
@@ -46,12 +49,14 @@ or run it locally -
 
 `go run . --help`
 
-or install it locally -
+or `go install` it -
+
 `cd cli`
 
 `go install`
 
 `cli --help`
+
 
 ## onestop-cli usage
 Get collection by id -
@@ -98,8 +103,7 @@ Complex collections search with a query text, spatial, and temporal filter -
 
 `cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522,  queries[]{type:queryText, value:satellite}  --verbose`
 
-## For complex query and filter structure, refer to these docs-
-Short hand documentation - https://github.com/danielgtaylor/openapi-cli-generator/tree/master/shorthand
+For complex query and filter structure, refer to these docs for the short hand documentation - https://github.com/danielgtaylor/openapi-cli-generator/tree/master/shorthand
 
 ## scdr-files usage
 
@@ -122,3 +126,9 @@ Area-
 Text Query -
 
 `cli  scdr-files --verbose --q="parentIdentifier:/.*NDBC-COOPS/"`
+
+## Developer notes
+
+The openapi.go file was generated using the `openapi-cli-generator` tool linked above. If you have `go` set up as mentioned above, you can get it with `go get github.com/danielgtaylor/openapi-cli-generator`. This will make `openapi-cli-generator` available. Refer to that repos documentation for more information.
+
+That library generated a command line client that allows us to inject our own middleware to marshal requests and responses. You can find these custom flags applied in scdr-flags.go and the parsing functions in parsing-util.go.
