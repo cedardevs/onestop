@@ -55,7 +55,7 @@ jib {
     labels = [
         'org.label-schema.build-date': project.buildDate.toString(),
         'org.label-schema.name': imageName,
-        'org.label-schema.description': 'A search API for the OneStop search software.',
+        'org.label-schema.description': 'A CLI for the OneStop API.',
         'org.label-schema.vcs-url': project.getVcsUrl().toString(),
         'org.label-schema.vcs-ref': project.getVcsRef().toString(),
         'org.label-schema.vendor': imageNamespace,
