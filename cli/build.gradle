@@ -28,13 +28,14 @@ jib {
   String imageRegistryURL = "registry.hub.docker.com"
   String imageNamespace = "cedardevs"
   String imageName = "${rootProject.name}-${project.name}".toString()
-  String imageTag = "1.0.0".toString()
+  String imageTag = "${project.version}".toString()
   String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
 
   from {
     // base image
     image = 'scratch'
   }
+
   to {
     image = imageRepository
     auth {
@@ -42,13 +43,14 @@ jib {
       password = System.getenv('DOCKER_PASSWORD').toString().trim()
     }
   }
+
   extraDirectories {
     paths = ["./.gogradle"]
     permissions = [
       '/cli-linux-amd64': '755'
       ]
-
   }
+
   container {
     labels = [
         'org.label-schema.build-date': project.buildDate.toString(),
