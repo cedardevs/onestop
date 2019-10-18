@@ -32,26 +32,6 @@ const styleDescription = {
   margin: 0,
 }
 
-// const styleApplyClearButtonRow = {
-//   display: 'flex',
-//   flexDirection: 'row',
-//   alignItems: 'center',
-//   justifyContent: 'center',
-// }
-//
-// const styleApplyButton = {
-//   width: '30.9%',
-//   padding: '0.309em',
-//   margin: '0 0.309em',
-//   fontSize: '1.05em',
-// }
-// const styleClearButton = {
-//   width: '30.9%',
-//   padding: '0.309em',
-//   margin: '0 0.309em',
-//   fontSize: '1.05em',
-// }
-
 const styleButtonShowMap = {
   fontSize: '1.05em',
 }

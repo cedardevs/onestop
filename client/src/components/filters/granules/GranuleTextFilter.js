@@ -4,7 +4,7 @@ import Button from '../../common/input/Button'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
 
-import FilterFieldset from '../FilterFieldset' // TODO where is the weird colored fieldset border in here coming from?
+import FilterFieldset from '../FilterFieldset'
 
 import {FilterColors} from '../../../style/defaultStyles'
 

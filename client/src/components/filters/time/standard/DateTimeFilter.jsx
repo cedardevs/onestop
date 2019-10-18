@@ -116,7 +116,6 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
     </div>
   )
 
-  // TODO annoying inconsistency in keys: DateFilter vs TimeFilter
   const buttons = (
     <ApplyClearRow
       key="DateFilter::InputColumn::Buttons"

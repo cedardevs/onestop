@@ -30,7 +30,6 @@ export class LoadingBar extends React.Component {
     })
   }
 
-  // TODO note no longer using this.props.loadingAlertId. Nuke that?
   render() {
     const {loading, loadingText, style, error} = this.props
     const displayErrors = !_.isEmpty(error) ? (

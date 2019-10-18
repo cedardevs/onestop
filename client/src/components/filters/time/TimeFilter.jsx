@@ -35,7 +35,7 @@ const TimeFilter = ({
   // TODO it might be worth extracting the alert states, drawer, etc, if we want to reuse the same visual+508 alert elsewhere. Or change to using react-aria-live (just added for LoadingBar)
   const [ alert, setAlert ] = useState('')
   const [ showAlert, setShowAlert ] = useState(false)
-  const [ alertDisplay, setAlertDisplay ] = useState('') // TODO rename to a11y alert or alertAnnouncement or something
+  const [ alertAnnouncement, setAlertAnnouncement ] = useState('')
 
   const standardView = (
     <DateTimeFilter
@@ -154,7 +154,7 @@ const TimeFilter = ({
           aria-atomic="true"
           style={defaultStyles.hideOffscreen}
         >
-          {alertDisplay}
+          {alertAnnouncement}
         </div>,
       ]}
     />
@@ -162,13 +162,13 @@ const TimeFilter = ({
 
   const onAlertOpen = () => {
     // change this *after* it opens so that announcment doesn't interupt tab change information in a screen reader
-    setAlertDisplay(alert)
+    setAlertAnnouncement(alert)
   }
 
   const onAlertClose = () => {
     // set these back when closed so that announcements reannounce when they reappear (screen reader only announces it the first time it changes otherwise)
     setAlert('')
-    setAlertDisplay('')
+    setAlertAnnouncement('')
   }
 
   return (

@@ -186,15 +186,10 @@ describe('The collection filter reducer', function(){
             },
           ],
           expectedChanges: {
-            // pageOffset: 0,
             queryText: 'new',
-            // geoJSON: null,
-            // startDateTime: null,
-            // endDateTime: null,
             selectedFacets: {
               science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
             },
-            // excludeGlobal: null,
           },
         },
         {

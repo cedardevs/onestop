@@ -239,15 +239,10 @@ describe('The granule filter reducer', function(){
           ],
           expectedChanges: {
             title: 'new',
-            // pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
-            // geoJSON: null,
-            // startDateTime: null,
-            // endDateTime: null,
             selectedFacets: {
               science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
             },
-            // excludeGlobal: null,
           },
         },
         {

@@ -73,7 +73,7 @@ const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
       setWarning(createWarning(start.valid, end.valid, dateRangeValid))
     }
     else {
-      // TODO assumes value has been returned in CE always!
+      // assumes value has been returned in CE always! (or bad things will happen)
       applyFilter(textToNumber(start.year), textToNumber(end.year))
     }
   }

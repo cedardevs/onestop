@@ -14,12 +14,10 @@ const mapStateToProps = state => {
   const text = inFlight
     ? 'Searching for files...'
     : `Loaded ${loadedCollectionCount} of ${totalCollectionCount} files.`
-  const loadingId = `loading-id::${inFlight}`
 
   return {
     loading: inFlight ? 1 : 0,
     loadingText: text,
-    loadingAlertId: loadingId,
     error: errorMessage,
   }
 }

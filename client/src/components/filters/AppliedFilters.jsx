@@ -93,7 +93,7 @@ export default class AppliedFilters extends React.Component {
       return _.map(terms, term => {
         const name = term.split('>').pop().trim() || (
           <abbr title="Does Not Exist">DNE</abbr>
-        ) // TODO verify the title is handled correctly for these
+        ) // TODO verify the title is handled correctly for these see search for title: "NOAA Aircraft Operations Center (AOC) Flight Level Data"
         const title = term.split('>').pop().trim()
           ? null
           : 'Remove Does Not Exist Filter'
