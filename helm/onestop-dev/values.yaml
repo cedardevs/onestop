@@ -119,21 +119,21 @@ grafana:
       datasources:
         - name: prometheus
           type: prometheus
-          url: http://psi-dev-prometheus-server/prometheus
+          url: http://onestop-dev-prometheus-server/prometheus
           access: proxy
           isDefault: true
   dashboardProviders:
     dashboardproviders.yaml:
       apiVersion: 1
       providers:
-        - name: 'psi'
+        - name: 'onestop'
           orgId: 1
           folder: ''
           type: file
           disableDeletion: false
           editable: true
           options:
-            path: /var/lib/grafana/dashboards/psi
+            path: /var/lib/grafana/dashboards/onestop
         - name: 'default'
           orgId: 1
           folder: ''
@@ -144,7 +144,7 @@ grafana:
             path: /var/lib/grafana/dashboards/default
   dashboardsConfigMaps:
     default: "dashboards"
-    psi: "dashboards"
+    onestop: "dashboards"
 
 metrics-server:
   args:

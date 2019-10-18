@@ -1,5 +1,9 @@
 ---
 dependencies:
+  - name: cp-helm-charts
+    version: ~0.1.0
+    repository: https://confluentinc.github.io/cp-helm-charts/
+    condition: cp.enabled,global.cp.enabled
   - name: elasticsearch
     version: ~0.1.0
     repository: file://../elasticsearch
@@ -8,6 +12,18 @@ dependencies:
     version: ~0.1.0
     repository: file://../onestop-admin
     conditions: onestop-admin.enabled,global.onestop-admin.enabled
+  - name: onestop-client
+    version: ~0.1.0
+    repository: file://../onestop-client
+    conditions: onestop-client.enabled,global.onestop-client.enabled
+  - name: onestop-manager
+    version: ~0.3.0
+    repository: file://../onestop-manager
+    conditions: manager.enabled,global.manager.enabled
+  - name: onestop-registry
+    version: ~0.3.0
+    repository: file://../onestop-registry
+    conditions: registry.enabled,global.registry.enabled
   - name: onestop-search
     version: ~0.1.0
     repository: file://../onestop-search
@@ -16,7 +32,3 @@ dependencies:
   #   version: ~0.1.0
   #   repository: file://../onestop-user
   #   conditions: onestop-user.enabled,global.onestop-user.enabled
-  - name: onestop-client
-    version: ~0.1.0
-    repository: file://../onestop-client
-    conditions: onestop-client.enabled,global.onestop-client.enabled

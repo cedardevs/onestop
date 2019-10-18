@@ -1,11 +1,11 @@
-# Default values for psi-manager.
+# Default values for onestop-registry.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: cedardevs/onestop-stream-manager
+  repository: cedardevs/onestop-registry
   tag: 1.2.0
   pullPolicy: IfNotPresent
   pullSecrets: []
@@ -13,6 +13,12 @@ image:
 service:
   type: ClusterIP
   port: 80
+#  annotations:
+#    key: value
+
+volume:
+  size: 1Gi
+  storageClass:
 
 autoscaler:
   enabled: false
@@ -24,7 +30,28 @@ autoscaler:
     averageValue:
     averageUtilization: ## Note: utilization is based on resources.requests.cpu and resources.limits.cpu
 
-config: # inline application config yaml
+debug: false
+
+###############################################################################
+# FEATURE TOGGLES (SUBCHART DEFAULTS)
+###############################################################################
+# map of features to enable
+# if the features are not here, they will be disabled
+features:
+  cas: false
+
+config: |-
+  topics:
+    num-partitions: 20
+    replication-factor: 3
+
+ingress:
+  enabled: true
+  annotations: {}
+  paths:
+  - "/registry"
+  hosts:
+  - "localhost"
 
 kafka: {}
 #  override just the name of kafka's headless service:
@@ -45,3 +72,4 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+

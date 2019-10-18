@@ -5,7 +5,7 @@ metadata:
   name: net-tools
   labels:
     app.kubernetes.io/name: net-tools
-    helm.sh/chart: psi-dev
+    helm.sh/chart: onestop-dev
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:

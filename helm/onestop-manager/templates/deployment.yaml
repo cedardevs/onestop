@@ -2,22 +2,22 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ include "psi-manager.fullname" . }}
+  name: {{ include "onestop-manager.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "psi-manager.name" . }}
-    helm.sh/chart: {{ include "psi-manager.chart" . }}
+    app.kubernetes.io/name: {{ include "onestop-manager.name" . }}
+    helm.sh/chart: {{ include "onestop-manager.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "psi-manager.name" . }}
+      app: {{ include "onestop-manager.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "psi-manager.name" . }}
+        app: {{ include "onestop-manager.name" . }}
         release: {{ .Release.Name }}
       annotations:
         {{- with .Values.config }}
@@ -34,9 +34,9 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "{{ include "psi-manager.kafka.bootstrap.servers" . }}"
+          value: "{{ include "onestop-manager.kafka.bootstrap.servers" . }}"
         - name: KAFKA_SCHEMA_REGISTRY_URL
-          value: "{{ include "psi-manager.kafka.schema.registry.url" . }}"
+          value: "{{ include "onestop-manager.kafka.schema.registry.url" . }}"
         {{- if .Values.config }}
         - name: spring.config.additional-location
           value: /etc/conf/application.yaml
@@ -53,7 +53,7 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ include "psi-manager.fullname" . }}-config
+          name: {{ include "onestop-manager.fullname" . }}-config
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
