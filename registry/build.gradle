@@ -1,6 +1,5 @@
 plugins {
   id 'groovy'
-//  id 'jacoco'
   id "org.springframework.boot" // version declared in top-level buildscript
   id "io.spring.dependency-management"
   id 'com.google.cloud.tools.jib' version '1.6.1'

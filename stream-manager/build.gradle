@@ -1,7 +1,6 @@
 plugins {
   id 'groovy'
   id 'application'
-//  id 'jacoco'
   id 'com.google.cloud.tools.jib' version '1.6.1'
   id "com.github.johnrengelman.shadow" version "4.0.3"
 }

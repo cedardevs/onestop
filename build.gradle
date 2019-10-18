@@ -132,37 +132,35 @@ subprojects {
     }
 
     if (project.plugins.hasPlugin('java')) {
-        project.apply plugin: 'org.owasp.dependencycheck'
+      project.apply plugin: 'org.owasp.dependencycheck'
 
 //      Not functioning in travis, disconnecting temporarily to move forward
 //      project.tasks.findByName('check').dependsOn('dependencyCheck')
 
-        dependencyCheck {
-          skipConfigurations = ["providedRuntime"]
-          suppressionFile = "${rootDir}/owasp-suppressions.xml"
-          failBuildOnCVSS = 4
+      dependencyCheck {
+        skipConfigurations = ["providedRuntime"]
+        suppressionFile = "${rootDir}/owasp-suppressions.xml"
+        failBuildOnCVSS = 4
 
-          // One of our dependencies has an un-parsable pom which causes dependency-checker
-          // to throw an exception. However, the checks still run and it still generates a
-          // report, so I think it's safe(ish) to ignore the error.
-          failOnError = false
-        }
+        // One of our dependencies has an un-parsable pom which causes dependency-checker
+        // to throw an exception. However, the checks still run and it still generates a
+        // report, so I think it's safe(ish) to ignore the error.
+        failOnError = false
+      }
 
-        if(project.plugins.hasPlugin('jacoco')) {
-          jacocoTestReport {
-            executionData fileTree(projectDir).include("build/jacoco/*.exec")
-            reports {
-              xml.enabled = true
-              xml.destination = "${buildDir}/reports/jacoco/report.xml"
-              html.enabled = true
-              html.destination = "${buildDir}/reports/jacoco/html"
-            }
-          }
-          jacocoTestReport.dependsOn test
-          check.dependsOn jacocoTestReport
+      project.apply plugin: 'jacoco'
+      jacocoTestReport {
+        executionData fileTree(projectDir).include("build/jacoco/*.exec")
+        reports {
+          xml.enabled true
+          xml.destination = file("${buildDir}/reports/jacoco/report.xml")
+          html.enabled true
+          html.destination = file("${buildDir}/reports/jacoco/html")
         }
       }
+      check.dependsOn jacocoTestReport
     }
+  }
 }
 
 task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
