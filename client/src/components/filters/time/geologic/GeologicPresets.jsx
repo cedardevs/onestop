@@ -11,6 +11,8 @@ import FilterFieldset from '../../FilterFieldset'
 
 import {convertYearToCE, textToNumber} from '../../../../utils/inputUtils'
 
+import {styleForm} from '../../common/styleFilters'
+
 const selectTheme = theme => {
   return {
     ...theme,
@@ -25,6 +27,25 @@ const selectTheme = theme => {
       dangerLight: '#277CB2',
     },
   }
+}
+
+const styleLayout = {
+  ...styleForm, // TODO is this even needed?
+  ...{
+    margin: '2px',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    marginBottom: '0.25em',
+  },
+}
+//
+const styleLabel = {
+  // TODO duplicate from DateFieldset
+  marginBottom: '0.25em',
+}
+//
+const styleField = {
+  width: '15em',
 }
 
 const ERAS = [
@@ -67,14 +88,7 @@ const ERAS = [
   }),
 ]
 
-const GeologicPresets = ({
-  startYear,
-  endYear,
-  applyFilter,
-  styleLayout,
-  styleLabel,
-  styleField,
-}) => {
+const GeologicPresets = ({startYear, endYear, applyFilter}) => {
   const legendText = 'Eras'
   const [ selectedPreset, setSelectedPreset ] = useState(null)
 

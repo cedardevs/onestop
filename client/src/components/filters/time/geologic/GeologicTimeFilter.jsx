@@ -25,31 +25,6 @@ import {
 } from '../../common/styleFilters'
 import ApplyClearRow from '../../common/ApplyClearRow'
 
-const styleLayout = {
-  ...styleForm, // TODO is this even needed?
-  ...{
-    margin: '2px',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    marginBottom: '0.25em',
-  },
-}
-//
-const styleLabel = {
-  // TODO duplicate from DateFieldset
-  marginBottom: '0.25em',
-}
-//
-const styleField = {
-  width: '15em',
-  // margin: 0,
-  // padding: 0, // TODO only non-duplicate from DateFieldset // TODO sync up max length and width - they are just guesses for now
-  // color: FilterColors.TEXT,
-  // height: '2em',
-  // border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
-  // borderRadius: '0.309em',
-}
-
 const warningStyle = warning => {
   if (_.isEmpty(warning)) {
     return {
@@ -118,7 +93,6 @@ const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
     }
   }
 
-  // const geoFormat = 'CE' // TODO add to redux state!
   const onFormatChange = f => {
     setFormat(f)
   }
@@ -173,9 +147,6 @@ const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
         startYear={startYear}
         endYear={endYear}
         applyFilter={applyFilter}
-        styleLayout={styleLayout}
-        styleLabel={styleLabel}
-        styleField={styleField}
       />
     </div>
   )
