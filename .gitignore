@@ -61,6 +61,7 @@ jspm_packages
 .gradle
 build/
 .gogradle
+cli/vendor
 
 # pid files from the spawn plugin
 .pid.lock
