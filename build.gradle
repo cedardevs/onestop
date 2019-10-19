@@ -144,6 +144,18 @@ subprojects {
             details.because 'fixes CVE-2018-10237'
           }
         }
+        if (details.requested.group == 'io.netty' && details.requested.name == 'netty-all') {
+          if (details.requested.version < '4.1.42.Final') {
+            details.useVersion '4.1.42.Final'
+            details.because 'fixes CVE-2019-16869'
+          }
+        }
+        if (details.requested.group == 'com.nimbusds' && details.requested.name == 'nimbus-jose-jwt') {
+          if (details.requested.version <= '7.8') {
+            details.useVersion '7.9'
+            details.because 'fixes CVE-2019-17195'
+          }
+        }
       }
     }
 
