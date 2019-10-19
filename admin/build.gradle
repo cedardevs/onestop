@@ -86,10 +86,6 @@ dependencies {
   runtime group: 'org.hsqldb', name: 'hsqldb', version: '2.4.1'
   implementation 'commons-collections:commons-collections:3.2.2'
 
-  // fix CVE-2019-0232, CVE-2019-0232 by forcing a higher version of the tomcat websocket dependency
-  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.19'
-  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.19'
-
   runtime 'org.springframework.boot:spring-boot-devtools'
 
   providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
