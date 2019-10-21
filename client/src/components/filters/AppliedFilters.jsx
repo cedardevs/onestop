@@ -2,6 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import AppliedFilterBubble from './AppliedFilterBubble'
 import * as geoUtils from '../../utils/geoUtils'
+import {displayBigYears} from '../../utils/ReadableUtils'
 
 const Theme = {
   facet: {
@@ -144,7 +145,8 @@ export default class AppliedFilters extends React.Component {
     if (startYear != null) {
       let startYearText = (
         <span>
-          After: {startYear} <abbr title="Current Era">CE</abbr>
+          After: {displayBigYears(startYear)}{' '}
+          <abbr title="Current Era">CE</abbr>
         </span>
       )
       timeBubbles.push(
@@ -161,7 +163,7 @@ export default class AppliedFilters extends React.Component {
     if (endYear != null) {
       let endYearText = (
         <span>
-          Before: {endYear} <abbr title="Current Era">CE</abbr>
+          Before: {displayBigYears(endYear)} <abbr title="Current Era">CE</abbr>
         </span>
       )
       timeBubbles.push(
