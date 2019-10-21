@@ -62,7 +62,7 @@ func scdrRegister() {
 
 		cmd := &cobra.Command{
 			Use:     "scdr-files",
-			Short:   "Retrieve flattened granule metadata",
+			Short:   "An SCDR interface for OneStop",
 			Long:    cli.Markdown("Retrietve flattened granule metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    description: filters applied to the search\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/dateTimeFilter'\n      - $ref: '#/components/schemas/facetFilter'\n      - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n  queries:\n    description: List of queries to search against.\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/textQuery'\n    type: array\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntype: object\n"),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(0),
