@@ -111,15 +111,15 @@ jobs:
 
       - run:
           name: Test Reports
-          command: ./gradlew jacocoTestReport -x test
+          command: ./gradlew admin:jacocoTestReport -x test
 
       - run:
           name: Save test results
           command: |
             mkdir -p ~/tests/junit/
-            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex ".*/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex "admin/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex "admin/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex "admin/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
 
       - store_test_results:
@@ -164,15 +164,15 @@ jobs:
 
       - run:
           name: Test Reports
-          command: ./gradlew jacocoTestReport -x test
+          command: ./gradlew search:jacocoTestReport -x test
 
       - run:
           name: Save test results
           command: |
             mkdir -p ~/tests/junit/
-            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex ".*/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex "search/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex "search/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex "search/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
 
       - store_test_results:
