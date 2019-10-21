@@ -5,6 +5,7 @@ import moment from 'moment/moment'
 import FlexColumn from '../../../common/ui/FlexColumn'
 import FlexRow from '../../../common/ui/FlexRow'
 import Button from '../../../common/input/Button'
+import RadioButtonSet from '../../../common/input/RadioButtonSet'
 import {Key} from '../../../../utils/keyboardUtils'
 import {isValidDateRange} from '../../../../utils/inputUtils'
 import {
@@ -14,13 +15,32 @@ import {
 } from '../../../../style/defaultStyles'
 import DateFieldset from './DateFieldset'
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
-
 import {
   styleFilterPanel,
   styleFieldsetBorder,
   styleForm,
 } from '../../common/styleFilters'
 import ApplyClearRow from '../../common/ApplyClearRow'
+import TimelineRelationDisplay from './TimelineRelationDisplay'
+
+const RELATION_OPTIONS = [
+  {
+    value: 'intersects',
+    label: 'Any Overlap',
+  },
+  {
+    value: 'contains',
+    label: 'Contains',
+  },
+  {
+    value: 'within',
+    label: 'Within',
+  },
+  // {
+  //   value: 'disjoint',
+  //   label: 'Disjoint',
+  // },
+]
 
 const warningStyle = warning => {
   if (_.isEmpty(warning)) {
@@ -44,6 +64,7 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
   const [ end, setEnd ] = useState({date: {}, valid: true})
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
+  const [ relation, setRelation ] = useState('intersects')
 
   const updateStartDate = (date, valid) => {
     setStart({date: date, valid: valid})
@@ -143,6 +164,18 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
           Future dates are not accepted.
         </legend>
         <FlexColumn items={[ form, buttons, warningMessage ]} />
+        <RadioButtonSet
+          name="relationship"
+          options={RELATION_OPTIONS}
+          onSelectionChange={relation => {
+            setRelation(relation)
+          }}
+        />
+        <TimelineRelationDisplay
+          relation={relation}
+          hasStart={start.date.year != null}
+          hasEnd={end.date.year}
+        />
       </fieldset>
     </div>
   )
