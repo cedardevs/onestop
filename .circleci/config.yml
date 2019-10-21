@@ -221,6 +221,25 @@ jobs:
             - client/build
             - client/node_modules
             -
+  cli:
+    <<: *defaults
+    steps:
+      - <<: *attachWorkspace
+
+      - run:
+          name: Assemble, Check
+          command: ./gradlew cli:build
+
+      - deploy:
+          name: Publish Image(s)
+          command: |
+            echo "${CIRCLE_BRANCH}"
+            if [[ "${CIRCLE_BRANCH}" == "1020-OneStopCLI" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+              ./gradlew client:jib
+            else
+              echo "Skipping publishing"
+            fi
+
   finalize:
     <<: *defaults
 
