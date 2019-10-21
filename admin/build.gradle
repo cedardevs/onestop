@@ -94,8 +94,8 @@ dependencies {
   testImplementation "org.spockframework:spock-core:${project.spockVersion}"
   testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
-  testImplementation "org.testcontainers:testcontainers:1.12.2"
-  testImplementation "org.testcontainers:elasticsearch:1.12.2"
+  testImplementation "org.testcontainers:testcontainers:${project.testContainersVersion}"
+  testImplementation "org.testcontainers:elasticsearch:${project.testContainersVersion}"
   testImplementation 'net.bytebuddy:byte-buddy:1.7.11'
 }
 

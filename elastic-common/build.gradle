@@ -15,13 +15,14 @@ dependencies {
     implementation "org.codehaus.groovy:groovy:${project.groovyVersion}"
     implementation "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
     implementation "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
-    implementation group: 'org.springframework', name: 'spring-context'
+    implementation "org.springframework:spring-context"
     implementation "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
     implementation "org.elasticsearch.client:transport:${project.esVersion}"
-    implementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation "org.testcontainers:testcontainers:${project.testContainersVersion}"
-    implementation "org.testcontainers:elasticsearch:${project.testContainersVersion}"
+
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.testcontainers:testcontainers:${project.testContainersVersion}"
+    testImplementation "org.testcontainers:elasticsearch:${project.testContainersVersion}"
 }
 
 configurations {
