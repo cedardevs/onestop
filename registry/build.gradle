@@ -8,6 +8,9 @@ plugins {
 
 apply from: "${rootDir}/gradle/publishing.gradle"
 
+sourceCompatibility = 11
+targetCompatibility = 11
+
 configurations {
   implementation.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
   testImplementation.exclude(group: 'ch.qos.logback')
@@ -27,7 +30,7 @@ dependencies {
   implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
   implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
   implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
-  implementation(project(':common'))
+  implementation(project(':kafka-common'))
   implementation("org.json:json:20190722")
   
   // -- CAS Authentication --
@@ -56,8 +59,6 @@ dependencies {
   testImplementation("com.github.java-json-tools:json-schema-validator:2.2.10")
   testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
 }
-
-sourceCompatibility = '11'
 
 sourceSets {
   integrationTest {
