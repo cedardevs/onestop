@@ -227,7 +227,7 @@ jobs:
     steps:
       - <<: *attachWorkspace
       - environment:
-         GOPATH : ~/repo/onestop/cli/.gogradle/project_gopath
+         GOPATH : ~/repo/cli/.gogradle/project_gopath
       - run:
           name: Build image, publish
           command: ./gradlew cli:build
