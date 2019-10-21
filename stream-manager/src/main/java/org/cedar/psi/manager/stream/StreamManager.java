@@ -8,7 +8,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
-import org.cedar.psi.common.constants.StreamsApps;
+import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.psi.manager.config.ManagerConfig;
 import org.cedar.psi.manager.util.RecordParser;
 import org.cedar.psi.manager.util.RoutingUtils;
@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import static org.apache.kafka.streams.KafkaStreams.State.ERROR;
 import static org.apache.kafka.streams.KafkaStreams.State.NOT_RUNNING;
 import static org.apache.kafka.streams.StreamsConfig.*;
-import static org.cedar.psi.common.constants.Topics.*;
 
 public class StreamManager {
   private static final Logger log = LoggerFactory.getLogger(StreamManager.class);

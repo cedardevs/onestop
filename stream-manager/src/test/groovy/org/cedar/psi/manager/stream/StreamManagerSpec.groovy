@@ -6,9 +6,9 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
-import org.cedar.psi.common.constants.StreamsApps
-import org.cedar.psi.common.constants.Topics
-import org.cedar.psi.common.serde.JsonSerdes
+import org.cedar.onestop.kafka.common.constants.StreamsApps
+import org.cedar.onestop.kafka.common.constants.Topics
+import org.cedar.onestop.kafka.common.serde.JsonSerdes
 import org.cedar.psi.manager.config.ManagerConfig
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
