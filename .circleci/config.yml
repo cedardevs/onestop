@@ -83,7 +83,7 @@ jobs:
 
       - run:
           name: Build shared resources
-          command: ./gradlew --parallel elastic-common:build
+          command: ./gradlew --parallel elastic-common:build --stacktrace
 
       - persist_to_workspace:
           root: ~/repo
