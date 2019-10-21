@@ -10,25 +10,25 @@ repositories {
 sourceCompatibility = '11'
 
 dependencies {
-  compile("org.codehaus.groovy:groovy:${project.groovyVersion}")
-  compile("org.codehaus.groovy:groovy-json:${project.groovyVersion}")
-  compile("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
-  compile("org.apache.avro:avro:1.8.2")
-  compile("org.slf4j:slf4j-api:1.7.25")
-  compile("ch.qos.logback:logback-classic:1.2.3")
-  compile("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
+  implementation("org.codehaus.groovy:groovy:${project.groovyVersion}")
+  implementation("org.codehaus.groovy:groovy-json:${project.groovyVersion}")
+  implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
+  implementation("org.apache.avro:avro:1.8.2")
+  implementation("org.slf4j:slf4j-api:1.7.25")
+  implementation("ch.qos.logback:logback-classic:1.2.3")
+  implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
 
-  testCompile("org.spockframework:spock-core:${project.spockVersion}")
-  testCompile("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
-  testCompile("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
-  testCompile("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
-  testCompile("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
-  testCompile("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
-  testCompile("io.confluent:kafka-schema-registry:${project.confluentVersion}")
-  testCompile("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
-  testCompile("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
-  testCompile("com.github.everit-org.json-schema:org.everit.json.schema:1.9.2")
-  testCompile("org.json:json:20180813")
+  testImplementation("org.spockframework:spock-core:${project.spockVersion}")
+  testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
+  testImplementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
+  testImplementation("com.github.everit-org.json-schema:org.everit.json.schema:1.9.2")
+  testImplementation("org.json:json:20180813")
 }
 
 jar {
