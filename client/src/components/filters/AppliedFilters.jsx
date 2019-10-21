@@ -2,7 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import AppliedFilterBubble from './AppliedFilterBubble'
 import * as geoUtils from '../../utils/geoUtils'
-import {displayBigYears} from '../../utils/ReadableUtils'
+import {displayBigYears} from '../../utils/readableUtils'
 
 const Theme = {
   facet: {
