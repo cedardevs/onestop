@@ -2,8 +2,8 @@ package org.cedar.psi.manager.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.cedar.onestop.kafka.common.util.DataUtils;
-import org.cedar.onestop.kafka.common.util.ValueWithErrors;
+import org.cedar.psi.common.util.DataUtils;
+import org.cedar.psi.common.util.ValueWithErrors;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ErrorEvent;
 import org.cedar.schemas.avro.psi.ParsedRecord;
