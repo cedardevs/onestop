@@ -55,6 +55,7 @@ saveCache: &saveCache
       - client/.gradle
       - client/node_modules
       - search/build
+      - cli/.gogradle
     key: onestop-cache-v12-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "search/build.gradle" }}
 
 attachWorkspace: &attachWorkspace
@@ -225,9 +226,10 @@ jobs:
     <<: *defaults
     steps:
       - <<: *attachWorkspace
-
+      - environment:
+         GOPATH : ~/repo/onestop/cli/.gogradle/project_gopath
       - run:
-          name: Assemble, Check
+          name: Build image, publish
           command: ./gradlew cli:build
 
       - deploy:
