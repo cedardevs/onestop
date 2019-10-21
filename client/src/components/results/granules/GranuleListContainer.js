@@ -4,8 +4,8 @@ import {
   removeSelectedGranule,
 } from '../../../actions/CartActions'
 import {
-  insertGranule,
-  removeGranuleFromLocalStorage,
+  insertSelectedGranuleIntoLocalStorage,
+  removeSelectedGranuleFromLocalStorage,
   getSelectedGranulesFromStorage,
 } from '../../../utils/localStorageUtil'
 
@@ -54,11 +54,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       )
     },
     selectGranule: (item, itemId) => {
-      insertGranule(itemId, item)
+      insertSelectedGranuleIntoLocalStorage(itemId, item)
       dispatch(insertSelectedGranule(item, itemId))
     },
     deselectGranule: itemId => {
-      removeGranuleFromLocalStorage(itemId)
+      removeSelectedGranuleFromLocalStorage(itemId)
       dispatch(removeSelectedGranule(itemId))
     },
   }

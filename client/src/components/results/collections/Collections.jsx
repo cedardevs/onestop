@@ -1,9 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import CollectionCard from './CollectionCard'
+import CollectionGridItem from './CollectionGridItem'
 import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
 import Meta from '../../helmet/Meta'
+import CollectionListItem from './CollectionListItem'
 
 const styleCollections = {
   color: '#222',
@@ -18,9 +19,13 @@ const styleShowMoreFocus = {
 }
 
 export default class Collections extends React.Component {
-  itemSelect = key => {
+  propsForResult = (item, itemId) => {
     const {selectCollection, collectionDetailFilter} = this.props
-    selectCollection(key, collectionDetailFilter)
+    return {
+      onSelect: key => {
+        selectCollection(key, collectionDetailFilter)
+      },
+    }
   }
 
   render() {
@@ -51,11 +56,9 @@ export default class Collections extends React.Component {
           shown={returnedHits}
           total={totalHits}
           onItemSelect={this.itemSelect}
-          ListItemComponent={null}
-          GridItemComponent={CollectionCard}
-          propsForItem={item => {
-            return null
-          }}
+          ListItemComponent={CollectionListItem}
+          GridItemComponent={CollectionGridItem}
+          propsForItem={this.propsForResult}
         />
         {showMoreButton}
       </div>

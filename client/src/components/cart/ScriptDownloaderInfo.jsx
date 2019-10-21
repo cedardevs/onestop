@@ -1,8 +1,7 @@
 import React from 'react'
-import FlexRow from '../common/ui/FlexRow'
 import dlStep1 from '../../../img/dl-step1.png'
 import {fontFamilyMonospace} from '../../utils/styleUtils'
-import Expandable from '../common/ui/Expandable'
+import Expandable from '../common/ui/ExpandableOld'
 import {SiteColors} from '../../style/defaultStyles'
 
 const styleExpandableInfoContent = {

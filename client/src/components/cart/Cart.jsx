@@ -1,17 +1,17 @@
 import React from 'react'
 import Meta from 'react-helmet'
 import ListView from '../common/ui/ListView'
-import CartItem from './CartItem'
 import Button from '../common/input/Button'
 import {boxShadow} from '../../style/defaultStyles'
 import {identifyProtocol} from '../../utils/resultUtils'
-import cancel from 'fa/ban.svg'
+import clearIcon from 'fa/ban.svg'
+import expandIcon from 'fa/expand.svg'
+import collapseIcon from 'fa/compress.svg'
+
 import {fontFamilySerif} from '../../utils/styleUtils'
 import ScriptDownloader from './ScriptDownloader'
 import {FEATURE_CART} from '../../utils/featureUtils'
-import {Route} from 'react-router'
-import {ROUTE} from '../../utils/urlUtils'
-import CartContainer from './CartContainer'
+import CartListItem from './CartListItem'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -82,10 +82,11 @@ export default class Cart extends React.Component {
   propsForResult = (item, itemId) => {
     const {deselectGranule} = this.props
     let resultProps = {}
-    return {deselectGranule: deselectGranule}
+    return {
+      onSelect: () => {},
+      deselectGranule: deselectGranule,
+    }
   }
-
-  handleSelectItem = e => {}
 
   handleShowMore = () => {
     const {numberOfGranulesSelected} = this.props
@@ -127,6 +128,8 @@ export default class Cart extends React.Component {
     // keep track of used protocols in results to avoid unnecessary legend keys
     const usedProtocols = new Set()
 
+    console.log("numShownItems", numShownItems)
+
     for (let key in selectedGranules) {
       if (selectedGranules.hasOwnProperty(key)) {
         const value = selectedGranules[key]
@@ -159,18 +162,23 @@ export default class Cart extends React.Component {
         </div>
       )
 
-    const clearCartButton = (
-      <Button
-        key={'clearCartButton'}
-        style={styleClearCartButton}
-        styleFocus={styleClearCartButtonFocus}
-        title={'Clear All Granules from Cart'}
-        text={'Clear All'}
-        icon={cancel}
-        styleIcon={styleClearCartIcon}
-        onClick={deselectAllGranules}
-      />
-    )
+    const cartListCustomActions = {
+      'Clear All': {
+        title: 'Clear All Granules from Cart',
+        icon: clearIcon,
+        showText: true,
+        handler: () => deselectAllGranules(),
+      }
+    }
+
+    // filter map down to size of results in cart we want (# shownGranules)
+    const allowed = Object.keys(selectedGranules).slice(0, shownGranules)
+    const subset = Object.keys(selectedGranules)
+      .filter(key => allowed.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = selectedGranules[key];
+        return obj;
+      }, {})
 
     return (
       <div style={styleCenterContent}>
@@ -179,16 +187,15 @@ export default class Cart extends React.Component {
         <div style={styleCartListWrapper}>
           {cartActionsWrapper}
           <ListView
-            items={selectedGranules}
+            items={subset}
             resultsMessage={'Files for download'}
             resultsMessageEmpty={'No files selected for download'}
-            shown={shownGranules}
-            total={selectedGranulesCount}
-            onItemSelect={this.handleSelectItem}
-            ListItemComponent={CartItem}
+            // shown={shownGranules}
+            // total={selectedGranulesCount}
+            ListItemComponent={CartListItem}
             GridItemComponent={null}
             propsForItem={this.propsForResult}
-            customControl={selectedGranulesCount > 0 ? clearCartButton : null}
+            customActions={cartListCustomActions}
           />
           {showMoreButton}
         </div>

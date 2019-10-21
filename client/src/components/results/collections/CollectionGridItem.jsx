@@ -123,7 +123,7 @@ const styleTitle = {
   overflow: 'hidden',
 }
 
-export default class CollectionCard extends React.Component {
+export default class CollectionGridItem extends React.Component {
   constructor(props) {
     super(props)
     const {item} = this.props
@@ -239,6 +239,7 @@ export default class CollectionCard extends React.Component {
           <button
             style={styleOverlayMerged}
             onClick={onClick}
+            role="link"
             onMouseOver={this.handleMouseOver}
             onMouseOut={this.handleMouseOut}
             onFocus={this.handleFocus}
@@ -256,7 +257,7 @@ export default class CollectionCard extends React.Component {
   }
 }
 
-CollectionCard.propTypes = {
+CollectionGridItem.propTypes = {
   item: PropTypes.object.isRequired,
   onClick: PropTypes.func.isRequired,
 }

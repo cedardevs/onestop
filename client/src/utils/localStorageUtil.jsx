@@ -1,3 +1,4 @@
+// local storage utilities
 export const storageAvailable = type => {
   try {
     var storage = window[type],
@@ -23,63 +24,66 @@ export const storageAvailable = type => {
   }
 }
 
-export const insertGranule = (itemId, item) => {
-  let selectedGranules = localStorage.getItem('selectedGranules')
-    ? JSON.parse(localStorage.getItem('selectedGranules'))
-    : {}
-  let cartGranule = {}
-  cartGranule[itemId] = item
-  localStorage.setItem(
-    'selectedGranules',
-    JSON.stringify({...selectedGranules, ...cartGranule})
-  )
-}
-
-export const insertGranules = granules => {
-  // loop through the granule "data" array returned from a search API granule success payload
-  granules.forEach(g => {
-    let selectedGranules = localStorage.getItem('selectedGranules')
-      ? JSON.parse(localStorage.getItem('selectedGranules'))
-      : {}
-
-    const itemId = g.id
-    const item = g.attributes
-    let cartGranule = {}
-    cartGranule[itemId] = item
-
-    // set each granule into local storage,
-    // overriding any previous conflicting granule ids with new
-    localStorage.setItem(
-      'selectedGranules',
-      JSON.stringify({...selectedGranules, ...cartGranule})
-    )
-  })
-}
-
-export const removeGranuleFromLocalStorage = itemId => {
-  let selectedGranules = JSON.parse(localStorage.getItem('selectedGranules'))
-  delete selectedGranules[itemId]
-  localStorage.setItem(
-    'selectedGranules',
-    JSON.stringify({...selectedGranules})
-  )
-}
-
-export const getSelectedGranulesFromStorage = state => {
-  if (storageAvailable('localStorage')) {
+const getObjectFromLocalStorage = (keyToObject, fallback) => {
+  if(storageAvailable('localStorage')) {
     try {
-      const parsedSelectedGranules = JSON.parse(
-        localStorage.getItem('selectedGranules')
-      )
-      return parsedSelectedGranules ? parsedSelectedGranules : {}
-    } catch (e) {}
+      const parsedObject = JSON.parse(localStorage.getItem(keyToObject))
+      return parsedObject ? parsedObject : {}
+    }
+    catch (e) {}
     return {}
   }
-  else {
-    return state.cart.granules.selectedGranules
-  }
+  return fallback
 }
 
-export const removeAllGranulesFromLocalStorage = () => {
+const getListFromLocalStorage = (keyToList, fallback) => {
+  if(storageAvailable('localStorage')) {
+    try {
+      const parsedList = JSON.parse(localStorage.getItem(keyToList))
+      return parsedList ? parsedList : []
+    }
+    catch (e) {}
+    return []
+  }
+  return fallback
+}
+
+// ---- OLD STUFF ----
+// selected granules (to be added to cart) in local storage
+const KEY_SELECTED_GRANULES = 'selectedGranules'
+export const getSelectedGranulesFromStorage = state => {
+  // fallback to the redux state of selected cart granules, if local storage unavailable
+  return getObjectFromLocalStorage(KEY_SELECTED_GRANULES, state.cart.selectedGranules)
+}
+
+export const insertSelectedGranuleIntoLocalStorage = (itemId, item) => {
+  const selectedGranules = getObjectFromLocalStorage(KEY_SELECTED_GRANULES, {})
+  const newSelectedGranules = {...selectedGranules, [itemId]: item}
+  localStorage.setItem(KEY_SELECTED_GRANULES, JSON.stringify(newSelectedGranules))
+}
+
+export const insertSelectedGranulesIntoLocalStorage = granules => {
+  const selectedGranules = getObjectFromLocalStorage(KEY_SELECTED_GRANULES, {})
+
+  // loop through the granule "data" array returned from a search API granule success payload
+  let insertedGranules = {}
+  granules.forEach(g => {
+    insertedGranules[g.id] = g.attributes
+  })
+
+  // set each granule into local storage,
+  // overriding any previous conflicting granule ids with new
+  const newSelectedGranules = {...selectedGranules, ...insertedGranules}
+  localStorage.setItem(KEY_SELECTED_GRANULES, JSON.stringify(newSelectedGranules))
+}
+
+export const removeSelectedGranuleFromLocalStorage = itemId => {
+  const selectedGranules = getObjectFromLocalStorage(KEY_SELECTED_GRANULES, {})
+  delete selectedGranules[itemId]
+  localStorage.setItem(KEY_SELECTED_GRANULES, JSON.stringify(selectedGranules))
+}
+
+export const removeAllSelectedGranulesFromLocalStorage = () => {
   localStorage.setItem('selectedGranules', JSON.stringify({}))
 }
+

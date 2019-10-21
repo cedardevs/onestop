@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import A from '../../common/link/Link'
 import FlexRow from '../../common/ui/FlexRow'
-import Expandable from '../../common/ui/Expandable'
+import Expandable from '../../common/ui/ExpandableOld'
 import {
   star,
   star_o,

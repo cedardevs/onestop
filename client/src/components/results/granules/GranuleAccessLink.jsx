@@ -14,7 +14,7 @@ const styleBadgeLink = {
 }
 
 const styleBadgeLinkFocused = {
-  outline: '2px dashed white',
+  outline: '2px dashed black',
   outlineOffset: '0.105em',
 }
 

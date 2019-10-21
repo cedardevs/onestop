@@ -2,14 +2,11 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import Cart from './Cart'
 import {
-  removeAllGranulesFromLocalStorage,
-  removeGranuleFromLocalStorage,
   getSelectedGranulesFromStorage,
+  removeAllSelectedGranulesFromLocalStorage,
+  removeSelectedGranuleFromLocalStorage,
 } from '../../utils/localStorageUtil'
-import {
-  removeAllSelectedGranule,
-  removeSelectedGranule,
-} from '../../actions/CartActions'
+import {removeAllSelectedGranule, removeSelectedGranule,} from '../../actions/CartActions'
 
 // import mockCartItems from '../../../test/cart/mockCartItems'
 
@@ -45,11 +42,11 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     deselectGranule: itemId => {
-      removeGranuleFromLocalStorage(itemId)
+      removeSelectedGranuleFromLocalStorage(itemId)
       dispatch(removeSelectedGranule(itemId))
     },
     deselectAllGranules: () => {
-      removeAllGranulesFromLocalStorage()
+      removeAllSelectedGranulesFromLocalStorage()
       dispatch(removeAllSelectedGranule())
     },
   }

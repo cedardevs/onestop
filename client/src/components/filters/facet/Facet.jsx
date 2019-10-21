@@ -1,5 +1,5 @@
 import React from 'react'
-import Expandable from '../../common/ui/Expandable'
+import Expandable from '../../common/ui/ExpandableOld'
 import Checkbox from '../../common/input/Checkbox'
 
 /**

@@ -19,7 +19,7 @@ import {
 } from './GranuleSearchStateActions'
 import {
   getSelectedGranulesFromStorage,
-  insertGranules,
+  insertSelectedGranulesIntoLocalStorage,
 } from '../../utils/localStorageUtil'
 import {
   warningExceedsMaxAddition,
@@ -137,7 +137,7 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
     }
 
     // add to local storage
-    insertGranules(granules)
+    insertSelectedGranulesIntoLocalStorage(granules)
 
     // and then add to redux state
     dispatch(granulesForCartResultsReceived(granules, total))

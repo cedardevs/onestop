@@ -5,6 +5,7 @@ import {abbreviateNumber} from '../../utils/readableUtils'
 import {getSelectedGranulesFromStorage} from '../../utils/localStorageUtil'
 
 const mapStateToProps = state => {
+  console.log("state", state)
   const numberOfGranulesSelected = Object.keys(
     getSelectedGranulesFromStorage(state)
   ).length

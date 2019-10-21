@@ -2,12 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
-import GranuleListResultContainer from './GranuleListResultContainer'
 import {SiteColors} from '../../../style/defaultStyles'
 import Meta from '../../helmet/Meta'
 import _ from 'lodash'
 import cartIcon from '../../../../img/font-awesome/white/svg/shopping-cart.svg'
 import {FEATURE_CART} from '../../../utils/featureUtils'
+import GranuleListItem from './GranuleListItem'
 
 const styleCenterContent = {
   display: 'flex',
@@ -95,9 +95,10 @@ export default class GranuleList extends React.Component {
   }
 
   propsForResult = (item, itemId) => {
-    const {featuresEnabled} = this.props
+    const {selectCollection, featuresEnabled} = this.props
 
     return {
+      onSelect: selectCollection,
       showLinks: true,
       showTimeAndSpace: true,
       handleCheckboxChange: this.handleCheckboxChange,
@@ -111,7 +112,6 @@ export default class GranuleList extends React.Component {
       results,
       returnedHits,
       totalHits,
-      selectCollection,
       fetchMoreResults,
       addFilteredGranulesToCart,
       addFilteredGranulesToCartWarning,
@@ -151,6 +151,15 @@ export default class GranuleList extends React.Component {
       )
     }
 
+    const granuleListCustomActions = {
+      'Add Matching to Cart': {
+        title: 'Add Matching to Cart',
+        icon: cartIcon,
+        showText: true,
+        handler: () => addFilteredGranulesToCart(granuleFilter),
+      }
+    }
+
     let customMessage = addFilteredGranulesToCartWarning ? (
       <div
         key="GranuleList::Warning"
@@ -175,12 +184,13 @@ export default class GranuleList extends React.Component {
             resultType="matching files"
             shown={returnedHits}
             total={totalHits}
-            onItemSelect={selectCollection}
-            ListItemComponent={GranuleListResultContainer}
+            ListItemComponent={GranuleListItem}
             GridItemComponent={null}
             propsForItem={this.propsForResult}
             customButtons={customButtons}
             customMessage={customMessage}
+
+            customActions={granuleListCustomActions}
           />
           {showMoreButton}
         </div>
