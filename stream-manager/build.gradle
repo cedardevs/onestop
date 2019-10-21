@@ -30,8 +30,9 @@ dependencies {
   implementation("ch.qos.logback:logback-classic:1.2.3")
   implementation('org.yaml:snakeyaml:1.24')
 
-  implementation("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
   implementation("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
 
   testImplementation("org.spockframework:spock-core:${project.spockVersion}")
   testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
