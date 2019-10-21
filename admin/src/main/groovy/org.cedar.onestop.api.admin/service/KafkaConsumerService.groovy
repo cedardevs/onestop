@@ -32,19 +32,17 @@ class KafkaConsumerService {
     // Update collections & granules
     log.info("consuming message from kafka topic")
     try {
-      def validRecords = records.stream()
-          .filter({ (it != null)} )
-          .map({
-            if(it.value().discovery == null && it.value().analysis == null) {
-              [id: it.key(), parsedRecord: Analyzers.addAnalysis(DefaultParser.addDiscoveryToParsedRecord(it.value()))]
-            }
-            else {
-              [id: it.key(), parsedRecord: it.value()]
-            }
-           })
-          .filter({Indexer.validateMessage(it.id, it.parsedRecord)?.valid})
-          .collect(Collectors.toList())
+      def partitionedRecords = records.stream()
+          .filter({ it != null })
+          .map({ [id: it.key(), parsedRecord: fillInRecord(it.value())] })
+          .filter({it.parsedRecord == null || Indexer.validateMessage(it.id, it.parsedRecord)?.valid})
+          .collect(Collectors.partitioningBy({it.parsedRecord == null}))
 
+      def tombstones = partitionedRecords.getOrDefault(true, Collections.emptyList())
+      tombstones.forEach({
+        metadataManagementService.deleteMetadata(it.id as String, true, false)
+      })
+      def validRecords = partitionedRecords.getOrDefault(false, Collections.emptyList())
       if (validRecords.size() > 0) {
         metadataManagementService.loadParsedRecords(validRecords)
       }
@@ -52,6 +50,21 @@ class KafkaConsumerService {
     catch (Exception e) {
       log.error("Unexpected error", e)
     }
+  }
+
+  /**
+   * Fills in default discovery and analysis information on a record if it does not already have them
+   * @param record The record
+   * @return The filled-in record, or null if the input record itself is null
+   */
+  private static ParsedRecord fillInRecord(ParsedRecord record) {
+    if (record != null && record.discovery == null) {
+      record = DefaultParser.addDiscoveryToParsedRecord(record)
+    }
+    if (record != null && record.analysis == null) {
+      record = Analyzers.addAnalysis(record)
+    }
+    return record
   }
 
 }
