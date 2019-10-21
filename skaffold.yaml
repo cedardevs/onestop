@@ -65,7 +65,7 @@ deploy:
         # all features default to "false" in base chart, unless otherwise overridden
         features.cas: false
         replicaCount: 2
-        # if true, `kubectl port-forward psi-registry-0 5005:5005` to expose JDWP for debugging
+        # if true, `kubectl port-forward onestop-registry-0 5005:5005` to expose JDWP for debugging
         # then, create a "Remote" Debug Configuration in intelliJ (Host: 127.0.0.1, Port: 5005)
         debug: false
         config: |-
@@ -80,7 +80,7 @@ deploy:
             num-partitions: 2
             replication-factor: 1
           cas:
-            prefixUrl: 'http://psi-dev-cas:8080/cas'
+            prefixUrl: 'http://onestop-dev-cas:8080/cas'
           authorization:
             roles:
               ROLE_ADMIN:
@@ -172,18 +172,43 @@ deploy:
 profiles:
   - name: registry
     patches:
-      # remove the psi-manager from the build and deployment
       - op: remove
         path: /build/artifacts/1
       - op: remove
         path: /deploy/helm/releases/1
-  - name: manager
-    patches:
-      # remove the psi-manager from the build and deployment
-      - op: remove
-        path: /build/artifacts/0
-      - op: remove
-        path: /deploy/helm/releases/0
+#  - name: manager
+#    patches:
+#      # remove the psi-manager from the build and deployment
+#      - op: remove
+#        path: /build/artifacts/0
+#      - op: remove
+#        path: /deploy/helm/releases/0
+#  - name: client
+#    patches:
+#      - op: remove
+#        path: /build/artifacts/4
+#      - op: remove
+#        path: /deploy/helm/releases/4
+#  - name: registry
+#    patches:
+#      # remove the onestop-registry from the build and deployment
+#      - op: remove
+#        path: /build/artifacts/1
+#      - op: remove
+#        path: /deploy/helm/releases/1
+#  - name: search
+#    patches:
+#      - op: remove
+#        path: /build/artifacts/3
+#      - op: remove
+#        path: /deploy/helm/releases/3
+#  - name: stream-manager
+#    patches:
+#      # remove the onestop-manager from the build and deployment
+#      - op: remove
+#        path: /build/artifacts/0
+#      - op: remove
+#        path: /deploy/helm/releases/0
   - name: cas
     patches:
       - op: replace
