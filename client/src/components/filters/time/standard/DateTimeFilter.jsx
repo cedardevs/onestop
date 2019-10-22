@@ -64,6 +64,7 @@ const DateTimeFilter = ({
   startDateTime,
   endDateTime,
   timeRelationship,
+  updateTimeRelationship,
   clear,
   applyFilter,
 }) => {
@@ -71,7 +72,6 @@ const DateTimeFilter = ({
   const [ end, setEnd ] = useState({date: {}, valid: true})
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
-  const [ relation, setRelation ] = useState('')
 
   const updateStartDate = (date, valid) => {
     setStart({date: date, valid: valid})
@@ -104,7 +104,7 @@ const DateTimeFilter = ({
         ? moment(end.date).utc().startOf('day').format()
         : null
 
-      applyFilter(startDateString, endDateString, relation)
+      applyFilter(startDateString, endDateString)
     }
   }
 
@@ -183,6 +183,7 @@ const DateTimeFilter = ({
         <TimeRelation
           id="datetimeRelation"
           timeRelationship={timeRelationship}
+          onUpdate={updateTimeRelationship}
           hasStart={start.date.year != null}
           hasEnd={end.date.year != null}
         />

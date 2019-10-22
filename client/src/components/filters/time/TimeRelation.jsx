@@ -42,7 +42,7 @@ const RELATION_OPTIONS = [
   },
 ]
 
-const TimeRelation = ({id, timeRelationship, hasStart, hasEnd}) => {
+const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
   // let defaultSelection = _.find(RELATION_OPTIONS, option => {
   //   return option.value == timeRelationship
   // })
@@ -68,6 +68,13 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd}) => {
       }
     },
     [ timeRelationship ]
+  )
+
+  useEffect(
+    () => {
+      onUpdate(selectedRelation.value)
+    },
+    [ selectedRelation ]
   )
 
   return (

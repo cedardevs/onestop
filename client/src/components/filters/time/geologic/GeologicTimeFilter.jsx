@@ -18,6 +18,8 @@ import GeologicPresets from './GeologicPresets'
 
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
 
+import TimeRelation from '../TimeRelation'
+
 import {
   styleFilterPanel,
   styleFieldsetBorder,
@@ -42,7 +44,14 @@ const warningStyle = warning => {
   }
 }
 
-const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
+const GeologicTimeFilter = ({
+  startYear,
+  endYear,
+  timeRelationship,
+  updateTimeRelationship,
+  clear,
+  applyFilter,
+}) => {
   const [ start, setStart ] = useState({year: null, valid: true})
   const [ end, setEnd ] = useState({year: null, valid: true})
   const [ format, setFormat ] = useState('CE')
@@ -161,6 +170,14 @@ const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
           <abbr title="megaannum">Ma</abbr>, <abbr title="gigaannum">Ga</abbr>).
         </legend>
         <FlexColumn items={[ form, buttons, warningMessage, presets ]} />
+
+        <TimeRelation
+          id="geologicTimeRelation"
+          timeRelationship={timeRelationship}
+          onUpdate={updateTimeRelationship}
+          hasStart={!_.isEmpty(start.year)}
+          hasEnd={!_.isEmpty(end.year)}
+        />
       </fieldset>
     </div>
   )

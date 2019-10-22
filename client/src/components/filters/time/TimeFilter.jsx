@@ -38,14 +38,17 @@ const TimeFilter = ({
   const [ showAlert, setShowAlert ] = useState(false)
   const [ alertAnnouncement, setAlertAnnouncement ] = useState('')
 
+  const [ relation, setRelation ] = useState('')
+
   const standardView = (
     <DateTimeFilter
       startDateTime={startDateTime}
       endDateTime={endDateTime}
       timeRelationship={timeRelationship}
-      applyFilter={(startDate, endDate, relationship) => {
+      updateTimeRelationship={setRelation}
+      applyFilter={(startDate, endDate) => {
         removeYearRange()
-        updateDateRange(startDate, endDate, relationship)
+        updateDateRange(startDate, endDate, relation)
         submit()
       }}
       clear={() => {
@@ -59,9 +62,10 @@ const TimeFilter = ({
       startYear={startYear}
       endYear={endYear}
       timeRelationship={timeRelationship}
-      applyFilter={(startYear, endYear, relationship) => {
+      updateTimeRelationship={setRelation}
+      applyFilter={(startYear, endYear) => {
         removeDateRange()
-        updateYearRange(startYear, endYear, relationship)
+        updateYearRange(startYear, endYear, relation)
         submit()
       }}
       clear={() => {
