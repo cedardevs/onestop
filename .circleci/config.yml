@@ -360,6 +360,7 @@ workflows:
             branches:
               only:
                 - master
+                - 1029-updateCircle
     jobs:
       - checkout
       - check-owasp-cve:
