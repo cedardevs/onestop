@@ -230,6 +230,7 @@ describe('granule search actions', function(){
       const {granuleFilter} = store.getState().search
       expect(granuleFilter.startDateTime).toEqual('2017')
       expect(granuleFilter.endDateTime).toEqual('2018')
+      expect(granuleFilter.timeRelationship).toBeNull()
     })
 
     it(`${submitSearchCase.name} does not change existing filters`, function(){

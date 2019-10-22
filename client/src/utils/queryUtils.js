@@ -74,30 +74,41 @@ const assembleGeometryFilters = ({geoJSON}) => {
 }
 
 const assembleTemporalFilters = ({
+  timeRelationship,
   startDateTime,
   endDateTime,
   startYear,
   endYear,
 }) => {
   if (startDateTime && endDateTime) {
-    return {type: 'datetime', after: startDateTime, before: endDateTime}
+    return {
+      type: 'datetime',
+      after: startDateTime,
+      before: endDateTime,
+      relation: timeRelationship,
+    }
   }
   else if (startDateTime) {
-    return {type: 'datetime', after: startDateTime}
+    return {type: 'datetime', after: startDateTime, relation: timeRelationship}
   }
   else if (endDateTime) {
-    return {type: 'datetime', before: endDateTime}
+    return {type: 'datetime', before: endDateTime, relation: timeRelationship}
   }
 
   // note: while this method does not explicitly prevent both datetime and year being used together (which is not actually valid), it also won't return anything for year if either datetime filter is used...
   if (startYear && endYear) {
-    return {type: 'year', after: startYear, before: endYear}
+    return {
+      type: 'year',
+      after: startYear,
+      before: endYear,
+      relation: timeRelationship,
+    }
   }
   else if (startYear) {
-    return {type: 'year', after: startYear}
+    return {type: 'year', after: startYear, relation: timeRelationship}
   }
   else if (endYear) {
-    return {type: 'year', before: endYear}
+    return {type: 'year', before: endYear, relation: timeRelationship}
   }
 }
 
@@ -166,6 +177,19 @@ export const decodeQueryString = queryString => {
   return searchParams
 }
 
+const encodeRelationship = text => {
+  if (text == 'intersects') return 'i' // TODO don't know if I can get it to skip it (and if I did, it'd also skip for no actual time filters)
+  if (text == 'within') return 'w'
+  if (text == 'disjoint') return 'd'
+  if (text == 'contains') return 'c'
+}
+const decodeRelationship = text => {
+  if (text == 'd') return 'disjoint'
+  if (text == 'c') return 'contains'
+  if (text == 'w') return 'within'
+  return null
+}
+
 const codecs = [
   {
     longKey: 'queryText',
@@ -187,6 +211,13 @@ const codecs = [
     encode: geoJSON => convertGeoJsonToBboxString(geoJSON),
     decode: text => convertBboxStringToGeoJson(text),
     encodable: getJSON => !_.isEmpty(getJSON),
+  },
+  {
+    longKey: 'timeRelationship',
+    shortKey: 'r',
+    encode: text => encodeRelationship(text),
+    decode: text => decodeRelationship(text),
+    encodable: text => !_.isEmpty(text),
   },
   {
     longKey: 'startDateTime',

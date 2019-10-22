@@ -47,7 +47,7 @@ const RESULTS = [
     start: 1,
     relation: [
       {contains: true, within: false, intersects: true, disjoint: false},
-      {contains: true, within: true, intersects: true, disjoint: false},
+      {contains: true, within: false, intersects: true, disjoint: false},
       {contains: false, within: false, intersects: true, disjoint: false},
     ],
   },

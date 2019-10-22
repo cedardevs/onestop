@@ -30,12 +30,12 @@ const RELATION_OPTIONS = [
   },
   {
     value: 'contains',
-    label: 'Contains',
+    label: 'Result fully contains query',
   },
   {
     value: 'within',
-    label: 'Within',
-  },
+    label: 'Result fully within query',
+  }, // TODO display as: Result [dropdown] query
   // {
   //   value: 'disjoint',
   //   label: 'Disjoint',
@@ -59,12 +59,18 @@ const warningStyle = warning => {
   }
 }
 
-const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
+const DateTimeFilter = ({
+  startDateTime,
+  endDateTime,
+  timeRelationship,
+  clear,
+  applyFilter,
+}) => {
   const [ start, setStart ] = useState({date: {}, valid: true})
   const [ end, setEnd ] = useState({date: {}, valid: true})
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
-  const [ relation, setRelation ] = useState('intersects')
+  const [ relation, setRelation ] = useState('')
 
   const updateStartDate = (date, valid) => {
     setStart({date: date, valid: valid})
@@ -97,7 +103,7 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
         ? moment(end.date).utc().startOf('day').format()
         : null
 
-      applyFilter(startDateString, endDateString)
+      applyFilter(startDateString, endDateString, relation)
     }
   }
 
@@ -156,6 +162,15 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
     </div>
   )
 
+  // let defaultSelection = 'intersects'
+  // timeRelationship || 'intersects
+  let defaultSelection = _.find(RELATION_OPTIONS, option => {
+    return option.value == timeRelationship
+  })
+  if (!defaultSelection) {
+    defaultSelection = RELATION_OPTIONS[0]
+  }
+  defaultSelection = defaultSelection.value
   return (
     <div style={styleFilterPanel}>
       <fieldset style={styleFieldsetBorder}>
@@ -170,6 +185,7 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
           onSelectionChange={relation => {
             setRelation(relation)
           }}
+          defaultSelection={defaultSelection}
         />
         <TimelineRelationDisplay
           relation={relation}

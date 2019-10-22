@@ -22,6 +22,7 @@ const alertStyle = {
 }
 
 const TimeFilter = ({
+  timeRelationship,
   startDateTime,
   endDateTime,
   updateDateRange,
@@ -41,9 +42,10 @@ const TimeFilter = ({
     <DateTimeFilter
       startDateTime={startDateTime}
       endDateTime={endDateTime}
-      applyFilter={(startDate, endDate) => {
+      timeRelationship={timeRelationship}
+      applyFilter={(startDate, endDate, relationship) => {
         removeYearRange()
-        updateDateRange(startDate, endDate)
+        updateDateRange(startDate, endDate, relationship)
         submit()
       }}
       clear={() => {
@@ -56,9 +58,10 @@ const TimeFilter = ({
     <GeologicTimeFilter
       startYear={startYear}
       endYear={endYear}
-      applyFilter={(startYear, endYear) => {
+      timeRelationship={timeRelationship}
+      applyFilter={(startYear, endYear, relationship) => {
         removeDateRange()
-        updateYearRange(startYear, endYear)
+        updateYearRange(startYear, endYear, relationship)
         submit()
       }}
       clear={() => {

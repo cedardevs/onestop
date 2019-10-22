@@ -142,6 +142,31 @@ function collectionTestCases(){
       },
     },
     {
+      name: 'a temporal search (within relation)',
+      inputState: {
+        timeRelationship: 'within',
+        startDateTime: '2017-01-01',
+        endDateTime: '2017-01-20',
+        pageOffset: 0,
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            type: 'datetime',
+            after: '2017-01-01',
+            before: '2017-01-20',
+            relation: 'within',
+          },
+        ],
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0,
+        },
+      },
+    },
+    {
       name: 'a temporal (year) search',
       inputState: {
         startYear: -3000000,
@@ -155,6 +180,31 @@ function collectionTestCases(){
             type: 'year',
             after: -3000000,
             before: -10000,
+          },
+        ],
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0,
+        },
+      },
+    },
+    {
+      name: 'a temporal (year) search (contains relation)',
+      inputState: {
+        timeRelationship: 'contains',
+        startYear: -3000000,
+        endYear: -10000,
+        pageOffset: 0,
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            type: 'year',
+            after: -3000000,
+            before: -10000,
+            relation: 'contains',
           },
         ],
         facets: true,
@@ -521,6 +571,26 @@ function queryTestCases(){
         queryText: 'ocean',
       }),
     },
+    {
+      name: 'time relationship (within)',
+      string: 'r=w',
+      state: Immutable.merge(initialState, {timeRelationship: 'within'}),
+    },
+    {
+      name: 'time relationship (disjoint)',
+      string: 'r=d',
+      state: Immutable.merge(initialState, {timeRelationship: 'disjoint'}),
+    },
+    {
+      name: 'time relationship (contains)',
+      string: 'r=c',
+      state: Immutable.merge(initialState, {timeRelationship: 'contains'}),
+    },
+    // { TODO this test doesn't really work bc of my magic logic
+    //   name: 'time relationship (intersects)',
+    //   string: 'r=i',
+    //   state: Immutable.merge(initialState, { timeRelationship: null}) // this is the default anyway
+    // },
     {
       name: 'start date filter',
       string: 's=2010-01-01T00%3A00%3A00Z',

@@ -19,6 +19,7 @@ import {updateSelectedFacets} from '../../utils/filterUtils'
 export const initialState = Immutable({
   title: '',
   geoJSON: null,
+  timeRelationship: null,
   startDateTime: null,
   endDateTime: null,
   startYear: null,
@@ -74,18 +75,21 @@ export const granuleFilter = (state = initialState, action) => {
       return Immutable.merge(state, {
         startDateTime: action.startDate,
         endDateTime: action.endDate,
+        timeRelationship: action.relationship ? action.relationship : null, // prevent undefined
       })
 
     case GRANULE_UPDATE_YEAR_RANGE:
       return Immutable.merge(state, {
         startYear: action.startYear,
         endYear: action.endYear,
+        timeRelationship: action.relationship ? action.relationship : null, // prevent undefined
       })
 
     case GRANULE_REMOVE_DATE_RANGE:
       return Immutable.merge(state, {
         startDateTime: initialState.startDateTime,
         endDateTime: initialState.endDateTime,
+        // timeRelationship: initialState.timeRelationship, // TODO clear probably shouldn't actually reset this - it needs a separate reset button?
       })
 
     case GRANULE_REMOVE_YEAR_RANGE:

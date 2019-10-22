@@ -15,22 +15,24 @@ const mapStateToProps = state => {
     endDateTime,
     startYear,
     endYear,
+    timeRelationship,
   } = state.search.granuleFilter
   return {
     startDateTime,
     endDateTime,
     startYear,
     endYear,
+    timeRelationship,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    updateDateRange: (startDate, endDate) => {
-      dispatch(granuleUpdateDateRange(startDate, endDate))
+    updateDateRange: (startDate, endDate, relation) => {
+      dispatch(granuleUpdateDateRange(startDate, endDate, relation))
     },
-    updateYearRange: (startYear, endYear) => {
-      dispatch(granuleUpdateYearRange(startYear, endYear))
+    updateYearRange: (startYear, endYear, relation) => {
+      dispatch(granuleUpdateYearRange(startYear, endYear, relation))
     },
     removeDateRange: () => {
       dispatch(granuleRemoveDateRange())
