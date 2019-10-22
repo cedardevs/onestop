@@ -18,6 +18,7 @@ import {updateSelectedFacets} from '../../utils/filterUtils'
 export const initialState = Immutable({
   queryText: '',
   geoJSON: null,
+  timeRelationship: null, // note there's not really a way to clear this value, but it should be clear if all 4 date/year options are null.. TODO
   startDateTime: null,
   endDateTime: null,
   startYear: null,
@@ -39,12 +40,14 @@ export const collectionFilter = (state = initialState, action) => {
       return Immutable.merge(state, {
         startDateTime: action.startDate,
         endDateTime: action.endDate,
+        timeRelationship: action.relationship ? action.relationship : null, // prevent undefined
       })
 
     case COLLECTION_UPDATE_YEAR_RANGE:
       return Immutable.merge(state, {
         startYear: action.startYear,
         endYear: action.endYear,
+        timeRelationship: action.relationship ? action.relationship : null, // prevent undefined
       })
 
     case COLLECTION_REMOVE_DATE_RANGE:

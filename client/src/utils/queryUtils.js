@@ -85,7 +85,7 @@ const assembleTemporalFilters = ({
       type: 'datetime',
       after: startDateTime,
       before: endDateTime,
-      relation: timeRelationship,
+      relation: timeRelationship, // TODO BAD when timeRelationship is null (ie: q=co-ops&s=2010-01-01T00%3A00%3A00Z)
     }
   }
   else if (startDateTime) {
@@ -214,7 +214,7 @@ const codecs = [
   },
   {
     longKey: 'timeRelationship',
-    shortKey: 'r',
+    shortKey: 'r', // TODO make this tr for same reason field is named 'timeRelationship' (namely, that geometry can also have these relationships and they shouldn't overlap!)
     encode: text => encodeRelationship(text),
     decode: text => decodeRelationship(text),
     encodable: text => !_.isEmpty(text),

@@ -140,6 +140,7 @@ describe('collection search actions', function(){
         expect(collectionFilter.startDateTime).toEqual('2017')
         expect(collectionFilter.endDateTime).toEqual('2018')
         expect(collectionFilter.queryText).toEqual('demo')
+        expect(collectionFilter.timeRelationship).toBeNull()
       })
 
       it(`${submitSearchCase.name} does not change existing filters`, function(){

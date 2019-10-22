@@ -19,7 +19,7 @@ import {updateSelectedFacets} from '../../utils/filterUtils'
 export const initialState = Immutable({
   title: '',
   geoJSON: null,
-  timeRelationship: null,
+  timeRelationship: null, // note there's not really a way to clear this value, but it should be clear if all 4 date/year options are null.. TODO
   startDateTime: null,
   endDateTime: null,
   startYear: null,

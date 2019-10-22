@@ -15,22 +15,25 @@ const mapStateToProps = state => {
     endDateTime,
     startYear,
     endYear,
+    timeRelationship,
   } = state.search.collectionFilter
   return {
     startDateTime,
     endDateTime,
     startYear,
     endYear,
+    timeRelationship,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    updateDateRange: (startDate, endDate) => {
-      dispatch(collectionUpdateDateRange(startDate, endDate))
+    updateDateRange: (startDate, endDate, relation) => {
+      console.log('????', relation)
+      dispatch(collectionUpdateDateRange(startDate, endDate, relation))
     },
-    updateYearRange: (startYear, endYear) => {
-      dispatch(collectionUpdateYearRange(startYear, endYear))
+    updateYearRange: (startYear, endYear, relation) => {
+      dispatch(collectionUpdateYearRange(startYear, endYear, relation))
     },
     removeDateRange: () => {
       dispatch(collectionRemoveDateRange())
