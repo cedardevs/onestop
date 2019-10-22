@@ -7,12 +7,12 @@ defaults: &defaults
   docker:
     - image: circleci/openjdk:11-jdk
   environment:
-    - GRADLE_USER_HOME: $HOME/repo/.gradle_home
+    - GRADLE_USER_HOME: .gradle_home
   working_directory: ~/repo
 
 defaultsWithElasticsearch: &defaultsWithElasticsearch
   environment:
-    - GRADLE_USER_HOME: $HOME/repo/.gradle_home
+    - GRADLE_USER_HOME: .gradle_home
   docker:
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
     - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
@@ -40,9 +40,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v14-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
+      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v14-
+      - onestop-cache-v15-
 
 saveCache: &saveCache
   save_cache:
@@ -57,7 +57,7 @@ saveCache: &saveCache
       - registry/build
       - search/build
       - stream-manager/build
-    key: onestop-cache-v14-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
+    key: onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
