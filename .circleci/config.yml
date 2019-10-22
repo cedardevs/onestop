@@ -227,7 +227,7 @@ jobs:
     steps:
       - <<: *attachWorkspace
       - environment:
-         GOPATH : ~/repo/cli/.gogradle/project_gopath
+        GRADLE_USER_HOME: /home/circleci/repo/.gradle_home        
       - run:
           name: Build image, publish
           command: ./gradlew cli:build
