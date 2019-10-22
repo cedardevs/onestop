@@ -42,4 +42,30 @@ func setScdrFlags(){
 	    req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]}")
 	  }
 	})
+
+	cli.RegisterAfter("scdr-files", func(cmd string, params *viper.Viper, resp *gentleman.Response, data interface{}) interface{} {
+		scdrResp := marshalScdrResponse(data)
+		return scdrResp
+	})
+}
+
+
+func marshalScdrResponse(data interface{}) interface{} {
+	responseMap := make(map[string]interface{})
+	links := []string{}
+	m := data.(map[string]interface{})
+	items := m["data"].([]interface {})
+	if len(items) > 0 {
+		for _, v := range items {
+			value := v.(map[string]interface{})
+			attr := value["attributes"].(map[string]interface{})
+			itemLinks := attr["links"].([]interface{})
+			for _, link := range itemLinks {
+				url := link.(map[string]interface{})["linkUrl"].(string)
+				links = append(links, url)
+			}
+		}
+		responseMap["links"] = links
+	}
+	return responseMap
 }
