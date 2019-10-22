@@ -18,6 +18,7 @@ import {updateSelectedFacets} from '../../utils/filterUtils'
 export const initialState = Immutable({
   queryText: '',
   geoJSON: null,
+  // TODO bad - can accidentally build 'null' into the query, which unsurprisingly causes a bad request
   timeRelationship: null, // note there's not really a way to clear this value, but it should be clear if all 4 date/year options are null.. TODO
   startDateTime: null,
   endDateTime: null,

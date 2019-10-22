@@ -21,26 +21,27 @@ import {
   styleForm,
 } from '../../common/styleFilters'
 import ApplyClearRow from '../../common/ApplyClearRow'
-import TimelineRelationDisplay from './TimelineRelationDisplay'
+import TimeRelation from '../TimeRelation'
+// import TimelineRelationDisplay from './TimelineRelationDisplay'
 
-const RELATION_OPTIONS = [
-  {
-    value: 'intersects',
-    label: 'Any Overlap',
-  },
-  {
-    value: 'contains',
-    label: 'Result fully contains query',
-  },
-  {
-    value: 'within',
-    label: 'Result fully within query',
-  }, // TODO display as: Result [dropdown] query
-  // {
-  //   value: 'disjoint',
-  //   label: 'Disjoint',
-  // },
-]
+// const RELATION_OPTIONS = [
+//   {
+//     value: 'intersects',
+//     label: 'Any Overlap',
+//   },
+//   {
+//     value: 'contains',
+//     label: 'Result fully contains query',
+//   },
+//   {
+//     value: 'within',
+//     label: 'Result fully within query',
+//   }, // TODO display as: Result [dropdown] query
+//   // {
+//   //   value: 'disjoint',
+//   //   label: 'Disjoint',
+//   // },
+// ]
 
 const warningStyle = warning => {
   if (_.isEmpty(warning)) {
@@ -164,13 +165,13 @@ const DateTimeFilter = ({
 
   // let defaultSelection = 'intersects'
   // timeRelationship || 'intersects
-  let defaultSelection = _.find(RELATION_OPTIONS, option => {
-    return option.value == timeRelationship
-  })
-  if (!defaultSelection) {
-    defaultSelection = RELATION_OPTIONS[0]
-  }
-  defaultSelection = defaultSelection.value
+  // let defaultSelection = _.find(RELATION_OPTIONS, option => {
+  //   return option.value == timeRelationship
+  // })
+  // if (!defaultSelection) {
+  //   defaultSelection = RELATION_OPTIONS[0]
+  // }
+  // defaultSelection = defaultSelection.value
   return (
     <div style={styleFilterPanel}>
       <fieldset style={styleFieldsetBorder}>
@@ -179,18 +180,11 @@ const DateTimeFilter = ({
           Future dates are not accepted.
         </legend>
         <FlexColumn items={[ form, buttons, warningMessage ]} />
-        <RadioButtonSet
-          name="relationship"
-          options={RELATION_OPTIONS}
-          onSelectionChange={relation => {
-            setRelation(relation)
-          }}
-          defaultSelection={defaultSelection}
-        />
-        <TimelineRelationDisplay
-          relation={relation}
+        <TimeRelation
+          id="datetimeRelation"
+          timeRelationship={timeRelationship}
           hasStart={start.date.year != null}
-          hasEnd={end.date.year}
+          hasEnd={end.date.year != null}
         />
       </fieldset>
     </div>
