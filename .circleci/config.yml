@@ -338,6 +338,9 @@ workflows:
       - search:
           requires:
             - checkout
+      - cli:
+          requires:
+            - checkout
       - finalize:
           requires:
             - admin
