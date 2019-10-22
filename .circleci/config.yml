@@ -226,12 +226,11 @@ jobs:
     <<: *defaults
     steps:
       - <<: *attachWorkspace
-      - environment:
-        GRADLE_USER_HOME: /home/circleci/repo/.gradle_home        
       - run:
           name: Build image, publish
           command: ./gradlew cli:build
-
+          environment:
+              GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
       - deploy:
           name: Publish Image(s)
           command: |
