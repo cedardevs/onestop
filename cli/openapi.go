@@ -21,7 +21,7 @@ func openapiServers() []map[string]string {
 
 		map[string]string{
 			"description": "Development test server (uses test data)",
-			"url":         "https://sciapps.colorado.edu/onestop/api",
+			"url":         "https://sciapps.colorado.edu/onestop-search",
 		},
 
 		map[string]string{
@@ -1092,7 +1092,7 @@ func openapiRegister(subcommand bool) {
 
 		var examples string
 
-		examples += "  " + cli.Root.CommandPath() + " searchcollection facets: true, filters[]{name: science, type: facet, values: Agriculture, Atmosphere > Atmospheric Radiation > Incoming Solar Radiation}, page{max: 20, offset: 0}, queries[]{type: queryText, value: weather}\n"
+		examples += "  " + cli.Root.CommandPath() + " searchcollection facets: true, filters[]{name: science, type: facet, values: Agriculture}, []{name: instruments, type: facet, values: ADCP > Acoustic Doppler Current Profiler}, page{max: 20, offset: 0}, queries[]{type: queryText, value: weather}\n"
 
 		cmd := &cobra.Command{
 			Use:     "searchcollection",

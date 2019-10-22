@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - url: 'https://sciapps.colorado.edu/onestop/api'
+  - url: 'https://sciapps.colorado.edu/onestop-search'
     description: Development test server (uses test data)
   - url: 'https://data.noaa.gov/onestop/api/search'
     description: NOAA OneStop
