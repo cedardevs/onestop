@@ -1,0 +1,82 @@
+[
+  {
+    "type": {
+      "org.cedar.schemas.avro.psi.RecordType": "granule"
+    },
+    "content": {
+      "string": "{\"trackingId\":\"1da0a700-6952-4663-a784-cc3e2c556dfe\",\"fileInformation\":{\"name\":\"AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\",\"size\":108400912,\"checksums\":[{\"value\":\"a1ba1814e81f270cbd63388e9a2d6957\",\"algorithm\":\"MD5\"}],\"format\":\"NetCDF\",\"headers\":\"[title = \\\"Surface reflectance parameters derived from NOAA-19 GAC data for day 2019/225\\\", institution = \\\"NASA/GSFC/SED/ESD/HBSL/TIS/MODIS-LAND > MODIS Land Science Team, Terrestrial Information Systems,  Hydrospheric and Biospheric Science Laboratory, Earth Sciences Division, Science and Exploration Directorate, Goddard Space Flight Center, NASA\\\", Conventions = \\\"CF-1.6, ACDD-1.3\\\", standard_name_vocabulary = \\\"CF Standard Name Table (v25, 05 July 2013)\\\", naming_authority = \\\"gov.noaa.ncei\\\", license = \\\"See the Use Agreement for this CDR available from the NOAA CDR webpage\\\", cdm_data_type = \\\"Grid\\\", time_coverage_start = \\\"2019-08-13T00:00:00Z\\\", time_coverage_end = \\\"2019-08-13T23:59:59Z\\\", product_version = \\\"v5r0-preliminary\\\", platform = \\\"NOAA-19 > National Oceanic & Atmospheric Administration-19\\\", sensor = \\\"AVHRR > Advanced Very High Resolution Radiometer\\\", keywords_vocabulary = \\\"NASA Global Change Master Directory (GCMD) Science Keywords\\\", platform_vocabulary = \\\"Global Change Master Directory (GCMD) Platform Keywords\\\", instrument_vocabulary = \\\"Global Change Master Directory (GCMD) Instrument Keywords\\\", keywords = \\\"EARTH SCIENCE > LAND SURFACE > SURFACE RADIATIVE PROPERTIES > REFLECTANCE, EARTH SCIENCE > ATMOSPHERE > ATMOSPHERIC RADIATION > REFLECTANCE, EARTH SCIENCE > SPECTRAL/ENGINEERING > INFRARED WAVELENGTHS > BRIGHTNESS TEMPERATURE, EARTH SCIENCE > SPECTRAL/ENGINEERING > SENSOR CHARACTERISTICS > VIEWING GEOMETRY\\\", source = \\\"NSS.GHRR.NP.D19224.S2240.E0034.B5417072.GC.txt, NSS.GHRR.NP.D19225.S2227.E0022.B5418486.GC, NSS.GHRR.NP.D19225.S2046.E2233.B5418385.WI, NSS.GHRR.NP.D19225.S1941.E2052.B5418384.WI, NSS.GHRR.NP.D19225.S1922.E1939.B5418383.WI, NSS.GHRR.NP.D19225.S1741.E1927.B5418283.GC, NSS.GHRR.NP.D19225.S1601.E1747.B5418182.GC, NSS.GHRR.NP.D19225.S1417.E1606.B5418081.GC, NSS.GHRR.NP.D19225.S1228.E1423.B5417980.GC, NSS.GHRR.NP.D19225.S1102.E1233.B5417879.SV, NSS.GHRR.NP.D19225.S0915.E1108.B5417778.WI, NSS.GHRR.NP.D19225.S0726.E0921.B5417677.WI, NSS.GHRR.NP.D19225.S0543.E0731.B5417576.SV, NSS.GHRR.NP.D19225.S0354.E0549.B5417475.SV, NSS.GHRR.NP.D19225.S0211.E0400.B5417374.GC, NSS.GHRR.NP.D19225.S0030.E0216.B5417273.GC, NCEP_REANALYSIS_SURFACE_2019225.hdf, NCEP_REANALYSIS_SURFACE_2019225.hdf, TOMS_2019225.hdf, GLOBAL_LAND_SEA.4KM, 2019_NOAA-19.OLE.txt\\\", date_created = \\\"2019-08-14T10:09:07Z\\\", spatial_resolution = \\\"0.050000 degrees per pixel\\\", geospatial_lat_min = -90.0f, geospatial_lat_max = 90.0f, geospatial_lon_min = -180.0f, geospatial_lon_max = 180.0f, metadata_link = \\\"https://doi.org/10.7289/V53776Z4\\\", program = \\\"NOAA Climate Data Record Program for satellites\\\", cdr_variable = \\\"SREFL_CH1, SREFL_CH2\\\", Process = \\\"LTDR_GAPS\\\", PostProcessingVersion = \\\"2.9\\\", PFIIVersion = \\\"3.5.45\\\", Satellite = \\\"NOAA-19\\\", Instrument = \\\"AVHRR\\\", InputDataType = \\\"GAC\\\", summary = \\\"AVHRR GAC data from NOAA-19 for 2019, days 225 to 225, processed by the Long-Term Land Data Record (LTDR) project (v3.5.45) into surface bidirectional reflectance (SREFL_CH1, SREFL_CH2), brightness temperatures and quality-control flags. This preliminary data corresponds to near real time processing. The preliminary data will be replaced by the final data at the beginning of the next calendar year.\\\", ProductionDate = \\\"2019-08-14T10:09:07.000000Z\\\", ESDT = \\\"AVH09C1\\\", LocalGranuleId = \\\"AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\\\", id = \\\"AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\\\", RangeBeginningDate = \\\"2019-225\\\", RangeBeginningTime = \\\"00:00:00.0000\\\", RangeEndingDate = \\\"2019-225\\\", RangeEndingTime = \\\"23:59:59.9999\\\", PercentMissingData = \\\"37.97\\\", PercentValidDaytimeData = \\\"34.49\\\", PercentValidDaytimeLand = \\\"34.49\\\", PercentValidClearDaytimeLand = \\\"6.48\\\", PercentValidDaytimeLandInCloudShadow = \\\"2.18\\\", PercentValidClearDaytimeWater = \\\"0.00\\\", PercentValidDaytimeWaterInCloudShadow = \\\"0.00\\\"]\",\"optionalAttributes\":{\"dataStream\":\"LSB-CDR\",\"relativePath\":\"AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\",\"path\":\"/data/common-ingest/working/lsb/valid/AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\"}},\"relationships\":[{\"type\":\"COLLECTION\",\"id\":\"11111111-1111-1111-1111-111111111111\"}],\"dateSent\":\"2019-08-14 16:01:50:636\",\"originator\":\"metadata-scraper\",\"arguments\":{}}"
+    },
+    "contentType": {
+      "string": "application/json"
+    },
+    "method": {
+      "org.cedar.schemas.avro.psi.Method": "PATCH"
+    },
+    "source": {
+      "string": "common-ingest"
+    },
+    "operation": {
+      "org.cedar.schemas.avro.psi.OperationType": "ADD"
+    }
+  },
+  {
+    "type": {
+      "org.cedar.schemas.avro.psi.RecordType": "granule"
+    },
+    "content": {
+      "string": "{\"trackingId\":\"1da0a700-6952-4663-a784-cc3e2c556dfe\",\"fileInformation\":{\"name\":\"AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\",\"size\":108400912,\"checksums\":[{\"value\":\"a1ba1814e81f270cbd63388e9a2d6957\",\"algorithm\":\"MD5\"}],\"format\":\"NetCDF\",\"headers\":\"[title = \\\"Surface reflectance parameters derived from NOAA-19 GAC data for day 2019/225\\\", institution = \\\"NASA/GSFC/SED/ESD/HBSL/TIS/MODIS-LAND > MODIS Land Science Team, Terrestrial Information Systems,  Hydrospheric and Biospheric Science Laboratory, Earth Sciences Division, Science and Exploration Directorate, Goddard Space Flight Center, NASA\\\", Conventions = \\\"CF-1.6, ACDD-1.3\\\", standard_name_vocabulary = \\\"CF Standard Name Table (v25, 05 July 2013)\\\", naming_authority = \\\"gov.noaa.ncei\\\", license = \\\"See the Use Agreement for this CDR available from the NOAA CDR webpage\\\", cdm_data_type = \\\"Grid\\\", time_coverage_start = \\\"2019-08-13T00:00:00Z\\\", time_coverage_end = \\\"2019-08-13T23:59:59Z\\\", product_version = \\\"v5r0-preliminary\\\", platform = \\\"NOAA-19 > National Oceanic & Atmospheric Administration-19\\\", sensor = \\\"AVHRR > Advanced Very High Resolution Radiometer\\\", keywords_vocabulary = \\\"NASA Global Change Master Directory (GCMD) Science Keywords\\\", platform_vocabulary = \\\"Global Change Master Directory (GCMD) Platform Keywords\\\", instrument_vocabulary = \\\"Global Change Master Directory (GCMD) Instrument Keywords\\\", keywords = \\\"EARTH SCIENCE > LAND SURFACE > SURFACE RADIATIVE PROPERTIES > REFLECTANCE, EARTH SCIENCE > ATMOSPHERE > ATMOSPHERIC RADIATION > REFLECTANCE, EARTH SCIENCE > SPECTRAL/ENGINEERING > INFRARED WAVELENGTHS > BRIGHTNESS TEMPERATURE, EARTH SCIENCE > SPECTRAL/ENGINEERING > SENSOR CHARACTERISTICS > VIEWING GEOMETRY\\\", source = \\\"NSS.GHRR.NP.D19224.S2240.E0034.B5417072.GC.txt, NSS.GHRR.NP.D19225.S2227.E0022.B5418486.GC, NSS.GHRR.NP.D19225.S2046.E2233.B5418385.WI, NSS.GHRR.NP.D19225.S1941.E2052.B5418384.WI, NSS.GHRR.NP.D19225.S1922.E1939.B5418383.WI, NSS.GHRR.NP.D19225.S1741.E1927.B5418283.GC, NSS.GHRR.NP.D19225.S1601.E1747.B5418182.GC, NSS.GHRR.NP.D19225.S1417.E1606.B5418081.GC, NSS.GHRR.NP.D19225.S1228.E1423.B5417980.GC, NSS.GHRR.NP.D19225.S1102.E1233.B5417879.SV, NSS.GHRR.NP.D19225.S0915.E1108.B5417778.WI, NSS.GHRR.NP.D19225.S0726.E0921.B5417677.WI, NSS.GHRR.NP.D19225.S0543.E0731.B5417576.SV, NSS.GHRR.NP.D19225.S0354.E0549.B5417475.SV, NSS.GHRR.NP.D19225.S0211.E0400.B5417374.GC, NSS.GHRR.NP.D19225.S0030.E0216.B5417273.GC, NCEP_REANALYSIS_SURFACE_2019225.hdf, NCEP_REANALYSIS_SURFACE_2019225.hdf, TOMS_2019225.hdf, GLOBAL_LAND_SEA.4KM, 2019_NOAA-19.OLE.txt\\\", date_created = \\\"2019-08-14T10:09:07Z\\\", spatial_resolution = \\\"0.050000 degrees per pixel\\\", geospatial_lat_min = -90.0f, geospatial_lat_max = 90.0f, geospatial_lon_min = -180.0f, geospatial_lon_max = 180.0f, metadata_link = \\\"https://doi.org/10.7289/V53776Z4\\\", program = \\\"NOAA Climate Data Record Program for satellites\\\", cdr_variable = \\\"SREFL_CH1, SREFL_CH2\\\", Process = \\\"LTDR_GAPS\\\", PostProcessingVersion = \\\"2.9\\\", PFIIVersion = \\\"3.5.45\\\", Satellite = \\\"NOAA-19\\\", Instrument = \\\"AVHRR\\\", InputDataType = \\\"GAC\\\", summary = \\\"AVHRR GAC data from NOAA-19 for 2019, days 225 to 225, processed by the Long-Term Land Data Record (LTDR) project (v3.5.45) into surface bidirectional reflectance (SREFL_CH1, SREFL_CH2), brightness temperatures and quality-control flags. This preliminary data corresponds to near real time processing. The preliminary data will be replaced by the final data at the beginning of the next calendar year.\\\", ProductionDate = \\\"2019-08-14T10:09:07.000000Z\\\", ESDT = \\\"AVH09C1\\\", LocalGranuleId = \\\"AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\\\", id = \\\"AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\\\", RangeBeginningDate = \\\"2019-225\\\", RangeBeginningTime = \\\"00:00:00.0000\\\", RangeEndingDate = \\\"2019-225\\\", RangeEndingTime = \\\"23:59:59.9999\\\", PercentMissingData = \\\"37.97\\\", PercentValidDaytimeData = \\\"34.49\\\", PercentValidDaytimeLand = \\\"34.49\\\", PercentValidClearDaytimeLand = \\\"6.48\\\", PercentValidDaytimeLandInCloudShadow = \\\"2.18\\\", PercentValidClearDaytimeWater = \\\"0.00\\\", PercentValidDaytimeWaterInCloudShadow = \\\"0.00\\\"]\",\"optionalAttributes\":{\"dataStream\":\"LSB-CDR\",\"relativePath\":\"AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\",\"path\":\"/data/common-ingest/working/lsb/valid/AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\"}},\"relationships\":[{\"type\":\"COLLECTION\",\"id\":\"11111111-1111-1111-1111-111111111111\"}],\"dateSent\":\"2019-08-14 16:01:51:256\",\"originator\":\"metadata-scraper\",\"arguments\":{}}"
+    },
+    "contentType": {
+      "string": "application/json"
+    },
+    "method": {
+      "org.cedar.schemas.avro.psi.Method": "PATCH"
+    },
+    "source": {
+      "string": "common-ingest"
+    },
+    "operation": {
+      "org.cedar.schemas.avro.psi.OperationType": "ADD"
+    }
+  },
+  {
+    "type": {
+      "org.cedar.schemas.avro.psi.RecordType": "granule"
+    },
+    "content": {
+      "string": "{\"trackingId\":\"1da0a700-6952-4663-a784-cc3e2c556dfe\",\"fileLocations\":{\"https://granule-access.s3.us-west-1.amazonaws.com/1da0a700-6952-4663-a784-cc3e2c556dfe\":{\"uri\":\"https://granule-access.s3.us-west-1.amazonaws.com/1da0a700-6952-4663-a784-cc3e2c556dfe\",\"type\":\"ACCESS\",\"deleted\":false,\"restricted\":false,\"asynchronous\":false,\"locality\":null,\"lastModified\":1565798513656,\"serviceType\":\"Amazon:AWS:S3\",\"optionalAttributes\":{\"storageClass\":\"STANDARD\"}}},\"fileName\":\"AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\",\"linkDescription\":\"Cloud access via S3\",\"dateSent\":\"2019-08-14 16:01:53:659\",\"originator\":\"object-storer\",\"arguments\":{}}"
+    },
+    "contentType": {
+      "string": "application/json"
+    },
+    "method": {
+      "org.cedar.schemas.avro.psi.Method": "PATCH"
+    },
+    "source": {
+      "string": "common-ingest"
+    },
+    "operation": {
+      "org.cedar.schemas.avro.psi.OperationType": "ADD"
+    }
+  },
+  {
+    "type": {
+      "org.cedar.schemas.avro.psi.RecordType": "granule"
+    },
+    "content": {
+      "string": "{\"trackingId\":\"1da0a700-6952-4663-a784-cc3e2c556dfe\",\"fileLocations\":{\"https://granule-access.s3.us-west-1.amazonaws.com/1da0a700-6952-4663-a784-cc3e2c556dfe\":{\"uri\":\"https://granule-access.s3.us-west-1.amazonaws.com/1da0a700-6952-4663-a784-cc3e2c556dfe\",\"type\":\"ACCESS\",\"deleted\":false,\"restricted\":false,\"asynchronous\":false,\"locality\":null,\"lastModified\":1565798527890,\"serviceType\":\"Amazon:AWS:S3\",\"optionalAttributes\":{\"storageClass\":\"STANDARD\"}}},\"fileName\":\"AVHRR-Land_v005-preliminary_AVH09C1_NOAA-19_20190813_c20190814100907.nc\",\"linkDescription\":\"Cloud access via S3\",\"dateSent\":\"2019-08-14 16:02:07:893\",\"originator\":\"object-storer\",\"arguments\":{}}"
+    },
+    "contentType": {
+      "string": "application/json"
+    },
+    "method": {
+      "org.cedar.schemas.avro.psi.Method": "PATCH"
+    },
+    "source": {
+      "string": "common-ingest"
+    },
+    "operation": {
+      "org.cedar.schemas.avro.psi.OperationType": "ADD"
+    }
+  }
+]

@@ -1,18 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
+import GranuleAccessLink from './GranuleAccessLink'
 import MapThumbnail from '../../common/MapThumbnail'
-import {processUrl, isGovExternal} from '../../../utils/urlUtils'
+import {processUrl} from '../../../utils/urlUtils'
 import * as util from '../../../utils/resultUtils'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
 import {boxShadow} from '../../../style/defaultStyles'
-import A from '../../common/link/Link'
-import Button from '../../common/input/Button'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import Checkbox from '../../common/input/Checkbox'
 import {FEATURE_CART} from '../../../utils/featureUtils'
-import {play_circle_o, SvgIcon} from '../../common/SvgIcon'
 import VideoTray from './VideoTray'
 import {granuleDownloadableLinks} from '../../../utils/cartUtils'
 const pattern = require('../../../../img/topography.png')
@@ -86,30 +84,6 @@ const styleFocusDefault = {
   textDecoration: 'underline',
 }
 
-const styleBadgeLink = {
-  textDecoration: 'none',
-  display: 'inline-flex',
-  paddingRight: '0.309em',
-}
-
-const styleBadgeLinkFocused = {
-  outline: '2px dashed white',
-  outlineOffset: '0.105em',
-}
-
-const stylePlayButton = {
-  alignSelf: 'center',
-  background: 'none',
-  border: 'none',
-  outline: 'none',
-  padding: '0.309',
-}
-
-const styleHoverPlayButton = {
-  background: 'none',
-  fill: 'blue',
-}
-
 const styleFlexRowR2L = {
   flexDirection: 'row-reverse',
   flexGrow: 1,
@@ -178,88 +152,20 @@ class ListResult extends React.Component {
   }
 
   renderServiceLinks = serviceLinks => {
-    const services = serviceLinks ? (
-      serviceLinks.map(service => {
-        return this.renderLinks(service.links)
-      })
-    ) : (
-      <div style={styleSectionContent}>None available</div>
-    )
+    const services =
+      serviceLinks && serviceLinks.length > 0 ? (
+        serviceLinks.map(service => {
+          return this.renderLinks(service.links)
+        })
+      ) : (
+        <div style={styleSectionContent}>None available</div>
+      )
 
     return (
       <div key={'ListResult::serviceLinks'}>
         <h4 style={styleSectionHeader}>Service Links:</h4>
         {services}
       </div>
-    )
-  }
-
-  renderBadge = (link, itemId) => {
-    const {protocol, url, displayName, linkProtocol} = link
-    const linkText = displayName ? displayName : protocol.label
-    const labelledBy = displayName
-      ? // title the link with references to elements: linkText, protocolLegend, granuleTitle
-        `ListResult::Link::${url} protocol::legend::${protocol.id}  ListResult::title::${itemId}`
-      : // linkText is the same as protocol, so only include one of the two
-        `protocol::legend::${protocol.id} ListResult::title::${itemId}`
-    let focusRef = null
-    const allowVideo =
-      linkProtocol === 'video:youtube' ||
-      (url.includes('.mp4') && !isGovExternal(url))
-    const videoPlay =
-      protocol.label === 'Video' && allowVideo ? (
-        <Button
-          key={`video-play-button-${url}`}
-          styleHover={styleHoverPlayButton}
-          style={stylePlayButton}
-          ref={ref => {
-            focusRef = ref
-          }}
-          onClick={() => {
-            this.props.showGranuleVideo(this.props.itemId)
-            this.setState(prevState => {
-              return {
-                ...prevState,
-                videoPlaying: {
-                  protocol: linkProtocol,
-                  url: url,
-                  returnFocusRef: focusRef,
-                },
-              }
-            })
-          }}
-          title={`Play ${linkText}`}
-        >
-          <SvgIcon size="1em" path={play_circle_o} />
-        </Button>
-      ) : null
-    return (
-      <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
-        <A
-          href={url}
-          key={url}
-          aria-labelledby={labelledBy}
-          target="_blank"
-          style={styleBadgeLink}
-          styleFocus={styleBadgeLinkFocused}
-        >
-          <div style={util.styleBadge(protocol)} aria-hidden="true">
-            {util.renderBadgeIcon(protocol)}
-          </div>
-          <div
-            id={`ListResult::Link::${url}`}
-            style={{
-              ...{
-                textDecoration: 'underline',
-                margin: '0.6em 0',
-              },
-            }}
-          >
-            {linkText}
-          </div>
-        </A>
-        {videoPlay}
-      </li>
     )
   }
 
@@ -275,8 +181,28 @@ class ListResult extends React.Component {
         linkProtocol: link.linkProtocol, // needed to handle videos consistently
       }))
       .sortBy(info => info.protocol.id)
-      .map(link => {
-        return this.renderBadge(link, this.props.itemId)
+      .map((link, index) => {
+        return (
+          <GranuleAccessLink
+            key={`accessLink::${this.props.itemId}::${index}`}
+            link={link}
+            item={this.props.item}
+            itemId={this.props.itemId}
+            showGranuleVideo={(linkProtocol, url, focusRef, itemId) => {
+              this.props.showGranuleVideo(itemId)
+              this.setState(prevState => {
+                return {
+                  ...prevState,
+                  videoPlaying: {
+                    protocol: linkProtocol,
+                    url: url,
+                    returnFocusRef: focusRef,
+                  },
+                }
+              })
+            }}
+          />
+        )
       })
       .value()
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges

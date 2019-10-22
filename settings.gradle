@@ -1,10 +1,13 @@
 rootProject.name = 'onestop'
 
 include 'admin'
-include 'search'
 include 'client'
 include 'cli'
 include 'e2e-tests'
-include 'geoportal-search'
 include 'elastic-common'
+include 'geoportal-search'
+include 'kafka-common'
+include 'registry'
+include 'search'
+include 'stream-manager'
 

@@ -1,0 +1,22 @@
+kafka:
+  bootstrap:
+    servers: "http://bootstrap-servers:3000"
+  schema:
+    registry:
+      url: "http://schema-registry:5000"
+  compression:
+    type: "snappy"
+  cache:
+    max:
+      bytes:
+        buffering: 209715200
+  commit:
+    interval:
+      ms: 50000
+  auto:
+    offset:
+      reset: "latest"
+  producer:
+    one: "invalid kafka config won't be saved"
+elasticsearch:
+  setting: "this will not be saved"

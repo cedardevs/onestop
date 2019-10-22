@@ -48,7 +48,7 @@ class SearchControllerIntegrationTests extends Specification {
   @Value('${server.servlet.context-path}')
   private String contextPath
 
-  private MediaType contentType = MediaType.APPLICATION_JSON_UTF8
+  private MediaType contentType = MediaType.APPLICATION_JSON
   private RestTemplate restTemplate
   private String baseUri
 
