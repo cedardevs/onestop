@@ -12,7 +12,7 @@ defaults: &defaults
 
 defaultsWithElasticsearch: &defaultsWithElasticsearch
   environment:
-    - GRADLE_USER_HOME: ~/repo/.gradle_home
+    - GRADLE_USER_HOME: $HOME/repo/.gradle_home
   docker:
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
     - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
