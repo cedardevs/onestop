@@ -105,7 +105,7 @@ jobs:
           name: Generate Coverage Reports
           command: ./gradlew admin:jacocoTestReport -x test
       - run:
-          name: Collect Test Reports
+          name: Collect Test Results
           command: |
             mkdir -p ~/tests/junit/
             find admin/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
@@ -147,7 +147,7 @@ jobs:
           name: Generate Coverage Report
           command: ./gradlew search:jacocoTestReport -x test
       - run:
-          name: Collect Test Reports
+          name: Collect Test Results
           command: |
             mkdir -p ~/tests/junit/
             find search/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
@@ -156,7 +156,7 @@ jobs:
       - store_test_results:
           path: ~/tests
       - store_artifacts:
-          path: build/search/reports
+          path: search/build/reports
       - deploy:
           name: Publish Image(s)
           command: |
@@ -179,7 +179,7 @@ jobs:
           name: Assemble, Check, Report
           command: ./gradlew --parallel client:assemble client:check
       - run:
-          name: Collect Test Reports
+          name: Collect Test Results
           command: |
             mkdir -p ~/tests/junit/
             find client/ -type f -regex ".*/build/junit/.*xml" -exec cp {} ~/tests/junit/ \;
@@ -210,7 +210,7 @@ jobs:
         name: Assemble, Check, Report
         command: ./gradlew --parallel registry:assemble registry:check registry:jacocoTestReport
     - run:
-        name: Collect Test Reports
+        name: Collect Test Results
         command: |
           mkdir -p ~/tests/junit/
           find registry/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
@@ -243,7 +243,7 @@ jobs:
         name: Assemble, Check, Report
         command: ./gradlew --parallel stream-manager:assemble stream-manager:check stream-manager:jacocoTestReport
     - run:
-        name: Collect Test Reports
+        name: Collect Test Results
         command: |
           mkdir -p ~/tests/junit/
           find stream-manager/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
@@ -272,15 +272,6 @@ jobs:
     steps:
       - <<: *attachWorkspace
       - run:
-          name: Collect Coverage Results
-          command: |
-            mkdir -p ~/tests/coverage/
-            find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/coverage/ \;
-            find . -type d -regex ".*/build/coverage/lcov-report/" -exec cp -r {} ~/tests/coverage/ \;
-          when: always
-      - store_artifacts:
-          path: ~/tests/coverage
-      - run:
           name: Post coverage results to codecov
           command: |
             bash <(curl -s https://codecov.io/bash)
@@ -292,7 +283,7 @@ jobs:
       - <<: *attachWorkspace
       - run:
           name: Run OWASP Check
-          command: ./gradlew dependencyCheckAggregate
+          command: ./gradlew dependencyCheckUpdate dependencyCheckAggregate
           no_output_timeout: 30m
       - store_artifacts:
           path: build/reports
