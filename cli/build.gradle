@@ -69,5 +69,5 @@ jib {
 }
 
 build {
-    dependsOn 'goBuild', 'jibDockerBuild'
+    dependsOn 'goBuild'
 }

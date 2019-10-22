@@ -228,7 +228,7 @@ jobs:
       - <<: *attachWorkspace
       - run:
           name: Build image, publish
-          command: ./gradlew cli:build
+          command: ./gradlew cli:goBuild ; ./gradlew cli:jib
           environment:
               GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
       - deploy:
