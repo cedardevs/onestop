@@ -65,13 +65,13 @@ Under the hood, we use a spring profile 'cas' to enable security. The mechanisms
 1. Via the YML config for OneStop: `spring.profiles.active:cas`
 1. Via environment variable: `export SPRING_PROFILES_ACTIVE=cas`
 
-### Service Accounts
+## Service Accounts
 The concept of "service accounts" is not yet being utilized for OneStop Registry on CAS, but one could theoretically be added for dedicated/automated service clients (non-humans) if the administrators of CAS are willing to maintain such a use case.
 
-### Per-Request Authentication
+## Per-Request Authentication
 OneStop Registry is not a UI or browser frontend, and is not intended to be exposed to the general public. The CAS instance it transacts with is using its own REST API that should not be exposed outside of an internal network to prevent brute-force dictionary attacks. This is why clients don't need to maintain an SSO session with OneStop Registry and require per-request credentials ("direct client").
 
-### References: 
+## References: 
 1. CAS Rest Protocol Documenation
   - https://apereo.github.io/cas/6.0.x/protocol/REST-Protocol.html#rest-protocol
 1. Pac4j Guidance on Securing REST APIs
