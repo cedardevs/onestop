@@ -1,0 +1,75 @@
+# Default values for psi-registry.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: cedardevs/psi-registry
+  tag: 1.2.0
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 80
+#  annotations:
+#    key: value
+
+volume:
+  size: 1Gi
+  storageClass:
+
+autoscaler:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: ## Required when enabled
+  cpu:
+    ## At least one of the following metrics to scale on is required when enabled
+    ## If both are provided, both will be used to trigger scaling
+    averageValue:
+    averageUtilization: ## Note: utilization is based on resources.requests.cpu and resources.limits.cpu
+
+debug: false
+
+###############################################################################
+# FEATURE TOGGLES (SUBCHART DEFAULTS)
+###############################################################################
+# map of features to enable
+# if the features are not here, they will be disabled
+features:
+  cas: false
+
+config: |-
+  topics:
+    num-partitions: 20
+    replication-factor: 3
+
+ingress:
+  enabled: true
+  annotations: {}
+  paths:
+  - "/registry"
+  hosts:
+  - "localhost"
+
+kafka: {}
+#  override just the name of kafka's headless service:
+#  serviceNameOverride:
+#  override the full bootstrap servers string:
+#  bootstrapServers:
+
+cp-schema-registry: {}
+#  override just the name of schema registry's service:
+#  serviceNameOverride:
+#  override the full url of the schema registry:
+#  url:
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+

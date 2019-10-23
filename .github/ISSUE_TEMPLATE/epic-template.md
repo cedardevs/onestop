@@ -23,8 +23,8 @@ assignees: ''
   </tr>
 </table>
 
-### Sprint
-{start} - {end}
+### Description
+{description}
 
 ### Assumptions
 - {assumption 1}

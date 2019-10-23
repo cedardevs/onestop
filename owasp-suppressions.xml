@@ -2,12 +2,12 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
 
   <suppress>
-     <notes><![CDATA[
+    <notes><![CDATA[
      file name: json-schema-core-1.2.8.jar
      Tests have been added to confirm that XML parsing has DTD disabled, and endpoints accepting application/json data reject all xml.
      ]]></notes>
-     <gav regex="true">^com\.github\.java-json-tools:json-schema-core:.*$</gav>
-     <cve>CVE-2018-1000840</cve>
+    <gav regex="true">^com\.github\.java-json-tools:json-schema-core:.*$</gav>
+    <cve>CVE-2018-1000840</cve>
   </suppress>
 
   <suppress>
@@ -34,7 +34,7 @@
     <notes><![CDATA[
       file name: avro-1.8.2.jar (shaded: com.google.guava:guava:11.0.2)
       This vulnerability refers to an unbounded allocation that can occur during the deserialization of several specific
-      classes provided by the Guava library. Howver, the only usage of Guava in this project is as a shaded dependency
+      classes provided by the Guava library. However, the only usage of Guava in this project is as a shaded dependency
       within the avro jar, and only the specific classes in use by avro have been shaded into it. Those shaded dependencies
       include neither AtomicDoubleArray nor CompoundOrdering_CustomFieldSerializer, the two classes containing the
       vulnerability (see the fix implemented later in Guava: https://github.com/google/guava/commit/7ec8718f1e6e2814dabaa4b9f96b6b33a813101c)
@@ -106,6 +106,56 @@
       artifacts.
     ]]></notes>
     <cve>CVE-2018-11771</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      file name: pac4j-core-3.8.2.jar
+      This vulnerability relates to using pac4j to authenticate via SAML, which is something we are not using pac4j to do
+    ]]></notes>
+    <sha1>4a4e49d0c3ae69671a3c8d63d730b0fc84da91a5</sha1>
+    <cve>CVE-2019-10755</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: spring-webmvc-pac4j-3.2.0.jar
+      This vulnerability relates to using pac4j to authenticate via SAML, which is something we are not using pac4j to do
+    ]]></notes>
+    <sha1>6fa360c8647f4c5d166437883bbfe639826fc162</sha1>
+    <cve>CVE-2019-10755</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: pac4j-cas-3.8.2.jar
+      This vulnerability relates to using pac4j to authenticate via SAML, which is something we are not using pac4j to do
+    ]]></notes>
+    <sha1>a000f0af5afc878769977db6d3de5501018f6002</sha1>
+    <cpe>cpe:/a:pac4j:pac4j</cpe>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      file names: spring-boot-starter-reactor-netty-2.2.0.RELEASE.jar, reactor-netty-0.9.0.RELEASE.jar
+      This is a false positive. The CVE refers to netty prior to 3.9.2, but we're forcing the actual underlying
+      netty-all dependency to 4.1.42.Final by rule.
+    ]]></notes>
+    <cve>CVE-2014-3488</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file names: spring-boot-starter-reactor-netty-2.2.0.RELEASE.jar, reactor-netty-0.9.0.RELEASE.jar
+      This is a false positive. The CVE refers to netty 4.1.x before 4.1.0.Beta5, but we're forcing the actual underlying
+      netty-all dependency to 4.1.42.Final by rule.
+    ]]></notes>
+    <cve>CVE-2015-2156</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file names: spring-boot-starter-reactor-netty-2.2.0.RELEASE.jar, reactor-netty-0.9.0.RELEASE.jar
+      This is a false positive. The CVE refers to netty befre 4.1.42.Final, but we're forcing the actual underlying
+      netty-all dependency to 4.1.42.Final by rule.
+    ]]></notes>
+    <cve>CVE-2019-16869</cve>
   </suppress>
 
 </suppressions>

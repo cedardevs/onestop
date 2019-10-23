@@ -30,7 +30,7 @@ import spock.lang.Specification
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @DirtiesContext
-@EmbeddedKafka
+@EmbeddedKafka(topics = ['${kafka.topic.granules}', '${kafka.topic.collections}'])
 @ActiveProfiles(["integration", "kafka-ingest"])
 @SpringBootTest(
     classes = [
@@ -60,7 +60,7 @@ class KafkaIngestIntegrationSpec extends Specification {
   @Value('${kafka.topic.collections}')
   String collectionTopic
 
-  @Value('${schema-registry.url:localhost:8081}')
+  @Value('${schema-registry.url}')
   String schemaUrl
 
   @Autowired

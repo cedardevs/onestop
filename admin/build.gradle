@@ -1,12 +1,12 @@
 plugins {
+  id 'war'
+  id 'groovy'
+  id 'org.springframework.boot' // version declared in top-level buildscript
+  id 'io.spring.dependency-management'
   id "io.forgo.keystoreplugin" version "1.1"
   id 'com.google.cloud.tools.jib' version '1.6.1'
 }
 
-apply plugin: 'war'
-apply plugin: 'groovy'
-apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
-apply plugin: 'io.spring.dependency-management'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 sourceCompatibility = 11
@@ -31,20 +31,20 @@ dependencies {
   implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
   implementation("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
   implementation("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
-  implementation("io.confluent:kafka-streams-avro-serde:5.2.1")
+  implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
 
-  implementation("org.apache.kafka:kafka-clients:2.2.1")
-  implementation("org.springframework.kafka:spring-kafka:2.2.8.RELEASE")
+  implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
+  implementation("org.springframework.kafka:spring-kafka:${project.springKafkaVersion}")
 
   testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
 
-  testImplementation("io.confluent:kafka-schema-registry:5.2.1")
-  testImplementation("io.confluent:kafka-schema-registry:5.2.1:tests")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
 
-  testImplementation("org.apache.kafka:kafka_2.12:2.2.1")
-  testImplementation("org.apache.kafka:kafka_2.12:2.2.1:test")
-  testImplementation("org.apache.kafka:kafka-clients:2.2.1:test")
-  implementation("org.springframework.kafka:spring-kafka-test:2.2.8.RELEASE")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
+  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
+  testImplementation("org.springframework.kafka:spring-kafka-test:${project.springKafkaVersion}")
 
   // opensaml
   implementation("org.opensaml:opensaml-core:${project.openSAMLVersion}")
@@ -84,13 +84,7 @@ dependencies {
   // Authorization Services
   implementation "org.springframework.boot:spring-boot-starter-data-jpa"
   runtime group: 'org.hsqldb', name: 'hsqldb', version: '2.4.1'
-  // version to override another library's dependency to solve a CVE:
-  implementation 'com.google.guava:guava:27.0.1-jre'
   implementation 'commons-collections:commons-collections:3.2.2'
-
-  // fix CVE-2019-0232, CVE-2019-0232 by forcing a higher version of the tomcat websocket dependency
-  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.19'
-  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.19'
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
@@ -100,8 +94,8 @@ dependencies {
   testImplementation "org.spockframework:spock-core:${project.spockVersion}"
   testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
-  testImplementation "org.testcontainers:testcontainers:1.10.7"
-  testImplementation "org.testcontainers:elasticsearch:1.10.7"
+  testImplementation "org.testcontainers:testcontainers:${project.testContainersVersion}"
+  testImplementation "org.testcontainers:elasticsearch:${project.testContainersVersion}"
   testImplementation 'net.bytebuddy:byte-buddy:1.7.11'
 }
 
@@ -162,7 +156,6 @@ sourceSets {
 }
 
 task integrationTest(type: Test) {
-
   doFirst {
     // `CI` env var is typically "true" inside CircleCI, Travis, and other CI environments.
     // If you find it is not, the build cmds used within your CI config could also be prefixed like:
