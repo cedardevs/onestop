@@ -67,6 +67,8 @@ jib {
     creationTime = project.buildDate.toString()
   }
 }
+tasks.jib.dependsOn 'goBuild'
+tasks.jibDockerBuild.dependsOn 'goBuild'
 
 build {
     dependsOn 'goBuild'
