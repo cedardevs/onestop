@@ -231,15 +231,6 @@ jobs:
           command: ./gradlew cli:jib
           environment:
               GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
-      - deploy:
-          name: Publish Image(s)
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "1020-OneStopCLI" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew client:jib
-            else
-              echo "Skipping publishing"
-            fi
 
   finalize:
     <<: *defaults
