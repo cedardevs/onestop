@@ -95,4 +95,22 @@ class LoadKafkaMsgServiceTest extends Specification {
     })
   }
 
+  def "handles tombstones"() {
+    def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
+    def validValue = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
+    def inputs = [
+        new ConsumerRecord(testCollectionTopic, 0, 0, 'A', null), // A -> tombstone
+        new ConsumerRecord(testCollectionTopic, 0, 0, 'B', validValue), // B -> valid
+        new ConsumerRecord(testCollectionTopic, 0, 0, 'C', null), // C -> tombstone
+    ]
+
+    when:
+    consumerService.listen(inputs)
+
+    then:
+    1 * mockMetadataService.deleteMetadata('A', true, false)
+    1 * mockMetadataService.loadParsedRecords({ it.size() == 1 && it[0].id == 'B' })
+    1 * mockMetadataService.deleteMetadata('C', true, false)
+  }
+
 }
