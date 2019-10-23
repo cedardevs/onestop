@@ -45,7 +45,7 @@ jib {
   }
 
   extraDirectories {
-    paths = ["${buildDir}/.gogradle"]
+    paths = ["${projectDir}/.gogradle".toString()]
     permissions = [
       '/cli-linux-amd64': '755'
       ]
