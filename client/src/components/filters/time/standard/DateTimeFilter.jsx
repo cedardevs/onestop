@@ -163,6 +163,17 @@ const DateTimeFilter = ({
     </div>
   )
 
+  const advanced = (
+    <TimeRelation
+      id="datetimeRelation"
+      key="DateFilter::InputColumn::Advanced"
+      timeRelationship={timeRelationship}
+      onUpdate={updateTimeRelationship}
+      hasStart={start.date.year != null}
+      hasEnd={end.date.year != null}
+    />
+  )
+
   // let defaultSelection = 'intersects'
   // timeRelationship || 'intersects
   // let defaultSelection = _.find(RELATION_OPTIONS, option => {
@@ -179,14 +190,7 @@ const DateTimeFilter = ({
           Provide a start date, end date, or both. Day and month are optional.
           Future dates are not accepted.
         </legend>
-        <FlexColumn items={[ form, buttons, warningMessage ]} />
-        <TimeRelation
-          id="datetimeRelation"
-          timeRelationship={timeRelationship}
-          onUpdate={updateTimeRelationship}
-          hasStart={start.date.year != null}
-          hasEnd={end.date.year != null}
-        />
+        <FlexColumn items={[ form, advanced, buttons, warningMessage ]} />
       </fieldset>
     </div>
   )

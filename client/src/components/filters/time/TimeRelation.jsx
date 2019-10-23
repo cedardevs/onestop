@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 
 import Select from 'react-select'
 import FlexRow from '../../common/ui/FlexRow'
+import Expandable from '../../common/ui/Expandable'
 import {FilterColors} from '../../../style/defaultStyles'
 import TimelineRelationDisplay from './TimelineRelationDisplay' // TODO rename that to like... Illustration?
 
@@ -77,7 +78,7 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
     [ selectedRelation ]
   )
 
-  return (
+  const content = (
     <div style={{marginTop: '.618em', marginBottom: '.618em'}}>
       <FlexRow
         style={{alignItems: 'center'}}
@@ -111,6 +112,16 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
         hasEnd={hasEnd}
       />
     </div>
+  )
+
+  return (
+    <Expandable
+      open={true}
+      showArrow={true}
+      heading="Advanced"
+      styleHeading={{color: 'inherit', marginTop: '0.309em'}}
+      content={content}
+    />
   )
 }
 export default TimeRelation
