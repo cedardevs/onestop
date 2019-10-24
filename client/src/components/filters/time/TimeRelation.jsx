@@ -102,7 +102,7 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
             />
           </div>,
           <div key="sentence::end" style={{marginLeft: '0.309em'}}>
-            query.
+            filter.
           </div>,
         ]}
       />
