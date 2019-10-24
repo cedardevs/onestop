@@ -449,25 +449,20 @@ components:
           data:
             items:
               oneOf:
-                -
-                  $ref: "#/components/schemas/collectionDataObject"
+                - $ref: "#/components/schemas/collectionDataObject"
             type: array
           meta:
             $ref: "#/components/schemas/collectionMetadataObject"
         type: object
       geometry:
         description: "One geometry as defined by GeoJSON. Can be a point, multipoint, linestring, mutlilinestring, polygon, or multipolygon."
-        properties:
-          queries:
-            items:
-              oneOf:
-                - $ref: "#/components/schemas/Point"
-                - $ref: "#/components/schemas/MultiPoint"
-                - $ref: "#/components/schemas/LineString"
-                - $ref: "#/components/schemas/MultiLineString"
-                - $ref: "#/components/schemas/Polygon"
-                - $ref: "#/components/schemas/MultiPolygon"
-            type: array
+        oneOf:
+          - $ref: "#/components/schemas/Point"
+          - $ref: "#/components/schemas/MultiPoint"
+          - $ref: "#/components/schemas/LineString"
+          - $ref: "#/components/schemas/MultiLineString"
+          - $ref: "#/components/schemas/Polygon"
+          - $ref: "#/components/schemas/MultiPolygon"
         title: Geometry
       geometryFilter:
         additionalProperties: false
@@ -543,24 +538,42 @@ components:
         type: object
         properties:
           max:
-            type: number
+            description: "Maximum number of results returned."
+            type: integer
+            minimum: 0
+            maximum: 1000
+            default: 10
           offset:
+            description:  "Number of records by which to offset results."
             type: number
+            default: 0
       polygon:
         description: "An array of linear rings"
         items:
           $ref: "#/components/schemas/linearRing"
         type: array
+      # position:
+      #   description: A single position
+      #   type: array
+      #   items:
+      #     allOf:
+      #       - type: number
+      #       - type: number
+      #   additionalItems: false
+      #   maxItems: 2
+      #   minItems: 2
       position:
         description: "A single position"
         items:
           allOf:
             - description: "longitudinal coordinate"
-              maximum: 360
+              type: number
               minimum: -360
+              maximum: 360
             - description: "latitude coordinate"
-              maximum: 90
+              type: number
               minimum: -90
+              maximum: 90
         maxItems: 2
         minItems: 2
         type: array
@@ -579,19 +592,13 @@ components:
             type: boolean
           filters:
             items:
-              oneOf:
-                -
-                  $ref: "#/components/schemas/dateTimeFilter"
-                -
-                  $ref: "#/components/schemas/yearFilter"
-                -
-                  $ref: "#/components/schemas/facetFilter"
-                -
-                  $ref: "#/components/schemas/geometryFilter"
-                -
-                  $ref: "#/components/schemas/collectionFilter"
-                -
-                  $ref: "#/components/schemas/excludeGlobalFilter"
+              anyOf:
+                - $ref: "#/components/schemas/dateTimeFilter"
+                - $ref: "#/components/schemas/yearFilter"
+                - $ref: "#/components/schemas/facetFilter"
+                - $ref: "#/components/schemas/geometryFilter"
+                - $ref: "#/components/schemas/collectionFilter"
+                - $ref: "#/components/schemas/excludeGlobalFilter"
             type: array
           page:
             $ref: "#/components/schemas/page"
@@ -625,7 +632,7 @@ components:
                       $ref: "#/components/schemas/link"
                 type: array
               spatialBounding:
-                $ref: components/geometry.json
+                $ref: "#/components/schemas/geometry"
               thumbnail:
                 format: uri
                 type: string
@@ -684,16 +691,16 @@ components:
         type: object
       yearFilter:
         additionalProperties: false
-        description: "Filter results by before, after, or a date range."
+        description: "Filter results by before, after, or a date range. Differs from the Datetime Filter in that it handles year values only."
         properties:
           after:
-            description: "Beginning of the date range, e.g., look for all results *after* this date."
-            format: date-time
-            type: string
+            description: "Beginning of the date range, e.g., look for all results *after* this year."
+            multipleOf: 1
+            type: number
           before:
-            description: "End of the date range, e.g., look for all results *before* this date."
-            format: date-time
-            type: string
+            description: "End of the date range, e.g., look for all results *before* this year."
+            multipleOf: 1
+            type: number
           relation:
             default: intersects
             description: "How the result time range relates to the query time range, e.g., return all datasets whose time range is within the given time range."
@@ -705,11 +712,12 @@ components:
           type:
             description: "Filter type."
             enum:
-              - datetime
+              - year
         required:
           - type
-        title: "Datetime Filter"
+        title: "Year Filter"
         type: object
+
 
 
   examples:
