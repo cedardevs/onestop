@@ -190,8 +190,12 @@ const DateTimeFilter = ({
           Provide a start date, end date, or both. Day and month are optional.
           Future dates are not accepted.
         </legend>
-        <FlexColumn items={[ form, advanced, buttons, warningMessage ]} />
+        <FlexColumn items={[ form, buttons, warningMessage ]} />
       </fieldset>
+      <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
+        Additional Filtering Options:
+      </h4>
+      {advanced}
     </div>
   )
 }

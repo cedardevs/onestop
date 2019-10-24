@@ -124,8 +124,8 @@ const TimeLineQuery = ({query, labels, outputs}) => {
         key="legend"
         style={{
           width: '100%',
-          borderLeft: `2px solid ${COLORS.query.borderColor}`,//'2px solid blue',
-          borderRight: `2px solid ${COLORS.query.borderColor}`,//'2px solid blue',
+          borderLeft: `2px solid ${COLORS.query.borderColor}`, //'2px solid blue',
+          borderRight: `2px solid ${COLORS.query.borderColor}`, //'2px solid blue',
         }}
       >
         <FlexRow
@@ -142,9 +142,9 @@ const TimeLineQuery = ({query, labels, outputs}) => {
           // height: '0px', // fix for IE
           // borderStyle: 'solid',
           // borderColor: 'blue',
-          borderTop: `2px solid ${COLORS.query.borderColor}`,//'2px solid blue',
-          borderLeft: `2px solid ${COLORS.query.borderColor}`,//'2px solid blue',
-          borderRight: `2px solid ${COLORS.query.borderColor}`,//'2px solid blue',
+          borderTop: `2px solid ${COLORS.query.borderColor}`, //'2px solid blue',
+          borderLeft: `2px solid ${COLORS.query.borderColor}`, //'2px solid blue',
+          borderRight: `2px solid ${COLORS.query.borderColor}`, //'2px solid blue',
         }}
         aria-hidden={true}
       >
@@ -186,13 +186,14 @@ const TimeLineQuery = ({query, labels, outputs}) => {
       <output
         style={{
           position: 'absolute',
-          left: leftEdgeOfRange(query.start ),
-          right: rightEdgeOfRange(query.end),
+          left: leftEdgeOfRange(query.start),
+          // right: rightEdgeOfRange(query.end),
+          width: width(query.start, query.end),
           height: '85%',
           bottom: 0,
           borderLeft: queryRangeBorder(query.start),
           borderRight: queryRangeBorder(query.end),
-          backgroundColor: COLORS.query.backgroundColor,//'#0000ff1f',
+          backgroundColor: COLORS.query.backgroundColor, //'#0000ff1f',
         }}
         title="user defined time filter"
       >
@@ -230,24 +231,31 @@ const TimeLineQuery = ({query, labels, outputs}) => {
   //   </div>
   // )
   return (
-    <div><div>some examples on a timeline:</div> {middle}</div>
+    <div>
+      <div>some examples on a timeline:</div> {middle}
+    </div>
   )
 }
 
 const COLORS = {
-  included: { backgroundColor: '#86D29A', borderColor: '#56B770'}, // 359E51, 1D8739, 096B23
-  excluded: { backgroundColor: '#4E5F53', borderColor: '#414642'},// 363C38, 2B312D, 1F2420
-  query: {backgroundColor: '#0000ff1f', borderColor: 'blue'}
+  included: {backgroundColor: '#86D29A', borderColor: '#56B770'}, // 359E51, 1D8739, 096B23
+  excluded: {backgroundColor: '#4E5F53', borderColor: '#414642'}, // 363C38, 2B312D, 1F2420
+  query: {backgroundColor: '#0000ff1f', borderColor: 'blue'},
 }
 
 const colorRelation = (isMatched, isBorder) => {
   // if (isBorder) return isMatched ? '#4b966e' : '#52665b'
   // return isMatched ? '#78b494' : '#71867a'
 
-  if(isMatched) {
-    return isBorder? COLORS.included.borderColor : COLORS.included.backgroundColor
-  } else {
-    return isBorder? COLORS.excluded.borderColor : COLORS.excluded.backgroundColor
+  if (isMatched) {
+    return isBorder
+      ? COLORS.included.borderColor
+      : COLORS.included.backgroundColor
+  }
+  else {
+    return isBorder
+      ? COLORS.excluded.borderColor
+      : COLORS.excluded.backgroundColor
   }
 }
 
@@ -259,18 +267,25 @@ const queryRangeBorder = (offset, isMatched) => {
 
   let style = offset == null ? 'dashed' : 'solid'
   let color = COLORS.query.borderColor
-  if(isMatched != null) {
-      color =  isMatched? COLORS.included.borderColor : COLORS.excluded.borderColor
+  if (isMatched != null) {
+    color = isMatched
+      ? COLORS.included.borderColor
+      : COLORS.excluded.borderColor
   }
   return `1px ${style} ${color}`
 }
 const leftEdgeOfRange = offset => {
-  console.log('????', offset, `${10 * ((offset == null ? 0 : offset)+0.5)}%`)
-  return `${10 * ((offset == null ? -0.5 : offset)+0.5)}%`
+  console.log('????', offset, `${10 * ((offset == null ? 0 : offset) + 0.5)}%`)
+  return `${10 * ((offset == null ? -0.5 : offset) + 0.5)}%`
 }
 const rightEdgeOfRange = offset => {
   console.log('?right?', offset, `${10 * (9 - (offset == null ? 9 : offset))}%`)
   return `${10 * (9 - (offset == null ? 9 : offset))}%`
+}
+const width = (left, right) => {
+  const leftOffset = 10 * ((left == null ? -0.5 : left) + 0.5)
+  const rightOffset = 10 * (9 - (right == null ? 9 : right))
+  return `${100 - rightOffset - leftOffset}%`
 }
 
 const TimeLineResult = ({id, label, result, relation, queryType}) => {
@@ -322,11 +337,17 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
         overflow: 'visible',
       }}
     >
-      <label style={{width: '100%',
-        color: includedBasedOnRelationship? 'inherit' : '#FFF',
+      <label
+        style={{
+          width: '100%',
+          color: includedBasedOnRelationship ? 'inherit' : '#FFF',
 
-    textAlign: 'center',
-    display: 'inline-block'}}>{label}</label>
+          textAlign: 'center',
+          display: 'inline-block',
+        }}
+      >
+        {label}
+      </label>
       <div style={defaultStyles.hideOffscreen}>{description}</div>
     </output>
   )

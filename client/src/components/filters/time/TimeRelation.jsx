@@ -114,6 +114,7 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
     </div>
   )
 
+  // TODO move 'advanced' expandable out of TimeRelation, which should just be a child of it in case we have other advanced options as well
   return (
     <Expandable
       open={true}

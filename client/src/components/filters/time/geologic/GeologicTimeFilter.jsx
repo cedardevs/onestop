@@ -170,15 +170,17 @@ const GeologicTimeFilter = ({
           <abbr title="megaannum">Ma</abbr>, <abbr title="gigaannum">Ga</abbr>).
         </legend>
         <FlexColumn items={[ form, buttons, warningMessage, presets ]} />
-
-        <TimeRelation
-          id="geologicTimeRelation"
-          timeRelationship={timeRelationship}
-          onUpdate={updateTimeRelationship}
-          hasStart={!_.isEmpty(start.year)}
-          hasEnd={!_.isEmpty(end.year)}
-        />
       </fieldset>
+      <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
+        Additional Filtering Options:
+      </h4>
+      <TimeRelation
+        id="geologicTimeRelation"
+        timeRelationship={timeRelationship}
+        onUpdate={updateTimeRelationship}
+        hasStart={!_.isEmpty(start.year)}
+        hasEnd={!_.isEmpty(end.year)}
+      />
     </div>
   )
 }
