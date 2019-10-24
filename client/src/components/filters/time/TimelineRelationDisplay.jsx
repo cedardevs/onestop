@@ -124,8 +124,8 @@ const TimeLineQuery = ({query, labels, outputs}) => {
         key="legend"
         style={{
           width: '100%',
-          borderLeft: '2px solid blue',
-          borderRight: '2px solid blue',
+          borderLeft: `2px solid ${COLORS.query.borderColor}`,//'2px solid blue',
+          borderRight: `2px solid ${COLORS.query.borderColor}`,//'2px solid blue',
         }}
       >
         <FlexRow
@@ -142,9 +142,9 @@ const TimeLineQuery = ({query, labels, outputs}) => {
           // height: '0px', // fix for IE
           // borderStyle: 'solid',
           // borderColor: 'blue',
-          borderTop: '2px solid blue',
-          borderLeft: '2px solid blue',
-          borderRight: '2px solid blue',
+          borderTop: `2px solid ${COLORS.query.borderColor}`,//'2px solid blue',
+          borderLeft: `2px solid ${COLORS.query.borderColor}`,//'2px solid blue',
+          borderRight: `2px solid ${COLORS.query.borderColor}`,//'2px solid blue',
         }}
         aria-hidden={true}
       >
@@ -186,13 +186,13 @@ const TimeLineQuery = ({query, labels, outputs}) => {
       <output
         style={{
           position: 'absolute',
-          left: leftEdgeOfRange(query.start == null ? -1 : query.start), // TODO edge of range position functions build in padding for results, manually pushing that off for query...
-          right: rightEdgeOfRange(query.end == null ? 9 : query.end),
+          left: leftEdgeOfRange(query.start ),
+          right: rightEdgeOfRange(query.end),
           height: '85%',
           bottom: 0,
           borderLeft: queryRangeBorder(query.start),
           borderRight: queryRangeBorder(query.end),
-          backgroundColor: '#0000ff1f',
+          backgroundColor: COLORS.query.backgroundColor,//'#0000ff1f',
         }}
         title="user defined time filter"
       >
@@ -223,56 +223,83 @@ const TimeLineQuery = ({query, labels, outputs}) => {
 
   // const rightColumn = <FlexColumn key="right" items={endLabelColumn} />
 
+  // return (
+  //   <div>
+  //     <div>Timeline</div>
+  //     <FlexRow items={[ leftColumn, middle ]} />
+  //   </div>
+  // )
   return (
-    <div>
-      <div>Timeline</div>
-      <FlexRow items={[ leftColumn, middle ]} />
-    </div>
+    <div><div>some examples on a timeline:</div> {middle}</div>
   )
 }
 
-const colorRelation = (isMatched, isBorder) => {
-  if (isBorder) return isMatched ? '#7ec390' : '#888888'
-  return isMatched ? '#9ffcb7' : '#b9b9b9'
+const COLORS = {
+  included: { backgroundColor: '#86D29A', borderColor: '#56B770'}, // 359E51, 1D8739, 096B23
+  excluded: { backgroundColor: '#4E5F53', borderColor: '#414642'},// 363C38, 2B312D, 1F2420
+  query: {backgroundColor: '#0000ff1f', borderColor: 'blue'}
 }
 
-const queryRangeBorder = offset => {
-  return offset == null ? '1px dashed blue' : '1px solid blue'
+const colorRelation = (isMatched, isBorder) => {
+  // if (isBorder) return isMatched ? '#4b966e' : '#52665b'
+  // return isMatched ? '#78b494' : '#71867a'
+
+  if(isMatched) {
+    return isBorder? COLORS.included.borderColor : COLORS.included.backgroundColor
+  } else {
+    return isBorder? COLORS.excluded.borderColor : COLORS.excluded.backgroundColor
+  }
+}
+
+const queryRangeBorder = (offset, isMatched) => {
+  // if(isMatched != null) {
+  //   return isMatched ? offset == null ? '1px dashed #0f5a32': '1px solid #0f5a32': offset == null ? '1px dashed #35443c': '1px solid #35443c'
+  // }
+  // return offset == null ? '1px dashed blue' : '1px solid blue'
+
+  let style = offset == null ? 'dashed' : 'solid'
+  let color = COLORS.query.borderColor
+  if(isMatched != null) {
+      color =  isMatched? COLORS.included.borderColor : COLORS.excluded.borderColor
+  }
+  return `1px ${style} ${color}`
 }
 const leftEdgeOfRange = offset => {
-  return `${10 * ((offset == null ? 1 : offset) + 1)}%`
+  console.log('????', offset, `${10 * ((offset == null ? 0 : offset)+0.5)}%`)
+  return `${10 * ((offset == null ? -0.5 : offset)+0.5)}%`
 }
 const rightEdgeOfRange = offset => {
-  return `${10 * (9 - (offset == null ? 8 : offset))}%`
+  console.log('?right?', offset, `${10 * (9 - (offset == null ? 9 : offset))}%`)
+  return `${10 * (9 - (offset == null ? 9 : offset))}%`
 }
 
-const TimeLineResult = ({id, result, relation, queryType}) => {
+const TimeLineResult = ({id, label, result, relation, queryType}) => {
   let isOngoing = result.end == null
   let includedBasedOnRelationship = result.relation[queryType][relation]
   let description = `${includedBasedOnRelationship
     ? 'Included in search results:'
     : 'NOT included in search results:'} ${result.description[queryType]}`
-  let title = `${result.label} ${description}.`
+  // let title = `${result.label} ${description}.`
 
-  const continuation = isOngoing ? (
-    <div
-      style={{
-        position: 'absolute',
-        height: '100%',
-        borderRadius: '0px 1em 1em 0px',
-        borderStyle: 'solid',
-        borderWidth: '1px',
-        borderColor: colorRelation(includedBasedOnRelationship, true),
-        backgroundColor: colorRelation(includedBasedOnRelationship),
-        borderLeft: '0',
-        top: '-1px', // due to border width
-        left: '100%',
-        paddingRight: '.4em',
-      }}
-    >
-      ...
-    </div>
-  ) : null // TODO background-image: linear-gradient(to right, green , yellow) instead of bg color?
+  // const continuation = isOngoing ? (
+  //   <div
+  //     style={{
+  //       position: 'absolute',
+  //       height: '100%',
+  //       borderRadius: '0px 1em 1em 0px',
+  //       borderStyle: 'solid',
+  //       borderWidth: '1px',
+  //       borderColor: colorRelation(includedBasedOnRelationship, true),
+  //       backgroundColor: colorRelation(includedBasedOnRelationship),
+  //       borderLeft: '0',
+  //       top: '-1px', // due to border width
+  //       left: '100%',
+  //       paddingRight: '.4em',
+  //     }}
+  //   >
+  //     ...
+  //   </div>
+  // ) : null // TODO background-image: linear-gradient(to right, green , yellow) instead of bg color?
 
   return (
     <output
@@ -288,13 +315,18 @@ const TimeLineResult = ({id, result, relation, queryType}) => {
         borderWidth: '1px',
         borderColor: colorRelation(includedBasedOnRelationship, true),
         backgroundColor: colorRelation(includedBasedOnRelationship),
+        borderLeft: queryRangeBorder(result.start, includedBasedOnRelationship),
+        borderRight: queryRangeBorder(result.end, includedBasedOnRelationship),
         marginBottom: '0.309em',
         position: 'relative',
         overflow: 'visible',
       }}
     >
-      <span aria-hidden={true}>&nbsp;</span>
-      {continuation}
+      <label style={{width: '100%',
+        color: includedBasedOnRelationship? 'inherit' : '#FFF',
+
+    textAlign: 'center',
+    display: 'inline-block'}}>{label}</label>
       <div style={defaultStyles.hideOffscreen}>{description}</div>
     </output>
   )
@@ -321,6 +353,7 @@ const TimelineRelationDisplay = ({relation, hasStart, hasEnd}) => {
       <TimeLineResult
         key={`result${index + 1}`}
         id={`result${index + 1}`}
+        label={`ex ${index + 1}`}
         result={result}
         relation={relation}
         queryType={currentQueryType}
