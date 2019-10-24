@@ -118,21 +118,51 @@ const TimeLineQuery = ({query, labels, outputs}) => {
       key="timeline"
       style={{
         width: '100%',
-        // marginTop: 'auto',
-        // marginBottom: 'auto',
-        // height: '0px', // fix for IE
-        // borderStyle: 'solid',
-        // borderColor: 'blue',
-        borderTop: '2px solid blue',
-        borderLeft: '2px solid blue',
-        borderRight: '2px solid blue'
       }}
-      aria-hidden={true}
-    ><span aria-hidden={true}>&nbsp;</span></div>
+    >
+      <div
+        key="legend"
+        style={{
+          width: '100%',
+          borderLeft: '2px solid blue',
+          borderRight: '2px solid blue',
+        }}
+      >
+        <FlexRow
+          style={{justifyContent: 'space-between'}}
+          items={[ timelineStartLabel, timelineEndLabel ]}
+        />
+      </div>
+      <div
+        key="timeline"
+        style={{
+          width: '100%',
+          // marginTop: 'auto',
+          // marginBottom: 'auto',
+          // height: '0px', // fix for IE
+          // borderStyle: 'solid',
+          // borderColor: 'blue',
+          borderTop: '2px solid blue',
+          borderLeft: '2px solid blue',
+          borderRight: '2px solid blue',
+        }}
+        aria-hidden={true}
+      >
+        <span aria-hidden={true}>&nbsp;</span>
+      </div>
+    </div>
   )
 
   // let labelColumn = [ <Spacer key="spacer1" />, <Spacer key="spacer2" /> ]
-  let labelColumn = [<div key="spacer1"><span aria-hidden={true}>&nbsp;</span></div>, <div key="spacer2"><span aria-hidden={true}>&nbsp;</span></div>, <Spacer key="spacer3"/>]
+  let labelColumn = [
+    <div key="spacer1">
+      <span aria-hidden={true}>&nbsp;</span>
+    </div>,
+    <div key="spacer2">
+      <span aria-hidden={true}>&nbsp;</span>
+    </div>,
+    <Spacer key="spacer3" />,
+  ]
   labels.forEach(label => {
     labelColumn.push(label)
   })
@@ -142,7 +172,11 @@ const TimeLineQuery = ({query, labels, outputs}) => {
   const leftColumn = (
     <FlexColumn
       key="left"
-      style={{alignItems: 'flex-end'}}
+      style={{
+        alignItems: 'flex-end',
+        // position: 'relative',
+        justifyContent: 'space-evenly',
+      }}
       items={labelColumn}
     />
   )
@@ -163,15 +197,12 @@ const TimeLineQuery = ({query, labels, outputs}) => {
         title="user defined time filter"
       >
         <label style={{position: 'absolute', right: '0.5em'}}>filter</label>
-      </output><span aria-hidden={true}>&nbsp;</span>
+      </output>
+      <span aria-hidden={true}>&nbsp;</span>
     </Spacer>
   )
 
-  let exampleColumn = [ <div key="legend" style={{
-    width: '100%',
-    borderLeft: '2px solid blue',
-    borderRight: '2px solid blue'
-  }}><FlexRow style={{justifyContent: 'space-between'}} items={[timelineStartLabel, timelineEndLabel]}/></div>,timeline, queryBox ]
+  let exampleColumn = [ timeline, queryBox ]
   outputs.forEach(output => {
     exampleColumn.push(output)
   })
@@ -262,7 +293,8 @@ const TimeLineResult = ({id, result, relation, queryType}) => {
         overflow: 'visible',
       }}
     >
-      <span aria-hidden={true}>&nbsp;</span>{continuation}
+      <span aria-hidden={true}>&nbsp;</span>
+      {continuation}
       <div style={defaultStyles.hideOffscreen}>{description}</div>
     </output>
   )
