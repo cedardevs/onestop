@@ -44,6 +44,7 @@ const RELATION_OPTIONS = [
 ]
 
 const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
+  const [examplesOpen, setExamplesOpen] = useState(false)
   // let defaultSelection = _.find(RELATION_OPTIONS, option => {
   //   return option.value == timeRelationship
   // })
@@ -78,8 +79,8 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
     [ selectedRelation ]
   )
 
-  const content = (
-    <div style={{marginTop: '.618em', marginBottom: '.618em'}}>
+  return (
+    <div style={{margin: '.618em'}}>
       <FlexRow
         style={{alignItems: 'center'}}
         items={[
@@ -106,23 +107,26 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
           </div>,
         ]}
       />
+
+    <Expandable open={examplesOpen} onToggle={({open}) => {setExamplesOpen(open)}} showArrow={true} heading="show example" styleHeading={{color: 'inherit', marginTop: '0.309em'}}
+      content={
       <TimelineRelationDisplay
         relation={selectedRelation.value}
         hasStart={hasStart}
         hasEnd={hasEnd}
-      />
+      />} />
     </div>
   )
 
   // TODO move 'advanced' expandable out of TimeRelation, which should just be a child of it in case we have other advanced options as well
-  return (
-    <Expandable
-      open={true}
-      showArrow={true}
-      heading="Advanced"
-      styleHeading={{color: 'inherit', marginTop: '0.309em'}}
-      content={content}
-    />
-  )
+  // return (
+  //   <Expandable
+  //     open={true}
+  //     showArrow={true}
+  //     heading="Advanced"
+  //     styleHeading={{color: 'inherit', marginTop: '0.309em'}}
+  //     content={content}
+  //   />
+  // )
 }
 export default TimeRelation

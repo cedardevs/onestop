@@ -232,7 +232,7 @@ const TimeLineQuery = ({query, labels, outputs}) => {
   // )
   return (
     <div>
-      <div>some examples on a timeline:</div> {middle}
+      <div style={{textAlign: 'center'}}>timeline:</div> {middle}
     </div>
   )
 }
