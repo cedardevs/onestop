@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.core.report.ProcessingReport
 import com.github.fge.jsonschema.main.JsonSchema
 import com.github.fge.jsonschema.main.JsonSchemaFactory
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import groovy.json.JsonSlurper
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -24,9 +25,21 @@ class JsonValidatorSpec extends Specification {
     }
   }
 
+  static def validateAgainstSpec(String request, String schema) {
+    def jsonSlurper = new JsonSlurper()
+    Map params = jsonSlurper.parseText(request)
+    try {
+      return JsonValidator.validateRequestAgainstSpec(params, schema)
+    } catch (e) {
+      println("failed with: ${request}")
+      println(e)
+      throw(e)
+    }
+  }
+
   static def validateSearchSchema(request) {
     def jsonSlurper = new JsonSlurper()
-    def params = jsonSlurper.parseText(request)
+    Map params = jsonSlurper.parseText(request)
     try {
       return JsonValidator.validateSearchRequestSchema(params)
     } catch (e) {
@@ -36,17 +49,18 @@ class JsonValidatorSpec extends Specification {
     }
   }
 
-  def 'OneStop schema is a valid schema'() {
+  def 'OneStop schema parsed from openapi spec is a valid schema'() {
     when: "The OneStop schemas are validated"
     ObjectMapper mapper = new ObjectMapper()
+    ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory())
     JsonNode jsonSchema = mapper.readTree(this.getClass().classLoader.getResource('json-schema-draft4.json').text)
-    JsonNode requestSchema = mapper.readTree(this.getClass().classLoader.getResource('onestop-request-schema.json').text)
+    JsonNode apiSpec = yamlMapper.readTree(this.getClass().classLoader.getResource('schema/openapi.yml').text)
+    JsonNode requestSchema = apiSpec.get('components').get('schemas').get('requestBody')
 
     final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
     final JsonSchema schema = factory.getJsonSchema(jsonSchema)
 
     ProcessingReport globalReport = schema.validate(requestSchema)
-    System.out.println(globalReport);
 
     then: "The validation is successful"
     globalReport.success
@@ -54,11 +68,11 @@ class JsonValidatorSpec extends Specification {
 
   def 'valid pagination: #desc'() {
     given:
-    def schema = 'schema/components/page.json'
+    def schema = 'page'
     def singleQuery = """{ "page": ${request} }"""
 
     when:
-    def validation = validatePart(request, schema)
+    def validation = validateAgainstSpec(singleQuery, schema)
 
     then:
     validation.success
