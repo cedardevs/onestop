@@ -5,12 +5,12 @@ import _ from 'lodash'
 import defaultStyles from '../../../style/defaultStyles'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
+import {consolidateStyles} from '../../../utils/styleUtils'
 
 const QUERY = [ {start: 2, end: 6}, {start: 2}, {end: 6} ]
 
 const RESULTS = [
   {
-    label: '1',
     start: 0,
     end: 1,
     description: [
@@ -25,7 +25,6 @@ const RESULTS = [
     ],
   },
   {
-    label: 'ex 2',
     start: 3,
     end: 5,
     description: [
@@ -40,7 +39,6 @@ const RESULTS = [
     ],
   },
   {
-    label: 'ex 3',
     start: 1,
     end: 7,
     description: [
@@ -55,7 +53,6 @@ const RESULTS = [
     ],
   },
   {
-    label: 'ex 4',
     start: 4,
     description: [
       'result range starts in middle of query range, and continues into present',
@@ -69,7 +66,6 @@ const RESULTS = [
     ],
   },
   {
-    label: 'ex 5',
     start: 1,
     description: [
       'result range starts before query, and continues into present',
@@ -84,36 +80,15 @@ const RESULTS = [
   },
 ]
 
-const TimeLineQuery = ({query, labels, outputs}) => {
-  let startOffset = query.start == null ? 0 : query.start
-  let endOffset = query.end == null ? 8 : query.end
-  let width = endOffset - startOffset
-  let style = {
-    position: 'absolute',
-    marginLeft: `${startOffset}em`,
-    width: `${width}em`,
-    height: '100%',
-    border: 'solid blue 1px',
-    borderRadius:
-      query.end == null
-        ? '0 1em 1em 0'
-        : query.start == null ? '1em 0 0 1em' : '0',
-  }
-  // return (
-  //   <div
-  //     style={{
-  //       position: 'relative',
-  //       paddingTop: '0.309em',
-  //       paddingBottom: '0.309em',
-  //     }}
-  //   >
-  //     <div style={style} />
-  //     {children}
-  //   </div>
-  // )
+const Spacer = ({style, children}) => {
+  const SPACER_HEIGHT = '0.309em'
+  const styleSpacer = {height: SPACER_HEIGHT}
 
-  let labelColumn = new Array()
-  labelColumn.push(
+  return <div style={consolidateStyles(styleSpacer, style)}>{children}</div>
+}
+
+const TimeLineQuery = ({query, labels, outputs}) => {
+  const timelineStartLabel = (
     <div
       key="inf"
       style={{paddingRight: '0.309em', borderRight: '2px solid blue'}}
@@ -122,21 +97,30 @@ const TimeLineQuery = ({query, labels, outputs}) => {
       -∞
     </div>
   )
-  labelColumn.push(<br key="spacer" />)
-  labels.forEach(label => {
-    labelColumn.push(label)
-  })
-
-  const leftColumn = (
-    <FlexColumn
-      key="left"
-      style={{alignItems: 'flex-end'}}
-      items={labelColumn}
-    />
+  const timelineEndLabel = (
+    <div
+      key="present"
+      style={{
+        paddingLeft: '0.309em',
+        borderLeft: '2px solid blue',
+        position: 'relative',
+      }}
+      aria-label="present, end scale of timeline"
+    >
+      &nbsp;<div
+        style={{
+          position: 'absolute',
+          transform: 'rotate(90deg)',
+          transformOrigin: 'left bottom',
+          top: 0,
+          left: 0,
+        }}
+      >
+        present
+      </div>
+    </div>
   )
-
-  let outputColumn = new Array()
-  outputColumn.push(
+  const timeline = (
     <hr
       key="timeline"
       style={{
@@ -151,115 +135,126 @@ const TimeLineQuery = ({query, labels, outputs}) => {
     />
   )
 
-  outputColumn.push(
-    <div key="queryrange" style={{width: '100%', marginBottom: '0.309em'}}>
+  let labelColumn = [ timelineStartLabel, <Spacer key="spacer" /> ]
+  labels.forEach(label => {
+    labelColumn.push(label)
+  })
+
+  let endLabelColumn = [ timelineEndLabel ]
+
+  const leftColumn = (
+    <FlexColumn
+      key="left"
+      style={{alignItems: 'flex-end'}}
+      items={labelColumn}
+    />
+  )
+
+  const queryBox = (
+    <Spacer key="queryrange" style={{width: '100%'}}>
       <output
         style={{
           position: 'absolute',
-          left: `${10 * (QUERY[0].start + 1)}%`,
-          right: `${10 * (9 - QUERY[0].end)}%`,
+          left: leftEdgeOfRange(query.start == null ? -1 : query.start), // TODO edge of range position functions build in padding for results, manually pushing that off for query...
+          right: rightEdgeOfRange(query.end == null ? 9 : query.end),
           height: '90%',
           bottom: 0,
-          borderRight: '1px solid blue',
-          borderLeft: '1px solid blue',
+          borderLeft: queryRangeBorder(query.start),
+          borderRight: queryRangeBorder(query.end),
           backgroundColor: '#0000ff1f',
         }}
         title="user defined time filter"
       >
-        <label style={{position: 'absolute', right: '0.5em', bottom: '0.5em'}}>
-          query
-        </label>
+        <label style={{position: 'absolute', right: '0.5em'}}>filter</label>
       </output>&nbsp;
-    </div>
+    </Spacer>
   )
+
+  let exampleColumn = [ timeline, queryBox ]
   outputs.forEach(output => {
-    outputColumn.push(output)
+    exampleColumn.push(output)
   })
-  outputColumn.push(<br key="spacer1" />)
-  outputColumn.push(<br key="spacer2" />)
+  // exampleColumn.push(<Spacer key="spacer1" />)
+  // exampleColumn.push(<Spacer key="spacer2" />)
 
   const middle = (
     <FlexColumn
       key="middle"
-      style={{flexGrow: 1, position: 'relative'}}
-      items={outputColumn}
+      style={{
+        flexGrow: 1,
+        position: 'relative',
+        justifyContent: 'space-evenly',
+      }}
+      items={exampleColumn}
     />
   )
 
-  const rightColumn = (
-    <FlexColumn
-      key="right"
-      items={[
-        <div
-          key="present"
-          style={{paddingLeft: '0.309em', borderLeft: '2px solid blue'}}
-          aria-label="present, end scale of timeline"
-        >
-          present
-        </div>,
-      ]}
-    />
-  )
+  const rightColumn = <FlexColumn key="right" items={endLabelColumn} />
 
-  // TODO H1 is a placeholder here for something title-like. Use the fieldset heading thing??
   return (
     <div>
-      <h1>Timeline</h1>
+      <div>Timeline</div>
       <FlexRow items={[ leftColumn, middle, rightColumn ]} />
     </div>
   )
 }
 
-const colorRelation = hasRelation => {
-  return hasRelation ? 'green' : 'red'
+const colorRelation = (isMatched, isBorder) => {
+  if (isBorder) return isMatched ? '#7ec390' : '#888888'
+  return isMatched ? '#9ffcb7' : '#b9b9b9'
+}
+
+const queryRangeBorder = offset => {
+  return offset == null ? '1px dashed blue' : '1px solid blue'
+}
+const leftEdgeOfRange = offset => {
+  return `${10 * ((offset == null ? 1 : offset) + 1)}%`
+}
+const rightEdgeOfRange = offset => {
+  return `${10 * (9 - (offset == null ? 8 : offset))}%`
 }
 
 const TimeLineResult = ({id, result, relation, queryType}) => {
-  let startOffset = result.start
-  let endOffset = result.end == null ? 8 : result.end
-  let width = endOffset - startOffset
+  let isOngoing = result.end == null
   let includedBasedOnRelationship = result.relation[queryType][relation]
-  let description = includedBasedOnRelationship
+  let description = `${includedBasedOnRelationship
     ? 'Included in search results:'
-    : 'NOT included in search results:'
+    : 'NOT included in search results:'} ${result.description[queryType]}`
   let title = `${result.label} ${description}.`
-  let style = {
-    marginLeft: `${startOffset}em`,
-    width: `${width}em`,
-    borderRadius: result.end ? '0' : '0 1em 1em 0',
-    backgroundColor: colorRelation(includedBasedOnRelationship),
-    marginTop: '0.309em',
-    marginBottom: '0.309em',
-  }
 
-  const continuation =
-    result.end == null ? (
-      <div
-        style={{
-          position: 'absolute',
-          height: '100%',
-          borderRadius: '0px 1em 1em 0px',
-          backgroundColor: colorRelation(includedBasedOnRelationship),
-          top: 0,
-          left: '100%',
-        }}
-      >
-        ...&nbsp;&nbsp;
-      </div>
-    ) : null // TODO background-image: linear-gradient(to right, green , yellow) instead of bg color?
+  const continuation = isOngoing ? (
+    <div
+      style={{
+        position: 'absolute',
+        height: '100%',
+        borderRadius: '0px 1em 1em 0px',
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        borderColor: colorRelation(includedBasedOnRelationship, true),
+        backgroundColor: colorRelation(includedBasedOnRelationship),
+        borderLeft: '0',
+        top: '-1px', // due to border width
+        left: '100%',
+        paddingRight: '.4em',
+      }}
+    >
+      ...
+    </div>
+  ) : null // TODO background-image: linear-gradient(to right, green , yellow) instead of bg color?
 
-  let desc = `${description} ${result.description[queryType]}` //'no overlap between result and query means result will not be included by this search' // TODO
-  let marginLeft = `${10 * (startOffset + 1)}%`
-  let marginRight = `${10 * (9 - endOffset)}%`
   return (
     <output
       id={id}
-      title={desc}
+      title={description}
       style={{
         cursor: 'pointer',
         display: 'block',
-        marginLeft: marginLeft,
-        marginRight: marginRight,
+        marginLeft: leftEdgeOfRange(result.start),
+        marginRight: rightEdgeOfRange(result.end),
+        borderRadius: isOngoing ? '.2em 0 0 .2em' : '.2em',
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        borderColor: colorRelation(includedBasedOnRelationship, true),
         backgroundColor: colorRelation(includedBasedOnRelationship),
         marginBottom: '0.309em',
         position: 'relative',
@@ -267,7 +262,7 @@ const TimeLineResult = ({id, result, relation, queryType}) => {
       }}
     >
       &nbsp;{continuation}
-      <div style={defaultStyles.hideOffscreen}>{desc}</div>
+      <div style={defaultStyles.hideOffscreen}>{description}</div>
     </output>
   )
 }
@@ -282,9 +277,9 @@ const TimelineRelationDisplay = ({relation, hasStart, hasEnd}) => {
       <label
         key={`result${index + 1}`}
         htmlFor={`result${index + 1}`}
-        style={{marginBottom: '0.309em'}}
+        style={{marginBottom: '0.309em', marginRight: '0.309em'}}
       >
-        ex {index + 1}
+        ex {index + 1} :
       </label>
     )
   })
