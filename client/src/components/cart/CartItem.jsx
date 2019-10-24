@@ -6,6 +6,7 @@ import A from '../common/link/Link'
 import TimeSummary from '../collections/detail/TimeSummary'
 import {fontFamilySerif} from '../../utils/styleUtils'
 import SpatialSummary from '../collections/detail/SpatialSummary'
+import GranuleAccessLink from '../results/granules/GranuleAccessLink'
 import MapThumbnail from '../common/MapThumbnail'
 import * as util from '../../utils/resultUtils'
 import {boxShadow} from '../../style/defaultStyles'
@@ -108,22 +109,6 @@ const styleMap = {
   paddingTop: '0.25em',
 }
 
-const styleBadgeLink = {
-  textDecoration: 'none',
-  display: 'inline-flex',
-  paddingRight: '0.309em',
-}
-
-const styleBadgeLinkFocused = {
-  outline: '2px dashed black',
-  outlineOffset: '0.105em',
-}
-
-const styleLinkText = {
-  textDecoration: 'underline',
-  margin: '0.6em 0',
-}
-
 export default class CartItem extends React.Component {
   constructor(props) {
     super(props)
@@ -169,33 +154,6 @@ export default class CartItem extends React.Component {
     }
   }
 
-  renderBadge = (link, itemId, item) => {
-    const {protocol, url, displayName} = link
-    const linkText = displayName ? displayName : protocol.label
-
-    const ariaTitle = displayName
-      ? `${linkText} ${protocol.label} ${item.title}`
-      : `${linkText} ${item.title}`
-
-    return (
-      <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
-        <A
-          href={url}
-          key={url}
-          title={ariaTitle}
-          target="_blank"
-          style={styleBadgeLink}
-          styleFocus={styleBadgeLinkFocused}
-        >
-          <div style={util.styleBadge(protocol)} aria-hidden="true">
-            {util.renderBadgeIcon(protocol)}
-          </div>
-          <div style={styleLinkText}>{linkText}</div>
-        </A>
-      </li>
-    )
-  }
-
   renderLinks = links => {
     const badges = _.chain(links)
       // .filter(link => link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess')
@@ -207,15 +165,22 @@ export default class CartItem extends React.Component {
           : link.linkDescription ? link.linkDescription : null,
       }))
       .sortBy(info => info.protocol.id)
-      .map(link => {
-        return this.renderBadge(link, this.props.itemId, this.props.item)
+      .map((link, index) => {
+        return (
+          <GranuleAccessLink
+            key={`accessLink::${this.props.itemId}::${index}`}
+            link={link}
+            item={this.props.item}
+            itemId={this.props.itemId}
+          />
+        )
       })
       .value()
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges
 
     return (
       <div key={'CartItem::accessLinks'}>
-        <h3 style={styleSectionHeadingTop}>Data Access Links:</h3>
+        <h4 style={styleSectionHeadingTop}>Data Access Links:</h4>
         <ul style={util.styleProtocolList}>{badgesElement}</ul>
       </div>
     )
@@ -240,14 +205,14 @@ export default class CartItem extends React.Component {
 
     const timePeriod = (
       <div key={'CartItem::timePeriod'}>
-        <h3 style={styleSectionHeading}>Time Period:</h3>
+        <h4 style={styleSectionHeading}>Time Period:</h4>
         <TimeSummary item={item} />
       </div>
     )
 
     const boundingCoordinates = (
       <div key={'CartItem::boundingCoordinates'}>
-        <h3 style={styleSectionHeading}>Bounding Coordinates:</h3>
+        <h4 style={styleSectionHeading}>Bounding Coordinates:</h4>
         <SpatialSummary item={item} />
       </div>
     )

@@ -1,0 +1,23 @@
+# set by kafka-spring-test's @EmbeddedKafka
+kafka:
+  compression:
+    type: "gzip"
+  bootstrap:
+    servers: ${spring.embedded.kafka.brokers}
+  schema:
+    registry:
+      url: http://localhost:8081
+      # use a random, temp dir for rocksdb state to prevent one run from interfering with the next
+  state:
+    dir: ${java.io.tmpdir}/${random.uuid}
+
+topics:
+  num-partitions: 1
+  replication-factor: 1
+
+cas:
+  prefixUrl: "http://test.org/cas"
+authorization:
+  roles:
+    ROLE_ADMIN:
+      - user.one

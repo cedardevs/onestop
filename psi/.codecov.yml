@@ -1,0 +1,9 @@
+coverage:
+  status:
+    # increase acceptable thresholds for PR checks
+    patch:
+      default:
+        threshold: 1%
+    project:
+      default:
+        threshold: 1%
