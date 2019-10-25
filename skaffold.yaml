@@ -196,10 +196,3 @@ profiles:
               cp-kafka.enabled: false
               cp-schema-registry.enabled: false
               cp-zookeeper.enabled: false
-
-  # replace  the registry and manager from the build and deployment
-  - name: cas
-    patches:
-      - op: replace
-        path: /deploy/helm/releases/1/setValues/features.cas
-        value: "true"
