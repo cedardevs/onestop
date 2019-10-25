@@ -26,7 +26,7 @@
   - Kafka
   - Elasticsearch
   
-### Metadata Manager
+### Metadata Developer/Manager
 - Unlocking maximum potential —  tips and best practices on what you can do with your metadata to take advantage of all features
 - Setting Up w/CI
 - the nitty gritty details on parsing
