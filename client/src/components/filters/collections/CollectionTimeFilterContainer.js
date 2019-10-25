@@ -6,6 +6,7 @@ import {
   collectionUpdateDateRange,
   collectionUpdateYearRange,
   collectionRemoveYearRange,
+  collectionUpdateTimeRelation,
 } from '../../../actions/routing/CollectionSearchStateActions'
 import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
@@ -28,12 +29,14 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    updateDateRange: (startDate, endDate, relation) => {
-      console.log('????', relation)
-      dispatch(collectionUpdateDateRange(startDate, endDate, relation))
+    updateTimeRelation: relation => {
+      dispatch(collectionUpdateTimeRelation(relation))
     },
-    updateYearRange: (startYear, endYear, relation) => {
-      dispatch(collectionUpdateYearRange(startYear, endYear, relation))
+    updateDateRange: (startDate, endDate) => {
+      dispatch(collectionUpdateDateRange(startDate, endDate))
+    },
+    updateYearRange: (startYear, endYear) => {
+      dispatch(collectionUpdateYearRange(startYear, endYear))
     },
     removeDateRange: () => {
       dispatch(collectionRemoveDateRange())

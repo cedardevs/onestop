@@ -31,6 +31,7 @@ const TimeFilter = ({
   endYear,
   updateYearRange,
   removeYearRange,
+  updateTimeRelation,
   submit,
 }) => {
   // TODO it might be worth extracting the alert states, drawer, etc, if we want to reuse the same visual+508 alert elsewhere. Or change to using react-aria-live (just added for LoadingBar)
@@ -38,17 +39,32 @@ const TimeFilter = ({
   const [ showAlert, setShowAlert ] = useState(false)
   const [ alertAnnouncement, setAlertAnnouncement ] = useState('')
 
-  const [ relation, setRelation ] = useState('')
+  // const [ relation, setRelation ] = useState('')
 
+  // useEffect(
+  //   ()=> {setRelation(timeRelationship)}, [timeRelationship]
+  // )
   const standardView = (
     <DateTimeFilter
       startDateTime={startDateTime}
       endDateTime={endDateTime}
       timeRelationship={timeRelationship}
-      updateTimeRelationship={setRelation}
+      updateTimeRelationship={relation => {
+        if (relation != timeRelationship) updateTimeRelation(relation)
+        if (
+          startYear != null ||
+          endYear != null ||
+          !_.isEmpty(startDateTime) ||
+          !_.isEmpty(endDateTime)
+        ) {
+          // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
+          console.log('submitting bc relation change')
+          submit()
+        }
+      }}
       applyFilter={(startDate, endDate) => {
         removeYearRange()
-        updateDateRange(startDate, endDate, relation)
+        updateDateRange(startDate, endDate)
         submit()
       }}
       clear={() => {
@@ -62,10 +78,12 @@ const TimeFilter = ({
       startYear={startYear}
       endYear={endYear}
       timeRelationship={timeRelationship}
-      updateTimeRelationship={setRelation}
+      updateTimeRelationship={relation => {
+        updateTimeRelation(relation)
+      }}
       applyFilter={(startYear, endYear) => {
         removeDateRange()
-        updateYearRange(startYear, endYear, relation)
+        updateYearRange(startYear, endYear)
         submit()
       }}
       clear={() => {

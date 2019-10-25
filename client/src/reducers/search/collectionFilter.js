@@ -2,6 +2,7 @@ import Immutable from 'seamless-immutable'
 import {
   COLLECTION_UPDATE_GEOMETRY,
   COLLECTION_REMOVE_GEOMETRY,
+  COLLECTION_UPDATE_TIME_RELATIONSHIP,
   COLLECTION_UPDATE_DATE_RANGE,
   COLLECTION_REMOVE_DATE_RANGE,
   COLLECTION_UPDATE_YEAR_RANGE,
@@ -19,7 +20,7 @@ export const initialState = Immutable({
   queryText: '',
   geoJSON: null,
   // TODO bad - can accidentally build 'null' into the query, which unsurprisingly causes a bad request
-  timeRelationship: null, // note there's not really a way to clear this value, but it should be clear if all 4 date/year options are null.. TODO
+  timeRelationship: 'intersects', // note there's not really a way to clear this value, but it should be clear if all 4 date/year options are null.. TODO
   startDateTime: null,
   endDateTime: null,
   startYear: null,
@@ -37,30 +38,33 @@ export const collectionFilter = (state = initialState, action) => {
     case COLLECTION_REMOVE_GEOMETRY:
       return Immutable.set(state, 'geoJSON', initialState.geoJSON)
 
+    case COLLECTION_UPDATE_TIME_RELATIONSHIP:
+      return Immutable.set(state, 'timeRelationship', action.relationship)
+
     case COLLECTION_UPDATE_DATE_RANGE:
       return Immutable.merge(state, {
         startDateTime: action.startDate,
         endDateTime: action.endDate,
-        timeRelationship: action.relationship ? action.relationship : null, // prevent undefined
       })
 
     case COLLECTION_UPDATE_YEAR_RANGE:
       return Immutable.merge(state, {
         startYear: action.startYear,
         endYear: action.endYear,
-        timeRelationship: action.relationship ? action.relationship : null, // prevent undefined
       })
 
     case COLLECTION_REMOVE_DATE_RANGE:
       return Immutable.merge(state, {
         startDateTime: initialState.startDateTime,
         endDateTime: initialState.endDateTime,
+        // timeRelationship: initialState.timeRelationship
       })
 
     case COLLECTION_REMOVE_YEAR_RANGE:
       return Immutable.merge(state, {
         startYear: initialState.startYear,
         endYear: initialState.endYear,
+        // timeRelationship: initialState.timeRelationship
       })
 
     case COLLECTION_TOGGLE_FACET:

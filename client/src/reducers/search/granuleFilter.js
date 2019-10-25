@@ -3,6 +3,7 @@ import {
   GRANULE_SET_QUERY_TEXT,
   GRANULE_UPDATE_GEOMETRY,
   GRANULE_REMOVE_GEOMETRY,
+  GRANULE_UPDATE_TIME_RELATIONSHIP,
   GRANULE_UPDATE_DATE_RANGE,
   GRANULE_REMOVE_DATE_RANGE,
   GRANULE_UPDATE_YEAR_RANGE,
@@ -71,24 +72,26 @@ export const granuleFilter = (state = initialState, action) => {
     case GRANULE_REMOVE_GEOMETRY:
       return Immutable.set(state, 'geoJSON', initialState.geoJSON)
 
+    case GRANULE_UPDATE_TIME_RELATIONSHIP:
+      return Immutable.set(state, 'timeRelationship', action.relationship)
+
     case GRANULE_UPDATE_DATE_RANGE:
       return Immutable.merge(state, {
         startDateTime: action.startDate,
         endDateTime: action.endDate,
-        timeRelationship: action.relationship ? action.relationship : null, // prevent undefined
       })
 
     case GRANULE_UPDATE_YEAR_RANGE:
       return Immutable.merge(state, {
         startYear: action.startYear,
         endYear: action.endYear,
-        timeRelationship: action.relationship ? action.relationship : null, // prevent undefined
       })
 
     case GRANULE_REMOVE_DATE_RANGE:
       return Immutable.merge(state, {
         startDateTime: initialState.startDateTime,
         endDateTime: initialState.endDateTime,
+        timeRelationship: initialState.timeRelationship,
         // timeRelationship: initialState.timeRelationship, // TODO clear probably shouldn't actually reset this - it needs a separate reset button?
       })
 
@@ -96,6 +99,7 @@ export const granuleFilter = (state = initialState, action) => {
       return Immutable.merge(state, {
         startYear: initialState.startYear,
         endYear: initialState.endYear,
+        timeRelationship: initialState.timeRelationship,
       })
 
     case GRANULE_TOGGLE_FACET:

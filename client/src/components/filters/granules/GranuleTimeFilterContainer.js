@@ -6,6 +6,7 @@ import {
   granuleUpdateDateRange,
   granuleUpdateYearRange,
   granuleRemoveYearRange,
+  granuleUpdateTimeRelation,
 } from '../../../actions/routing/GranuleSearchStateActions'
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
@@ -28,11 +29,14 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    updateDateRange: (startDate, endDate, relation) => {
-      dispatch(granuleUpdateDateRange(startDate, endDate, relation))
+    updateTimeRelation: relation => {
+      dispatch(granuleUpdateTimeRelation(relation))
     },
-    updateYearRange: (startYear, endYear, relation) => {
-      dispatch(granuleUpdateYearRange(startYear, endYear, relation))
+    updateDateRange: (startDate, endDate) => {
+      dispatch(granuleUpdateDateRange(startDate, endDate))
+    },
+    updateYearRange: (startYear, endYear) => {
+      dispatch(granuleUpdateYearRange(startYear, endYear))
     },
     removeDateRange: () => {
       dispatch(granuleRemoveDateRange())

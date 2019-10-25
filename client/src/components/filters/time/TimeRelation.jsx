@@ -44,7 +44,7 @@ const RELATION_OPTIONS = [
 ]
 
 const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
-  const [examplesOpen, setExamplesOpen] = useState(false)
+  const [ examplesOpen, setExamplesOpen ] = useState(false)
   // let defaultSelection = _.find(RELATION_OPTIONS, option => {
   //   return option.value == timeRelationship
   // })
@@ -63,9 +63,19 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
         return relation.value == timeRelationship
       })
       if (matchingRelation) {
+        console.log(
+          'changing selected relation matching',
+          timeRelationship,
+          matchingRelation
+        )
         setSelectedRelation(matchingRelation)
       }
       else {
+        console.log(
+          'changing selected relation default',
+          timeRelationship,
+          matchingRelation
+        )
         setSelectedRelation(RELATION_OPTIONS[0])
       }
     },
@@ -74,6 +84,7 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
 
   useEffect(
     () => {
+      console.log('changing selected relation', selectedRelation.value)
       onUpdate(selectedRelation.value)
     },
     [ selectedRelation ]
@@ -108,13 +119,22 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
         ]}
       />
 
-    <Expandable open={examplesOpen} onToggle={({open}) => {setExamplesOpen(open)}} showArrow={true} heading="show example" styleHeading={{color: 'inherit', marginTop: '0.309em'}}
-      content={
-      <TimelineRelationDisplay
-        relation={selectedRelation.value}
-        hasStart={hasStart}
-        hasEnd={hasEnd}
-      />} />
+      <Expandable
+        open={examplesOpen}
+        onToggle={({open}) => {
+          setExamplesOpen(open)
+        }}
+        showArrow={true}
+        heading="show example"
+        styleHeading={{color: 'inherit', marginTop: '0.309em'}}
+        content={
+          <TimelineRelationDisplay
+            relation={selectedRelation.value}
+            hasStart={hasStart}
+            hasEnd={hasEnd}
+          />
+        }
+      />
     </div>
   )
 

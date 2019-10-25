@@ -52,13 +52,21 @@ export const collectionRemoveGeometry = () => {
   }
 }
 
+export const COLLECTION_UPDATE_TIME_RELATIONSHIP =
+  'COLLECTION_UPDATE_TIME_RELATIONSHIP'
+export const collectionUpdateTimeRelation = relationship => {
+  return {
+    type: COLLECTION_UPDATE_TIME_RELATIONSHIP,
+    relationship: relationship,
+  }
+}
+
 export const COLLECTION_UPDATE_YEAR_RANGE = 'COLLECTION_UPDATE_YEAR_RANGE'
-export const collectionUpdateYearRange = (startYear, endYear, relationship) => {
+export const collectionUpdateYearRange = (startYear, endYear) => {
   return {
     type: COLLECTION_UPDATE_YEAR_RANGE,
     startYear: startYear,
     endYear: endYear,
-    relationship: relationship,
   }
 }
 
@@ -72,12 +80,11 @@ export const collectionRemoveYearRange = (startYear, endYear) => {
 }
 
 export const COLLECTION_UPDATE_DATE_RANGE = 'COLLECTION_UPDATE_DATE_RANGE'
-export const collectionUpdateDateRange = (startDate, endDate, relationship) => {
+export const collectionUpdateDateRange = (startDate, endDate) => {
   return {
     type: COLLECTION_UPDATE_DATE_RANGE,
     startDate: startDate,
     endDate: endDate,
-    relationship: relationship,
   }
 }
 export const COLLECTION_REMOVE_DATE_RANGE = 'COLLECTION_REMOVE_DATE_RANGE'
