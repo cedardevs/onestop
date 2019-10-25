@@ -552,16 +552,6 @@ components:
         items:
           $ref: "#/components/schemas/linearRing"
         type: array
-      # position:
-      #   description: A single position
-      #   type: array
-      #   items:
-      #     allOf:
-      #       - type: number
-      #       - type: number
-      #   additionalItems: false
-      #   maxItems: 2
-      #   minItems: 2
       position:
         description: "A single position"
         items:
