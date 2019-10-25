@@ -7,7 +7,7 @@ plugins {
 
 apply from: "${rootDir}/gradle/publishing.gradle"
 
-mainClassName = 'org.cedar.psi.manager.StreamManagerMain'
+mainClassName = 'org.cedar.onestop.manager.StreamManagerMain'
 
 repositories {
   mavenCentral()
