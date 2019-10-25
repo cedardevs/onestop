@@ -153,7 +153,7 @@ build:
 deploy:
   helm:
     releases:
-    - *onestop-admin
+    - *onestop-admin # depends on both kafka and elasticsearch by default
 
     - *onestop-registry
 
@@ -171,29 +171,18 @@ deploy:
 
 profiles:
   - name: psi
+    # things that depend only on kafka
     deploy:
       helm:
         releases:
           - *onestop-manager
           - *onestop-registry
-          - *elasticsearch
           # DEV DEPENDENCIES
           - name: onestop-dev
             chartPath: helm/onestop-dev
 
   - name: os
-    deploy:
-      helm:
-        releases:
-          - *onestop-admin
-          - *onestop-search
-          - *onestop-client
-          - *elasticsearch
-          # DEV DEPENDENCIES
-          - name: onestop-dev
-            chartPath: helm/onestop-dev
-
-  - name: client
+    # things that depend only on elasticsearch
     deploy:
       helm:
         releases:
