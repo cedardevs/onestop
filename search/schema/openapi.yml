@@ -565,15 +565,14 @@ components:
       position:
         description: "A single position"
         items:
-          allOf:
-            - description: "longitudinal coordinate"
-              type: number
-              minimum: -360
-              maximum: 360
-            - description: "latitude coordinate"
-              type: number
-              minimum: -90
-              maximum: 90
+          - description: "longitudinal coordinate"
+            type: number
+            minimum: -360
+            maximum: 360
+          - description: "latitude coordinate"
+            type: number
+            minimum: -90
+            maximum: 90
         maxItems: 2
         minItems: 2
         type: array
