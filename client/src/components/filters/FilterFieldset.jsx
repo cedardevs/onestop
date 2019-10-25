@@ -44,6 +44,11 @@ const styleLegend = {
 
 export default class FilterFieldset extends React.Component {
   render() {
+    const appliedStyleFieldset = {
+      ...styleFieldset,
+      ...this.props.styleFieldset,
+    }
+
     const fieldsetLegend = (
       <legend style={styleLegend}>
         <div style={mask} />
@@ -52,7 +57,7 @@ export default class FilterFieldset extends React.Component {
     )
 
     return (
-      <fieldset style={styleFieldset}>
+      <fieldset style={appliedStyleFieldset}>
         {this.props.legendText ? fieldsetLegend : null}
         {this.props.children}
       </fieldset>

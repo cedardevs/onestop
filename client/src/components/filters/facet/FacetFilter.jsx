@@ -3,12 +3,15 @@ import Expandable from '../../common/ui/ExpandableOld'
 import FacetTree from './FacetTree'
 import _ from 'lodash'
 import {FilterStyles} from '../../../style/defaultStyles'
-
+import {styleFilterPanel} from '../common/styleFilters'
 /**
   This component contains everything described by the facet map built from the facet results.
 **/
 
-const styleFacetFilter = FilterStyles.MEDIUM
+const styleFacetFilter = {
+  ...styleFilterPanel,
+  ...{padding: 0}, // reset padding since this filter doesn't have a fieldset in it
+}
 
 const styleDescription = {
   margin: '0.618em',

@@ -11,48 +11,25 @@ import {
 } from '../../../utils/geoUtils'
 import {fontFamilyMonospace} from '../../../utils/styleUtils'
 import FilterFieldset from '../FilterFieldset'
+import FormSeparator from '../FormSeparator'
+import {FilterColors, SiteColors} from '../../../style/defaultStyles'
+
 import {
-  FilterColors,
-  FilterStyles,
-  SiteColors,
-} from '../../../style/defaultStyles'
+  styleFilterPanel,
+  styleFieldsetBorder,
+  styleForm,
+} from '../common/styleFilters'
+import ApplyClearRow from '../common/ApplyClearRow'
 
 const styleMapFilter = {
-  ...FilterStyles.MEDIUM,
+  ...styleFilterPanel,
   ...{
-    padding: '0.618em',
     position: 'relative',
   },
 }
 
 const styleDescription = {
   margin: 0,
-}
-
-const styleForm = {
-  display: 'flex',
-  flexDirection: 'column',
-}
-
-const styleApplyClearButtonRow = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: '0.618em',
-}
-
-const styleApplyButton = {
-  width: '30.9%',
-  padding: '0.309em',
-  margin: '0 0.309em',
-  fontSize: '1.05em',
-}
-const styleClearButton = {
-  width: '30.9%',
-  padding: '0.309em',
-  margin: '0 0.309em',
-  fontSize: '1.05em',
 }
 
 const styleButtonShowMap = {
@@ -298,39 +275,18 @@ export default class MapFilter extends React.Component {
       />
     )
 
-    const buttonApply = (
-      <Button
-        key="MapFilter::applyButton"
-        text="Apply"
-        title="Apply location filter"
-        onClick={this.applyGeometry}
-        style={styleApplyButton}
-      />
-    )
-
-    const buttonClear = (
-      <Button
-        key="MapFilter::clearButton"
-        text="Clear"
-        title="Clear location filter"
-        onClick={this.clearGeometry}
-        style={styleClearButton}
-      />
-    )
-
     const inputBoundingBox = this.renderCoordinateInput()
 
     const inputColumn = (
       <FlexColumn
         items={[
           inputBoundingBox,
-          <div
+          <ApplyClearRow
             key="MapFilter::InputColumn::Buttons"
-            style={styleApplyClearButtonRow}
-          >
-            {buttonApply}
-            {buttonClear}
-          </div>,
+            ariaActionDescription="location filter"
+            applyAction={this.applyGeometry}
+            clearAction={this.clearGeometry}
+          />,
           <div
             key="MapFilter::InputColumn::Warning"
             style={this.warningStyle()}
@@ -338,6 +294,7 @@ export default class MapFilter extends React.Component {
           >
             {this.state.warning}
           </div>,
+          <FormSeparator key="MapFilter::InputColumn::OR" text="OR" />,
           buttonShowMap,
         ]}
       />
@@ -356,7 +313,7 @@ export default class MapFilter extends React.Component {
 
     return (
       <div style={styleMapFilter}>
-        <fieldset style={{padding: '0.618em'}}>
+        <fieldset style={styleFieldsetBorder}>
           <legend id="mapFilterInstructions" style={styleDescription}>
             Type coordinates or draw on the map. Use the Clear button to reset
             the location filter.

@@ -1,0 +1,116 @@
+plugins {
+  id 'groovy'
+  id 'application'
+  id 'com.google.cloud.tools.jib' version '1.6.1'
+  id "com.github.johnrengelman.shadow" version "4.0.3"
+}
+
+apply from: "${rootDir}/gradle/publishing.gradle"
+
+mainClassName = 'org.cedar.onestop.manager.StreamManagerMain'
+
+repositories {
+  mavenCentral()
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+configurations {
+  integrationTestCompile.extendsFrom testCompile
+  integrationTestRuntime.extendsFrom testRuntime
+}
+
+dependencies {
+  implementation(project(':kafka-common'))
+  implementation("org.apache.commons:commons-text:1.2")
+  implementation("org.codehaus.groovy:groovy:${project.groovyVersion}")
+  implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
+  implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
+  implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
+  implementation("org.slf4j:slf4j-api:1.7.25")
+  implementation("ch.qos.logback:logback-classic:1.2.3")
+  implementation('org.yaml:snakeyaml:1.24')
+
+  implementation("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
+
+  testImplementation("org.spockframework:spock-core:${project.spockVersion}")
+  testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
+  testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
+  testImplementation("com.github.java-json-tools:json-schema-validator:2.2.10")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:sources")
+}
+
+jar {
+  baseName = "${rootProject.name}-${project.name}"
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+}
+// check http://imperceptiblethoughts.com/shadow/
+shadowJar {
+  baseName = "${rootProject.name}-${project.name}"
+  classifier = 'all'
+  version = version
+  configurations = [project.configurations.compile]
+}
+
+task sourceJar(type: Jar) {
+  classifier = 'sources'
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
+assemble.dependsOn(sourceJar)
+
+task BuildDockerImage {
+  group "jib"
+  dependsOn jibDockerBuild
+}
+task PublishDockerImage {
+  group "jib"
+  dependsOn jib
+}
+
+jib {
+  // derive image repository
+  String imageRegistryURL = "registry.hub.docker.com"
+  String imageNamespace = "cedardevs"
+  String imageName = "${rootProject.name}-${project.name}".toString()
+  String imageTag = "${project.version}".toString()
+  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+
+  from {
+    //base image
+    image = 'gcr.io/distroless/java:11'
+  }
+  to {
+    image = imageRepository
+    auth {
+      username = System.getenv('DOCKER_USER').toString().trim()
+      password = System.getenv('DOCKER_PASSWORD').toString().trim()
+    }
+  }
+  container {
+    creationTime = project.buildDate.toString()
+    // http://label-schema.org/rc1/
+    labels = [
+        'org.label-schema.build-date': project.buildDate.toString(),
+        'org.label-schema.name': imageName,
+        'org.label-schema.description': 'A stream manager API for PSI.',
+        'org.label-schema.vcs-url': project.getVcsUrl().toString(),
+        'org.label-schema.vcs-ref': project.getVcsRef().toString(),
+        'org.label-schema.vendor': imageNamespace,
+        'org.label-schema.version': imageTag,
+        'org.label-schema.schema-version': '1.0'
+    ]
+  }
+}

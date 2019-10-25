@@ -1,0 +1,133 @@
+---
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ include "psi-registry.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "psi-registry.name" . }}
+    helm.sh/chart: {{ include "psi-registry.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ include "psi-registry.fullname" . }}
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels:
+      app: {{ include "psi-registry.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "psi-registry.name" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        {{- with .Values.config }}
+        checksum/config: {{ . | sha256sum }}
+        {{- end }}
+    spec:
+      securityContext:
+        fsGroup: 102
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: db
+          containerPort: 9090
+          protocol: TCP
+        {{- if .Values.debug }}
+        - name: jdwp
+          containerPort: 5005
+        {{- end }}
+        env:
+        # EXPORT ACTIVE SPRING PROFILES TO TELL SPRING WHICH FEATURES TO ENABLE
+        # the loop is making a comma delimited list for multi-feature handling
+        - name: SPRING_PROFILES_ACTIVE
+          value: '{{ $active := dict "profiles" (list) -}}
+                  {{- range $feature, $enabled := .Values.features -}}
+                    {{- if $enabled -}}
+                      {{- $noop := $feature | append $active.profiles | set $active "profiles" -}}
+                    {{- end -}}
+                  {{- end -}}
+                  {{- join "," $active.profiles }}'
+        {{- if .Values.debug }}
+        - name: JAVA_TOOL_OPTIONS
+          value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+        {{- end }}
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "{{ include "psi-registry.kafka.bootstrap.servers" . }}"
+        - name: KAFKA_SCHEMA_REGISTRY_URL
+          value: "{{ include "psi-registry.kafka.schema.registry.url" . }}"
+        - name: KAFKA_STATE_DIR
+          value: "/var/lib/registry/data"
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: KAFKA_APPLICATION_SERVER
+          value: "${POD_IP}:9090"
+        {{- if .Values.config }}
+        - name: spring.config.additional-location
+          value: /etc/conf/application.yaml
+        {{- end }}
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/registry/data
+        {{- if .Values.config }}
+        - name: config
+          mountPath: /etc/conf
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      {{- if .Values.config }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "psi-registry.fullname" . }}-config
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+      {{- with .Values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- else }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - {{ include "psi-registry.name" . }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- with .Values.volume.storageClass }}
+        storageClassName: {{ . }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.volume.size }}

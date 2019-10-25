@@ -4,6 +4,7 @@ import {
   granuleToggleExcludeGlobal,
   granuleToggleFacet,
   granuleUpdateDateRange,
+  granuleUpdateYearRange,
   granuleRemoveGeometry,
   clearGranuleQueryText,
 } from '../../../actions/routing/GranuleSearchStateActions'
@@ -16,6 +17,8 @@ const mapStateToProps = state => {
     selectedFacets,
     startDateTime,
     endDateTime,
+    startYear,
+    endYear,
     geoJSON,
     excludeGlobal,
     title,
@@ -24,6 +27,8 @@ const mapStateToProps = state => {
     selectedFacets,
     startDateTime,
     endDateTime,
+    startYear,
+    endYear,
     geoJSON,
     excludeGlobal,
     showAppliedFilters: state.layout.showAppliedFilterBubbles,
@@ -46,6 +51,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     updateDateRange: (startDate, endDate) =>
       dispatch(granuleUpdateDateRange(startDate, endDate)),
+    updateYearRange: (startYear, endYear) =>
+      dispatch(granuleUpdateYearRange(startYear, endYear)),
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
   }
 }

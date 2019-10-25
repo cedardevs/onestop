@@ -2,6 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import AppliedFilterBubble from './AppliedFilterBubble'
 import * as geoUtils from '../../utils/geoUtils'
+import {displayBigYears} from '../../utils/readableUtils'
 
 const Theme = {
   facet: {
@@ -50,6 +51,11 @@ export default class AppliedFilters extends React.Component {
     this.props.submit()
   }
 
+  unselectYearAndSubmitSearch = (start, end) => {
+    this.props.updateYearRange(start, end)
+    this.props.submit()
+  }
+
   unselectMapAndSubmitSearch = () => {
     this.props.removeGeometry()
     this.props.submit()
@@ -86,7 +92,12 @@ export default class AppliedFilters extends React.Component {
     const {selectedFacets} = this.props
     return _.flatMap(selectedFacets, (terms, category) => {
       return _.map(terms, term => {
-        const name = term.split('>').pop().trim() || 'DNE'
+        const name = term.split('>').pop().trim() || (
+          <abbr title="Does Not Exist">DNE</abbr>
+        ) // TODO verify the title is handled correctly for these see search for title: "NOAA Aircraft Operations Center (AOC) Flight Level Data"
+        const title = term.split('>').pop().trim()
+          ? null
+          : 'Remove Does Not Exist Filter'
         const key = `appliedFilter::${term}`
 
         return (
@@ -94,6 +105,7 @@ export default class AppliedFilters extends React.Component {
             backgroundColor={Theme.facet.backgroundColor}
             borderColor={Theme.facet.borderColor}
             text={name}
+            title={title}
             key={key}
             onUnselect={() => this.unselectFacetAndSubmitSearch(category, term)}
           />
@@ -103,7 +115,7 @@ export default class AppliedFilters extends React.Component {
   }
 
   buildTimeBubbles = () => {
-    const {startDateTime, endDateTime} = this.props
+    const {startDateTime, endDateTime, startYear, endYear} = this.props
     const removeZeroTime = dateTime => dateTime.replace('T00:00:00Z', '')
     let timeBubbles = []
     if (startDateTime) {
@@ -127,6 +139,41 @@ export default class AppliedFilters extends React.Component {
           key="appliedFilter::end"
           onUnselect={() =>
             this.unselectDateTimeAndSubmitSearch(startDateTime, null)}
+        />
+      )
+    }
+    if (startYear != null) {
+      let startYearText = (
+        <span>
+          After: {displayBigYears(startYear)}{' '}
+          <abbr title="Current Era">CE</abbr>
+        </span>
+      )
+      timeBubbles.push(
+        <AppliedFilterBubble
+          backgroundColor={Theme.time.backgroundColor}
+          borderColor={Theme.time.borderColor}
+          text={startYearText}
+          title={`Remove After ${startYear} Current Era Filter`}
+          key="appliedFilter::startYear"
+          onUnselect={() => this.unselectYearAndSubmitSearch(null, endYear)}
+        />
+      )
+    }
+    if (endYear != null) {
+      let endYearText = (
+        <span>
+          Before: {displayBigYears(endYear)} <abbr title="Current Era">CE</abbr>
+        </span>
+      )
+      timeBubbles.push(
+        <AppliedFilterBubble
+          backgroundColor={Theme.time.backgroundColor}
+          borderColor={Theme.time.borderColor}
+          text={endYearText}
+          title={`Remove Before ${endYear} Current Era Filter`}
+          key="appliedFilter::endYear"
+          onUnselect={() => this.unselectYearAndSubmitSearch(startYear, null)}
         />
       )
     }

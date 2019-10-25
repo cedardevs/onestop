@@ -145,6 +145,33 @@ Follow these steps to confirm that core behavior is working as expected, as well
     - [ ] A validation error displays
 1. Search for `tree rings`. Select any of the paleo results.
     - [ ] The begin date shows with a negative year (eg -0106-01-01)
+    - [ ] The date filter allows you to switch to "Geologic", which provides options for:
+        - CE vs BP year entry
+        - start and end year
+        - Eras
+    - Enter `-3.8 Ga` to `-1ka` and apply. These are automatically changed to -3800000000 and -1000
+    - change -1000 to `-2ma`. It is changed to -2000000 when applied.
+    - change the start year to `foo` -> invalid start date.
+    - change the start year to 2000 -> invalid year range.
+    - Select the Era "Pliocene"
+        - [ ] The range -5298050 to -2598050 is automatically applied and filled in
+        - [ ] the URL encodes these as sy and ey
+    - reload the page and reopen the date filter
+        - [ ] Geologic is selected by default
+        - [ ] Pliocene is still show under Eras
+    - [ ] change the end year to 1950, Eras is reset to an empty value (no longer matches the range)
+    - [ ] change
+    - toggle CE to BP
+        - [ ] The range displays as 5300000 to 0 (applied filters still show the CE values, clearly labeled as CE)
+        - [ ] clearing the filters and toggling back and forth between CE and BP changes the placeholder value from -YYYYYYYYY (for CE) to YYYYYYYYY (for BP)
+        - [ ] hovering over CE or BP will indicate what those are acronyms for
+        - [ ] With BP set, selecting the Pliocene Era fills in the range 5300000 to 2600000 in the text boxes
+    - switch back to the standard Datetime filter view.
+        - [ ] A warning is displayed indicating that changes here will automatically remove the geologic filters
+        - [ ] enter a datetime and confirm that the new datetime is applied and the CE years are removed
+        - [ ] switching back to the Geologic view shows a comparable warning about removing datetime filters
+        - [ ] selecting an era will likewise change the filters and clear the warning
+    - note that most of the Era searches may not match any data
 1. Search for `"NOAA/WDS Paleoclimatology - A global planktic foraminifer census data set for the Pliocene ocean"`. Select the result.
     - [ ] The date displays as "-617905000 to -1601050-12-31"
 1. Search `glacier`. Select the first result (*not* the Digital Elevation Model).

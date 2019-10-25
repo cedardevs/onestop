@@ -9,4 +9,5 @@ kafka:
     collections: "psi-registry-collection-parsed-changelog"
 
 schema-registry:
-  url: "http://localhost:8082"
+  port: 8081
+  url: http://localhost:${schema-registry.port}
