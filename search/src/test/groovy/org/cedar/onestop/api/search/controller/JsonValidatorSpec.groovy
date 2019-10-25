@@ -13,18 +13,6 @@ import spock.lang.Unroll
 @Unroll
 class JsonValidatorSpec extends Specification {
 
-  static def validatePart(request, schema) {
-    def jsonSlurper = new JsonSlurper()
-    def params = jsonSlurper.parseText(request)
-    try {
-      return JsonValidator.validateSchema(params, schema)
-    } catch (e) {
-      println("failed with: ${request}")
-      println(e)
-      throw(e)
-    }
-  }
-
   static def validateAgainstSpec(String request, String schema) {
     def jsonSlurper = new JsonSlurper()
     Map params = jsonSlurper.parseText(request)
@@ -100,15 +88,8 @@ class JsonValidatorSpec extends Specification {
 
   def 'invalid pagination: #desc (reason: #reasoning)'() {
     given:
-    def schema = 'schema/components/page.json'
+    def schema = 'page'
     def singleQuery = """{ "page": ${request} }"""
-
-    when:
-    def validation = validatePart(request, schema)
-
-    then: "exception is thrown"
-    def e = thrown(Exception)
-    e.message.contains('not a valid request')
 
     when:
     def validSearch = validateSearchSchema(singleQuery)
@@ -127,17 +108,8 @@ class JsonValidatorSpec extends Specification {
 
   def 'valid text query: #desc'() {
     given:
-    def schema = 'schema/components/textQuery.json'
+    def schema = 'textQuery'
     def singleQuery = """{ "queries": [ ${request} ] }"""
-
-    when:
-    def validation = validatePart(request, schema)
-
-    then:
-    validation.success
-
-    and: 'no errors are returned'
-    !validation.errors
 
     when:
     def validSearch = validateSearchSchema(singleQuery)
@@ -155,15 +127,8 @@ class JsonValidatorSpec extends Specification {
 
   def 'invalid text query: #desc (reason: #reasoning)'() {
     given:
-    def schema = 'schema/components/textQuery.json'
+    def schema = 'textQuery'
     def singleQuery = """{ "queries": [ ${request} ] }"""
-
-    when:
-    def validation = validatePart(request, schema)
-
-    then: "exception is thrown"
-    def e = thrown(Exception)
-    e.message.contains('not a valid request')
 
     when:
     def validSearch = validateSearchSchema(singleQuery)
@@ -187,15 +152,6 @@ class JsonValidatorSpec extends Specification {
   def 'valid filter: #component #desc'() {
     given:
     def singleQuery = """{ "filters": [ ${request} ] }"""
-
-    when:
-    def validation = validatePart(request, "schema/components/${component}Filter.json")
-
-    then:
-    validation.success
-
-    and: 'no errors are returned'
-    !validation.errors
 
     when:
     def validSearch = validateSearchSchema(singleQuery)
@@ -243,13 +199,6 @@ class JsonValidatorSpec extends Specification {
   def 'invalid filter: #component #desc'() {
     given:
     def singleQuery = """{ "filters": [ ${request} ] }"""
-
-    when:
-    def validation = validatePart(request, "schema/components/${component}Filter.json")
-
-    then: "exception is thrown"
-    def e = thrown(Exception)
-    e.message.contains('not a valid request')
 
     when:
     def validSearch = validateSearchSchema(singleQuery)
