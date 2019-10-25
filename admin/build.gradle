@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
   implementation(project(':elastic-common'))
+  implementation(project(':kafka-common'))
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
 
   // Kafka dependencies for connecting with PSI
