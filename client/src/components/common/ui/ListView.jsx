@@ -2,10 +2,15 @@ import React, {useEffect, useState, useRef, useCallback} from 'react'
 import PropTypes from 'prop-types'
 import ListViewController from './ListViewController'
 import {mapFromObject} from '../../../utils/objectUtils'
-import {useListViewItem} from "./ListViewItem";
 
 const styleListView = {
   marginLeft: '1.618em',
+}
+
+const styleList = {
+  display: 'flex',
+  flexDirection: 'column',
+  flexWrap: 'nowrap',
 }
 
 const styleGrid = {
@@ -17,49 +22,18 @@ const styleGrid = {
   alignContent: 'flex-start',
 }
 
-const styleList = {
-  display: 'flex',
-  flexDirection: 'column',
-  flexWrap: 'nowrap',
-}
-
-const styleFallbackItem = {
-  display: 'block',
-  margin: '0 1.618em 0 0',
-}
-
-const styleFocusDefault = {
-  outline: 'none',
-  border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
-  padding: '.259em',
-  margin: '.259em',
-}
-
-function useHookWithRefCallback(setFocusKey){
-  const ref = useRef(null)
-  let focusKey = null
-
-  const setRef = useCallback(node => {
-    if (ref.current) {
-      // Make sure to cleanup any events/references added to the last instance
-    }
-
-    if (node) {
-      // console.log("node.props", node.props)
-      // Check if a node is actually passed. Otherwise node would be null.
-      // You can now do what you need to, addEventListeners, measure, etc.
-      if (node.props && node.props.itemId && node.props.itemId) {
-        if (setFocusKey) {
-          setFocusKey(node.props.itemId)
-        }
-      }
-    }
-
-    // Save a reference to the node
-    ref.current = node
-  }, []) // TODO: set `node` id/key in inputs here? -- to take advantage of useCallback memoization
-
-  return [ setRef ]
+const styleDefaultItem = focusing => {
+  const styleDefaultFocus = {
+    outline: 'none',
+    border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
+    padding: '.259em',
+    margin: '.259em',
+  }
+  return {
+    display: 'block',
+    margin: '0 1.618em 0 0',
+    ...(focusing ? styleDefaultFocus : {})
+  }
 }
 
 function usePrevious(value){
@@ -78,6 +52,10 @@ function useItems(items){
   // initial previous items map is also empty
   const [ itemsMapPrevious, setItemsMapPrevious ] = useState(new Map())
 
+  const [ focusedKey, setFocusedKey ] = useState(null)
+  const focusedRef = useRef(null)
+
+
   // this effect tracks when the items supplied to ListView changes
   useEffect(
     () => {
@@ -88,11 +66,52 @@ function useItems(items){
       // we track our `previous` items after they've already been
       // converted to a `Map`, so there's no need to convert it here
       setItemsMapPrevious(previous ? previous.itemsMap : new Map())
+
+      // focus on what next new item, or the first item if the previous focused key cannot be found; otherwise, previous focused item (if key to previous focused item is the last item),
+      // let keyIterator = itemsMap.keys()
+      // let done = false
+      // let value = undefined
+      // while(!done && value !== focusedKey) {
+      //   let ki = keyIterator.next();
+      //   done = ki.done;
+      //   value = ki.value;
+      // }
+      // // focus on next new item because we found our previously focused key and it isn't the last key in the map
+      // if(!done && value === focusedKey) {
+      //   let firstNewItemKey = keyIterator.next().value
+      //   console.log("firstNewItemKey:", firstNewItemKey)
+      //   setFocusedKey(firstNewItemKey)
+      // }
+      // // focus on the first item in the map because the iterator finished without finding the previously focused key
+      // if(done && value !== focusedKey) {
+      //   let firstItemKey = itemsMap.keys().next().value
+      //   console.log("firstItemKey:", firstItemKey)
+      //   setFocusedKey(firstItemKey)
+      // }
+      // otherwise we must have found the previously focused key, and it *was* last, so we continue to focus on it
     },
     [ items ]
   )
 
-  return [ itemsMap, itemsMapPrevious ]
+  useEffect(() => {
+    if(focusedRef.current) {
+      focusedRef.current.focus()
+    }
+  })
+
+  return [ itemsMap, itemsMapPrevious, focusedKey, setFocusedKey, focusedRef ]
+}
+
+// TODO: eventually ListView won't take control over its own global expanded state, but will be stored
+// in local storage (if available) and redux state to preserve expanded states between pages and refreshes, etc...
+function useCycleState(steadyStateValue) {
+  const [state, cycleValue] = useState(steadyStateValue)
+  useEffect(() => {
+    if(state !== steadyStateValue) {
+      cycleValue(steadyStateValue)
+    }
+  })
+  return [state, cycleValue]
 }
 
 export default function ListView(props){
@@ -103,33 +122,14 @@ export default function ListView(props){
     propsForItem,
     customActions,
   } = props
-  const [ itemsMap, itemsMapPrevious ] = useItems(items)
 
+  const [ itemsMap, itemsMapPrevious, focusedKey, setFocusedKey, focusedRef ] = useItems(items)
   const [ showAsGrid, setShowAsGrid ] = useState(
     !!props.showAsGrid && !!props.GridItemComponent
   )
 
-  // TODO: eventually ListView won't take control over its own global expanded state, but will be stored
-  // in local storage (if available) and redux state to preserve expanded states between pages and refreshes, etc...
-  const [expanded, setExpanded] = useState(null)
-
-  useEffect(() => {
-    if(expanded !== null) {
-      setExpanded(null)
-    }
-  })
-
-  // const [focusing, setFocusing] = useState(false)
-  //
-  // const [focusKey, setFocusKey] = useState(null)
-  // const [focusItemRef] = useHookWithRefCallback(setFocusKey)
-
-  const numItems = itemsMap ? itemsMap.size : 0
-  const numItemsPrevious = itemsMapPrevious ? itemsMapPrevious.size : 0
-
-  const cycleState = (setter, transientValue) => {
-    setter(transientValue)
-  }
+  const [focusingDefaultItem, setFocusingDefaultItem] = useState(false)
+  const [expanded, cycleExpanded] = useCycleState(null)
 
   // list view controller
   const controlElement = (
@@ -141,51 +141,34 @@ export default function ListView(props){
       GridItemComponent={GridItemComponent}
       showAsGrid={showAsGrid}
       toggleGrid={() => setShowAsGrid(!showAsGrid)}
-      expandAll={() => cycleState(setExpanded, true)}
-      collapseAll={() => cycleState(setExpanded, false)}
+      expandAll={() => cycleExpanded(true)}
+      collapseAll={() => cycleExpanded(false)}
       customActions={customActions}
     />
   )
 
-  console.log("expanded:", expanded)
-
   let itemElements = []
   itemsMap.forEach((item, key) => {
-    // if(key === focusKey) {
-    //   console.log("key === focusKey -> ", focusKey)
-    // }
-
-    // const isNextFocus = numItemsPrevious > 0 && numItemsPrevious === itemElements.length
-    //
-    // if(isNextFocus) {
-    //   console.log(`isNextFocus:${isNextFocus}, focusKey:${focusKey}`)
-    // }
-
-    // const styleFocused = {
-    //   ...(focusing ? styleFocusDefault : {}),
-    // }
-
-    const styleOverallItemApplied = {
-      ...styleFallbackItem,
-      // ...styleFocused,
-    }
 
     let itemElement = null
-    const isFocused = false // key === focusKey
+
+    const isFocused = key === focusedKey
+    console.log(`key=${key}, isFocused=${isFocused}`)
     const itemProps = propsForItem ? propsForItem(item, key, isFocused) : null
 
     // list item element
     if (!showAsGrid && ListItemComponent) {
       itemElement = (
         <ListItemComponent
+          key={key}
+          tabIndex={-1}
+          ref={isFocused ? focusedRef : null}
+
           itemId={key}
           item={item}
-          key={key}
-          //ref={isNextFocus ? focusItemRef : null}
-          // make this a callback to allow the user control over the prop name so that it's not dictated by ListView
-          // e.g. - listItemShouldFocus = key => {  }
-          //shouldFocus={isNextFocus}
           expanded={expanded}
+          onFocus={() => { console.log("is this focusing?", key); setFocusedKey(key)}}
+          onBlur={() => { console.log("is this blurring?"); setFocusedKey(null) }}
           {...itemProps}
         />
       )
@@ -194,12 +177,13 @@ export default function ListView(props){
       // grid item element
       itemElement = (
         <GridItemComponent
+          key={key}
+          tabIndex={-1}
+
           itemId={key}
           item={item}
-          key={key}
-          //ref={isNextFocus ? focusItemRef : null}
-          // make this a callback to allow the user control over the prop name so that it's not dictated by ListView
-          //shouldFocus={isNextFocus}
+          onFocus={() => setFocusedKey(key)}
+          onBlur={() => setFocusedKey(null)}
           {...itemProps}
         />
       )
@@ -210,13 +194,12 @@ export default function ListView(props){
         <div
           key={key}
           tabIndex={-1}
-          //ref={isNextFocus ? focusItemRef : null}
-          style={styleOverallItemApplied}
-          //onFocus={() => setFocusing(true)}
-          //onBlur={() => setFocusing(false)}
-        >
-          {key}
-        </div>
+
+          style={styleDefaultItem(focusingDefaultItem)}
+          onFocus={() => setFocusingDefaultItem(true)}
+          onBlur={() => setFocusingDefaultItem(false)}
+          children={key}
+        />
       )
     }
     itemElements.push(itemElement)
@@ -236,4 +219,5 @@ ListView.propTypes = {
   ListItemComponent: PropTypes.func,
   GridItemComponent: PropTypes.func,
   propsForItem: PropTypes.func,
+  customActions: PropTypes.object
 }

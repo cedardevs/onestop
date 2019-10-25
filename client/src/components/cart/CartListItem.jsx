@@ -12,7 +12,7 @@ import {useListViewItem} from '../common/ui/ListViewItem'
 import CartListItemActions from './CartListItemActions'
 const pattern = require('../../../img/topography.png')
 
-const styleTitle = expanded => {
+const styleTitle = (expanded, focusing) => {
   return {
     fontFamily: fontFamilySerif(),
     fontSize: '1em',
@@ -20,6 +20,7 @@ const styleTitle = expanded => {
     overflowWrap: 'break-word',
     wordWrap: 'break-word',
     margin: '0 1.236em 0 0',
+    background: focusing ? 'green' : 'none'
   }
 }
 
@@ -75,9 +76,9 @@ export default function CartListItem(props){
   const [ itemId, item, _, expanded, setExpanded ] = useListViewItem(props)
 
   // const { itemId, item, expanded, onExpanded } = props
-
+  const { isFocused } = props
   const title = (
-    <h3 key={'CartListItem::title'} style={styleTitle(expanded)}>
+    <h3 key={'CartListItem::title'} style={styleTitle(expanded, isFocused)}>
       {item.title}
     </h3>
   )

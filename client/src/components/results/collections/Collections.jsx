@@ -18,9 +18,22 @@ const styleShowMoreFocus = {
   outlineOffset: '.118em',
 }
 
-export default class Collections extends React.Component {
-  propsForResult = (item, itemId) => {
-    const {selectCollection, collectionDetailFilter} = this.props
+export default function Collections(props) {
+
+  const {results, returnedHits, totalHits, fetchMoreResults, selectCollection, collectionDetailFilter} = props
+  const queryText = props.collectionDetailFilter.queryText
+
+  const showMoreButton =
+    returnedHits < totalHits ? (
+      <Button
+        text="Show More Results"
+        onClick={() => fetchMoreResults()}
+        style={styleShowMore}
+        styleFocus={styleShowMoreFocus}
+      />
+    ) : null
+
+  const propsForItem = (item, itemId) => {
     return {
       onSelect: key => {
         selectCollection(key, collectionDetailFilter)
@@ -28,42 +41,22 @@ export default class Collections extends React.Component {
     }
   }
 
-  render() {
-    const {results, returnedHits, totalHits, fetchMoreResults} = this.props
-    const queryText = this.props.collectionDetailFilter.queryText
-
-    const showMoreButton =
-      returnedHits < totalHits ? (
-        <Button
-          text="Show More Results"
-          onClick={() => fetchMoreResults()}
-          style={styleShowMore}
-          styleFocus={styleShowMoreFocus}
-        />
-      ) : null
-
-    return (
-      <div style={styleCollections}>
-        <Meta
-          title={'Collection Search Results for ' + queryText}
-          formatTitle={true}
-          robots="noindex"
-        />
-        <ListView
-          items={results}
-          resultType="collections"
-          searchTerms={queryText}
-          shown={returnedHits}
-          total={totalHits}
-          onItemSelect={this.itemSelect}
-          ListItemComponent={CollectionListItem}
-          GridItemComponent={CollectionGridItem}
-          propsForItem={this.propsForResult}
-        />
-        {showMoreButton}
-      </div>
-    )
-  }
+  return (
+    <div style={styleCollections}>
+      <Meta
+        title={'Collection Search Results for ' + queryText}
+        formatTitle={true}
+        robots="noindex"
+      />
+      <ListView
+        items={results}
+        ListItemComponent={CollectionListItem}
+        GridItemComponent={CollectionGridItem}
+        propsForItem={propsForItem}
+      />
+      {showMoreButton}
+    </div>
+  )
 }
 
 Collections.propTypes = {

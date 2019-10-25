@@ -58,9 +58,7 @@ export function useListViewItem(props){
   // then we should set our items state according to that (if it has changed)
   useEffect(
     () => {
-      console.log("props", props)
       if (props.expanded !== null && props.expanded !== expanded) {
-        console.log("prop provided for expanded", props.expanded)
         setExpanded(props.expanded)
       }
     },

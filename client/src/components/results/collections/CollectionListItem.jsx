@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import FlexRow from '../../common/ui/FlexRow'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import FlexColumn from '../../common/ui/FlexColumn'
@@ -70,9 +70,39 @@ const styleContentHeadingTop = {
   marginTop: '0em',
 }
 
-export default function CollectionListItem(props){
+const useFocus = (ref, defaultState = false) => {
+
+  const [state, setState] = useState(defaultState);
+
+  if(!ref.current) {
+    return false
+  }
+
+  useEffect(() => {
+    const onFocus = () => setState(true);
+    const onBlur = () => setState(false);
+    ref.current.addEventListener("focus", onFocus);
+    ref.current.addEventListener("blur", onBlur);
+
+    return () => {
+      ref.current.removeEventListener("focus", onFocus);
+      ref.current.removeEventListener("blur", onBlur);
+    };
+  }, []);
+
+  return state;
+}
+
+const CollectionListItem = React.forwardRef((props, ref) => {
+
   const [ focusingLink, setFocusingLink ] = useState(false)
   const [ itemId, item, onSelect, expanded, setExpanded ] = useListViewItem(props)
+
+  console.log(`itemId=${itemId}, ref=${ref}`)
+  console.log(ref)
+
+  const focusingItem = useFocus(ref)
+
 
   const handleKeyDown = event => {
     if (event.keyCode === Key.SPACE) {
@@ -86,6 +116,7 @@ export default function CollectionListItem(props){
 
   const title = (
     <h3 key={'CollectionListItem::title'} style={styleTitle(expanded)}>
+      <span>{focusingItem ? 'FOCUSING: ' : ''}</span>
       <a
         style={styleLink(focusingLink)}
         tabIndex={0}
@@ -98,7 +129,6 @@ export default function CollectionListItem(props){
       </a>
     </h3>
   )
-
   const heading = (
     <div style={styleHeading}>
       <FlexRow items={[ title ]} />
@@ -157,4 +187,6 @@ export default function CollectionListItem(props){
       setExpanded={setExpanded}
     />
   )
-}
+})
+
+export default CollectionListItem

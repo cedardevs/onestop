@@ -79,12 +79,13 @@ export default class Cart extends React.Component {
     this.props = props
   }
 
-  propsForResult = (item, itemId) => {
+  propsForResult = (item, itemId, isFocused) => {
     const {deselectGranule} = this.props
     let resultProps = {}
     return {
       onSelect: () => {},
       deselectGranule: deselectGranule,
+      isFocused: isFocused
     }
   }
 
@@ -127,8 +128,6 @@ export default class Cart extends React.Component {
         : numShownItems
     // keep track of used protocols in results to avoid unnecessary legend keys
     const usedProtocols = new Set()
-
-    console.log("numShownItems", numShownItems)
 
     for (let key in selectedGranules) {
       if (selectedGranules.hasOwnProperty(key)) {
