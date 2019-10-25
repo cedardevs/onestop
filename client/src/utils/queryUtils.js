@@ -1,12 +1,13 @@
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {getIdFromPath} from './urlUtils'
-import {recenterGeometry} from './geoUtils'
 import {initialState} from '../reducers/search/collectionFilter'
 import {
+  recenterGeometry,
   convertBboxStringToGeoJson,
   convertGeoJsonToBboxString,
 } from './geoUtils'
+import {textToNumber} from './inputUtils'
 
 export const PAGE_SIZE = 20
 
@@ -72,7 +73,12 @@ const assembleGeometryFilters = ({geoJSON}) => {
   }
 }
 
-const assembleTemporalFilters = ({startDateTime, endDateTime}) => {
+const assembleTemporalFilters = ({
+  startDateTime,
+  endDateTime,
+  startYear,
+  endYear,
+}) => {
   if (startDateTime && endDateTime) {
     return {type: 'datetime', after: startDateTime, before: endDateTime}
   }
@@ -81,6 +87,17 @@ const assembleTemporalFilters = ({startDateTime, endDateTime}) => {
   }
   else if (endDateTime) {
     return {type: 'datetime', before: endDateTime}
+  }
+
+  // note: while this method does not explicitly prevent both datetime and year being used together (which is not actually valid), it also won't return anything for year if either datetime filter is used...
+  if (startYear && endYear) {
+    return {type: 'year', after: startYear, before: endYear}
+  }
+  else if (startYear) {
+    return {type: 'year', after: startYear}
+  }
+  else if (endYear) {
+    return {type: 'year', before: endYear}
   }
 }
 
@@ -127,7 +144,7 @@ export const decodePathAndQueryString = (path, queryString) => {
 export const encodeQueryString = searchParamsState => {
   const queryParams = _.map(searchParamsState, (v, k) => {
     const codec = _.find(codecs, c => c.longKey === k)
-    const encode = codec && (v === true || !_.isEmpty(v))
+    const encode = codec && codec.encodable(v)
     return encode ? `${codec.shortKey}=${codec.encode(v)}` : null
   })
   return _.filter(queryParams).join('&')
@@ -155,30 +172,49 @@ const codecs = [
     shortKey: 'q',
     encode: text => encodeURIComponent(text),
     decode: text => decodeURIComponent(text),
+    encodable: text => !_.isEmpty(text),
   },
   {
     longKey: 'title',
     shortKey: 't',
     encode: text => encodeURIComponent(text),
     decode: text => decodeURIComponent(text),
+    encodable: text => !_.isEmpty(text),
   },
   {
     longKey: 'geoJSON',
     shortKey: 'g',
     encode: geoJSON => convertGeoJsonToBboxString(geoJSON),
     decode: text => convertBboxStringToGeoJson(text),
+    encodable: getJSON => !_.isEmpty(getJSON),
   },
   {
     longKey: 'startDateTime',
     shortKey: 's',
     encode: text => encodeURIComponent(text),
     decode: text => decodeURIComponent(text),
+    encodable: text => !_.isEmpty(text),
   },
   {
     longKey: 'endDateTime',
     shortKey: 'e',
     encode: text => encodeURIComponent(text),
     decode: text => decodeURIComponent(text),
+    encodable: text => !_.isEmpty(text),
+  },
+  {
+    longKey: 'startYear',
+    shortKey: 'sy',
+    encode: num => encodeURIComponent(num),
+    decode: text => textToNumber(decodeURIComponent(text)),
+    encodable: num => num != null,
+  },
+  {
+    longKey: 'endYear',
+    shortKey: 'ey',
+    encode: num => encodeURIComponent(num),
+    decode: text => textToNumber(decodeURIComponent(text)),
+    encodable: num => num != null,
   },
   {
     longKey: 'selectedFacets',
@@ -206,17 +242,20 @@ const codecs = [
         {}
       )
     },
+    encodable: facets => !_.isEmpty(facets),
   },
   // {
   //   longKey: 'selectedCollectionIds',
   //   shortKey: 'i',
   //   encode: ids => _.map(ids, id => encodeURIComponent(id)).join(','),
   //   decode: text => _.map(text.split(','), id => decodeURIComponent(id)),
+  //   encodable:  // TODO
   // },
   {
     longKey: 'excludeGlobal',
     shortKey: 'eg',
     encode: bool => (bool ? '1' : '0'),
     decode: text => text === '1',
+    encodable: bool => bool === true,
   },
 ]

@@ -30,3 +30,13 @@ export const abbreviateNumber = (number, decPlaces) => {
 
   return number.toString()
 }
+
+export const displayBigYears = number => {
+  if (number == 0) {
+    return '0'
+  }
+  if (Math.abs(number) < 10000) {
+    return number.toString()
+  }
+  return number.toLocaleString() // adds commas
+}
