@@ -96,7 +96,7 @@ describe('collection search actions', function(){
     params: [ mockHistory, {startDateTime: '1998'} ],
     expectedURL: {
       pathname: '/collections',
-      search: '?s=1998',
+      search: '?tr=i&s=1998', // default intersects relation
     },
   }
   const submitNextPageCase = {
@@ -140,7 +140,6 @@ describe('collection search actions', function(){
         expect(collectionFilter.startDateTime).toEqual('2017')
         expect(collectionFilter.endDateTime).toEqual('2018')
         expect(collectionFilter.queryText).toEqual('demo')
-        expect(collectionFilter.timeRelationship).toBeNull()
       })
 
       it(`${submitSearchCase.name} does not change existing filters`, function(){

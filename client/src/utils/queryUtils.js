@@ -155,7 +155,7 @@ export const decodePathAndQueryString = (path, queryString) => {
 export const encodeQueryString = searchParamsState => {
   const queryParams = _.map(searchParamsState, (v, k) => {
     const codec = _.find(codecs, c => c.longKey === k)
-    const encode = codec && codec.encodable(v)
+    const encode = codec && codec.encodable(v, searchParamsState)
     return encode ? `${codec.shortKey}=${codec.encode(v)}` : null
   })
   return _.filter(queryParams).join('&')
@@ -187,6 +187,7 @@ const decodeRelationship = text => {
   if (text == 'd') return 'disjoint'
   if (text == 'c') return 'contains'
   if (text == 'w') return 'within'
+  if (text == 'i') return 'intersects'
   return null
 }
 
@@ -214,10 +215,18 @@ const codecs = [
   },
   {
     longKey: 'timeRelationship',
-    shortKey: 'r', // TODO make this tr for same reason field is named 'timeRelationship' (namely, that geometry can also have these relationships and they shouldn't overlap!)
+    shortKey: 'tr', // TODO make this tr for same reason field is named 'timeRelationship' (namely, that geometry can also have these relationships and they shouldn't overlap!)
     encode: text => encodeRelationship(text),
     decode: text => decodeRelationship(text),
-    encodable: text => !_.isEmpty(text),
+    encodable: (text, queryState) => {
+      return (
+        !_.isEmpty(text) &&
+        (!_.isEmpty(queryState.startDateTime) ||
+          !_.isEmpty(queryState.endDateTime) ||
+          queryState.startYear != null ||
+          queryState.endYear != null)
+      )
+    },
   },
   {
     longKey: 'startDateTime',

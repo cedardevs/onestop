@@ -6,6 +6,7 @@ import {
 import {
   granuleUpdateGeometry,
   granuleRemoveGeometry,
+  granuleUpdateTimeRelation,
   granuleUpdateDateRange,
   granuleRemoveDateRange,
   granuleUpdateYearRange,
@@ -61,7 +62,7 @@ describe('The granule filter reducer', function(){
     pageOffset: 0,
     selectedCollectionIds: [ 'parent-uuid' ],
     geoJSON: null,
-    timeRelationship: null,
+    timeRelationship: 'intersects',
     startDateTime: null,
     endDateTime: null,
     startYear: null,
@@ -77,7 +78,7 @@ describe('The granule filter reducer', function(){
       pageOffset: 0,
       selectedCollectionIds: [],
       geoJSON: null,
-      timeRelationship: null,
+      timeRelationship: 'intersects',
       startDateTime: null,
       endDateTime: null,
       startYear: null,
@@ -164,7 +165,7 @@ describe('The granule filter reducer', function(){
         },
         {
           name:
-            'resets to initial values on except where explicitly set (startDateTime)',
+            'resets to initial values except where explicitly set (startDateTime)',
           initialState: nonInitialState,
           function: granuleNewSearchResetFiltersRequested,
           params: [ 'parent-uuid', {startDateTime: '2000-01-01T00:00:00Z'} ],
@@ -173,7 +174,7 @@ describe('The granule filter reducer', function(){
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
-            timeRelationship: null,
+            timeRelationship: 'intersects',
             startDateTime: '2000-01-01T00:00:00Z',
             endDateTime: null,
             startYear: null,
@@ -184,7 +185,7 @@ describe('The granule filter reducer', function(){
         },
         {
           name:
-            'resets to initial values on except where explicitly set (startYear)',
+            'resets to initial values except where explicitly set (startYear)',
           initialState: nonInitialState,
           function: granuleNewSearchResetFiltersRequested,
           params: [ 'parent-uuid', {startYear: -100000000} ],
@@ -193,7 +194,7 @@ describe('The granule filter reducer', function(){
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
-            timeRelationship: null,
+            timeRelationship: 'intersects',
             startDateTime: null,
             endDateTime: null,
             startYear: -100000000,
@@ -204,7 +205,7 @@ describe('The granule filter reducer', function(){
         },
         {
           name:
-            'resets to initial values on except where explicitly set (selectedFacets)',
+            'resets to initial values except where explicitly set (selectedFacets)',
           initialState: nonInitialState,
           function: granuleNewSearchResetFiltersRequested,
           params: [
@@ -220,7 +221,7 @@ describe('The granule filter reducer', function(){
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
-            timeRelationship: null,
+            timeRelationship: 'intersects',
             startDateTime: null,
             endDateTime: null,
             startYear: null,
@@ -360,12 +361,11 @@ describe('The granule filter reducer', function(){
         expectedChanges: {startDateTime: '2017-01-01T00:00:00Z'},
       },
       {
-        name: 'sets start date and relation',
+        name: 'sets time relation',
         initialState: initialState,
-        function: granuleUpdateDateRange,
-        params: [ '2017-01-01T00:00:00Z', null, 'within' ],
+        function: granuleUpdateTimeRelation,
+        params: [ 'within' ],
         expectedChanges: {
-          startDateTime: '2017-01-01T00:00:00Z',
           timeRelationship: 'within',
         },
       },
@@ -398,7 +398,6 @@ describe('The granule filter reducer', function(){
         expectedChanges: {
           startDateTime: '1990-01-01T00:00:00Z',
           endDateTime: '2017-01-01T00:00:00Z',
-          timeRelationship: null, // TODO see below for 'sets year range'
         },
       },
       {
@@ -409,7 +408,6 @@ describe('The granule filter reducer', function(){
         expectedChanges: {
           startYear: -1000000,
           endYear: -900000,
-          timeRelationship: null, // TODO granuleUpdateYearRange granuleUpdateTimeRange without 3rd param reset this to null always. Is that really the behavior we want and expect? is it just not valid without 3rd param from now on? decisions decisions...
         },
       },
       {

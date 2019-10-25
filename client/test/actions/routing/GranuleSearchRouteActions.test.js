@@ -152,7 +152,7 @@ describe('granule search actions', function(){
     params: [ mockHistory, 'parent-uuid', {startDateTime: '1998'} ],
     expectedURL: {
       pathname: '/collections/granules/parent-uuid',
-      search: '?s=1998',
+      search: '?tr=i&s=1998', // default intersects relation
     },
   }
   const submitNextPageCase = {
@@ -230,7 +230,6 @@ describe('granule search actions', function(){
       const {granuleFilter} = store.getState().search
       expect(granuleFilter.startDateTime).toEqual('2017')
       expect(granuleFilter.endDateTime).toEqual('2018')
-      expect(granuleFilter.timeRelationship).toBeNull()
     })
 
     it(`${submitSearchCase.name} does not change existing filters`, function(){

@@ -4,6 +4,7 @@ import {
   initialState,
 } from '../../../src/reducers/search/collectionFilter'
 import {
+  collectionUpdateTimeRelation,
   collectionUpdateDateRange,
   collectionRemoveDateRange,
   collectionUpdateYearRange,
@@ -62,7 +63,7 @@ describe('The collection filter reducer', function(){
       pageOffset: 0,
       queryText: '',
       geoJSON: null,
-      timeRelationship: null,
+      timeRelationship: 'intersects',
       startDateTime: null,
       endDateTime: null,
       startYear: null,
@@ -134,7 +135,7 @@ describe('The collection filter reducer', function(){
         },
         {
           name:
-            'resets to initial values on except where explicitly set (queryText)',
+            'resets to initial values except where explicitly set (queryText)',
           initialState: nonInitialState,
           function: collectionNewSearchResetFiltersRequested,
           params: [ {queryText: 'new'} ],
@@ -142,7 +143,7 @@ describe('The collection filter reducer', function(){
             pageOffset: 0,
             queryText: 'new',
             geoJSON: null,
-            timeRelationship: null,
+            timeRelationship: 'intersects',
             startDateTime: null,
             endDateTime: null,
             startYear: null,
@@ -153,7 +154,7 @@ describe('The collection filter reducer', function(){
         },
         {
           name:
-            'resets to initial values on except where explicitly set (selectedFacets)',
+            'resets to initial values except where explicitly set (selectedFacets)',
           initialState: nonInitialState,
           function: collectionNewSearchResetFiltersRequested,
           params: [
@@ -167,7 +168,7 @@ describe('The collection filter reducer', function(){
             pageOffset: 0,
             queryText: '',
             geoJSON: null,
-            timeRelationship: null,
+            timeRelationship: 'intersects',
             startDateTime: null,
             endDateTime: null,
             startYear: null,
@@ -304,12 +305,11 @@ describe('The collection filter reducer', function(){
         expectedChanges: {startDateTime: '2017-01-01T00:00:00Z'},
       },
       {
-        name: 'sets start date and relation',
+        name: 'sets time relation',
         initialState: initialState,
-        function: collectionUpdateDateRange,
-        params: [ '2017-01-01T00:00:00Z', null, 'within' ],
+        function: collectionUpdateTimeRelation,
+        params: [ 'within' ],
         expectedChanges: {
-          startDateTime: '2017-01-01T00:00:00Z',
           timeRelationship: 'within',
         },
       },
@@ -342,7 +342,6 @@ describe('The collection filter reducer', function(){
         expectedChanges: {
           startDateTime: '1990-01-01T00:00:00Z',
           endDateTime: '2017-01-01T00:00:00Z',
-          timeRelationship: null, // TODO see commentary in granuleFilter test
         },
       },
       {
@@ -353,7 +352,6 @@ describe('The collection filter reducer', function(){
         expectedChanges: {
           startYear: -1000000,
           endYear: -900000,
-          timeRelationship: null, // TODO see commentary in granuleFilter test
         },
       },
       {

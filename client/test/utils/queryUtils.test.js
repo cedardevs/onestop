@@ -79,6 +79,13 @@ describe('The queryUtils', function(){
         expect(decodedString).toEqual(testCase.state)
       })
     })
+
+    specialEncodingQueryTestCases().forEach(testCase => {
+      it(`encodes accurately with ${testCase.name}`, function(){
+        const encodedString = queryUtils.encodeQueryString(testCase.state)
+        expect(encodedString).toBe(testCase.string)
+      })
+    })
   })
 })
 
@@ -557,6 +564,33 @@ function granuleCountTestCases(){
   ]
 }
 
+function specialEncodingQueryTestCases(){
+  return [
+    {
+      name:
+        'time relationship (intersects) does not encode without a date filter',
+      string: '',
+      state: Immutable.merge(initialState, {timeRelationship: 'intersects'}),
+    },
+    {
+      name: 'time relationship (within) does not encode without a date filter',
+      string: '',
+      state: Immutable.merge(initialState, {timeRelationship: 'within'}),
+    },
+    {
+      name:
+        'time relationship (disjoint) does not encode without a date filter',
+      string: '',
+      state: Immutable.merge(initialState, {timeRelationship: 'disjoint'}),
+    },
+    {
+      name:
+        'time relationship (contains) does not encode without a date filter',
+      string: '',
+      state: Immutable.merge(initialState, {timeRelationship: 'contains'}),
+    },
+  ]
+}
 function queryTestCases(){
   return [
     {
@@ -571,52 +605,89 @@ function queryTestCases(){
         queryText: 'ocean',
       }),
     },
-    {
-      name: 'time relationship (within)',
-      string: 'r=w',
-      state: Immutable.merge(initialState, {timeRelationship: 'within'}),
-    },
-    {
-      name: 'time relationship (disjoint)',
-      string: 'r=d',
-      state: Immutable.merge(initialState, {timeRelationship: 'disjoint'}),
-    },
-    {
-      name: 'time relationship (contains)',
-      string: 'r=c',
-      state: Immutable.merge(initialState, {timeRelationship: 'contains'}),
-    },
-    // { TODO this test doesn't really work bc of my magic logic
+    // {
     //   name: 'time relationship (intersects)',
-    //   string: 'r=i',
-    //   state: Immutable.merge(initialState, { timeRelationship: null}) // this is the default anyway
+    //   string: 'tr=i',
+    //   state: Immutable.merge(initialState, {timeRelationship: 'intersects'}),
     // },
+    // {
+    //   name: 'time relationship (within)',
+    //   string: 'tr=w',
+    //   state: Immutable.merge(initialState, {timeRelationship: 'within'}),
+    // },
+    // {
+    //   name: 'time relationship (disjoint)',
+    //   string: 'tr=d',
+    //   state: Immutable.merge(initialState, {timeRelationship: 'disjoint'}),
+    // },
+    // {
+    //   name: 'time relationship (contains)',
+    //   string: 'tr=c',
+    //   state: Immutable.merge(initialState, {timeRelationship: 'contains'}),
+    // },
+
     {
-      name: 'start date filter',
-      string: 's=2010-01-01T00%3A00%3A00Z',
+      name: 'time relationship (intersects)',
+      string: 'tr=i&s=2010-01-01T00%3A00%3A00Z',
       state: Immutable.merge(initialState, {
+        timeRelationship: 'intersects',
         startDateTime: '2010-01-01T00:00:00Z',
       }),
     },
     {
-      name: 'end date filter',
-      string: 'e=2010-01-01T00%3A00%3A00Z',
+      name: 'time relationship (within)',
+      string: 'tr=w&e=2010-01-01T00%3A00%3A00Z',
       state: Immutable.merge(initialState, {
+        timeRelationship: 'within',
         endDateTime: '2010-01-01T00:00:00Z',
       }),
     },
     {
-      name: 'start year filter',
-      string: 'sy=-3000000',
+      name: 'time relationship (disjoint)',
+      string: 'tr=d&sy=-3000000',
       state: Immutable.merge(initialState, {
+        timeRelationship: 'disjoint',
         startYear: -3000000,
       }),
     },
     {
+      name: 'time relationship (contains)',
+      string: 'tr=c&ey=-100000',
+      state: Immutable.merge(initialState, {
+        timeRelationship: 'contains',
+        endYear: -100000,
+      }),
+    },
+    {
+      name: 'start date filter',
+      string: 'tr=i&s=2010-01-01T00%3A00%3A00Z',
+      state: Immutable.merge(initialState, {
+        startDateTime: '2010-01-01T00:00:00Z',
+        // intersects is the default timeRelationship, and is covered by initialState
+      }),
+    },
+    {
+      name: 'end date filter',
+      string: 'tr=i&e=2010-01-01T00%3A00%3A00Z',
+      state: Immutable.merge(initialState, {
+        endDateTime: '2010-01-01T00:00:00Z',
+        // intersects is the default timeRelationship, and is covered by initialState
+      }),
+    },
+    {
+      name: 'start year filter',
+      string: 'tr=i&sy=-3000000',
+      state: Immutable.merge(initialState, {
+        startYear: -3000000,
+        // intersects is the default timeRelationship, and is covered by initialState
+      }),
+    },
+    {
       name: 'end year filter',
-      string: 'ey=-100000',
+      string: 'tr=i&ey=-100000',
       state: Immutable.merge(initialState, {
         endYear: -100000,
+        // intersects is the default timeRelationship, and is covered by initialState
       }),
     },
     // {
@@ -669,7 +740,7 @@ function queryTestCases(){
     {
       name: 'all types of filters',
       string:
-        'q=ocean&g=-83,29,-70,38&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&eg=1',
+        'q=ocean&g=-83,29,-70,38&tr=i&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&eg=1',
       state: Immutable.merge(initialState, {
         queryText: 'ocean',
         startDateTime: '2010-01-01T00:00:00Z',
