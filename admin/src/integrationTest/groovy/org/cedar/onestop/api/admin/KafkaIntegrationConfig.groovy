@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Profile
 @Profile('kafka-ingest & integration')
 class KafkaIntegrationConfig {
 
-  @Value('${schema-registry.port:8081}')
+  @Value('${kafka.schema.registry.port:8081}')
   int port
 
   @Value('${spring.embedded.zookeeper.connect:}')
