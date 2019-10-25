@@ -30,7 +30,7 @@ class KafkaConsumerConfig {
    * @deprecated Use kafka.schema.registry.url instead
    */
   @Deprecated
-  @Value('${schema-registry.url}')
+  @Value('${schema-registry.url:}')
   private String schemaRegistryUrl
 
   @ConfigurationProperties(prefix = "kafka")
