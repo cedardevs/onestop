@@ -91,6 +91,24 @@ export const granuleRemoveGeometry = () => {
   }
 }
 
+export const GRANULE_UPDATE_YEAR_RANGE = 'GRANULE_UPDATE_YEAR_RANGE'
+export const granuleUpdateYearRange = (startYear, endYear) => {
+  return {
+    type: GRANULE_UPDATE_YEAR_RANGE,
+    startYear: startYear,
+    endYear: endYear,
+  }
+}
+
+export const GRANULE_REMOVE_YEAR_RANGE = 'GRANULE_REMOVE_YEAR_RANGE'
+export const granuleRemoveYearRange = (startYear, endYear) => {
+  return {
+    type: GRANULE_REMOVE_YEAR_RANGE,
+    startYear: startYear,
+    endYear: endYear,
+  }
+}
+
 export const GRANULE_UPDATE_DATE_RANGE = 'GRANULE_UPDATE_DATE_RANGE'
 export const granuleUpdateDateRange = (startDate, endDate) => {
   return {

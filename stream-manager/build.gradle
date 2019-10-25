@@ -1,20 +1,20 @@
 plugins {
   id 'groovy'
   id 'application'
-//  id 'jacoco'
   id 'com.google.cloud.tools.jib' version '1.6.1'
   id "com.github.johnrengelman.shadow" version "4.0.3"
 }
 
 apply from: "${rootDir}/gradle/publishing.gradle"
 
-mainClassName = 'org.cedar.psi.manager.StreamManagerMain'
+mainClassName = 'org.cedar.onestop.manager.StreamManagerMain'
 
 repositories {
   mavenCentral()
 }
 
-sourceCompatibility = '11'
+sourceCompatibility = 11
+targetCompatibility = 11
 
 configurations {
   integrationTestCompile.extendsFrom testCompile
@@ -22,30 +22,31 @@ configurations {
 }
 
 dependencies {
-  compile(project(':common'))
-  compile("org.apache.commons:commons-text:1.2")
-  compile("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
-  compile("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
-  compile("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
-  compile("org.slf4j:slf4j-api:1.7.25")
-  compile("ch.qos.logback:logback-classic:1.2.3")
-  compile('org.yaml:snakeyaml:1.24')
+  implementation(project(':kafka-common'))
+  implementation("org.apache.commons:commons-text:1.2")
+  implementation("org.codehaus.groovy:groovy:${project.groovyVersion}")
+  implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
+  implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
+  implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
+  implementation("org.slf4j:slf4j-api:1.7.25")
+  implementation("ch.qos.logback:logback-classic:1.2.3")
+  implementation('org.yaml:snakeyaml:1.24')
 
-  compile("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
-  compile("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
 
-  testCompile("org.spockframework:spock-core:${project.spockVersion}")
-  testCompile("com.github.stefanbirkner:system-rules:1.19.0")
-  testCompile("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
-  testCompile("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
-  testCompile("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
-  testCompile("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
-  testCompile("io.confluent:kafka-schema-registry:${project.confluentVersion}")
-  testCompile("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
-  testCompile("com.github.java-json-tools:json-schema-validator:2.2.10")
-  testCompile("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
-  testCompile("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:sources")
-
+  testImplementation("org.spockframework:spock-core:${project.spockVersion}")
+  testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
+  testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
+  testImplementation("com.github.java-json-tools:json-schema-validator:2.2.10")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:sources")
 }
 
 jar {

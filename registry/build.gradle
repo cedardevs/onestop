@@ -1,6 +1,5 @@
 plugins {
   id 'groovy'
-//  id 'jacoco'
   id "org.springframework.boot" // version declared in top-level buildscript
   id "io.spring.dependency-management"
   id 'com.google.cloud.tools.jib' version '1.6.1'
@@ -8,6 +7,9 @@ plugins {
 }
 
 apply from: "${rootDir}/gradle/publishing.gradle"
+
+sourceCompatibility = 11
+targetCompatibility = 11
 
 configurations {
   implementation.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
@@ -27,7 +29,8 @@ dependencies {
   implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
   implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
   implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
-  implementation(project(':common'))
+  implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
+  implementation(project(':kafka-common'))
   implementation("org.json:json:20190722")
   
   // -- CAS Authentication --
@@ -46,7 +49,7 @@ dependencies {
   testImplementation("org.spockframework:spock-core:${project.spockVersion}")
   testImplementation("org.codehaus.groovy.modules.http-builder:http-builder:0.7.1")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.springframework.kafka:spring-kafka-test:2.2.7.RELEASE")
+  testImplementation("org.springframework.kafka:spring-kafka-test:${project.springKafkaVersion}")
   testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
   testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
   testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
@@ -56,8 +59,6 @@ dependencies {
   testImplementation("com.github.java-json-tools:json-schema-validator:2.2.10")
   testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
 }
-
-sourceCompatibility = '11'
 
 sourceSets {
   integrationTest {

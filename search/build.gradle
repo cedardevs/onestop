@@ -49,13 +49,6 @@ dependencies {
   implementation 'org.apache.lucene:lucene-expressions:7.2.1'
   implementation 'javax.xml.bind:jaxb-api:2.3.1' // Java 9/10 deprecates, 11 removes javax.xml.bind.DatatypeConverter
 
-  // version to override another library's dependency to solve a CVE:
-  implementation 'com.google.guava:guava:27.0.1-jre'
-
-  // fix CVE-2019-0232, CVE-2019-0232 by forcing a higher version of the tomcat websocket dependency
-  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.19'
-  providedRuntime group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.19'
-
   runtime 'org.springframework.boot:spring-boot-devtools'
 
   providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'

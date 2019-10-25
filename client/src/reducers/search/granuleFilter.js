@@ -5,6 +5,8 @@ import {
   GRANULE_REMOVE_GEOMETRY,
   GRANULE_UPDATE_DATE_RANGE,
   GRANULE_REMOVE_DATE_RANGE,
+  GRANULE_UPDATE_YEAR_RANGE,
+  GRANULE_REMOVE_YEAR_RANGE,
   GRANULE_TOGGLE_FACET,
   GRANULE_TOGGLE_EXCLUDE_GLOBAL,
   GRANULE_NEW_SEARCH_REQUESTED,
@@ -19,6 +21,8 @@ export const initialState = Immutable({
   geoJSON: null,
   startDateTime: null,
   endDateTime: null,
+  startYear: null,
+  endYear: null,
   selectedFacets: {},
   selectedCollectionIds: [],
   excludeGlobal: null,
@@ -72,10 +76,22 @@ export const granuleFilter = (state = initialState, action) => {
         endDateTime: action.endDate,
       })
 
+    case GRANULE_UPDATE_YEAR_RANGE:
+      return Immutable.merge(state, {
+        startYear: action.startYear,
+        endYear: action.endYear,
+      })
+
     case GRANULE_REMOVE_DATE_RANGE:
       return Immutable.merge(state, {
         startDateTime: initialState.startDateTime,
         endDateTime: initialState.endDateTime,
+      })
+
+    case GRANULE_REMOVE_YEAR_RANGE:
+      return Immutable.merge(state, {
+        startYear: initialState.startYear,
+        endYear: initialState.endYear,
       })
 
     case GRANULE_TOGGLE_FACET:

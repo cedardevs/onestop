@@ -1,5 +1,4 @@
-
-
+---
 ###############################################################################
 # KIBANA
 ###############################################################################
@@ -8,9 +7,13 @@ kibana:
   service:
     type: NodePort
     nodePort: 32001
-# values used within cp-helm-charts
+
+###############################################################################
+# CONFLUENT
+###############################################################################
 cp-helm-charts:
   cp-kafka:
+    enabled: true
     brokers: 1
     imageTag: 5.3.1
     configurationOverrides:
@@ -21,6 +24,7 @@ cp-helm-charts:
       jmx:
         enabled: true
   cp-kafka-connect:
+    enabled: false
     imageTag: 5.3.1
     jmx:
       port: 5555
@@ -28,6 +32,7 @@ cp-helm-charts:
       jmx:
         enabled: true
   cp-kafka-rest:
+    enabled: false
     imageTag: 5.3.1
     jmx:
       port: 5555
@@ -39,12 +44,14 @@ cp-helm-charts:
       type: ClusterIP
       externalTrafficPolicy:
   cp-ksql-server:
+    enabled: false
     jmx:
       port: 5555
     prometheus:
       jmx:
         enabled: true
   cp-schema-registry:
+    enabled: true
     imageTag: 5.3.1
     configurationOverrides:
       kafkastore.topic.replication.factor: 1
@@ -54,6 +61,7 @@ cp-helm-charts:
       jmx:
         enabled: true
   cp-zookeeper:
+    enabled: true
     servers: 1
     imageTag: 5.3.1
     jmx:
@@ -62,26 +70,15 @@ cp-helm-charts:
       jmx:
         enabled: true
 
-# enable/disable dependencies on cp subcharts
-cp-kafka:
-  enabled: true
-cp-kafka-connect:
-  enabled: false
-cp-kafka-rest:
-  enabled: false
-cp-ksql-server:
-  enabled: false
-cp-schema-registry:
-  enabled: true
-cp-zookeeper:
-  enabled: true
-
-kafka-rest: {}
-zookeeper: {}
-
+###############################################################################
+# CAS
+###############################################################################
 cas:
   enabled: false
 
+###############################################################################
+# PROMETHEUS
+###############################################################################
 prometheus:
   alertmanager:
     enabled: false
@@ -99,6 +96,9 @@ prometheus:
     baseURL: "http://localhost/prometheus"
     prefixURL: "/prometheus"
 
+###############################################################################
+# GRAFANA
+###############################################################################
 grafana:
   ingress:
     enabled: true
@@ -146,6 +146,9 @@ grafana:
     default: "dashboards"
     onestop: "dashboards"
 
+###############################################################################
+# K8S METRICS SERVER
+###############################################################################
 metrics-server:
   args:
     - --kubelet-insecure-tls

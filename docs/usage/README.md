@@ -8,3 +8,4 @@
 * [Search API Responses](/docs/usage/search-api-responses.md)
 * [Data Load Process](/docs/usage/metadata-loading.md)
 * [Community Standards Support](/docs/usage/community-standards.md)
+* [OneStop Registry Security](/docs/usage/registry-security.md)
