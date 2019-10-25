@@ -12,8 +12,10 @@ class KafkaBeanConfigSpec extends Specification {
 
   def "streams app throws exception when transitioning to bad state #state"() {
     def mockInitializer = Mock(TopicInitializer)
-    def kafkaProps = beanConfig.kafkaProps([:] as Properties)
-    def streamsConfig = beanConfig.streamsConfig(kafkaProps)
+    def streamsConfig = beanConfig.streamsConfig([
+        'bootstrap.servers': 'http://localhost:9092',
+        'schema.registry.url': 'http://localhost:8081'
+    ])
     def streamsApp = beanConfig.streamsApp(streamsConfig, mockInitializer)
 
     when:

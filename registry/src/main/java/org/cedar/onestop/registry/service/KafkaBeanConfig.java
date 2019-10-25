@@ -55,7 +55,7 @@ public class KafkaBeanConfig {
 
   @Bean
   Properties streamsConfig(Map kafkaProps) {
-    var validConfigNames = new HashSet<String>(StreamsConfig.configDef().names());
+    var validConfigNames = new HashSet<>(StreamsConfig.configDef().names());
     validConfigNames.addAll(ProducerConfig.configNames());
     validConfigNames.addAll(ConsumerConfig.configNames());
     var props = DataUtils.filterProperties(kafkaProps, validConfigNames);
@@ -63,7 +63,6 @@ public class KafkaBeanConfig {
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
     props.putAll(kafkaProps);
-
     return props;
   }
 
