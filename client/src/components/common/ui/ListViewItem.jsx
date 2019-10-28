@@ -87,7 +87,9 @@ export default function ListViewItem(props){
       styleHeading={styleExpandableHeading(expanded)}
       content={content}
       value={itemId}
-      onToggle={event => { setExpanded(!expanded) }}
+      onToggle={event => {
+        setExpanded(!expanded)
+      }}
       open={expanded}
     />
   )

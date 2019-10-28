@@ -81,10 +81,10 @@ export default class CartListItemActions extends React.Component {
     )
 
     return (
-      <>
+      <div>
         {expandableButtons}
         {deleteButton}
-      </>
+      </div>
     )
   }
 }

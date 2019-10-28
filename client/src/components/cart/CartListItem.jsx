@@ -20,7 +20,7 @@ const styleTitle = (expanded, focusing) => {
     overflowWrap: 'break-word',
     wordWrap: 'break-word',
     margin: '0 1.236em 0 0',
-    background: focusing ? 'green' : 'none'
+    background: focusing ? 'green' : 'none',
   }
 }
 
@@ -76,7 +76,7 @@ export default function CartListItem(props){
   const [ itemId, item, _, expanded, setExpanded ] = useListViewItem(props)
 
   // const { itemId, item, expanded, onExpanded } = props
-  const { isFocused } = props
+  const {isFocused} = props
   const title = (
     <h3 key={'CartListItem::title'} style={styleTitle(expanded, isFocused)}>
       {item.title}

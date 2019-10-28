@@ -157,7 +157,7 @@ export default class GranuleList extends React.Component {
         icon: cartIcon,
         showText: true,
         handler: () => addFilteredGranulesToCart(granuleFilter),
-      }
+      },
     }
 
     let customMessage = addFilteredGranulesToCartWarning ? (
@@ -189,7 +189,6 @@ export default class GranuleList extends React.Component {
             propsForItem={this.propsForResult}
             customButtons={customButtons}
             customMessage={customMessage}
-
             customActions={granuleListCustomActions}
           />
           {showMoreButton}

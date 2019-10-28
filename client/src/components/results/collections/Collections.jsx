@@ -18,9 +18,15 @@ const styleShowMoreFocus = {
   outlineOffset: '.118em',
 }
 
-export default function Collections(props) {
-
-  const {results, returnedHits, totalHits, fetchMoreResults, selectCollection, collectionDetailFilter} = props
+export default function Collections(props){
+  const {
+    results,
+    returnedHits,
+    totalHits,
+    fetchMoreResults,
+    selectCollection,
+    collectionDetailFilter,
+  } = props
   const queryText = props.collectionDetailFilter.queryText
 
   const showMoreButton =

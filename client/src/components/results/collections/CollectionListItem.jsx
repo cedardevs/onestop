@@ -71,38 +71,37 @@ const styleContentHeadingTop = {
 }
 
 const useFocus = (ref, defaultState = false) => {
+  const [ state, setState ] = useState(defaultState)
 
-  const [state, setState] = useState(defaultState);
-
-  if(!ref.current) {
+  if (!ref.current) {
     return false
   }
 
   useEffect(() => {
-    const onFocus = () => setState(true);
-    const onBlur = () => setState(false);
-    ref.current.addEventListener("focus", onFocus);
-    ref.current.addEventListener("blur", onBlur);
+    const onFocus = () => setState(true)
+    const onBlur = () => setState(false)
+    ref.current.addEventListener('focus', onFocus)
+    ref.current.addEventListener('blur', onBlur)
 
     return () => {
-      ref.current.removeEventListener("focus", onFocus);
-      ref.current.removeEventListener("blur", onBlur);
-    };
-  }, []);
+      ref.current.removeEventListener('focus', onFocus)
+      ref.current.removeEventListener('blur', onBlur)
+    }
+  }, [])
 
-  return state;
+  return state
 }
 
 const CollectionListItem = React.forwardRef((props, ref) => {
-
   const [ focusingLink, setFocusingLink ] = useState(false)
-  const [ itemId, item, onSelect, expanded, setExpanded ] = useListViewItem(props)
+  const [ itemId, item, onSelect, expanded, setExpanded ] = useListViewItem(
+    props
+  )
 
   console.log(`itemId=${itemId}, ref=${ref}`)
   console.log(ref)
 
   const focusingItem = useFocus(ref)
-
 
   const handleKeyDown = event => {
     if (event.keyCode === Key.SPACE) {

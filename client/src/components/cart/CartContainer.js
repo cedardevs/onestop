@@ -6,7 +6,10 @@ import {
   removeAllSelectedGranulesFromLocalStorage,
   removeSelectedGranuleFromLocalStorage,
 } from '../../utils/localStorageUtil'
-import {removeAllSelectedGranule, removeSelectedGranule,} from '../../actions/CartActions'
+import {
+  removeAllSelectedGranule,
+  removeSelectedGranule,
+} from '../../actions/CartActions'
 
 // import mockCartItems from '../../../test/cart/mockCartItems'
 

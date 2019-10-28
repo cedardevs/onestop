@@ -85,7 +85,7 @@ export default class Cart extends React.Component {
     return {
       onSelect: () => {},
       deselectGranule: deselectGranule,
-      isFocused: isFocused
+      isFocused: isFocused,
     }
   }
 
@@ -167,7 +167,7 @@ export default class Cart extends React.Component {
         icon: clearIcon,
         showText: true,
         handler: () => deselectAllGranules(),
-      }
+      },
     }
 
     // filter map down to size of results in cart we want (# shownGranules)
@@ -175,8 +175,8 @@ export default class Cart extends React.Component {
     const subset = Object.keys(selectedGranules)
       .filter(key => allowed.includes(key))
       .reduce((obj, key) => {
-        obj[key] = selectedGranules[key];
-        return obj;
+        obj[key] = selectedGranules[key]
+        return obj
       }, {})
 
     return (

@@ -32,7 +32,7 @@ const styleDefaultItem = focusing => {
   return {
     display: 'block',
     margin: '0 1.618em 0 0',
-    ...(focusing ? styleDefaultFocus : {})
+    ...(focusing ? styleDefaultFocus : {}),
   }
 }
 
@@ -54,7 +54,6 @@ function useItems(items){
 
   const [ focusedKey, setFocusedKey ] = useState(null)
   const focusedRef = useRef(null)
-
 
   // this effect tracks when the items supplied to ListView changes
   useEffect(
@@ -94,7 +93,7 @@ function useItems(items){
   )
 
   useEffect(() => {
-    if(focusedRef.current) {
+    if (focusedRef.current) {
       focusedRef.current.focus()
     }
   })
@@ -104,14 +103,14 @@ function useItems(items){
 
 // TODO: eventually ListView won't take control over its own global expanded state, but will be stored
 // in local storage (if available) and redux state to preserve expanded states between pages and refreshes, etc...
-function useCycleState(steadyStateValue) {
-  const [state, cycleValue] = useState(steadyStateValue)
+function useCycleState(steadyStateValue){
+  const [ state, cycleValue ] = useState(steadyStateValue)
   useEffect(() => {
-    if(state !== steadyStateValue) {
+    if (state !== steadyStateValue) {
       cycleValue(steadyStateValue)
     }
   })
-  return [state, cycleValue]
+  return [ state, cycleValue ]
 }
 
 export default function ListView(props){
@@ -123,13 +122,19 @@ export default function ListView(props){
     customActions,
   } = props
 
-  const [ itemsMap, itemsMapPrevious, focusedKey, setFocusedKey, focusedRef ] = useItems(items)
+  const [
+    itemsMap,
+    itemsMapPrevious,
+    focusedKey,
+    setFocusedKey,
+    focusedRef,
+  ] = useItems(items)
   const [ showAsGrid, setShowAsGrid ] = useState(
     !!props.showAsGrid && !!props.GridItemComponent
   )
 
-  const [focusingDefaultItem, setFocusingDefaultItem] = useState(false)
-  const [expanded, cycleExpanded] = useCycleState(null)
+  const [ focusingDefaultItem, setFocusingDefaultItem ] = useState(false)
+  const [ expanded, cycleExpanded ] = useCycleState(null)
 
   // list view controller
   const controlElement = (
@@ -149,7 +154,6 @@ export default function ListView(props){
 
   let itemElements = []
   itemsMap.forEach((item, key) => {
-
     let itemElement = null
 
     const isFocused = key === focusedKey
@@ -163,12 +167,17 @@ export default function ListView(props){
           key={key}
           tabIndex={-1}
           ref={isFocused ? focusedRef : null}
-
           itemId={key}
           item={item}
           expanded={expanded}
-          onFocus={() => { console.log("is this focusing?", key); setFocusedKey(key)}}
-          onBlur={() => { console.log("is this blurring?"); setFocusedKey(null) }}
+          onFocus={() => {
+            console.log('is this focusing?', key)
+            setFocusedKey(key)
+          }}
+          onBlur={() => {
+            console.log('is this blurring?')
+            setFocusedKey(null)
+          }}
           {...itemProps}
         />
       )
@@ -179,7 +188,6 @@ export default function ListView(props){
         <GridItemComponent
           key={key}
           tabIndex={-1}
-
           itemId={key}
           item={item}
           onFocus={() => setFocusedKey(key)}
@@ -194,7 +202,6 @@ export default function ListView(props){
         <div
           key={key}
           tabIndex={-1}
-
           style={styleDefaultItem(focusingDefaultItem)}
           onFocus={() => setFocusingDefaultItem(true)}
           onBlur={() => setFocusingDefaultItem(false)}
@@ -219,5 +226,5 @@ ListView.propTypes = {
   ListItemComponent: PropTypes.func,
   GridItemComponent: PropTypes.func,
   propsForItem: PropTypes.func,
-  customActions: PropTypes.object
+  customActions: PropTypes.object,
 }

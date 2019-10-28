@@ -1,10 +1,10 @@
 import React from 'react'
-import Button from "../input/Button";
+import Button from '../input/Button'
 import gridIcon from 'fa/th.svg'
 import listIcon from 'fa/th-list.svg'
 import expandIcon from 'fa/expand.svg'
 import collapseIcon from 'fa/compress.svg'
-import {mapFromObject} from "../../../utils/objectUtils";
+import {mapFromObject} from '../../../utils/objectUtils'
 
 const styleController = {
   display: 'flex',
@@ -21,9 +21,20 @@ const styleControlButtonIcon = {
   marginRight: '0.309em',
 }
 
-export default function ListViewController(props) {
-
-  const {itemsMap, itemsMapPrevious, propsForItem, ListItemComponent, GridItemComponent, showAsGrid, focusKey, toggleGrid, expandAll, collapseAll, customActions} = props
+export default function ListViewController(props){
+  const {
+    itemsMap,
+    itemsMapPrevious,
+    propsForItem,
+    ListItemComponent,
+    GridItemComponent,
+    showAsGrid,
+    focusKey,
+    toggleGrid,
+    expandAll,
+    collapseAll,
+    customActions,
+  } = props
 
   // initialize vars for control elements
   let controller = null
@@ -49,9 +60,10 @@ export default function ListViewController(props) {
   }
 
   // if a list component is provided and we are currently showing as a list
-  const expandCollapseAvailable = ListItemComponent && !showAsGrid && numItems > 0
+  const expandCollapseAvailable =
+    ListItemComponent && !showAsGrid && numItems > 0
   if (expandCollapseAvailable) {
-    let buttonExpandText = "Expand All"
+    let buttonExpandText = 'Expand All'
     controlButtons.push(
       <Button
         key={buttonExpandText}
@@ -61,7 +73,7 @@ export default function ListViewController(props) {
         onClick={expandAll}
       />
     )
-    let buttonCollapseText = "Collapse All"
+    let buttonCollapseText = 'Collapse All'
     controlButtons.push(
       <Button
         key={buttonCollapseText}
@@ -82,7 +94,7 @@ export default function ListViewController(props) {
   //   }
   // }
   const customActionsMap = mapFromObject(customActions)
-  if(customActionsMap && customActionsMap.size > 0) {
+  if (customActionsMap && customActionsMap.size > 0) {
     customActionsMap.forEach((action, key) => {
       controlButtons.push(
         <Button
@@ -91,7 +103,16 @@ export default function ListViewController(props) {
           text={action.showText || !action.icon ? key : null}
           icon={action.icon}
           styleIcon={styleControlButtonIcon}
-          onClick={() => action.handler({itemsMap, itemsMapPrevious, propsForItem, ListItemComponent, GridItemComponent, showAsGrid, focusKey})}
+          onClick={() =>
+            action.handler({
+              itemsMap,
+              itemsMapPrevious,
+              propsForItem,
+              ListItemComponent,
+              GridItemComponent,
+              showAsGrid,
+              focusKey,
+            })}
         />
       )
     })
@@ -99,12 +120,8 @@ export default function ListViewController(props) {
 
   // if any control buttons are available to show, show them
   if (controlButtons.length > 0) {
-    controller =  <div style={styleController}>{controlButtons}</div>
+    controller = <div style={styleController}>{controlButtons}</div>
   }
 
-  return (
-    <>
-      {controller}
-    </>
-  )
+  return <div>{controller}</div>
 }
