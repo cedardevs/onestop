@@ -108,6 +108,14 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
               value={selectedRelation}
               options={RELATION_OPTIONS}
               menuPlacement="auto"
+              styles={{
+                menu: styles => {
+                  return {
+                    ...styles,
+                    zIndex: 101,
+                  }
+                },
+              }}
               onChange={relation => {
                 setSelectedRelation(relation)
               }}
