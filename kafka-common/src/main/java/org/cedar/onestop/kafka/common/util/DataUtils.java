@@ -286,4 +286,14 @@ public class DataUtils {
         .findFirst();
   }
 
+  // Helper functions:
+  public static Properties filterProperties(Map kafkaConfigMap, Set<String> keySet) {
+    var props = new Properties();
+    kafkaConfigMap.forEach( (k, v) -> {
+      if(keySet.contains(k)) {
+        props.put(k, v);
+      }
+    });
+    return props;
+  }
 }

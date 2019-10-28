@@ -4,13 +4,12 @@ ARG VCS_REF
 ARG VERSION
 ARG DATE
 
-LABEL org.label-schema.schema-version=1.0
-LABEL org.label-schema.version=${VERSION}
-LABEL org.label-schema.build-date=${DATE}
-LABEL org.label-schema.name="OneStop CSW/OpenSearch API"
-LABEL org.label-schema.vendor=CEDAR
-LABEL org.label-schema.vcs-url=https://github.com/cedardevs/onestop
-LABEL org.label-schema.vcs-ref=${VCS_REF}
+LABEL org.opencontainers.image.version=${VERSION}
+LABEL org.opencontainers.image.created=${DATE}
+LABEL org.opencontainers.image.ref.name="OneStop CSW/OpenSearch API"
+LABEL org.opencontainers.image.vendor=CEDAR
+LABEL org.opencontainers.image.source=https://github.com/cedardevs/onestop
+LABEL org.opencontainers.image.revision=${VCS_REF}
 
 ENV TMP_DIR="/tmp/geoportal/" \
     ZIP_URL="https://github.com/Esri/geoportal-server-catalog/releases/download/v2.5.1/geoportal-search-2.5.1.zip" \

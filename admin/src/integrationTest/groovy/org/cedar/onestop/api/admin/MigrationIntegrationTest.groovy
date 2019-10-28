@@ -61,7 +61,7 @@ class MigrationIntegrationTest extends Specification {
   @Value('${kafka.topic.granules}')
   String granuleTopic
 
-  @Value('${schema-registry.url}')
+  @Value('${kafka.schema.registry.url}')
   String schemaUrl
 
   @Autowired

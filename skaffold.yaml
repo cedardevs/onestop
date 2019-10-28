@@ -18,7 +18,7 @@ kind: Config
     features.kafka-ingest: true
     features.sitemap: true
     # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
-    env.SCHEMA_REGISTRY_URL: http://onestop-dev-cp-schema-registry:8081
+    env.KAFKA_SCHEMA_REGISTRY_URL: http://onestop-dev-cp-schema-registry:8081
     env.KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://onestop-dev-cp-kafka:9092
     config: |-
       ---
@@ -154,17 +154,11 @@ deploy:
   helm:
     releases:
     - *onestop-admin # depends on both kafka and elasticsearch by default
-
     - *onestop-registry
-
     - *onestop-manager
-
     - *onestop-search
-
     - *onestop-client
-
     - *elasticsearch
-
     # DEV DEPENDENCIES
     - name: onestop-dev
       chartPath: helm/onestop-dev

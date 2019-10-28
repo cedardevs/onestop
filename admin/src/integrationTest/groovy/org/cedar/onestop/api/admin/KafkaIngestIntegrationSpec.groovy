@@ -60,7 +60,7 @@ class KafkaIngestIntegrationSpec extends Specification {
   @Value('${kafka.topic.collections}')
   String collectionTopic
 
-  @Value('${schema-registry.url}')
+  @Value('${kafka.schema.registry.url}')
   String schemaUrl
 
   @Autowired
