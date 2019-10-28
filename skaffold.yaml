@@ -1,5 +1,137 @@
 apiVersion: skaffold/v1beta7
 kind: Config
+
+.onestop-admin: &onestop-admin
+  name: onestop-admin
+  chartPath: helm/onestop-admin
+  values:
+    # skaffold may not build/deploy w/the latest if this is not set here
+    image: cedardevs/onestop-admin
+  imageStrategy:
+    helm: {}
+  setValues:
+    # allows onestop-admin to be exposed outside the cluster in dev
+    # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
+    # all features default to "false" in base chart, unless otherwise overridden
+    features.icam: false
+    features.manual-upload: false
+    features.kafka-ingest: true
+    features.sitemap: true
+    # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
+    env.KAFKA_SCHEMA_REGISTRY_URL: http://onestop-dev-cp-schema-registry:8081
+    env.KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://onestop-dev-cp-kafka:9092
+    config: |-
+      ---
+      logging.level.org.cedar.onestop.api.admin: DEBUG
+      ---
+      spring:
+        profiles: sitemap
+      etl:
+        sitemap:
+          delay:
+            initial: 60000
+
+.onestop-registry: &onestop-registry
+  name: onestop-registry
+  chartPath: helm/onestop-registry
+  values:
+    image: cedardevs/onestop-registry
+  setValues:
+    # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
+    # all features default to "false" in base chart, unless otherwise overridden
+    features.cas: false
+    replicaCount: 2
+    # if true, `kubectl port-forward onestop-registry-0 5005:5005` to expose JDWP for debugging
+    # then, create a "Remote" Debug Configuration in intelliJ (Host: 127.0.0.1, Port: 5005)
+    debug: false
+    config: |-
+      ---
+      logging:
+        level:
+          org.cedar: DEBUG
+          org.cedar.schemas.avro.util: INFO
+      server.servlet.context-path: /registry
+      kafka.commit.interval: 1000
+      topics:
+        num-partitions: 2
+        replication-factor: 1
+      cas:
+        prefixUrl: 'http://onestop-dev-cas:8080/cas'
+      authorization:
+        roles:
+          ROLE_ADMIN:
+            - casuser
+    # env values
+    kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
+    kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
+  #        autoscaler.enabled: true
+  #        autoscaler.maxReplicas: 2
+  #        autoscaler.cpu.averageValue: 150m
+  imageStrategy:
+    helm: {}
+
+.onestop-manager: &onestop-manager
+  name: onestop-manager
+  chartPath: helm/onestop-manager
+  values:
+    image: cedardevs/onestop-stream-manager
+  setValues:
+    config: |-
+      ---
+      logging:
+        level:
+          org.cedar: DEBUG
+          org.cedar.schemas.avro.util: INFO
+      kafka.commit.interval: 1000
+    # Env values
+    kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
+    kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
+  imageStrategy:
+    helm: {}
+
+.onestop-search: &onestop-search
+  name: onestop-search
+  chartPath: helm/onestop-search
+  values:
+    # skaffold may not build/deploy w/the latest if this is not set here
+    image: cedardevs/onestop-search
+  imageStrategy:
+    helm: {}
+  setValues:
+    service.type: NodePort
+    service.nodePort: 30097
+    # allows onestop-search to be exposed outside the cluster in dev
+    # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
+    # all features default to "false" in base chart, unless otherwise overridden
+    features.login-gov: false
+    features.sitemap: true
+    # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
+    env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
+    env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
+#        config: |-
+#          ---
+#          logging.level.org.cedar.onestop.api.search: DEBUG
+
+.onestop-client: &onestop-client
+  name: onestop-client
+  chartPath: helm/onestop-client
+  values:
+    # skaffold may not build/deploy w/the latest if this is not set here
+    image: cedardevs/onestop-client
+  imageStrategy:
+    helm: {}
+  setValues:
+    # allows onestop-search to be exposed outside the cluster in dev
+    prefixPath: onestop
+    apiSearch.endpoint: onestop-search:8080/onestop-search
+
+.elasticsearch: &elasticsearch
+  name: elasticsearch
+  chartPath: helm/elasticsearch
+  setValues:
+    service.type: NodePort
+    service.nodePort: 30092
+
 build:
   artifacts:
   - image: cedardevs/onestop-admin
@@ -21,193 +153,40 @@ build:
 deploy:
   helm:
     releases:
-    # API ADMIN
-    - name: onestop-admin
-      chartPath: helm/onestop-admin
-      values:
-        # skaffold may not build/deploy w/the latest if this is not set here
-        image: cedardevs/onestop-admin
-      imageStrategy:
-        helm: {}
-      setValues:
-        # allows onestop-admin to be exposed outside the cluster in dev
-        # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
-        # all features default to "false" in base chart, unless otherwise overridden
-        features.icam: false
-        features.manual-upload: false
-        features.kafka-ingest: true
-        features.sitemap: true
-        # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
-        env.SCHEMA_REGISTRY_URL: http://onestop-dev-cp-schema-registry:8081
-        env.KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://onestop-dev-cp-kafka:9092
-        config: |-
-          ---
-          logging.level.org.cedar.onestop.api.admin: DEBUG
-          ---
-          spring:
-            profiles: sitemap
-          etl:
-            sitemap:
-              delay:
-                initial: 60000
-
-    # registry
-    - name: onestop-registry
-      chartPath: helm/onestop-registry
-      values:
-        image: cedardevs/onestop-registry
-      setValues:
-        # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
-        # all features default to "false" in base chart, unless otherwise overridden
-        features.cas: false
-        replicaCount: 2
-        # if true, `kubectl port-forward onestop-registry-0 5005:5005` to expose JDWP for debugging
-        # then, create a "Remote" Debug Configuration in intelliJ (Host: 127.0.0.1, Port: 5005)
-        debug: false
-        config: |-
-          ---
-          logging:
-            level:
-              org.cedar: DEBUG
-              org.cedar.schemas.avro.util: INFO
-          server.servlet.context-path: /registry
-          kafka.commit.interval: 1000
-          topics:
-            num-partitions: 2
-            replication-factor: 1
-          cas:
-            prefixUrl: 'http://onestop-dev-cas:8080/cas'
-          authorization:
-            roles:
-              ROLE_ADMIN:
-                - casuser
-        # env values
-        kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
-        kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
-      #        autoscaler.enabled: true
-      #        autoscaler.maxReplicas: 2
-      #        autoscaler.cpu.averageValue: 150m
-      imageStrategy:
-        helm: {}
-
-    # manager
-    - name: onestop-manager
-      chartPath: helm/onestop-manager
-      values:
-        image: cedardevs/onestop-stream-manager
-      setValues:
-        config: |-
-          ---
-          logging:
-            level:
-              org.cedar: DEBUG
-              org.cedar.schemas.avro.util: INFO
-          kafka.commit.interval: 1000
-        # Env values
-        kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
-        kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
-      imageStrategy:
-        helm: {}
-
-    # API SEARCH
-    - name: onestop-search
-      chartPath: helm/onestop-search
-      values:
-        # skaffold may not build/deploy w/the latest if this is not set here
-        image: cedardevs/onestop-search
-      imageStrategy:
-        helm: {}
-      setValues:
-        service.type: NodePort
-        service.nodePort: 30097
-        # allows onestop-search to be exposed outside the cluster in dev
-        # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
-        # all features default to "false" in base chart, unless otherwise overridden
-        features.login-gov: false
-        features.sitemap: true
-        # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
-        env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
-        env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
-#        config: |-
-#          ---
-#          logging.level.org.cedar.onestop.api.search: DEBUG
-
-    # CLIENT
-    - name: onestop-client
-      chartPath: helm/onestop-client
-      values:
-        # skaffold may not build/deploy w/the latest if this is not set here
-        image: cedardevs/onestop-client
-      imageStrategy:
-        helm: {}
-      setValues:
-        # allows onestop-search to be exposed outside the cluster in dev
-        prefixPath: onestop
-        apiSearch.endpoint: onestop-search:8080/onestop-search
-
-    # ELASTICSEARCH
-    - name: elasticsearch
-      chartPath: helm/elasticsearch
-      setValues:
-        service.type: NodePort
-        service.nodePort: 30092
-
+    - *onestop-admin # depends on both kafka and elasticsearch by default
+    - *onestop-registry
+    - *onestop-manager
+    - *onestop-search
+    - *onestop-client
+    - *elasticsearch
     # DEV DEPENDENCIES
     - name: onestop-dev
       chartPath: helm/onestop-dev
 
 profiles:
-  # remove the admin, client and search from the build and deployment
   - name: psi
-    patches:
-      - op: remove
-        path: /build/artifacts/3
-      - op: remove
-        path: /deploy/helm/releases/3
-      - op: remove
-        path: /build/artifacts/4
-      - op: remove
-        path: /deploy/helm/releases/4
-      - op: remove
-        path: /build/artifacts/0
-      - op: remove
-        path: /deploy/helm/releases/0
+    # things that depend only on kafka
+    deploy:
+      helm:
+        releases:
+          - *onestop-manager
+          - *onestop-registry
+          # DEV DEPENDENCIES
+          - name: onestop-dev
+            chartPath: helm/onestop-dev
 
-  # remove the registry and manager from the build and deployment
   - name: os
-    patches:
-      - op: remove
-        path: /build/artifacts/2
-      - op: remove
-        path: /deploy/helm/releases/2
-      - op: remove
-        path: /build/artifacts/1
-      - op: remove
-        path: /deploy/helm/releases/1
-
-  # remove the registry and manager from the build and deployment
-  - name: client
-    patches:
-      - op: remove
-        path: /build/artifacts/3
-      - op: remove
-        path: /deploy/helm/releases/3
-      - op: remove
-        path: /build/artifacts/2
-      - op: remove
-        path: /deploy/helm/releases/2
-      - op: remove
-        path: /build/artifacts/1
-      - op: remove
-        path: /deploy/helm/releases/1
-      - op: remove
-        path: /build/artifacts/0
-      - op: remove
-        path: /deploy/helm/releases/0
-
-  # replace  the registry and manager from the build and deployment
-  - name: cas
-    patches:
-      - op: replace
-        path: /deploy/helm/releases/1/setValues/features.cas
-        value: "true"
+    # things that depend only on elasticsearch
+    deploy:
+      helm:
+        releases:
+          - *onestop-search
+          - *onestop-client
+          - *elasticsearch
+          # DEV DEPENDENCIES
+          - name: onestop-dev
+            chartPath: helm/onestop-dev
+            setValues:
+              cp-kafka.enabled: false
+              cp-schema-registry.enabled: false
+              cp-zookeeper.enabled: false
