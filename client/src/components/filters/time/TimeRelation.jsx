@@ -3,6 +3,8 @@ import React, {useState, useEffect} from 'react'
 import Select from 'react-select'
 import FlexRow from '../../common/ui/FlexRow'
 import Expandable from '../../common/ui/Expandable'
+import Button from '../../common/input/Button'
+import {question_circle, SvgIcon} from '../../common/SvgIcon'
 import {FilterColors} from '../../../style/defaultStyles'
 import TimelineRelationDisplay from './TimelineRelationDisplay' // TODO rename that to like... Illustration?
 
@@ -36,7 +38,7 @@ const RELATION_OPTIONS = [
   {
     value: 'within',
     label: 'is fully within',
-  }, // TODO display as: Result [dropdown] query
+  },
   {
     value: 'disjoint',
     label: 'is disjoint from',
@@ -45,13 +47,6 @@ const RELATION_OPTIONS = [
 
 const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
   const [ examplesOpen, setExamplesOpen ] = useState(false)
-  // let defaultSelection = _.find(RELATION_OPTIONS, option => {
-  //   return option.value == timeRelationship
-  // })
-  // if (!defaultSelection) {
-  //   defaultSelection = RELATION_OPTIONS[0]
-  // }
-  // defaultSelection = defaultSelection.value
 
   const [ selectedRelation, setSelectedRelation ] = useState(
     RELATION_OPTIONS[0]
@@ -63,32 +58,14 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
         return relation.value == timeRelationship
       })
       if (matchingRelation) {
-        console.log(
-          'changing selected relation matching',
-          timeRelationship,
-          matchingRelation
-        )
         setSelectedRelation(matchingRelation)
       }
       else {
-        console.log(
-          'changing selected relation default',
-          timeRelationship,
-          matchingRelation
-        )
         setSelectedRelation(RELATION_OPTIONS[0])
       }
     },
     [ timeRelationship ]
   )
-
-  // useEffect(
-  //   () => {
-  //     console.log('changing selected relation', selectedRelation.value)
-  //     onUpdate(selectedRelation.value)
-  //   },
-  //   [ selectedRelation ]
-  // )
 
   return (
     <div style={{margin: '.618em'}}>
@@ -125,17 +102,33 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
           <div key="sentence::end" style={{marginLeft: '0.309em'}}>
             filter.
           </div>,
+          <Button
+            key="show-examples-button"
+            title="Show relationship examples"
+            aria-label="Show relationship examples"
+            style={{
+              marginLeft: '0.309em',
+              padding: '0.309em',
+              background: 'none',
+              color: 'inherit',
+              font: 'inherit',
+            }}
+            styleHover={{
+              // unset default style until we genericize Button more
+              background: 'none',
+            }}
+            aria-expanded={examplesOpen}
+            onClick={() => {
+              setExamplesOpen(!examplesOpen)
+            }}
+          >
+            <SvgIcon path={question_circle} size="1em" />
+          </Button>,
         ]}
       />
 
       <Expandable
         open={examplesOpen}
-        onToggle={({open}) => {
-          setExamplesOpen(open)
-        }}
-        showArrow={true}
-        heading="show example"
-        styleHeading={{color: 'inherit', marginTop: '0.309em'}}
         content={
           <TimelineRelationDisplay
             relation={selectedRelation.value}
@@ -146,16 +139,5 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
       />
     </div>
   )
-
-  // TODO move 'advanced' expandable out of TimeRelation, which should just be a child of it in case we have other advanced options as well
-  // return (
-  //   <Expandable
-  //     open={true}
-  //     showArrow={true}
-  //     heading="Advanced"
-  //     styleHeading={{color: 'inherit', marginTop: '0.309em'}}
-  //     content={content}
-  //   />
-  // )
 }
 export default TimeRelation
