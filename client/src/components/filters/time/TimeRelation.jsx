@@ -82,13 +82,13 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
     [ timeRelationship ]
   )
 
-  useEffect(
-    () => {
-      console.log('changing selected relation', selectedRelation.value)
-      onUpdate(selectedRelation.value)
-    },
-    [ selectedRelation ]
-  )
+  // useEffect(
+  //   () => {
+  //     console.log('changing selected relation', selectedRelation.value)
+  //     onUpdate(selectedRelation.value)
+  //   },
+  //   [ selectedRelation ]
+  // )
 
   return (
     <div style={{margin: '.618em'}}>
@@ -117,7 +117,8 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
                 },
               }}
               onChange={relation => {
-                setSelectedRelation(relation)
+                onUpdate(relation.value)
+                // setSelectedRelation(relation)
               }}
             />
           </div>,
