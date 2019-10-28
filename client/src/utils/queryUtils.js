@@ -66,10 +66,14 @@ const assembleFacetFilters = ({selectedFacets}) => {
   return _.map(selectedFacets, (v, k) => ({type: 'facet', name: k, values: v}))
 }
 
-const assembleGeometryFilters = ({geoJSON}) => {
+const assembleGeometryFilters = ({geoJSON, geoRelationship}) => {
   if (geoJSON && geoJSON.geometry) {
     const recenteredGeometry = recenterGeometry(geoJSON.geometry)
-    return {type: 'geometry', geometry: recenteredGeometry}
+    return {
+      type: 'geometry',
+      geometry: recenteredGeometry,
+      relation: geoRelationship,
+    }
   }
 }
 
@@ -85,7 +89,7 @@ const assembleTemporalFilters = ({
       type: 'datetime',
       after: startDateTime,
       before: endDateTime,
-      relation: timeRelationship, // TODO BAD when timeRelationship is null (ie: q=co-ops&s=2010-01-01T00%3A00%3A00Z)
+      relation: timeRelationship,
     }
   }
   else if (startDateTime) {
@@ -214,8 +218,17 @@ const codecs = [
     encodable: getJSON => !_.isEmpty(getJSON),
   },
   {
+    longKey: 'geoRelationship',
+    shortKey: 'gr',
+    encode: text => encodeRelationship(text),
+    decode: text => decodeRelationship(text),
+    encodable: (text, queryState) => {
+      return !_.isEmpty(text) && !_.isEmpty(queryState.geoJSON)
+    },
+  },
+  {
     longKey: 'timeRelationship',
-    shortKey: 'tr', // TODO make this tr for same reason field is named 'timeRelationship' (namely, that geometry can also have these relationships and they shouldn't overlap!)
+    shortKey: 'tr',
     encode: text => encodeRelationship(text),
     decode: text => decodeRelationship(text),
     encodable: (text, queryState) => {

@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react'
 
 import Select from 'react-select'
-import FlexRow from '../../common/ui/FlexRow'
-import Expandable from '../../common/ui/Expandable'
-import Button from '../../common/input/Button'
-import {question_circle, SvgIcon} from '../../common/SvgIcon'
-import {FilterColors} from '../../../style/defaultStyles'
-import TimelineRelationDisplay from './TimelineRelationDisplay' // TODO rename that to like... Illustration?
+import FlexRow from '../common/ui/FlexRow'
+import Expandable from '../common/ui/Expandable'
+import Button from '../common/input/Button'
+import {question_circle, SvgIcon} from '../common/SvgIcon'
+import {FilterColors} from '../../style/defaultStyles'
+// import TimelineRelationDisplay from './TimelineRelationDisplay' // TODO rename that to like... Illustration?
 
 const selectTheme = theme => {
   // TODO copy-pasta #3 - move this to defaultStyles (although actually there's just a lot of overlap in re-setting up the select....?)
@@ -45,7 +45,7 @@ const RELATION_OPTIONS = [
   },
 ]
 
-const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
+const Relation = ({id, relation, onUpdate, illustration}) => {
   const [ examplesOpen, setExamplesOpen ] = useState(false)
 
   const [ selectedRelation, setSelectedRelation ] = useState(
@@ -55,7 +55,7 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
   useEffect(
     () => {
       let matchingRelation = _.find(RELATION_OPTIONS, (relation, index) => {
-        return relation.value == timeRelationship
+        return relation.value == relation
       })
       if (matchingRelation) {
         setSelectedRelation(matchingRelation)
@@ -64,7 +64,7 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
         setSelectedRelation(RELATION_OPTIONS[0])
       }
     },
-    [ timeRelationship ]
+    [ relation ]
   )
 
   return (
@@ -129,15 +129,9 @@ const TimeRelation = ({id, timeRelationship, hasStart, hasEnd, onUpdate}) => {
 
       <Expandable
         open={examplesOpen}
-        content={
-          <TimelineRelationDisplay
-            relation={selectedRelation.value}
-            hasStart={hasStart}
-            hasEnd={hasEnd}
-          />
-        }
+        content={illustration(selectedRelation.value)}
       />
     </div>
   )
 }
-export default TimeRelation
+export default Relation

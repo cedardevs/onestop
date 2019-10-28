@@ -21,7 +21,9 @@ import {
   styleForm,
 } from '../../common/styleFilters'
 import ApplyClearRow from '../../common/ApplyClearRow'
-import TimeRelation from '../TimeRelation'
+import Relation from '../../Relation'
+import TimelineRelationDisplay from '../TimelineRelationDisplay' // TODO rename that to like... Illustration?
+
 // import TimelineRelationDisplay from './TimelineRelationDisplay'
 
 // const RELATION_OPTIONS = [
@@ -163,14 +165,23 @@ const DateTimeFilter = ({
     </div>
   )
 
+  const illustration = relation => {
+    return (
+      <TimelineRelationDisplay
+        relation={relation}
+        hasStart={start.date.year != null}
+        hasEnd={end.date.year != null}
+      />
+    )
+  }
+
   const advanced = (
-    <TimeRelation
+    <Relation
       id="datetimeRelation"
       key="DateFilter::InputColumn::Advanced"
-      timeRelationship={timeRelationship}
+      relation={timeRelationship}
       onUpdate={updateTimeRelationship}
-      hasStart={start.date.year != null}
-      hasEnd={end.date.year != null}
+      illustration={illustration}
     />
   )
 

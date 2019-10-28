@@ -58,7 +58,6 @@ const TimeFilter = ({
           !_.isEmpty(endDateTime)
         ) {
           // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
-          console.log('submitting bc relation change')
           submit()
         }
       }}

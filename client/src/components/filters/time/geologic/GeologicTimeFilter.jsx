@@ -18,7 +18,8 @@ import GeologicPresets from './GeologicPresets'
 
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
 
-import TimeRelation from '../TimeRelation'
+import Relation from '../../Relation'
+import TimelineRelationDisplay from '../TimelineRelationDisplay' // TODO rename that to like... Illustration?
 
 import {
   styleFilterPanel,
@@ -160,6 +161,16 @@ const GeologicTimeFilter = ({
     </div>
   )
 
+  const illustration = relation => {
+    return (
+      <TimelineRelationDisplay
+        relation={relation}
+        hasStart={!_.isEmpty(start.year)}
+        hasEnd={!_.isEmpty(end.year)}
+      />
+    )
+  }
+
   return (
     <div style={styleFilterPanel}>
       <fieldset style={styleFieldsetBorder}>
@@ -174,12 +185,11 @@ const GeologicTimeFilter = ({
       <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
         Additional Filtering Options:
       </h4>
-      <TimeRelation
+      <Relation
         id="geologicTimeRelation"
-        timeRelationship={timeRelationship}
+        relation={timeRelationship}
         onUpdate={updateTimeRelationship}
-        hasStart={!_.isEmpty(start.year)}
-        hasEnd={!_.isEmpty(end.year)}
+        illustration={illustration}
       />
     </div>
   )

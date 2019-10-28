@@ -275,11 +275,9 @@ const queryRangeBorder = (offset, isMatched) => {
   return `1px ${style} ${color}`
 }
 const leftEdgeOfRange = offset => {
-  console.log('????', offset, `${10 * ((offset == null ? 0 : offset) + 0.5)}%`)
   return `${10 * ((offset == null ? -0.5 : offset) + 0.5)}%`
 }
 const rightEdgeOfRange = offset => {
-  console.log('?right?', offset, `${10 * (9 - (offset == null ? 9 : offset))}%`)
   return `${10 * (9 - (offset == null ? 9 : offset))}%`
 }
 const width = (left, right) => {

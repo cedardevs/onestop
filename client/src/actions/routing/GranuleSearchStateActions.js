@@ -1,19 +1,16 @@
 export const GRANULE_NEW_SEARCH_REQUESTED = 'GRANULE_NEW_SEARCH_REQUESTED'
-export const granuleNewSearchRequested = collectionId => ({
-  // this indicates a granule search within a single collection
+export const granuleNewSearchRequested = granuleId => ({
+  // this indicates a granule search within a single granule
   type: GRANULE_NEW_SEARCH_REQUESTED,
-  id: collectionId,
+  id: granuleId,
 })
 
 export const GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED =
   'GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED'
-export const granuleNewSearchResetFiltersRequested = (
-  collectionId,
-  filters
-) => ({
-  // this indicates a granule search within a single collection
+export const granuleNewSearchResetFiltersRequested = (granuleId, filters) => ({
+  // this indicates a granule search within a single granule
   type: GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED,
-  id: collectionId,
+  id: granuleId,
   filters: filters,
 })
 
@@ -88,6 +85,14 @@ export const GRANULE_REMOVE_GEOMETRY = 'GRANULE_REMOVE_GEOMETRY'
 export const granuleRemoveGeometry = () => {
   return {
     type: GRANULE_REMOVE_GEOMETRY,
+  }
+}
+
+export const GRANULE_UPDATE_GEO_RELATIONSHIP = 'GRANULE_UPDATE_GEO_RELATIONSHIP'
+export const granuleUpdateGeoRelation = relationship => {
+  return {
+    type: GRANULE_UPDATE_GEO_RELATIONSHIP,
+    relationship: relationship,
   }
 }
 

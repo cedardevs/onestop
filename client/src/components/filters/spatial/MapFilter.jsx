@@ -14,6 +14,8 @@ import FilterFieldset from '../FilterFieldset'
 import FormSeparator from '../FormSeparator'
 import {FilterColors, SiteColors} from '../../../style/defaultStyles'
 
+import Relation from '../Relation'
+
 import {
   styleFilterPanel,
   styleFieldsetBorder,
@@ -324,6 +326,14 @@ export default class MapFilter extends React.Component {
           Additional Filtering Options:
         </h4>
         {excludeGlobalCheckbox}
+        <Relation
+          id="geoRelation"
+          relation={this.props.geoRelationship}
+          onUpdate={this.props.updateGeoRelationship}
+          illustration={() => {
+            return null
+          }}
+        />
       </div>
     )
   }
