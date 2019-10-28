@@ -231,9 +231,9 @@ jobs:
           command: |
             echo "${CIRCLE_BRANCH}"
             if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew client:jib
+              ./gradlew cli:jib
             else
-              ./gradlew client:jib --image=cedardevs/onestop-cli:2.4.0-$CIRCLE_BRANCH
+              ./gradlew cli:jib --image=cedardevs/onestop-cli:2.4.0-$CIRCLE_BRANCH
             fi
           environment:
               GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
