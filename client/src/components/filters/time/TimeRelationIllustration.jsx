@@ -11,15 +11,40 @@ import {styleRelationIllustration} from '../common/styleFilters'
 
 const QUERY = [ {start: 2, end: 6}, {start: 2}, {end: 6} ]
 
+const resultDescription = (include, description) => {
+  return `${include
+    ? 'Included in search results:'
+    : 'NOT included in search results:'} ${description}`
+}
+
+const resultStyles = {
+  color: include =>
+    include
+      ? styleRelationIllustration.included.color
+      : styleRelationIllustration.excluded.color,
+  backgroundColor: include =>
+    include
+      ? styleRelationIllustration.included.backgroundColor
+      : styleRelationIllustration.excluded.backgroundColor,
+  borderColor: include =>
+    include
+      ? styleRelationIllustration.included.borderColor
+      : styleRelationIllustration.excluded.borderColor,
+}
+
 const RESULTS = [
   {
     start: 0,
     end: 1,
-    description: [
-      'result range ends before query begins, with no overlap',
-      'result range ends before query begins, with no overlap',
-      'result range ends before query ends',
-    ],
+    description: (include, queryIndex) => {
+      let description = [
+        'result range ends before query begins, with no overlap',
+        'result range ends before query begins, with no overlap',
+        'result range ends before query ends',
+      ]
+      return resultDescription(include, description[queryIndex])
+    },
+    styles: resultStyles,
     relation: [
       {contains: false, within: false, intersects: false, disjoint: true},
       {contains: false, within: false, intersects: false, disjoint: true},
@@ -29,11 +54,15 @@ const RESULTS = [
   {
     start: 3,
     end: 5,
-    description: [
-      'result range is smaller than query, with complete overlap (result is a subset)',
-      'result range is smaller than query, with complete overlap (result is a subset)',
-      'result range ends before query ends',
-    ],
+    description: (include, queryIndex) => {
+      let description = [
+        'result range is smaller than query, with complete overlap (result is a subset)',
+        'result range is smaller than query, with complete overlap (result is a subset)',
+        'result range ends before query ends',
+      ]
+      return resultDescription(include, description[queryIndex])
+    },
+    styles: resultStyles,
     relation: [
       {contains: false, within: true, intersects: true, disjoint: false},
       {contains: false, within: true, intersects: true, disjoint: false},
@@ -43,11 +72,15 @@ const RESULTS = [
   {
     start: 1,
     end: 7,
-    description: [
-      'result range is larger than query, with complete overlap (result is a superset)',
-      'result range starts before query, with significant overlap',
-      'result range ends before query, with significant overlap',
-    ],
+    description: (include, queryIndex) => {
+      let description = [
+        'result range is larger than query, with complete overlap (result is a superset)',
+        'result range starts before query, with significant overlap',
+        'result range ends before query, with significant overlap',
+      ]
+      return resultDescription(include, description[queryIndex])
+    },
+    styles: resultStyles,
     relation: [
       {contains: true, within: false, intersects: true, disjoint: false},
       {contains: false, within: false, intersects: true, disjoint: false},
@@ -56,11 +89,15 @@ const RESULTS = [
   },
   {
     start: 4,
-    description: [
-      'result range starts in middle of query range, and continues into present',
-      'result range starts in middle of query range, and continues into present',
-      'result range starts in middle of query range, and continues into present',
-    ],
+    description: (include, queryIndex) => {
+      let description = [
+        'result range starts in middle of query range, and continues into present',
+        'result range starts in middle of query range, and continues into present',
+        'result range starts in middle of query range, and continues into present',
+      ]
+      return resultDescription(include, description[queryIndex])
+    },
+    styles: resultStyles,
     relation: [
       {contains: false, within: false, intersects: true, disjoint: false},
       {contains: false, within: true, intersects: true, disjoint: false},
@@ -69,11 +106,15 @@ const RESULTS = [
   },
   {
     start: 1,
-    description: [
-      'result range starts before query, and continues into present',
-      'result range starts before query, and continues into present',
-      'result range starts in middle of query range, and continues into present, past query end',
-    ],
+    description: (include, queryIndex) => {
+      let description = [
+        'result range starts before query, and continues into present',
+        'result range starts before query, and continues into present',
+        'result range starts in middle of query range, and continues into present, past query end',
+      ]
+      return resultDescription(include, description[queryIndex])
+    },
+    styles: resultStyles,
     relation: [
       {contains: true, within: false, intersects: true, disjoint: false},
       {contains: true, within: false, intersects: true, disjoint: false},
@@ -230,19 +271,6 @@ const TimeLineQuery = ({query, labels, outputs}) => {
   )
 }
 
-const colorRelation = (isMatched, isBorder) => {
-  if (isMatched) {
-    return isBorder
-      ? styleRelationIllustration.included.borderColor
-      : styleRelationIllustration.included.backgroundColor
-  }
-  else {
-    return isBorder
-      ? styleRelationIllustration.excluded.borderColor
-      : styleRelationIllustration.excluded.backgroundColor
-  }
-}
-
 const queryRangeBorder = (offset, isMatched) => {
   let style = offset == null ? 'dashed' : 'solid'
   let color = styleRelationIllustration.query.borderColor
@@ -266,12 +294,35 @@ const width = (left, right) => {
   return `${100 - rightOffset - leftOffset}%`
 }
 
+const styleResult = {
+  cursor: 'pointer',
+  display: 'block',
+  position: 'relative',
+  borderRadius: '.2em',
+  borderStyle: 'solid',
+  borderWidth: '1px',
+  marginBottom: '0.309em',
+  overflow: 'visible',
+  boxShadow: '2px 2px 5px 2px #2c2c2c59', // TODO check in other browers and maybe move to styleRelationIllustration?
+}
+
+const stylePosition = ({start, end}) => {
+  return {
+    marginLeft: leftEdgeOfRange(start),
+    marginRight: rightEdgeOfRange(end),
+  }
+}
+
 const TimeLineResult = ({id, label, result, relation, queryType}) => {
   let isOngoing = result.end == null
   let includedBasedOnRelationship = result.relation[queryType][relation]
-  let description = `${includedBasedOnRelationship
-    ? 'Included in search results:'
-    : 'NOT included in search results:'} ${result.description[queryType]}`
+
+  let description = result.description(includedBasedOnRelationship, queryType)
+
+  const styleColors = {
+    borderColor: result.styles.borderColor(includedBasedOnRelationship),
+    backgroundColor: result.styles.backgroundColor(includedBasedOnRelationship),
+  }
 
   // const continuation = isOngoing ? ( // TODO try arrow to indicate ongoing
   //   <div
@@ -292,42 +343,31 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
   //     ...
   //   </div>
   // ) : null // TODO background-image: linear-gradient(to right, green , yellow) instead of bg color?
+  const styleBorders = {
+    borderRadius: isOngoing ? '.2em 0 0 .2em' : '.2em',
+    borderLeft: queryRangeBorder(result.start, includedBasedOnRelationship),
+    borderRight: queryRangeBorder(result.end, includedBasedOnRelationship),
+  }
+
+  const styleLabel = {
+    color: result.styles.color(includedBasedOnRelationship),
+    width: '100%',
+    textAlign: 'center',
+    display: 'inline-block',
+  }
 
   return (
     <output
       id={id}
       title={description}
-      style={{
-        cursor: 'pointer',
-        display: 'block',
-        marginLeft: leftEdgeOfRange(result.start),
-        marginRight: rightEdgeOfRange(result.end),
-        borderRadius: isOngoing ? '.2em 0 0 .2em' : '.2em',
-        borderStyle: 'solid',
-        borderWidth: '1px',
-        borderColor: colorRelation(includedBasedOnRelationship, true),
-        backgroundColor: colorRelation(includedBasedOnRelationship),
-        borderLeft: queryRangeBorder(result.start, includedBasedOnRelationship),
-        borderRight: queryRangeBorder(result.end, includedBasedOnRelationship),
-        marginBottom: '0.309em',
-        position: 'relative',
-        overflow: 'visible',
-        boxShadow: '2px 2px 5px 2px #2c2c2c59',
-      }}
+      style={consolidateStyles(
+        styleResult,
+        stylePosition(result),
+        styleBorders,
+        styleColors
+      )}
     >
-      <label
-        style={{
-          width: '100%',
-          color: includedBasedOnRelationship
-            ? styleRelationIllustration.included.color
-            : styleRelationIllustration.excluded.color, //'inherit' : '#FFF',
-
-          textAlign: 'center',
-          display: 'inline-block',
-        }}
-      >
-        {label}
-      </label>
+      <label style={styleLabel}>{label}</label>
       <div style={defaultStyles.hideOffscreen}>{description}</div>
     </output>
   )
