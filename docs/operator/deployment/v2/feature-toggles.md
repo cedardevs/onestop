@@ -104,4 +104,4 @@ The following profiles are active: sitemap
 
 ## Trending Searches
 
-See [Trending Searches](/docs/deployment/trending-searches.md). Note, however, that this feature is stale.
+See [Trending Searches](/docs/operator/deployment/v2/trending-searches.md). Note, however, that this feature is stale.

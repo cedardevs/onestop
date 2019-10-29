@@ -4,6 +4,6 @@ The development directory of the PSI project docs is geared toward getting devel
 ***
 
 ### Table of Contents
-* [Release Checklist](/docs/development/release-checklist.md)
-* [Setting Up Local Development Environment](/docs/development/local-dev-environment.md)
-* [Guidelines For External Contributors](/docs/development/contribution-guidelines.md)
+* [Release Checklist](/docs/developer/release-checklist.md)
+* [Setting Up Local Development Environment](/docs/developer/local-dev-environment.md)
+* [Guidelines For External Contributors](/docs/developer/contribution-guidelines.md)

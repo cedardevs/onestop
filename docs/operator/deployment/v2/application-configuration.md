@@ -61,13 +61,13 @@ but that these endpoints are potentially destructive and should likely not be ex
 ## The Configuration Process
 Configuring OneStop to run for development, testing, and production purposes is predominantly done via a configuration file.
 
-Since OneStop is a Spring Boot application, it can easily take advantage of this externalized configuration. Spring will look for properties files, YAML files, environment variables, and command-line arguments in the order specified [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html). The compiled OneStop API applications include an application.yml file ([Search API's default config values](/search/src/main/resources/application.yml) and [Metadata API's default config values](/admin/src/main/resources/application.yml)) that contains the default values. However, if Spring encounters additional configuration parameters in its step-through of specified locations, any or all of these parameters can be overwritten or added to. Likewise, previously unspecified values may be added.
+Since OneStop is a Spring Boot application, it can easily take advantage of this externalized configuration. Spring will look for properties files, YAML files, environment variables, and command-line arguments in the order specified [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html). The compiled OneStop API applications include an application.yml file ([Search API's default config values](/application.yml) and [Metadata API's default config values](/application.yml)) that contains the default values. However, if Spring encounters additional configuration parameters in its step-through of specified locations, any or all of these parameters can be overwritten or added to. Likewise, previously unspecified values may be added.
 
-The [2.1 Deployment Guide](/docs/deployment/2-1-guide.md) has a more in-depth discussion of configuration values around feature toggles.
+The [2.1 Deployment Guide](/docs/operator/deployment/v2/2-1-guide.md) has a more in-depth discussion of configuration values around feature toggles.
 
 ## Running Locally
 
-See [Quickstart](/docs/development/quickstart.md).
+See [Quickstart](/docs/developer/quickstart.md).
 
 ## Running on a Server
 Wherever you choose to put your configuration values, it is important that some of the default values be replaced and otherwise optional parameters be provided before deploying OneStop to a production environment. Let's go through the categories:

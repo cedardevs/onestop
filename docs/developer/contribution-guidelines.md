@@ -27,7 +27,7 @@ Have questions or need help with setup? Open [an issue][github issues] via Githu
 
 ### Running locally
 
-See the [Quickstart](/docs/development/quickstart.md) deployment overview pages.
+See the [Quickstart](/docs/developer/quickstart.md) deployment overview pages.
 
 ## Coding guidelines
 
