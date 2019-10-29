@@ -15,7 +15,7 @@ const mapStateToProps = state => {
   return {
     showMap: state.layout.showMap,
     geoJSON: state.search.collectionFilter.geoJSON,
-    geoRelationship: state.search.collectionFilter.geoRelationship, // TODO geo not time!
+    geoRelationship: state.search.collectionFilter.geoRelationship,
     excludeGlobal: state.search.collectionFilter.excludeGlobal,
   }
 }

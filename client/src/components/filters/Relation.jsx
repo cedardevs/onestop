@@ -53,9 +53,12 @@ const Relation = ({id, relation, onUpdate, illustration}) => {
 
   useEffect(
     () => {
-      let matchingRelation = _.find(RELATION_OPTIONS, (relation, index) => {
-        return relation.value == relation
-      })
+      let matchingRelation = _.find(
+        RELATION_OPTIONS,
+        (relationOption, index) => {
+          return relationOption.value == relation
+        }
+      )
       if (matchingRelation) {
         setSelectedRelation(matchingRelation)
       }
@@ -94,7 +97,6 @@ const Relation = ({id, relation, onUpdate, illustration}) => {
               }}
               onChange={relation => {
                 onUpdate(relation.value)
-                // setSelectedRelation(relation)
               }}
             />
           </div>,

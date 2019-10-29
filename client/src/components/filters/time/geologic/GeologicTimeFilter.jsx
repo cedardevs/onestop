@@ -171,6 +171,15 @@ const GeologicTimeFilter = ({
     )
   }
 
+  const relation = (
+    <Relation
+      id="geologicTimeRelation"
+      relation={timeRelationship}
+      onUpdate={updateTimeRelationship}
+      illustration={illustration}
+    />
+  )
+
   return (
     <div style={styleFilterPanel}>
       <fieldset style={styleFieldsetBorder}>
@@ -185,12 +194,7 @@ const GeologicTimeFilter = ({
       <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
         Additional Filtering Options:
       </h4>
-      <Relation
-        id="geologicTimeRelation"
-        relation={timeRelationship}
-        onUpdate={updateTimeRelationship}
-        illustration={illustration}
-      />
+      {relation}
     </div>
   )
 }

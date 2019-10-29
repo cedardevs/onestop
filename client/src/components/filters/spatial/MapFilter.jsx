@@ -315,11 +315,7 @@ export default class MapFilter extends React.Component {
     )
 
     const illustration = relation => {
-      return (
-        <GeoRelationIllustration
-          relation={relation}
-        />
-      )
+      return <GeoRelationIllustration relation={relation} />
     }
 
     return (
@@ -338,7 +334,15 @@ export default class MapFilter extends React.Component {
         <Relation
           id="geoRelation"
           relation={this.props.geoRelationship}
-          onUpdate={this.props.updateGeoRelationship}
+          onUpdate={relation => {
+            if (relation != this.props.geoRelationship) {
+              this.props.updateGeoRelationship(relation)
+            }
+            if (!_.isEmpty(this.props.geoJSON)) {
+              // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
+              this.props.submit()
+            }
+          }}
           illustration={illustration}
         />
       </div>

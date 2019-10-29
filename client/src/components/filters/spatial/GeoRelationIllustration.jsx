@@ -7,17 +7,15 @@ import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
 import {consolidateStyles} from '../../../utils/styleUtils'
 
-
 const BOXES = [
   {
     // global
     label: 'global',
-    top: 0, height: 9,// height: 100%,
-    left: 0,width: 14, // width: 100%,
-    description: [
-      'global result',
-      'global result is always excluded',
-    ],
+    top: 0,
+    height: 9, // height: 100%,
+    left: 0,
+    width: 14, // width: 100%,
+    description: [ 'global result', 'global result is always excluded' ],
     relation: [
       {contains: true, within: false, intersects: true, disjoint: false},
       {contains: false, within: false, intersects: false, disjoint: false}, // excludeGlobal
@@ -26,8 +24,10 @@ const BOXES = [
   {
     // contains
     label: 'ex 1',
-    top: 0, height: 9,
-    left: 0, width: 10, // TODO or 11?
+    top: 0,
+    height: 9,
+    left: 0,
+    width: 10, // TODO or 11?
     description: [
       'result is larger than query, with complete overlap (result is a superset)',
     ],
@@ -35,21 +35,28 @@ const BOXES = [
       {contains: true, within: false, intersects: true, disjoint: false},
     ],
   },
-  { // query
-  label: 'query',
-  query: true,
-    top: 1, height: 7, left: 1, width: 5, description: [
+  {
+    // query
+    label: 'query',
+    query: true,
+    top: 1,
+    height: 7,
+    left: 1,
+    width: 5,
+    description: [
       'user defined query', // TODO nonsense
     ],
     relation: [
-      {contains: true, within: false, intersects: true, disjoint: false},// TODO nonsense
+      {contains: true, within: false, intersects: true, disjoint: false}, // TODO nonsense
     ],
   },
   {
     // within
     label: 'ex 2',
-    top: 2, height: 2,
-    left: 2, width: 2,
+    top: 2,
+    height: 2,
+    left: 2,
+    width: 2,
     description: [
       'result is smaller than query, with complete overlap (result is a subset)',
     ],
@@ -60,11 +67,11 @@ const BOXES = [
   {
     // disjoint
     label: 'ex 3',
-    top: 1, height: 2,
-    left: 7, width: 2,
-    description: [
-      'result is outside query, with no overlap',
-    ],
+    top: 1,
+    height: 2,
+    left: 7,
+    width: 2,
+    description: [ 'result is outside query, with no overlap' ],
     relation: [
       {contains: false, within: false, intersects: false, disjoint: true},
     ],
@@ -72,11 +79,11 @@ const BOXES = [
   {
     // intersects
     label: 'ex 4',
-    top: 4, height: 2,
-    left: 4, width: 2,
-    description: [
-      'result partially overlaps query',
-    ],
+    top: 4,
+    height: 2,
+    left: 4,
+    width: 2,
+    description: [ 'result partially overlaps query' ],
     relation: [
       {contains: false, within: false, intersects: true, disjoint: false},
     ],
@@ -185,9 +192,14 @@ const TimeLineQuery = ({query, labels, outputs}) => {
   // )
 
   const queryBox = (
-    <div key="queryrange" style={{width: '100%', height: '7em',  // TODO picked an arbitrary total height for now...
-      position: 'relative',
-    }}>
+    <div
+      key="queryrange"
+      style={{
+        width: '100%',
+        height: '7em', // TODO picked an arbitrary total height for now...
+        position: 'relative',
+      }}
+    >
       <output
         style={{
           position: 'absolute',
@@ -202,7 +214,11 @@ const TimeLineQuery = ({query, labels, outputs}) => {
         }}
         title="user defined time filter"
       >
-        <label style={{position: 'absolute', right: '0.25em', bottom: '0.25em'}}>ex #</label>
+        <label
+          style={{position: 'absolute', right: '0.25em', bottom: '0.25em'}}
+        >
+          ex #
+        </label>
       </output>
     </div>
   )
@@ -275,23 +291,19 @@ const queryRangeBorder = (offset, isMatched) => {
   return `1px ${style} ${color}`
 }
 const leftEdgeOfRange = offset => {
-  console.log('left', offset, `${10 * ((offset == null ? 0 : offset) + 0)}%`)
   return `${10 * ((offset == null ? 0 : offset) + 0)}%`
 }
-const rightEdgeOfRange = offset => {
-  return `${10 * (9 - (offset == null ? 9 : offset))}%`
-}
-const width = (width) => {
-  console.log('w', width, `${100 * (width/14)}%`)
-  return `${100 * (width/14)}%`
+// const rightEdgeOfRange = offset => {
+//   return `${10 * (9 - (offset == null ? 9 : offset))}%`
+// }
+const width = width => {
+  return `${100 * (width / 14)}%`
 }
 const topEdge = offset => {
-  console.log('top', offset, `${10 * ((offset == null? 0: offset)+0)}%`)
-  return `${10 * ((offset == null? 0: offset)+0)}%`
+  return `${10 * ((offset == null ? 0 : offset) + 0)}%`
 }
-const height = (height) => {
-  console.log('h', height, `${100 * (height/9)}%`)
-  return `${100 * (height/9)}%`
+const height = height => {
+  return `${100 * (height / 9)}%`
 }
 
 const TimeLineResult = ({id, label, result, relation, queryType}) => {
@@ -336,17 +348,25 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
         borderRadius: '.2em',
         borderStyle: 'solid',
         borderWidth: '1px',
-        borderColor: result.query? COLORS.query.borderColor: colorRelation(includedBasedOnRelationship, true),
-        backgroundColor: result.query?COLORS.query.backgroundColor: colorRelation(includedBasedOnRelationship),
+        borderColor: result.query
+          ? COLORS.query.borderColor
+          : colorRelation(includedBasedOnRelationship, true),
+        backgroundColor: result.query
+          ? COLORS.query.backgroundColor
+          : colorRelation(includedBasedOnRelationship),
         // border: queryRangeBorder(result.left, includedBasedOnRelationship), // TODO not really variable, except color
-        overflow: 'visible',boxShadow:'2px 2px 5px 2px #2c2c2c59',
+        overflow: 'visible',
+        boxShadow: '2px 2px 5px 2px #2c2c2c59',
       }}
     >
       <label
-        style={
-
-      {color: includedBasedOnRelationship && !result.query ? 'inherit' : '#FFF',
-        position: 'absolute', right: '0.25em', bottom: 0}}
+        style={{
+          color:
+            includedBasedOnRelationship && !result.query ? 'inherit' : '#FFF',
+          position: 'absolute',
+          right: '0.25em',
+          bottom: 0,
+        }}
       >
         {label}
       </label>
@@ -384,14 +404,21 @@ const GeoRelationIllustration = ({relation, excludeGlobal}) => {
     )
   })
 
-    // <TimeLineQuery
-    //   query={BOXES[0]}
-    // />
+  // <TimeLineQuery
+  //   query={BOXES[0]}
+  // />
   return (
-  <div key="queryrange" style={{width: '100%', height: '7em',  // TODO picked an arbitrary total height for now...
-    position: 'relative',
-    marginTop: '.609em',
-  }}>{outputs}</div>
+    <div
+      key="queryrange"
+      style={{
+        width: '100%',
+        height: '7em', // TODO picked an arbitrary total height for now...
+        position: 'relative',
+        marginTop: '.609em',
+      }}
+    >
+      {outputs}
+    </div>
   )
 }
 export default GeoRelationIllustration

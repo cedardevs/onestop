@@ -24,7 +24,6 @@ import ApplyClearRow from '../../common/ApplyClearRow'
 import Relation from '../../Relation'
 import TimeRelationIllustration from '../TimeRelationIllustration'
 
-
 // const RELATION_OPTIONS = [
 //   {
 //     value: 'intersects',
@@ -174,7 +173,7 @@ const DateTimeFilter = ({
     )
   }
 
-  const advanced = (
+  const relation = (
     <Relation
       id="datetimeRelation"
       key="DateFilter::InputColumn::Advanced"
@@ -205,7 +204,7 @@ const DateTimeFilter = ({
       <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
         Additional Filtering Options:
       </h4>
-      {advanced}
+      {relation}
     </div>
   )
 }

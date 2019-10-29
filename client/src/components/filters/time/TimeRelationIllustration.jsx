@@ -332,7 +332,8 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
         borderRight: queryRangeBorder(result.end, includedBasedOnRelationship),
         marginBottom: '0.309em',
         position: 'relative',
-        overflow: 'visible',boxShadow:'2px 2px 5px 2px #2c2c2c59',
+        overflow: 'visible',
+        boxShadow: '2px 2px 5px 2px #2c2c2c59',
       }}
     >
       <label
