@@ -6,6 +6,7 @@ import {
 import {
   granuleUpdateGeometry,
   granuleRemoveGeometry,
+  granuleUpdateGeoRelation,
   granuleUpdateTimeRelation,
   granuleUpdateDateRange,
   granuleRemoveDateRange,
@@ -28,6 +29,7 @@ const assertParam = (param, result, expected, fallback) => {
 const assertAllFilterParams = (results, values, defaults) => {
   assertParam('pageOffset', results, values, defaults)
   assertParam('geoJSON', results, values, defaults)
+  assertParam('geoRelationship', results, values, defaults)
   assertParam('timeRelationship', results, values, defaults)
   assertParam('startDateTime', results, values, defaults)
   assertParam('endDateTime', results, values, defaults)
@@ -49,6 +51,7 @@ describe('The granule filter reducer', function(){
       type: 'Point',
       geometry: {type: 'Point', coordinates: [ 0, 0 ]},
     },
+    geoRelationship: 'within',
     timeRelationship: 'disjoint',
     startDateTime: '2000-01-01T00:00:00Z',
     endDateTime: '3000-01-01T00:00:00Z',
@@ -62,6 +65,7 @@ describe('The granule filter reducer', function(){
     pageOffset: 0,
     selectedCollectionIds: [ 'parent-uuid' ],
     geoJSON: null,
+    geoRelationship: 'intersects',
     timeRelationship: 'intersects',
     startDateTime: null,
     endDateTime: null,
@@ -78,6 +82,7 @@ describe('The granule filter reducer', function(){
       pageOffset: 0,
       selectedCollectionIds: [],
       geoJSON: null,
+      geoRelationship: 'intersects',
       timeRelationship: 'intersects',
       startDateTime: null,
       endDateTime: null,
@@ -174,6 +179,7 @@ describe('The granule filter reducer', function(){
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
+            geoRelationship: 'intersects',
             timeRelationship: 'intersects',
             startDateTime: '2000-01-01T00:00:00Z',
             endDateTime: null,
@@ -194,6 +200,7 @@ describe('The granule filter reducer', function(){
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
+            geoRelationship: 'intersects',
             timeRelationship: 'intersects',
             startDateTime: null,
             endDateTime: null,
@@ -221,6 +228,7 @@ describe('The granule filter reducer', function(){
             pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
             geoJSON: null,
+            geoRelationship: 'intersects',
             timeRelationship: 'intersects',
             startDateTime: null,
             endDateTime: null,
@@ -272,6 +280,7 @@ describe('The granule filter reducer', function(){
                   ],
                 ],
               },
+              geoRelationship: 'contains',
               timeRelationship: 'contains',
               startDateTime: '1998-01-01T00:00:00Z',
               endDateTime: '2020-01-01T00:00:00Z',
@@ -299,6 +308,7 @@ describe('The granule filter reducer', function(){
                 ],
               ],
             },
+            geoRelationship: 'contains',
             timeRelationship: 'contains',
             startDateTime: '1998-01-01T00:00:00Z',
             endDateTime: '2020-01-01T00:00:00Z',
@@ -434,6 +444,15 @@ describe('The granule filter reducer', function(){
         initialState: nonInitialState,
         function: granuleRemoveGeometry,
         expectedChanges: {geoJSON: null},
+      },
+      {
+        name: 'sets geo relation',
+        initialState: initialState,
+        function: granuleUpdateGeoRelation,
+        params: [ 'disjoint' ],
+        expectedChanges: {
+          geoRelationship: 'disjoint',
+        },
       },
       {
         name: 'sets facet',

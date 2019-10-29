@@ -222,7 +222,7 @@ function collectionTestCases(){
       },
     },
     {
-      name: 'a spatial search',
+      name: 'a spatial search (default relation)',
       inputState: {
         geoJSON: {
           geometry: {
@@ -247,6 +247,206 @@ function collectionTestCases(){
         queries: [],
         filters: [
           {
+            type: 'geometry',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [ 100.0, 0.0 ],
+                  [ 101.0, 0.0 ],
+                  [ 101.0, 1.0 ],
+                  [ 100.0, 1.0 ],
+                  [ 100.0, 0.0 ],
+                ],
+              ],
+            },
+          },
+        ],
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0,
+        },
+      },
+    },
+    {
+      name: 'a spatial search (intersects relation)',
+      inputState: {
+        geoRelationship: 'intersects',
+        geoJSON: {
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ 100.0, 0.0 ],
+                [ 101.0, 0.0 ],
+                [ 101.0, 1.0 ],
+                [ 100.0, 1.0 ],
+                [ 100.0, 0.0 ],
+              ],
+            ],
+          },
+          properties: {
+            description: 'Valid test GeoJSON',
+          },
+        },
+        pageOffset: 0,
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            relation: 'intersects',
+            type: 'geometry',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [ 100.0, 0.0 ],
+                  [ 101.0, 0.0 ],
+                  [ 101.0, 1.0 ],
+                  [ 100.0, 1.0 ],
+                  [ 100.0, 0.0 ],
+                ],
+              ],
+            },
+          },
+        ],
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0,
+        },
+      },
+    },
+    {
+      name: 'a spatial search (contains relation)',
+      inputState: {
+        geoRelationship: 'contains',
+        geoJSON: {
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ 100.0, 0.0 ],
+                [ 101.0, 0.0 ],
+                [ 101.0, 1.0 ],
+                [ 100.0, 1.0 ],
+                [ 100.0, 0.0 ],
+              ],
+            ],
+          },
+          properties: {
+            description: 'Valid test GeoJSON',
+          },
+        },
+        pageOffset: 0,
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            relation: 'contains',
+            type: 'geometry',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [ 100.0, 0.0 ],
+                  [ 101.0, 0.0 ],
+                  [ 101.0, 1.0 ],
+                  [ 100.0, 1.0 ],
+                  [ 100.0, 0.0 ],
+                ],
+              ],
+            },
+          },
+        ],
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0,
+        },
+      },
+    },
+    {
+      name: 'a spatial search (within relation)',
+      inputState: {
+        geoRelationship: 'within',
+        geoJSON: {
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ 100.0, 0.0 ],
+                [ 101.0, 0.0 ],
+                [ 101.0, 1.0 ],
+                [ 100.0, 1.0 ],
+                [ 100.0, 0.0 ],
+              ],
+            ],
+          },
+          properties: {
+            description: 'Valid test GeoJSON',
+          },
+        },
+        pageOffset: 0,
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            relation: 'within',
+            type: 'geometry',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [ 100.0, 0.0 ],
+                  [ 101.0, 0.0 ],
+                  [ 101.0, 1.0 ],
+                  [ 100.0, 1.0 ],
+                  [ 100.0, 0.0 ],
+                ],
+              ],
+            },
+          },
+        ],
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0,
+        },
+      },
+    },
+    {
+      name: 'a spatial search (disjoint relation)',
+      inputState: {
+        geoRelationship: 'disjoint',
+        geoJSON: {
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ 100.0, 0.0 ],
+                [ 101.0, 0.0 ],
+                [ 101.0, 1.0 ],
+                [ 100.0, 1.0 ],
+                [ 100.0, 0.0 ],
+              ],
+            ],
+          },
+          properties: {
+            description: 'Valid test GeoJSON',
+          },
+        },
+        pageOffset: 0,
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            relation: 'disjoint',
             type: 'geometry',
             geometry: {
               type: 'Polygon',
@@ -589,6 +789,30 @@ function specialEncodingQueryTestCases(){
       string: '',
       state: Immutable.merge(initialState, {timeRelationship: 'contains'}),
     },
+    {
+      name:
+        'geo relationship (intersects) does not encode without a geoJSON filter',
+      string: '',
+      state: Immutable.merge(initialState, {geoRelationship: 'intersects'}),
+    },
+    {
+      name:
+        'geo relationship (within) does not encode without a geoJSON filter',
+      string: '',
+      state: Immutable.merge(initialState, {geoRelationship: 'within'}),
+    },
+    {
+      name:
+        'geo relationship (disjoint) does not encode without a geoJSON filter',
+      string: '',
+      state: Immutable.merge(initialState, {geoRelationship: 'disjoint'}),
+    },
+    {
+      name:
+        'geo relationship (contains) does not encode without a geoJSON filter',
+      string: '',
+      state: Immutable.merge(initialState, {geoRelationship: 'contains'}),
+    },
   ]
 }
 function queryTestCases(){
@@ -605,27 +829,6 @@ function queryTestCases(){
         queryText: 'ocean',
       }),
     },
-    // {
-    //   name: 'time relationship (intersects)',
-    //   string: 'tr=i',
-    //   state: Immutable.merge(initialState, {timeRelationship: 'intersects'}),
-    // },
-    // {
-    //   name: 'time relationship (within)',
-    //   string: 'tr=w',
-    //   state: Immutable.merge(initialState, {timeRelationship: 'within'}),
-    // },
-    // {
-    //   name: 'time relationship (disjoint)',
-    //   string: 'tr=d',
-    //   state: Immutable.merge(initialState, {timeRelationship: 'disjoint'}),
-    // },
-    // {
-    //   name: 'time relationship (contains)',
-    //   string: 'tr=c',
-    //   state: Immutable.merge(initialState, {timeRelationship: 'contains'}),
-    // },
-
     {
       name: 'time relationship (intersects)',
       string: 'tr=i&s=2010-01-01T00%3A00%3A00Z',
@@ -717,7 +920,7 @@ function queryTestCases(){
     },
     {
       name: 'geometry filter',
-      string: 'g=-83.9531,29.234,-70.5938,38.5527',
+      string: 'g=-83.9531,29.234,-70.5938,38.5527&gr=i', // defaults to intersects relation
       state: Immutable.merge(initialState, {
         geoJSON: {
           type: 'Feature',
@@ -738,9 +941,101 @@ function queryTestCases(){
       }),
     },
     {
+      name: 'geo relationship (intersects)',
+      string: 'g=-83,29,-70,38&gr=i', // 1-> 83, 2 -> 29, 3 -> 70, 4 ->38
+      state: Immutable.merge(initialState, {
+        geoRelationship: 'intersects',
+        geoJSON: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ -83, 29 ],
+                [ -70, 29 ],
+                [ -70, 38 ],
+                [ -83, 38 ],
+                [ -83, 29 ],
+              ],
+            ],
+          },
+        },
+      }),
+    },
+    {
+      name: 'geo relationship (contains)',
+      string: 'g=-83,29,-70,38&gr=c',
+      state: Immutable.merge(initialState, {
+        geoRelationship: 'contains',
+        geoJSON: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ -83, 29 ],
+                [ -70, 29 ],
+                [ -70, 38 ],
+                [ -83, 38 ],
+                [ -83, 29 ],
+              ],
+            ],
+          },
+        },
+      }),
+    },
+    {
+      name: 'geo relationship (within)',
+      string: 'g=-83,29,-70,38&gr=w',
+      state: Immutable.merge(initialState, {
+        geoRelationship: 'within',
+        geoJSON: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ -83, 29 ],
+                [ -70, 29 ],
+                [ -70, 38 ],
+                [ -83, 38 ],
+                [ -83, 29 ],
+              ],
+            ],
+          },
+        },
+      }),
+    },
+    {
+      name: 'geo relationship (disjoint)',
+      string: 'g=-83,29,-70,38&gr=d',
+      state: Immutable.merge(initialState, {
+        geoRelationship: 'disjoint',
+        geoJSON: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [ -83, 29 ],
+                [ -70, 29 ],
+                [ -70, 38 ],
+                [ -83, 38 ],
+                [ -83, 29 ],
+              ],
+            ],
+          },
+        },
+      }),
+    },
+    {
       name: 'all types of filters',
       string:
-        'q=ocean&g=-83,29,-70,38&tr=i&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&eg=1',
+        'q=ocean&g=-83,29,-70,38&gr=c&tr=i&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&eg=1',
       state: Immutable.merge(initialState, {
         queryText: 'ocean',
         startDateTime: '2010-01-01T00:00:00Z',
@@ -750,6 +1045,7 @@ function queryTestCases(){
         selectedFacets: {
           platforms: [ 'DEM > Digital Elevation Model' ],
         },
+        geoRelationship: 'contains',
         geoJSON: {
           type: 'Feature',
           properties: {},

@@ -11,6 +11,7 @@ import {
   collectionRemoveYearRange,
   collectionUpdateGeometry,
   collectionRemoveGeometry,
+  collectionUpdateGeoRelation,
   collectionToggleExcludeGlobal,
   collectionToggleFacet,
   collectionNewSearchRequested,
@@ -29,6 +30,7 @@ const assertAllFilterParams = (results, values, defaults) => {
   assertParam('pageOffset', results, values, defaults)
   assertParam('queryText', results, values, defaults)
   assertParam('geoJSON', results, values, defaults)
+  assertParam('geoRelationship', results, values, defaults)
   assertParam('timeRelationship', results, values, defaults)
   assertParam('startDateTime', results, values, defaults)
   assertParam('endDateTime', results, values, defaults)
@@ -47,6 +49,7 @@ describe('The collection filter reducer', function(){
       type: 'Point',
       geometry: {type: 'Point', coordinates: [ 0, 0 ]},
     },
+    geoRelationship: 'within',
     timeRelationship: 'disjoint',
     startDateTime: '2000-01-01T00:00:00Z',
     endDateTime: '3000-01-01T00:00:00Z',
@@ -63,6 +66,7 @@ describe('The collection filter reducer', function(){
       pageOffset: 0,
       queryText: '',
       geoJSON: null,
+      geoRelationship: 'intersects',
       timeRelationship: 'intersects',
       startDateTime: null,
       endDateTime: null,
@@ -143,6 +147,7 @@ describe('The collection filter reducer', function(){
             pageOffset: 0,
             queryText: 'new',
             geoJSON: null,
+            geoRelationship: 'intersects',
             timeRelationship: 'intersects',
             startDateTime: null,
             endDateTime: null,
@@ -168,6 +173,7 @@ describe('The collection filter reducer', function(){
             pageOffset: 0,
             queryText: '',
             geoJSON: null,
+            geoRelationship: 'intersects',
             timeRelationship: 'intersects',
             startDateTime: null,
             endDateTime: null,
@@ -217,6 +223,7 @@ describe('The collection filter reducer', function(){
                   ],
                 ],
               },
+              geoRelationship: 'contains',
               timeRelationship: 'contains',
               startDateTime: '1998-01-01T00:00:00Z',
               endDateTime: '2020-01-01T00:00:00Z',
@@ -243,6 +250,7 @@ describe('The collection filter reducer', function(){
                 ],
               ],
             },
+            geoRelationship: 'contains',
             timeRelationship: 'contains',
             startDateTime: '1998-01-01T00:00:00Z',
             endDateTime: '2020-01-01T00:00:00Z',
@@ -378,6 +386,15 @@ describe('The collection filter reducer', function(){
         initialState: nonInitialState,
         function: collectionRemoveGeometry,
         expectedChanges: {geoJSON: null},
+      },
+      {
+        name: 'sets geo relation',
+        initialState: initialState,
+        function: collectionUpdateGeoRelation,
+        params: [ 'disjoint' ],
+        expectedChanges: {
+          geoRelationship: 'disjoint',
+        },
       },
       {
         name: 'sets facet',
