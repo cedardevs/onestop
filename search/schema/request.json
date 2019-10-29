@@ -9,7 +9,7 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "components/textQuery.json"
+            "$ref": "openapi.yml#/components/schemas/textQuery"
           }
         ]
       }
@@ -19,22 +19,22 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "components/datetimeFilter.json"
+            "$ref": "openapi.yml#/components/schemas/dateTimeFilter"
           },
           {
-            "$ref": "components/yearFilter.json"
+            "$ref": "openapi.yml#/components/schemas/yearFilter"
           },
           {
-            "$ref": "components/facetFilter.json"
+            "$ref": "openapi.yml#/components/schemas/facetFilter"
           },
           {
-            "$ref": "components/geometryFilter.json"
+            "$ref": "openapi.yml#/components/schemas/geometryFilter"
           },
           {
-            "$ref": "components/collectionFilter.json"
+            "$ref": "openapi.yml#/components/schemas/collectionFilter"
           },
           {
-            "$ref": "components/excludeGlobalFilter.json"
+            "$ref": "openapi.yml#/components/schemas/excludeGlobalFilter"
           }
         ]
       }
@@ -50,7 +50,7 @@
       "default": true
     },
     "page": {
-      "$ref": "components/page.json"
+      "$ref": "openapi.yml#/components/schemas/page"
     }
   },
   "additionalProperties": false

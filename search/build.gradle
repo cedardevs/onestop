@@ -178,7 +178,7 @@ task integrationTest(type: Test) {
 check.dependsOn integrationTest
 
 bootWar {
-  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
+  dependsOn { ['generateJsonSchema'] }
 
   from("${buildDir}/resources/main") {
     include "onestop-request-schema.json"
@@ -194,7 +194,7 @@ bootWar {
 // variables are not set and can require different values (e.g. - keystore path/file)
 //task environmentVariables(type: Exec) {
 bootRun {
-  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
+  dependsOn { ['generateJsonSchema'] }
   environment project.envVars as Map<String, ?>
 }
 
@@ -206,17 +206,6 @@ test {
 task setupOpenapiGenPart1(type: Copy) {
   from "schema"
   into "${buildDir}/tmp/schema"
-}
-
-// override the actual geometry so that the openApi is valid
-task setupOpenapiGenPart2(type: Copy) {
-  dependsOn "setupOpenapiGenPart1"
-  from "schema/components"
-  include "override-geometry.json"
-  into "${buildDir}/tmp/schema/components"
-  rename { filename ->
-    filename.replace 'override-geometry', 'geometry'
-  }
 }
 
 node {
@@ -238,27 +227,13 @@ task generateJsonSchema(type: NpmTask) {
 }
 tasks.assemble.dependsOn generateJsonSchema
 
-// NOTE: The 'build' task defined in package.json pipes the output directly to the output file
-task generateOpenApi(type: NpmTask) {
-  outputs.upToDateWhen { false }
-  dependsOn { ['npmInstall', 'processResources', 'setupOpenapiGenPart2'] }
-  args = ['run', 'build']
-  outputs.file("${buildDir}/resources/main/static/docs/openapi.yaml")
-}
-
-// NOTE: The 'testSchemas' task defined in package.json generates json dereference for test
-task generateTestSchemas(type: NpmTask) {
-  dependsOn { ['copyPartialSchemas', 'npmInstall'] }
-  args = ['run', 'testSchemas']
-}
-
 // copy schemas for testing
 task copyPartialSchemas(type: Copy) {
   from 'schema/'
   into "${buildDir}/resources/test/schema/"
 }
 
-test.dependsOn 'generateTestSchemas', 'generateJsonSchema'
+test.dependsOn 'copyPartialSchemas', 'generateJsonSchema'
 
 processResources {
   outputs.upToDateWhen { false }
