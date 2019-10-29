@@ -7,8 +7,6 @@ import Button from '../../../common/input/Button'
 import {Key} from '../../../../utils/keyboardUtils'
 import {isValidYearRange, textToNumber} from '../../../../utils/inputUtils'
 import {
-  FilterColors,
-  FilterStyles,
   SiteColors,
 } from '../../../../style/defaultStyles'
 import FormSeparator from '../../FormSeparator'

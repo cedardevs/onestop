@@ -9,8 +9,6 @@ import RadioButtonSet from '../../../common/input/RadioButtonSet'
 import {Key} from '../../../../utils/keyboardUtils'
 import {isValidDateRange} from '../../../../utils/inputUtils'
 import {
-  FilterStyles,
-  FilterColors,
   SiteColors,
 } from '../../../../style/defaultStyles'
 import DateFieldset from './DateFieldset'

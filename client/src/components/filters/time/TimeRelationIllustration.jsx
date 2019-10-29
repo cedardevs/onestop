@@ -8,6 +8,7 @@ import FlexRow from '../../common/ui/FlexRow'
 import {consolidateStyles} from '../../../utils/styleUtils'
 
 import {styleRelationIllustration} from '../common/styleFilters'
+import {arrow_right, SvgIcon} from '../../common/SvgIcon'
 
 const QUERY = [ {start: 2, end: 6}, {start: 2}, {end: 6} ]
 
@@ -130,7 +131,7 @@ const Spacer = ({style, children}) => {
   return <div style={consolidateStyles(styleSpacer, style)}>{children}</div>
 }
 
-const TimeLineQuery = ({query, labels, outputs}) => {
+const TimeLineQuery = ({query, outputs}) => {
   const timelineStartLabel = (
     <div
       key="inf"
@@ -192,31 +193,31 @@ const TimeLineQuery = ({query, labels, outputs}) => {
     </div>
   )
 
-  let labelColumn = [
-    <div key="spacer1">
-      <span aria-hidden={true}>&nbsp;</span>
-    </div>,
-    <div key="spacer2">
-      <span aria-hidden={true}>&nbsp;</span>
-    </div>,
-    <Spacer key="spacer3" />,
-  ]
-  labels.forEach(label => {
-    labelColumn.push(label)
-  })
+  // let labelColumn = [
+  //   <div key="spacer1">
+  //     <span aria-hidden={true}>&nbsp;</span>
+  //   </div>,
+  //   <div key="spacer2">
+  //     <span aria-hidden={true}>&nbsp;</span>
+  //   </div>,
+  //   <Spacer key="spacer3" />,
+  // ]
+  // labels.forEach(label => {
+  //   labelColumn.push(label)
+  // })
 
   let endLabelColumn = [ timelineEndLabel ]
 
-  const leftColumn = (
-    <FlexColumn
-      key="left"
-      style={{
-        alignItems: 'flex-end',
-        justifyContent: 'space-evenly',
-      }}
-      items={labelColumn}
-    />
-  )
+  // const leftColumn = (
+  //   <FlexColumn
+  //     key="left"
+  //     style={{
+  //       alignItems: 'flex-end',
+  //       justifyContent: 'space-evenly',
+  //     }}
+  //     items={labelColumn}
+  //   />
+  // )
 
   const queryBox = (
     <Spacer key="queryrange" style={{width: '100%'}}>
@@ -265,7 +266,7 @@ const TimeLineQuery = ({query, labels, outputs}) => {
   )
 
   return (
-    <div>
+    <div style={{marginTop: '.609em'}}>
       <div style={{textAlign: 'center'}}>timeline:</div> {middle}
     </div>
   )
@@ -297,7 +298,7 @@ const width = (left, right) => {
 const styleResult = {
   cursor: 'pointer',
   display: 'block',
-  position: 'relative',
+  // position: 'relative',
   borderRadius: '.2em',
   borderStyle: 'solid',
   borderWidth: '1px',
@@ -320,33 +321,32 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
   let description = result.description(includedBasedOnRelationship, queryType)
 
   const styleColors = {
-    borderColor: result.styles.borderColor(includedBasedOnRelationship),
+    // borderColor: result.styles.borderColor(includedBasedOnRelationship),
     backgroundColor: result.styles.backgroundColor(includedBasedOnRelationship),
   }
 
-  // const continuation = isOngoing ? ( // TODO try arrow to indicate ongoing
-  //   <div
-  //     style={{
-  //       position: 'absolute',
-  //       height: '100%',
-  //       borderRadius: '0px 1em 1em 0px',
-  //       borderStyle: 'solid',
-  //       borderWidth: '1px',
-  //       borderColor: colorRelation(includedBasedOnRelationship, true),
-  //       backgroundColor: colorRelation(includedBasedOnRelationship),
-  //       borderLeft: '0',
-  //       top: '-1px', // due to border width
-  //       left: '100%',
-  //       paddingRight: '.4em',
-  //     }}
-  //   >
-  //     ...
-  //   </div>
-  // ) : null // TODO background-image: linear-gradient(to right, green , yellow) instead of bg color?
+  const continuation = isOngoing ? ( // TODO retest accessibility!
+    <div
+      style={consolidateStyles(styleColors, {
+        backgroundColor: 'none',
+        fill: result.styles.color(includedBasedOnRelationship),
+        backgroundImage: `linear-gradient(to right, ${result.styles.backgroundColor(
+          includedBasedOnRelationship
+        )} , ${includedBasedOnRelationship? '#cbeed5': '#6b8c73'})`,
+        // borderRadius: '0 .2em .2em 0',
+        // borderStyle: 'solid',
+        // borderWidth: '1px',
+        // borderLeft: 0,
+        // borderRight: queryRangeBorder(result.end, includedBasedOnRelationship),
+      })}
+    ><SvgIcon key="hackFlexRow" wrapperStyle={{display: 'inline'}} path={arrow_right} size=".5em" /></div>
+) : null // TODO svg hovering doesn't show text now...
+
   const styleBorders = {
-    borderRadius: isOngoing ? '.2em 0 0 .2em' : '.2em',
+    // borderRadius: isOngoing ? '.2em 0 0 .2em' : '.2em',
     borderLeft: queryRangeBorder(result.start, includedBasedOnRelationship),
-    borderRight: queryRangeBorder(result.end, includedBasedOnRelationship),
+    borderRight: queryRangeBorder(result.end, includedBasedOnRelationship), //0
+    borderColor: result.styles.borderColor(includedBasedOnRelationship),
   }
 
   const styleLabel = {
@@ -356,20 +356,64 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
     display: 'inline-block',
   }
 
+  // previous layout... (no arrow)
+  // return (
+  //   <output
+  //     id={id}
+  //     title={description}
+  //     style={consolidateStyles(
+  //       styleResult,
+  //       stylePosition(result),
+  //       styleBorders,
+  //       styleColors
+  //     )}
+  //   >
+  //     <FlexRow items={[<label key="label" style={styleLabel}>{label}</label>, continuation]} />
+  //     <div style={defaultStyles.hideOffscreen}>{description}</div>
+  //   </output>
+  // )
+
   return (
-    <output
-      id={id}
-      title={description}
+    <div
       style={consolidateStyles(
-        styleResult,
+        {
+          cursor: 'pointer', // TODO redefine styles
+          display: 'block',
+          position: 'relative',
+          marginBottom: '0.309em',
+          overflow: 'visible',
+          borderRadius: '.2em',
+          borderStyle: 'solid',
+          borderWidth: '1px',
+          boxShadow: '2px 2px 5px 2px #2c2c2c59',
+        },
         stylePosition(result),
-        styleBorders,
-        styleColors
+        styleBorders
       )}
+      title={description}
     >
-      <label style={styleLabel}>{label}</label>
-      <div style={defaultStyles.hideOffscreen}>{description}</div>
-    </output>
+      <FlexRow
+        items={[
+          <output
+            id={id}
+            key="output"
+            title={description}
+            style={consolidateStyles(
+              // stylePosition(result),
+              {flexGrow: 1},
+              // styleBorders,
+              styleColors
+            )}
+          >
+            <label key="label" style={styleLabel}>
+              {label}
+            </label>
+            <div style={defaultStyles.hideOffscreen}>{description}</div>
+          </output>,
+          continuation,
+        ]}
+      />
+    </div>
   )
 }
 
@@ -378,17 +422,17 @@ const TimeRelationIllustration = ({relation, hasStart, hasEnd}) => {
   if (hasStart && !hasEnd) currentQueryType = 1
   if (!hasStart && hasEnd) currentQueryType = 2
 
-  const labels = _.map(RESULTS, (result, index) => {
-    return (
-      <label
-        key={`result${index + 1}`}
-        htmlFor={`result${index + 1}`}
-        style={{marginBottom: '0.309em', marginRight: '0.309em'}}
-      >
-        ex {index + 1} :
-      </label>
-    )
-  })
+  // const labels = _.map(RESULTS, (result, index) => {
+  //   return (
+  //     <label
+  //       key={`result${index + 1}`}
+  //       htmlFor={`result${index + 1}`}
+  //       style={{marginBottom: '0.309em', marginRight: '0.309em'}}
+  //     >
+  //       ex {index + 1} :
+  //     </label>
+  //   )
+  // })
 
   const outputs = _.map(RESULTS, (result, index) => {
     return (
@@ -403,12 +447,6 @@ const TimeRelationIllustration = ({relation, hasStart, hasEnd}) => {
     )
   })
 
-  return (
-    <TimeLineQuery
-      query={QUERY[currentQueryType]}
-      labels={labels}
-      outputs={outputs}
-    />
-  )
+  return <TimeLineQuery query={QUERY[currentQueryType]} outputs={outputs} />
 }
 export default TimeRelationIllustration
