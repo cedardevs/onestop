@@ -10,7 +10,7 @@ The documentation for OneStop is divided into four main categories:
 
 ## External Docs
 
-* [Swagger API Docs - 2.0.0](https://app.swaggerhub.com/apis/cedardevs/one-stop_search_api/2.0.0)
+* [Swagger API Docs - 2.4.0](https://app.swaggerhub.com/apis/cedarbot/OneStop/2.4.0)
 
 ## Further Issues or Questions
 
