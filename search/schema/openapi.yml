@@ -458,18 +458,12 @@ components:
     geometry:
       description: "One geometry as defined by GeoJSON. Can be a point, multipoint, linestring, mutlilinestring, polygon, or multipolygon."
       oneOf:
-        -
-          $ref: "#/components/schemas/Point"
-        -
-          $ref: "#/components/schemas/MultiPoint"
-        -
-          $ref: "#/components/schemas/LineString"
-        -
-          $ref: "#/components/schemas/MultiLineString"
-        -
-          $ref: "#/components/schemas/Polygon"
-        -
-          $ref: "#/components/schemas/MultiPolygon"
+        - $ref: "#/components/schemas/Point"
+        - $ref: "#/components/schemas/MultiPoint"
+        - $ref: "#/components/schemas/LineString"
+        - $ref: "#/components/schemas/MultiLineString"
+        - $ref: "#/components/schemas/Polygon"
+        - $ref: "#/components/schemas/MultiPolygon"
       title: Geometry
     geometryFilter:
       additionalProperties: false
@@ -518,17 +512,13 @@ components:
       type: object
     lineString:
       allOf:
-        -
-          $ref: "#/components/schemas/positionArray"
-        -
-          minItems: 2
+        - $ref: "#/components/schemas/positionArray"
+        - minItems: 2
       description: "An array of two or more positions"
     linearRing:
       allOf:
-        -
-          $ref: "#/components/schemas/positionArray"
-        -
-          minItems: 4
+        - $ref: "#/components/schemas/positionArray"
+        - minItems: 4
       description: "An array of four positions where the first equals the last"
     link:
       properties:
