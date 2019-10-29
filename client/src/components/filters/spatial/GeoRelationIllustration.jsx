@@ -16,10 +16,9 @@ const BOXES = [
     height: 9, // height: 100%,
     left: 0,
     width: 14, // width: 100%,
-    description: [ 'global result', 'global result is always excluded' ],
+    description: [ 'global result' ],
     relation: [
       {contains: true, within: false, intersects: true, disjoint: false},
-      {contains: false, within: false, intersects: false, disjoint: false}, // excludeGlobal
     ],
   },
   {
@@ -37,7 +36,7 @@ const BOXES = [
     ],
   },
   {
-    // query
+    // query included here to get the layer order correct
     label: 'query',
     query: true,
     top: 1,
@@ -45,7 +44,7 @@ const BOXES = [
     left: 1,
     width: 5,
     description: [
-      'user defined query', // TODO nonsense
+      'user defined location filter',
     ],
     relation: [
       {contains: true, within: false, intersects: true, disjoint: false}, // TODO nonsense
@@ -309,9 +308,20 @@ const height = height => {
 
 const TimeLineResult = ({id, label, result, relation, queryType, excludeGlobal}) => {
   let includedBasedOnRelationship = (excludeGlobal && result.global) ? false : result.relation[queryType][relation]
-  let description = `${includedBasedOnRelationship
-    ? 'Included in search results:'
-    : 'NOT included in search results:'} ${result.description[queryType]}`
+  // let description = result.query? result.description[queryType] : `${includedBasedOnRelationship
+  //   ? 'Included in search results:'
+  //   : 'NOT included in search results:'} ${result.description[queryType]}`
+  let description = ''
+  if (result.query) {description= result.description[queryType]}
+  else {
+    if (excludeGlobal && result.global && result.relation[queryType][relation]) {
+        description = `NOT included in search results: ${result.description[queryType]}, due to Exclude Global Results filter`
+    } else {
+      description = `${includedBasedOnRelationship
+        ? 'Included in search results:'
+        : 'NOT included in search results:'} ${result.description[queryType]}`
+    }
+  }
   // let title = `${result.label} ${description}.`
 
   // const continuation = isOngoing ? (
