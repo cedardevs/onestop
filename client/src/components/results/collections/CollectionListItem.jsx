@@ -70,9 +70,9 @@ const styleContentHeadingTop = {
   marginTop: '0em',
 }
 
-const CollectionListItem = ({itemId, item, onSelect, shouldFocus, ...props}) => {
+const CollectionListItem = ({itemId, item, onSelect, ...props}) => {
   const [ focusingLink, setFocusingLink ] = useState(false)
-  const [ expanded, setExpanded ] = useListViewItem(props)
+  const { expanded, setExpanded, focusRef } = useListViewItem(props)
 
   const handleKeyDown = event => {
     if (event.keyCode === Key.SPACE) {
@@ -93,6 +93,7 @@ const CollectionListItem = ({itemId, item, onSelect, shouldFocus, ...props}) => 
         onKeyDown={handleKeyDown}
         onFocus={() => setFocusingLink(true)}
         onBlur={() => setFocusingLink(false)}
+        ref={focusRef}
       >
         {item.title}
       </a>

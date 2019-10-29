@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import Expandable from './Expandable'
 import FlexRow from './FlexRow'
 import {boxShadow} from '../../../style/defaultStyles'
@@ -52,14 +52,12 @@ export function useListViewItem(props){
   // give the custom list view item component control over its expanded state
   const [ expanded, setExpanded ] = useState(false)
 
-  // TODO: supply this ref from this effect
-  // const focusRef = useRef(null)
-  //
-  // useEffect(() => {
-  //   if (shouldFocus) {
-  //     focusRef.current.focus()
-  //   }
-  // }, [])
+  const focusRef = useRef(null)
+  useEffect(() => {
+    if (focusRef && focusRef.current && props.shouldFocus) {
+      focusRef.current.focus()
+    }
+  }, [])
 
   // if the ListView wants to control the items props directly
   // then we should set our items state according to that (if it has changed)
@@ -71,7 +69,7 @@ export function useListViewItem(props){
     },
     [ props.expanded ]
   )
-  return [ expanded, setExpanded ]
+  return { expanded, setExpanded, focusRef }
 }
 
 export default function ListViewItem(props){

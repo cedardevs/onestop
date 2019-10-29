@@ -5,6 +5,7 @@ import MapThumbnail from '../../common/MapThumbnail'
 import {boxShadow} from '../../../style/defaultStyles'
 import {Key} from "../../../utils/keyboardUtils";
 import {consolidateStyles} from "../../../utils/styleUtils";
+import {useListViewItem} from "../../common/ui/ListViewItem";
 
 const styleCard = {
   width: '25em',
@@ -137,20 +138,13 @@ const styleTitle = {
   overflow: 'hidden',
 }
 
-const CollectionGridItem = ({itemId, item, onSelect, shouldFocus}) => {
+const CollectionGridItem = ({itemId, item, onSelect, ...props}) => {
 
   const thumbnailUrl = processUrl(item.thumbnail)
 
+  const { focusRef } = useListViewItem(props)
   const [hovering, setHovering] = useState(false)
   const [focusing, setFocusing] = useState(false)
-
-  const focusRef = useRef(null)
-
-  useEffect(() => {
-    if (shouldFocus) {
-      focusRef.current.focus()
-    }
-  }, [])
 
   const handleKeyDown = event => {
     if (event.keyCode === Key.SPACE) {

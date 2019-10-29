@@ -72,8 +72,8 @@ const styleContentHeadingTop = {
   marginTop: '0em',
 }
 
-export default function CartListItem({itemId, item, onSelect, shouldFocus, ...props}){
-  const [ expanded, setExpanded ] = useListViewItem(props)
+export default function CartListItem({itemId, item, onSelect, ...props}){
+  const { expanded, setExpanded, focusRef } = useListViewItem(props)
 
   const {isFocused} = props
   const title = (
