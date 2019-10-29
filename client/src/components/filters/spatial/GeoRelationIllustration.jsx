@@ -11,6 +11,7 @@ const BOXES = [
   {
     // global
     label: 'global',
+    global: true,
     top: 0,
     height: 9, // height: 100%,
     left: 0,
@@ -306,8 +307,8 @@ const height = height => {
   return `${100 * (height / 9)}%`
 }
 
-const TimeLineResult = ({id, label, result, relation, queryType}) => {
-  let includedBasedOnRelationship = result.relation[queryType][relation]
+const TimeLineResult = ({id, label, result, relation, queryType, excludeGlobal}) => {
+  let includedBasedOnRelationship = (excludeGlobal && result.global) ? false : result.relation[queryType][relation]
   let description = `${includedBasedOnRelationship
     ? 'Included in search results:'
     : 'NOT included in search results:'} ${result.description[queryType]}`
@@ -400,6 +401,7 @@ const GeoRelationIllustration = ({relation, excludeGlobal}) => {
         result={result}
         relation={relation}
         queryType={currentQueryType}
+        excludeGlobal={excludeGlobal}
       />
     )
   })
