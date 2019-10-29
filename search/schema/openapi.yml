@@ -530,7 +530,6 @@ components:
           linkProtocol:
             type: string
           linkUrl:
-            format: uri
             type: string
         type: object
       page:
@@ -565,7 +564,6 @@ components:
             maximum: 90
         maxItems: 2
         minItems: 2
-        type: array
       positionArray:
         description: "An array of positions"
         items:
@@ -617,17 +615,21 @@ components:
               links:
                 items:
                   oneOf:
-                    -
-                      $ref: "#/components/schemas/link"
+                    - $ref: "#/components/schemas/link"
                 type: array
+              serviceLinks:
+                $ref: '#/components/schemas/serviceLinks'
               spatialBounding:
                 $ref: "#/components/schemas/geometry"
               thumbnail:
-                format: uri
                 type: string
               title:
                 type: string
-            type: object
+              citeAsStatements:
+                type: array
+                title: The Citeasstatements Schema
+                items:
+                  type: string
           id:
             description: "internal uuid"
             type: string
@@ -655,12 +657,25 @@ components:
           data:
             items:
               oneOf:
-                -
-                  $ref: "#/components/schemas/searchDataObject"
+                - $ref: "#/components/schemas/searchDataObject"
             type: array
+
           meta:
             $ref: "#/components/schemas/searchMetadataObject"
         type: object
+      serviceLinks:
+        type: object
+        properties:
+          title:
+            type: string
+          alternateTitle:
+            type: string
+          description:
+            type: string
+          links:
+            type: array
+            items:
+              $ref: '#/components/schemas/link'
       textQuery:
         additionalProperties: false
         description: "When providing multiple queryText objects in your search request, keep in mind that they will be combined with a logical AND. Terms use Lucene Query Syntax."
@@ -706,8 +721,6 @@ components:
           - type
         title: "Year Filter"
         type: object
-
-
 
   examples:
     payload0:
