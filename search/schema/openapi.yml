@@ -583,26 +583,19 @@ components:
         filters:
           items:
             anyOf:
-              -
-                $ref: "#/components/schemas/dateTimeFilter"
-              -
-                $ref: "#/components/schemas/yearFilter"
-              -
-                $ref: "#/components/schemas/facetFilter"
-              -
-                $ref: "#/components/schemas/geometryFilter"
-              -
-                $ref: "#/components/schemas/collectionFilter"
-              -
-                $ref: "#/components/schemas/excludeGlobalFilter"
+              - $ref: "#/components/schemas/dateTimeFilter"
+              - $ref: "#/components/schemas/yearFilter"
+              - $ref: "#/components/schemas/facetFilter"
+              - $ref: "#/components/schemas/geometryFilter"
+              - $ref: "#/components/schemas/collectionFilter"
+              - $ref: "#/components/schemas/excludeGlobalFilter"
           type: array
         page:
           $ref: "#/components/schemas/page"
         queries:
           items:
             oneOf:
-              -
-                $ref: "#/components/schemas/textQuery"
+              - $ref: "#/components/schemas/textQuery"
           type: array
         summary:
           default: true
@@ -629,8 +622,7 @@ components:
             links:
               items:
                 oneOf:
-                  -
-                    $ref: "#/components/schemas/link"
+                  - $ref: "#/components/schemas/link"
               type: array
             serviceLinks:
               $ref: "#/components/schemas/serviceLinks"
@@ -667,8 +659,7 @@ components:
         data:
           items:
             oneOf:
-              -
-                $ref: "#/components/schemas/searchDataObject"
+              - $ref: "#/components/schemas/searchDataObject"
           type: array
         meta:
           $ref: "#/components/schemas/searchMetadataObject"
