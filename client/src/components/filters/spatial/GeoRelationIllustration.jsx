@@ -6,9 +6,31 @@ import defaultStyles from '../../../style/defaultStyles'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
 import {consolidateStyles} from '../../../utils/styleUtils'
+import {styleRelationIllustration} from '../common/styleFilters'
 
 const HEIGHT_RATIO = 9
 const WIDTH_RATIO = 14
+
+const resultStyles = {
+  color: include =>
+    include
+      ? styleRelationIllustration.included.color
+      : styleRelationIllustration.excluded.color,
+  backgroundColor: include =>
+    include
+      ? styleRelationIllustration.included.backgroundColor
+      : styleRelationIllustration.excluded.backgroundColor,
+  borderColor: include =>
+    include
+      ? styleRelationIllustration.included.borderColor
+      : styleRelationIllustration.excluded.borderColor,
+}
+
+const resultDescription = (include, description) => {
+  return `${include
+    ? 'Included in search results:'
+    : 'NOT included in search results:'} ${description}`
+}
 
 const BOXES = [
   {
@@ -19,10 +41,22 @@ const BOXES = [
     height: HEIGHT_RATIO, // 100%
     left: 0,
     width: WIDTH_RATIO, // 100%
-    description: 'global result',
-    // description: (relation, excludeGlobal) => {
-    //   let desc = 'global result'
-    // },
+    description: (include, excludeGlobal) =>
+      excludeGlobal
+        ? `NOT included in search results: global result, due to 'Exclude Global Results' filter`
+        : resultDescription(include, 'global result'),
+    styles: {
+      color: (include, excludeGlobal) =>
+        excludeGlobal ? resultStyles.color(false) : resultStyles.color(include),
+      backgroundColor: (include, excludeGlobal) =>
+        excludeGlobal
+          ? resultStyles.backgroundColor(false)
+          : resultStyles.backgroundColor(include),
+      borderColor: (include, excludeGlobal) =>
+        excludeGlobal
+          ? resultStyles.borderColor(false)
+          : resultStyles.borderColor(include),
+    },
     relation: {
       contains: true,
       within: false,
@@ -37,8 +71,12 @@ const BOXES = [
     height: 9,
     left: 0,
     width: 10, // TODO or 11?
-    description:
-      'result is larger than query, with complete overlap (result is a superset)',
+    description: include =>
+      resultDescription(
+        include,
+        'result is larger than query, with complete overlap (result is a superset)'
+      ),
+    styles: resultStyles,
     relation: {
       contains: true,
       within: false,
@@ -54,13 +92,13 @@ const BOXES = [
     height: 7,
     left: 1,
     width: 5,
-    description: 'user defined location filter',
-    relation: {
-      contains: true,
-      within: false,
-      intersects: true,
-      disjoint: false,
-    }, // TODO nonsense
+    description: () => 'user defined location filter',
+    styles: {
+      color: () => styleRelationIllustration.query.color,
+      backgroundColor: () => styleRelationIllustration.query.backgroundColor,
+      borderColor: () => styleRelationIllustration.query.borderColor,
+    },
+    relation: {},
   },
   {
     // within
@@ -69,8 +107,12 @@ const BOXES = [
     height: 2,
     left: 2,
     width: 2,
-    description:
-      'result is smaller than query, with complete overlap (result is a subset)',
+    description: include =>
+      resultDescription(
+        include,
+        'result is smaller than query, with complete overlap (result is a subset)'
+      ),
+    styles: resultStyles,
     relation: {
       contains: false,
       within: true,
@@ -85,7 +127,9 @@ const BOXES = [
     height: 2,
     left: 7,
     width: 2,
-    description: 'result is outside query, with no overlap',
+    description: include =>
+      resultDescription(include, 'result is outside query, with no overlap'),
+    styles: resultStyles,
     relation: {
       contains: false,
       within: false,
@@ -100,7 +144,9 @@ const BOXES = [
     height: 2,
     left: 4,
     width: 2,
-    description: 'result partially overlaps query',
+    description: include =>
+      resultDescription(include, 'result partially overlaps query'),
+    styles: resultStyles,
     relation: {
       contains: false,
       within: false,
@@ -110,13 +156,6 @@ const BOXES = [
   },
 ]
 
-const COLORS = {
-  // TODO move to common?
-  included: {backgroundColor: '#86D29A', borderColor: '#56B770'},
-  excluded: {backgroundColor: '#4E5F53', borderColor: '#414642'},
-  query: {backgroundColor: '#277cb2', borderColor: '#28323E'},
-}
-
 const styleBox = {
   cursor: 'pointer',
   display: 'block',
@@ -125,7 +164,7 @@ const styleBox = {
   borderStyle: 'solid',
   borderWidth: '1px',
   overflow: 'visible',
-  boxShadow: '2px 2px 5px 2px #2c2c2c59',
+  boxShadow: '2px 2px 5px 2px #2c2c2c59', // TODO check in other browers and maybe move to styleRelationIllustration?
 }
 
 const stylePosition = ({left, width, top, height}) => {
@@ -134,19 +173,6 @@ const stylePosition = ({left, width, top, height}) => {
     width: calculateWidth(width),
     height: calculateHeight(height),
     top: topEdge(top),
-  }
-}
-
-const colorRelation = (isMatched, isBorder) => {
-  if (isMatched) {
-    return isBorder
-      ? COLORS.included.borderColor
-      : COLORS.included.backgroundColor
-  }
-  else {
-    return isBorder
-      ? COLORS.excluded.borderColor
-      : COLORS.excluded.backgroundColor
   }
 }
 
@@ -163,39 +189,27 @@ const calculateHeight = height => {
   return `${100 * (height / HEIGHT_RATIO)}%`
 }
 
-const TimeLineResult = ({
-  // TODO rename
-  id,
-  box,
-  relation,
-  excludeGlobal,
-}) => {
-  let includedBasedOnRelationship =
-    excludeGlobal && box.global
-      ? false // always exclude the global result when excludeGlobal filter is active
-      : box.relation[relation] // otherwise base it on the relation
+const BoxIllustration = ({id, box, relation, excludeGlobal}) => {
+  let includedBasedOnRelationship = box.relation[relation]
 
-  let description = ''
-  if (box.query) {
-    description = box.description
-  }
-  else {
-    if (excludeGlobal && box.global && box.relation[relation]) {
-      description = `NOT included in search results: ${box.description}, due to 'Exclude Global Results' filter`
-    }
-    else {
-      description = `${includedBasedOnRelationship
-        ? 'Included in search results:'
-        : 'NOT included in search results:'} ${box.description}`
-    }
-  }
+  let description = box.description(includedBasedOnRelationship, excludeGlobal)
+
   const styleColors = {
-    borderColor: box.query
-      ? COLORS.query.borderColor
-      : colorRelation(includedBasedOnRelationship, true),
-    backgroundColor: box.query
-      ? COLORS.query.backgroundColor
-      : colorRelation(includedBasedOnRelationship),
+    borderColor: box.styles.borderColor(
+      includedBasedOnRelationship,
+      excludeGlobal
+    ),
+    backgroundColor: box.styles.backgroundColor(
+      includedBasedOnRelationship,
+      excludeGlobal
+    ),
+  }
+
+  const styleLabel = {
+    color: box.styles.color(includedBasedOnRelationship, excludeGlobal),
+    position: 'absolute',
+    right: '0.25em',
+    bottom: 0,
   }
 
   return (
@@ -204,16 +218,7 @@ const TimeLineResult = ({
       title={description}
       style={consolidateStyles(styleBox, stylePosition(box), styleColors)}
     >
-      <label
-        style={{
-          color: includedBasedOnRelationship && !box.query ? 'inherit' : '#FFF', // TODO more color style logic
-          position: 'absolute',
-          right: '0.25em',
-          bottom: 0,
-        }}
-      >
-        {box.label}
-      </label>
+      <label style={styleLabel}>{box.label}</label>
       <div style={defaultStyles.hideOffscreen}>{description}</div>
     </output>
   )
@@ -222,7 +227,7 @@ const TimeLineResult = ({
 const GeoRelationIllustration = ({relation, excludeGlobal}) => {
   const outputs = _.map(BOXES, (box, index) => {
     return (
-      <TimeLineResult
+      <BoxIllustration
         key={`illustration${index + 1}`}
         id={`illustration${index + 1}`}
         box={box}

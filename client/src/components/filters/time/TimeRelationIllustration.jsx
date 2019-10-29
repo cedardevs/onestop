@@ -7,6 +7,8 @@ import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
 import {consolidateStyles} from '../../../utils/styleUtils'
 
+import {styleRelationIllustration} from '../common/styleFilters'
+
 const QUERY = [ {start: 2, end: 6}, {start: 2}, {end: 6} ]
 
 const RESULTS = [
@@ -121,8 +123,10 @@ const TimeLineQuery = ({query, labels, outputs}) => {
         key="legend"
         style={{
           width: '100%',
-          borderLeft: `2px solid ${COLORS.query.borderColor}`,
-          borderRight: `2px solid ${COLORS.query.borderColor}`,
+          borderLeft: `2px solid ${styleRelationIllustration.query
+            .borderColor}`,
+          borderRight: `2px solid ${styleRelationIllustration.query
+            .borderColor}`,
         }}
       >
         <FlexRow
@@ -134,9 +138,11 @@ const TimeLineQuery = ({query, labels, outputs}) => {
         key="timeline"
         style={{
           width: '100%',
-          borderTop: `2px solid ${COLORS.query.borderColor}`,
-          borderLeft: `2px solid ${COLORS.query.borderColor}`,
-          borderRight: `2px solid ${COLORS.query.borderColor}`,
+          borderTop: `2px solid ${styleRelationIllustration.query.borderColor}`,
+          borderLeft: `2px solid ${styleRelationIllustration.query
+            .borderColor}`,
+          borderRight: `2px solid ${styleRelationIllustration.query
+            .borderColor}`,
         }}
         aria-hidden={true}
       >
@@ -182,11 +188,19 @@ const TimeLineQuery = ({query, labels, outputs}) => {
           bottom: 0,
           borderLeft: queryRangeBorder(query.start),
           borderRight: queryRangeBorder(query.end),
-          backgroundColor: COLORS.query.backgroundColor,
+          backgroundColor: styleRelationIllustration.query.backgroundColor,
         }}
         title="user defined time filter"
       >
-        <label style={{position: 'absolute', right: '0.5em'}}>filter</label>
+        <label
+          style={{
+            position: 'absolute',
+            right: '0.5em',
+            color: styleRelationIllustration.query.color,
+          }}
+        >
+          filter
+        </label>
       </output>
       <span aria-hidden={true}>&nbsp;</span>
     </Spacer>
@@ -216,32 +230,26 @@ const TimeLineQuery = ({query, labels, outputs}) => {
   )
 }
 
-const COLORS = {
-  included: {backgroundColor: '#86D29A', borderColor: '#56B770'}, // 359E51, 1D8739, 096B23
-  excluded: {backgroundColor: '#4E5F53', borderColor: '#414642'}, // 363C38, 2B312D, 1F2420
-  query: {backgroundColor: '#277cb278', borderColor: '#277cb2'},
-}
-
 const colorRelation = (isMatched, isBorder) => {
   if (isMatched) {
     return isBorder
-      ? COLORS.included.borderColor
-      : COLORS.included.backgroundColor
+      ? styleRelationIllustration.included.borderColor
+      : styleRelationIllustration.included.backgroundColor
   }
   else {
     return isBorder
-      ? COLORS.excluded.borderColor
-      : COLORS.excluded.backgroundColor
+      ? styleRelationIllustration.excluded.borderColor
+      : styleRelationIllustration.excluded.backgroundColor
   }
 }
 
 const queryRangeBorder = (offset, isMatched) => {
   let style = offset == null ? 'dashed' : 'solid'
-  let color = COLORS.query.borderColor
+  let color = styleRelationIllustration.query.borderColor
   if (isMatched != null) {
     color = isMatched
-      ? COLORS.included.borderColor
-      : COLORS.excluded.borderColor
+      ? styleRelationIllustration.included.borderColor
+      : styleRelationIllustration.excluded.borderColor
   }
   return `1px ${style} ${color}`
 }
@@ -264,7 +272,6 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
   let description = `${includedBasedOnRelationship
     ? 'Included in search results:'
     : 'NOT included in search results:'} ${result.description[queryType]}`
-  // let title = `${result.label} ${description}.`
 
   // const continuation = isOngoing ? ( // TODO try arrow to indicate ongoing
   //   <div
@@ -311,7 +318,9 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
       <label
         style={{
           width: '100%',
-          color: includedBasedOnRelationship ? 'inherit' : '#FFF',
+          color: includedBasedOnRelationship
+            ? styleRelationIllustration.included.color
+            : styleRelationIllustration.excluded.color, //'inherit' : '#FFF',
 
           textAlign: 'center',
           display: 'inline-block',
