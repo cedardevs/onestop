@@ -1,4 +1,28 @@
 ---
+kafka:
+  bootstrap:
+    servers: "http://localhost:9092"
+  schema:
+    registry:
+      url: "http://localhost:8081"
+  application:
+    server: "localhost:9090"
+  compression:
+    type: "gzip"
+  cache:
+    max:
+      bytes:
+        buffering: 104857600 # 100 MiB
+  commit:
+    interval:
+      ms: 30000 # 30 sec
+  request:
+    timeout:
+      ms: 1000
+  auto:
+    offset:
+      reset: "earliest"
+
 server:
   port: 8080
 management.endpoints.enabled-by-default: false

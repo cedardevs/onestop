@@ -8,6 +8,8 @@ import {
   granuleRemoveGeometry,
   granuleUpdateDateRange,
   granuleRemoveDateRange,
+  granuleUpdateYearRange,
+  granuleRemoveYearRange,
   granuleToggleExcludeGlobal,
   granuleToggleFacet,
   granuleNewSearchRequested,
@@ -27,6 +29,8 @@ const assertAllFilterParams = (results, values, defaults) => {
   assertParam('geoJSON', results, values, defaults)
   assertParam('startDateTime', results, values, defaults)
   assertParam('endDateTime', results, values, defaults)
+  assertParam('startYear', results, values, defaults)
+  assertParam('endYear', results, values, defaults)
   assertParam('selectedFacets', results, values, defaults)
   assertParam('excludeGlobal', results, values, defaults)
   assertParam('selectedCollectionIds', results, values, defaults)
@@ -45,6 +49,8 @@ describe('The granule filter reducer', function(){
     },
     startDateTime: '2000-01-01T00:00:00Z',
     endDateTime: '3000-01-01T00:00:00Z',
+    startYear: -30000,
+    endYear: -3000,
     selectedFacets: {science: [ 'Oceans', 'Oceans > Ocean Temperature' ]},
     excludeGlobal: true,
   }
@@ -55,6 +61,8 @@ describe('The granule filter reducer', function(){
     geoJSON: null,
     startDateTime: null,
     endDateTime: null,
+    startYear: null,
+    endYear: null,
     selectedFacets: {},
     excludeGlobal: null,
   }
@@ -68,6 +76,8 @@ describe('The granule filter reducer', function(){
       geoJSON: null,
       startDateTime: null,
       endDateTime: null,
+      startYear: null,
+      endYear: null,
       selectedFacets: {},
       excludeGlobal: null,
       title: '',
@@ -161,6 +171,27 @@ describe('The granule filter reducer', function(){
             geoJSON: null,
             startDateTime: '2000-01-01T00:00:00Z',
             endDateTime: null,
+            startYear: null,
+            endYear: null,
+            selectedFacets: {},
+            excludeGlobal: null,
+          },
+        },
+        {
+          name:
+            'resets to initial values on except where explicitly set (startYear)',
+          initialState: nonInitialState,
+          function: granuleNewSearchResetFiltersRequested,
+          params: [ 'parent-uuid', {startYear: -100000000} ],
+          expectedChanges: {
+            title: '',
+            pageOffset: 0,
+            selectedCollectionIds: [ 'parent-uuid' ],
+            geoJSON: null,
+            startDateTime: null,
+            endDateTime: null,
+            startYear: -100000000,
+            endYear: null,
             selectedFacets: {},
             excludeGlobal: null,
           },
@@ -185,6 +216,8 @@ describe('The granule filter reducer', function(){
             geoJSON: null,
             startDateTime: null,
             endDateTime: null,
+            startYear: null,
+            endYear: null,
             selectedFacets: {
               science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
             },
@@ -206,15 +239,10 @@ describe('The granule filter reducer', function(){
           ],
           expectedChanges: {
             title: 'new',
-            pageOffset: 0,
             selectedCollectionIds: [ 'parent-uuid' ],
-            geoJSON: null,
-            startDateTime: null,
-            endDateTime: null,
             selectedFacets: {
               science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
             },
-            excludeGlobal: null,
           },
         },
         {
@@ -238,6 +266,8 @@ describe('The granule filter reducer', function(){
               },
               startDateTime: '1998-01-01T00:00:00Z',
               endDateTime: '2020-01-01T00:00:00Z',
+              startYear: -100000000,
+              endYear: -90000000,
               selectedFacets: {
                 science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
               },
@@ -262,6 +292,8 @@ describe('The granule filter reducer', function(){
             },
             startDateTime: '1998-01-01T00:00:00Z',
             endDateTime: '2020-01-01T00:00:00Z',
+            startYear: -100000000,
+            endYear: -90000000,
             selectedFacets: {
               science: [ 'Atmosphere', 'Atmosphere > Aerosols' ],
             },
@@ -326,6 +358,20 @@ describe('The granule filter reducer', function(){
         expectedChanges: {endDateTime: '2017-01-01T00:00:00Z'},
       },
       {
+        name: 'sets start year',
+        initialState: initialState,
+        function: granuleUpdateYearRange,
+        params: [ -1000000, null ],
+        expectedChanges: {startYear: -1000000},
+      },
+      {
+        name: 'sets end year',
+        initialState: initialState,
+        function: granuleUpdateYearRange,
+        params: [ null, -1000000 ],
+        expectedChanges: {endYear: -1000000},
+      },
+      {
         name: 'sets date range',
         initialState: nonInitialState,
         function: granuleUpdateDateRange,
@@ -336,10 +382,26 @@ describe('The granule filter reducer', function(){
         },
       },
       {
+        name: 'sets year range',
+        initialState: nonInitialState,
+        function: granuleUpdateYearRange,
+        params: [ -1000000, -900000 ],
+        expectedChanges: {
+          startYear: -1000000,
+          endYear: -900000,
+        },
+      },
+      {
         name: 'unsets date range',
         initialState: nonInitialState,
         function: granuleRemoveDateRange,
         expectedChanges: {startDateTime: null, endDateTime: null},
+      },
+      {
+        name: 'unsets year range',
+        initialState: nonInitialState,
+        function: granuleRemoveYearRange,
+        expectedChanges: {startYear: null, endYear: null},
       },
       {
         name: 'sets geometry',
@@ -407,6 +469,8 @@ describe('The granule filter reducer', function(){
           geoJSON: null,
           startDateTime: null,
           endDateTime: null,
+          startYear: null,
+          endYear: null,
           selectedFacets: {},
           excludeGlobal: false,
         },

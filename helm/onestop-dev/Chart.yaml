@@ -1,4 +1,4 @@
 apiVersion: v1
-description: A Helm chart to spin up the development version of OneStop
+description: A Helm chart to spin up the development tools of OneStop
 name: onestop-dev
-version: 1.0
+version: 0.3.0

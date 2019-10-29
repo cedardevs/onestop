@@ -4,6 +4,7 @@ import {
   collectionToggleExcludeGlobal,
   collectionToggleFacet,
   collectionUpdateDateRange,
+  collectionUpdateYearRange,
   collectionRemoveGeometry,
 } from '../../../actions/routing/CollectionSearchStateActions'
 import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
@@ -14,6 +15,8 @@ const mapStateToProps = state => {
     selectedFacets,
     startDateTime,
     endDateTime,
+    startYear,
+    endYear,
     geoJSON,
     excludeGlobal,
   } = state.search.collectionFilter
@@ -21,6 +24,8 @@ const mapStateToProps = state => {
     selectedFacets,
     startDateTime,
     endDateTime,
+    startYear,
+    endYear,
     geoJSON,
     excludeGlobal,
     showAppliedFilters: state.layout.showAppliedFilterBubbles,
@@ -39,6 +44,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     updateDateRange: (startDate, endDate) =>
       dispatch(collectionUpdateDateRange(startDate, endDate)),
+    updateYearRange: (startYear, endYear) =>
+      dispatch(collectionUpdateYearRange(startYear, endYear)),
     removeGeometry: () => dispatch(collectionRemoveGeometry()),
   }
 }

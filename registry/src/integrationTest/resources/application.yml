@@ -10,6 +10,8 @@ kafka:
       # use a random, temp dir for rocksdb state to prevent one run from interfering with the next
   state:
     dir: ${java.io.tmpdir}/${random.uuid}
+  application:
+    server: "localhost:9090"
 
 topics:
   num-partitions: 1

@@ -266,16 +266,15 @@ jib {
     }
   }
   container {
-    // http://label-schema.org/rc1/
+    // https://github.com/opencontainers/image-spec/blob/master/annotations.md
     labels = [
-        'org.label-schema.build-date': project.buildDate.toString(),
-        'org.label-schema.name': imageName,
-        'org.label-schema.description': 'A search API for the OneStop search software.',
-        'org.label-schema.vcs-url': project.getVcsUrl().toString(),
-        'org.label-schema.vcs-ref': project.getVcsRef().toString(),
-        'org.label-schema.vendor': imageNamespace,
-        'org.label-schema.version': imageTag,
-        'org.label-schema.schema-version': '1.0',
+        'org.opencontainers.image.created': project.buildDate.toString(),
+        'org.opencontainers.image.ref.name': imageName,
+        'org.opencontainers.image.description': 'A search API for the OneStop search software.',
+        'org.opencontainers.image.source': project.getVcsUrl().toString(),
+        'org.opencontainers.image.revision': project.getVcsRef().toString(),
+        'org.opencontainers.image.vendor': imageNamespace,
+        'org.opencontainers.image.version': imageTag,
     ]
     ports = ['8080'.toString()]
 
