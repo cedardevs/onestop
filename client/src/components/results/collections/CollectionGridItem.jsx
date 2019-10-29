@@ -1,11 +1,10 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import {isFTP, processUrl} from '../../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
 import {boxShadow} from '../../../style/defaultStyles'
-import {Key} from "../../../utils/keyboardUtils";
-import {consolidateStyles} from "../../../utils/styleUtils";
-import {useListViewItem} from "../../common/ui/ListViewItem";
+import {consolidateStyles} from '../../../utils/styleUtils'
+import {useListViewItem} from '../../common/ui/ListViewItem'
 
 const styleCard = {
   width: '25em',
@@ -33,7 +32,7 @@ const styleContent = thumbnailUrl => {
     overflow: 'hidden',
     position: 'relative',
     boxShadow: boxShadow,
-    ...styleBackground
+    ...styleBackground,
   }
 }
 
@@ -138,23 +137,19 @@ const styleTitle = {
   overflow: 'hidden',
 }
 
-const CollectionGridItem = ({itemId, item, onSelect, ...props}) => {
+const CollectionGridItem = props => {
+  const {
+    item,
+    focusRef,
+    focusing,
+    handleFocus,
+    handleBlur,
+    handleSelect,
+    handleKeyDown,
+  } = useListViewItem(props)
+  const [ hovering, setHovering ] = useState(false)
 
   const thumbnailUrl = processUrl(item.thumbnail)
-
-  const { focusRef } = useListViewItem(props)
-  const [hovering, setHovering] = useState(false)
-  const [focusing, setFocusing] = useState(false)
-
-  const handleKeyDown = event => {
-    if (event.keyCode === Key.SPACE) {
-      event.preventDefault() // prevent scrolling down on space press
-      onSelect(itemId)
-    }
-    if (event.keyCode === Key.ENTER) {
-      onSelect(itemId)
-    }
-  }
 
   const fallbackMap = () => {
     const geometry = item.spatialBounding
@@ -183,14 +178,15 @@ const CollectionGridItem = ({itemId, item, onSelect, ...props}) => {
     <div style={styleCard} onKeyDown={handleKeyDown}>
       <div style={styleContent(thumbnailUrl)}>
         <button
-          style={styleOverlayMerged}
-          onClick={() => onSelect(itemId)}
           role="link"
+          style={styleOverlayMerged}
+          ref={focusRef}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onClick={handleSelect}
+          onKeyDown={handleKeyDown}
           onMouseOver={() => setHovering(true)}
           onMouseOut={() => setHovering(false)}
-          onFocus={() => setFocusing(true)}
-          onBlur={() => setFocusing(false)}
-          ref={focusRef}
         >
           {fallbackMap()}
           <div style={styleArchMerged}>

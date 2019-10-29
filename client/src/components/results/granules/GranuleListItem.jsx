@@ -20,7 +20,7 @@ const styleHeading = {
 }
 
 export default function GranuleListItem({itemId, item, onSelect, ...props}){
-  const { expanded, setExpanded, focusRef } = useListViewItem(props)
+  const {expanded, setExpanded, focusRef} = useListViewItem(props)
 
   const title = (
     <h3 key={'GranuleListItem::title'} style={styleTitle(expanded)}>

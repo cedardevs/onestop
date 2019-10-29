@@ -39,11 +39,12 @@ export default function Collections(props){
       />
     ) : null
 
-  const propsForItem = (item, itemId) => {
+  const propsForItem = (item, itemId, setFocusedKey) => {
     return {
       onSelect: key => {
         selectCollection(key, collectionDetailFilter)
       },
+      setFocusedKey,
     }
   }
 

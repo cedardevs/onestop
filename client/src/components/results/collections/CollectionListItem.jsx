@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 import FlexRow from '../../common/ui/FlexRow'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import FlexColumn from '../../common/ui/FlexColumn'
@@ -6,7 +6,6 @@ import ListViewItem, {useListViewItem} from '../../common/ui/ListViewItem'
 import TimeSummary from '../../collections/detail/TimeSummary'
 import SpatialSummary from '../../collections/detail/SpatialSummary'
 import ResultGraphic from '../ResultGraphic'
-import {Key} from '../../../utils/keyboardUtils'
 import {SiteColors} from '../../../style/defaultStyles'
 
 const pattern = require('../../../../img/topography.png')
@@ -70,30 +69,30 @@ const styleContentHeadingTop = {
   marginTop: '0em',
 }
 
-const CollectionListItem = ({itemId, item, onSelect, ...props}) => {
-  const [ focusingLink, setFocusingLink ] = useState(false)
-  const { expanded, setExpanded, focusRef } = useListViewItem(props)
-
-  const handleKeyDown = event => {
-    if (event.keyCode === Key.SPACE) {
-      event.preventDefault() // prevent scrolling down on space press
-      onSelect(itemId)
-    }
-    if (event.keyCode === Key.ENTER) {
-      onSelect(itemId)
-    }
-  }
+const CollectionListItem = props => {
+  const {
+    itemId,
+    item,
+    focusRef,
+    focusing,
+    handleFocus,
+    handleBlur,
+    handleSelect,
+    handleKeyDown,
+    expanded,
+    setExpanded,
+  } = useListViewItem(props)
 
   const title = (
     <h3 key={'CollectionListItem::title'} style={styleTitle(expanded)}>
       <a
-        style={styleLink(focusingLink)}
+        style={styleLink(focusing)}
         tabIndex={0}
-        onClick={() => onSelect(itemId)}
-        onKeyDown={handleKeyDown}
-        onFocus={() => setFocusingLink(true)}
-        onBlur={() => setFocusingLink(false)}
         ref={focusRef}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onClick={handleSelect}
+        onKeyDown={handleKeyDown}
       >
         {item.title}
       </a>

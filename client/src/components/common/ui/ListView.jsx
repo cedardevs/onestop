@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef, useCallback} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import PropTypes from 'prop-types'
 import ListViewController from './ListViewController'
 import {mapFromObject} from '../../../utils/objectUtils'
@@ -36,24 +36,25 @@ const styleDefaultItem = focusing => {
   }
 }
 
-function usePrevious(value){
+function usePrevious(value, defaultValue = undefined){
   const ref = useRef()
-  useEffect(() => {
-    ref.current = value
-  })
-  return ref.current
+  useEffect(
+    () => {
+      ref.current = value
+    },
+    [ value ]
+  )
+  return ref.current ? ref.current : defaultValue
 }
 
 function useItems(items){
-  // initial items map is empty
-  const [ itemsMap, setItemsMap ] = useState(new Map())
-  // keep track of previous items map
-  const previous = usePrevious({itemsMap})
-  // initial previous items map is also empty
-  const [ itemsMapPrevious, setItemsMapPrevious ] = useState(new Map())
+  const [ itemsMap, setItemsMap ] = useState(mapFromObject(items))
 
-  const [ focusedKey, setFocusedKey ] = useState(null)
-  const focusedRef = useRef(null)
+  // keep track of previous items map
+  const previousItemsMap = usePrevious(itemsMap, new Map())
+
+  const [ focusedKey, setFocusedKey ] = useState(undefined)
+  console.log('ListView::focusedKey', focusedKey)
 
   // this effect tracks when the items supplied to ListView changes
   useEffect(
@@ -62,43 +63,37 @@ function useItems(items){
       // as a `Map` can iterate elements in insertion order and easily
       // retrieve the size of the items, without counting keys
       setItemsMap(mapFromObject(items))
-      // we track our `previous` items after they've already been
-      // converted to a `Map`, so there's no need to convert it here
-      setItemsMapPrevious(previous ? previous.itemsMap : new Map())
-
-      // focus on what next new item, or the first item if the previous focused key cannot be found; otherwise, previous focused item (if key to previous focused item is the last item),
-      // let keyIterator = itemsMap.keys()
-      // let done = false
-      // let value = undefined
-      // while(!done && value !== focusedKey) {
-      //   let ki = keyIterator.next();
-      //   done = ki.done;
-      //   value = ki.value;
-      // }
-      // // focus on next new item because we found our previously focused key and it isn't the last key in the map
-      // if(!done && value === focusedKey) {
-      //   let firstNewItemKey = keyIterator.next().value
-      //   console.log("firstNewItemKey:", firstNewItemKey)
-      //   setFocusedKey(firstNewItemKey)
-      // }
-      // // focus on the first item in the map because the iterator finished without finding the previously focused key
-      // if(done && value !== focusedKey) {
-      //   let firstItemKey = itemsMap.keys().next().value
-      //   console.log("firstItemKey:", firstItemKey)
-      //   setFocusedKey(firstItemKey)
-      // }
-      // otherwise we must have found the previously focused key, and it *was* last, so we continue to focus on it
     },
     [ items ]
   )
 
-  useEffect(() => {
-    if (focusedRef.current) {
-      focusedRef.current.focus()
-    }
-  })
+  // this effect tracks when the derived itemsMap changes
+  useEffect(
+    () => {
+      // figure out where we should focus next with new items
+      const keysBefore = [ ...previousItemsMap.keys() ]
+      const keysAfter = [ ...itemsMap.keys() ]
+      const intersection = [ ...keysBefore ].filter(k => itemsMap.has(k))
+      // previously focused key is in the new results
+      if (intersection.includes(focusedKey)) {
+        const lastKey = keysAfter[itemsMap.size - 1][0]
+        // the previously focused key is not the last key
+        if (focusedKey !== lastKey) {
+          // the next key is not necessarily the last key
+          const nextKey = keysAfter.indexOf(focusedKey) + 1
+          setFocusedKey(keysAfter[nextKey])
+        } // otherwise it's okay to keep focusing on the last key
+      }
+      else {
+        // could not find anything new or old to focus on, go for the first
+        // will be `undefined` if the new results are empty
+        setFocusedKey(keysAfter[0])
+      }
+    },
+    [ itemsMap ]
+  )
 
-  return [ itemsMap, itemsMapPrevious, focusedKey, setFocusedKey, focusedRef ]
+  return [ itemsMap, previousItemsMap, focusedKey, setFocusedKey ]
 }
 
 // TODO: eventually ListView won't take control over its own global expanded state, but will be stored
@@ -122,13 +117,9 @@ export default function ListView(props){
     customActions,
   } = props
 
-  const [
-    itemsMap,
-    itemsMapPrevious,
-    focusedKey,
-    setFocusedKey,
-    focusedRef,
-  ] = useItems(items)
+  const [ itemsMap, previousItemsMap, focusedKey, setFocusedKey ] = useItems(
+    items
+  )
   const [ showAsGrid, setShowAsGrid ] = useState(
     !!props.showAsGrid && !!props.GridItemComponent
   )
@@ -140,7 +131,7 @@ export default function ListView(props){
   const controlElement = (
     <ListViewController
       itemsMap={itemsMap}
-      itemsMapPrevious={itemsMapPrevious}
+      itemsMapPrevious={previousItemsMap}
       propsForItem={propsForItem}
       ListItemComponent={ListItemComponent}
       GridItemComponent={GridItemComponent}
@@ -156,9 +147,10 @@ export default function ListView(props){
   itemsMap.forEach((item, key) => {
     let itemElement = null
 
-    const isFocused = key === focusedKey
-    console.log(`key=${key}, isFocused=${isFocused}`)
-    const itemProps = propsForItem ? propsForItem(item, key, isFocused) : null
+    const shouldFocus = key === focusedKey
+    const itemProps = propsForItem
+      ? propsForItem(item, key, setFocusedKey)
+      : null
 
     // list item element
     if (!showAsGrid && ListItemComponent) {
@@ -166,18 +158,10 @@ export default function ListView(props){
         <ListItemComponent
           key={key}
           tabIndex={-1}
-          ref={isFocused ? focusedRef : null}
           itemId={key}
           item={item}
           expanded={expanded}
-          onFocus={() => {
-            console.log('is this focusing?', key)
-            setFocusedKey(key)
-          }}
-          onBlur={() => {
-            console.log('is this blurring?')
-            setFocusedKey(null)
-          }}
+          shouldFocus={shouldFocus}
           {...itemProps}
         />
       )
@@ -190,8 +174,7 @@ export default function ListView(props){
           tabIndex={-1}
           itemId={key}
           item={item}
-          onFocus={() => setFocusedKey(key)}
-          onBlur={() => setFocusedKey(null)}
+          shouldFocus={shouldFocus}
           {...itemProps}
         />
       )

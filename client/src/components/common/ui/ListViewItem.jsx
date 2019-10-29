@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react'
 import Expandable from './Expandable'
 import FlexRow from './FlexRow'
 import {boxShadow} from '../../../style/defaultStyles'
-// import ExpandableFxnal from "../common/ui/Expandable";
+import {Key} from '../../../utils/keyboardUtils'
 
 const styleWrapper = focusing => {
   return {
@@ -17,11 +17,6 @@ const styleWrapper = focusing => {
 const styleExpandableWrapper = {
   width: '100%',
 }
-
-// const styleExpandableHeadingFocused = {
-//   textDecoration: 'underline',
-//   outline: '2px dashed black',
-// }
 
 const styleExpandableHeading = open => {
   return {
@@ -49,15 +44,54 @@ const styleActionPane = {
 }
 
 export function useListViewItem(props){
+  const {itemId, item} = props
+
   // give the custom list view item component control over its expanded state
   const [ expanded, setExpanded ] = useState(false)
 
+  const [ focusing, setFocusing ] = useState(false)
   const focusRef = useRef(null)
-  useEffect(() => {
-    if (focusRef && focusRef.current && props.shouldFocus) {
-      focusRef.current.focus()
+  // if we have a `focusRef` and we've been instructed that we `shouldFocus`,
+  // that ref should be focused programmatically
+  useEffect(
+    () => {
+      if (focusRef && focusRef.current && props.shouldFocus) {
+        focusRef.current.focus()
+      }
+    },
+    [ focusRef.current ]
+  )
+
+  const handleFocus = event => {
+    if (props.setFocusedKey) {
+      props.setFocusedKey(props.itemId)
     }
-  }, [])
+    setFocusing(true)
+  }
+
+  const handleBlur = event => {
+    setFocusing(false)
+  }
+
+  const handleSelect = event => {
+    if (props.onSelect) {
+      props.onSelect(props.itemId)
+    }
+  }
+
+  const handleKeyDown = event => {
+    if (event.keyCode === Key.SPACE) {
+      if (props.onSelect) {
+        event.preventDefault() // prevent scrolling down on space press
+        onSelect(props.itemId)
+      }
+    }
+    if (event.keyCode === Key.ENTER) {
+      if (props.onSelect) {
+        props.onSelect(props.itemId)
+      }
+    }
+  }
 
   // if the ListView wants to control the items props directly
   // then we should set our items state according to that (if it has changed)
@@ -69,7 +103,18 @@ export function useListViewItem(props){
     },
     [ props.expanded ]
   )
-  return { expanded, setExpanded, focusRef }
+  return {
+    itemId,
+    item,
+    focusRef,
+    focusing,
+    handleFocus,
+    handleBlur,
+    handleSelect,
+    handleKeyDown,
+    expanded,
+    setExpanded,
+  }
 }
 
 export default function ListViewItem(props){
