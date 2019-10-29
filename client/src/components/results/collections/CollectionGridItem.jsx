@@ -1,9 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React, {useEffect, useRef, useState} from 'react'
 import PropTypes from 'prop-types'
-import {processUrl} from '../../../utils/urlUtils'
+import {isFTP, processUrl} from '../../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
 import {boxShadow} from '../../../style/defaultStyles'
+import {Key} from "../../../utils/keyboardUtils";
+import {consolidateStyles} from "../../../utils/styleUtils";
 
 const styleCard = {
   width: '25em',
@@ -12,14 +13,27 @@ const styleCard = {
   textAlign: 'center',
 }
 
-const styleContent = {
-  boxSizing: 'border-box',
-  width: '100%',
-  height: '100%',
-  color: 'white',
-  overflow: 'hidden',
-  position: 'relative',
-  boxShadow: boxShadow,
+const styleContent = thumbnailUrl => {
+  let styleBackground = {}
+  if (thumbnailUrl) {
+    styleBackground = {
+      background: `url('${thumbnailUrl}')`,
+      backgroundColor: 'black',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center center',
+    }
+  }
+  return {
+    boxSizing: 'border-box',
+    width: '100%',
+    height: '100%',
+    color: 'white',
+    overflow: 'hidden',
+    position: 'relative',
+    boxShadow: boxShadow,
+    ...styleBackground
+  }
 }
 
 const styleOverlay = {
@@ -123,141 +137,80 @@ const styleTitle = {
   overflow: 'hidden',
 }
 
-export default class CollectionGridItem extends React.Component {
-  constructor(props) {
-    super(props)
-    const {item} = this.props
-    this.thumbnailUrl = processUrl(item.thumbnail)
-  }
+const CollectionGridItem = ({itemId, item, onSelect, shouldFocus}) => {
 
-  componentWillMount() {
-    this.setState(prevState => {
-      return {
-        hovering: false,
-        focusing: false,
-      }
-    })
-  }
+  const thumbnailUrl = processUrl(item.thumbnail)
 
-  thumbnailStyle() {
-    if (this.thumbnailUrl) {
-      return {
-        background: `url('${this.thumbnailUrl}')`,
-        backgroundColor: 'black',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
-      }
+  const [hovering, setHovering] = useState(false)
+  const [focusing, setFocusing] = useState(false)
+
+  const focusRef = useRef(null)
+
+  useEffect(() => {
+    if (shouldFocus) {
+      focusRef.current.focus()
+    }
+  }, [])
+
+  const handleKeyDown = event => {
+    if (event.keyCode === Key.SPACE) {
+      event.preventDefault() // prevent scrolling down on space press
+      onSelect(itemId)
+    }
+    if (event.keyCode === Key.ENTER) {
+      onSelect(itemId)
     }
   }
 
-  handleKeyPress(event, actionHandler) {
-    if (event.key == 'Enter') {
-      actionHandler()
-    }
-  }
-
-  renderThumbnailMap() {
-    const {item} = this.props
+  const fallbackMap = () => {
     const geometry = item.spatialBounding
-    if (!this.thumbnailUrl) {
-      return (
-        <div style={styleMapContainer}>
-          <MapThumbnail geometry={geometry} interactive={false} />
-        </div>
-      )
-    }
-  }
-
-  handleMouseOver = event => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        hovering: true,
-      }
-    })
-  }
-
-  handleMouseOut = event => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        hovering: false,
-      }
-    })
-  }
-
-  handleFocus = event => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: true,
-      }
-    })
-  }
-
-  handleBlur = event => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: false,
-      }
-    })
-  }
-
-  componentDidMount() {
-    if (this.props.shouldFocus) {
-      ReactDOM.findDOMNode(this.focusItem).focus()
-    }
-  }
-
-  render() {
-    const {item, onClick, shouldFocus} = this.props
-
-    const title = item.title
-
-    const styleContentMerged = {
-      ...styleContent,
-      ...this.thumbnailStyle(),
-    }
-
-    const styleOverlayMerged = {
-      ...styleOverlay,
-      ...(this.state.focusing ? styleOverlayFocus : styleOverlayBlur),
-      ...(this.state.hovering ? styleOverlayHover : {}),
-    }
-
-    const styleArchMerged = {
-      ...styleArch,
-      ...(this.state.focusing ? styleArchFocus : styleArchBlur),
-      ...(this.state.hovering ? styleArchHover : {}),
-    }
-
-    return (
-      <div style={styleCard} onKeyPress={e => this.handleKeyPress(e, onClick)}>
-        <div style={styleContentMerged}>
-          <button
-            style={styleOverlayMerged}
-            onClick={onClick}
-            role="link"
-            onMouseOver={this.handleMouseOver}
-            onMouseOut={this.handleMouseOut}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            ref={item => (this.focusItem = item)}
-          >
-            {this.renderThumbnailMap()}
-            <div style={styleArchMerged}>
-              <h3 style={styleTitle}>{title}</h3>
-            </div>
-          </button>
-        </div>
+    // show map for FTP links as most modern block loading FTP subresources for security reasons
+    // or if no thumbnail was provided at all
+    return isFTP(thumbnailUrl) || !thumbnailUrl ? (
+      <div style={styleMapContainer}>
+        <MapThumbnail geometry={geometry} interactive={false} />
       </div>
-    )
+    ) : null
   }
+
+  const styleOverlayMerged = consolidateStyles(
+    styleOverlay,
+    focusing ? styleOverlayFocus : styleOverlayBlur,
+    hovering ? styleOverlayHover : null
+  )
+
+  const styleArchMerged = consolidateStyles(
+    styleArch,
+    focusing ? styleArchFocus : styleArchBlur,
+    hovering ? styleArchHover : null
+  )
+
+  return (
+    <div style={styleCard} onKeyDown={handleKeyDown}>
+      <div style={styleContent(thumbnailUrl)}>
+        <button
+          style={styleOverlayMerged}
+          onClick={() => onSelect(itemId)}
+          role="link"
+          onMouseOver={() => setHovering(true)}
+          onMouseOut={() => setHovering(false)}
+          onFocus={() => setFocusing(true)}
+          onBlur={() => setFocusing(false)}
+          ref={focusRef}
+        >
+          {fallbackMap()}
+          <div style={styleArchMerged}>
+            <h3 style={styleTitle}>{item.title}</h3>
+          </div>
+        </button>
+      </div>
+    </div>
+  )
 }
 
 CollectionGridItem.propTypes = {
   item: PropTypes.object.isRequired,
-  onClick: PropTypes.func.isRequired,
+  onSelect: PropTypes.func.isRequired,
 }
+
+export default CollectionGridItem

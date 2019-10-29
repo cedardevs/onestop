@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {processUrl} from '../../utils/urlUtils'
+import {isFTP, processUrl} from '../../utils/urlUtils'
 import MapThumbnail from '../common/MapThumbnail'
 
 const styleImageContainer = {
@@ -31,7 +31,7 @@ const styleMap = height => {
   return {
     ...styleMapDefault,
     // if height is unspecified, height of map will be contigent on flex content to left and right of graphic
-    ...(height ? {height: height} : {}),
+    ...(height ? {height: height} : {height: '100%'}),
   }
 }
 
@@ -39,8 +39,9 @@ export default function ResultGraphic(props){
   const {thumbnail, geometry, height} = props
 
   const imgUrl = processUrl(thumbnail)
+  const isFTPUrl = isFTP(imgUrl)
 
-  if (imgUrl && !imgUrl.includes('maps.googleapis.com')) {
+  if (imgUrl && !isFTPUrl && !imgUrl.includes('maps.googleapis.com')) {
     return (
       <div style={styleImageContainer}>
         <img
@@ -57,10 +58,8 @@ export default function ResultGraphic(props){
   else {
     // return map image of spatial bounding or, if none, world map
     return (
-      <div aria-hidden={true}>
-        <div style={styleMap(height)}>
-          <MapThumbnail geometry={geometry} interactive={true} />
-        </div>
+      <div aria-hidden={true} style={styleMap(height)}>
+        <MapThumbnail geometry={geometry} interactive={true} />
       </div>
     )
   }

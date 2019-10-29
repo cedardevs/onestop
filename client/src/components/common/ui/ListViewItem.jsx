@@ -49,10 +49,17 @@ const styleActionPane = {
 }
 
 export function useListViewItem(props){
-  const {itemId, item, onSelect} = props
-
   // give the custom list view item component control over its expanded state
   const [ expanded, setExpanded ] = useState(false)
+
+  // TODO: supply this ref from this effect
+  // const focusRef = useRef(null)
+  //
+  // useEffect(() => {
+  //   if (shouldFocus) {
+  //     focusRef.current.focus()
+  //   }
+  // }, [])
 
   // if the ListView wants to control the items props directly
   // then we should set our items state according to that (if it has changed)
@@ -64,7 +71,7 @@ export function useListViewItem(props){
     },
     [ props.expanded ]
   )
-  return [ itemId, item, onSelect, expanded, setExpanded ]
+  return [ expanded, setExpanded ]
 }
 
 export default function ListViewItem(props){

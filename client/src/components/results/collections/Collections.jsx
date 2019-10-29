@@ -59,6 +59,7 @@ export default function Collections(props){
         ListItemComponent={CollectionListItem}
         GridItemComponent={CollectionGridItem}
         propsForItem={propsForItem}
+        showAsGrid={true}
       />
       {showMoreButton}
     </div>

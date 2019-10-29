@@ -18,6 +18,13 @@ export const processUrl = url => {
   }
 }
 
+export const isFTP = url => {
+  if (typeof url === 'string') {
+    return url.toLowerCase().startsWith('ftp')
+  }
+  return false
+}
+
 export const govExternalPopupMsg = `The site you are navigating to is not hosted by the US Government.
 
 Thank you for visiting our site. We have provided \

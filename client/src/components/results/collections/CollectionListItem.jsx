@@ -70,38 +70,9 @@ const styleContentHeadingTop = {
   marginTop: '0em',
 }
 
-const useFocus = (ref, defaultState = false) => {
-  const [ state, setState ] = useState(defaultState)
-
-  if (!ref.current) {
-    return false
-  }
-
-  useEffect(() => {
-    const onFocus = () => setState(true)
-    const onBlur = () => setState(false)
-    ref.current.addEventListener('focus', onFocus)
-    ref.current.addEventListener('blur', onBlur)
-
-    return () => {
-      ref.current.removeEventListener('focus', onFocus)
-      ref.current.removeEventListener('blur', onBlur)
-    }
-  }, [])
-
-  return state
-}
-
-const CollectionListItem = React.forwardRef((props, ref) => {
+const CollectionListItem = ({itemId, item, onSelect, shouldFocus, ...props}) => {
   const [ focusingLink, setFocusingLink ] = useState(false)
-  const [ itemId, item, onSelect, expanded, setExpanded ] = useListViewItem(
-    props
-  )
-
-  console.log(`itemId=${itemId}, ref=${ref}`)
-  console.log(ref)
-
-  const focusingItem = useFocus(ref)
+  const [ expanded, setExpanded ] = useListViewItem(props)
 
   const handleKeyDown = event => {
     if (event.keyCode === Key.SPACE) {
@@ -115,7 +86,6 @@ const CollectionListItem = React.forwardRef((props, ref) => {
 
   const title = (
     <h3 key={'CollectionListItem::title'} style={styleTitle(expanded)}>
-      <span>{focusingItem ? 'FOCUSING: ' : ''}</span>
       <a
         style={styleLink(focusingLink)}
         tabIndex={0}
@@ -147,7 +117,6 @@ const CollectionListItem = React.forwardRef((props, ref) => {
       <SpatialSummary item={item} />
     </div>
   )
-
   const left = (
     <FlexColumn
       key={'CollectionListItem::left'}
@@ -186,6 +155,6 @@ const CollectionListItem = React.forwardRef((props, ref) => {
       setExpanded={setExpanded}
     />
   )
-})
+}
 
 export default CollectionListItem
