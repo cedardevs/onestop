@@ -93,7 +93,6 @@ const TimeLineQuery = ({query, labels, outputs}) => {
       key="inf"
       style={{
         paddingLeft: '0.309em',
-        // borderLeft: '2px solid blue'
       }}
       aria-label="negative infinity, start scale of timeline"
     >
@@ -105,8 +104,6 @@ const TimeLineQuery = ({query, labels, outputs}) => {
       key="present"
       style={{
         paddingRight: '0.309em',
-        // borderRight: '2px solid blue',
-        // position: 'relative',
       }}
       aria-label="present, end scale of timeline"
     >
@@ -124,8 +121,8 @@ const TimeLineQuery = ({query, labels, outputs}) => {
         key="legend"
         style={{
           width: '100%',
-          borderLeft: `2px solid ${COLORS.query.borderColor}`, //'2px solid blue',
-          borderRight: `2px solid ${COLORS.query.borderColor}`, //'2px solid blue',
+          borderLeft: `2px solid ${COLORS.query.borderColor}`,
+          borderRight: `2px solid ${COLORS.query.borderColor}`,
         }}
       >
         <FlexRow
@@ -137,14 +134,9 @@ const TimeLineQuery = ({query, labels, outputs}) => {
         key="timeline"
         style={{
           width: '100%',
-          // marginTop: 'auto',
-          // marginBottom: 'auto',
-          // height: '0px', // fix for IE
-          // borderStyle: 'solid',
-          // borderColor: 'blue',
-          borderTop: `2px solid ${COLORS.query.borderColor}`, //'2px solid blue',
-          borderLeft: `2px solid ${COLORS.query.borderColor}`, //'2px solid blue',
-          borderRight: `2px solid ${COLORS.query.borderColor}`, //'2px solid blue',
+          borderTop: `2px solid ${COLORS.query.borderColor}`,
+          borderLeft: `2px solid ${COLORS.query.borderColor}`,
+          borderRight: `2px solid ${COLORS.query.borderColor}`,
         }}
         aria-hidden={true}
       >
@@ -153,7 +145,6 @@ const TimeLineQuery = ({query, labels, outputs}) => {
     </div>
   )
 
-  // let labelColumn = [ <Spacer key="spacer1" />, <Spacer key="spacer2" /> ]
   let labelColumn = [
     <div key="spacer1">
       <span aria-hidden={true}>&nbsp;</span>
@@ -174,7 +165,6 @@ const TimeLineQuery = ({query, labels, outputs}) => {
       key="left"
       style={{
         alignItems: 'flex-end',
-        // position: 'relative',
         justifyContent: 'space-evenly',
       }}
       items={labelColumn}
@@ -187,13 +177,12 @@ const TimeLineQuery = ({query, labels, outputs}) => {
         style={{
           position: 'absolute',
           left: leftEdgeOfRange(query.start),
-          // right: rightEdgeOfRange(query.end),
           width: width(query.start, query.end),
           height: '85%',
           bottom: 0,
           borderLeft: queryRangeBorder(query.start),
           borderRight: queryRangeBorder(query.end),
-          backgroundColor: COLORS.query.backgroundColor, //'#0000ff1f',
+          backgroundColor: COLORS.query.backgroundColor,
         }}
         title="user defined time filter"
       >
@@ -207,8 +196,6 @@ const TimeLineQuery = ({query, labels, outputs}) => {
   outputs.forEach(output => {
     exampleColumn.push(output)
   })
-  // exampleColumn.push(<Spacer key="spacer1" />)
-  // exampleColumn.push(<Spacer key="spacer2" />)
 
   const middle = (
     <FlexColumn
@@ -222,14 +209,6 @@ const TimeLineQuery = ({query, labels, outputs}) => {
     />
   )
 
-  // const rightColumn = <FlexColumn key="right" items={endLabelColumn} />
-
-  // return (
-  //   <div>
-  //     <div>Timeline</div>
-  //     <FlexRow items={[ leftColumn, middle ]} />
-  //   </div>
-  // )
   return (
     <div>
       <div style={{textAlign: 'center'}}>timeline:</div> {middle}
@@ -244,9 +223,6 @@ const COLORS = {
 }
 
 const colorRelation = (isMatched, isBorder) => {
-  // if (isBorder) return isMatched ? '#4b966e' : '#52665b'
-  // return isMatched ? '#78b494' : '#71867a'
-
   if (isMatched) {
     return isBorder
       ? COLORS.included.borderColor
@@ -260,11 +236,6 @@ const colorRelation = (isMatched, isBorder) => {
 }
 
 const queryRangeBorder = (offset, isMatched) => {
-  // if(isMatched != null) {
-  //   return isMatched ? offset == null ? '1px dashed #0f5a32': '1px solid #0f5a32': offset == null ? '1px dashed #35443c': '1px solid #35443c'
-  // }
-  // return offset == null ? '1px dashed blue' : '1px solid blue'
-
   let style = offset == null ? 'dashed' : 'solid'
   let color = COLORS.query.borderColor
   if (isMatched != null) {
@@ -274,6 +245,7 @@ const queryRangeBorder = (offset, isMatched) => {
   }
   return `1px ${style} ${color}`
 }
+
 const leftEdgeOfRange = offset => {
   return `${10 * ((offset == null ? -0.5 : offset) + 0.5)}%`
 }
@@ -294,7 +266,7 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
     : 'NOT included in search results:'} ${result.description[queryType]}`
   // let title = `${result.label} ${description}.`
 
-  // const continuation = isOngoing ? (
+  // const continuation = isOngoing ? ( // TODO try arrow to indicate ongoing
   //   <div
   //     style={{
   //       position: 'absolute',

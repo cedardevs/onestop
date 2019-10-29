@@ -315,7 +315,12 @@ export default class MapFilter extends React.Component {
     )
 
     const illustration = relation => {
-      return <GeoRelationIllustration relation={relation} excludeGlobal={this.props.excludeGlobal}/>
+      return (
+        <GeoRelationIllustration
+          relation={relation}
+          excludeGlobal={this.props.excludeGlobal}
+        />
+      )
     }
 
     return (
