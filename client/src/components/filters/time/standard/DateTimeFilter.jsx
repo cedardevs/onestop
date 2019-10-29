@@ -22,9 +22,8 @@ import {
 } from '../../common/styleFilters'
 import ApplyClearRow from '../../common/ApplyClearRow'
 import Relation from '../../Relation'
-import TimelineRelationDisplay from '../TimelineRelationDisplay' // TODO rename that to like... Illustration?
+import TimeRelationIllustration from '../TimeRelationIllustration'
 
-// import TimelineRelationDisplay from './TimelineRelationDisplay'
 
 // const RELATION_OPTIONS = [
 //   {
@@ -167,7 +166,7 @@ const DateTimeFilter = ({
 
   const illustration = relation => {
     return (
-      <TimelineRelationDisplay
+      <TimeRelationIllustration
         relation={relation}
         hasStart={start.date.year != null}
         hasEnd={end.date.year != null}

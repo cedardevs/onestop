@@ -15,6 +15,7 @@ import FormSeparator from '../FormSeparator'
 import {FilterColors, SiteColors} from '../../../style/defaultStyles'
 
 import Relation from '../Relation'
+import GeoRelationIllustration from './GeoRelationIllustration'
 
 import {
   styleFilterPanel,
@@ -313,6 +314,14 @@ export default class MapFilter extends React.Component {
       </div>
     )
 
+    const illustration = relation => {
+      return (
+        <GeoRelationIllustration
+          relation={relation}
+        />
+      )
+    }
+
     return (
       <div style={styleMapFilter}>
         <fieldset style={styleFieldsetBorder}>
@@ -330,9 +339,7 @@ export default class MapFilter extends React.Component {
           id="geoRelation"
           relation={this.props.geoRelationship}
           onUpdate={this.props.updateGeoRelationship}
-          illustration={() => {
-            return null
-          }}
+          illustration={illustration}
         />
       </div>
     )

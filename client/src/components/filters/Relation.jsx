@@ -6,7 +6,6 @@ import Expandable from '../common/ui/Expandable'
 import Button from '../common/input/Button'
 import {question_circle, SvgIcon} from '../common/SvgIcon'
 import {FilterColors} from '../../style/defaultStyles'
-// import TimelineRelationDisplay from './TimelineRelationDisplay' // TODO rename that to like... Illustration?
 
 const selectTheme = theme => {
   // TODO copy-pasta #3 - move this to defaultStyles (although actually there's just a lot of overlap in re-setting up the select....?)

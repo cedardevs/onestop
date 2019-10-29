@@ -19,7 +19,7 @@ import GeologicPresets from './GeologicPresets'
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
 
 import Relation from '../../Relation'
-import TimelineRelationDisplay from '../TimelineRelationDisplay' // TODO rename that to like... Illustration?
+import TimeRelationIllustration from '../TimeRelationIllustration'
 
 import {
   styleFilterPanel,
@@ -163,7 +163,7 @@ const GeologicTimeFilter = ({
 
   const illustration = relation => {
     return (
-      <TimelineRelationDisplay
+      <TimeRelationIllustration
         relation={relation}
         hasStart={!_.isEmpty(start.year)}
         hasEnd={!_.isEmpty(end.year)}

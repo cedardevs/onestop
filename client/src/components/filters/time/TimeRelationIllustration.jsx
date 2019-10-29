@@ -240,7 +240,7 @@ const TimeLineQuery = ({query, labels, outputs}) => {
 const COLORS = {
   included: {backgroundColor: '#86D29A', borderColor: '#56B770'}, // 359E51, 1D8739, 096B23
   excluded: {backgroundColor: '#4E5F53', borderColor: '#414642'}, // 363C38, 2B312D, 1F2420
-  query: {backgroundColor: '#0000ff1f', borderColor: 'blue'},
+  query: {backgroundColor: '#277cb278', borderColor: '#277cb2'},
 }
 
 const colorRelation = (isMatched, isBorder) => {
@@ -332,7 +332,7 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
         borderRight: queryRangeBorder(result.end, includedBasedOnRelationship),
         marginBottom: '0.309em',
         position: 'relative',
-        overflow: 'visible',
+        overflow: 'visible',boxShadow:'2px 2px 5px 2px #2c2c2c59',
       }}
     >
       <label
@@ -351,7 +351,7 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
   )
 }
 
-const TimelineRelationDisplay = ({relation, hasStart, hasEnd}) => {
+const TimeRelationIllustration = ({relation, hasStart, hasEnd}) => {
   let currentQueryType = 0
   if (hasStart && !hasEnd) currentQueryType = 1
   if (!hasStart && hasEnd) currentQueryType = 2
@@ -367,6 +367,7 @@ const TimelineRelationDisplay = ({relation, hasStart, hasEnd}) => {
       </label>
     )
   })
+
   const outputs = _.map(RESULTS, (result, index) => {
     return (
       <TimeLineResult
@@ -379,6 +380,7 @@ const TimelineRelationDisplay = ({relation, hasStart, hasEnd}) => {
       />
     )
   })
+
   return (
     <TimeLineQuery
       query={QUERY[currentQueryType]}
@@ -387,4 +389,4 @@ const TimelineRelationDisplay = ({relation, hasStart, hasEnd}) => {
     />
   )
 }
-export default TimelineRelationDisplay
+export default TimeRelationIllustration
