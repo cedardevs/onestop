@@ -87,7 +87,7 @@ export default class MapFilter extends React.Component {
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.mapGeoJSONToState(this.props.geoJSON)
   }
 
@@ -97,7 +97,7 @@ export default class MapFilter extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (!nextProps.isOpen && nextProps.showMap) {
       this.props.toggleMap()
     }

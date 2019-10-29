@@ -33,7 +33,7 @@ const styleCartIconHover = {
 }
 
 export default class HeaderCartLink extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       hovering: false,
     })

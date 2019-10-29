@@ -34,7 +34,7 @@ class InlineError extends React.Component {
     this.errors = this.extractErrors(props)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.errors = this.extractErrors(nextProps)
   }
 

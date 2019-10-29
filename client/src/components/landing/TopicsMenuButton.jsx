@@ -40,7 +40,7 @@ const styleTopicButtonTitleHover = {
 }
 
 class TopicsMenuButton extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       hovering: false,
       focusing: false,

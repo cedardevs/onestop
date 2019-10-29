@@ -62,7 +62,7 @@ class Checkbox extends React.Component {
     this.state = {checked: !!props.checked, hovering: false, pressing: false}
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // keep checkbox checked state in sync with props passed in
     if (nextProps.checked !== this.props.checked) {
       this.setState(prevState => ({

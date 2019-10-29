@@ -49,7 +49,7 @@ const styleExpandableInfoContent = {
 }
 
 class DSMMRating extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       showInfo: false,
       focusingShowInfo: false,

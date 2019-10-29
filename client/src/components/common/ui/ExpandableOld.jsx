@@ -65,7 +65,7 @@ export default class ExpandableOld extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.open !== this.state.open) {
       this.setState(prevState => {
         return {

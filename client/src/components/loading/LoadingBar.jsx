@@ -16,7 +16,7 @@ export class LoadingBar extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState(prevState => {
       let newText = !_.isEqual(this.props.loadingText, nextProps.loadingText)
         ? nextProps.loadingText

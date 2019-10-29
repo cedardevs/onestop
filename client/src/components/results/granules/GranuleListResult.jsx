@@ -90,7 +90,7 @@ const styleFlexRowR2L = {
 }
 
 class ListResult extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       focusing: false,
       videoPlaying: null,

@@ -60,7 +60,7 @@ class TextSearchField extends React.Component {
     this.state = {value: props.value}
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       value: this.props.value,
       focusingText: false,
@@ -69,7 +69,7 @@ class TextSearchField extends React.Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState(prevState => {
       return {
         ...prevState,

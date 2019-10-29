@@ -1,3 +1,4 @@
+import {connectRouter} from 'connected-react-router'
 import {combineReducers} from 'redux-seamless-immutable'
 
 import cart from './reducers/cart'
@@ -35,21 +36,14 @@ const search = combineReducers({
   info,
 })
 
-// TODO: Pass search state elements to query removing the need for state duplication
-const reducer = (state, action) => {
-  // allow a top-level reducer action to trigger all reducers to initial state
-  if (action.type === RESET_STORE) {
-    state = undefined
-  }
-  return {
-    cart: cart((state && state.cart) || undefined, action),
-    config: config((state && state.config) || undefined, action),
-    errors: errors((state && state.errors) || undefined, action),
-    layout: layout((state && state.layout) || undefined, action),
-    routing: routing((state && state.routing) || undefined, action),
-    user: user((state && state.user) || undefined, action),
-    search: search((state && state.search) || undefined, action),
-  }
-}
-
-export default reducer
+export default history =>
+  combineReducers({
+    router: connectRouter(history),
+    cart: cart,
+    config: config,
+    errors: errors,
+    layout: layout,
+    routing: routing,
+    user: user,
+    search: search,
+  })
