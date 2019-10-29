@@ -1,4 +1,22 @@
-import {abbreviateNumber} from '../../src/utils/readableUtils'
+import {abbreviateNumber, displayBigYears} from '../../src/utils/readableUtils'
+
+describe('The readableUtils displayBigYears function', function(){
+  const testCases = [
+    {input: 0, output: '0'},
+    {input: 1999, output: '1999'},
+    {input: 9999, output: '9999'},
+    {input: 10000, output: '10,000'},
+    {input: -2000, output: '-2000'},
+    {input: -55998050, output: '-55,998,050'},
+    {input: -7800000000, output: '-7,800,000,000'},
+  ]
+
+  testCases.forEach(c => {
+    it(`formats ${c.input} as ${c.output}`, function(){
+      expect(displayBigYears(c.input)).toBe(c.output)
+    })
+  })
+})
 
 describe('The readableUtils abbreviateNumber function', function(){
   describe('converts numbers to the appropriate abbreviated strings with 1 decimal place', function(){

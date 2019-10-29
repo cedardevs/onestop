@@ -12,12 +12,10 @@ const mapStateToProps = state => {
   const text = inFlight
     ? `Loading collection with id ${requestedID}`
     : `Completed collection load.` // TODO put collection id
-  const loadingId = `loading-id::${requestedID}`
 
   return {
     loading: inFlight ? 1 : 0,
     loadingText: text,
-    loadingAlertId: loadingId,
     error: errorMessage,
   }
 }

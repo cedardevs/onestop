@@ -2,12 +2,20 @@
 kafka:
   bootstrap:
     servers: "localhost:9092"
-    max_poll_records: 20
-    max_wait_ms: 300000  # 5 min
+  schema:
+    registry:
+      port: 8081
+      url: http://localhost:${kafka.schema.registry.port}
+  fetch:
+    max:
+      wait:
+        ms: 300000  # 5 min
+  max:
+    poll:
+      records: 20
+  auto:
+    offset:
+      reset: "earliest"
   topic:
     granules: "psi-registry-granule-parsed-changelog"
     collections: "psi-registry-collection-parsed-changelog"
-
-schema-registry:
-  port: 8081
-  url: http://localhost:${schema-registry.port}

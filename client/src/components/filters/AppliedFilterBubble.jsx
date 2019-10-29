@@ -1,5 +1,5 @@
 import React from 'react'
-
+import _ from 'lodash'
 import Button from '../common/input/Button'
 import xIcon from 'fa/times.svg'
 
@@ -38,7 +38,7 @@ const styleIcon = {
 
 export default class AppliedFilterBubble extends React.Component {
   render() {
-    const {text, onUnselect, backgroundColor, borderColor} = this.props
+    const {text, onUnselect, backgroundColor, borderColor, title} = this.props
 
     return (
       <Button
@@ -46,7 +46,7 @@ export default class AppliedFilterBubble extends React.Component {
         styleHover={styleHover(backgroundColor)}
         styleFocus={styleFocus}
         onClick={onUnselect}
-        title={`Remove ${text} Filter`}
+        title={_.isEmpty(title) ? `Remove ${text} Filter` : title}
         icon={xIcon}
         iconAfter={true}
         text={text}

@@ -12,7 +12,7 @@ The documentation for PSI is divided into four main categories:
 * [Deployment](/docs/deployment)
 * [Usage](/docs/usage)
 * [Design](/docs/design)
-* [Development](/docs/development)
+* [Development](/docs/developer)
 
 Information in **Deployment** covers [infrastructure requirements](/docs/deployment/required-software-components.md), the [project artifacts](/docs/deployment/project-artifacts.md), and how to [build and deploy](/docs/deployment/system-build-and-deploy.md) the system.
 
@@ -20,4 +20,4 @@ Once PSI is running for you, peruse the **Usage** subdirectory for details on ho
 
 Meanwhile, if you're interested in a deep-dive into architectural and infrastructural decisions made in the creation of PSI, check out the **Design** subdirectory.
 
-Finally, if you're a Foam-Cat team member or otherwise interested in [making a contribution](/docs/development/contribution-guidelines.md) to the code, head over to the **Development** subdirectory for tips on setting up your [local dev environment](/docs/development/local-dev-environment.md).
+Finally, if you're a Foam-Cat team member or otherwise interested in [making a contribution](/docs/developer/contribution-guidelines.md) to the code, head over to the **Development** subdirectory for tips on setting up your [local dev environment](/docs/developer/local-dev-environment.md).

@@ -142,6 +142,29 @@ function collectionTestCases(){
       },
     },
     {
+      name: 'a temporal (year) search',
+      inputState: {
+        startYear: -3000000,
+        endYear: -10000,
+        pageOffset: 0,
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            type: 'year',
+            after: -3000000,
+            before: -10000,
+          },
+        ],
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0,
+        },
+      },
+    },
+    {
       name: 'a spatial search',
       inputState: {
         geoJSON: {
@@ -510,6 +533,20 @@ function queryTestCases(){
       string: 'e=2010-01-01T00%3A00%3A00Z',
       state: Immutable.merge(initialState, {
         endDateTime: '2010-01-01T00:00:00Z',
+      }),
+    },
+    {
+      name: 'start year filter',
+      string: 'sy=-3000000',
+      state: Immutable.merge(initialState, {
+        startYear: -3000000,
+      }),
+    },
+    {
+      name: 'end year filter',
+      string: 'ey=-100000',
+      state: Immutable.merge(initialState, {
+        endYear: -100000,
       }),
     },
     // {

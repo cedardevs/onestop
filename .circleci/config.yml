@@ -40,9 +40,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v12-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "search/build.gradle" }}
+      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v12-
+      - onestop-cache-v15-
 
 saveCache: &saveCache
   save_cache:
@@ -54,9 +54,11 @@ saveCache: &saveCache
       - client/build
       - client/.gradle
       - client/node_modules
+      - registry/build
       - search/build
+      - stream-manager/build
       - cli/.gogradle
-    key: onestop-cache-v12-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "search/build.gradle" }}
+    key: onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -72,20 +74,15 @@ jobs:
             - source-v1-{{ .Branch }}-{{ .Revision }}
             - source-v1-{{ .Branch }}-
             - source-v1-
-
       - checkout
-
       - save_cache:
           key: source-v1-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".git"
-
       - <<: *restoreCache
-
       - run:
           name: Build shared resources
-          command: ./gradlew --parallel elastic-common:build --stacktrace
-
+          command: ./gradlew --parallel elastic-common:build kafka-common:build
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -94,41 +91,31 @@ jobs:
   admin:
     <<: *defaultsWithElasticsearch
     <<: *env
-
     steps:
       - <<: *attachWorkspace
-
       - run:
           name: Assemble, Check (sans integration tests)
           command: ./gradlew --parallel admin:assemble admin:check -x integrationTest
-
       - run:
           name: Wait for Elasticsearch
           command: dockerize -wait tcp://localhost:9200 -timeout 1m
-
       - run:
           name: Integration Tests
           command: ./gradlew admin:integrationTest
-
       - run:
-          name: Test Reports
+          name: Generate Coverage Reports
           command: ./gradlew admin:jacocoTestReport -x test
-
       - run:
-          name: Save test results
+          name: Collect Test Results
           command: |
             mkdir -p ~/tests/junit/
-            find . -type f -regex "admin/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex "admin/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex "admin/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
+            find admin/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find admin/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
-
       - store_test_results:
           path: ~/tests
-
       - store_artifacts:
-          path: ~/tests
-
+          path: admin/build/reports
       - deploy:
           name: Publish Image(s)
           command: |
@@ -138,7 +125,6 @@ jobs:
             else
               echo "Skipping publishing"
             fi
-
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -147,41 +133,31 @@ jobs:
   search:
     <<: *defaultsWithElasticsearch
     <<: *env
-
     steps:
       - <<: *attachWorkspace
-
       - run:
           name: Assemble, Check (sans integration tests)
           command: ./gradlew --parallel search:assemble search:check -x integrationTest
-
       - run:
           name: Wait for Elasticsearch
           command: dockerize -wait tcp://localhost:9200 -timeout 1m
-
       - run:
           name: Integration Tests
           command: ./gradlew search:integrationTest
-
       - run:
-          name: Test Reports
+          name: Generate Coverage Report
           command: ./gradlew search:jacocoTestReport -x test
-
       - run:
-          name: Save test results
+          name: Collect Test Results
           command: |
             mkdir -p ~/tests/junit/
-            find . -type f -regex "search/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex "search/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex "search/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
+            find search/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find search/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
-
       - store_test_results:
           path: ~/tests
-
       - store_artifacts:
-          path: ~/tests
-
+          path: search/build/reports
       - deploy:
           name: Publish Image(s)
           command: |
@@ -191,7 +167,6 @@ jobs:
             else
               echo "Skipping publishing"
             fi
-
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -201,11 +176,17 @@ jobs:
     <<: *defaults
     steps:
       - <<: *attachWorkspace
-
       - run:
-          name: Assemble, Check
+          name: Assemble, Check, Report
           command: ./gradlew --parallel client:assemble client:check
-
+      - run:
+          name: Collect Test Results
+          command: |
+            mkdir -p ~/tests/junit/
+            find client/ -type f -regex ".*/build/junit/.*xml" -exec cp {} ~/tests/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/tests
       - deploy:
           name: Publish Image(s)
           command: |
@@ -215,13 +196,78 @@ jobs:
             else
               echo "Skipping publishing"
             fi
-
       - persist_to_workspace:
           root: ~/repo
           paths:
             - client/build
             - client/node_modules
-            -
+
+  registry:
+    <<: *defaults
+    <<: *env
+    steps:
+    - <<: *attachWorkspace
+    - run:
+        name: Assemble, Check, Report
+        command: ./gradlew --parallel registry:assemble registry:check registry:jacocoTestReport
+    - run:
+        name: Collect Test Results
+        command: |
+          mkdir -p ~/tests/junit/
+          find registry/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+          find registry/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+        when: always
+    - store_test_results:
+        path: ~/tests
+    - store_artifacts:
+        path: registry/build/reports
+    - deploy:
+        name: Publish Image(s)
+        command: |
+          echo "${CIRCLE_BRANCH}"
+          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+            ./gradlew registry:jib
+          else
+            echo "Skipping publishing"
+          fi
+    - persist_to_workspace:
+        root: ~/repo
+        paths:
+        - registry/build
+
+  stream-manager:
+    <<: *defaults
+    <<: *env
+    steps:
+    - <<: *attachWorkspace
+    - run:
+        name: Assemble, Check, Report
+        command: ./gradlew --parallel stream-manager:assemble stream-manager:check stream-manager:jacocoTestReport
+    - run:
+        name: Collect Test Results
+        command: |
+          mkdir -p ~/tests/junit/
+          find stream-manager/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+          find stream-manager/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+        when: always
+    - store_test_results:
+        path: ~/tests
+    - store_artifacts:
+        path: stream-manager/build/reports
+    - deploy:
+        name: Publish Image(s)
+        command: |
+          echo "${CIRCLE_BRANCH}"
+          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+            ./gradlew stream-manager:jib
+          else
+            echo "Skipping publishing"
+          fi
+    - persist_to_workspace:
+        root: ~/repo
+        paths:
+        - stream-manager/build
+
   cli:
     <<: *defaults
     steps:
@@ -240,50 +286,24 @@ jobs:
 
   finalize:
     <<: *defaults
-
     steps:
       - <<: *attachWorkspace
-
-      - run:
-          name: Save coverage results
-          command: |
-            mkdir -p ~/tests/coverage/
-            find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/coverage/ \;
-            find . -type d -regex ".*/build/coverage/lcov-report/" -exec cp -r {} ~/tests/coverage/ \;
-          when: always
-
-      - store_artifacts:
-          path: ~/tests/coverage
-
       - run:
           name: Post coverage results to codecov
           command: |
             bash <(curl -s https://codecov.io/bash)
-
       - <<: *saveCache
 
   check-owasp-cve:
     <<: *defaults
-
     steps:
       - <<: *attachWorkspace
-
       - run:
           name: Run OWASP Check
-          command: ./gradlew dependencyCheckAnalyze
+          command: ./gradlew dependencyCheckUpdate dependencyCheckAggregate
           no_output_timeout: 30m
-
-      - run:
-          name: Save OWASP results
-          command: |
-            mkdir -p ~/owasp/admin/
-            find . -type d -regex "admin/build/reports/dependency-check-report.html" -exec cp -r {} ~/owasp/admin/ \;
-            mkdir -p ~/owasp/search/
-            find . -type d -regex "search/build/reports/dependency-check-report.html" -exec cp -r {} ~/owasp/search/ \;
-          when: always
-
       - store_artifacts:
-          path: ~/owasp
+          path: build/reports
 
   e2e:
     <<: *defaultsMachine
@@ -332,7 +352,13 @@ workflows:
       - client:
           requires:
             - checkout
+      - registry:
+          requires:
+            - checkout
       - search:
+          requires:
+            - checkout
+      - stream-manager:
           requires:
             - checkout
       - cli:
@@ -342,7 +368,9 @@ workflows:
           requires:
             - admin
             - client
+            - registry
             - search
+            - stream-manager
 
   nightly:
     triggers:
