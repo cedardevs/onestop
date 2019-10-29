@@ -12,6 +12,7 @@
   - Project structure (finding your way around the code)
 - Ensuring a secure codebase
 - Testing best practices
+- Adding input sources to the registry
 
 ### Operator
 - Architectural Overview of Modules?

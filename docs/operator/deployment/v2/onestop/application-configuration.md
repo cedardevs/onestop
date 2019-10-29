@@ -63,7 +63,7 @@ Configuring OneStop to run for development, testing, and production purposes is 
 
 Since OneStop is a Spring Boot application, it can easily take advantage of this externalized configuration. Spring will look for properties files, YAML files, environment variables, and command-line arguments in the order specified [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html). The compiled OneStop API applications include an application.yml file ([Search API's default config values](/application.yml) and [Metadata API's default config values](/application.yml)) that contains the default values. However, if Spring encounters additional configuration parameters in its step-through of specified locations, any or all of these parameters can be overwritten or added to. Likewise, previously unspecified values may be added.
 
-The [2.1 Deployment Guide](/docs/operator/deployment/v2/2-1-guide.md) has a more in-depth discussion of configuration values around feature toggles.
+The [2.1 Deployment Guide](/docs/operator/deployment/v2/onestop/2-1-guide.md) has a more in-depth discussion of configuration values around feature toggles.
 
 ## Running Locally
 
