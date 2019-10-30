@@ -8,9 +8,7 @@ import Button from '../../../common/input/Button'
 import RadioButtonSet from '../../../common/input/RadioButtonSet'
 import {Key} from '../../../../utils/keyboardUtils'
 import {isValidDateRange} from '../../../../utils/inputUtils'
-import {
-  SiteColors,
-} from '../../../../style/defaultStyles'
+import {SiteColors} from '../../../../style/defaultStyles'
 import DateFieldset from './DateFieldset'
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
 import {

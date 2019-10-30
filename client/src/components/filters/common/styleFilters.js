@@ -27,5 +27,5 @@ export const styleRelationIllustration = {
     color: 'inherit',
   },
   excluded: {backgroundColor: '#4E5F53', borderColor: '#414642', color: '#FFF'},
-  query: {backgroundColor: '#277cb2', borderColor: '#28323E', color: '#FFF'},
+  query: {backgroundColor: '#277cb2', borderColor: '#285489', color: '#FFF'},
 }

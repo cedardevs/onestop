@@ -6,9 +6,7 @@ import FlexRow from '../../../common/ui/FlexRow'
 import Button from '../../../common/input/Button'
 import {Key} from '../../../../utils/keyboardUtils'
 import {isValidYearRange, textToNumber} from '../../../../utils/inputUtils'
-import {
-  SiteColors,
-} from '../../../../style/defaultStyles'
+import {SiteColors} from '../../../../style/defaultStyles'
 import FormSeparator from '../../FormSeparator'
 import GeologicFieldset from './GeologicFieldset'
 import GeologicFormatFieldset from './GeologicFormatFieldset'
