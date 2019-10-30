@@ -196,7 +196,7 @@ const TimeLineQuery = ({query, outputs}) => {
   const beginning = (
     <SvgIcon
       key="leftarrow"
-      wrapperStyle={{display: 'inline', marginRight: '0.309em'}}
+      wrapperStyle={{display: 'inline'}}
       path={arrow_left}
       size=".5em"
     />
@@ -204,7 +204,7 @@ const TimeLineQuery = ({query, outputs}) => {
   const continuation = (
     <SvgIcon
       key="rightarrow"
-      wrapperStyle={{display: 'inline', marginLeft: '0.309em'}}
+      wrapperStyle={{display: 'inline'}}
       path={arrow_right}
       size=".5em"
     />
@@ -216,6 +216,8 @@ const TimeLineQuery = ({query, outputs}) => {
     <label
       key="label"
       style={{
+        marginLeft: '0.309em',
+        marginRight: '0.309em',
         color: styleRelationIllustration.query.color,
       }}
     >
@@ -242,6 +244,10 @@ const TimeLineQuery = ({query, outputs}) => {
             query.end == null
           ),
           backgroundColor: styleRelationIllustration.query.backgroundColor,
+
+          // cursor: 'pointer', // TODO should this be pointer too???
+          borderRadius: '.2em',
+          boxShadow: '2px 2px 5px 2px #2c2c2c59',
         }}
         title="user defined time filter"
       >
