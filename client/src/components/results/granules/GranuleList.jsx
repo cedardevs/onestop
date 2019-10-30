@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
@@ -9,6 +9,7 @@ import cartIcon from '../../../../img/font-awesome/white/svg/shopping-cart.svg'
 import {FEATURE_CART} from '../../../utils/featureUtils'
 import GranuleListItem from './GranuleListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
+import {Link} from "react-router-dom";
 
 const styleCenterContent = {
   display: 'flex',
@@ -24,6 +25,15 @@ const styleGranuleListWrapper = {
 const styleListHeading = {
   fontFamily: fontFamilySerif(),
   fontSize: '1.2em',
+}
+
+const styleLink = focusing => {
+  return {
+    color: SiteColors.LINK,
+    textDecoration: 'underline',
+    outline: focusing ? '2px dashed white' : 'none',
+    outlineOffset: focusing ? '0.309em' : 'initial',
+  }
 }
 
 const styleShowMore = {
@@ -74,22 +84,29 @@ const styleWarning = warning => {
   }
 }
 
-export default class GranuleList extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      hovering: false,
-    }
-  }
+export default function GranuleList(props) {
 
-  isGranuleSelected = itemId => {
-    const {selectedGranules} = this.props
+  const {
+    results,
+    returnedHits,
+    totalHits,
+    fetchMoreResults,
+    addFilteredGranulesToCart,
+    addFilteredGranulesToCartWarning,
+    collectionId,
+    collectionTitle,
+    granuleFilter,
+    selectedGranules,
+    selectGranule,
+    deselectGranule
+  } = props
+
+  const isGranuleSelected = itemId => {
     const checkIt = Object.keys(selectedGranules).includes(itemId)
     return checkIt
   }
 
-  handleCheckboxChange = (itemId, item) => {
-    const {selectGranule, deselectGranule} = this.props
+  const handleCheckboxChange = (itemId, item) => {
     return checkbox => {
       if (checkbox.checked) {
         selectGranule(item, itemId)
@@ -100,89 +117,88 @@ export default class GranuleList extends React.Component {
     }
   }
 
-  propsForItem = (item, itemId, setFocusedKey) => {
+  const propsForItem = (item, itemId, setFocusedKey) => {
     return {
       onSelect: () => {},
       showLinks: true,
       showTimeAndSpace: true,
-      handleCheckboxChange: this.handleCheckboxChange,
-      checkGranule: this.isGranuleSelected(itemId),
+      handleCheckboxChange: handleCheckboxChange,
+      checkGranule: isGranuleSelected(itemId),
     }
   }
 
-  render() {
-    const {
-      results,
-      returnedHits,
-      totalHits,
-      fetchMoreResults,
-      addFilteredGranulesToCart,
-      addFilteredGranulesToCartWarning,
-      collectionTitle,
-      granuleFilter,
-      featuresEnabled,
-    } = this.props
 
-    const {hovering} = this.state
 
-    const showMoreButton =
-      returnedHits < totalHits ? (
-        <Button
-          text="Show More Results"
-          onClick={() => fetchMoreResults()}
-          style={styleShowMore}
-          styleFocus={styleShowMoreFocus}
-        />
-      ) : null
 
-    let message = 'No file results'
-    if (totalHits > 0) {
-      message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} matching files`
-    }
-    const listHeading = <h2 style={styleListHeading}>{message}</h2>
-
-    const granuleListCustomActions = {
-      'Add Matching to Cart': {
-        title: 'Add Matching to Cart',
-        icon: cartIcon,
-        showText: false,
-        handler: () => addFilteredGranulesToCart(granuleFilter),
-      },
-    }
-
-    let customMessage = addFilteredGranulesToCartWarning ? (
-      <div
-        key="GranuleList::Warning"
-        style={styleWarning(addFilteredGranulesToCartWarning)}
-        role="alert"
-      >
-        {addFilteredGranulesToCartWarning}
-      </div>
+  const showMoreButton =
+    returnedHits < totalHits ? (
+      <Button
+        text="Show More Results"
+        onClick={() => fetchMoreResults()}
+        style={styleShowMore}
+        styleFocus={styleShowMoreFocus}
+      />
     ) : null
 
-    return (
-      <div style={styleCenterContent}>
-        <Meta
-          title={`Files in Collection ${collectionTitle}`}
-          formatTitle={true}
-          robots="noindex"
-        />
-
-        <div style={styleGranuleListWrapper}>
-          <ListView
-            items={results}
-            ListItemComponent={GranuleListItem}
-            GridItemComponent={null}
-            propsForItem={this.propsForItem}
-            heading={listHeading}
-            customActions={granuleListCustomActions}
-            customMessage={customMessage}
-          />
-          {showMoreButton}
-        </div>
-      </div>
-    )
+  let message = 'No file results'
+  if (totalHits > 0) {
+    message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} matching files`
   }
+  const listHeading = (
+    <h2 style={styleListHeading}>
+      {message} within&nbsp;
+      <Link
+        style={styleLink(true)}
+        to={`/collections/details/${collectionId}`}
+        title={collectionTitle ? collectionTitle : 'Return to collection details.'}
+      >
+        collection
+      </Link>
+    </h2>
+  )
+
+  const granuleListCustomActions = {
+    'Add Matching to Cart': {
+      title: 'Add Matching to Cart',
+      icon: cartIcon,
+      showText: false,
+      handler: () => addFilteredGranulesToCart(granuleFilter),
+    },
+  }
+
+  let customMessage = addFilteredGranulesToCartWarning ? (
+    <div
+      key="GranuleList::Warning"
+      style={styleWarning(addFilteredGranulesToCartWarning)}
+      role="alert"
+    >
+      {addFilteredGranulesToCartWarning}
+    </div>
+  ) : null
+
+  return (
+    <div style={styleCenterContent}>
+      <Meta
+        title={`Files in Collection ${collectionTitle}`}
+        formatTitle={true}
+        robots="noindex"
+      />
+
+      <div style={styleGranuleListWrapper}>
+        <ListView
+          items={results}
+          ListItemComponent={GranuleListItem}
+          GridItemComponent={null}
+          propsForItem={propsForItem}
+          heading={listHeading}
+          customActions={granuleListCustomActions}
+          customMessage={customMessage}
+        />
+        {showMoreButton}
+      </div>
+    </div>
+  )
+
 }
 
 GranuleList.propTypes = {

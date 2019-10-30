@@ -24,10 +24,11 @@ const mapStateToProps = state => {
     totalGranuleCount,
     loadedGranuleCount,
   } = state.search.granuleResult
-  const focusedItem = state.search.collectionDetailResult.collection
+  const collectionDetail = state.search.collectionDetailResult.collection
 
   return {
-    collectionTitle: focusedItem ? focusedItem.attributes.title : null,
+    collectionId: collectionDetail ? collectionDetail.id : null,
+    collectionTitle: collectionDetail ? collectionDetail.attributes.title : null,
     results: granules,
     totalHits: totalGranuleCount,
     returnedHits: loadedGranuleCount,
