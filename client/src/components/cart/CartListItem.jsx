@@ -77,8 +77,6 @@ export default function CartListItem(props){
     focusing,
     handleFocus,
     handleBlur,
-    handleSelect,
-    handleKeyDown,
     expanded,
     setExpanded,
   } = useListViewItem(props)
