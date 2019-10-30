@@ -32,7 +32,7 @@ Configuration file: /Users/neo/git/onestop/docs/_config.yml
 ## Errors Encountered
 If you run into something frustrating somewhere and figure out how to fix it, save your teammates some grief and add your fix below!
 ### Liquid Error When No One's Using Liquid To Begin With...
-Jekyll uses Liquid for some site templating functionality, which is great if you're using it, but not great if you add a file with something Liquid thinks is Liquid even though it's not. Think code snippet with another templating language being used within. In order to avoid this, you'll have to wrap offending text inside `{% raw %}` TEXT `{% endraw %}`.
+Jekyll uses Liquid for some site templating functionality, which is great if you're using it, but not great if you add a file with something Liquid thinks is Liquid even though it's not. Think code snippet with another templating language being used within. In order to avoid this, you'll have to [wrap offending text inside some tags](https://github.com/jekyll/jekyll/issues/6430#issuecomment-337446307).
 
 The tags are visible when looking at rendered Markdown but disappear when GitHub renders the page. Example:
 
