@@ -13,8 +13,8 @@ Interactions with the registry API are centered around the endpoint:
 `{context-path}/metadata/{required-type}/{optional-source}/{optional-id}`
 
 Where:
-* The `context-path` is [explicitly set](/docs/deployment/project-artifacts.md#config) at time of deployment (otherwise `localhost:8080`)
-* The `type` is one of the enum values for the [RecordType](https://github.com/cedardevs/schemas/blob/master/src/main/resources/avro/psi/recordType.avsc) object: 
+* The `context-path` is [explicitly set](/docs/operator/deployment/v2/psi/project-artifacts.md#config) at time of deployment (otherwise `localhost:8080`)
+* The `type` is one of the enum values for the [RecordType](https://github.com/cedardevs/schemas/blob/master/schemas-core/src/main/resources/avro/psi/recordType.avsc) object: 
   * `collection` 
   * `granule`
 * The `source` is one of the following:

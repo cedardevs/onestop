@@ -6,7 +6,7 @@ The project consists of two Java-based microservices, backed by a Kafka cluster.
 
 #### Purpose
 
-The [registry](registry) hosts the public API of the system and stores its persistent state. Specifically, it
+The [registry](/docs/registry-api.md) hosts the public API of the system and stores its persistent state. Specifically, it
 serves several basic purposes:
 
 1. Receive metadata input via HTTP and send them to the appropriate Kafka topics
@@ -118,7 +118,7 @@ Example:
 
 #### Purpose
 
-The [stream manager](stream-manager) processes all the metadata that passes through the inventory management system. Metadata that is
+The stream manager processes all the metadata that passes through the inventory management system. Metadata that is
 not yet well-formed (i.e. in ISO-19115 XML format) is passed off to a Kafka topic to be transformed into well-formed
 metadata via domain-specific logic. Once the metadata is well formed, discovery information is parsed out of it, and
 that discovery information is then analyzed. All resulting info is then sent back to the registry for storage.
