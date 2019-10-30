@@ -6,7 +6,6 @@ import {SiteColors} from '../../../style/defaultStyles'
 import Meta from '../../helmet/Meta'
 import _ from 'lodash'
 import cartIcon from '../../../../img/font-awesome/white/svg/shopping-cart.svg'
-import {FEATURE_CART} from '../../../utils/featureUtils'
 import GranuleListItem from './GranuleListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {Link} from 'react-router-dom'
@@ -29,7 +28,7 @@ const styleListHeading = {
 
 const styleLink = focusing => {
   return {
-    color: SiteColors.LINK,
+    color: SiteColors.LINK_LIGHT,
     textDecoration: 'underline',
     outline: focusing ? '2px dashed white' : 'none',
     outlineOffset: focusing ? '0.309em' : 'initial',
@@ -40,25 +39,6 @@ const styleShowMore = {
   margin: '1em auto 1.618em auto',
 }
 const styleShowMoreFocus = {
-  outline: '2px dashed #5C87AC',
-  outlineOffset: '.118em',
-}
-
-const styleAddFilteredGranulesToCartButton = {
-  flexShrink: 0,
-  height: 'fit-content',
-}
-
-const styleAddFilteredGranulesToCartButtonIcon = {
-  width: '1em',
-  height: '1em',
-}
-
-const styleAddFilteredGranulesToCartButtonText = {
-  paddingRight: '0.309em',
-}
-
-const styleAddFilteredGranulesToCartButtonFocus = {
   outline: '2px dashed #5C87AC',
   outlineOffset: '.118em',
 }
@@ -99,6 +79,8 @@ export default function GranuleList(props){
     selectGranule,
     deselectGranule,
   } = props
+
+  const [ focusingCollectionLink, setFocusingCollectionLink ] = useState(false)
 
   const isGranuleSelected = itemId => {
     const checkIt = Object.keys(selectedGranules).includes(itemId)
@@ -144,11 +126,11 @@ export default function GranuleList(props){
     <h2 key="GranuleList::listHeading" style={styleListHeading}>
       {message} within&nbsp;
       <Link
-        style={styleLink(true)}
+        style={styleLink(focusingCollectionLink)}
         to={`/collections/details/${collectionId}`}
-        title={
-          collectionTitle ? collectionTitle : 'Return to collection details.'
-        }
+        title={'Return to collection details.'}
+        onFocus={() => setFocusingCollectionLink(true)}
+        onBlur={() => setFocusingCollectionLink(false)}
       >
         collection
       </Link>
