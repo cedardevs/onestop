@@ -6,6 +6,7 @@ import Expandable from '../common/ui/Expandable'
 import Button from '../common/input/Button'
 import {question_circle, SvgIcon} from '../common/SvgIcon'
 import {FilterColors} from '../../style/defaultStyles'
+import {consolidateStyles} from '../../utils/styleUtils'
 
 const selectTheme = theme => {
   // TODO copy-pasta #3 - move this to defaultStyles (although actually there's just a lot of overlap in re-setting up the select....?)
@@ -46,6 +47,7 @@ const RELATION_OPTIONS = [
 
 const Relation = ({id, relation, onUpdate, illustration}) => {
   const [ examplesOpen, setExamplesOpen ] = useState(false)
+  const [ examplesButtonFocused, setExamplesButtonFocused ] = useState(false)
 
   const [ selectedRelation, setSelectedRelation ] = useState(
     RELATION_OPTIONS[0]
@@ -69,6 +71,7 @@ const Relation = ({id, relation, onUpdate, illustration}) => {
     [ relation ]
   )
 
+  // note: not using <Button> because that doesn't pass through attrs like aria-expanded
   return (
     <div style={{margin: '.618em'}}>
       <FlexRow
@@ -103,28 +106,38 @@ const Relation = ({id, relation, onUpdate, illustration}) => {
           <div key="sentence::end" style={{marginLeft: '0.309em'}}>
             filter.
           </div>,
-          <Button
+          <button
             key="show-examples-button"
             title="Show relationship examples"
             aria-label="Show relationship examples"
-            style={{
-              marginLeft: '0.309em',
-              padding: '0.309em',
-              background: 'none',
-              color: 'inherit',
-              font: 'inherit',
-            }}
-            styleHover={{
-              // unset default style until we genericize Button more
-              background: 'none',
-            }}
+            style={consolidateStyles(
+              {
+                marginLeft: '0.309em',
+                padding: '0.309em',
+                background: 'none',
+                color: 'inherit',
+                font: 'inherit',
+                border: 0,
+                boxSizing: 'content-box',
+                lineHeight: 'normal',
+                // overflow: 'visible',
+                // userSelect: 'none',
+              },
+              examplesButtonFocused
+                ? {
+                    outline: '2px dashed #00002c',
+                  }
+                : null
+            )}
             aria-expanded={examplesOpen}
             onClick={() => {
               setExamplesOpen(!examplesOpen)
             }}
+            onFocus={() => setExamplesButtonFocused(true)}
+            onBlur={() => setExamplesButtonFocused(false)}
           >
             <SvgIcon path={question_circle} size="1em" />
-          </Button>,
+          </button>,
         ]}
       />
 

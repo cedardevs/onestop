@@ -138,9 +138,9 @@ const TimeLineQuery = ({query, outputs}) => {
       style={{
         paddingLeft: '0.309em',
       }}
-      aria-label="negative infinity, start scale of timeline"
     >
-      -∞
+      <span aria-hidden={true}>-∞</span>
+      <div style={defaultStyles.hideOffscreen}>negative infinity</div>
     </div>
   )
   const timelineEndLabel = (
@@ -149,7 +149,6 @@ const TimeLineQuery = ({query, outputs}) => {
       style={{
         paddingRight: '0.309em',
       }}
-      aria-label="present, end scale of timeline"
     >
       present
     </div>
@@ -194,26 +193,36 @@ const TimeLineQuery = ({query, outputs}) => {
   )
 
   // TODO left arrow kind of dumb because of overall alignment?
-  const beginning =
-    query.start == null ? (
-      <SvgIcon
-        key="leftarrow"
-        wrapperStyle={{display: 'inline', marginRight: '0.309em'}}
-        path={arrow_left}
-        size=".5em"
-      />
-    ) : null
-  const continuation =
-    query.end == null ? (
-      <SvgIcon
-        key="rightarrow"
-        wrapperStyle={{display: 'inline', marginLeft: '0.309em'}}
-        path={arrow_right}
-        size=".5em"
-      />
-    ) : null
+  const beginning = (
+    <SvgIcon
+      key="leftarrow"
+      wrapperStyle={{display: 'inline', marginRight: '0.309em'}}
+      path={arrow_left}
+      size=".5em"
+    />
+  )
+  const continuation = (
+    <SvgIcon
+      key="rightarrow"
+      wrapperStyle={{display: 'inline', marginLeft: '0.309em'}}
+      path={arrow_right}
+      size=".5em"
+    />
+  )
 
-  console.log('????', query.start, continuation)
+  const queryLabelItems = new Array()
+  if (query.start == null) queryLabelItems.push(beginning)
+  queryLabelItems.push(
+    <label
+      key="label"
+      style={{
+        color: styleRelationIllustration.query.color,
+      }}
+    >
+      filter
+    </label>
+  )
+  if (query.end == null) queryLabelItems.push(continuation)
 
   const queryBox = (
     <Spacer key="queryrange" style={{width: '100%'}}>
@@ -242,19 +251,9 @@ const TimeLineQuery = ({query, outputs}) => {
             width: '100%',
             fill: styleRelationIllustration.query.color,
           }}
-          items={[
-            beginning,
-            <label
-              key="label"
-              style={{
-                color: styleRelationIllustration.query.color,
-              }}
-            >
-              filter
-            </label>,
-            continuation,
-          ]}
+          items={queryLabelItems}
         />
+        <div style={defaultStyles.hideOffscreen}>user defined time filter</div>
       </output>
       <span aria-hidden={true}>&nbsp;</span>
     </Spacer>
@@ -331,7 +330,7 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
     )} , ${includedBasedOnRelationship ? '#cbeed5' : '#6b8c73'})`,
   }
   const continuation = isOngoing ? ( // TODO retest accessibility!
-    <div style={styleContinuation}>
+    <div style={styleContinuation} key="...arrow">
       <SvgIcon
         wrapperStyle={{display: 'inline'}}
         path={arrow_right}
