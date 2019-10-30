@@ -33,7 +33,7 @@ jib {
 
   from {
     // base image
-    image = 'scratch'
+    image = 'alpine'
   }
 
   to {
