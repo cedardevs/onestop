@@ -10,7 +10,21 @@ import {consolidateStyles} from '../../../utils/styleUtils'
 import {styleRelationIllustration} from '../common/styleFilters'
 import {arrow_left, arrow_right, SvgIcon} from '../../common/SvgIcon'
 
-const QUERY = [ {start: 2, end: 6}, {start: 2}, {end: 6} ]
+const QUERY = [
+  {
+    start: 2,
+    end: 6,
+    description: 'user defined time filter, from start to end date',
+  },
+  {
+    start: 2,
+    description: 'user defined time filter, from start date to present',
+  },
+  {
+    end: 6,
+    description: 'user defined time filter, from beginning of time to end date',
+  },
+]
 
 const resultDescription = (include, description) => {
   return `${include
@@ -249,7 +263,7 @@ const TimeLineQuery = ({query, outputs}) => {
           borderRadius: '.2em',
           boxShadow: '2px 2px 5px 2px #2c2c2c59',
         }}
-        title="user defined time filter"
+        title={query.description}
       >
         <FlexRow
           style={{
@@ -259,7 +273,7 @@ const TimeLineQuery = ({query, outputs}) => {
           }}
           items={queryLabelItems}
         />
-        <div style={defaultStyles.hideOffscreen}>user defined time filter</div>
+        <div style={defaultStyles.hideOffscreen}>{query.description}</div>
       </output>
       <span aria-hidden={true}>&nbsp;</span>
     </Spacer>
