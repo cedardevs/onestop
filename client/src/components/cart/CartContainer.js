@@ -10,6 +10,7 @@ import {
   removeAllSelectedGranule,
   removeSelectedGranule,
 } from '../../actions/CartActions'
+import {submitCollectionDetail} from '../../actions/routing/CollectionDetailRouteActions'
 
 // import mockCartItems from '../../../test/cart/mockCartItems'
 
@@ -39,10 +40,11 @@ const mapStateToProps = state => {
     featuresEnabled: state.config.featuresEnabled,
     selectedGranules: selectedGranules,
     numberOfGranulesSelected: numberOfGranulesSelected,
+    collectionDetailFilter: state.search.collectionFilter, // just used to submit collection detail correctly
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     deselectGranule: itemId => {
       removeSelectedGranuleFromLocalStorage(itemId)
@@ -51,6 +53,9 @@ const mapDispatchToProps = dispatch => {
     deselectAllGranules: () => {
       removeAllSelectedGranulesFromLocalStorage()
       dispatch(removeAllSelectedGranule())
+    },
+    selectCollection: (id, filterState) => {
+      dispatch(submitCollectionDetail(ownProps.history, id, filterState))
     },
   }
 }

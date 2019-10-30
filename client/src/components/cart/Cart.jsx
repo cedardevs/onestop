@@ -12,6 +12,7 @@ import {fontFamilySerif} from '../../utils/styleUtils'
 import ScriptDownloader from './ScriptDownloader'
 import {FEATURE_CART} from '../../utils/featureUtils'
 import CartListItem from './CartListItem'
+import collectionDetailFilter from '../../reducers/search/collectionDetailFilter'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -28,6 +29,11 @@ const styleCartListWrapper = {
   paddingBottom: '1.618em',
   backgroundColor: 'white',
   color: '#222',
+}
+
+const styleListHeading = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.2em',
 }
 
 const styleCartActions = {
@@ -79,13 +85,19 @@ export default class Cart extends React.Component {
     this.props = props
   }
 
-  propsForResult = (item, itemId, isFocused) => {
-    const {deselectGranule} = this.props
-    let resultProps = {}
+  propsForItem = (item, itemId, setFocusedKey) => {
+    const {
+      collectionDetailFilter,
+      selectCollection,
+      deselectGranule,
+    } = this.props
+    const collectionId = item.internalParentIdentifier
     return {
-      onSelect: () => {},
-      deselectGranule: deselectGranule,
-      isFocused: isFocused,
+      onSelect: key => {
+        selectCollection(collectionId, collectionDetailFilter)
+      },
+      setFocusedKey,
+      deselectGranule,
     }
   }
 
@@ -161,11 +173,17 @@ export default class Cart extends React.Component {
         </div>
       )
 
+    let message = 'No files selected for download'
+    if (selectedGranulesCount > 0) {
+      message = `Showing ${shownGranules.toLocaleString()} of ${selectedGranulesCount.toLocaleString()} files for download`
+    }
+    const listHeading = <h2 style={styleListHeading}>{message}</h2>
+
     const cartListCustomActions = {
       'Clear All': {
         title: 'Clear All Granules from Cart',
         icon: clearIcon,
-        showText: true,
+        showText: false,
         handler: () => deselectAllGranules(),
       },
     }
@@ -187,13 +205,10 @@ export default class Cart extends React.Component {
           {cartActionsWrapper}
           <ListView
             items={subset}
-            resultsMessage={'Files for download'}
-            resultsMessageEmpty={'No files selected for download'}
-            // shown={shownGranules}
-            // total={selectedGranulesCount}
             ListItemComponent={CartListItem}
             GridItemComponent={null}
-            propsForItem={this.propsForResult}
+            propsForItem={this.propsForItem}
+            heading={listHeading}
             customActions={cartListCustomActions}
           />
           {showMoreButton}

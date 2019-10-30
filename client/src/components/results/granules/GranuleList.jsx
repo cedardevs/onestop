@@ -8,6 +8,7 @@ import _ from 'lodash'
 import cartIcon from '../../../../img/font-awesome/white/svg/shopping-cart.svg'
 import {FEATURE_CART} from '../../../utils/featureUtils'
 import GranuleListItem from './GranuleListItem'
+import {fontFamilySerif} from '../../../utils/styleUtils'
 
 const styleCenterContent = {
   display: 'flex',
@@ -18,6 +19,11 @@ const styleGranuleListWrapper = {
   maxWidth: '80em',
   width: '80em',
   color: '#222',
+}
+
+const styleListHeading = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.2em',
 }
 
 const styleShowMore = {
@@ -94,16 +100,13 @@ export default class GranuleList extends React.Component {
     }
   }
 
-  propsForResult = (item, itemId) => {
-    const {selectCollection, featuresEnabled} = this.props
-
+  propsForItem = (item, itemId, setFocusedKey) => {
     return {
-      onSelect: selectCollection,
+      onSelect: () => {},
       showLinks: true,
       showTimeAndSpace: true,
       handleCheckboxChange: this.handleCheckboxChange,
       checkGranule: this.isGranuleSelected(itemId),
-      featuresEnabled: featuresEnabled,
     }
   }
 
@@ -132,30 +135,17 @@ export default class GranuleList extends React.Component {
         />
       ) : null
 
-    // custom control for list view
-    let customButtons = []
-
-    if (featuresEnabled.includes(FEATURE_CART)) {
-      customButtons.push(
-        <Button
-          key={'addMatchingToCartButton'}
-          icon={cartIcon}
-          iconAfter={true}
-          styleIcon={styleAddFilteredGranulesToCartButtonIcon}
-          text="Add Matching to Cart"
-          onClick={() => addFilteredGranulesToCart(granuleFilter)}
-          style={styleAddFilteredGranulesToCartButton}
-          styleFocus={styleAddFilteredGranulesToCartButtonFocus}
-          styleText={styleAddFilteredGranulesToCartButtonText}
-        />
-      )
+    let message = 'No file results'
+    if (totalHits > 0) {
+      message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} matching files`
     }
+    const listHeading = <h2 style={styleListHeading}>{message}</h2>
 
     const granuleListCustomActions = {
       'Add Matching to Cart': {
         title: 'Add Matching to Cart',
         icon: cartIcon,
-        showText: true,
+        showText: false,
         handler: () => addFilteredGranulesToCart(granuleFilter),
       },
     }
@@ -181,15 +171,12 @@ export default class GranuleList extends React.Component {
         <div style={styleGranuleListWrapper}>
           <ListView
             items={results}
-            resultType="matching files"
-            shown={returnedHits}
-            total={totalHits}
             ListItemComponent={GranuleListItem}
             GridItemComponent={null}
-            propsForItem={this.propsForResult}
-            customButtons={customButtons}
-            customMessage={customMessage}
+            propsForItem={this.propsForItem}
+            heading={listHeading}
             customActions={granuleListCustomActions}
+            customMessage={customMessage}
           />
           {showMoreButton}
         </div>

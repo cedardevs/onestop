@@ -8,28 +8,34 @@ import {mapFromObject} from '../../../utils/objectUtils'
 
 const styleController = {
   display: 'flex',
-  justifyContent: 'space-around',
+  justifyContent: 'space-evenly',
   padding: '0.618em',
   backgroundColor: 'rgba(0,0,0, 0.2)',
   borderRadius: '0.309em',
-  margin: '0 1.618em 1em 0',
 }
 
-const styleControlButtonIcon = {
-  width: '1em',
-  height: '1em',
-  marginRight: '0.309em',
+const styleControlButton = {
+  margin: '0 0.105em',
+}
+
+const styleControlButtonIcon = withText => {
+  return {
+    width: '1em',
+    height: '1em',
+    padding: withText ? 'initial' : '0.309em 0',
+    marginRight: withText ? '0.309em' : 0,
+  }
 }
 
 export default function ListViewController(props){
   const {
     itemsMap,
-    itemsMapPrevious,
+    previousItemsMap,
     propsForItem,
+    focusedKey,
     ListItemComponent,
     GridItemComponent,
     showAsGrid,
-    focusKey,
     toggleGrid,
     expandAll,
     collapseAll,
@@ -41,19 +47,20 @@ export default function ListViewController(props){
   let controlButtons = []
 
   const numItems = itemsMap ? itemsMap.size : 0
-  const numItemsPrevious = itemsMapPrevious ? itemsMapPrevious.size : 0
+  const numPreviousItems = previousItemsMap ? previousItemsMap.size : 0
 
   // if both list and grid components are provided,
   // we can show a toggle between views
   const toggleGridAvailable = ListItemComponent && GridItemComponent
   if (toggleGridAvailable) {
-    let buttonText = showAsGrid ? 'Show List' : 'Show Grid'
+    let buttonTitle = showAsGrid ? 'Show List' : 'Show Grid'
     controlButtons.push(
       <Button
-        key={buttonText}
-        text={buttonText}
+        key={buttonTitle}
+        title={buttonTitle}
         icon={showAsGrid ? listIcon : gridIcon}
-        styleIcon={styleControlButtonIcon}
+        style={styleControlButton}
+        styleIcon={styleControlButtonIcon(false)}
         onClick={toggleGrid}
       />
     )
@@ -63,23 +70,25 @@ export default function ListViewController(props){
   const expandCollapseAvailable =
     ListItemComponent && !showAsGrid && numItems > 0
   if (expandCollapseAvailable) {
-    let buttonExpandText = 'Expand All'
+    let buttonExpandTitle = 'Expand All'
     controlButtons.push(
       <Button
-        key={buttonExpandText}
-        text={buttonExpandText}
+        key={buttonExpandTitle}
+        title={buttonExpandTitle}
         icon={expandIcon}
-        styleIcon={styleControlButtonIcon}
+        style={styleControlButton}
+        styleIcon={styleControlButtonIcon(false)}
         onClick={expandAll}
       />
     )
-    let buttonCollapseText = 'Collapse All'
+    let buttonCollapseTitle = 'Collapse All'
     controlButtons.push(
       <Button
-        key={buttonCollapseText}
-        text={buttonCollapseText}
+        key={buttonCollapseTitle}
+        title={buttonCollapseTitle}
         icon={collapseIcon}
-        styleIcon={styleControlButtonIcon}
+        style={styleControlButton}
+        styleIcon={styleControlButtonIcon(false)}
         onClick={collapseAll}
       />
     )
@@ -89,8 +98,15 @@ export default function ListViewController(props){
   // e.g. -
   // {
   //   "Clear All": {
-  //     icon: clearIcon,       // `import clearIcon from 'fa/remove.svg'`
-  //     handler: (itemsMap, itemsMapPrevious, ListItemComponent, GridItemComponent, showAsGrid, focusKey) => { ... } // action handler for when button is activated
+  //     icon: clearIcon, // `import clearIcon from 'fa/remove.svg'`
+  //     handler: ({
+  //       itemsMap,
+  //       previousItemsMap,
+  //       focusedKey,
+  //       ListItemComponent,
+  //       GridItemComponent,
+  //       showAsGrid
+  //     }) => { ... } // action handler for when button is activated
   //   }
   // }
   const customActionsMap = mapFromObject(customActions)
@@ -102,16 +118,17 @@ export default function ListViewController(props){
           title={action.title}
           text={action.showText || !action.icon ? key : null}
           icon={action.icon}
-          styleIcon={styleControlButtonIcon}
+          style={styleControlButton}
+          styleIcon={styleControlButtonIcon(action.showText)}
           onClick={() =>
             action.handler({
               itemsMap,
-              itemsMapPrevious,
+              previousItemsMap,
+              focusedKey,
               propsForItem,
               ListItemComponent,
               GridItemComponent,
               showAsGrid,
-              focusKey,
             })}
         />
       )

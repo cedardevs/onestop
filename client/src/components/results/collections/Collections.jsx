@@ -5,9 +5,15 @@ import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
 import Meta from '../../helmet/Meta'
 import CollectionListItem from './CollectionListItem'
+import {fontFamilySerif} from '../../../utils/styleUtils'
 
 const styleCollections = {
   color: '#222',
+}
+
+const styleListHeading = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.2em',
 }
 
 const styleShowMore = {
@@ -28,6 +34,12 @@ export default function Collections(props){
     collectionDetailFilter,
   } = props
   const queryText = props.collectionDetailFilter.queryText
+
+  let message = 'No collection results'
+  if (totalHits > 0) {
+    message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} collection results`
+  }
+  const listHeading = <h2 style={styleListHeading}>{message}</h2>
 
   const showMoreButton =
     returnedHits < totalHits ? (
@@ -60,6 +72,7 @@ export default function Collections(props){
         ListItemComponent={CollectionListItem}
         GridItemComponent={CollectionGridItem}
         propsForItem={propsForItem}
+        heading={listHeading}
         showAsGrid={true}
       />
       {showMoreButton}

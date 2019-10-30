@@ -13,6 +13,12 @@ import CartListItemActions from './CartListItemActions'
 const pattern = require('../../../img/topography.png')
 
 const styleTitle = (expanded, focusing) => {
+  const styleTitleFocusing = {
+    textDecoration: 'underline',
+    outline: focusing ? '2px dashed black' : 'none',
+    outlineOffset: focusing ? '0.309em' : 'initial',
+  }
+
   return {
     fontFamily: fontFamilySerif(),
     fontSize: '1em',
@@ -20,16 +26,7 @@ const styleTitle = (expanded, focusing) => {
     overflowWrap: 'break-word',
     wordWrap: 'break-word',
     margin: '0 1.236em 0 0',
-    background: focusing ? 'green' : 'none',
-  }
-}
-
-const styleLink = focusing => {
-  return {
-    color: SiteColors.LINK,
-    textDecoration: 'underline',
-    outline: focusing ? '2px dashed black' : 'none',
-    outlineOffset: focusing ? '0.309em' : 'initial',
+    ...(focusing ? styleTitleFocusing : {}),
   }
 }
 
@@ -72,12 +69,29 @@ const styleContentHeadingTop = {
   marginTop: '0em',
 }
 
-export default function CartListItem({itemId, item, onSelect, ...props}){
-  const {expanded, setExpanded, focusRef} = useListViewItem(props)
+export default function CartListItem(props){
+  const {
+    itemId,
+    item,
+    focusRef,
+    focusing,
+    handleFocus,
+    handleBlur,
+    handleSelect,
+    handleKeyDown,
+    expanded,
+    setExpanded,
+  } = useListViewItem(props)
 
-  const {isFocused} = props
   const title = (
-    <h3 key={'CartListItem::title'} style={styleTitle(expanded, isFocused)}>
+    <h3
+      key={'CartListItem::title'}
+      style={styleTitle(expanded, focusing)}
+      tabIndex={0}
+      ref={focusRef}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+    >
       {item.title}
     </h3>
   )

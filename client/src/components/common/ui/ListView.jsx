@@ -2,9 +2,20 @@ import React, {useEffect, useRef, useState} from 'react'
 import PropTypes from 'prop-types'
 import ListViewController from './ListViewController'
 import {mapFromObject} from '../../../utils/objectUtils'
+import FlexRow from './FlexRow'
+import {FilterStyles} from '../../../style/defaultStyles'
 
 const styleListView = {
   marginLeft: '1.618em',
+}
+
+const styleHeading = {
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  margin: '0 1.618em 0.618em 0',
+  paddingLeft: '1em',
+  borderRadius: '0.309em',
+  ...FilterStyles.DARKEST,
 }
 
 const styleList = {
@@ -114,7 +125,9 @@ export default function ListView(props){
     ListItemComponent,
     GridItemComponent,
     propsForItem,
+    heading,
     customActions,
+    customMessage,
   } = props
 
   const [ itemsMap, previousItemsMap, focusedKey, setFocusedKey ] = useItems(
@@ -131,8 +144,9 @@ export default function ListView(props){
   const controlElement = (
     <ListViewController
       itemsMap={itemsMap}
-      itemsMapPrevious={previousItemsMap}
+      previousItemsMap={previousItemsMap}
       propsForItem={propsForItem}
+      focusedKey={focusedKey}
       ListItemComponent={ListItemComponent}
       GridItemComponent={GridItemComponent}
       showAsGrid={showAsGrid}
@@ -197,7 +211,8 @@ export default function ListView(props){
 
   return (
     <div style={styleListView}>
-      {controlElement}
+      <FlexRow style={styleHeading} items={[ heading, controlElement ]} />
+      {customMessage}
       <div style={showAsGrid ? styleGrid : styleList}>{itemElements}</div>
     </div>
   )
