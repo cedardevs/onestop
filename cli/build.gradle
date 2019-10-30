@@ -33,7 +33,7 @@ jib {
 
   from {
     // base image
-    image = 'circleci/openjdk:11-jdk'
+    image = 'golang:1.12.0-alpine3.9'
   }
 
   to {
