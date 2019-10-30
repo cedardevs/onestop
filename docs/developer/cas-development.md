@@ -203,6 +203,7 @@ features:
   cas: false
 ```
 
+{% raw %}
 ```
 # helm/psi-registry/templates/statefulset.yaml
 ...
@@ -219,6 +220,7 @@ features:
               {{- join "," $active.profiles }}'
 ...
 ```
+{% endraw %}
 
 ## Spring Boot Configuration
 
