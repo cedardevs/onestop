@@ -39,7 +39,11 @@ export default function Collections(props){
   if (totalHits > 0) {
     message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} collection results`
   }
-  const listHeading = <h2 style={styleListHeading}>{message}</h2>
+  const listHeading = (
+    <h2 key="Collections::listHeading" style={styleListHeading}>
+      {message}
+    </h2>
+  )
 
   const showMoreButton =
     returnedHits < totalHits ? (

@@ -28,7 +28,9 @@ const mapStateToProps = state => {
 
   return {
     collectionId: collectionDetail ? collectionDetail.id : null,
-    collectionTitle: collectionDetail ? collectionDetail.attributes.title : null,
+    collectionTitle: collectionDetail
+      ? collectionDetail.attributes.title
+      : null,
     results: granules,
     totalHits: totalGranuleCount,
     returnedHits: loadedGranuleCount,

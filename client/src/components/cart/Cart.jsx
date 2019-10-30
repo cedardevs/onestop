@@ -177,7 +177,11 @@ export default class Cart extends React.Component {
     if (selectedGranulesCount > 0) {
       message = `Showing ${shownGranules.toLocaleString()} of ${selectedGranulesCount.toLocaleString()} files for download`
     }
-    const listHeading = <h2 style={styleListHeading}>{message}</h2>
+    const listHeading = (
+      <h2 key="Cart::listHeading" style={styleListHeading}>
+        {message}
+      </h2>
+    )
 
     const cartListCustomActions = {
       'Clear All': {

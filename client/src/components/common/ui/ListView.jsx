@@ -65,7 +65,6 @@ function useItems(items){
   const previousItemsMap = usePrevious(itemsMap, new Map())
 
   const [ focusedKey, setFocusedKey ] = useState(undefined)
-  console.log('ListView::focusedKey', focusedKey)
 
   // this effect tracks when the items supplied to ListView changes
   useEffect(
@@ -96,9 +95,13 @@ function useItems(items){
         } // otherwise it's okay to keep focusing on the last key
       }
       else {
-        // could not find anything new or old to focus on, go for the first
-        // will be `undefined` if the new results are empty
-        setFocusedKey(keysAfter[0])
+        // we avoid focusing when previous size == 0 because it's the first time loading the list view
+        // and we dont' want to force focus on the first item
+        if (previousItemsMap.size > 0) {
+          // could not find anything new or old to focus on, go for the first
+          // will be `undefined` if the new results are empty
+          setFocusedKey(keysAfter[0])
+        }
       }
     },
     [ itemsMap ]
@@ -143,6 +146,7 @@ export default function ListView(props){
   // list view controller
   const controlElement = (
     <ListViewController
+      key={'ListViewController'}
       itemsMap={itemsMap}
       previousItemsMap={previousItemsMap}
       propsForItem={propsForItem}

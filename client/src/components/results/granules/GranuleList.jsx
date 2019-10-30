@@ -9,7 +9,7 @@ import cartIcon from '../../../../img/font-awesome/white/svg/shopping-cart.svg'
 import {FEATURE_CART} from '../../../utils/featureUtils'
 import GranuleListItem from './GranuleListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
-import {Link} from "react-router-dom";
+import {Link} from 'react-router-dom'
 
 const styleCenterContent = {
   display: 'flex',
@@ -84,8 +84,7 @@ const styleWarning = warning => {
   }
 }
 
-export default function GranuleList(props) {
-
+export default function GranuleList(props){
   const {
     results,
     returnedHits,
@@ -98,7 +97,7 @@ export default function GranuleList(props) {
     granuleFilter,
     selectedGranules,
     selectGranule,
-    deselectGranule
+    deselectGranule,
   } = props
 
   const isGranuleSelected = itemId => {
@@ -127,9 +126,6 @@ export default function GranuleList(props) {
     }
   }
 
-
-
-
   const showMoreButton =
     returnedHits < totalHits ? (
       <Button
@@ -145,12 +141,14 @@ export default function GranuleList(props) {
     message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} matching files`
   }
   const listHeading = (
-    <h2 style={styleListHeading}>
+    <h2 key="GranuleList::listHeading" style={styleListHeading}>
       {message} within&nbsp;
       <Link
         style={styleLink(true)}
         to={`/collections/details/${collectionId}`}
-        title={collectionTitle ? collectionTitle : 'Return to collection details.'}
+        title={
+          collectionTitle ? collectionTitle : 'Return to collection details.'
+        }
       >
         collection
       </Link>
@@ -198,7 +196,6 @@ export default function GranuleList(props) {
       </div>
     </div>
   )
-
 }
 
 GranuleList.propTypes = {
