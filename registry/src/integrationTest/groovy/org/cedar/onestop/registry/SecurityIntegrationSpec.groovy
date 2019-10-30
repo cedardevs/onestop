@@ -1,6 +1,8 @@
 package org.cedar.onestop.registry
 
 import groovy.json.JsonSlurper
+import org.apache.kafka.streams.KafkaStreams
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -38,11 +40,23 @@ class SecurityIntegrationSpec extends Specification {
   @Shared
   String granuleEndpoint
 
+  @Autowired
+  KafkaStreams streamsApp
+
   def setupSpec() {
     granulePayload = ClassLoader.systemClassLoader.getResourceAsStream('test_granule.json').text
     Map granuleMap = new JsonSlurper().parseText(granulePayload) as Map
     granuleTrackingId = granuleMap.trackingId
     granuleEndpoint = "metadata/granule/common-ingest/${granuleTrackingId}"
+
+    def tries = 0
+    while (streamsApp.state() != KafkaStreams.State.RUNNING) {
+      if (tries >= 5) {
+        throw new RuntimeException("Streams app still in bad state ${streamsApp.state()} after ${tries} seconds")
+      }
+      sleep(1000)
+      tries += 1
+    }
   }
 
   def 'secure endpoints return 401 without authorization header'() {
