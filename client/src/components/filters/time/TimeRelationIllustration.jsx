@@ -27,9 +27,13 @@ const QUERY = [
 ]
 
 const resultDescription = (include, description) => {
+  return `${include ? 'Included:' : 'Excluded:'} ${description}`
+}
+
+const resultLongDescription = (include, name, description, relation) => {
   return `${include
-    ? 'Included in search results:'
-    : 'NOT included in search results:'} ${description}`
+    ? 'Included:'
+    : 'Excluded:'} ${name} ${description} for ${relation} filter`
 }
 
 const resultStyles = {
@@ -49,14 +53,24 @@ const resultStyles = {
 
 const RESULTS = [
   {
+    label: 'ex 1',
     start: 0,
     end: 1,
-    description: (include, queryIndex) => {
+    description: (include, queryIndex, relation) => {
       let description = [
         'result range ends before query begins, with no overlap',
         'result range ends before query begins, with no overlap',
         'result range ends before query ends',
       ]
+      if (relation) {
+        // long description
+        return resultLongDescription(
+          include,
+          'example 1',
+          description[queryIndex],
+          relation
+        )
+      }
       return resultDescription(include, description[queryIndex])
     },
     styles: resultStyles,
@@ -67,14 +81,24 @@ const RESULTS = [
     ],
   },
   {
+    label: 'ex 2',
     start: 3,
     end: 5,
-    description: (include, queryIndex) => {
+    description: (include, queryIndex, relation) => {
       let description = [
         'result range is smaller than query, with complete overlap (result is a subset)',
         'result range is smaller than query, with complete overlap (result is a subset)',
         'result range ends before query ends',
       ]
+      if (relation) {
+        // long description
+        return resultLongDescription(
+          include,
+          'example 2',
+          description[queryIndex],
+          relation
+        )
+      }
       return resultDescription(include, description[queryIndex])
     },
     styles: resultStyles,
@@ -85,14 +109,24 @@ const RESULTS = [
     ],
   },
   {
+    label: 'ex 3',
     start: 1,
     end: 7,
-    description: (include, queryIndex) => {
+    description: (include, queryIndex, relation) => {
       let description = [
         'result range is larger than query, with complete overlap (result is a superset)',
         'result range starts before query, with significant overlap',
         'result range ends before query, with significant overlap',
       ]
+      if (relation) {
+        // long description
+        return resultLongDescription(
+          include,
+          'example 3',
+          description[queryIndex],
+          relation
+        )
+      }
       return resultDescription(include, description[queryIndex])
     },
     styles: resultStyles,
@@ -103,13 +137,23 @@ const RESULTS = [
     ],
   },
   {
+    label: 'ex 4',
     start: 4,
-    description: (include, queryIndex) => {
+    description: (include, queryIndex, relation) => {
       let description = [
         'result range starts in middle of query range, and continues into present',
         'result range starts in middle of query range, and continues into present',
         'result range starts in middle of query range, and continues into present',
       ]
+      if (relation) {
+        // long description
+        return resultLongDescription(
+          include,
+          'example 4',
+          description[queryIndex],
+          relation
+        )
+      }
       return resultDescription(include, description[queryIndex])
     },
     styles: resultStyles,
@@ -120,13 +164,23 @@ const RESULTS = [
     ],
   },
   {
+    label: 'ex 5',
     start: 1,
-    description: (include, queryIndex) => {
+    description: (include, queryIndex, relation) => {
       let description = [
         'result range starts before query, and continues into present',
         'result range starts before query, and continues into present',
         'result range starts in middle of query range, and continues into present, past query end',
       ]
+      if (relation) {
+        // long description
+        return resultLongDescription(
+          include,
+          'example 5',
+          description[queryIndex],
+          relation
+        )
+      }
       return resultDescription(include, description[queryIndex])
     },
     styles: resultStyles,
@@ -339,11 +393,17 @@ const stylePosition = ({start, end}) => {
   }
 }
 
-const TimeLineResult = ({id, label, result, relation, queryType}) => {
+const TimeLineResult = ({id, result, relation, queryType}) => {
   let isOngoing = result.end == null
   let includedBasedOnRelationship = result.relation[queryType][relation]
 
   let description = result.description(includedBasedOnRelationship, queryType)
+  let longDescription = result.description(
+    includedBasedOnRelationship,
+    queryType,
+    relation
+  )
+  console.log('result', longDescription)
 
   let styleContinuation = {
     fill: result.styles.color(includedBasedOnRelationship),
@@ -394,10 +454,10 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
         items={[
           <output id={id} key="output" title={description} style={styleOutput}>
             <label key="label" style={styleLabel}>
-              {label}
+              {result.label}
             </label>
             <div role="listitem" style={defaultStyles.hideOffscreen}>
-              {description}
+              {longDescription}
             </div>
           </output>,
           continuation,
@@ -417,7 +477,6 @@ const TimeRelationIllustration = ({relation, hasStart, hasEnd}) => {
       <TimeLineResult
         key={`result${index + 1}`}
         id={`result${index + 1}`}
-        label={`ex ${index + 1}`}
         result={result}
         relation={relation}
         queryType={currentQueryType}

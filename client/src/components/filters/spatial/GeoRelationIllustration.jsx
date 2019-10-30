@@ -27,9 +27,13 @@ const resultStyles = {
 }
 
 const resultDescription = (include, description) => {
+  return `${include ? 'Included:' : 'Excluded:'} ${description}`
+}
+
+const resultLongDescription = (include, name, description, relation) => {
   return `${include
-    ? 'Included in search results:'
-    : 'NOT included in search results:'} ${description}`
+    ? 'Included:'
+    : 'Excluded:'} ${name} ${description} for ${relation} filter`
 }
 
 const BOXES = [
@@ -43,8 +47,12 @@ const BOXES = [
     width: WIDTH_RATIO, // 100%
     description: (include, excludeGlobal) =>
       excludeGlobal
-        ? `NOT included in search results: global result, due to 'Exclude Global Results' filter`
+        ? `Excluded: global result, due to 'Exclude Global Results' filter`
         : resultDescription(include, 'global result'),
+    longDescription: (include, relation, excludeGlobal) =>
+      excludeGlobal
+        ? `Excluded: global result, due to 'Exclude Global Results' filter`
+        : resultLongDescription(include, 'global result', '', relation),
     styles: {
       color: (include, excludeGlobal) =>
         excludeGlobal ? resultStyles.color(false) : resultStyles.color(include),
@@ -76,6 +84,13 @@ const BOXES = [
         include,
         'result is larger than query, with complete overlap (result is a superset)'
       ),
+    longDescription: (include, relation) =>
+      resultLongDescription(
+        include,
+        'example 1',
+        'result is larger than query, with complete overlap (result is a superset)',
+        relation
+      ),
     styles: resultStyles,
     relation: {
       contains: true,
@@ -93,6 +108,7 @@ const BOXES = [
     left: 1,
     width: 5,
     description: () => 'user defined location filter',
+    longDescription: () => 'user defined location filter',
     styles: {
       color: () => styleRelationIllustration.query.color,
       backgroundColor: () => styleRelationIllustration.query.backgroundColor,
@@ -112,6 +128,13 @@ const BOXES = [
         include,
         'result is smaller than query, with complete overlap (result is a subset)'
       ),
+    longDescription: (include, relation) =>
+      resultLongDescription(
+        include,
+        'example 2',
+        'result is smaller than query, with complete overlap (result is a subset)',
+        relation
+      ),
     styles: resultStyles,
     relation: {
       contains: false,
@@ -129,6 +152,13 @@ const BOXES = [
     width: 2,
     description: include =>
       resultDescription(include, 'result is outside query, with no overlap'),
+    longDescription: (include, relation) =>
+      resultLongDescription(
+        include,
+        'example 3',
+        'result is outside query, with no overlap',
+        relation
+      ),
     styles: resultStyles,
     relation: {
       contains: false,
@@ -146,6 +176,13 @@ const BOXES = [
     width: 2,
     description: include =>
       resultDescription(include, 'result partially overlaps query'),
+    longDescription: (include, relation) =>
+      resultLongDescription(
+        include,
+        'example 4',
+        'result partially overlaps query',
+        relation
+      ),
     styles: resultStyles,
     relation: {
       contains: false,
@@ -193,6 +230,11 @@ const BoxIllustration = ({id, box, relation, excludeGlobal}) => {
   let includedBasedOnRelationship = box.relation[relation]
 
   let description = box.description(includedBasedOnRelationship, excludeGlobal)
+  let longDescription = box.longDescription(
+    includedBasedOnRelationship,
+    relation,
+    excludeGlobal
+  )
 
   const styleColors = {
     borderColor: box.styles.borderColor(
@@ -220,7 +262,7 @@ const BoxIllustration = ({id, box, relation, excludeGlobal}) => {
     >
       <label style={styleLabel}>{box.label}</label>
       <div role="listitem" style={defaultStyles.hideOffscreen}>
-        {description}
+        {longDescription}
       </div>
     </output>
   )
