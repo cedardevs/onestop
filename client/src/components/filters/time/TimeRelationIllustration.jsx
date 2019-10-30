@@ -273,7 +273,9 @@ const TimeLineQuery = ({query, outputs}) => {
           }}
           items={queryLabelItems}
         />
-        <div style={defaultStyles.hideOffscreen}>{query.description}</div>
+        <div role="listitem" style={defaultStyles.hideOffscreen}>
+          {query.description}
+        </div>
       </output>
       <span aria-hidden={true}>&nbsp;</span>
     </Spacer>
@@ -284,7 +286,7 @@ const TimeLineQuery = ({query, outputs}) => {
     exampleColumn.push(output)
   })
 
-  const middle = (
+  const middle = ( //TODO rename "middle"
     <FlexColumn
       key="middle"
       style={{
@@ -297,7 +299,7 @@ const TimeLineQuery = ({query, outputs}) => {
   )
 
   return (
-    <div style={{marginTop: '.609em'}}>
+    <div role="list" style={{marginTop: '.609em'}}>
       <div style={{textAlign: 'center'}}>timeline:</div> {middle}
     </div>
   )
@@ -394,7 +396,9 @@ const TimeLineResult = ({id, label, result, relation, queryType}) => {
             <label key="label" style={styleLabel}>
               {label}
             </label>
-            <div style={defaultStyles.hideOffscreen}>{description}</div>
+            <div role="listitem" style={defaultStyles.hideOffscreen}>
+              {description}
+            </div>
           </output>,
           continuation,
         ]}

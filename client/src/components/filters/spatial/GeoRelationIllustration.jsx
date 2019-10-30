@@ -219,7 +219,9 @@ const BoxIllustration = ({id, box, relation, excludeGlobal}) => {
       style={consolidateStyles(styleBox, stylePosition(box), styleColors)}
     >
       <label style={styleLabel}>{box.label}</label>
-      <div style={defaultStyles.hideOffscreen}>{description}</div>
+      <div role="listitem" style={defaultStyles.hideOffscreen}>
+        {description}
+      </div>
     </output>
   )
 }
@@ -239,6 +241,7 @@ const GeoRelationIllustration = ({relation, excludeGlobal}) => {
 
   return (
     <div
+      role="list"
       style={{
         width: '100%',
         height: '7em', // TODO picked an arbitrary total height for now...
