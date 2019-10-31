@@ -145,8 +145,7 @@ export default class AppliedFilters extends React.Component {
     if (startYear != null) {
       let startYearText = (
         <span>
-          After: {displayBigYears(startYear)}{' '}
-          <abbr title="Common Era">CE</abbr>
+          After: {displayBigYears(startYear)} <abbr title="Common Era">CE</abbr>
         </span>
       )
       timeBubbles.push(
