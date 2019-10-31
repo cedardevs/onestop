@@ -146,7 +146,7 @@ export default class AppliedFilters extends React.Component {
       let startYearText = (
         <span>
           After: {displayBigYears(startYear)}{' '}
-          <abbr title="Current Era">CE</abbr>
+          <abbr title="Common Era">CE</abbr>
         </span>
       )
       timeBubbles.push(
@@ -154,7 +154,7 @@ export default class AppliedFilters extends React.Component {
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
           text={startYearText}
-          title={`Remove After ${startYear} Current Era Filter`}
+          title={`Remove After ${startYear} Common Era Filter`}
           key="appliedFilter::startYear"
           onUnselect={() => this.unselectYearAndSubmitSearch(null, endYear)}
         />
@@ -163,7 +163,7 @@ export default class AppliedFilters extends React.Component {
     if (endYear != null) {
       let endYearText = (
         <span>
-          Before: {displayBigYears(endYear)} <abbr title="Current Era">CE</abbr>
+          Before: {displayBigYears(endYear)} <abbr title="Common Era">CE</abbr>
         </span>
       )
       timeBubbles.push(
@@ -171,7 +171,7 @@ export default class AppliedFilters extends React.Component {
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
           text={endYearText}
-          title={`Remove Before ${endYear} Current Era Filter`}
+          title={`Remove Before ${endYear} Common Era Filter`}
           key="appliedFilter::endYear"
           onUnselect={() => this.unselectYearAndSubmitSearch(startYear, null)}
         />
