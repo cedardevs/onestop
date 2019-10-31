@@ -39,11 +39,6 @@ const TimeFilter = ({
   const [ showAlert, setShowAlert ] = useState(false)
   const [ alertAnnouncement, setAlertAnnouncement ] = useState('')
 
-  // const [ relation, setRelation ] = useState('')
-
-  // useEffect(
-  //   ()=> {setRelation(timeRelationship)}, [timeRelationship]
-  // )
   const standardView = (
     <DateTimeFilter
       startDateTime={startDateTime}

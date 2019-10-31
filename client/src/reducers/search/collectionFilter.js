@@ -21,8 +21,7 @@ export const initialState = Immutable({
   queryText: '',
   geoJSON: null,
   geoRelationship: 'intersects',
-  // TODO bad - can accidentally build 'null' into the query, which unsurprisingly causes a bad request
-  timeRelationship: 'intersects', // note there's not really a way to clear this value, but it should be clear if all 4 date/year options are null.. TODO
+  timeRelationship: 'intersects',
   startDateTime: null,
   endDateTime: null,
   startYear: null,
@@ -62,14 +61,12 @@ export const collectionFilter = (state = initialState, action) => {
       return Immutable.merge(state, {
         startDateTime: initialState.startDateTime,
         endDateTime: initialState.endDateTime,
-        // timeRelationship: initialState.timeRelationship
       })
 
     case COLLECTION_REMOVE_YEAR_RANGE:
       return Immutable.merge(state, {
         startYear: initialState.startYear,
         endYear: initialState.endYear,
-        // timeRelationship: initialState.timeRelationship
       })
 
     case COLLECTION_TOGGLE_FACET:

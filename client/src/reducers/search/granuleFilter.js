@@ -22,7 +22,7 @@ export const initialState = Immutable({
   title: '',
   geoJSON: null,
   geoRelationship: 'intersects',
-  timeRelationship: 'intersects', // note there's not really a way to clear this value, but it should be clear if all 4 date/year options are null.. TODO
+  timeRelationship: 'intersects',
   startDateTime: null,
   endDateTime: null,
   startYear: null,

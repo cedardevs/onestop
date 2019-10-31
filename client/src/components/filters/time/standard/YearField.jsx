@@ -28,7 +28,6 @@ const YearField = props => {
   const id = `${name}DateYear`
   const ariaLabel = `year ${name}`
   const labelText = label ? label : 'Year'
-  console.log('rendering with value', value)
 
   return (
     <div style={styleLayout}>
