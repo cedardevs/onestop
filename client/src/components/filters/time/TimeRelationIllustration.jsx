@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 
 import _ from 'lodash'
 
@@ -10,19 +10,24 @@ import {consolidateStyles} from '../../../utils/styleUtils'
 import {styleRelationIllustration} from '../common/styleFilters'
 import {arrow_left, arrow_right, SvgIcon} from '../../common/SvgIcon'
 
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
+
 const QUERY = [
   {
     start: 2,
     end: 6,
     description: 'user defined time filter, from start to end date',
+    short: 'start and end date',
   },
   {
     start: 2,
     description: 'user defined time filter, from start date to present',
+    short: 'start date to present',
   },
   {
     end: 6,
     description: 'user defined time filter, from beginning of time to end date',
+    short: 'beginning of time to end date',
   },
 ]
 
@@ -471,6 +476,18 @@ const TimeRelationIllustration = ({relation, hasStart, hasEnd}) => {
   if (hasStart && !hasEnd) currentQueryType = 1
   if (!hasStart && hasEnd) currentQueryType = 2
 
+  let query = QUERY[currentQueryType]
+
+  const [ notification, setNotification ] = useState('')
+  useEffect(
+    () => {
+      setNotification(
+        `Examples updated for ${relation} date filter ${query.short}`
+      )
+    },
+    [ relation, hasStart, hasEnd ]
+  )
+
   const outputs = _.map(RESULTS, (result, index) => {
     return (
       <TimeLineResult
@@ -483,6 +500,17 @@ const TimeRelationIllustration = ({relation, hasStart, hasEnd}) => {
     )
   })
 
-  return <TimeLineQuery query={QUERY[currentQueryType]} outputs={outputs} />
+  return (
+    <div>
+      <LiveAnnouncer>
+        <LiveMessage
+          message={notification}
+          aria-live="polite"
+          style={defaultStyles.hideOffscreen}
+        />
+      </LiveAnnouncer>
+      <TimeLineQuery query={query} outputs={outputs} />
+    </div>
+  )
 }
 export default TimeRelationIllustration

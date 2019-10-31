@@ -1,7 +1,8 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 
 import _ from 'lodash'
 
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 import defaultStyles from '../../../style/defaultStyles'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
@@ -269,6 +270,18 @@ const BoxIllustration = ({id, box, relation, excludeGlobal}) => {
 }
 
 const GeoRelationIllustration = ({relation, excludeGlobal}) => {
+  const [ notification, setNotification ] = useState('')
+  useEffect(
+    () => {
+      setNotification(
+        `Examples updated for ${relation} location filter${excludeGlobal
+          ? ' with exclude global filter'
+          : ''}`
+      )
+    },
+    [ relation, excludeGlobal ]
+  )
+
   const outputs = _.map(BOXES, (box, index) => {
     return (
       <BoxIllustration
@@ -291,6 +304,13 @@ const GeoRelationIllustration = ({relation, excludeGlobal}) => {
         marginTop: '.609em',
       }}
     >
+      <LiveAnnouncer>
+        <LiveMessage
+          message={notification}
+          aria-live="polite"
+          style={defaultStyles.hideOffscreen}
+        />
+      </LiveAnnouncer>
       {outputs}
     </div>
   )

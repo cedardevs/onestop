@@ -52,6 +52,7 @@ const Relation = ({id, relation, onUpdate, illustration}) => {
   const [ selectedRelation, setSelectedRelation ] = useState(
     RELATION_OPTIONS[0]
   )
+  const diagram = illustration(relation)
 
   useEffect(
     () => {
@@ -141,10 +142,7 @@ const Relation = ({id, relation, onUpdate, illustration}) => {
         ]}
       />
 
-      <Expandable
-        open={examplesOpen}
-        content={illustration(selectedRelation.value)}
-      />
+      <Expandable open={examplesOpen} content={diagram} />
     </div>
   )
 }
