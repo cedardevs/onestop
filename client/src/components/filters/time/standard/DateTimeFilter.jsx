@@ -46,13 +46,16 @@ const DateTimeFilter = ({
   clear,
   applyFilter,
 }) => {
-  // const [ start, setStart ] = useState({date: {year:'', month:'', day:''}, valid: true})
-  const [ end, setEnd ] = useState({date: {}, valid: true})
+  // const [ end, setEnd ] = useState({date: {}, valid: true})
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
-  const [initStart, clearStart, startMap, start, setStart] = useDatetime((date)=>{
+  const [initStart, clearStart, startMap, start] = useDatetime((date)=>{
     setWarning('')
-    setDateRangeValid(isValidDateRange(date, end.date))
+    setDateRangeValid(isValidDateRange(date, endMap()))
+  })
+  const [initEnd, clearEnd, endMap, end] = useDatetime((date)=>{
+    setWarning('')
+    setDateRangeValid(isValidDateRange(startMap(), date))
   })
   // const [ sy, ssy] = useState('')
   // const [ sm, ssm] = useState('')
@@ -72,7 +75,12 @@ const DateTimeFilter = ({
     useEffect(
       () => {
         initStart(startDateTime) // setFromString
-      }, [startDateTime]
+      }, [startDateTime] // TODO wouldn't have to expose initFromString method if I pass startDateTime into useDateTime as arg and do this there instead!
+    )
+    useEffect(
+      ()=> {
+        initEnd(endDateTime)
+      }, [endDateTime]
     )
 
 // useEffect(
@@ -104,17 +112,18 @@ const DateTimeFilter = ({
   //   setWarning('')
   //   setDateRangeValid(isValidDateRange(date, end.date)) // TODO
   // }
-  const updateEndDate = (date, valid) => {
-    setEnd({date: date, valid: valid})
-    setWarning('')
-    setDateRangeValid(isValidDateRange(start.date, date))
-  }
+  // const updateEndDate = (date, valid) => {
+  //   setEnd({date: date, valid: valid})
+  //   setWarning('')
+  //   setDateRangeValid(isValidDateRange(start.date, date))
+  // }
 
   const clearDates = () => {
     clear()
     clearStart() // clear()
     // ssy('') ; ssm(''); ssd(''); ssv(true)
-    setEnd({date: {}, valid: true})
+    // setEnd({date: {}, valid: true})
+    clearEnd()
     setDateRangeValid(true)
     setWarning('')
   }
@@ -122,29 +131,30 @@ const DateTimeFilter = ({
   const applyDates = () => {
     console.log('applying dates:')
     if (!start.valid || !end.valid || !dateRangeValid) {
-      setWarning(createWarning(end.valid, dateRangeValid))
+      setWarning(createWarning())
     }
     else {
 
-      let start = startMap()
+      let start = startMap()// TODO warning variable name collistion
       let startDateString = !_.every(start, _.isNull)
         ? moment(start).utc().startOf('day').format()
         : null
-      let endDateString = !_.every(end.date, _.isNull)
-        ? moment(end.date).utc().startOf('day').format()
+        let end = endMap() // TODO warning variable name collistion
+      let endDateString = !_.every(end, _.isNull)
+        ? moment(end).utc().startOf('day').format()
         : null
 
       applyFilter(startDateString, endDateString)
     }
   }
 
-  // const createWarning = (endValueValid, dateRangeValid) => {
-  //   if (!sv && !endValueValid) return 'Invalid start and end date.'
-  //   if (!sv) return 'Invalid start date.'
-  //   if (!endValueValid) return 'Invalid end date.'
-  //   if (!dateRangeValid) return 'Invalid date range.'
-  //   return 'Unknown error'
-  // }
+  const createWarning = () => {
+    if (!start.valid && !end.valid) return 'Invalid start and end date.'
+    if (!start.valid) return 'Invalid start date.'
+    if (!end.valid) return 'Invalid end date.'
+    if (!dateRangeValid) return 'Invalid date range.'
+    return 'Unknown error'
+  }
 
   const handleKeyDown = event => {
     if (event.keyCode === Key.ENTER) {
@@ -167,14 +177,12 @@ const DateTimeFilter = ({
       >
         <DateFieldset
           name="start"
-          year={start.year}
-          month={start.month}
-          day={start.day}
-          setYear={setStart.year}
-          setMonth={setStart.month}
-          setDay={setStart.day}
-          valid={start.valid}
+          date={start}
         />
+          <DateFieldset
+            name="end"
+            date={end}
+          />
       </form>
     </div>
   )
@@ -202,8 +210,8 @@ const DateTimeFilter = ({
     return (
       <TimeRelationIllustration
         relation={relation}
-        hasStart={start.year != null}
-        hasEnd={end.date.year != null}
+        hasStart={_.isEmpty(start.year)}
+        hasEnd={_.isEmpty(end.year)}
       />
     )
   }

@@ -42,10 +42,10 @@ const styleInputValidity = isValid => {
   }
 }
 
-const DateFieldset = ({name, year, day, month, setYear, setDay, setMonth, valid, setValid, onDateChange}) => {
+const DateFieldset = ({name, date, onDateChange}) => {
   const legendText = `${_.capitalize(name)} Date:`
 
-
+// year, day, month, setYear, setDay, setMonth, valid, setValid,
   // const [ year, setYear ] = useState('')
   // const [ month, setMonth ] = useState('')
   // const [ day, setDay ] = useState('')
@@ -89,24 +89,24 @@ const DateFieldset = ({name, year, day, month, setYear, setDay, setMonth, valid,
       <div style={styleDate}>
         <YearField
           name={name}
-          value={year}
-          onChange={e => setYear(e.target.value)}
+          value={date.year}
+          onChange={e => date.setYear(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
         />
         <MonthField
           name={name}
-          value={month}
-          onChange={e => setMonth( e.target.value)}
+          value={date.month}
+          onChange={e => date.setMonth( e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
         />
         <DayField
           name={name}
-          value={day}
-          onChange={e => setDay(e.target.value)}
+          value={date.day}
+          onChange={e => date.setDay(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
@@ -114,8 +114,8 @@ const DateFieldset = ({name, year, day, month, setYear, setDay, setMonth, valid,
 
         <div style={styleLayout}>
           <span />
-          <span aria-hidden="true" style={styleInputValidity(valid)}>
-            {valid ? '✓' : '✖'}
+          <span aria-hidden="true" style={styleInputValidity(date.valid)}>
+            {date.valid ? '✓' : '✖'}
           </span>
         </div>
       </div>
