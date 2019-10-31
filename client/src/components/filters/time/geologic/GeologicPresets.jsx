@@ -89,7 +89,7 @@ const ERAS = [
 ]
 
 const GeologicPresets = ({startYear, endYear, applyFilter}) => {
-  const legendText = 'Eras'
+  const legendText = 'Intervals'
   const [ selectedPreset, setSelectedPreset ] = useState(null)
 
   useEffect(
@@ -130,8 +130,8 @@ const GeologicPresets = ({startYear, endYear, applyFilter}) => {
         <Select
           id="presets"
           name="presets"
-          aria-label="Era Preset Filter"
-          placeholder="Select Era Filter"
+          aria-label="Interval Preset Filter"
+          placeholder="Select Interval Filter"
           theme={selectTheme}
           value={selectedPreset}
           options={ERAS}
