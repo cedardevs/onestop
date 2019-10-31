@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 import _ from 'lodash'
 import moment from 'moment/moment'
 
 import {FilterColors, SiteColors} from '../../../../style/defaultStyles'
-import {ymdToDateMap, isValidDate} from '../../../../utils/inputUtils'
+import { isValidDate} from '../../../../utils/inputUtils'
 
 import FilterFieldset from '../../FilterFieldset'
 import YearField from './YearField'
@@ -42,40 +42,47 @@ const styleInputValidity = isValid => {
   }
 }
 
-const DateFieldset = ({name, date, onDateChange}) => {
+const DateFieldset = ({name, year, day, month, setYear, setDay, setMonth, valid, setValid, onDateChange}) => {
   const legendText = `${_.capitalize(name)} Date:`
 
-  const [ year, setYear ] = useState('')
-  const [ month, setMonth ] = useState('')
-  const [ day, setDay ] = useState('')
-  const [ valid, setValid ] = useState(true)
 
-  useEffect(
-    () => {
-      if (date != null) {
-        let dateObj = moment(date).utc()
-        setYear(dateObj.year().toString())
-        setMonth(dateObj.month().toString())
-        setDay(dateObj.date().toString())
-      }
-      else {
-        setYear('')
-        setMonth('')
-        setDay('')
-      }
-    },
-    [ date ] // when props date / redux store changes, update fields
-  )
+  // const [ year, setYear ] = useState('')
+  // const [ month, setMonth ] = useState('')
+  // const [ day, setDay ] = useState('')
+  // const [ valid, setValid ] = useState(true)
 
-  useEffect(
-    () => {
-      let validValue = isValidDate(year, month, day)
-      setValid(validValue) // update UI
-      // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
-      onDateChange(ymdToDateMap(year, month, day), validValue)
-    },
-    [ year, month, day ]
-  )
+  // useEffect(
+  //   () => {
+  //     if (date != null) {
+  //       let dateObj = moment(date).utc()
+  //       console.log('setting year from external value:', date, dateObj.year().toString())
+  //       setYear(dateObj.year().toString())
+  //       setMonth(dateObj.month().toString())
+  //       setDay(dateObj.date().toString())
+  //     }
+  //     else {
+  //       console.log('setting year to empty str')
+  //       setYear('')
+  //       setMonth('')
+  //       setDay('')
+  //     }
+  //   },
+  //   [ date ] // when props date / redux store changes, update fields
+  // )
+
+  // useEffect(
+  //   () => {
+  //     let validValue = isValidDate(year, month, day)
+  //     setValid(validValue) // update UI
+  //     // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
+  //     console.log('changed', year, validValue, ymdToDateMap(year, month, day))
+  //     onDateChange(ymdToDateMap(year, month, day), validValue)
+  //   },
+  //   [ year, month, day ]
+  // )
+  // const onChange = (year, month, day) => {
+  //   onDateChange(year, month, day, isValidDate(year, month, day))
+  // }
 
   return (
     <FilterFieldset legendText={legendText}>
@@ -91,7 +98,7 @@ const DateFieldset = ({name, date, onDateChange}) => {
         <MonthField
           name={name}
           value={month}
-          onChange={e => setMonth(e.target.value)}
+          onChange={e => setMonth( e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}

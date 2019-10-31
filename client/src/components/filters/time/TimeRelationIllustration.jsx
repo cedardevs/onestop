@@ -403,7 +403,6 @@ const TimeLineResult = ({id, result, relation, queryType}) => {
     queryType,
     relation
   )
-  console.log('result', longDescription)
 
   let styleContinuation = {
     fill: result.styles.color(includedBasedOnRelationship),

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
 import moment from 'moment/moment'
@@ -7,7 +7,7 @@ import FlexRow from '../../../common/ui/FlexRow'
 import Button from '../../../common/input/Button'
 import RadioButtonSet from '../../../common/input/RadioButtonSet'
 import {Key} from '../../../../utils/keyboardUtils'
-import {isValidDateRange} from '../../../../utils/inputUtils'
+import {ymdToDateMap, isValidDate, isValidDateRange} from '../../../../utils/inputUtils'
 import {SiteColors} from '../../../../style/defaultStyles'
 import DateFieldset from './DateFieldset'
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
@@ -19,25 +19,6 @@ import {
 import ApplyClearRow from '../../common/ApplyClearRow'
 import Relation from '../../Relation'
 import TimeRelationIllustration from '../TimeRelationIllustration'
-
-// const RELATION_OPTIONS = [
-//   {
-//     value: 'intersects',
-//     label: 'Any Overlap',
-//   },
-//   {
-//     value: 'contains',
-//     label: 'Result fully contains query',
-//   },
-//   {
-//     value: 'within',
-//     label: 'Result fully within query',
-//   }, // TODO display as: Result [dropdown] query
-//   // {
-//   //   value: 'disjoint',
-//   //   label: 'Disjoint',
-//   // },
-// ]
 
 const warningStyle = warning => {
   if (_.isEmpty(warning)) {
@@ -64,16 +45,55 @@ const DateTimeFilter = ({
   clear,
   applyFilter,
 }) => {
-  const [ start, setStart ] = useState({date: {}, valid: true})
+  // const [ start, setStart ] = useState({date: {year:'', month:'', day:''}, valid: true})
   const [ end, setEnd ] = useState({date: {}, valid: true})
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
+  const [ sy, ssy] = useState('')
+  const [ sm, ssm] = useState('')
+  const [ sd, ssd] = useState('')
+  const [ sv, ssv] = useState(true)
 
-  const updateStartDate = (date, valid) => {
-    setStart({date: date, valid: valid})
-    setWarning('')
-    setDateRangeValid(isValidDateRange(date, end.date))
-  }
+    useEffect(
+      () => {
+        let validValue = isValidDate(sy, sm, sd)
+        ssv(validValue)
+        setWarning('')
+        let date = ymdToDateMap(sy, sm, sd)
+        setDateRangeValid(isValidDateRange(date, end.date))
+      },
+      [ sy, sm, sd ]
+    )
+
+useEffect(
+  () => {
+    if (startDateTime != null) {
+      let dateObj = moment(startDateTime).utc()
+      ssy (dateObj.year().toString())
+      ssm (dateObj.month().toString())
+      ssd (dateObj.date().toString())
+      ssv(true) // TODO I think?
+      // setStart({date: ymdToDateMap(year, month, day), valid: true})
+    }
+    else {
+      // setYear('')
+      // setMonth('')
+      // setDay('')
+      // setStart({date: ymdToDateMap('', '', ''), valid: true})
+      // setWarning('') // TODO unsure about this
+      ssy('') ; ssm(''); ssd(''); ssv(true) // duplicate clear
+    }
+  },
+  [ startDateTime ] // when props date / redux store changes, update fields
+)
+
+  // const updateStartDate = (year, month, day, valid) => {
+  //   // setStart({date: date, valid: valid})
+  //   let date = ymdToDateMap(year, month, day)
+  //   setStart({date: date, valid: valid})
+  //   setWarning('')
+  //   setDateRangeValid(isValidDateRange(date, end.date)) // TODO
+  // }
   const updateEndDate = (date, valid) => {
     setEnd({date: date, valid: valid})
     setWarning('')
@@ -82,19 +102,22 @@ const DateTimeFilter = ({
 
   const clearDates = () => {
     clear()
-    setStart({date: {}, valid: true})
+    ssy('') ; ssm(''); ssd(''); ssv(true)
     setEnd({date: {}, valid: true})
     setDateRangeValid(true)
     setWarning('')
   }
 
   const applyDates = () => {
-    if (!start.valid || !end.valid || !dateRangeValid) {
-      setWarning(createWarning(start.valid, end.valid, dateRangeValid))
+    console.log('applying dates:')
+    if (!sv || !end.valid || !dateRangeValid) {
+      setWarning(createWarning(end.valid, dateRangeValid))
     }
     else {
-      let startDateString = !_.every(start.date, _.isNull)
-        ? moment(start.date).utc().startOf('day').format()
+
+      let start = ymdToDateMap(sy, sm, sd)
+      let startDateString = !_.every(start, _.isNull)
+        ? moment(start).utc().startOf('day').format()
         : null
       let endDateString = !_.every(end.date, _.isNull)
         ? moment(end.date).utc().startOf('day').format()
@@ -104,9 +127,9 @@ const DateTimeFilter = ({
     }
   }
 
-  const createWarning = (startValueValid, endValueValid, dateRangeValid) => {
-    if (!startValueValid && !endValueValid) return 'Invalid start and end date.'
-    if (!startValueValid) return 'Invalid start date.'
+  const createWarning = (endValueValid, dateRangeValid) => {
+    if (!sv && !endValueValid) return 'Invalid start and end date.'
+    if (!sv) return 'Invalid start date.'
     if (!endValueValid) return 'Invalid end date.'
     if (!dateRangeValid) return 'Invalid date range.'
     return 'Unknown error'
@@ -119,6 +142,11 @@ const DateTimeFilter = ({
     }
   }
 
+// <DateFieldset
+//   name="end"
+//   date={endDateTime}
+//   onDateChange={updateEndDate}
+// />
   const form = (
     <div key="DateFilterInput::all">
       <form
@@ -128,13 +156,13 @@ const DateTimeFilter = ({
       >
         <DateFieldset
           name="start"
-          date={startDateTime}
-          onDateChange={updateStartDate}
-        />
-        <DateFieldset
-          name="end"
-          date={endDateTime}
-          onDateChange={updateEndDate}
+          year={sy}
+          day={sd}
+          month={sm}
+          setYear={ssy}
+          setDay={ssd}
+          setMonth={ssm}
+          valid={sv}
         />
       </form>
     </div>
@@ -163,7 +191,7 @@ const DateTimeFilter = ({
     return (
       <TimeRelationIllustration
         relation={relation}
-        hasStart={start.date.year != null}
+        hasStart={sy != null}
         hasEnd={end.date.year != null}
       />
     )
@@ -179,15 +207,6 @@ const DateTimeFilter = ({
     />
   )
 
-  // let defaultSelection = 'intersects'
-  // timeRelationship || 'intersects
-  // let defaultSelection = _.find(RELATION_OPTIONS, option => {
-  //   return option.value == timeRelationship
-  // })
-  // if (!defaultSelection) {
-  //   defaultSelection = RELATION_OPTIONS[0]
-  // }
-  // defaultSelection = defaultSelection.value
   return (
     <div style={styleFilterPanel}>
       <fieldset style={styleFieldsetBorder}>
