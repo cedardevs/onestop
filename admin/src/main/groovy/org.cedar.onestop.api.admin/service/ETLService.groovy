@@ -43,8 +43,6 @@ class ETLService {
   void rebuildSearchIndices() {
     log.info "Starting search indices rebuilding process"
     def start = System.currentTimeMillis()
-    elasticsearchService.ensureIndices()
-    elasticsearchService.ensurePipelines()
     elasticsearchService.refresh(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
     def newCollectionSearchIndex = elasticsearchService.createIndex(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
     def newGranuleSearchIndex = elasticsearchService.createIndex(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
@@ -97,8 +95,6 @@ class ETLService {
    * 5) Reindex those granules with internalParentIdentifier
    */
   private Map runETL(String sourceCollection, String destCollection, String sourceGranule, String destGranule) {
-    elasticsearchService.ensureIndices()
-    elasticsearchService.ensurePipelines()
     elasticsearchService.refresh(sourceCollection, sourceGranule, destCollection, destGranule)
 
     // Identify & reindex new/updated collections from staging -> search
@@ -216,7 +212,6 @@ class ETLService {
   }
 
   private Map runFlatteningETL(String collectionIndex, String source, String destination) {
-    elasticsearchService.ensureSearchIndices()
     elasticsearchService.refresh(collectionIndex, source, destination)
 
     def wholeCollections

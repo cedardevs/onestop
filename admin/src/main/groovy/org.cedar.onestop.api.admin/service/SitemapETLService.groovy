@@ -43,8 +43,6 @@ class SitemapETLService {
   void rebuildSearchIndices() {
     log.info "Starting sitemap indices rebuilding process"
     def start = System.currentTimeMillis()
-    elasticsearchService.ensureIndices()
-    elasticsearchService.ensurePipelines()
     def newSitemapIndex = elasticsearchService.createIndex(esConfig.SITEMAP_INDEX_ALIAS)
 
     try {
@@ -73,7 +71,6 @@ class SitemapETLService {
   }
 
   private Map runSitemapEtl(String collectionIndex, String sitemapIndex) {
-    elasticsearchService.ensureSearchIndices()
     elasticsearchService.refresh(collectionIndex, sitemapIndex)
 
     List<List<String>> collections = []

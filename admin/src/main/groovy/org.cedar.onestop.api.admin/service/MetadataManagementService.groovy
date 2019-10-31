@@ -107,8 +107,6 @@ class MetadataManagementService {
 
   List loadParsedRecords(List<Map<String, ?>> parsedRecords){
     log.debug("Loading ${parsedRecords.size()} parsedRecords...")
-    esService.ensureStagingIndices()
-    esService.ensurePipelines()
     esService.refreshAllIndices()
     List<Map> results = []
     def bulkRequest = new StringBuilder()

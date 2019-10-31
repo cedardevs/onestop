@@ -1,6 +1,6 @@
 package org.cedar.onestop.api.admin.service
 
-import groovy.json.JsonBuilder
+
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
@@ -14,6 +14,8 @@ import org.elasticsearch.client.ResponseException
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+
+import javax.annotation.PostConstruct
 
 import static org.cedar.onestop.elastic.common.DocumentUtil.parseAdminResponse
 
@@ -37,6 +39,12 @@ class ElasticsearchService {
     this.esConfig = elasticsearchConfig
     putPipeline(esConfig.COLLECTION_PIPELINE)
     putPipeline(esConfig.GRANULE_PIPELINE)
+  }
+
+  @PostConstruct
+  void ensureAllEsObjects() {
+    ensureIndices()
+    ensurePipelines()
   }
 
   void ensureIndices() {
