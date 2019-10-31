@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
+
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 import DateTimeFilter from './standard/DateTimeFilter'
 import GeologicTimeFilter from './geologic/GeologicTimeFilter'
 import TabPanels from '../../common/ui/TabPanels'
-
 import FlexRow from '../../common/ui/FlexRow'
 import Drawer from '../../layout/Drawer'
 import {exclamation_triangle, SvgIcon} from '../../common/SvgIcon'
@@ -34,10 +35,8 @@ const TimeFilter = ({
   updateTimeRelation,
   submit,
 }) => {
-  // TODO it might be worth extracting the alert states, drawer, etc, if we want to reuse the same visual+508 alert elsewhere. Or change to using react-aria-live (just added for LoadingBar)
   const [ alert, setAlert ] = useState('')
   const [ showAlert, setShowAlert ] = useState(false)
-  const [ alertAnnouncement, setAlertAnnouncement ] = useState('')
 
   const standardView = (
     <DateTimeFilter
@@ -112,7 +111,7 @@ const TimeFilter = ({
   if (!_.isEmpty(startDateTime) || !_.isEmpty(endDateTime))
     defaultSelection = 'standard'
   else if (startYear != null || endYear != null) defaultSelection = 'geologic'
-  const [ currentTab, setCurrentTab ] = useState(defaultSelection) // note! this is not the master state of the tab, but used for computing the alert message internal to this component only
+  const [ currentTab, setCurrentTab ] = useState(defaultSelection) // note! this is not the master state of the tab, but used for computing the alert message internal to this component only TODO use the same Effect magic as the DateTimeEffect/GeologicYearEffect to pass this information around and only keep it in one place
 
   const setAlertStatus = () => {
     let shouldShowAlert = false
@@ -167,37 +166,25 @@ const TimeFilter = ({
         <div key="alert::message" aria-hidden="true">
           {alert}
         </div>,
-        <div
-          key="alert::annoucement"
-          aria-live="polite"
-          aria-atomic="true"
-          style={defaultStyles.hideOffscreen}
-        >
-          {alertAnnouncement}
-        </div>,
+        <LiveAnnouncer key="alert::annoucement">
+          <LiveMessage
+            message={alert}
+            aria-live="polite"
+            style={defaultStyles.hideOffscreen}
+          />
+        </LiveAnnouncer>,
       ]}
     />
   )
 
-  const onAlertOpen = () => {
-    // change this *after* it opens so that announcment doesn't interupt tab change information in a screen reader
-    setAlertAnnouncement(alert)
-  }
-
   const onAlertClose = () => {
     // set these back when closed so that announcements reannounce when they reappear (screen reader only announces it the first time it changes otherwise)
     setAlert('')
-    setAlertAnnouncement('')
   }
 
   return (
     <div>
-      <Drawer
-        content={alertMessage}
-        open={showAlert}
-        onOpen={onAlertOpen}
-        onClose={onAlertClose}
-      />
+      <Drawer content={alertMessage} open={showAlert} onClose={onAlertClose} />
       <TabPanels
         name="timeFilter"
         options={VIEW_OPTIONS}
