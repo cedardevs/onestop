@@ -19,6 +19,7 @@ import {
 import ApplyClearRow from '../../common/ApplyClearRow'
 import Relation from '../../Relation'
 import TimeRelationIllustration from '../TimeRelationIllustration'
+import {useDatetime} from './DateTimeEffect'
 
 const warningStyle = warning => {
   if (_.isEmpty(warning)) {
@@ -49,43 +50,52 @@ const DateTimeFilter = ({
   const [ end, setEnd ] = useState({date: {}, valid: true})
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
-  const [ sy, ssy] = useState('')
-  const [ sm, ssm] = useState('')
-  const [ sd, ssd] = useState('')
-  const [ sv, ssv] = useState(true)
-
+  const [initStart, clearStart, startMap, start, setStart] = useDatetime((date)=>{
+    setWarning('')
+    setDateRangeValid(isValidDateRange(date, end.date))
+  })
+  // const [ sy, ssy] = useState('')
+  // const [ sm, ssm] = useState('')
+  // const [ sd, ssd] = useState('')
+  // const [ sv, ssv] = useState(true)
+  //
+  //   useEffect(
+  //     () => {
+  //       let validValue = isValidDate(sy, sm, sd)
+  //       ssv(validValue)
+  //       setWarning('')
+  //       let date = ymdToDateMap(sy, sm, sd)
+  //       setDateRangeValid(isValidDateRange(date, end.date))
+  //     },
+  //     [ sy, sm, sd ]
+  //   )
     useEffect(
       () => {
-        let validValue = isValidDate(sy, sm, sd)
-        ssv(validValue)
-        setWarning('')
-        let date = ymdToDateMap(sy, sm, sd)
-        setDateRangeValid(isValidDateRange(date, end.date))
-      },
-      [ sy, sm, sd ]
+        initStart(startDateTime) // setFromString
+      }, [startDateTime]
     )
 
-useEffect(
-  () => {
-    if (startDateTime != null) {
-      let dateObj = moment(startDateTime).utc()
-      ssy (dateObj.year().toString())
-      ssm (dateObj.month().toString())
-      ssd (dateObj.date().toString())
-      ssv(true) // TODO I think?
-      // setStart({date: ymdToDateMap(year, month, day), valid: true})
-    }
-    else {
-      // setYear('')
-      // setMonth('')
-      // setDay('')
-      // setStart({date: ymdToDateMap('', '', ''), valid: true})
-      // setWarning('') // TODO unsure about this
-      ssy('') ; ssm(''); ssd(''); ssv(true) // duplicate clear
-    }
-  },
-  [ startDateTime ] // when props date / redux store changes, update fields
-)
+// useEffect(
+//   () => {
+//     if (startDateTime != null) {
+//       let dateObj = moment(startDateTime).utc()
+//       ssy (dateObj.year().toString())
+//       ssm (dateObj.month().toString())
+//       ssd (dateObj.date().toString())
+//       ssv(true) // TODO I think?
+//       // setStart({date: ymdToDateMap(year, month, day), valid: true})
+//     }
+//     else {
+//       // setYear('')
+//       // setMonth('')
+//       // setDay('')
+//       // setStart({date: ymdToDateMap('', '', ''), valid: true})
+//       // setWarning('') // TODO unsure about this
+//       ssy('') ; ssm(''); ssd(''); ssv(true) // duplicate clear
+//     }
+//   },
+//   [ startDateTime ] // when props date / redux store changes, update fields
+// )
 
   // const updateStartDate = (year, month, day, valid) => {
   //   // setStart({date: date, valid: valid})
@@ -102,7 +112,8 @@ useEffect(
 
   const clearDates = () => {
     clear()
-    ssy('') ; ssm(''); ssd(''); ssv(true)
+    clearStart() // clear()
+    // ssy('') ; ssm(''); ssd(''); ssv(true)
     setEnd({date: {}, valid: true})
     setDateRangeValid(true)
     setWarning('')
@@ -110,12 +121,12 @@ useEffect(
 
   const applyDates = () => {
     console.log('applying dates:')
-    if (!sv || !end.valid || !dateRangeValid) {
+    if (!start.valid || !end.valid || !dateRangeValid) {
       setWarning(createWarning(end.valid, dateRangeValid))
     }
     else {
 
-      let start = ymdToDateMap(sy, sm, sd)
+      let start = startMap()
       let startDateString = !_.every(start, _.isNull)
         ? moment(start).utc().startOf('day').format()
         : null
@@ -127,13 +138,13 @@ useEffect(
     }
   }
 
-  const createWarning = (endValueValid, dateRangeValid) => {
-    if (!sv && !endValueValid) return 'Invalid start and end date.'
-    if (!sv) return 'Invalid start date.'
-    if (!endValueValid) return 'Invalid end date.'
-    if (!dateRangeValid) return 'Invalid date range.'
-    return 'Unknown error'
-  }
+  // const createWarning = (endValueValid, dateRangeValid) => {
+  //   if (!sv && !endValueValid) return 'Invalid start and end date.'
+  //   if (!sv) return 'Invalid start date.'
+  //   if (!endValueValid) return 'Invalid end date.'
+  //   if (!dateRangeValid) return 'Invalid date range.'
+  //   return 'Unknown error'
+  // }
 
   const handleKeyDown = event => {
     if (event.keyCode === Key.ENTER) {
@@ -156,13 +167,13 @@ useEffect(
       >
         <DateFieldset
           name="start"
-          year={sy}
-          day={sd}
-          month={sm}
-          setYear={ssy}
-          setDay={ssd}
-          setMonth={ssm}
-          valid={sv}
+          year={start.year}
+          month={start.month}
+          day={start.day}
+          setYear={setStart.year}
+          setMonth={setStart.month}
+          setDay={setStart.day}
+          valid={start.valid}
         />
       </form>
     </div>
@@ -191,7 +202,7 @@ useEffect(
     return (
       <TimeRelationIllustration
         relation={relation}
-        hasStart={sy != null}
+        hasStart={start.year != null}
         hasEnd={end.date.year != null}
       />
     )
