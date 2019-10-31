@@ -49,13 +49,13 @@ const DateTimeFilter = ({
   // const [ end, setEnd ] = useState({date: {}, valid: true})
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
-  const [initStart, clearStart, startMap, start] = useDatetime((date)=>{
+  const [start] = useDatetime(startDateTime, (date)=>{
     setWarning('')
-    setDateRangeValid(isValidDateRange(date, endMap()))
+    setDateRangeValid(isValidDateRange(date, end.asMap()))
   })
-  const [initEnd, clearEnd, endMap, end] = useDatetime((date)=>{
+  const [end] = useDatetime(endDateTime, (date)=>{
     setWarning('')
-    setDateRangeValid(isValidDateRange(startMap(), date))
+    setDateRangeValid(isValidDateRange(start.asMap(), date))
   })
   // const [ sy, ssy] = useState('')
   // const [ sm, ssm] = useState('')
@@ -72,16 +72,16 @@ const DateTimeFilter = ({
   //     },
   //     [ sy, sm, sd ]
   //   )
-    useEffect(
-      () => {
-        initStart(startDateTime) // setFromString
-      }, [startDateTime] // TODO wouldn't have to expose initFromString method if I pass startDateTime into useDateTime as arg and do this there instead!
-    )
-    useEffect(
-      ()=> {
-        initEnd(endDateTime)
-      }, [endDateTime]
-    )
+    // useEffect(
+    //   () => {
+    //     initStart(startDateTime) // setFromString
+    //   }, [startDateTime] // TODO wouldn't have to expose initFromString method if I pass startDateTime into useDateTime as arg and do this there instead!
+    // )
+    // useEffect(
+    //   ()=> {
+    //     initEnd(endDateTime)
+    //   }, [endDateTime]
+    // )
 
 // useEffect(
 //   () => {
@@ -120,10 +120,10 @@ const DateTimeFilter = ({
 
   const clearDates = () => {
     clear()
-    clearStart() // clear()
+    start.clear() // clear()
     // ssy('') ; ssm(''); ssd(''); ssv(true)
     // setEnd({date: {}, valid: true})
-    clearEnd()
+    end.clear()
     setDateRangeValid(true)
     setWarning('')
   }
@@ -135,13 +135,13 @@ const DateTimeFilter = ({
     }
     else {
 
-      let start = startMap()// TODO warning variable name collistion
-      let startDateString = !_.every(start, _.isNull)
-        ? moment(start).utc().startOf('day').format()
+      let startMap = start.asMap()
+      let startDateString = !_.every(startMap, _.isNull)
+        ? moment(startMap).utc().startOf('day').format()
         : null
-        let end = endMap() // TODO warning variable name collistion
-      let endDateString = !_.every(end, _.isNull)
-        ? moment(end).utc().startOf('day').format()
+        let endMap = end.asMap()
+      let endDateString = !_.every(endMap, _.isNull)
+        ? moment(endMap).utc().startOf('day').format()
         : null
 
       applyFilter(startDateString, endDateString)
