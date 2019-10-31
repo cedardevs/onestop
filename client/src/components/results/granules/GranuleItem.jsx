@@ -11,18 +11,8 @@ import ReactDOM from 'react-dom'
 import {granuleDownloadableLinks} from '../../../utils/cartUtils'
 import {FEATURE_CART} from '../../../utils/featureUtils'
 import Checkbox from '../../common/input/Checkbox'
-const pattern = require('../../../../img/topography.png')
 
-const styleTitle = expanded => {
-  return {
-    fontFamily: fontFamilySerif(),
-    fontSize: '1em',
-    fontWeight: expanded ? 'bold' : 'normal',
-    overflowWrap: 'break-word',
-    wordWrap: 'break-word',
-    margin: '0 1.236em 0 0',
-  }
-}
+const pattern = require('../../../../img/topography.png')
 
 const styleLeft = {
   flex: '1 1 auto',
@@ -65,7 +55,6 @@ export default function GranuleItem(props){
   const {
     itemId,
     item,
-    expanded,
     showAccessLinks,
     showVideos,
     featuresEnabled,
@@ -85,12 +74,6 @@ export default function GranuleItem(props){
         })
       }
     : null
-
-  const title = (
-    <h3 key={'GranuleListItem::title'} style={styleTitle(expanded)}>
-      {item.title}
-    </h3>
-  )
 
   const accessLinks = showAccessLinks ? (
     <div key={'GranuleListItem::accessLinks'}>

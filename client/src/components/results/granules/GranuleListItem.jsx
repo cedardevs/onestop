@@ -62,7 +62,6 @@ export default function GranuleListItem(props){
     <GranuleItemContainer
       itemId={itemId}
       item={item}
-      expanded={expanded}
       checkGranule={props.checkGranule}
       handleCheckboxChange={props.handleCheckboxChange}
       showAccessLinks={true}
