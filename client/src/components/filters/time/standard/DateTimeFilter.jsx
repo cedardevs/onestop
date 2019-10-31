@@ -7,7 +7,7 @@ import FlexRow from '../../../common/ui/FlexRow'
 import Button from '../../../common/input/Button'
 import RadioButtonSet from '../../../common/input/RadioButtonSet'
 import {Key} from '../../../../utils/keyboardUtils'
-import {ymdToDateMap, isValidDate, isValidDateRange} from '../../../../utils/inputUtils'
+import {isValidDateRange} from '../../../../utils/inputUtils'
 import {SiteColors} from '../../../../style/defaultStyles'
 import DateFieldset from './DateFieldset'
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
@@ -46,100 +46,35 @@ const DateTimeFilter = ({
   clear,
   applyFilter,
 }) => {
-  // const [ end, setEnd ] = useState({date: {}, valid: true})
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
-  const [start] = useDatetime(startDateTime, (date)=>{
+  const [ start ] = useDatetime(startDateTime, date => {
     setWarning('')
     setDateRangeValid(isValidDateRange(date, end.asMap()))
   })
-  const [end] = useDatetime(endDateTime, (date)=>{
+  const [ end ] = useDatetime(endDateTime, date => {
     setWarning('')
     setDateRangeValid(isValidDateRange(start.asMap(), date))
   })
-  // const [ sy, ssy] = useState('')
-  // const [ sm, ssm] = useState('')
-  // const [ sd, ssd] = useState('')
-  // const [ sv, ssv] = useState(true)
-  //
-  //   useEffect(
-  //     () => {
-  //       let validValue = isValidDate(sy, sm, sd)
-  //       ssv(validValue)
-  //       setWarning('')
-  //       let date = ymdToDateMap(sy, sm, sd)
-  //       setDateRangeValid(isValidDateRange(date, end.date))
-  //     },
-  //     [ sy, sm, sd ]
-  //   )
-    // useEffect(
-    //   () => {
-    //     initStart(startDateTime) // setFromString
-    //   }, [startDateTime] // TODO wouldn't have to expose initFromString method if I pass startDateTime into useDateTime as arg and do this there instead!
-    // )
-    // useEffect(
-    //   ()=> {
-    //     initEnd(endDateTime)
-    //   }, [endDateTime]
-    // )
-
-// useEffect(
-//   () => {
-//     if (startDateTime != null) {
-//       let dateObj = moment(startDateTime).utc()
-//       ssy (dateObj.year().toString())
-//       ssm (dateObj.month().toString())
-//       ssd (dateObj.date().toString())
-//       ssv(true) // TODO I think?
-//       // setStart({date: ymdToDateMap(year, month, day), valid: true})
-//     }
-//     else {
-//       // setYear('')
-//       // setMonth('')
-//       // setDay('')
-//       // setStart({date: ymdToDateMap('', '', ''), valid: true})
-//       // setWarning('') // TODO unsure about this
-//       ssy('') ; ssm(''); ssd(''); ssv(true) // duplicate clear
-//     }
-//   },
-//   [ startDateTime ] // when props date / redux store changes, update fields
-// )
-
-  // const updateStartDate = (year, month, day, valid) => {
-  //   // setStart({date: date, valid: valid})
-  //   let date = ymdToDateMap(year, month, day)
-  //   setStart({date: date, valid: valid})
-  //   setWarning('')
-  //   setDateRangeValid(isValidDateRange(date, end.date)) // TODO
-  // }
-  // const updateEndDate = (date, valid) => {
-  //   setEnd({date: date, valid: valid})
-  //   setWarning('')
-  //   setDateRangeValid(isValidDateRange(start.date, date))
-  // }
 
   const clearDates = () => {
     clear()
-    start.clear() // clear()
-    // ssy('') ; ssm(''); ssd(''); ssv(true)
-    // setEnd({date: {}, valid: true})
+    start.clear()
     end.clear()
     setDateRangeValid(true)
     setWarning('')
   }
 
   const applyDates = () => {
-    console.log('applying dates:')
     if (!start.valid || !end.valid || !dateRangeValid) {
       setWarning(createWarning())
     }
     else {
-
       let startMap = start.asMap()
       let startDateString = !_.every(startMap, _.isNull)
         ? moment(startMap).utc().startOf('day').format()
         : null
-        let endMap = end.asMap()
+      let endMap = end.asMap()
       let endDateString = !_.every(endMap, _.isNull)
         ? moment(endMap).utc().startOf('day').format()
         : null
@@ -163,11 +98,6 @@ const DateTimeFilter = ({
     }
   }
 
-// <DateFieldset
-//   name="end"
-//   date={endDateTime}
-//   onDateChange={updateEndDate}
-// />
   const form = (
     <div key="DateFilterInput::all">
       <form
@@ -175,14 +105,8 @@ const DateTimeFilter = ({
         onKeyDown={handleKeyDown}
         aria-describedby="timeFilterInstructions"
       >
-        <DateFieldset
-          name="start"
-          date={start}
-        />
-          <DateFieldset
-            name="end"
-            date={end}
-          />
+        <DateFieldset name="start" date={start} />
+        <DateFieldset name="end" date={end} />
       </form>
     </div>
   )
