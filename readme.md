@@ -1,12 +1,15 @@
-# OneStop Search
+# OneStop Stack
 
 [![Build Status](https://circleci.com/gh/cedardevs/onestop.svg?style=svg)](https://circleci.com/gh/cedardevs/onestop)
 [![Code Coverage](https://codecov.io/gh/cedardevs/onestop/branch/master/graph/badge.svg)](https://codecov.io/gh/cedardevs/onestop)
 
-OneStop search software is used to allow discovery and access to the
-National Oceanic and Atmospheric Administration’s publicly available
-data holdings. It is being developed on a grant by a team of researchers
-from the University of Colorado (more legal info below).
+OneStop is a distributed, scalable, event-driven database and search engine for environmental data. 
+It is designed to receive metadata both from automated systems and manual uploads of ISO-19115 XML metadata.
+It implements generic parsing and analysis of that metadata while also enabling arbitrary processing flows 
+on it. All metadata entities are retrievable via REST API, exposed as streaming events via Kafka, and
+indexed to support a wide range of search and discovery capabilities via Elasticsearch.
+
+It is being developed on a grant by a team of researchers from the University of Colorado (more legal info below).
 
 ## Documentation
 
@@ -14,9 +17,9 @@ For Overview, Usage, Deployment, and Development information about this project,
 
 ## Legal
 
-This software was developed,
-under the OneStop project: 1553647,
-NOAA award number NA12OAR4320137 to CIRES.
+This software was developed under the OneStop project: 1553647 and MSN project: 1555839,
+NOAA award numbers NA12OAR4320137 and NA17OAR4320101 respectively to the Cooperative Institute 
+for Research in Environmental Sciences at the University of Colorado.
 This code is licensed under GPL version 2.
 © 2016 The Regents of the University of Colorado.
 
