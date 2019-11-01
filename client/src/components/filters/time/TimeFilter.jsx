@@ -111,7 +111,7 @@ const TimeFilter = ({
   if (!_.isEmpty(startDateTime) || !_.isEmpty(endDateTime))
     defaultSelection = 'standard'
   else if (startYear != null || endYear != null) defaultSelection = 'geologic'
-  const [ currentTab, setCurrentTab ] = useState(defaultSelection) // note! this is not the master state of the tab, but used for computing the alert message internal to this component only TODO use the same Effect magic as the DateTimeEffect/GeologicYearEffect to pass this information around and only keep it in one place
+  const [ currentTab, setCurrentTab ] = useState(defaultSelection) // note! this is not the master state of the tab, but used for computing the alert message internal to this component only
 
   const setAlertStatus = () => {
     let shouldShowAlert = false

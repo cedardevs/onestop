@@ -14,7 +14,7 @@ export function useDatetime(dateString, afterValidate){
   useEffect(
     () => {
       setValid(isValidDate(year, month, day))
-      afterValidate(asMap()) // TODO doesn't actually make much sense to call this if it's not valid
+      afterValidate(asMap()) // TODO doesn't actually make much sense to call this if it's not valid, since it then validates the date range, but that's what we'd been doing before
     },
     [ year, month, day ]
   )
@@ -33,7 +33,7 @@ export function useDatetime(dateString, afterValidate){
         setYear(dateObj.year().toString())
         setMonth(dateObj.month().toString())
         setDay(dateObj.date().toString())
-        setValid(true) // TODO I think?
+        setValid(true) // TODO I think? (we weren't doing this before but it makes sense, given that if we can parse the dateString as a moment, it is valid for usre)
       }
       else {
         clear()

@@ -418,7 +418,7 @@ const TimeLineResult = ({id, result, relation, queryType}) => {
       includedBasedOnRelationship
     )} , ${includedBasedOnRelationship ? '#cbeed5' : '#6b8c73'})`,
   }
-  const continuation = isOngoing ? ( // TODO retest accessibility!
+  const continuation = isOngoing ? (
     <div style={styleContinuation} key="...arrow">
       <SvgIcon
         wrapperStyle={{display: 'inline'}}

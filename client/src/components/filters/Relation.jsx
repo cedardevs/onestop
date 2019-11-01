@@ -10,7 +10,6 @@ import {consolidateStyles} from '../../utils/styleUtils'
 
 const RELATION_OPTIONS = [
   {
-    // TODO make these immutable like in GeologicPresets?
     value: 'intersects',
     label: 'intersects',
   },
