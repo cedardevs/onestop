@@ -10,13 +10,6 @@ defaults: &defaults
     - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
   working_directory: ~/repo
 
-go: &go
-  docker:
-    - image: circleci/golang
-  environment:
-    - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
-  working_directory: ~/repo
-
 defaultsWithElasticsearch: &defaultsWithElasticsearch
   environment:
     - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
@@ -275,8 +268,12 @@ jobs:
         paths:
         - stream-manager/build
 
-  cli:
-    <<: *go
+  cli-generation:
+    docker:
+      - image: circleci/golang
+    environment:
+      - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
+    working_directory: ~/repo
     steps:
       - <<: *attachWorkspace
       - run:
@@ -290,6 +287,10 @@ jobs:
            cd cli ;
            go get -u https://github.com/danielgtaylor/openapi-cli-generator ;
            openapi-cli-generator generate openapi.yaml
+
+  cli-publish:
+    <<: *defaults
+    steps:
       - run:
           name: Build image, publish
           command: |
@@ -376,9 +377,11 @@ workflows:
       - stream-manager:
           requires:
             - checkout
-      - cli:
+      - cli-generation
+      - cli-publish:
           requires:
             - checkout
+            - cli-generation
       - finalize:
           requires:
             - admin
