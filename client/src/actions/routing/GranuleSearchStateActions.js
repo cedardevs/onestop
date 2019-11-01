@@ -1,16 +1,19 @@
 export const GRANULE_NEW_SEARCH_REQUESTED = 'GRANULE_NEW_SEARCH_REQUESTED'
-export const granuleNewSearchRequested = granuleId => ({
-  // this indicates a granule search within a single granule
+export const granuleNewSearchRequested = collectionId => ({
+  // this indicates a granule search within a single collection
   type: GRANULE_NEW_SEARCH_REQUESTED,
-  id: granuleId,
+  id: collectionId,
 })
 
 export const GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED =
   'GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED'
-export const granuleNewSearchResetFiltersRequested = (granuleId, filters) => ({
-  // this indicates a granule search within a single granule
+export const granuleNewSearchResetFiltersRequested = (
+  collectionId,
+  filters
+) => ({
+  // this indicates a granule search within a single collection
   type: GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED,
-  id: granuleId,
+  id: collectionId,
   filters: filters,
 })
 
