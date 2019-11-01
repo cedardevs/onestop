@@ -273,6 +273,9 @@ jobs:
       - image: circleci/golang
     environment:
       - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
+      - GOOS: 'linux'
+      - GOARCH: 'amd64'
+      - GCO_ENABLED: 0
     working_directory: ~/repo
     steps:
       - <<: *attachWorkspace
