@@ -47,7 +47,6 @@ class SitemapETLService {
 
     try {
       def sitemapResult = runSitemapEtl(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, newSitemapIndex)
-      elasticsearchService.refresh(newSitemapIndex)
       elasticsearchService.moveAliasToIndex(esConfig.SITEMAP_INDEX_ALIAS, newSitemapIndex, true)
       def end = System.currentTimeMillis()
       log.info "Indexed ${sitemapResult.updated + sitemapResult.created} of ${sitemapResult.total} sitemap in ${(end - start) / 1000}s"

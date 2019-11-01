@@ -43,15 +43,14 @@ class ETLService {
   void rebuildSearchIndices() {
     log.info "Starting search indices rebuilding process"
     def start = System.currentTimeMillis()
-    elasticsearchService.refresh(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
     def newCollectionSearchIndex = elasticsearchService.createIndex(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
     def newGranuleSearchIndex = elasticsearchService.createIndex(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
     def newFlatGranuleSearchIndex = elasticsearchService.createIndex(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
 
     try {
+      elasticsearchService.refresh(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS)
       def etlResult = runETL(esConfig.COLLECTION_STAGING_INDEX_ALIAS, newCollectionSearchIndex, esConfig.GRANULE_STAGING_INDEX_ALIAS, newGranuleSearchIndex)
       def flattenResult = runFlatteningETL(newCollectionSearchIndex, newGranuleSearchIndex, newFlatGranuleSearchIndex)
-      elasticsearchService.refresh(newCollectionSearchIndex, newGranuleSearchIndex, newFlatGranuleSearchIndex)
       elasticsearchService.moveAliasToIndex(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, newCollectionSearchIndex, true)
       elasticsearchService.moveAliasToIndex(esConfig.GRANULE_SEARCH_INDEX_ALIAS, newGranuleSearchIndex, true)
       elasticsearchService.moveAliasToIndex(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS, newFlatGranuleSearchIndex, true)
@@ -200,7 +199,6 @@ class ETLService {
     }
     elasticsearchService.deleteTask(collectionTask)
 
-    elasticsearchService.refresh(esConfig.COLLECTION_STAGING_INDEX_ALIAS, esConfig.GRANULE_STAGING_INDEX_ALIAS, esConfig.COLLECTION_SEARCH_INDEX_ALIAS, esConfig.GRANULE_SEARCH_INDEX_ALIAS)
     return [
         totalCollectionsInRequest: collectionTaskStatus.totalDocs,
         updatedCollections: collectionTaskStatus.updated,
