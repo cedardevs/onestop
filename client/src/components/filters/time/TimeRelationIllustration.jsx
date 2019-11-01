@@ -46,10 +46,16 @@ const resultStyles = {
     include
       ? styleRelationIllustration.included.color
       : styleRelationIllustration.excluded.color,
-  backgroundColor: include =>
-    include
+  backgroundColor: (include, hovering) => {
+    if (hovering) {
+      return include
+        ? styleRelationIllustration.included.backgroundColorHover
+        : styleRelationIllustration.excluded.backgroundColorHover
+    }
+    return include
       ? styleRelationIllustration.included.backgroundColor
-      : styleRelationIllustration.excluded.backgroundColor,
+      : styleRelationIllustration.excluded.backgroundColor
+  },
   borderColor: include =>
     include
       ? styleRelationIllustration.included.borderColor
@@ -299,9 +305,13 @@ const TimeLineQuery = ({query, outputs}) => {
   )
   if (query.end == null) queryLabelItems.push(continuation)
 
+  const [ hovering, setHovering ] = useState(false)
+
   const queryBox = (
     <Spacer key="queryrange" style={{width: '100%'}}>
       <output
+        onMouseOver={() => setHovering(true)}
+        onMouseOut={() => setHovering(false)}
         style={{
           position: 'absolute',
           left: leftEdgeOfRange(query.start),
@@ -316,9 +326,9 @@ const TimeLineQuery = ({query, outputs}) => {
             styleRelationIllustration.query.borderColor,
             query.end == null
           ),
-          backgroundColor: styleRelationIllustration.query.backgroundColor,
-
-          // cursor: 'pointer', // TODO should this be pointer too???
+          backgroundColor: hovering
+            ? styleRelationIllustration.query.backgroundColorHover
+            : styleRelationIllustration.query.backgroundColor,
           borderRadius: '.2em',
           boxShadow: '2px 2px 5px 2px #2c2c2c59',
         }}
@@ -382,7 +392,6 @@ const width = (left, right) => {
 }
 
 const styleResult = {
-  cursor: 'pointer',
   display: 'block',
   position: 'relative',
   marginBottom: '0.309em',
@@ -440,9 +449,14 @@ const TimeLineResult = ({id, result, relation, queryType}) => {
     display: 'inline-block',
   }
 
+  const [ hovering, setHovering ] = useState(false)
+
   const styleOutput = {
     flexGrow: 1,
-    backgroundColor: result.styles.backgroundColor(includedBasedOnRelationship),
+    backgroundColor: result.styles.backgroundColor(
+      includedBasedOnRelationship,
+      hovering
+    ),
   }
 
   return (
@@ -456,7 +470,14 @@ const TimeLineResult = ({id, result, relation, queryType}) => {
     >
       <FlexRow
         items={[
-          <output id={id} key="output" title={description} style={styleOutput}>
+          <output
+            id={id}
+            key="output"
+            title={description}
+            style={styleOutput}
+            onMouseOver={() => setHovering(true)}
+            onMouseOut={() => setHovering(false)}
+          >
             <label key="label" style={styleLabel}>
               {result.label}
             </label>

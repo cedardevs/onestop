@@ -17,10 +17,16 @@ const resultStyles = {
     include
       ? styleRelationIllustration.included.color
       : styleRelationIllustration.excluded.color,
-  backgroundColor: include =>
-    include
+  backgroundColor: (include, hovering) => {
+    if (hovering) {
+      return include
+        ? styleRelationIllustration.included.backgroundColorHover
+        : styleRelationIllustration.excluded.backgroundColorHover
+    }
+    return include
       ? styleRelationIllustration.included.backgroundColor
-      : styleRelationIllustration.excluded.backgroundColor,
+      : styleRelationIllustration.excluded.backgroundColor
+  },
   borderColor: include =>
     include
       ? styleRelationIllustration.included.borderColor
@@ -57,10 +63,10 @@ const BOXES = [
     styles: {
       color: (include, excludeGlobal) =>
         excludeGlobal ? resultStyles.color(false) : resultStyles.color(include),
-      backgroundColor: (include, excludeGlobal) =>
+      backgroundColor: (include, hovering, excludeGlobal) =>
         excludeGlobal
-          ? resultStyles.backgroundColor(false)
-          : resultStyles.backgroundColor(include),
+          ? resultStyles.backgroundColor(false, hovering)
+          : resultStyles.backgroundColor(include, hovering),
       borderColor: (include, excludeGlobal) =>
         excludeGlobal
           ? resultStyles.borderColor(false)
@@ -112,7 +118,10 @@ const BOXES = [
     longDescription: () => 'user defined location filter',
     styles: {
       color: () => styleRelationIllustration.query.color,
-      backgroundColor: () => styleRelationIllustration.query.backgroundColor,
+      backgroundColor: (include, hovering) =>
+        hovering
+          ? styleRelationIllustration.query.backgroundColorHover
+          : styleRelationIllustration.query.backgroundColor,
       borderColor: () => styleRelationIllustration.query.borderColor,
     },
     relation: {},
@@ -195,7 +204,6 @@ const BOXES = [
 ]
 
 const styleBox = {
-  cursor: 'pointer',
   display: 'block',
   position: 'absolute',
   borderRadius: '.2em',
@@ -237,6 +245,8 @@ const BoxIllustration = ({id, box, relation, excludeGlobal}) => {
     excludeGlobal
   )
 
+  const [ hovering, setHovering ] = useState(false)
+
   const styleColors = {
     borderColor: box.styles.borderColor(
       includedBasedOnRelationship,
@@ -244,6 +254,7 @@ const BoxIllustration = ({id, box, relation, excludeGlobal}) => {
     ),
     backgroundColor: box.styles.backgroundColor(
       includedBasedOnRelationship,
+      hovering,
       excludeGlobal
     ),
   }
@@ -258,6 +269,8 @@ const BoxIllustration = ({id, box, relation, excludeGlobal}) => {
   return (
     <output
       id={id}
+      onMouseOver={() => setHovering(true)}
+      onMouseOut={() => setHovering(false)}
       title={description}
       style={consolidateStyles(styleBox, stylePosition(box), styleColors)}
     >
