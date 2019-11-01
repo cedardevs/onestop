@@ -2,7 +2,7 @@ openapi: 3.0.0
 servers:
   - url: 'https://sciapps.colorado.edu/onestop-search'
     description: Development test server (uses test data)
-  - url: 'https://data.noaa.gov/onestop/api/search-search'
+  - url: 'https://data.noaa.gov/onestop-search'
     description: NOAA OneStop
 info:
   title: OneStop Search API
@@ -16,7 +16,7 @@ tags:
   - name: flattened-granule
     description: Flattened granules are a representation of the granules which inherit all the metadata from the parent collection.
 paths:
-  '/collection':
+  /collection:
     head:
       operationId: headCollection
       tags:
@@ -37,7 +37,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/infoResponse'
-  '/collection/{id}':
+  /collection/{id}:
     head:
       operationId: headCollectionById
       tags:
@@ -76,7 +76,7 @@ paths:
                 $ref: '#/components/schemas/fullCollectionResponse'
         '404':
           description: Request Parsing Error
-  '/search/collection':
+  /search/collection:
     post:
       operationId: searchCollection
       tags:
@@ -107,7 +107,7 @@ paths:
                 $ref: '#/components/schemas/searchResponse'
         '400':
           description: Bad Request
-  '/granule':
+  /granule:
     head:
       operationId: headGranule
       tags:
@@ -128,7 +128,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/infoResponse'
-  '/granule/{id}':
+  /granule/{id}:
     head:
       operationId: headGranuleById
       tags:
@@ -163,7 +163,7 @@ paths:
           description: Successful operation
         '404':
           description: Request Parsing Error
-  '/search/granule':
+  /search/granule:
     post:
       operationId: searchGranule
       tags:
@@ -185,7 +185,7 @@ paths:
                 $ref: '#/components/schemas/searchResponse'
         '400':
           description: Bad Request
-  '/flattened-granule':
+  /flattened-granule:
     head:
       operationId: headFlattenedGranule
       tags:
@@ -206,7 +206,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/infoResponse'
-  '/flattened-granule/{id}':
+  /flattened-granule/{id}:
     head:
       operationId: headFlattenedGranuleById
       tags:
@@ -241,7 +241,7 @@ paths:
           description: Successful operation
         '404':
           description: Request Parsing Error
-  '/search/flattened-granule':
+  /search/flattened-granule:
     post:
       operationId: searchFlattenedGranule
       tags:
