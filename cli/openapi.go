@@ -26,7 +26,7 @@ func openapiServers() []map[string]string {
 
 		map[string]string{
 			"description": "NOAA OneStop",
-			"url":         "https://data.noaa.gov/onestop/api/search",
+			"url":         "https://data.noaa.gov/onestop/api/search-search",
 		},
 	}
 }
@@ -197,47 +197,6 @@ func OpenapiHeadCollectionById(paramId string, params *viper.Viper) (*gentleman.
 	return resp, decoded, nil
 }
 
-// OpenapiGetFlattenedGranule Get Flattened Granule Info
-func OpenapiGetFlattenedGranule(params *viper.Viper) (*gentleman.Response, map[string]interface{}, error) {
-	handlerPath := "getflattenedgranule"
-	if openapiSubcommand {
-		handlerPath = "openapi " + handlerPath
-	}
-
-	server := viper.GetString("server")
-	if server == "" {
-		server = openapiServers()[viper.GetInt("server-index")]["url"]
-	}
-
-	url := server + "/flattened-granule"
-
-	req := cli.Client.Get().URL(url)
-
-	cli.HandleBefore(handlerPath, params, req)
-
-	resp, err := req.Do()
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "Request failed")
-	}
-
-	var decoded map[string]interface{}
-
-	if resp.StatusCode < 400 {
-		if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
-			return nil, nil, errors.Wrap(err, "Unmarshalling response failed")
-		}
-	} else {
-		return nil, nil, errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())
-	}
-
-	after := cli.HandleAfter(handlerPath, params, resp, decoded)
-	if after != nil {
-		decoded = after.(map[string]interface{})
-	}
-
-	return resp, decoded, nil
-}
-
 // OpenapiHeadFlattenedGranule Get Flattened Granule Info
 func OpenapiHeadFlattenedGranule(params *viper.Viper) (*gentleman.Response, interface{}, error) {
 	handlerPath := "headflattenedgranule"
@@ -274,6 +233,47 @@ func OpenapiHeadFlattenedGranule(params *viper.Viper) (*gentleman.Response, inte
 	after := cli.HandleAfter(handlerPath, params, resp, decoded)
 	if after != nil {
 		decoded = after
+	}
+
+	return resp, decoded, nil
+}
+
+// OpenapiGetFlattenedGranule Get Flattened Granule Info
+func OpenapiGetFlattenedGranule(params *viper.Viper) (*gentleman.Response, map[string]interface{}, error) {
+	handlerPath := "getflattenedgranule"
+	if openapiSubcommand {
+		handlerPath = "openapi " + handlerPath
+	}
+
+	server := viper.GetString("server")
+	if server == "" {
+		server = openapiServers()[viper.GetInt("server-index")]["url"]
+	}
+
+	url := server + "/flattened-granule"
+
+	req := cli.Client.Get().URL(url)
+
+	cli.HandleBefore(handlerPath, params, req)
+
+	resp, err := req.Do()
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "Request failed")
+	}
+
+	var decoded map[string]interface{}
+
+	if resp.StatusCode < 400 {
+		if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
+			return nil, nil, errors.Wrap(err, "Unmarshalling response failed")
+		}
+	} else {
+		return nil, nil, errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())
+	}
+
+	after := cli.HandleAfter(handlerPath, params, resp, decoded)
+	if after != nil {
+		decoded = after.(map[string]interface{})
 	}
 
 	return resp, decoded, nil
@@ -821,14 +821,14 @@ func openapiRegister(subcommand bool) {
 		var examples string
 
 		cmd := &cobra.Command{
-			Use:     "getflattenedgranule",
+			Use:     "headflattenedgranule",
 			Short:   "Get Flattened Granule Info",
 			Long:    cli.Markdown(""),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(0),
 			Run: func(cmd *cobra.Command, args []string) {
 
-				_, decoded, err := OpenapiGetFlattenedGranule(params)
+				_, decoded, err := OpenapiHeadFlattenedGranule(params)
 				if err != nil {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
@@ -855,14 +855,14 @@ func openapiRegister(subcommand bool) {
 		var examples string
 
 		cmd := &cobra.Command{
-			Use:     "headflattenedgranule",
+			Use:     "getflattenedgranule",
 			Short:   "Get Flattened Granule Info",
 			Long:    cli.Markdown(""),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(0),
 			Run: func(cmd *cobra.Command, args []string) {
 
-				_, decoded, err := OpenapiHeadFlattenedGranule(params)
+				_, decoded, err := OpenapiGetFlattenedGranule(params)
 				if err != nil {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
@@ -1092,12 +1092,12 @@ func openapiRegister(subcommand bool) {
 
 		var examples string
 
-		examples += "  " + cli.Root.CommandPath() + " searchcollection facets: true, filters[]{name: science, type: facet, values: Agriculture}, []{name: instruments, type: facet, values: ADCP > Acoustic Doppler Current Profiler}, page{max: 20, offset: 0}, queries[]{type: queryText, value: weather}\n"
+		examples += "  " + cli.Root.CommandPath() + " searchcollection facets: true, filters: , page{max: 20, offset: 0}, queries[]{type: queryText, value: climate}\n"
 
 		cmd := &cobra.Command{
 			Use:     "searchcollection",
 			Short:   "Retrieve collection metadata",
-			Long:    cli.Markdown("Retrieve collection metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      oneOf:\n      - additionalProperties: false\n        description: Filter results by before, after, or a date range.\n        properties:\n          after:\n            description: Beginning of the date range, e.g., look for all results *after*\n              this date.\n            format: date-time\n            type: string\n          before:\n            description: End of the date range, e.g., look for all results *before*\n              this date.\n            format: date-time\n            type: string\n          relation:\n            default: intersects\n            description: How the result time range relates to the query time range,\n              e.g., return all datasets whose time range is within the given time\n              range.\n            enum:\n            - contains\n            - disjoint\n            - intersects\n            - within\n          type:\n            description: Filter type.\n            enum:\n            - datetime\n        required:\n        - type\n        title: Datetime Filter\n        type: object\n      - additionalProperties: false\n        description: Filter results by before, after, or a date range. Differs from\n          the Datetime Filter in that it handles year values only.\n        properties:\n          after:\n            description: Beginning of the date range, e.g., look for all results *after*\n              this year.\n            multipleOf: 1\n            type: number\n          before:\n            description: End of the date range, e.g., look for all results *before*\n              this year.\n            multipleOf: 1\n            type: number\n          relation:\n            default: intersects\n            description: How the result time range relates to the query time range,\n              e.g., return all datasets whose time range is within the given time\n              range.\n            enum:\n            - contains\n            - disjoint\n            - intersects\n            - within\n          type:\n            description: Filter type.\n            enum:\n            - year\n        required:\n        - type\n        title: Year Filter\n        type: object\n      - additionalProperties: false\n        description: Filters results based on given terms (data formats, link protocols,\n          service link protocols, GCMD keywords) where returned results MUST have\n          the specified term values. Multiple facetFilter objects will be combined\n          with logical AND; multiple values in a single facetFilter object will be\n          combined with the logical OR.\n        properties:\n          name:\n            description: 'One of the following: ''dataFormats'', ''linkProtocols'',\n              ''serviceLinkProtocols'', or GCMD keyword categories (''science'', ''services'',\n              ''locations'', ''instruments'', ''platforms'', ''projects'', ''dataCenters'',\n              ''horizontalResolution'', ''verticalResolution'', ''temporalResolution'').'\n            enum:\n            - dataFormats\n            - linkProtocols\n            - serviceLinkProtocols\n            - science\n            - services\n            - locations\n            - instruments\n            - platforms\n            - projects\n            - dataCenters\n            - horizontalResolution\n            - verticalResolution\n            - temporalResolution\n          type:\n            description: Filter type.\n            enum:\n            - facet\n          values:\n            description: List of terms to match\n            items:\n              description: Exact match data format(s) (e.g. - \"NETCDF\"), link or service\n                link protocol(s) (e.g. - \"ftp\"), or GCMD keyword(s) (e.g. - \"Atmosphere\n                > Atmospheric Temperature > Surface Temperature\")\n              type: string\n            type: array\n        required:\n        - type\n        - name\n        - values\n        title: Facet Filter\n        type: object\n      - additionalProperties: false\n        description: Filter that returns results whose bounding geometry contains\n          the specified geographical coordinate.\n        properties:\n          geometry:\n            $ref: '#/components/schemas/geometry'\n          relation:\n            default: intersects\n            description: How the result geometry relates to the query geometry, e.g.,\n              return all datasets whose geometry contains the given point.\n            enum:\n            - contains\n            - disjoint\n            - intersects\n            - within\n          type:\n            description: Filter type.\n            enum:\n            - geometry\n        required:\n        - type\n        - geometry\n        title: Geometry Filter\n        type: object\n      - additionalProperties: false\n        description: Filter granules by specific collection(s). If multiple collection\n          filters are used, or multiple values in a single collection filter, then\n          the search is performed with a logical OR.\n        properties:\n          type:\n            description: Filter type.\n            enum:\n            - collection\n          values:\n            description: List of collection UUIDs.\n            items:\n              description: Collection UUID\n              type: string\n            type: array\n        required:\n        - type\n        - values\n        title: Collection Filter\n        type: object\n      - additionalProperties: false\n        description: Flag to request that geospatially global results be excluded.\n          Defaults to false if not provided.\n        properties:\n          type:\n            description: Filter type.\n            enum:\n            - excludeGlobal\n          value:\n            default: false\n            type: boolean\n        required:\n        - type\n        - value\n        title: Exclude Global Filter\n        type: object\n    type: array\n  page:\n    additionalProperties: false\n    description: Pagination of results\n    properties:\n      max:\n        default: 10\n        description: Maximum number of results returned.\n        maximum: 1000\n        minimum: 0\n        type: integer\n      offset:\n        default: 0\n        description: Number of records by which to offset results.\n        type: integer\n    required:\n    - max\n    - offset\n    title: Pagination\n    type: object\n  queries:\n    items:\n      oneOf:\n      - additionalProperties: false\n        description: When providing multiple queryText objects in your search request,\n          keep in mind that they will be combined with a logical AND. Terms use Lucene\n          Query Syntax.\n        properties:\n          type:\n            description: Filter type.\n            enum:\n            - queryText\n          value:\n            description: Text query to search with that is valid so long as it does\n              not have a leading wildcard ('*' or '?')\n            type: string\n        required:\n        - type\n        - value\n        title: Text Query\n        type: object\n    type: array\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
+			Long:    cli.Markdown("Retrieve collection metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      anyOf:\n      - $ref: '#/components/schemas/dateTimeFilter'\n      - $ref: '#/components/schemas/yearFilter'\n      - $ref: '#/components/schemas/facetFilter'\n      - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n  queries:\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/textQuery'\n    type: array\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(0),
 			Run: func(cmd *cobra.Command, args []string) {
@@ -1135,7 +1135,7 @@ func openapiRegister(subcommand bool) {
 		cmd := &cobra.Command{
 			Use:     "searchflattenedgranule",
 			Short:   "Retrieve flattened granule metadata",
-			Long:    cli.Markdown("Retrieve flattened granule metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      oneOf:\n      - additionalProperties: false\n        description: Filter results by before, after, or a date range.\n        properties:\n          after:\n            description: Beginning of the date range, e.g., look for all results *after*\n              this date.\n            format: date-time\n            type: string\n          before:\n            description: End of the date range, e.g., look for all results *before*\n              this date.\n            format: date-time\n            type: string\n          relation:\n            default: intersects\n            description: How the result time range relates to the query time range,\n              e.g., return all datasets whose time range is within the given time\n              range.\n            enum:\n            - contains\n            - disjoint\n            - intersects\n            - within\n          type:\n            description: Filter type.\n            enum:\n            - datetime\n        required:\n        - type\n        title: Datetime Filter\n        type: object\n      - additionalProperties: false\n        description: Filter results by before, after, or a date range. Differs from\n          the Datetime Filter in that it handles year values only.\n        properties:\n          after:\n            description: Beginning of the date range, e.g., look for all results *after*\n              this year.\n            multipleOf: 1\n            type: number\n          before:\n            description: End of the date range, e.g., look for all results *before*\n              this year.\n            multipleOf: 1\n            type: number\n          relation:\n            default: intersects\n            description: How the result time range relates to the query time range,\n              e.g., return all datasets whose time range is within the given time\n              range.\n            enum:\n            - contains\n            - disjoint\n            - intersects\n            - within\n          type:\n            description: Filter type.\n            enum:\n            - year\n        required:\n        - type\n        title: Year Filter\n        type: object\n      - additionalProperties: false\n        description: Filters results based on given terms (data formats, link protocols,\n          service link protocols, GCMD keywords) where returned results MUST have\n          the specified term values. Multiple facetFilter objects will be combined\n          with logical AND; multiple values in a single facetFilter object will be\n          combined with the logical OR.\n        properties:\n          name:\n            description: 'One of the following: ''dataFormats'', ''linkProtocols'',\n              ''serviceLinkProtocols'', or GCMD keyword categories (''science'', ''services'',\n              ''locations'', ''instruments'', ''platforms'', ''projects'', ''dataCenters'',\n              ''horizontalResolution'', ''verticalResolution'', ''temporalResolution'').'\n            enum:\n            - dataFormats\n            - linkProtocols\n            - serviceLinkProtocols\n            - science\n            - services\n            - locations\n            - instruments\n            - platforms\n            - projects\n            - dataCenters\n            - horizontalResolution\n            - verticalResolution\n            - temporalResolution\n          type:\n            description: Filter type.\n            enum:\n            - facet\n          values:\n            description: List of terms to match\n            items:\n              description: Exact match data format(s) (e.g. - \"NETCDF\"), link or service\n                link protocol(s) (e.g. - \"ftp\"), or GCMD keyword(s) (e.g. - \"Atmosphere\n                > Atmospheric Temperature > Surface Temperature\")\n              type: string\n            type: array\n        required:\n        - type\n        - name\n        - values\n        title: Facet Filter\n        type: object\n      - additionalProperties: false\n        description: Filter that returns results whose bounding geometry contains\n          the specified geographical coordinate.\n        properties:\n          geometry:\n            $ref: '#/components/schemas/geometry'\n          relation:\n            default: intersects\n            description: How the result geometry relates to the query geometry, e.g.,\n              return all datasets whose geometry contains the given point.\n            enum:\n            - contains\n            - disjoint\n            - intersects\n            - within\n          type:\n            description: Filter type.\n            enum:\n            - geometry\n        required:\n        - type\n        - geometry\n        title: Geometry Filter\n        type: object\n      - additionalProperties: false\n        description: Filter granules by specific collection(s). If multiple collection\n          filters are used, or multiple values in a single collection filter, then\n          the search is performed with a logical OR.\n        properties:\n          type:\n            description: Filter type.\n            enum:\n            - collection\n          values:\n            description: List of collection UUIDs.\n            items:\n              description: Collection UUID\n              type: string\n            type: array\n        required:\n        - type\n        - values\n        title: Collection Filter\n        type: object\n      - additionalProperties: false\n        description: Flag to request that geospatially global results be excluded.\n          Defaults to false if not provided.\n        properties:\n          type:\n            description: Filter type.\n            enum:\n            - excludeGlobal\n          value:\n            default: false\n            type: boolean\n        required:\n        - type\n        - value\n        title: Exclude Global Filter\n        type: object\n    type: array\n  page:\n    additionalProperties: false\n    description: Pagination of results\n    properties:\n      max:\n        default: 10\n        description: Maximum number of results returned.\n        maximum: 1000\n        minimum: 0\n        type: integer\n      offset:\n        default: 0\n        description: Number of records by which to offset results.\n        type: integer\n    required:\n    - max\n    - offset\n    title: Pagination\n    type: object\n  queries:\n    items:\n      oneOf:\n      - additionalProperties: false\n        description: When providing multiple queryText objects in your search request,\n          keep in mind that they will be combined with a logical AND. Terms use Lucene\n          Query Syntax.\n        properties:\n          type:\n            description: Filter type.\n            enum:\n            - queryText\n          value:\n            description: Text query to search with that is valid so long as it does\n              not have a leading wildcard ('*' or '?')\n            type: string\n        required:\n        - type\n        - value\n        title: Text Query\n        type: object\n    type: array\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
+			Long:    cli.Markdown("Retrieve flattened granule metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      anyOf:\n      - $ref: '#/components/schemas/dateTimeFilter'\n      - $ref: '#/components/schemas/yearFilter'\n      - $ref: '#/components/schemas/facetFilter'\n      - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n  queries:\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/textQuery'\n    type: array\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(0),
 			Run: func(cmd *cobra.Command, args []string) {
@@ -1173,7 +1173,7 @@ func openapiRegister(subcommand bool) {
 		cmd := &cobra.Command{
 			Use:     "searchgranule",
 			Short:   "Retrieve granule metadata",
-			Long:    cli.Markdown("Retrieve granule metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      oneOf:\n      - additionalProperties: false\n        description: Filter results by before, after, or a date range.\n        properties:\n          after:\n            description: Beginning of the date range, e.g., look for all results *after*\n              this date.\n            format: date-time\n            type: string\n          before:\n            description: End of the date range, e.g., look for all results *before*\n              this date.\n            format: date-time\n            type: string\n          relation:\n            default: intersects\n            description: How the result time range relates to the query time range,\n              e.g., return all datasets whose time range is within the given time\n              range.\n            enum:\n            - contains\n            - disjoint\n            - intersects\n            - within\n          type:\n            description: Filter type.\n            enum:\n            - datetime\n        required:\n        - type\n        title: Datetime Filter\n        type: object\n      - additionalProperties: false\n        description: Filter results by before, after, or a date range. Differs from\n          the Datetime Filter in that it handles year values only.\n        properties:\n          after:\n            description: Beginning of the date range, e.g., look for all results *after*\n              this year.\n            multipleOf: 1\n            type: number\n          before:\n            description: End of the date range, e.g., look for all results *before*\n              this year.\n            multipleOf: 1\n            type: number\n          relation:\n            default: intersects\n            description: How the result time range relates to the query time range,\n              e.g., return all datasets whose time range is within the given time\n              range.\n            enum:\n            - contains\n            - disjoint\n            - intersects\n            - within\n          type:\n            description: Filter type.\n            enum:\n            - year\n        required:\n        - type\n        title: Year Filter\n        type: object\n      - additionalProperties: false\n        description: Filters results based on given terms (data formats, link protocols,\n          service link protocols, GCMD keywords) where returned results MUST have\n          the specified term values. Multiple facetFilter objects will be combined\n          with logical AND; multiple values in a single facetFilter object will be\n          combined with the logical OR.\n        properties:\n          name:\n            description: 'One of the following: ''dataFormats'', ''linkProtocols'',\n              ''serviceLinkProtocols'', or GCMD keyword categories (''science'', ''services'',\n              ''locations'', ''instruments'', ''platforms'', ''projects'', ''dataCenters'',\n              ''horizontalResolution'', ''verticalResolution'', ''temporalResolution'').'\n            enum:\n            - dataFormats\n            - linkProtocols\n            - serviceLinkProtocols\n            - science\n            - services\n            - locations\n            - instruments\n            - platforms\n            - projects\n            - dataCenters\n            - horizontalResolution\n            - verticalResolution\n            - temporalResolution\n          type:\n            description: Filter type.\n            enum:\n            - facet\n          values:\n            description: List of terms to match\n            items:\n              description: Exact match data format(s) (e.g. - \"NETCDF\"), link or service\n                link protocol(s) (e.g. - \"ftp\"), or GCMD keyword(s) (e.g. - \"Atmosphere\n                > Atmospheric Temperature > Surface Temperature\")\n              type: string\n            type: array\n        required:\n        - type\n        - name\n        - values\n        title: Facet Filter\n        type: object\n      - additionalProperties: false\n        description: Filter that returns results whose bounding geometry contains\n          the specified geographical coordinate.\n        properties:\n          geometry:\n            $ref: '#/components/schemas/geometry'\n          relation:\n            default: intersects\n            description: How the result geometry relates to the query geometry, e.g.,\n              return all datasets whose geometry contains the given point.\n            enum:\n            - contains\n            - disjoint\n            - intersects\n            - within\n          type:\n            description: Filter type.\n            enum:\n            - geometry\n        required:\n        - type\n        - geometry\n        title: Geometry Filter\n        type: object\n      - additionalProperties: false\n        description: Filter granules by specific collection(s). If multiple collection\n          filters are used, or multiple values in a single collection filter, then\n          the search is performed with a logical OR.\n        properties:\n          type:\n            description: Filter type.\n            enum:\n            - collection\n          values:\n            description: List of collection UUIDs.\n            items:\n              description: Collection UUID\n              type: string\n            type: array\n        required:\n        - type\n        - values\n        title: Collection Filter\n        type: object\n      - additionalProperties: false\n        description: Flag to request that geospatially global results be excluded.\n          Defaults to false if not provided.\n        properties:\n          type:\n            description: Filter type.\n            enum:\n            - excludeGlobal\n          value:\n            default: false\n            type: boolean\n        required:\n        - type\n        - value\n        title: Exclude Global Filter\n        type: object\n    type: array\n  page:\n    additionalProperties: false\n    description: Pagination of results\n    properties:\n      max:\n        default: 10\n        description: Maximum number of results returned.\n        maximum: 1000\n        minimum: 0\n        type: integer\n      offset:\n        default: 0\n        description: Number of records by which to offset results.\n        type: integer\n    required:\n    - max\n    - offset\n    title: Pagination\n    type: object\n  queries:\n    items:\n      oneOf:\n      - additionalProperties: false\n        description: When providing multiple queryText objects in your search request,\n          keep in mind that they will be combined with a logical AND. Terms use Lucene\n          Query Syntax.\n        properties:\n          type:\n            description: Filter type.\n            enum:\n            - queryText\n          value:\n            description: Text query to search with that is valid so long as it does\n              not have a leading wildcard ('*' or '?')\n            type: string\n        required:\n        - type\n        - value\n        title: Text Query\n        type: object\n    type: array\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
+			Long:    cli.Markdown("Retrieve granule metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      anyOf:\n      - $ref: '#/components/schemas/dateTimeFilter'\n      - $ref: '#/components/schemas/yearFilter'\n      - $ref: '#/components/schemas/facetFilter'\n      - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n  queries:\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/textQuery'\n    type: array\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(0),
 			Run: func(cmd *cobra.Command, args []string) {
