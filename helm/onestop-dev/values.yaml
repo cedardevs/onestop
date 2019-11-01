@@ -42,7 +42,6 @@ cp-helm-charts:
     external:
       enabled: true
       type: ClusterIP
-      externalTrafficPolicy:
   cp-ksql-server:
     enabled: false
     jmx:
