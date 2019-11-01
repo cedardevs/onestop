@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
-import Expandable from './Expandable'
+import Expandable from './ExpandableListViewItem'
 import FlexRow from './FlexRow'
 import {boxShadow} from '../../../style/defaultStyles'
 import {Key} from '../../../utils/keyboardUtils'

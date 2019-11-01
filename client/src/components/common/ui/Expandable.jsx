@@ -1,8 +1,6 @@
-import React, {useState, useEffect} from 'react'
-import _ from 'lodash'
+import React from 'react'
 import AnimateHeight from 'react-animate-height/lib/index'
 import {Key} from '../../../utils/keyboardUtils'
-import defaultStyles from '../../../style/defaultStyles'
 
 const ANIMATION_DURATION = 200
 
@@ -16,6 +14,7 @@ const styleHeadingDefault = (open, borderRadius) => {
     textAlign: 'left',
     alignItems: 'center',
     color: '#FFFFFF',
+    cursor: 'pointer',
     borderRadius: borderRadius ? borderRadiusEffective : 'none',
     borderBottom: 0,
     outline: 'none', // focus is shown on an interior element instead
@@ -25,7 +24,6 @@ const styleHeadingDefault = (open, borderRadius) => {
 
 const styleArrowDefault = {
   userSelect: 'none',
-  cursor: 'pointer',
 }
 
 const styleArrowFocusDefault = {
@@ -56,154 +54,201 @@ const styleHeadingFocusDefault = () => {
   return {}
 }
 
-export default function Expandable(props){
-  const [ open, setOpen ] = useState(false)
-  const [ focusing, setFocusing ] = useState(false)
-  const [ display, setDisplay ] = useState(props.open ? 'block' : 'none')
+export default class Expandable extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      open: props.open || false,
+      showArrow: props.showArrow,
+      focusing: false,
+      display: props.open ? 'block' : 'none',
+    }
+  }
 
-  useEffect(
-    () => {
-      if (props.open !== open) {
-        setOpen(!!props.open)
-      }
-    },
-    [ props.open ]
-  )
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.open !== this.state.open) {
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          open: !!nextProps.open,
+        }
+      })
+    }
+  }
 
-  const {
-    showArrow,
-    arrowTextClosed,
-    arrowTextOpened,
-    styleArrowText,
-    styleFocus,
-    styleHeadingFocus,
-    styleWrapper,
-    styleHeading,
-    heading,
-    headingTitle,
-    styleContent,
-    styleContentOpen,
-    content,
-    borderRadius,
-    styleArrow,
-    styleArrowFocus,
-    onToggle,
-    value,
-    disabled,
-  } = props
+  toggle = () => {
+    const {onToggle, value, disabled} = this.props
 
-  const toggle = () => {
     if (disabled) {
       return
     }
-    const newOpen = !open
-    if (onToggle) {
-      onToggle({open: newOpen, value: value})
-    }
-    setOpen(newOpen)
+
+    this.setState(prevState => {
+      const newOpen = !prevState.open
+
+      // if provided, tell the caller of expandable we're updating the open state
+      if (onToggle) {
+        onToggle({open: newOpen, value: value})
+      }
+
+      return {
+        ...prevState,
+        open: newOpen,
+      }
+    })
   }
 
-  const handleClick = event => {
+  handleClick = event => {
     event.preventDefault()
-    toggle()
+    this.toggle()
   }
 
-  const handleKeyDown = event => {
-    if (event.keyCode === Key.SPACE) {
-      event.preventDefault() // prevent scrolling down on space press
-      toggle()
+  handleKeyDown = e => {
+    if (e.keyCode === Key.SPACE) {
+      e.preventDefault() // prevent scrolling down on space press
+      this.toggle()
     }
-    if (event.keyCode === Key.ENTER) {
-      toggle()
+    if (e.keyCode === Key.ENTER) {
+      this.toggle()
     }
   }
 
-  const arrowText = (
-    <span>{open ? arrowTextOpened : arrowTextClosed}&nbsp;</span>
-  )
-  const arrow = showArrow ? open ? (
-    <span style={styleArrowText}>
-      &nbsp;{arrowText}
-      <span aria-hidden={true}>&#9660;&nbsp;</span>
-      <span style={defaultStyles.hideOffscreen}>for {headingTitle}</span>
-    </span>
-  ) : (
-    <span style={styleArrowText}>
-      &nbsp;{arrowText}
-      <span aria-hidden={true}>&#9654;&nbsp;</span>
-      <span style={defaultStyles.hideOffscreen}>for {headingTitle}</span>
-    </span>
-  ) : null
-
-  const ariaHidden = display === 'none'
-  const tabbable = !(props.tabbable === false)
-  const tabIndex = tabbable ? '0' : '-1'
-  const role = tabbable ? 'button' : undefined
-  const ariaExpanded = tabbable ? open : undefined
-
-  const stylesHeadingMerged = {
-    ...styleHeadingDefault(open, borderRadius),
-    ...styleHeading,
-    ...(focusing ? {...styleHeadingFocusDefault(), ...styleHeadingFocus} : {}),
+  handleFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
   }
 
-  const styleFocused = {
-    ...(focusing
-      ? {...styleFocusDefault(open, borderRadius, showArrow), ...styleFocus}
-      : {}),
+  handleBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+      }
+    })
   }
 
-  const styleContentMerged = {
-    ...styleContentDefault(open, display, borderRadius),
-    ...styleContent,
-    ...(open ? styleContentOpen : {}),
+  handleAnimationStart = open => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        display: 'block',
+      }
+    })
   }
 
-  const styleArrowMerged = {
-    ...styleArrowDefault,
-    ...styleArrow,
-    ...(focusing && showArrow
-      ? {...styleArrowFocusDefault, ...styleArrowFocus}
-      : {}),
+  handleAnimationEnd = open => {
+    if (!open) {
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          display: 'none',
+        }
+      })
+    }
   }
 
-  // dynamic aria-hidden={_.isEmpty(arrowText)} may not work for all uses of Expandable
-  const headingEffective = heading ? (
-    <div style={stylesHeadingMerged} title={headingTitle}>
-      <div style={styleFocused}>{heading}</div>
+  render() {
+    const {
+      showArrow,
+      arrowTextClosed,
+      arrowTextOpened,
+      styleArrowText,
+      styleFocus,
+      styleHeadingFocus,
+      styleWrapper,
+      styleHeading,
+      heading,
+      headingTitle,
+      styleContent,
+      styleContentOpen,
+      content,
+      borderRadius,
+      styleArrow,
+      styleArrowFocus,
+    } = this.props
+    const {open, display, focusing} = this.state
+
+    const arrowText = (
+      <span>{open ? arrowTextOpened : arrowTextClosed}&nbsp;</span>
+    )
+    const arrow = showArrow ? open ? (
+      <span style={styleArrowText}>&nbsp;{arrowText}&#9660;&nbsp;</span>
+    ) : (
+      <span style={styleArrowText}>&nbsp;{arrowText}&#9654;&nbsp;</span>
+    ) : null
+
+    const ariaHidden = display === 'none'
+    const tabbable = !(this.props.tabbable === false)
+    const tabIndex = tabbable ? '0' : '-1'
+    const role = tabbable ? 'button' : undefined
+    const ariaExpanded = tabbable ? open : undefined
+
+    const stylesHeadingMerged = {
+      ...styleHeadingDefault(open, borderRadius),
+      ...styleHeading,
+      ...(focusing
+        ? {...styleHeadingFocusDefault(), ...styleHeadingFocus}
+        : {}),
+    }
+
+    const styleFocused = {
+      ...(focusing
+        ? {...styleFocusDefault(open, borderRadius, showArrow), ...styleFocus}
+        : {}),
+    }
+
+    const styleContentMerged = {
+      ...styleContentDefault(open, display, borderRadius),
+      ...styleContent,
+      ...(open ? styleContentOpen : {}),
+    }
+
+    const styleArrowMerged = {
+      ...styleArrowDefault,
+      ...styleArrow,
+      ...(focusing && showArrow
+        ? {...styleArrowFocusDefault, ...styleArrowFocus}
+        : {}),
+    }
+
+    const headingEffective = heading ? (
       <div
-        aria-hidden={_.isEmpty(arrowText)}
-        style={styleArrowMerged}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
+        style={stylesHeadingMerged}
+        onClick={this.handleClick}
+        onKeyDown={this.handleKeyDown}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
         tabIndex={tabIndex}
-        aria-expanded={ariaExpanded}
+        title={headingTitle}
         role={role}
-        onFocus={() => setFocusing(true)}
-        onBlur={() => setFocusing(false)}
+        aria-expanded={ariaExpanded}
       >
-        {arrow}
+        <div style={styleFocused}>{heading}</div>
+        <div aria-hidden="true" style={styleArrowMerged}>
+          {arrow}
+        </div>
       </div>
-    </div>
-  ) : null
+    ) : null
 
-  return (
-    <div style={styleWrapper}>
-      {headingEffective}
-      <div style={styleContentMerged} aria-hidden={ariaHidden}>
-        <AnimateHeight
-          duration={ANIMATION_DURATION}
-          height={open ? 'auto' : 0}
-          onAnimationStart={() => {
-            if (!open) {
-              setDisplay('none')
-            }
-          }}
-          onAnimationEnd={() => setDisplay('block')}
-        >
-          {content}
-        </AnimateHeight>
+    return (
+      <div style={styleWrapper}>
+        {headingEffective}
+
+        <div style={styleContentMerged} aria-hidden={ariaHidden}>
+          <AnimateHeight
+            duration={ANIMATION_DURATION}
+            height={open ? 'auto' : 0}
+            onAnimationStart={() => this.handleAnimationStart(open)}
+            onAnimationEnd={() => this.handleAnimationEnd(open)}
+          >
+            {content}
+          </AnimateHeight>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 }

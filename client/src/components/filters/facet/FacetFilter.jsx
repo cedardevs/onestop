@@ -1,5 +1,5 @@
 import React from 'react'
-import Expandable from '../../common/ui/ExpandableOld'
+import Expandable from '../../common/ui/Expandable'
 import FacetTree from './FacetTree'
 import _ from 'lodash'
 import {FilterStyles} from '../../../style/defaultStyles'

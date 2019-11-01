@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import Expandable from '../../common/ui/ExpandableOld'
+import Expandable from '../../common/ui/Expandable'
 import FlexRow from '../../common/ui/FlexRow'
 import Button from '../../common/input/Button'
 import FilterHeading from '../FilterHeading'
