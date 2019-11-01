@@ -284,7 +284,7 @@ jobs:
            go get -u https://github.com/danielgtaylor/openapi-cli-generator ;
            openapi-cli-generator generate openapi.yaml
           environment:
-            GOPATH: /home/circleci/repo/cli/.gogradle
+            GOPATH: /home/circleci/repo/cli/.gogradle/project_gopath
       - run:
           name: Build image, publish
           command: |
