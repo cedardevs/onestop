@@ -86,10 +86,10 @@ function useItems(items){
       const nextKey = keysAfter.indexOf(lastItem) + 1
       setFocusedKey(keysAfter[nextKey])
 
-      let lastKey = undefined
-      itemsMap.forEach((item, key) => {
-        lastKey = key
-      }) // I am having a brainfart day and can't figure out the right thing to get the last element without using the forEach to loop over them...
+      const lastKey =
+        itemsMap.size > 0
+          ? Array.from(itemsMap)[itemsMap.size - 1][0]
+          : undefined
       setLastItem(lastKey)
     },
     [ itemsMap ]
