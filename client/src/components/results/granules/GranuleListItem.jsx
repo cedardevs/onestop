@@ -43,7 +43,7 @@ export default function GranuleListItem(props){
     <h3
       key={'GranuleListItem::title'}
       style={styleTitle(expanded, focusing)}
-      tabIndex={0}
+      tabIndex={-1}
       ref={focusRef}
       onFocus={handleFocus}
       onBlur={handleBlur}

@@ -65,6 +65,7 @@ function useItems(items){
   const previousItemsMap = usePrevious(itemsMap, new Map())
 
   const [ focusedKey, setFocusedKey ] = useState(undefined)
+  const [ lastItem, setLastItem ] = useState(undefined)
 
   // this effect tracks when the items supplied to ListView changes
   useEffect(
@@ -80,29 +81,16 @@ function useItems(items){
   // this effect tracks when the derived itemsMap changes
   useEffect(
     () => {
-      // figure out where we should focus next with new items
-      const keysBefore = [ ...previousItemsMap.keys() ]
       const keysAfter = [ ...itemsMap.keys() ]
-      const intersection = [ ...keysBefore ].filter(k => itemsMap.has(k))
-      // previously focused key is in the new results
-      if (intersection.includes(focusedKey)) {
-        const lastKey = keysAfter[itemsMap.size - 1][0]
-        // the previously focused key is not the last key
-        if (focusedKey !== lastKey) {
-          // the next key is not necessarily the last key
-          const nextKey = keysAfter.indexOf(focusedKey) + 1
-          setFocusedKey(keysAfter[nextKey])
-        } // otherwise it's okay to keep focusing on the last key
-      }
-      else {
-        // we avoid focusing when previous size == 0 because it's the first time loading the list view
-        // and we dont' want to force focus on the first item
-        if (previousItemsMap.size > 0) {
-          // could not find anything new or old to focus on, go for the first
-          // will be `undefined` if the new results are empty
-          setFocusedKey(keysAfter[0])
-        }
-      }
+
+      const nextKey = keysAfter.indexOf(lastItem) + 1
+      setFocusedKey(keysAfter[nextKey])
+
+      let lastKey = undefined
+      itemsMap.forEach((item, key) => {
+        lastKey = key
+      }) // I am having a brainfart day and can't figure out the right thing to get the last element without using the forEach to loop over them...
+      setLastItem(lastKey)
     },
     [ itemsMap ]
   )
