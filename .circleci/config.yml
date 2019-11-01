@@ -273,6 +273,17 @@ jobs:
     steps:
       - <<: *attachWorkspace
       - run:
+          name: go build
+          command: |
+           ./gradlew cli:goBuild
+      - run:
+          name: go build
+          command: |
+           cp search/schema/openapi.yml cli/openapi.yaml ;
+           cd cli ;
+           go get -u https://github.com/danielgtaylor/openapi-cli-generator ;
+           openapi-cli-generator generate openapi.yaml
+      - run:
           name: Build image, publish
           command: |
             echo "${CIRCLE_BRANCH}"
@@ -283,7 +294,6 @@ jobs:
             fi
           environment:
               GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
-
   finalize:
     <<: *defaults
     steps:
