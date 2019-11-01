@@ -281,7 +281,7 @@ jobs:
           command: |
            cp search/schema/openapi.yml cli/openapi.yaml ;
            cd cli ;
-           go get -u https://github.com/danielgtaylor/openapi-cli-generator ;
+           go get -u github.com/danielgtaylor/openapi-cli-generator ;
            openapi-cli-generator generate openapi.yaml
       - persist_to_workspace:
           root: ~/repo
