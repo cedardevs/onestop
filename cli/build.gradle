@@ -37,7 +37,7 @@ jib {
 
   from {
     // base image
-    image = 'golang:1.12.0-alpine3.9'
+    image = 'golang'
   }
 
   to {
