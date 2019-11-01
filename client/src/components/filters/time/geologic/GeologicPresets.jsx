@@ -4,30 +4,10 @@ import Immutable from 'seamless-immutable' // TODO is immutable actually needed?
 import _ from 'lodash'
 
 import Select from 'react-select'
-
-import {FilterColors} from '../../../../style/defaultStyles'
-
+import {FilterColors, selectTheme} from '../../../../style/defaultStyles'
 import FilterFieldset from '../../FilterFieldset'
-
 import {convertYearToCE, textToNumber} from '../../../../utils/inputUtils'
-
 import {styleForm} from '../../common/styleFilters'
-
-const selectTheme = theme => {
-  return {
-    ...theme,
-    borderRadius: '0.309em',
-    colors: {
-      ...theme.colors,
-      primary: FilterColors.DARKEST,
-      primary75: FilterColors.DARK,
-      primary50: FilterColors.MEDIUM,
-      primary25: FilterColors.LIGHT,
-      danger: '#277CB2',
-      dangerLight: '#277CB2',
-    },
-  }
-}
 
 const styleLayout = {
   ...styleForm, // TODO is this even needed?

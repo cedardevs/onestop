@@ -85,7 +85,7 @@ const BOXES = [
     top: 0,
     height: 9,
     left: 0,
-    width: 10, // TODO or 11?
+    width: 11,
     description: include =>
       resultDescription(
         include,
@@ -203,15 +203,11 @@ const BOXES = [
   },
 ]
 
-const styleBox = {
-  display: 'block',
+const styleBox = consolidateStyles(styleRelationIllustration.general, {
   position: 'absolute',
-  borderRadius: '.2em',
   borderStyle: 'solid',
   borderWidth: '1px',
-  overflow: 'visible',
-  boxShadow: '2px 2px 5px 2px #2c2c2c59', // TODO check in other browers and maybe move to styleRelationIllustration?
-}
+})
 
 const stylePosition = ({left, width, top, height}) => {
   return {
@@ -312,7 +308,7 @@ const GeoRelationIllustration = ({relation, excludeGlobal}) => {
       role="list"
       style={{
         width: '100%',
-        height: '7em', // TODO picked an arbitrary total height for now...
+        height: '7em',
         position: 'relative',
         marginTop: '.609em',
       }}

@@ -312,7 +312,7 @@ const TimeLineQuery = ({query, outputs}) => {
       <output
         onMouseOver={() => setHovering(true)}
         onMouseOut={() => setHovering(false)}
-        style={{
+        style={consolidateStyles(styleRelationIllustration.general, {
           position: 'absolute',
           left: leftEdgeOfRange(query.start),
           width: width(query.start, query.end),
@@ -329,9 +329,7 @@ const TimeLineQuery = ({query, outputs}) => {
           backgroundColor: hovering
             ? styleRelationIllustration.query.backgroundColorHover
             : styleRelationIllustration.query.backgroundColor,
-          borderRadius: '.2em',
-          boxShadow: '2px 2px 5px 2px #2c2c2c59',
-        }}
+        })}
         title={query.description}
       >
         <FlexRow
@@ -350,12 +348,12 @@ const TimeLineQuery = ({query, outputs}) => {
     </Spacer>
   )
 
-  let exampleColumn = [ timeline, queryBox ]
+  let exampleColumnItems = [ timeline, queryBox ]
   outputs.forEach(output => {
-    exampleColumn.push(output)
+    exampleColumnItems.push(output)
   })
 
-  const middle = ( //TODO rename "middle"
+  const exampleColumn = (
     <FlexColumn
       key="middle"
       style={{
@@ -363,13 +361,13 @@ const TimeLineQuery = ({query, outputs}) => {
         position: 'relative',
         justifyContent: 'space-evenly',
       }}
-      items={exampleColumn}
+      items={exampleColumnItems}
     />
   )
 
   return (
     <div role="list" style={{marginTop: '.609em'}}>
-      <div style={{textAlign: 'center'}}>timeline:</div> {middle}
+      <div style={{textAlign: 'center'}}>timeline:</div> {exampleColumn}
     </div>
   )
 }
@@ -391,14 +389,10 @@ const width = (left, right) => {
   return `${100 - rightOffset - leftOffset}%`
 }
 
-const styleResult = {
-  display: 'block',
+const styleResult = consolidateStyles(styleRelationIllustration.general, {
   position: 'relative',
   marginBottom: '0.309em',
-  overflow: 'visible',
-  borderRadius: '.2em',
-  boxShadow: '2px 2px 5px 2px #2c2c2c59', // TODO check in other browers and maybe move to styleRelationIllustration?
-}
+})
 
 const stylePosition = ({start, end}) => {
   return {

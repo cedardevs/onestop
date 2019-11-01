@@ -5,25 +5,8 @@ import FlexRow from '../common/ui/FlexRow'
 import Expandable from '../common/ui/Expandable'
 import Button from '../common/input/Button'
 import {question_circle, SvgIcon} from '../common/SvgIcon'
-import {FilterColors} from '../../style/defaultStyles'
+import {FilterColors, selectTheme} from '../../style/defaultStyles'
 import {consolidateStyles} from '../../utils/styleUtils'
-
-const selectTheme = theme => {
-  // TODO copy-pasta #3 - move this to defaultStyles (although actually there's just a lot of overlap in re-setting up the select....?)
-  return {
-    ...theme,
-    borderRadius: '0.309em',
-    colors: {
-      ...theme.colors,
-      primary: FilterColors.DARKEST,
-      primary75: FilterColors.DARK,
-      primary50: FilterColors.MEDIUM,
-      primary25: FilterColors.LIGHT,
-      danger: '#277CB2',
-      dangerLight: '#277CB2',
-    },
-  }
-}
 
 const RELATION_OPTIONS = [
   {

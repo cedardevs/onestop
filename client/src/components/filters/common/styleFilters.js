@@ -39,4 +39,11 @@ export const styleRelationIllustration = {
     borderColor: '#285489',
     color: '#FFF',
   },
+  general: {
+    // TODO I don't know what else to name this...
+    display: 'block',
+    borderRadius: '.2em',
+    overflow: 'visible',
+    boxShadow: '2px 2px 5px 2px #2c2c2c59',
+  },
 }
