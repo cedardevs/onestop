@@ -63,9 +63,9 @@ export function useListViewItem(props){
   )
 
   const handleFocus = event => {
-    if (props.setFocusedKey) {
-      props.setFocusedKey(props.itemId)
-    }
+    // if (props.setFocusedKey) {
+    //   props.setFocusedKey(props.itemId) // TODO untangle passing the setFocusedKey stuff around?
+    // }
     setFocusing(true)
   }
 

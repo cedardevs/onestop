@@ -87,7 +87,7 @@ const CollectionListItem = props => {
     <h3 key={'CollectionListItem::title'} style={styleTitle(expanded)}>
       <a
         style={styleLink(focusing)}
-        tabIndex={0}
+        tabIndex={-1}
         ref={focusRef}
         onFocus={handleFocus}
         onBlur={handleBlur}
