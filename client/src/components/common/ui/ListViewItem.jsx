@@ -56,7 +56,10 @@ export function useListViewItem(props){
   useEffect(
     () => {
       if (focusRef && focusRef.current && props.shouldFocus) {
-        focusRef.current.focus()
+        /* A small delay before triggering programitic focus allows screen readers to follow better after updating their buffer.
+        See https://webaim.org/discussion/mail_thread?thread=4561 and http://accessibleculture.org/articles/2010/03/accessible-tabs/
+        */
+        setTimeout(focusRef.current.focus(), 200)
       }
     },
     [ focusRef.current ]

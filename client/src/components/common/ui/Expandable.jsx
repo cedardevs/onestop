@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react'
+import _ from 'lodash'
 import AnimateHeight from 'react-animate-height/lib/index'
 import {Key} from '../../../utils/keyboardUtils'
+import defaultStyles from '../../../style/defaultStyles'
 
 const ANIMATION_DURATION = 200
 
@@ -120,9 +122,17 @@ export default function Expandable(props){
     <span>{open ? arrowTextOpened : arrowTextClosed}&nbsp;</span>
   )
   const arrow = showArrow ? open ? (
-    <span style={styleArrowText}>&nbsp;{arrowText}&#9660;&nbsp;</span>
+    <span style={styleArrowText}>
+      &nbsp;{arrowText}
+      <span aria-hidden={true}>&#9660;&nbsp;</span>
+      <span style={defaultStyles.hideOffscreen}>for {headingTitle}</span>
+    </span>
   ) : (
-    <span style={styleArrowText}>&nbsp;{arrowText}&#9654;&nbsp;</span>
+    <span style={styleArrowText}>
+      &nbsp;{arrowText}
+      <span aria-hidden={true}>&#9654;&nbsp;</span>
+      <span style={defaultStyles.hideOffscreen}>for {headingTitle}</span>
+    </span>
   ) : null
 
   const ariaHidden = display === 'none'
@@ -157,11 +167,12 @@ export default function Expandable(props){
       : {}),
   }
 
+  // dynamic aria-hidden={_.isEmpty(arrowText)} may not work for all uses of Expandable
   const headingEffective = heading ? (
     <div style={stylesHeadingMerged} title={headingTitle}>
       <div style={styleFocused}>{heading}</div>
       <div
-        aria-hidden="true"
+        aria-hidden={_.isEmpty(arrowText)}
         style={styleArrowMerged}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
