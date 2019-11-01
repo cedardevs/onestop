@@ -32,10 +32,13 @@ describe('The ScriptDownloader component', () => {
     const featuresList = [ 'cart' ]
     await store.dispatch(toggleFeatures(featuresList))
 
+    component = mount(App(store, history))
+
     // initialize history to be on the '/cart' route
     history.push(url)
 
-    component = mount(App(store, history))
+    // force a re-render after pushing to history so that our component hierarchy look as if we are on the cart page
+    component.update()
   })
 
   it('exists on the /cart page', () => {

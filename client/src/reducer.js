@@ -36,7 +36,7 @@ const search = combineReducers({
   info,
 })
 
-export default history =>
+const appReducer = history =>
   combineReducers({
     router: connectRouter(history),
     cart: cart,
@@ -47,3 +47,11 @@ export default history =>
     user: user,
     search: search,
   })
+
+export default history => (state, action) => {
+  // allow a top-level reducer action to trigger all reducers to initial state
+  if (action.type === RESET_STORE) {
+    state = undefined
+  }
+  return appReducer(history)(state, action)
+}

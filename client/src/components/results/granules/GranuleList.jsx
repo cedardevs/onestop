@@ -103,7 +103,7 @@ export default function GranuleList(props){
       onSelect: () => {},
       handleCheckboxChange: handleCheckboxChange,
       checkGranule: isGranuleSelected(itemId),
-      setFocusedKey
+      setFocusedKey,
     }
   }
 
