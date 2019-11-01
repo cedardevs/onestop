@@ -101,10 +101,9 @@ export default function GranuleList(props){
   const propsForItem = (item, itemId, setFocusedKey) => {
     return {
       onSelect: () => {},
-      showLinks: true,
-      showTimeAndSpace: true,
       handleCheckboxChange: handleCheckboxChange,
       checkGranule: isGranuleSelected(itemId),
+      setFocusedKey
     }
   }
 

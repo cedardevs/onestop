@@ -47,24 +47,6 @@ const styleCartActionsTitle = {
   padding: 0,
 }
 
-const styleClearCartButton = {
-  fontSize: '1em',
-  display: 'inline-flex',
-  padding: '0.309em 0.618em 0.309em 0.309em',
-  marginBottom: '0.618em',
-}
-
-const styleClearCartButtonFocus = {
-  outline: '2px dashed #5C87AC',
-  outlineOffset: '.118em',
-}
-
-const styleClearCartIcon = {
-  width: '1.618em',
-  height: '1.618em',
-  marginRight: '0.309em',
-}
-
 const styleShowMore = {
   margin: '1em auto 1.618em auto',
 }
