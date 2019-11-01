@@ -376,7 +376,9 @@ workflows:
       - stream-manager:
           requires:
             - checkout
-      - cli-generation
+      - cli-generation:
+          requires:
+            - checkout
       - cli-publish:
           requires:
             - checkout
