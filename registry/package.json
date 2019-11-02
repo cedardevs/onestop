@@ -4,6 +4,6 @@
     "build": "speccy resolve build/resources/main/openapi_base.yaml --json-schema > build/resources/main/static/openapi.yaml"
   },
   "dependencies": {
-    "speccy": "^0.9.0"
+    "speccy": "^0.11.0"
   }
 }

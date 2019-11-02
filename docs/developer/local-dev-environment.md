@@ -10,29 +10,29 @@
     - Note: if you already have docker, kubectl, and minikube installed, you only need to do the first step in the linked installation guide
     - Note: skaffold is also available via homebrew
 
-### Recommended Development Cycle
+### Local Development 
+The system uses Skaffold and Jib as a Gradle plugin to help with continuous development and deployment of Kubernetes 
+applications.
 
-From the root of this repo, run:
-```bash
-./gradlew -t test bootJar shadowJar
-```
-Which will:
-1. Install gradle if needed
-1. Run the unit tests of each subproject
-1. Assemble the executable jar used in each component's docker image
-1. Set up a watch on the source code of each subproject which will rerun compilation and tests when they change
+How it works:
 
-Now, in a separate shell, run:
+1. Creates Kubernetes configuration files for the apps
+1. Deploys applications to local cluster
+1. Monitors source code and automatically re-deploys when needed
+1. Steams logs from your deployed pods to your local terminal
+
+### Recommended Development Cycle using Jib for gradle and skaffold
+This means that Jib will monitors and catchs any changes made to the source code and trigger a build. 
+This saves a separate docker image and redeploy the application. 
 ```bash
 skaffold dev
 ```
 Which will:
-1. Locally build docker images for each subproject, using the outputs compiled by gradle above
+1. Locally build docker images for each subproject
 1. Deploy the k8s objects based on those images, as well as dependencies like zookeeper and kafka, to your k8s cluster
 1. Set up a watch on the docker image source files which will rebuild and redeploy their corresponding images when they change
 
 At this point, modifying a source file in a subproject will:
-1. Run its unit tests
 1. Assemble its jars
 1. Build its docker image
 1. Deploy its objects to the cluster
@@ -92,3 +92,17 @@ Or, to delete all volume claims in the current namespace:
 ```bash
 kubectl delete pvc --all
 ```
+### optional Development Cycle
+From the root of this repo, you can run gradle task: 
+for the entire project  
+```bash
+./gradlew -t test bootJar shadowJar
+```
+for each subproject
+```bash
+./gradlew -t test `applicationName`:bootJar shadowJar
+```
+Which will:
+1. Run the unit tests of each subproject
+1. Assemble the executable jar 
+1. Set up a watch on the source code of each subproject which will rerun compilation and tests when they change
