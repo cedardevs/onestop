@@ -7,7 +7,10 @@ One of the subcommands, `scdr-files`, was added to demonstrate how the OneStop A
 Find the OneStop OpenAPI spec here- https://app.swaggerhub.com/apis/cedardevs/one-stop_search_api/2.0.0
 The `onstop-cli/openapi.go` file was generated using this project- https://github.com/danielgtaylor/openapi-cli-generator
 
-## Install and run using a docker container (go not required locally)
+## Requirements -
+Either golang, docker, or java.  
+
+## Install and run using a docker container (golang not required)
 
 `./gradlew cli:build`
 
@@ -24,7 +27,7 @@ For more commands and flags -
 `docker run cedardevs/onestop-cli <CMD> --help`
 
 ## Download and use as Go package
-(requires go and the following environemt)
+(requires go and the following environment)
 
 ```
 export PATH=$PATH:/usr/local/go/bin \ export GOPATH=$HOME/go
@@ -33,7 +36,7 @@ export PATH=$PATH:$GOBIN
 export GO111MODULE=on
 ```
 
-`go get  github.com/cedardevs/onestop/cli`
+`go get github.com/cedardevs/onestop/cli`
 
 `cli --help`
 
@@ -58,7 +61,7 @@ or `go install` it -
 `cli --help`
 
 
-## onestop-cli usage
+## Usage
 Get collection by id -
 
 `cli getcollectionbyid ecb087a6-25cf-4bfa-8165-2d374c701646`
@@ -104,6 +107,8 @@ Complex collections search with a query text, spatial, and temporal filter -
 `cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522,  queries[]{type:queryText, value:satellite}  --verbose`
 
 For complex query and filter structure, refer to these docs for the short hand documentation - https://github.com/danielgtaylor/openapi-cli-generator/tree/master/shorthand
+
+Note: As it is now, you cannot combine the flags with json shorthand. e.g. This will not work - `cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --q="satellite" filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} `
 
 ## scdr-files usage
 
