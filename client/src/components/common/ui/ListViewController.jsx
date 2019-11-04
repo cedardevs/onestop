@@ -10,7 +10,6 @@ const styleController = {
   display: 'flex',
   justifyContent: 'space-evenly',
   padding: '0.618em',
-  backgroundColor: 'rgba(0,0,0, 0.2)',
   borderRadius: '0.309em',
 }
 
@@ -53,7 +52,7 @@ export default function ListViewController(props){
   // we can show a toggle between views
   const toggleGridAvailable = ListItemComponent && GridItemComponent
   if (toggleGridAvailable) {
-    let buttonTitle = showAsGrid ? 'Show List' : 'Show Grid'
+    let buttonTitle = showAsGrid ? 'List View' : 'Grid View'
     controlButtons.push(
       <Button
         key={buttonTitle}
