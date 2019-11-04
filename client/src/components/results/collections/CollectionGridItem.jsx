@@ -95,14 +95,14 @@ const styleArch = {
 
 const styleArchHover = {
   fontWeight: 'bold',
-  backgroundColor: '#327CAC',
+  backgroundColor: '#307AAA',
   color: '#FBFBFB',
   height: '7.708em',
 }
 
 const styleArchFocus = {
   fontWeight: 'bold',
-  backgroundColor: '#327CAC',
+  backgroundColor: '#307AAA',
   color: '#FBFBFB',
   height: '7.708em',
 }
