@@ -125,13 +125,13 @@ export default function Expandable(props){
     <span style={styleArrowText}>
       &nbsp;{arrowText}
       <span aria-hidden={true}>&#9660;&nbsp;</span>
-      <span style={defaultStyles.hideOffscreen}>for {headingTitle}</span>
+      <span style={defaultStyles.hideOffscreen}> for {headingTitle}</span>
     </span>
   ) : (
     <span style={styleArrowText}>
       &nbsp;{arrowText}
       <span aria-hidden={true}>&#9654;&nbsp;</span>
-      <span style={defaultStyles.hideOffscreen}>for {headingTitle}</span>
+      <span style={defaultStyles.hideOffscreen}> for {headingTitle}</span>
     </span>
   ) : null
 
