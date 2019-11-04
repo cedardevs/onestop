@@ -134,8 +134,8 @@ const DateTimeFilter = ({
     return (
       <TimeRelationIllustration
         relation={relation}
-        hasStart={_.isEmpty(start.year)}
-        hasEnd={_.isEmpty(end.year)}
+        hasStart={!_.isEmpty(start.year)}
+        hasEnd={!_.isEmpty(end.year)}
       />
     )
   }
