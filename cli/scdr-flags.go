@@ -4,7 +4,6 @@ import (
 	"github.com/danielgtaylor/openapi-cli-generator/cli"
 	"github.com/spf13/viper"
 	"gopkg.in/h2non/gentleman.v2"
-	"strings"
 )
 
 const scdrFileCmd = "scdr-files"
@@ -14,35 +13,16 @@ const typeDescription = "Search only for files of the specified data collection 
 const regexDescription = "Locate files whose names match the case-insensitive regular expression REGEX. Only one regular expression is allowed, not longer than 100 characters."
 
 func setScdrFlags(){
+	//flags are in onestop-flags.go
 	cli.AddFlag(scdrFileCmd, dateFilterFlag, "", dateDescription, "")
 	cli.AddFlag(scdrFileCmd, typeFlag, "", typeDescription, "")
 	cli.AddFlag(scdrFileCmd, spatialFilterFlag, "", areaDescription, "")
 	// cli.AddFlag(scdrFileCmd, regexFileCmd, "", regexDescription, "")
 	cli.AddFlag(scdrFileCmd, textQueryFlag, "", queryDescription, "")
+	cli.AddFlag(scdrFileCmd, maxFlag, "", maxDescription, "")
+	cli.AddFlag(scdrFileCmd, offsetFlag, "", offsetDescription, "")
 
-	cli.RegisterBefore("scdr-files", func(cmd string, params *viper.Viper, req *gentleman.Request) {
-		filters := []string{}
-		queries := []string{}
-
-		dateTimeFilter := parseDate(params)
-		filters = append(filters, dateTimeFilter...)
-		geoSpatialFilter := parsePolygon(params)
-		filters = append(filters, geoSpatialFilter...)
-		parentIdentifierQuery := parseParentIdentifier(params)
-		queries = append(queries, parentIdentifierQuery...)
-		fileIdentifierQuery := parseFileIdentifier(params)
-		queries = append(queries, fileIdentifierQuery...)
-		regexQuery := parseParentIdentifierRegex(params)
-		queries = append(queries, regexQuery...)
-		query := parseTextQuery(params)
-		queries = append(queries, query...)
-
-		if len(queries) > 0 || len(filters) > 0  {
-	    req.AddHeader("content-type", "application/json")
-	    req.BodyString("{\"page\":{ \"max\": 100, \"offset\": 0 },\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]}")
-	  }
-	})
-
+	cli.RegisterBefore("scdr-files", parseScdrRequestFlags)
 	cli.RegisterAfter("scdr-files", func(cmd string, params *viper.Viper, resp *gentleman.Response, data interface{}) interface{} {
 		scdrResp := marshalScdrResponse(data)
 		return scdrResp

@@ -10,7 +10,7 @@ import (
 )
 
 
-func parseFiltersAndQueryFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
+func parseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
   filters := []string{}
   queries := []string{}
 
@@ -20,13 +20,49 @@ func parseFiltersAndQueryFlags(cmd string, params *viper.Viper, req *gentleman.R
   filters = append(filters, geoSpatialFilter...)
   query := parseTextQuery(params)
   queries = append(queries, query...)
-
+	requestMeta := parseRequestMeta(params)
   if len(queries) > 0 || len(filters) > 0  {
-    req.AddHeader("content-type", "application/json")
-    req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]}")
+		req.AddHeader("content-type", "application/json")
+    req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
   }
 }
 
+func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
+	filters := []string{}
+	queries := []string{}
+
+	dateTimeFilter := parseDate(params)
+	filters = append(filters, dateTimeFilter...)
+	geoSpatialFilter := parsePolygon(params)
+	filters = append(filters, geoSpatialFilter...)
+	parentIdentifierQuery := parseParentIdentifier(params)
+	queries = append(queries, parentIdentifierQuery...)
+	fileIdentifierQuery := parseFileIdentifier(params)
+	queries = append(queries, fileIdentifierQuery...)
+	regexQuery := parseParentIdentifierRegex(params)
+	queries = append(queries, regexQuery...)
+	query := parseTextQuery(params)
+	queries = append(queries, query...)
+	requestMeta := parseRequestMeta(params)
+
+	if len(queries) > 0 || len(filters) > 0  {
+		req.AddHeader("content-type", "application/json")
+		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "],"+ requestMeta +"}")
+	}
+}
+
+func parseRequestMeta(params *viper.Viper) string {
+	max := params.GetString("max")
+	offset := params.GetString("offset")
+	if len(max) == 0 {
+		max = "100"
+	}
+	if len(offset) == 0 {
+		offset = "0"
+	}
+	page := "\"page\" : {\"max\": " + max + ", \"offset\": " + offset + "}"
+	return page
+}
 
 func parseDate(params *viper.Viper) []string {
 	//parse date flags, add filter
