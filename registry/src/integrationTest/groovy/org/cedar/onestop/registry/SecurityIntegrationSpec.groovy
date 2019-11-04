@@ -1,6 +1,8 @@
 package org.cedar.onestop.registry
 
 import groovy.json.JsonSlurper
+import org.apache.kafka.streams.KafkaStreams
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate

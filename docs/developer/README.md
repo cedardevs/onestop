@@ -9,5 +9,5 @@
 * [Contribution Guidelines](/docs/developer/contribution-guidelines.md)
 * [Internal Development Practices](/docs/developer/internal-practices.md)
 * [Hotfix Strategy](/docs/developer/hotfix-strategy.md)
-* [Release Prep Checklist](/docs/developer/release-checklist.md)
-* [Integration Tests](/docs/developer/integration-tests)
+* [Release Prep Checklist](/docs/developer/testing/onestop-release-checklist.md)
+* [Integration Tests](/docs/developer/testing/integration-tests)

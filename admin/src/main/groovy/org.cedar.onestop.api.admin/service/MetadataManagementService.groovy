@@ -201,6 +201,7 @@ class MetadataManagementService {
         Map resultRecordMeta = resultRecord.meta as Map
         resultRecord.id = index._id
         resultRecordMeta.status = index.status
+        resultRecordMeta.result == index.result
 
         // ES6+ changed the item structure in a batch response
         // `index.result` <string> (e.g. 'created') exists in both versions,
@@ -215,6 +216,16 @@ class MetadataManagementService {
 
         if (result.error) {
           resultRecordMeta.error = result.error
+          def message = "Error of type [${result.error.type}] when indexing record with id [${resultRecord.id}], reason: ${result.error.reason}"
+          if ((resultRecordMeta.status as Integer) < 500) {
+            log.info(message)
+          }
+          else {
+            log.error(message)
+          }
+        }
+        else {
+          log.info("Indexed record with id [${resultRecord.id}] with result [${resultRecordMeta.result}")
         }
       }
     }
