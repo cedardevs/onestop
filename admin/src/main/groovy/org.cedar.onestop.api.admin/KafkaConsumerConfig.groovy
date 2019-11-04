@@ -2,6 +2,7 @@ package org.cedar.onestop.api.admin
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer
 import org.apache.avro.specific.SpecificRecord
+import org.apache.kafka.clients.admin.AdminClientConfig
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -16,6 +17,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.config.KafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.core.KafkaAdmin
 import org.springframework.kafka.listener.BatchLoggingErrorHandler
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
 
@@ -66,6 +68,12 @@ class KafkaConsumerConfig {
     factory.setBatchListener(true)
     factory.setBatchErrorHandler(new BatchLoggingErrorHandler())
     return factory
+  }
+
+  @Bean
+  KafkaAdmin kafkaAdmin(Properties kafkaProps) {
+    def adminProps = DataUtils.filterProperties(kafkaProps, AdminClientConfig.configNames())
+    return new KafkaAdmin(adminProps as Map<String, Object>)
   }
   
 }
