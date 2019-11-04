@@ -20,7 +20,7 @@ The project is composed of four high level "components":
 
 You can check out OneStop in action while exploring NOAA's Earth science data offerings at [NOAA's OneStop](https://data.noaa.gov/onestop/) search portal. If the latest features in progress are what you're after, however, take a peek at our [test host](https://sciapps.colorado.edu/onestop/). *Keep in mind the latter could be broken at any time as it represents what's currently under development.*
 
-![OneStop UI Landing Page](images/onestop-landing-page.png)
+![OneStop UI Landing Page](/onestop/images/onestop-landing-page.png)
 
 
 
@@ -29,18 +29,18 @@ OneStop has an enormous amount to offer, but it can be difficult to know how and
 
 ### By User Type
 What's important to you when using OneStop varies significantly based on what you need to accomplish. Select the role below that most closely represents you to get started.
-* [Public User](public-user)
+* [Public User](/onestop/public-user)
   * You're using the UI, API, or CLI in order to find data
-* [Metadata Manager](metadata-manager)
+* [Metadata Manager](/onestop/metadata-manager)
   * You're responsible for loading or maintaining metadata records
-* [Operator](operator)
+* [Operator](/onestop/operator)
   * You're deploying, upgrading, or maintaining an instance of OneStop in a production setting
-* [Developer](developer)
+* [Developer](/onestop/developer)
   * You're contributing to the code or even just trying to run a local instance on your personal machine
 
 
 ### By Project Component
-If you're interested in learning about the finer details of the "components" described above in the overview, head over to our [Architectural Overview](architectural-overview) page to begin your deep-dive journey.
+If you're interested in learning about the finer details of the "components" described above in the overview, head over to our [Architectural Overview](/onestop/architectural-overview) page to begin your deep-dive journey.
 
 
 ## External Documentation

@@ -5,14 +5,14 @@ Take a look at our navigational suggestions below, or simply click the `Next` li
 
 ## Table of Contents
 * User Interface
-  1. [Quick Start](public-user/ui/quickstart)
+  1. [Quick Start](/onestop/public-user/ui/quickstart)
   1. [Keyboard Navigation Guide](/onestop/public-user/ui/keyboard-navigation)
   1. TBD
 * Search API
-  1. [Quick Start](/public-user/api/quickstart)
+  1. [Quick Start](/onestop/public-user/api/quickstart)
   1. TBD
 * Command Line Interface
-  1. [Quick Start](/public-user/cli/quickstart)
+  1. [Quick Start](/onestop/public-user/cli/quickstart)
   1. TBD
 
-<div align="center"><a href="/">Previous</a> | <a href="#public-user-navigation-guide">Top of Page</a> | <a href="/public-user/ui/quickstart">Next</a></div>
+<div align="center"><a href="/onestop/">Previous</a> | <a href="#public-user-navigation-guide">Top of Page</a> | <a href="/onestop/public-user/ui/quickstart">Next</a></div>

@@ -3,4 +3,4 @@ OneStop UI features are fully accessible via use of the keyboard. A lot of funct
 
 
 
-<div align="center"><a href="/public-user/ui/quickstart">Previous</a> | <a href="#keyboard-navigation-guide">Top of Page</a> | <a href="/public-user/ui/">Next</a></div>
+<div align="center"><a href="/onestop/public-user/ui/quickstart">Previous</a> | <a href="#keyboard-navigation-guide">Top of Page</a> | <a href="/onestop/public-user/ui/">Next</a></div>
