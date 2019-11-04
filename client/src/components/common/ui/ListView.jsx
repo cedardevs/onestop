@@ -4,6 +4,7 @@ import ListViewController from './ListViewController'
 import {mapFromObject} from '../../../utils/objectUtils'
 import FlexRow from './FlexRow'
 import {FilterStyles} from '../../../style/defaultStyles'
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 
 const styleListView = {
   marginLeft: '1.618em',
@@ -121,6 +122,8 @@ export default function ListView(props){
     customMessage,
   } = props
 
+  const [ notification, setNotification ] = useState('')
+
   const [ itemsMap, previousItemsMap, focusedKey, setFocusedKey ] = useItems(
     items
   )
@@ -142,9 +145,22 @@ export default function ListView(props){
       ListItemComponent={ListItemComponent}
       GridItemComponent={GridItemComponent}
       showAsGrid={showAsGrid}
-      toggleGrid={() => setShowAsGrid(!showAsGrid)}
-      expandAll={() => cycleExpanded(true)}
-      collapseAll={() => cycleExpanded(false)}
+      toggleGrid={() => {
+        setNotification(
+          showAsGrid
+            ? 'List view used to display results.'
+            : 'Grid view used to display results.'
+        )
+        setShowAsGrid(!showAsGrid)
+      }}
+      expandAll={() => {
+        setNotification('Expanding all results in list.')
+        cycleExpanded(true)
+      }}
+      collapseAll={() => {
+        setNotification('Collapsing all results in list.')
+        cycleExpanded(false)
+      }}
       customActions={customActions}
     />
   )
@@ -204,6 +220,9 @@ export default function ListView(props){
   return (
     <div style={styleListView}>
       <FlexRow style={styleHeading} items={[ heading, controlElement ]} />
+      <LiveAnnouncer>
+        <LiveMessage message={notification} aria-live="polite" />
+      </LiveAnnouncer>
       {customMessage}
       <div style={showAsGrid ? styleGrid : styleList}>{itemElements}</div>
     </div>
