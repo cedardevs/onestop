@@ -167,7 +167,7 @@ export default class Cart extends React.Component {
 
     const cartListCustomActions = {
       'Clear All': {
-        title: 'Clear All Granules from Cart',
+        title: 'Clear All Files from Cart',
         icon: clearIcon,
         showText: false,
         handler: () => deselectAllGranules(),
