@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
 import {FilterColors, SiteColors} from '../../../../style/defaultStyles'
-import {isValidYear, convertYearToCE} from '../../../../utils/inputUtils'
 
 import FilterFieldset from '../../FilterFieldset'
 import YearField from '../standard/YearField'
@@ -40,75 +39,8 @@ const styleInputValidity = isValid => {
   }
 }
 
-const GeologicFieldset = ({
-  startYear,
-  endYear,
-  updateStartYear,
-  updateEndYear,
-  format,
-}) => {
+const GeologicFieldset = ({start, end, format}) => {
   const legendText = 'Geologic'
-
-  const [ start, setStart ] = useState('')
-  const [ end, setEnd ] = useState('')
-  const [ startValid, setStartValid ] = useState(true)
-  const [ endValid, setEndValid ] = useState(true)
-
-  useEffect(
-    () => {
-      if (startYear != null) {
-        // internal to component, values should be string. expected startYear format is integer
-        if (format == 'BP') {
-          setStart(convertYearToCE(`${startYear}`, 'BP'))
-        }
-        else {
-          setStart(`${startYear}`)
-        }
-      }
-      else {
-        setStart('')
-      }
-    },
-    [ startYear, format ] // when props date / redux store changes, update fields
-  )
-  useEffect(
-    () => {
-      if (endYear != null) {
-        // internal to component, values should be string. expected startYear format is integer
-        if (format == 'BP') {
-          setEnd(convertYearToCE(`${endYear}`, 'BP'))
-        }
-        else {
-          setEnd(`${endYear}`)
-        }
-      }
-      else {
-        setEnd('')
-      }
-    },
-    [ endYear, format ] // when props date / redux store changes, update fields
-  )
-
-  useEffect(
-    () => {
-      let yearCE = convertYearToCE(start, format)
-      let validValue = isValidYear(yearCE)
-      setStartValid(validValue) // update UI
-      updateStartYear(yearCE, validValue) // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
-    },
-    [ start ]
-  )
-
-  useEffect(
-    // validate end
-    () => {
-      let yearCE = convertYearToCE(end, format)
-      let validValue = isValidYear(yearCE)
-      setEndValid(validValue) // update UI
-      updateEndYear(yearCE, validValue) // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
-    },
-    [ end ]
-  )
 
   return (
     <FilterFieldset legendText={legendText}>
@@ -117,8 +49,8 @@ const GeologicFieldset = ({
           name="startyear"
           label="Start:"
           maxLength={14}
-          value={start}
-          onChange={e => setStart(e.target.value)}
+          value={start.year}
+          onChange={e => start.setYear(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
@@ -130,8 +62,8 @@ const GeologicFieldset = ({
 
         <div style={styleLayout}>
           <span />
-          <span aria-hidden="true" style={styleInputValidity(startValid)}>
-            {startValid ? '✓' : '✖'}
+          <span aria-hidden="true" style={styleInputValidity(start.valid)}>
+            {start.valid ? '✓' : '✖'}
           </span>
         </div>
       </div>
@@ -140,8 +72,8 @@ const GeologicFieldset = ({
           name="endyear"
           label="End:"
           maxLength={14}
-          value={end}
-          onChange={e => setEnd(e.target.value)}
+          value={end.year}
+          onChange={e => end.setYear(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
@@ -153,8 +85,8 @@ const GeologicFieldset = ({
 
         <div style={styleLayout}>
           <span />
-          <span aria-hidden="true" style={styleInputValidity(endValid)}>
-            {endValid ? '✓' : '✖'}
+          <span aria-hidden="true" style={styleInputValidity(end.valid)}>
+            {end.valid ? '✓' : '✖'}
           </span>
         </div>
       </div>

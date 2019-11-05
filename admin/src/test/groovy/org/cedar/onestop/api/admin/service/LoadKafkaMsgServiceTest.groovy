@@ -32,7 +32,7 @@ class LoadKafkaMsgServiceTest extends Specification {
     consumerService.listen([inputRecord])
 
     then:
-    1 * mockMetadataService.loadParsedRecords([[id: inputKey, parsedRecord: inputValue]])
+    1 * mockMetadataService.loadParsedRecords({ it.size() == 1 && it[0].id == inputKey })
   }
 
   def "ignores invalid metadata record" () {
@@ -50,18 +50,19 @@ class LoadKafkaMsgServiceTest extends Specification {
 
   def "filters out invalid metadata records" () {
     given:
-    def inputKey = 'ABC'
+    def validKey = 'ABC'
     def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
     def validValue = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
-    def validRecord = new ConsumerRecord(testCollectionTopic, 0, 0, inputKey, validValue)
+    def validRecord = new ConsumerRecord(testCollectionTopic, 0, 0, validKey, validValue)
+    def invalidKey = 'XYZ'
     def invalidValue = new ParsedRecord()
-    def invalidRecord = new ConsumerRecord(testCollectionTopic, 0, 0, inputKey, invalidValue)
+    def invalidRecord = new ConsumerRecord(testCollectionTopic, 0, 0, invalidKey, invalidValue)
 
     when:
     consumerService.listen([validRecord, invalidRecord])
 
     then:
-    1 * mockMetadataService.loadParsedRecords({ it.size() == 1 && it[0].parsedRecord == validRecord.value() })
+    1 * mockMetadataService.loadParsedRecords({ it.size() == 1 && it[0].id == validKey })
   }
 
   def "appends default index-ready Discovery and Analysis to ParsedRecord"() {

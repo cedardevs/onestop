@@ -91,6 +91,23 @@ export const granuleRemoveGeometry = () => {
   }
 }
 
+export const GRANULE_UPDATE_GEO_RELATIONSHIP = 'GRANULE_UPDATE_GEO_RELATIONSHIP'
+export const granuleUpdateGeoRelation = relationship => {
+  return {
+    type: GRANULE_UPDATE_GEO_RELATIONSHIP,
+    relationship: relationship,
+  }
+}
+
+export const GRANULE_UPDATE_TIME_RELATIONSHIP =
+  'GRANULE_UPDATE_TIME_RELATIONSHIP'
+export const granuleUpdateTimeRelation = relationship => {
+  return {
+    type: GRANULE_UPDATE_TIME_RELATIONSHIP,
+    relationship: relationship,
+  }
+}
+
 export const GRANULE_UPDATE_YEAR_RANGE = 'GRANULE_UPDATE_YEAR_RANGE'
 export const granuleUpdateYearRange = (startYear, endYear) => {
   return {
@@ -117,6 +134,7 @@ export const granuleUpdateDateRange = (startDate, endDate) => {
     endDate: endDate,
   }
 }
+
 export const GRANULE_REMOVE_DATE_RANGE = 'GRANULE_REMOVE_DATE_RANGE'
 export const granuleRemoveDateRange = () => {
   return {

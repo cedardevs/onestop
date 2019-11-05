@@ -1,12 +1,9 @@
 import React from 'react'
 
-// import FlexRow from '../../common/ui/FlexRow'
+import FlexRow from '../../common/ui/FlexRow'
 import Button from '../../common/input/Button'
 
 const styleButtonRow = {
-  // TODO replace with flexrow
-  display: 'flex',
-  flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'center',
 }
@@ -20,22 +17,25 @@ const styleButton = {
 
 const ApplyClearRow = ({ariaActionDescription, applyAction, clearAction}) => {
   return (
-    <div style={styleButtonRow}>
-      <Button
-        key="filter::apply"
-        text="Apply"
-        title={`Apply ${ariaActionDescription}`}
-        onClick={applyAction}
-        style={styleButton}
-      />
-      <Button
-        key="filter::clear"
-        text="Clear"
-        title={`Clear ${ariaActionDescription}`}
-        onClick={clearAction}
-        style={styleButton}
-      />
-    </div>
+    <FlexRow
+      style={styleButtonRow}
+      items={[
+        <Button
+          key="filter::apply"
+          text="Apply"
+          title={`Apply ${ariaActionDescription}`}
+          onClick={applyAction}
+          style={styleButton}
+        />,
+        <Button
+          key="filter::clear"
+          text="Clear"
+          title={`Clear ${ariaActionDescription}`}
+          onClick={clearAction}
+          style={styleButton}
+        />,
+      ]}
+    />
   )
 }
 export default ApplyClearRow

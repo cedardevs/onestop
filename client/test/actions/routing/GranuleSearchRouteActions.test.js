@@ -152,7 +152,7 @@ describe('granule search actions', function(){
     params: [ mockHistory, 'parent-uuid', {startDateTime: '1998'} ],
     expectedURL: {
       pathname: '/collections/granules/parent-uuid',
-      search: '?s=1998',
+      search: '?tr=i&s=1998', // default intersects relation
     },
   }
   const submitNextPageCase = {

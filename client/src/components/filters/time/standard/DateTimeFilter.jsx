@@ -1,26 +1,25 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
 import moment from 'moment/moment'
 import FlexColumn from '../../../common/ui/FlexColumn'
 import FlexRow from '../../../common/ui/FlexRow'
 import Button from '../../../common/input/Button'
+import RadioButtonSet from '../../../common/input/RadioButtonSet'
 import {Key} from '../../../../utils/keyboardUtils'
 import {isValidDateRange} from '../../../../utils/inputUtils'
-import {
-  FilterStyles,
-  FilterColors,
-  SiteColors,
-} from '../../../../style/defaultStyles'
+import {SiteColors} from '../../../../style/defaultStyles'
 import DateFieldset from './DateFieldset'
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
-
 import {
   styleFilterPanel,
   styleFieldsetBorder,
   styleForm,
 } from '../../common/styleFilters'
 import ApplyClearRow from '../../common/ApplyClearRow'
+import Relation from '../../Relation'
+import TimeRelationIllustration from '../TimeRelationIllustration'
+import {useDatetime} from './DateTimeEffect'
 
 const warningStyle = warning => {
   if (_.isEmpty(warning)) {
@@ -39,51 +38,55 @@ const warningStyle = warning => {
   }
 }
 
-const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
-  const [ start, setStart ] = useState({date: {}, valid: true})
-  const [ end, setEnd ] = useState({date: {}, valid: true})
+const DateTimeFilter = ({
+  startDateTime,
+  endDateTime,
+  timeRelationship,
+  updateTimeRelationship,
+  clear,
+  applyFilter,
+}) => {
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
-
-  const updateStartDate = (date, valid) => {
-    setStart({date: date, valid: valid})
+  const [ start ] = useDatetime(startDateTime, date => {
     setWarning('')
-    setDateRangeValid(isValidDateRange(date, end.date))
-  }
-  const updateEndDate = (date, valid) => {
-    setEnd({date: date, valid: valid})
+    setDateRangeValid(isValidDateRange(date, end.asMap()))
+  })
+  const [ end ] = useDatetime(endDateTime, date => {
     setWarning('')
-    setDateRangeValid(isValidDateRange(start.date, date))
-  }
+    setDateRangeValid(isValidDateRange(start.asMap(), date))
+  })
 
   const clearDates = () => {
     clear()
-    setStart({date: {}, valid: true})
-    setEnd({date: {}, valid: true})
+    start.clear()
+    end.clear()
     setDateRangeValid(true)
     setWarning('')
   }
 
   const applyDates = () => {
     if (!start.valid || !end.valid || !dateRangeValid) {
-      setWarning(createWarning(start.valid, end.valid, dateRangeValid))
+      setWarning(createWarning())
     }
     else {
-      let startDateString = !_.every(start.date, _.isNull)
-        ? moment(start.date).utc().startOf('day').format()
+      let startMap = start.asMap()
+      let startDateString = !_.every(startMap, _.isNull)
+        ? moment(startMap).utc().startOf('day').format()
         : null
-      let endDateString = !_.every(end.date, _.isNull)
-        ? moment(end.date).utc().startOf('day').format()
+      let endMap = end.asMap()
+      let endDateString = !_.every(endMap, _.isNull)
+        ? moment(endMap).utc().startOf('day').format()
         : null
 
       applyFilter(startDateString, endDateString)
     }
   }
 
-  const createWarning = (startValueValid, endValueValid, dateRangeValid) => {
-    if (!startValueValid && !endValueValid) return 'Invalid start and end date.'
-    if (!startValueValid) return 'Invalid start date.'
-    if (!endValueValid) return 'Invalid end date.'
+  const createWarning = () => {
+    if (!start.valid && !end.valid) return 'Invalid start and end date.'
+    if (!start.valid) return 'Invalid start date.'
+    if (!end.valid) return 'Invalid end date.'
     if (!dateRangeValid) return 'Invalid date range.'
     return 'Unknown error'
   }
@@ -102,16 +105,8 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
         onKeyDown={handleKeyDown}
         aria-describedby="timeFilterInstructions"
       >
-        <DateFieldset
-          name="start"
-          date={startDateTime}
-          onDateChange={updateStartDate}
-        />
-        <DateFieldset
-          name="end"
-          date={endDateTime}
-          onDateChange={updateEndDate}
-        />
+        <DateFieldset name="start" date={start} />
+        <DateFieldset name="end" date={end} />
       </form>
     </div>
   )
@@ -135,6 +130,26 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
     </div>
   )
 
+  const illustration = relation => {
+    return (
+      <TimeRelationIllustration
+        relation={relation}
+        hasStart={!_.isEmpty(start.year)}
+        hasEnd={!_.isEmpty(end.year)}
+      />
+    )
+  }
+
+  const relation = (
+    <Relation
+      id="datetimeRelation"
+      key="DateFilter::InputColumn::Advanced"
+      relation={timeRelationship}
+      onUpdate={updateTimeRelationship}
+      illustration={illustration}
+    />
+  )
+
   return (
     <div style={styleFilterPanel}>
       <fieldset style={styleFieldsetBorder}>
@@ -144,6 +159,10 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
         </legend>
         <FlexColumn items={[ form, buttons, warningMessage ]} />
       </fieldset>
+      <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
+        Additional Filtering Options:
+      </h4>
+      {relation}
     </div>
   )
 }

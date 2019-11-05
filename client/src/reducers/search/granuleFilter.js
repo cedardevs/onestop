@@ -3,6 +3,8 @@ import {
   GRANULE_SET_QUERY_TEXT,
   GRANULE_UPDATE_GEOMETRY,
   GRANULE_REMOVE_GEOMETRY,
+  GRANULE_UPDATE_GEO_RELATIONSHIP,
+  GRANULE_UPDATE_TIME_RELATIONSHIP,
   GRANULE_UPDATE_DATE_RANGE,
   GRANULE_REMOVE_DATE_RANGE,
   GRANULE_UPDATE_YEAR_RANGE,
@@ -19,6 +21,8 @@ import {updateSelectedFacets} from '../../utils/filterUtils'
 export const initialState = Immutable({
   title: '',
   geoJSON: null,
+  geoRelationship: 'intersects',
+  timeRelationship: 'intersects',
   startDateTime: null,
   endDateTime: null,
   startYear: null,
@@ -69,6 +73,12 @@ export const granuleFilter = (state = initialState, action) => {
 
     case GRANULE_REMOVE_GEOMETRY:
       return Immutable.set(state, 'geoJSON', initialState.geoJSON)
+
+    case GRANULE_UPDATE_GEO_RELATIONSHIP:
+      return Immutable.set(state, 'geoRelationship', action.relationship)
+
+    case GRANULE_UPDATE_TIME_RELATIONSHIP:
+      return Immutable.set(state, 'timeRelationship', action.relationship)
 
     case GRANULE_UPDATE_DATE_RANGE:
       return Immutable.merge(state, {

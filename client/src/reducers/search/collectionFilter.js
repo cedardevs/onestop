@@ -2,6 +2,8 @@ import Immutable from 'seamless-immutable'
 import {
   COLLECTION_UPDATE_GEOMETRY,
   COLLECTION_REMOVE_GEOMETRY,
+  COLLECTION_UPDATE_GEO_RELATIONSHIP,
+  COLLECTION_UPDATE_TIME_RELATIONSHIP,
   COLLECTION_UPDATE_DATE_RANGE,
   COLLECTION_REMOVE_DATE_RANGE,
   COLLECTION_UPDATE_YEAR_RANGE,
@@ -18,6 +20,8 @@ import {updateSelectedFacets} from '../../utils/filterUtils'
 export const initialState = Immutable({
   queryText: '',
   geoJSON: null,
+  geoRelationship: 'intersects',
+  timeRelationship: 'intersects',
   startDateTime: null,
   endDateTime: null,
   startYear: null,
@@ -34,6 +38,12 @@ export const collectionFilter = (state = initialState, action) => {
 
     case COLLECTION_REMOVE_GEOMETRY:
       return Immutable.set(state, 'geoJSON', initialState.geoJSON)
+
+    case COLLECTION_UPDATE_GEO_RELATIONSHIP:
+      return Immutable.set(state, 'geoRelationship', action.relationship)
+
+    case COLLECTION_UPDATE_TIME_RELATIONSHIP:
+      return Immutable.set(state, 'timeRelationship', action.relationship)
 
     case COLLECTION_UPDATE_DATE_RANGE:
       return Immutable.merge(state, {

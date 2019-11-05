@@ -1,22 +1,6 @@
 import React from 'react'
 import Select from 'react-select'
-import {FilterColors} from '../../style/defaultStyles'
-
-const selectTheme = theme => {
-  return {
-    ...theme,
-    borderRadius: '0.309em',
-    colors: {
-      ...theme.colors,
-      primary: FilterColors.DARKEST,
-      primary75: FilterColors.DARK,
-      primary50: FilterColors.MEDIUM,
-      primary25: FilterColors.LIGHT,
-      danger: '#277CB2',
-      dangerLight: '#277CB2',
-    },
-  }
-}
+import {FilterColors, selectTheme} from '../../style/defaultStyles'
 
 const cursorStyle = (styles, {isDisabled}) => {
   return {

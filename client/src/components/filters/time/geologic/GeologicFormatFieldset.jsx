@@ -16,14 +16,14 @@ const styleDate = {
 const FORMAT_OPTIONS = [
   {
     value: 'CE',
-    label: <abbr title="Current Era">CE</abbr>,
+    label: <abbr title="Common Era">CE</abbr>,
   },
   {
     value: 'BP',
     label: (
       <span>
         <abbr title="Before Present">BP</abbr>(0 = 1950{' '}
-        <abbr title="Current Era">CE</abbr>)
+        <abbr title="Common Era">CE</abbr>)
       </span>
     ),
   },
