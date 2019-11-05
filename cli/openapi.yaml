@@ -53,6 +53,10 @@ paths:
       responses:
         '200':
           description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getByIdResponse'
         '404':
           description: Request Parsing Error
     get:
@@ -73,7 +77,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/fullCollectionResponse'
+                $ref: '#/components/schemas/getByIdResponse'
         '404':
           description: Request Parsing Error
   /search/collection:
@@ -161,6 +165,10 @@ paths:
       responses:
         '200':
           description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getByIdResponse'
         '404':
           description: Request Parsing Error
   /search/granule:
@@ -239,6 +247,10 @@ paths:
       responses:
         '200':
           description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getByIdResponse'
         '404':
           description: Request Parsing Error
   /search/flattened-granule:
@@ -263,6 +275,7 @@ paths:
                 $ref: '#/components/schemas/searchResponse'
         '400':
           description: Bad Request
+
 components:
   schemas:
     LineString:
@@ -342,15 +355,6 @@ components:
       items:
         type: string
       type: array
-    collectionDataObject:
-      properties:
-        id:
-          type: string
-        type:
-          enum:
-            - collection
-          type: string
-      type: object
     collectionFilter:
       additionalProperties: false
       description: "Filter granules by specific collection(s). If multiple collection filters are used, or multiple values in a single collection filter, then the search is performed with a logical OR."
@@ -503,13 +507,12 @@ components:
     fileIdentifier:
       pattern: ^(.*)$
       type: string
-    fullCollectionResponse:
-      description: Collection
+    getByIdResponse:
+      description: Full records for matching item
       properties:
         data:
           items:
-            oneOf:
-              - $ref: "#/components/schemas/collectionDataObject"
+            $ref: "#/components/schemas/searchDataFullObject"
           type: array
         # meta:
         #   $ref: "#/components/schemas/collectionMetadataObject"
