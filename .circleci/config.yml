@@ -285,7 +285,7 @@ jobs:
           name: go build
           command: |
            if test -f "~/repo/search/schema/openapi.yml"; then
-             echo "Generation CLI"
+             echo "Generating CLI"
              cp search/schema/openapi.yml cli/openapi.yml ;
              cd cli ;
              go get -u github.com/danielgtaylor/openapi-cli-generator ;
