@@ -126,18 +126,6 @@ subprojects {
             details.because 'some packages had an earlier ES version'
           }
         }
-        if (details.requested.group == 'org.apache.tomcat.embed' && details.requested.name == 'tomcat-embed-websocket') {
-          if (details.requested.version <= '9.0.21') {
-            details.useVersion '9.0.21'
-            details.because 'fixes CVE-2019-0221'
-          }
-        }
-        if (details.requested.group == 'org.apache.tomcat.embed' && details.requested.name == 'tomcat-embed-core') {
-          if (details.requested.version <= '9.0.21') {
-            details.useVersion '9.0.21'
-            details.because 'fixes CVE-2019-0221'
-          }
-        }
         if (details.requested.group == 'com.google.guava' && details.requested.name == 'guava') {
           if (details.requested.version <= '27.0.1') {
             details.useVersion '27.0.1-jre'
