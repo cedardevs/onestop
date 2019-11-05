@@ -36,7 +36,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/infoResponse'
+                $ref: '#/components/schemas/collectionInfoResponse'
   /collection/{id}:
     head:
       operationId: headCollectionById
@@ -131,7 +131,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/infoResponse'
+                $ref: '#/components/schemas/granuleInfoResponse'
   /granule/{id}:
     head:
       operationId: headGranuleById
@@ -213,7 +213,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/infoResponse'
+                $ref: '#/components/schemas/granuleInfoResponse'
   /flattened-granule/{id}:
     head:
       operationId: headFlattenedGranuleById
@@ -593,26 +593,24 @@ components:
         pattern: ^(.*)$
         type: string
       type: array
-    infoResponse:
+    collectionInfoResponse:
       additionalProperties: false
       description: "High-level information on a resource."
       properties:
         data:
           items:
-            additionalProperties: false
-            properties:
-              count:
-                type: integer
-              id:
-                enum:
-                  - collection
-                  - granule
-                type: string
-              type:
-                enum:
-                  - count
-                type: string
-            type: object
+            $ref: '#/components/schemas/responseItem'
+          type: array
+        meta:
+          $ref : '#/components/schemas/collectionMetadataObject'
+      type: object
+    granuleInfoResponse:
+      additionalProperties: false
+      description: "High-level information on a resource."
+      properties:
+        data:
+          items:
+            $ref: responseItem
           type: array
       type: object
     internalParentIdentifier:
@@ -739,7 +737,21 @@ components:
           type: boolean
       title: "Search Request"
       type: object
-
+    responseItem:
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+        id:
+          enum:
+            - collection
+            - granule
+          type: string
+        type:
+          enum:
+            - count
+          type: string
+      type: object
     searchDataFullObject:
       properties:
         attributes:
@@ -796,7 +808,6 @@ components:
               $ref: "#/components/schemas/internalParentIdentifier"
             isGlobal:
               $ref: "#/components/schemas/isGlobal"
-              default: false
             keywords:
               $ref: "#/components/schemas/keywords"
             largerWorks:
