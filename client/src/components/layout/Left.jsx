@@ -16,7 +16,6 @@ const styleOpen = (width, customStyle) => {
     width: width,
     minWidth: '3.236em',
     position: 'relative',
-    overflow: 'hidden',
     boxShadow: boxShadow,
     ...customStyle,
   }

@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
+
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 import DateTimeFilter from './standard/DateTimeFilter'
 import GeologicTimeFilter from './geologic/GeologicTimeFilter'
 import TabPanels from '../../common/ui/TabPanels'
-
 import FlexRow from '../../common/ui/FlexRow'
 import Drawer from '../../layout/Drawer'
 import {exclamation_triangle, SvgIcon} from '../../common/SvgIcon'
@@ -22,6 +23,7 @@ const alertStyle = {
 }
 
 const TimeFilter = ({
+  timeRelationship,
   startDateTime,
   endDateTime,
   updateDateRange,
@@ -30,17 +32,29 @@ const TimeFilter = ({
   endYear,
   updateYearRange,
   removeYearRange,
+  updateTimeRelation,
   submit,
 }) => {
-  // TODO it might be worth extracting the alert states, drawer, etc, if we want to reuse the same visual+508 alert elsewhere. Or change to using react-aria-live (just added for LoadingBar)
   const [ alert, setAlert ] = useState('')
   const [ showAlert, setShowAlert ] = useState(false)
-  const [ alertAnnouncement, setAlertAnnouncement ] = useState('')
 
   const standardView = (
     <DateTimeFilter
       startDateTime={startDateTime}
       endDateTime={endDateTime}
+      timeRelationship={timeRelationship}
+      updateTimeRelationship={relation => {
+        if (relation != timeRelationship) updateTimeRelation(relation)
+        if (
+          startYear != null ||
+          endYear != null ||
+          !_.isEmpty(startDateTime) ||
+          !_.isEmpty(endDateTime)
+        ) {
+          // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
+          submit()
+        }
+      }}
       applyFilter={(startDate, endDate) => {
         removeYearRange()
         updateDateRange(startDate, endDate)
@@ -56,6 +70,10 @@ const TimeFilter = ({
     <GeologicTimeFilter
       startYear={startYear}
       endYear={endYear}
+      timeRelationship={timeRelationship}
+      updateTimeRelationship={relation => {
+        updateTimeRelation(relation)
+      }}
       applyFilter={(startYear, endYear) => {
         removeDateRange()
         updateYearRange(startYear, endYear)
@@ -148,37 +166,25 @@ const TimeFilter = ({
         <div key="alert::message" aria-hidden="true">
           {alert}
         </div>,
-        <div
-          key="alert::annoucement"
-          aria-live="polite"
-          aria-atomic="true"
-          style={defaultStyles.hideOffscreen}
-        >
-          {alertAnnouncement}
-        </div>,
+        <LiveAnnouncer key="alert::annoucement">
+          <LiveMessage
+            message={alert}
+            aria-live="polite"
+            style={defaultStyles.hideOffscreen}
+          />
+        </LiveAnnouncer>,
       ]}
     />
   )
 
-  const onAlertOpen = () => {
-    // change this *after* it opens so that announcment doesn't interupt tab change information in a screen reader
-    setAlertAnnouncement(alert)
-  }
-
   const onAlertClose = () => {
     // set these back when closed so that announcements reannounce when they reappear (screen reader only announces it the first time it changes otherwise)
     setAlert('')
-    setAlertAnnouncement('')
   }
 
   return (
     <div>
-      <Drawer
-        content={alertMessage}
-        open={showAlert}
-        onOpen={onAlertOpen}
-        onClose={onAlertClose}
-      />
+      <Drawer content={alertMessage} open={showAlert} onClose={onAlertClose} />
       <TabPanels
         name="timeFilter"
         options={VIEW_OPTIONS}

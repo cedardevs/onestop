@@ -6,17 +6,17 @@ import FlexRow from '../../../common/ui/FlexRow'
 import Button from '../../../common/input/Button'
 import {Key} from '../../../../utils/keyboardUtils'
 import {isValidYearRange, textToNumber} from '../../../../utils/inputUtils'
-import {
-  FilterColors,
-  FilterStyles,
-  SiteColors,
-} from '../../../../style/defaultStyles'
+import {SiteColors} from '../../../../style/defaultStyles'
 import FormSeparator from '../../FormSeparator'
 import GeologicFieldset from './GeologicFieldset'
 import GeologicFormatFieldset from './GeologicFormatFieldset'
 import GeologicPresets from './GeologicPresets'
+import {useYear} from './GeologicYearEffect'
 
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
+
+import Relation from '../../Relation'
+import TimeRelationIllustration from '../TimeRelationIllustration'
 
 import {
   styleFilterPanel,
@@ -42,46 +42,48 @@ const warningStyle = warning => {
   }
 }
 
-const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
-  const [ start, setStart ] = useState({year: null, valid: true})
-  const [ end, setEnd ] = useState({year: null, valid: true})
+const GeologicTimeFilter = ({
+  startYear,
+  endYear,
+  timeRelationship,
+  updateTimeRelationship,
+  clear,
+  applyFilter,
+}) => {
   const [ format, setFormat ] = useState('CE')
+
+  const [ start ] = useYear(startYear, format, year => {
+    setWarning('')
+    setDateRangeValid(isValidYearRange(year, end.CE))
+  })
+  const [ end ] = useYear(endYear, format, year => {
+    setWarning('')
+    setDateRangeValid(isValidYearRange(start.CE, year))
+  })
   const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
 
-  const updateStartYear = (year, valid) => {
-    setStart({year: year, valid: valid})
-    setWarning('')
-    setDateRangeValid(isValidYearRange(year, end.year))
-  }
-  const updateEndYear = (year, valid) => {
-    setEnd({year: year, valid: valid})
-    setWarning('')
-    setDateRangeValid(isValidYearRange(start.year, year))
-  }
-
   const clearDates = () => {
     clear()
-    setStart({year: null, valid: true})
-    setEnd({year: null, valid: true})
+    start.clear()
+    end.clear()
     setDateRangeValid(true)
     setWarning('')
   }
 
   const applyDates = () => {
     if (!start.valid || !end.valid || !dateRangeValid) {
-      setWarning(createWarning(start.valid, end.valid, dateRangeValid))
+      setWarning(createWarning())
     }
     else {
-      // assumes value has been returned in CE always! (or bad things will happen)
-      applyFilter(textToNumber(start.year), textToNumber(end.year))
+      applyFilter(textToNumber(start.CE), textToNumber(end.CE))
     }
   }
 
-  const createWarning = (startValueValid, endValueValid, dateRangeValid) => {
-    if (!startValueValid && !endValueValid) return 'Invalid start and end date.'
-    if (!startValueValid) return 'Invalid start date.'
-    if (!endValueValid) return 'Invalid end date.'
+  const createWarning = () => {
+    if (!start.valid && !end.valid) return 'Invalid start and end date.'
+    if (!start.valid) return 'Invalid start date.'
+    if (!end.valid) return 'Invalid end date.'
     if (!dateRangeValid) return 'Invalid date range.'
     return 'Unknown error'
   }
@@ -109,13 +111,7 @@ const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
           geologicFormat={format}
           onFormatChange={onFormatChange}
         />
-        <GeologicFieldset
-          startYear={startYear}
-          endYear={endYear}
-          format={format}
-          updateStartYear={updateStartYear}
-          updateEndYear={updateEndYear}
-        />
+        <GeologicFieldset start={start} end={end} format={format} />
       </form>
     </div>
   )
@@ -151,6 +147,25 @@ const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
     </div>
   )
 
+  const illustration = relation => {
+    return (
+      <TimeRelationIllustration
+        relation={relation}
+        hasStart={!_.isEmpty(start.year)}
+        hasEnd={!_.isEmpty(end.year)}
+      />
+    )
+  }
+
+  const relation = (
+    <Relation
+      id="geologicTimeRelation"
+      relation={timeRelationship}
+      onUpdate={updateTimeRelationship}
+      illustration={illustration}
+    />
+  )
+
   return (
     <div style={styleFilterPanel}>
       <fieldset style={styleFieldsetBorder}>
@@ -162,6 +177,10 @@ const GeologicTimeFilter = ({startYear, endYear, clear, applyFilter}) => {
         </legend>
         <FlexColumn items={[ form, buttons, warningMessage, presets ]} />
       </fieldset>
+      <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
+        Additional Filtering Options:
+      </h4>
+      {relation}
     </div>
   )
 }

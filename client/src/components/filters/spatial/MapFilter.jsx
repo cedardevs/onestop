@@ -14,6 +14,9 @@ import FilterFieldset from '../FilterFieldset'
 import FormSeparator from '../FormSeparator'
 import {FilterColors, SiteColors} from '../../../style/defaultStyles'
 
+import Relation from '../Relation'
+import GeoRelationIllustration from './GeoRelationIllustration'
+
 import {
   styleFilterPanel,
   styleFieldsetBorder,
@@ -311,6 +314,15 @@ export default class MapFilter extends React.Component {
       </div>
     )
 
+    const illustration = relation => {
+      return (
+        <GeoRelationIllustration
+          relation={relation}
+          excludeGlobal={this.props.excludeGlobal}
+        />
+      )
+    }
+
     return (
       <div style={styleMapFilter}>
         <fieldset style={styleFieldsetBorder}>
@@ -324,6 +336,20 @@ export default class MapFilter extends React.Component {
           Additional Filtering Options:
         </h4>
         {excludeGlobalCheckbox}
+        <Relation
+          id="geoRelation"
+          relation={this.props.geoRelationship}
+          onUpdate={relation => {
+            if (relation != this.props.geoRelationship) {
+              this.props.updateGeoRelationship(relation)
+            }
+            if (!_.isEmpty(this.props.geoJSON)) {
+              // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
+              this.props.submit()
+            }
+          }}
+          illustration={illustration}
+        />
       </div>
     )
   }

@@ -4,6 +4,7 @@ import {
   granuleToggleExcludeGlobal,
   granuleUpdateGeometry,
   granuleRemoveGeometry,
+  granuleUpdateGeoRelation,
 } from '../../../actions/routing/GranuleSearchStateActions'
 import {toggleMap} from '../../../actions/LayoutActions'
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
@@ -14,12 +15,16 @@ const mapStateToProps = state => {
   return {
     showMap: state.layout.showMap,
     geoJSON: state.search.granuleFilter.geoJSON,
+    geoRelationship: state.search.granuleFilter.geoRelationship,
     excludeGlobal: state.search.granuleFilter.excludeGlobal,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    updateGeoRelationship: relation => {
+      dispatch(granuleUpdateGeoRelation(relation))
+    },
     toggleExcludeGlobal: () => {
       dispatch(granuleToggleExcludeGlobal())
     },
