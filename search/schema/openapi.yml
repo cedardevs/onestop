@@ -610,7 +610,7 @@ components:
       properties:
         data:
           items:
-            $ref: responseItem
+            $ref: '#/components/schemas/responseItem'
           type: array
       type: object
     internalParentIdentifier:
