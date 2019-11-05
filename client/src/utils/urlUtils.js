@@ -98,6 +98,19 @@ export const ROUTE = Object.freeze({
   error: {path: '/error', regex: /\/error/},
 })
 
+export const routeA11yAnnouncer = path => {
+  if (isHome(path)) return 'OneStop home page showing'
+  if (isRoute(path, ROUTE.collections))
+    return 'collection search results page showing'
+  if (isRoute(path, ROUTE.details)) return 'collection page showing'
+  if (isRoute(path, ROUTE.granules)) return 'file results page showing'
+  if (isRoute(path, ROUTE.cart)) return 'download cart page showing'
+  if (isRoute(path, ROUTE.about)) return 'about OneStop page showing'
+  if (isRoute(path, ROUTE.help)) return 'help page showing'
+  if (isRoute(path, ROUTE.error)) return 'error page showing'
+  return ''
+}
+
 export const isRoute = (path, route) => {
   return route.regex.exec(path)
 }
