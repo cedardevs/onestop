@@ -4,7 +4,7 @@ import {fontFamilySerif} from '../../../utils/styleUtils'
 import ListViewItem, {useListViewItem} from '../../common/ui/ListViewItem'
 import GranuleItemContainer from './GranuleItemContainer'
 
-const styleTitle = (expanded, focusing) => {
+const styleTitle = focusing => {
   const styleTitleFocusing = {
     textDecoration: 'underline',
     outline: focusing ? '2px dashed black' : 'none',
@@ -14,7 +14,7 @@ const styleTitle = (expanded, focusing) => {
   return {
     fontFamily: fontFamilySerif(),
     fontSize: '1em',
-    fontWeight: expanded ? 'bold' : 'normal',
+    fontWeight: 'bold',
     overflowWrap: 'break-word',
     wordWrap: 'break-word',
     margin: '0 1.236em 0 0',
@@ -42,7 +42,7 @@ export default function GranuleListItem(props){
   const title = (
     <h3
       key={'GranuleListItem::title'}
-      style={styleTitle(expanded, focusing)}
+      style={styleTitle(focusing)}
       tabIndex={-1}
       ref={focusRef}
       onFocus={handleFocus}
