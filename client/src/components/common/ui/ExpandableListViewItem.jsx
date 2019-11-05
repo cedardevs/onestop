@@ -3,6 +3,9 @@ import _ from 'lodash'
 import AnimateHeight from 'react-animate-height/lib/index'
 import {Key} from '../../../utils/keyboardUtils'
 import defaultStyles from '../../../style/defaultStyles'
+import arrowIconClosed from '../../../../img/font-awesome/white/svg/caret-right.svg'
+import arrowIconOpen from '../../../../img/font-awesome/white/svg/caret-down.svg'
+import {caret_right, caret_down, SvgIcon} from '../SvgIcon'
 
 const ANIMATION_DURATION = 200
 
@@ -124,13 +127,13 @@ export default function Expandable(props){
   const arrow = showArrow ? open ? (
     <span style={styleArrowText}>
       &nbsp;{arrowText}
-      <span aria-hidden={true}>&#9660;&nbsp;</span>
+      <SvgIcon size=".9em" verticalAlign="initial" path={caret_down} />
       <span style={defaultStyles.hideOffscreen}> for {headingTitle}</span>
     </span>
   ) : (
     <span style={styleArrowText}>
       &nbsp;{arrowText}
-      <span aria-hidden={true}>&#9654;&nbsp;</span>
+      <SvgIcon size=".9em" verticalAlign="initial" path={caret_right} />
       <span style={defaultStyles.hideOffscreen}> for {headingTitle}</span>
     </span>
   ) : null
