@@ -66,13 +66,9 @@ class KafkaConsumerService {
    * @return The filled-in record, or null if the input record itself is null
    */
   private static ParsedRecord fillInRecord(ParsedRecord record) {
-    if (record != null && record.discovery == null) {
-      record = DefaultParser.addDiscoveryToParsedRecord(record)
-    }
-    if (record != null && record.analysis == null) {
-      record = Analyzers.addAnalysis(record)
-    }
-    return record
+    def withDefaults = DefaultParser.fillInDefaults(record)
+    def withAnalysis = Analyzers.addAnalysis(withDefaults)
+    return withAnalysis
   }
 
   /**
