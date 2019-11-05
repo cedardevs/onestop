@@ -1,25 +1,22 @@
 import React from 'react'
 import FlexRow from '../../common/ui/FlexRow'
-import {fontFamilySerif} from '../../../utils/styleUtils'
+import {fontFamilySerif, consolidateStyles} from '../../../utils/styleUtils'
 import ListViewItem, {useListViewItem} from '../../common/ui/ListViewItem'
 import GranuleItemContainer from './GranuleItemContainer'
 
-const styleTitle = focusing => {
-  const styleTitleFocusing = {
-    textDecoration: 'underline',
-    outline: focusing ? '2px dashed black' : 'none',
-    outlineOffset: focusing ? '0.309em' : 'initial',
-  }
+const styleTitleFocusing = {
+  textDecoration: 'underline',
+  outline: '2px dashed black',
+  outlineOffset: '0.309em',
+}
 
-  return {
-    fontFamily: fontFamilySerif(),
-    fontSize: '1em',
-    fontWeight: 'bold',
-    overflowWrap: 'break-word',
-    wordWrap: 'break-word',
-    margin: '0 1.236em 0 0',
-    ...(focusing ? styleTitleFocusing : {}),
-  }
+const styleTitle = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1em',
+  fontWeight: 'bold',
+  overflowWrap: 'break-word',
+  wordWrap: 'break-word',
+  margin: '0 1.236em 0 0',
 }
 
 const styleHeading = {
@@ -42,7 +39,10 @@ export default function GranuleListItem(props){
   const title = (
     <h3
       key={'GranuleListItem::title'}
-      style={styleTitle(focusing)}
+      style={consolidateStyles(
+        styleTitle,
+        focusing ? styleTitleFocusing : null
+      )}
       tabIndex={-1}
       ref={focusRef}
       onFocus={handleFocus}
