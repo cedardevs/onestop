@@ -86,7 +86,7 @@ export function useListViewItem(props){
     if (event.keyCode === Key.SPACE) {
       if (props.onSelect) {
         event.preventDefault() // prevent scrolling down on space press
-        onSelect(props.itemId)
+        props.onSelect(props.itemId)
       }
     }
     if (event.keyCode === Key.ENTER) {
