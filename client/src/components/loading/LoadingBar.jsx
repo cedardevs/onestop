@@ -3,7 +3,6 @@ import React from 'react'
 import _ from 'lodash'
 import './LoadingBar.css'
 import InlineError from '../error/InlineError'
-import defaultStyles from '../../style/defaultStyles'
 import {Route, Switch} from 'react-router'
 import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 
@@ -45,7 +44,6 @@ export class LoadingBar extends React.Component {
               <LiveMessage
                 message={this.state.loadingText}
                 aria-live="polite"
-                style={defaultStyles.hideOffscreen}
               />
             </LiveAnnouncer>
             <div className={loading ? 'loadingContainer' : null} />

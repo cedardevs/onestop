@@ -314,11 +314,7 @@ const GeoRelationIllustration = ({relation, excludeGlobal}) => {
       }}
     >
       <LiveAnnouncer>
-        <LiveMessage
-          message={notification}
-          aria-live="polite"
-          style={defaultStyles.hideOffscreen}
-        />
+        <LiveMessage message={notification} aria-live="polite" />
       </LiveAnnouncer>
       {outputs}
     </div>
