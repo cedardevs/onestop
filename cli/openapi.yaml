@@ -330,6 +330,18 @@ components:
       required:
         - type
         - coordinates
+    accessFeeStatement:
+      type: string
+    beginDate:
+      format: date
+      type: string
+    beginYear:
+      format: date
+      type: string
+    citeAsStatements:
+      items:
+        type: string
+      type: array
     collectionDataObject:
       properties:
         id:
@@ -363,6 +375,39 @@ components:
         totalGranules:
           type: integer
       type: object
+    crossReferences:
+      items:
+        properties:
+          date:
+            type: string
+          links:
+            $ref: "#/components/schemas/links"
+          title:
+            type: string
+        required:
+          - date
+          - links
+          - title
+        type: object
+      type: array
+    dataFormat:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
+    dataFormats:
+      items:
+        properties:
+          name:
+            pattern: ^(.*)$
+            type: string
+          version:
+            type: string
+        required:
+          - name
+          - version
+        type: object
+      type: array
     dateTimeFilter:
       additionalProperties: false
       description: "Filter results by before, after, or a date range."
@@ -391,6 +436,18 @@ components:
         - type
       title: "Datetime Filter"
       type: object
+    description:
+      type: string
+    doi:
+      type: string
+    dsmmAverage:
+      default: 0
+      type: number
+    edition:
+      type: string
+    endYear:
+      format: date
+      type: string
     excludeGlobalFilter:
       additionalProperties: false
       description: "Flag to request that geospatially global results be excluded. Defaults to false if not provided."
@@ -443,18 +500,58 @@ components:
         - values
       title: "Facet Filter"
       type: object
+    fileIdentifier:
+      pattern: ^(.*)$
+      type: string
     fullCollectionResponse:
       description: Collection
       properties:
         data:
           items:
             oneOf:
-              -
-                $ref: "#/components/schemas/collectionDataObject"
+              - $ref: "#/components/schemas/collectionDataObject"
           type: array
-        meta:
-          $ref: "#/components/schemas/collectionMetadataObject"
+        # meta:
+        #   $ref: "#/components/schemas/collectionMetadataObject"
       type: object
+    gcmdDataCenters:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
+    gcmdHorizontalResolution:
+      type: array
+    gcmdInstruments:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
+    gcmdLocations:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
+    gcmdPlatforms:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
+    gcmdProjects:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
+    gcmdScience:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
+    gcmdScienceServices:
+      type: array
+    gcmdTemporalResolution:
+      type: array
+    gcmdVerticalResolution:
+      type: array
     geometry:
       description: "One geometry as defined by GeoJSON. Can be a point, multipoint, linestring, mutlilinestring, polygon, or multipolygon."
       oneOf:
@@ -488,6 +585,11 @@ components:
         - geometry
       title: "Geometry Filter"
       type: object
+    individualNames:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
     infoResponse:
       additionalProperties: false
       description: "High-level information on a resource."
@@ -510,6 +612,24 @@ components:
             type: object
           type: array
       type: object
+    internalParentIdentifier:
+      pattern: ^(.*)$
+      type: string
+    isGlobal:
+      default: false
+      type: boolean
+    keywords:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
+    largerWorks:
+      type: array
+    legalConstraints:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
     lineString:
       allOf:
         - $ref: "#/components/schemas/positionArray"
@@ -533,6 +653,24 @@ components:
         linkUrl:
           type: string
       type: object
+    linkProtocol:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
+    links:
+      items:
+        oneOf:
+          -
+            $ref: "#/components/schemas/link"
+      type: array
+    orderingInstructions:
+      type: string
+    organizationNames:
+      items:
+        pattern: ^(.*)$
+        type: string
+      type: array
     page:
       description: "Result page"
       properties:
@@ -547,6 +685,9 @@ components:
           description: "Number of records by which to offset results."
           type: number
       type: object
+    parentIdentifier:
+      pattern: ^(.*)$
+      type: string
     polygon:
       description: "An array of linear rings"
       items:
@@ -555,7 +696,7 @@ components:
     position:
       description: "A single position"
       items:
-        description: "coordinate"
+        description: coordinate
         type: number
       maxItems: 2
       minItems: 2
@@ -595,35 +736,121 @@ components:
           type: boolean
       title: "Search Request"
       type: object
-    searchDataObject:
+
+    searchDataFullObject:
+      properties:
+        attributes:
+          properties:
+            accessFeeStatement:
+              $ref: "#/components/schemas/accessFeeStatement"
+            beginDate:
+              $ref: "#/components/schemas/beginDate"
+            beginYear:
+              $ref: "#/components/schemas/beginYear"
+            citeAsStatements:
+              $ref: "#/components/schemas/citeAsStatements"
+            crossReferences:
+              $ref: "#/components/schemas/crossReferences"
+            dataFormat:
+              $ref: "#/components/schemas/dataFormat"
+            dataFormats:
+              $ref: "#/components/schemas/dataFormats"
+            description:
+              $ref: "#/components/schemas/description"
+            doi:
+              $ref: "#/components/schemas/doi"
+            dsmmAverage:
+              $ref: "#/components/schemas/dsmmAverage"
+            edition:
+              $ref: "#/components/schemas/edition"
+            endYear:
+              $ref: "#/components/schemas/endYear"
+            fileIdentifier:
+              $ref: "#/components/schemas/fileIdentifier"
+            gcmdDataCenters:
+              $ref: "#/components/schemas/gcmdDataCenters"
+            gcmdHorizontalResolution:
+              $ref: "#/components/schemas/gcmdHorizontalResolution"
+            gcmdInstruments:
+              $ref: "#/components/schemas/gcmdInstruments"
+            gcmdLocations:
+              $ref: "#/components/schemas/gcmdLocations"
+            gcmdPlatforms:
+              $ref: "#/components/schemas/gcmdPlatforms"
+            gcmdProjects:
+              $ref: "#/components/schemas/gcmdProjects"
+            gcmdScience:
+              $ref: "#/components/schemas/gcmdScience"
+            gcmdScienceServices:
+              $ref: "#/components/schemas/gcmdScienceServices"
+            gcmdTemporalResolution:
+              $ref: "#/components/schemas/gcmdTemporalResolution"
+            gcmdVerticalResolution:
+              $ref: "#/components/schemas/gcmdVerticalResolution"
+            individualNames:
+              $ref: "#/components/schemas/individualNames"
+            internalParentIdentifier:
+              $ref: "#/components/schemas/internalParentIdentifier"
+            isGlobal:
+              $ref: "#/components/schemas/isGlobal"
+              default: false
+            keywords:
+              $ref: "#/components/schemas/keywords"
+            largerWorks:
+              $ref: "#/components/schemas/largerWorks"
+            legalConstraints:
+              $ref: "#/components/schemas/legalConstraints"
+            linkProtocol:
+              $ref: "#/components/schemas/linkProtocol"
+            links:
+              $ref: "#/components/schemas/links"
+            orderingInstructions:
+              $ref: "#/components/schemas/orderingInstructions"
+            organizationNames:
+              $ref: "#/components/schemas/organizationNames"
+            parentIdentifier:
+              $ref: "#/components/schemas/parentIdentifier"
+            serviceLinkProtocol:
+              $ref: "#/components/schemas/serviceLinkProtocol"
+            serviceLinks:
+              $ref: "#/components/schemas/serviceLinks"
+            spatialBounding:
+              $ref: "#/components/schemas/geometry"
+            stagedDate:
+              $ref: "#/components/schemas/stagedDate"
+            thumbnail:
+              $ref: "#/components/schemas/thumbnail"
+            title:
+              $ref: "#/components/schemas/title"
+            useLimitation:
+              $ref: "#/components/schemas/useLimitation"
+          type: object
+      required:
+        - attributes
+        - id
+        - type
+      type: object
+    searchDataSummaryObject:
       properties:
         attributes:
           description: "Summary of the result. If search specified summary:false, this could be the entire result instead."
           properties:
             beginYear:
-              format: date
-              type: string
+              $ref: "#/components/schemas/beginYear"
             citeAsStatements:
-              items:
-                type: string
-              title: "The Citeasstatements Schema"
-              type: array
+              $ref: "#/components/schemas/citeAsStatements"
             endYear:
-              format: date
-              type: string
+              $ref: "#/components/schemas/endYear"
             links:
-              items:
-                oneOf:
-                  - $ref: "#/components/schemas/link"
-              type: array
+              $ref: "#/components/schemas/links"
             serviceLinks:
               $ref: "#/components/schemas/serviceLinks"
             spatialBounding:
               $ref: "#/components/schemas/geometry"
             thumbnail:
-              type: string
+              $ref: "#/components/schemas/thumbnail"
             title:
-              type: string
+              $ref: "#/components/schemas/title"
         id:
           description: "internal uuid"
           type: string
@@ -651,11 +878,14 @@ components:
         data:
           items:
             oneOf:
-              - $ref: "#/components/schemas/searchDataObject"
+              - $ref: "#/components/schemas/searchDataSummaryObject"
+              - $ref: "#/components/schemas/searchDataFullObject"
           type: array
         meta:
           $ref: "#/components/schemas/searchMetadataObject"
       type: object
+    serviceLinkProtocol:
+      type: array
     serviceLinks:
       properties:
         alternateTitle:
@@ -669,6 +899,8 @@ components:
         title:
           type: string
       type: object
+    stagedDate:
+      type: integer
     textQuery:
       additionalProperties: false
       description: "When providing multiple queryText objects in your search request, keep in mind that they will be combined with a logical AND. Terms use Lucene Query Syntax."
@@ -686,6 +918,15 @@ components:
         - value
       title: "Text Query"
       type: object
+    thumbnail:
+      pattern: ^(.*)$
+      type: string
+    title:
+      pattern: ^(.*)$
+      type: string
+    useLimitation:
+      pattern: ^(.*)$
+      type: string
     yearFilter:
       additionalProperties: false
       description: "Filter results by before, after, or a date range. Differs from the Datetime Filter in that it handles year values only."
