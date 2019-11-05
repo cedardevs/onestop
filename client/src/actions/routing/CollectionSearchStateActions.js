@@ -52,6 +52,24 @@ export const collectionRemoveGeometry = () => {
   }
 }
 
+export const COLLECTION_UPDATE_GEO_RELATIONSHIP =
+  'COLLECTION_UPDATE_GEO_RELATIONSHIP'
+export const collectionUpdateGeoRelation = relationship => {
+  return {
+    type: COLLECTION_UPDATE_GEO_RELATIONSHIP,
+    relationship: relationship,
+  }
+}
+
+export const COLLECTION_UPDATE_TIME_RELATIONSHIP =
+  'COLLECTION_UPDATE_TIME_RELATIONSHIP'
+export const collectionUpdateTimeRelation = relationship => {
+  return {
+    type: COLLECTION_UPDATE_TIME_RELATIONSHIP,
+    relationship: relationship,
+  }
+}
+
 export const COLLECTION_UPDATE_YEAR_RANGE = 'COLLECTION_UPDATE_YEAR_RANGE'
 export const collectionUpdateYearRange = (startYear, endYear) => {
   return {

@@ -1,9 +1,7 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 import _ from 'lodash'
-import moment from 'moment/moment'
 
 import {FilterColors, SiteColors} from '../../../../style/defaultStyles'
-import {ymdToDateMap, isValidDate} from '../../../../utils/inputUtils'
 
 import FilterFieldset from '../../FilterFieldset'
 import YearField from './YearField'
@@ -45,61 +43,29 @@ const styleInputValidity = isValid => {
 const DateFieldset = ({name, date, onDateChange}) => {
   const legendText = `${_.capitalize(name)} Date:`
 
-  const [ year, setYear ] = useState('')
-  const [ month, setMonth ] = useState('')
-  const [ day, setDay ] = useState('')
-  const [ valid, setValid ] = useState(true)
-
-  useEffect(
-    () => {
-      if (date != null) {
-        let dateObj = moment(date).utc()
-        setYear(dateObj.year().toString())
-        setMonth(dateObj.month().toString())
-        setDay(dateObj.date().toString())
-      }
-      else {
-        setYear('')
-        setMonth('')
-        setDay('')
-      }
-    },
-    [ date ] // when props date / redux store changes, update fields
-  )
-
-  useEffect(
-    () => {
-      let validValue = isValidDate(year, month, day)
-      setValid(validValue) // update UI
-      // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
-      onDateChange(ymdToDateMap(year, month, day), validValue)
-    },
-    [ year, month, day ]
-  )
-
   return (
     <FilterFieldset legendText={legendText}>
       <div style={styleDate}>
         <YearField
           name={name}
-          value={year}
-          onChange={e => setYear(e.target.value)}
+          value={date.year}
+          onChange={e => date.setYear(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
         />
         <MonthField
           name={name}
-          value={month}
-          onChange={e => setMonth(e.target.value)}
+          value={date.month}
+          onChange={e => date.setMonth(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
         />
         <DayField
           name={name}
-          value={day}
-          onChange={e => setDay(e.target.value)}
+          value={date.day}
+          onChange={e => date.setDay(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
@@ -107,8 +73,8 @@ const DateFieldset = ({name, date, onDateChange}) => {
 
         <div style={styleLayout}>
           <span />
-          <span aria-hidden="true" style={styleInputValidity(valid)}>
-            {valid ? '✓' : '✖'}
+          <span aria-hidden="true" style={styleInputValidity(date.valid)}>
+            {date.valid ? '✓' : '✖'}
           </span>
         </div>
       </div>

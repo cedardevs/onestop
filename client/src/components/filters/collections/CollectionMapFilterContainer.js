@@ -4,6 +4,7 @@ import {
   collectionToggleExcludeGlobal,
   collectionUpdateGeometry,
   collectionRemoveGeometry,
+  collectionUpdateGeoRelation,
 } from '../../../actions/routing/CollectionSearchStateActions'
 import {toggleMap} from '../../../actions/LayoutActions'
 import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
@@ -14,12 +15,16 @@ const mapStateToProps = state => {
   return {
     showMap: state.layout.showMap,
     geoJSON: state.search.collectionFilter.geoJSON,
+    geoRelationship: state.search.collectionFilter.geoRelationship,
     excludeGlobal: state.search.collectionFilter.excludeGlobal,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    updateGeoRelationship: relation => {
+      dispatch(collectionUpdateGeoRelation(relation))
+    },
     toggleExcludeGlobal: () => {
       dispatch(collectionToggleExcludeGlobal())
     },
