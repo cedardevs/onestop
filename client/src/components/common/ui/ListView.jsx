@@ -179,7 +179,6 @@ export default function ListView(props){
       itemElement = (
         <ListItemComponent
           key={key}
-          tabIndex={-1}
           itemId={key}
           item={item}
           expanded={expanded}
@@ -193,7 +192,6 @@ export default function ListView(props){
       itemElement = (
         <GridItemComponent
           key={key}
-          tabIndex={-1}
           itemId={key}
           item={item}
           shouldFocus={shouldFocus}
