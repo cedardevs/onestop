@@ -120,7 +120,6 @@ func parseDate(params *viper.Viper) []string {
 	layout := "2006-01-02"
 	t, err := time.Parse(layout, date)
 	if err != nil {
-    log.Warn().Msg("Default date format, YYYY-MM-DD, parsing failed. Checking for MM-DD")
 		currentTime := time.Now() //support for current year default
 		t, err = time.Parse(layout, strconv.Itoa(currentTime.Year()) + "-" + date)
 		if err != nil {
@@ -130,7 +129,7 @@ func parseDate(params *viper.Viper) []string {
 	beginDateTime := t.Format("2006-01-02T00:00:00Z")
 	t2 := t.AddDate(0,0,1)
   endDateTime := t2.Format("2006-01-02T00:00:00Z")
-	return []string{"{\"type\":\"datetime\", \"after\" :\""+ beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
+	return []string{"{\"type\":\"datetime\", \"after\":\""+ beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
 func parseParentIdentifier(params *viper.Viper) []string {
