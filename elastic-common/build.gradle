@@ -12,19 +12,18 @@ repositories {
 }
 
 dependencies {
-    implementation "org.codehaus.groovy:groovy:${project.groovyVersion}"
-    implementation "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
-    implementation "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
-    implementation "org.springframework:spring-context"
+    implementation("org.codehaus.groovy:groovy:${project.groovyVersion}")
+    implementation("org.codehaus.groovy:groovy-json:${project.groovyVersion}")
+    implementation("org.codehaus.groovy:groovy-xml:${project.groovyVersion}")
     implementation("org.slf4j:slf4j-api:1.7.25")
     implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
-    implementation "org.elasticsearch.client:transport:${project.esVersion}"
+    implementation("org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}")
+    implementation("org.elasticsearch.client:transport:${project.esVersion}")
 
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation "org.testcontainers:testcontainers:${project.testContainersVersion}"
-    testImplementation "org.testcontainers:elasticsearch:${project.testContainersVersion}"
+    testImplementation("junit:junit:4.12")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.testcontainers:testcontainers:${project.testContainersVersion}")
+    testImplementation("org.testcontainers:elasticsearch:${project.testContainersVersion}")
 }
 
 configurations {

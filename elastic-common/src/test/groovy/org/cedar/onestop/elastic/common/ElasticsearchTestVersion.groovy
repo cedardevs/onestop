@@ -15,6 +15,7 @@ class ElasticsearchTestVersion {
   static Integer TEST_REQUESTS_PER_SECOND = null
   static Integer TEST_SITEMAP_SCROLL_SIZE = 2
   static Integer TEST_SITEMAP_COLLECTIONS_PER_SUBMAP = 5
+  static Boolean TEST_SITEMAP_ENABLED= true
 
   static ElasticsearchConfig esConfigForVersion(Version version) {
     return new ElasticsearchConfig(
@@ -23,6 +24,7 @@ class ElasticsearchTestVersion {
         TEST_REQUESTS_PER_SECOND,
         TEST_SITEMAP_SCROLL_SIZE,
         TEST_SITEMAP_COLLECTIONS_PER_SUBMAP,
+        TEST_SITEMAP_ENABLED,
         version
     )
   }

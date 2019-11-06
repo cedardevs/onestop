@@ -8,16 +8,19 @@ import org.apache.http.auth.AuthScope
 import org.apache.http.auth.UsernamePasswordCredentials
 import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.elasticsearch.Version
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestClientBuilder
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Profile
+import org.springframework.core.env.Environment
 
 @Slf4j
 @Configuration
@@ -83,5 +86,30 @@ class DefaultApplicationConfig {
     })
 
     return builder.build()
+  }
+
+  // default: null
+  @Value('${elasticsearch.index.prefix:}')
+  String PREFIX
+  // default: 10
+  @Value('${elasticsearch.max-tasks:10}')
+  Integer MAX_TASKS
+  // default: null
+  @Value('${elasticsearch.requests-per-second:}')
+  Integer REQUESTS_PER_SECOND
+  // optional: feature toggled by 'sitemap' profile, default: empty
+  @Value('${etl.sitemap.scroll-size:}')
+  Integer SITEMAP_SCROLL_SIZE
+  // optional: feature toggled by 'sitemap' profile, default: empty
+  @Value('${etl.sitemap.collections-per-submap:}')
+  Integer SITEMAP_COLLECTIONS_PER_SUBMAP
+
+  @Autowired
+  Environment environment
+
+  @Bean
+  ElasticsearchConfig elasticsearchConfig(Version elasticsearchVersion) {
+    def sitemapEnabled = environment.activeProfiles.contains('sitemap')
+    return new ElasticsearchConfig(PREFIX, MAX_TASKS, REQUESTS_PER_SECOND, SITEMAP_SCROLL_SIZE, SITEMAP_COLLECTIONS_PER_SUBMAP, sitemapEnabled, elasticsearchVersion)
   }
 }

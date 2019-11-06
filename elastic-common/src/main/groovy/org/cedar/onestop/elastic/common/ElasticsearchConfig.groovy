@@ -1,18 +1,11 @@
 package org.cedar.onestop.elastic.common
 
-import groovy.util.logging.Slf4j
 import org.elasticsearch.Version
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.env.Environment
-import org.springframework.stereotype.Component
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
-@Slf4j
-@Component
 class ElasticsearchConfig {
-
-  @Autowired
-  private Environment environment
+  Logger log = LoggerFactory.getLogger(ElasticsearchConfig)
 
   // index aliases
   String COLLECTION_SEARCH_INDEX_ALIAS = "search_collection"
@@ -36,41 +29,37 @@ class ElasticsearchConfig {
   // sitemap configs
   Integer SITEMAP_SCROLL_SIZE
   Integer SITEMAP_COLLECTIONS_PER_SUBMAP
+  Boolean SITEMAP_ENABLED
 
   // Elasticsearch Version
   Version version
 
-  static final String TYPE_COLLECTION = "collection"
-  static final String TYPE_GRANULE = "granule"
-  static final String TYPE_FLATTENED_GRANULE = "flattened-granule"
-  static final String TYPE_SITEMAP = "sitemap"
+  public static final String TYPE_COLLECTION = "collection"
+  public static final String TYPE_GRANULE = "granule"
+  public static final String TYPE_FLATTENED_GRANULE = "flattened-granule"
+  public static final String TYPE_SITEMAP = "sitemap"
 
   private Map<String, String> jsonPipelines = [:]
   private Map<String, String> jsonMappings = [:]
   private Map<String, String> typesByAlias = [:]
 
-  @Autowired
   ElasticsearchConfig(
       // default: null
-      @Value('${elasticsearch.index.prefix:}')
           String PREFIX,
       // default: 10
-      @Value('${elasticsearch.max-tasks:10}')
           Integer MAX_TASKS,
       // default: null
-      @Value('${elasticsearch.requests-per-second:}')
           Integer REQUESTS_PER_SECOND,
       // optional: feature toggled by 'sitemap' profile, default: empty
-      @Value('${etl.sitemap.scroll-size:}')
           Integer SITEMAP_SCROLL_SIZE,
       // optional: feature toggled by 'sitemap' profile, default: empty
-      @Value('${etl.sitemap.collections-per-submap:}')
           Integer SITEMAP_COLLECTIONS_PER_SUBMAP,
-
+      // optional: enable sitemap feature, default: false
+          Boolean SITEMAP_ENABLED,
       // Elasticsearch Version
       Version version
-  ) {
-
+  )
+  {
     // log prefix if it's not null
     if(PREFIX) {
       log.info("Prefix for Elasticsearch aliases provided by config as '${PREFIX}'")
@@ -90,6 +79,7 @@ class ElasticsearchConfig {
     this.REQUESTS_PER_SECOND = REQUESTS_PER_SECOND
     this.SITEMAP_SCROLL_SIZE = SITEMAP_SCROLL_SIZE
     this.SITEMAP_COLLECTIONS_PER_SUBMAP = SITEMAP_COLLECTIONS_PER_SUBMAP
+    this.SITEMAP_ENABLED = SITEMAP_ENABLED
 
     this.version = version
 
@@ -176,6 +166,6 @@ class ElasticsearchConfig {
   }
 
   Boolean sitemapEnabled() {
-    return environment.activeProfiles.contains('sitemap')
+    return SITEMAP_ENABLED
   }
 }
