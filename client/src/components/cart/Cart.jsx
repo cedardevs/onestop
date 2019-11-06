@@ -162,15 +162,16 @@ export default class Cart extends React.Component {
       </h2>
     )
 
-    const cartListCustomActions = {
-      'Clear All': {
+    const cartListCustomActions = [
+      {
+        text: 'Clear All',
         title: 'Clear All Files from Cart',
         icon: clearIcon,
         showText: false,
         handler: deselectAllGranules,
+        notification: 'Clearing all files from cart',
       },
-    }
-
+    ]
     // filter map down to size of results in cart we want (# shownGranules)
     const allowed = Object.keys(selectedGranules).slice(0, shownGranules)
     const subset = Object.keys(selectedGranules)

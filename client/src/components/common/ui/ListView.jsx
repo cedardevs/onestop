@@ -5,6 +5,10 @@ import {mapFromObject} from '../../../utils/objectUtils'
 import FlexRow from './FlexRow'
 import {FilterStyles} from '../../../style/defaultStyles'
 import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
+import gridIcon from 'fa/th.svg'
+import listIcon from 'fa/th-list.svg'
+import expandIcon from 'fa/expand.svg'
+import collapseIcon from 'fa/compress.svg'
 
 const styleListView = {
   marginLeft: '1.618em',
@@ -118,6 +122,23 @@ export default function ListView(props){
     GridItemComponent,
     propsForItem,
     heading,
+    // add any provided custom actions to the control element
+    // e.g. -
+    // [
+    //   {
+    //     text: "Clear All",
+    //     notification: 'Clearing all.', // a11y feature to notifiy users of AT that something elsewhere on the page is changing
+    //     icon: clearIcon, // `import clearIcon from 'fa/remove.svg'`
+    //     handler: ({
+    //       itemsMap,
+    //       previousItemsMap,
+    //       focusedKey,
+    //       ListItemComponent,
+    //       GridItemComponent,
+    //       showAsGrid
+    //     }) => { ... } // action handler for when button is activated
+    //   }
+    // ]
     customActions,
     customMessage,
   } = props
@@ -134,6 +155,49 @@ export default function ListView(props){
   const [ focusingDefaultItem, setFocusingDefaultItem ] = useState(false)
   const [ expanded, cycleExpanded ] = useCycleState(null)
 
+  const actions = []
+
+  // if both list and grid components are provided,
+  // we can show a toggle between views
+  if (ListItemComponent && GridItemComponent) {
+    actions.push({
+      text: 'Toggle',
+      title: showAsGrid ? 'List View' : 'Grid View',
+      icon: showAsGrid ? listIcon : gridIcon,
+      showText: false,
+      handler: () => setShowAsGrid(!showAsGrid),
+      notification: showAsGrid
+        ? 'Displaying as list.'
+        : 'Displaying as grid view.',
+    })
+  }
+
+  // if a list component is provided and we are currently showing as a list
+  const numItems = itemsMap ? itemsMap.size : 0
+  if (ListItemComponent && !showAsGrid && numItems > 0) {
+    actions.push({
+      text: 'Expand',
+      title: 'Expand All',
+      icon: expandIcon,
+      showText: false,
+      handler: () => cycleExpanded(true),
+      notification: 'Expanding all results in list.',
+    })
+    actions.push({
+      text: 'Collapse',
+      title: 'Collapse All',
+      icon: collapseIcon,
+      showText: false,
+      handler: () => cycleExpanded(false),
+      notification: 'Collapsing all results in list.',
+    })
+  }
+  if (customActions) {
+    customActions.forEach(action => {
+      actions.push(action)
+    })
+  }
+
   // list view controller
   const controlElement = (
     <ListViewController
@@ -145,23 +209,8 @@ export default function ListView(props){
       ListItemComponent={ListItemComponent}
       GridItemComponent={GridItemComponent}
       showAsGrid={showAsGrid}
-      toggleGrid={() => {
-        setNotification(
-          showAsGrid
-            ? 'List view used to display results.'
-            : 'Grid view used to display results.'
-        )
-        setShowAsGrid(!showAsGrid)
-      }}
-      expandAll={() => {
-        setNotification('Expanding all results in list.')
-        cycleExpanded(true)
-      }}
-      collapseAll={() => {
-        setNotification('Collapsing all results in list.')
-        cycleExpanded(false)
-      }}
-      customActions={customActions}
+      notification={setNotification}
+      actions={actions}
     />
   )
 
@@ -233,5 +282,5 @@ ListView.propTypes = {
   ListItemComponent: PropTypes.func,
   GridItemComponent: PropTypes.func,
   propsForItem: PropTypes.func,
-  customActions: PropTypes.object,
+  customActions: PropTypes.array,
 }

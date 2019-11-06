@@ -136,14 +136,16 @@ export default function GranuleList(props){
     </h2>
   )
 
-  const granuleListCustomActions = {
-    'Add Matching to Cart': {
+  const granuleListCustomActions = [
+    {
+      text: 'Add Matching to Cart',
       title: 'Add Matching to Cart',
       icon: cartIcon,
       showText: false,
       handler: () => addFilteredGranulesToCart(granuleFilter),
+      notification: 'Adding all files matching this search to cart.',
     },
-  }
+  ]
 
   let customMessage = addFilteredGranulesToCartWarning ? (
     <div
