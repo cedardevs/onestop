@@ -1,6 +1,6 @@
 ## Loading Metadata Into PSI
 Metadata can be published into the OneStop system using Registry application rest api. Use the Registry API   
-`/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload Metadata records. Registry api is also   
+`/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload Metadata records. The application is also   
 equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
 NOTE: The REST API is also secured via CAS authentication, for more detail see [OneStop Registry Security documentation](doc/operator/security/registry-security.md). 
     
@@ -42,7 +42,7 @@ DELETE      | /registry/metadata/${type}/${source}/${id}     | (none)           
 
 HTTP Method | Endpoint                                       | Body              | Function
 ------------|------------------------------------------------|-------------------|--------------------------
- .          | /metadata/${type}/${source}/${id}/resurrection | (none)            | resurrect a metadata record 
+GET         | /metadata/${type}/${source}/${id}/resurrection | (none)            | resurrect a metadata record 
  
 #### Endpoint key words: 
 - Types: The type of record it could be either collection or granule. 
@@ -96,7 +96,7 @@ Successful operations will return a response body:
 }
 ```
 
-Unsuccessful operations will return a response body with an error formatted as:
+Unsuccessful operations will return a response body with an error message formatted as:
 ```json
 {
   "errors": []
@@ -105,17 +105,18 @@ Unsuccessful operations will return a response body with an error formatted as:
 
 #### Uploading Json record: 
 All metadata input in json format should contain `FileLocation`, `relationships (if the input metadata is granule)`,   
-`FileInformation (optinal)` information in order to be searchable and discoverable by the OneStop client: 
+`FileInformation (optinal)` and `discovery (optinal)` information in order to be searchable and discoverable by the OneStop client: 
 
 1. FileLocation information: A map of URIs to location objects describing where the file is located
 1. FileInformation information: Details about the file that this input object is in reference to
 1. relationships information: A record of this objects relationships to other objects in the inventory
 1. publishing information: Information pertaining to whether a file is private and for how long if so
+1. discovery information: A key/value metadata information.
+
 
 Input json Template: 
 ```
 {
-  "UUID": "UUID",
   "fileInformation": {
     "name": "The file name",
     "size": The size of the file in bytes,
@@ -154,9 +155,36 @@ Input json Template:
       "type": "Relationship type: only COLLECTION for now ",
       "id": "Collection id it belongs to"
     }
-  ]
+  ],
+  "discovery": {
+    "fileIdentifier": "",
+    "parentIdentifier": "",
+    "hierarchyLevelName": "",
+    "doi": "",
+    "status": "onGoing",
+    "title": "title, a short description",
+    "alternateTitle": "alternate title",
+    "description": "description of the metadata",
+    "keywords": [],
+    "responsibleParties": [],
+    "thumbnail": "https://www1.ncdc.noaa.gov/pub/data/metadata/images/C00811_SR_lowRes.png",
+    "thumbnailDescription": "Global image of daily AVHRR surface reflectance",
+    "creationDate": null,
+    "revisionDate": null,
+    "publicationDate": "2014-05-21",
+    "citeAsStatements":[],
+    "crossReferences": [],
+    "accessFeeStatement": null,
+    "orderingInstructions": null,
+    "edition": "Version 4",
+    "dsmmAccessibility": 2,
+    "dsmmDataIntegrity": 3,
+    "services": [ ]
+    ...
+  }
 }
 ```
+Note: Refer for officially supported discovery metadata [fields](https://sciapps.colorado.edu/registry/openapi.yaml).
 
 Example: Uploading a GRANULE type JSON file from a source COMMON-INGEST with trackingId/UUID 11111111-1111-1111-1111-111111111: 
 ```
@@ -166,8 +194,6 @@ common-ingest/11111111-1111-1111-1111-111111111 --data-binary @/path/to/test-gra
 GRANULE Input json example: test-granule.json
 ```
 {
-  "trackingId": "11111111-1111-1111-1111-111111111",
-  "dataStream": "dscovr",
   "fileInformation": {
     "name": "Demo granule file one (NOTE: this is not a REAL GRANULE file)",
     "size": 42,
@@ -203,8 +229,23 @@ GRANULE Input json example: test-granule.json
       "type": "COLLECTION",
       "id": "22222222-1111-1111-1111-22222222"
     }
-  ]
-}
+  ],
+  "discovery": {
+    "fileIdentifier": "gov.noaa.ncdc:C00811",
+    "parentIdentifier": null,
+    "hierarchyLevelName": null,
+    "doi": "doi:10.7289/V5TM782M",
+    "status": "onGoing",
+    "credit": null,
+    "title": "NOAA Climate Data Record (CDR) of AVHRR Surface Reflectance, Version 4",
+    "alternateTitle": "AVHRR Surface Reflectance",
+    "dsmmProductionSustainability": 4,
+    "dsmmTransparencyTraceability": 3,
+    "dsmmUsability": 4,
+    "dsmmAverage": 3.2222223,
+    "updateFrequency": "daily",
+    "services": [ ]
+  }
 ``` 
 Successful operations will return a response body:
 ```json
@@ -214,14 +255,27 @@ Successful operations will return a response body:
 }
 ```
 
-Unsuccessful operations will return a response body with an error formatted as:
+Unsuccessful operations will return a response body with an error message formatted as:
 ```json
 {
   "errors": []
 }
 ```
 
-### Recommendation for integrated upstream application to the underlying Kafka system
+#### OneStop Required fields
+For a records to be indexed and searchable by the downstream OneStop client, a record must include the follow discovery fields: 
 
-See the [integrating upstream application](../registry-api.md) for more details.
+####required Collection fields:
+    - fileIdentifier
+    - title
+    
+####required Granule fields:
+    - fileIdentifier
+    - parentIdentifier
+    - hierarchyLevelName
+    - title
+    
+### Integrating upstream application to the underlying Kafka system
+
+See the [integrating upstream application](upstream-kafka-connect.md) for more details.
 
