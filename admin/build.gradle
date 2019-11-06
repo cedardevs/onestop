@@ -206,7 +206,7 @@ jib {
 
   from {
     // base image
-    image = 'tomcat:8.5.45-jdk11-openjdk'
+    image = 'tomcat:9.0.27-jdk11-openjdk'
   }
   to {
     image = imageRepository
