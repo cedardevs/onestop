@@ -1,10 +1,12 @@
 import {connect} from 'react-redux'
 import {showGranuleVideo} from '../../../actions/LayoutActions'
-import GranuleListResult from './GranuleListResult'
+import GranuleItem from './GranuleItem'
 
 const mapStateToProps = state => {
+  const {featuresEnabled} = state.config
   const {granuleVideo} = state.layout
   return {
+    featuresEnabled: featuresEnabled,
     granuleVideoId: granuleVideo,
   }
 }
@@ -14,7 +16,7 @@ const mapDispatchToProps = dispatch => {
     showGranuleVideo: id => dispatch(showGranuleVideo(id)),
   }
 }
-const GranuleListResultContainer = connect(mapStateToProps, mapDispatchToProps)(
-  GranuleListResult
+const GranuleItemContainer = connect(mapStateToProps, mapDispatchToProps)(
+  GranuleItem
 )
-export default GranuleListResultContainer
+export default GranuleItemContainer

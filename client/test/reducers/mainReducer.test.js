@@ -1,13 +1,16 @@
+import Immutable from 'seamless-immutable'
 import reducer from '../../src/reducer'
+import history from '../../src/history'
 
 describe('The main reducer', function(){
   it('returns a composed initial state', function(){
-    const initialState = new Map()
+    const initialState = Immutable({})
     const initialAction = {type: 'init'}
 
-    const result = reducer(initialState, initialAction)
+    const result = reducer(history)(initialState, initialAction)
 
     expect(result).toBeInstanceOf(Object)
+    expect(result.router).toBeInstanceOf(Object)
     expect(result.cart).toBeInstanceOf(Object)
     expect(result.config).toBeInstanceOf(Object)
     expect(result.errors).toBeInstanceOf(Object)

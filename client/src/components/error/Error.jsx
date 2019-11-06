@@ -27,7 +27,7 @@ class Error extends React.Component {
     this.goHome = props.goHome.bind(this)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.errors = this.extractErrors(nextProps)
   }
 

@@ -35,13 +35,13 @@ const styleClosed = (width, customStyle) => {
 }
 
 export default class Left extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       open: this.props.open,
     })
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.open !== this.state.open) {
       this.setState(prevState => {
         return {

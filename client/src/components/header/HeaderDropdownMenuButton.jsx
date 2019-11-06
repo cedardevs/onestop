@@ -39,7 +39,7 @@ const styleIconPressDefault = {}
 const styleIconFocusDefault = {}
 
 export default class HeaderDropdownMenuButton extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       hovering: false,
       pressing: false,

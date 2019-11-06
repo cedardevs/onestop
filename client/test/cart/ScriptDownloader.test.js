@@ -8,7 +8,6 @@ import history from '../../src/history'
 import ScriptDownloader from '../../src/components/cart/ScriptDownloader'
 import mockCartItems from '../mocks/mockCartItems'
 import {insertSelectedGranule} from '../../src/actions/CartActions'
-import {insertGranule} from '../../src/utils/localStorageUtil'
 import {toggleFeatures} from '../../src/actions/ConfigActions'
 
 const debugStore = (label, path) => {
@@ -24,7 +23,6 @@ describe('The ScriptDownloader component', () => {
   beforeAll(async () => {
     // populate redux with mock selected granules
     _.forEach(mockCartItems, (item, itemId) => {
-      insertGranule(itemId, item)
       store.dispatch(insertSelectedGranule(item, itemId))
     })
 
@@ -32,10 +30,13 @@ describe('The ScriptDownloader component', () => {
     const featuresList = [ 'cart' ]
     await store.dispatch(toggleFeatures(featuresList))
 
+    component = mount(App(store, history))
+
     // initialize history to be on the '/cart' route
     history.push(url)
 
-    component = mount(App(store, history))
+    // force a re-render after pushing to history so that our component hierarchy look as if we are on the cart page
+    component.update()
   })
 
   it('exists on the /cart page', () => {

@@ -8,7 +8,7 @@ import TabPanels from '../../common/ui/TabPanels'
 import FlexRow from '../../common/ui/FlexRow'
 import Drawer from '../../layout/Drawer'
 import {exclamation_triangle, SvgIcon} from '../../common/SvgIcon'
-import defaultStyles, {FilterColors} from '../../../style/defaultStyles'
+import {FilterColors} from '../../../style/defaultStyles'
 
 const alertStyle = {
   alignItems: 'center',
@@ -167,11 +167,7 @@ const TimeFilter = ({
           {alert}
         </div>,
         <LiveAnnouncer key="alert::annoucement">
-          <LiveMessage
-            message={alert}
-            aria-live="polite"
-            style={defaultStyles.hideOffscreen}
-          />
+          <LiveMessage message={alert} aria-live="polite" />
         </LiveAnnouncer>,
       ]}
     />
