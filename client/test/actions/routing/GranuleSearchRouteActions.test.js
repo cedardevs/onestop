@@ -557,8 +557,9 @@ describe('granule search actions', function(){
       expect(Object.keys(stateAfter.cart.selectedGranules).length).toBe(
         mockPayloadCart1.data.length
       )
+
       expect(
-        Object.keys(JSON.parse(localStorage.selectedGranules)).length
+        Object.keys(JSON.parse(localStorage.cart).selectedGranules).length
       ).toBe(mockPayloadCart1.data.length)
 
       // mock another set of unique ID granules to add to cart which will cause the overflow
@@ -587,7 +588,7 @@ describe('granule search actions', function(){
         mockPayloadCart1.data.length
       )
       expect(
-        Object.keys(JSON.parse(localStorage.selectedGranules)).length
+        Object.keys(JSON.parse(localStorage.cart).selectedGranules).length
       ).toBe(mockPayloadCart1.data.length)
 
       // dispatching `granulesForCartClearError()` after a warning has been set in the cart reducer, clears it
@@ -619,9 +620,9 @@ describe('granule search actions', function(){
       expect(Object.keys(stateAfter.cart.selectedGranules).length).toBe(0)
       // if we've never added anything to local storage, the key 'selectedGranules' may not even exist
       // so testing it's length to be 0 would be pointless
-      if (localStorage.selectedGranules) {
+      if (localStorage.cart) {
         expect(
-          Object.keys(JSON.parse(localStorage.selectedGranules)).length
+          Object.keys(JSON.parse(localStorage.cart).selectedGranules).length
         ).toBe(0)
       }
 
@@ -672,7 +673,7 @@ describe('granule search actions', function(){
         mockPayloadCart1.data.length
       )
       expect(
-        Object.keys(JSON.parse(localStorage.selectedGranules)).length
+        Object.keys(JSON.parse(localStorage.cart).selectedGranules).length
       ).toBe(mockPayloadCart1.data.length)
 
       // after the second request, we expect a warning
@@ -725,9 +726,9 @@ describe('granule search actions', function(){
       expect(Object.keys(stateAfter.cart.selectedGranules).length).toBe(0)
       // if we've never added anything to local storage, the key 'selectedGranules' may not even exist
       // so testing it's length to be 0 would be pointless
-      if (localStorage.selectedGranules) {
+      if (localStorage.cart) {
         expect(
-          Object.keys(JSON.parse(localStorage.selectedGranules)).length
+          Object.keys(JSON.parse(localStorage.cart).selectedGranules).length
         ).toBe(0)
       }
 
