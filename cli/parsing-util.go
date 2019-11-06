@@ -33,6 +33,8 @@ func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 
 	dateTimeFilter := parseDate(params)
 	filters = append(filters, dateTimeFilter...)
+	startEndTimeFilter := parseStartAndEndTime(params)
+	filters = append(filters, startEndTimeFilter...)
 	geoSpatialFilter := parsePolygon(params)
 	filters = append(filters, geoSpatialFilter...)
 	parentIdentifierQuery := parseParentIdentifier(params)
@@ -62,6 +64,42 @@ func parseRequestMeta(params *viper.Viper) string {
 	}
 	page := "\"page\" : {\"max\": " + max + ", \"offset\": " + offset + "}"
 	return page
+}
+
+func parseStartAndEndTime(params *viper.Viper) []string {
+
+	startTime := params.GetString("start-time")
+	if len(startTime) == 0 {
+		startTime = params.GetString("stime")
+	}
+	endTime := params.GetString("end-time")
+	if len(endTime) == 0 {
+		endTime = params.GetString("etime")
+	}
+
+	if len(startTime) == 0 && len(endTime) == 0 {
+		return []string{}
+	}
+
+	layout := "2006-01-02"
+	t1, _ := time.Parse(layout, startTime)
+	t2, _ := time.Parse(layout, endTime)
+
+	beginDateTime := t1.Format("2006-01-02T00:00:00Z")
+	endDateTime := t2.Format("2006-01-02T00:00:00Z")
+
+	beginDateTimeFilter := "\"after\":\"" + beginDateTime + "\""
+	endDateTimeFilter := "\"before\":\"" + endDateTime + "\""
+
+	if len(startTime) == 0 {
+		beginDateTimeFilter = ""
+	}
+
+	if len(endTime) == 0 {
+		endDateTimeFilter = ""
+	}
+
+	return []string{"{\"type\":\"datetime\", " + beginDateTimeFilter + ", " + endDateTimeFilter + "}"}
 }
 
 func parseDate(params *viper.Viper) []string {

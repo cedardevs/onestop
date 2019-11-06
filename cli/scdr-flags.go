@@ -17,10 +17,14 @@ func setScdrFlags(){
 	cli.AddFlag(scdrFileCmd, dateFilterFlag, "", dateDescription, "")
 	cli.AddFlag(scdrFileCmd, typeFlag, "", typeDescription, "")
 	cli.AddFlag(scdrFileCmd, spatialFilterFlag, "", areaDescription, "")
+	cli.AddFlag(scdrFileCmd, "end-time", "", "end time", "")
+	cli.AddFlag(scdrFileCmd, "etime", "", "end time shorthand", "")
 	// cli.AddFlag(scdrFileCmd, regexFileCmd, "", regexDescription, "")
 	cli.AddFlag(scdrFileCmd, textQueryFlag, "", queryDescription, "")
 	cli.AddFlag(scdrFileCmd, maxFlag, "", maxDescription, "")
 	cli.AddFlag(scdrFileCmd, offsetFlag, "", offsetDescription, "")
+	cli.AddFlag(scdrFileCmd, "start-time", "", "start time", "")
+	cli.AddFlag(scdrFileCmd, "stime", "", "start time shorthand", "")
 
 	cli.RegisterBefore("scdr-files", parseScdrRequestFlags)
 	cli.RegisterAfter("scdr-files", func(cmd string, params *viper.Viper, resp *gentleman.Response, data interface{}) interface{} {
