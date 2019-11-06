@@ -10,7 +10,7 @@ import {submitCollectionDetail} from '../../actions/routing/CollectionDetailRout
 // import mockCartItems from '../../../test/cart/mockCartItems'
 
 const mapStateToProps = state => {
-  const selectedGranules = state.cart.selectedGranules // getSelectedGranulesFromStorage(state)
+  const selectedGranules = state.cart.selectedGranules
   const numberOfGranulesSelected = selectedGranules
     ? Object.keys(selectedGranules).length
     : 0

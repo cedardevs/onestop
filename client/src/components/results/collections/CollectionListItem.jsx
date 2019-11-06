@@ -10,22 +10,24 @@ import {SiteColors} from '../../../style/defaultStyles'
 
 const pattern = require('../../../../img/topography.png')
 
-const styleTitle = {
-  fontFamily: fontFamilySerif(),
-  fontSize: '1em',
-  fontWeight: 'bold',
-  overflowWrap: 'break-word',
-  wordWrap: 'break-word',
-  margin: '0 1.236em 0 0',
-}
-
-const styleLink = focusing => {
+const styleTitle = focusing => {
   return {
-    color: SiteColors.LINK,
-    textDecoration: 'underline',
+    fontFamily: fontFamilySerif(),
+    fontSize: '1em',
+    fontWeight: 'bold',
+    overflowWrap: 'break-word',
+    wordWrap: 'break-word',
+    margin: '0 1.236em 0 0',
+
     outline: focusing ? '2px dashed black' : 'none',
     outlineOffset: focusing ? '0.309em' : 'initial',
   }
+}
+
+const styleLink = {
+  color: SiteColors.LINK,
+  textDecoration: 'underline',
+  outline: 'none',
 }
 
 const styleHeading = {
@@ -82,10 +84,10 @@ const CollectionListItem = props => {
   } = useListViewItem(props)
 
   const title = (
-    <h3 key={'CollectionListItem::title'} style={styleTitle}>
+    <h3 key={'CollectionListItem::title'} style={styleTitle(focusing)}>
       <a
         role="link"
-        style={styleLink(focusing)}
+        style={styleLink}
         tabIndex={0}
         ref={focusRef}
         onFocus={handleFocus}
