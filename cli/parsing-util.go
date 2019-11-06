@@ -88,18 +88,21 @@ func parseStartAndEndTime(params *viper.Viper) []string {
 	beginDateTime := t1.Format("2006-01-02T00:00:00Z")
 	endDateTime := t2.Format("2006-01-02T00:00:00Z")
 
-	beginDateTimeFilter := "\"after\":\"" + beginDateTime + "\""
-	endDateTimeFilter := "\"before\":\"" + endDateTime + "\""
+	beginDateTimeFilter := ""
+	endDateTimeFilter := ""
 
-	if len(startTime) == 0 {
-		beginDateTimeFilter = ""
+	if len(startTime) > 0 {
+		beginDateTimeFilter = "\"after\":\"" + beginDateTime + "\""
+		if len(endTime) > 0 {
+			beginDateTimeFilter = beginDateTimeFilter + ", "
+		}
 	}
 
-	if len(endTime) == 0 {
-		endDateTimeFilter = ""
+	if len(endTime) > 0 {
+		endDateTimeFilter = "\"before\":\"" + endDateTime + "\""
 	}
 
-	return []string{"{\"type\":\"datetime\", " + beginDateTimeFilter + ", " + endDateTimeFilter + "}"}
+	return []string{"{\"type\":\"datetime\", " + beginDateTimeFilter + endDateTimeFilter + "}"}
 }
 
 func parseDate(params *viper.Viper) []string {
