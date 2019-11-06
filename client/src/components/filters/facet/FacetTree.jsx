@@ -113,7 +113,7 @@ export default class FacetTree extends React.Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (
       !_.isEqual(this.props.hierarchy, nextProps.hierarchy) ||
       !_.isEqual(this.props.facetMap, nextProps.facetMap)

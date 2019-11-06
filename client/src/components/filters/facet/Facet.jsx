@@ -18,7 +18,7 @@ export default class FacetTreeItem extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState(prevState => {
       return {
         ...prevState,

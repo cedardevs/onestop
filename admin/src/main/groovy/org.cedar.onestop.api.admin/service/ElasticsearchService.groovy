@@ -186,9 +186,16 @@ class ElasticsearchService {
   }
 
   Map performRequest(String method, String endpoint, String requestBody = null) {
-    String requestBodyOneLiner = requestBody ? requestBody.replace("\r\n", " ").replace("\n", " ") : null
     try {
-      log.debug("Performing Elasticsearch request: ${method} ${endpoint} ${requestBodyOneLiner}")
+      // trace log the method and endpoint of every ES request made through our service
+      log.trace("Performing Elasticsearch request: ${method} ${endpoint}")
+
+      // trace log the actual body of the ES request
+      if(log.isTraceEnabled()) {
+        // make sure we only do this expensive replace on huge request bodies when we really need it for this expensive log
+        String requestBodyOneLiner = requestBody ? requestBody.replace("\r\n", " ").replace("\n", " ") : null
+        log.trace("Elasticsearch request body: ${requestBodyOneLiner}")
+      }
 
       Response response
       if(requestBody) {

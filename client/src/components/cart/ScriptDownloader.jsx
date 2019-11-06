@@ -237,7 +237,7 @@ export default class ScriptDownloader extends React.Component {
     })
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       showInfo: false,
       focusingShowInfo: false,

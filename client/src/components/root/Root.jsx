@@ -23,10 +23,13 @@ import CollectionSearchLoadingContainer from '../loading/CollectionSearchLoading
 
 import FooterContainer from '../footer/FooterContainer'
 
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
+
 import {SiteColors} from '../../style/defaultStyles'
 import {
   isHome,
   isSearch,
+  routeA11yAnnouncer,
   validHomePaths,
   ROUTE,
   isGranuleListPage,
@@ -112,8 +115,13 @@ export default class Root extends React.Component {
       </div>
     )
 
+    let message = routeA11yAnnouncer(location.pathname)
+
     const middle = (
       <div style={{width: '100%'}}>
+        <LiveAnnouncer>
+          <LiveMessage message={message} aria-live="polite" />
+        </LiveAnnouncer>
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
           <Route path={`/:path(${validHomePaths.join('|')})`} exact>

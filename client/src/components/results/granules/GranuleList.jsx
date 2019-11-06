@@ -1,13 +1,14 @@
-import React from 'react'
+import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
-import GranuleListResultContainer from './GranuleListResultContainer'
 import {SiteColors} from '../../../style/defaultStyles'
 import Meta from '../../helmet/Meta'
 import _ from 'lodash'
 import cartIcon from '../../../../img/font-awesome/white/svg/shopping-cart.svg'
-import {FEATURE_CART} from '../../../utils/featureUtils'
+import GranuleListItem from './GranuleListItem'
+import {fontFamilySerif} from '../../../utils/styleUtils'
+import {Link} from 'react-router-dom'
 
 const styleCenterContent = {
   display: 'flex',
@@ -20,29 +21,24 @@ const styleGranuleListWrapper = {
   color: '#222',
 }
 
+const styleListHeading = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.2em',
+}
+
+const styleLink = focusing => {
+  return {
+    color: SiteColors.LINK_LIGHT,
+    textDecoration: 'underline',
+    outline: focusing ? '2px dashed white' : 'none',
+    outlineOffset: focusing ? '0.309em' : 'initial',
+  }
+}
+
 const styleShowMore = {
   margin: '1em auto 1.618em auto',
 }
 const styleShowMoreFocus = {
-  outline: '2px dashed #5C87AC',
-  outlineOffset: '.118em',
-}
-
-const styleAddFilteredGranulesToCartButton = {
-  flexShrink: 0,
-  height: 'fit-content',
-}
-
-const styleAddFilteredGranulesToCartButtonIcon = {
-  width: '1em',
-  height: '1em',
-}
-
-const styleAddFilteredGranulesToCartButtonText = {
-  paddingRight: '0.309em',
-}
-
-const styleAddFilteredGranulesToCartButtonFocus = {
   outline: '2px dashed #5C87AC',
   outlineOffset: '.118em',
 }
@@ -68,22 +64,30 @@ const styleWarning = warning => {
   }
 }
 
-export default class GranuleList extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      hovering: false,
-    }
-  }
+export default function GranuleList(props){
+  const {
+    results,
+    returnedHits,
+    totalHits,
+    fetchMoreResults,
+    addFilteredGranulesToCart,
+    addFilteredGranulesToCartWarning,
+    collectionId,
+    collectionTitle,
+    granuleFilter,
+    selectedGranules,
+    selectGranule,
+    deselectGranule,
+  } = props
 
-  isGranuleSelected = itemId => {
-    const {selectedGranules} = this.props
+  const [ focusingCollectionLink, setFocusingCollectionLink ] = useState(false)
+
+  const isGranuleSelected = itemId => {
     const checkIt = Object.keys(selectedGranules).includes(itemId)
     return checkIt
   }
 
-  handleCheckboxChange = (itemId, item) => {
-    const {selectGranule, deselectGranule} = this.props
+  const handleCheckboxChange = (itemId, item) => {
     return checkbox => {
       if (checkbox.checked) {
         selectGranule(item, itemId)
@@ -94,99 +98,87 @@ export default class GranuleList extends React.Component {
     }
   }
 
-  propsForResult = (item, itemId) => {
-    const {featuresEnabled} = this.props
-
+  const propsForItem = (item, itemId, setFocusedKey) => {
     return {
-      showLinks: true,
-      showTimeAndSpace: true,
-      handleCheckboxChange: this.handleCheckboxChange,
-      checkGranule: this.isGranuleSelected(itemId),
-      featuresEnabled: featuresEnabled,
+      onSelect: () => {},
+      handleCheckboxChange: handleCheckboxChange,
+      checkGranule: isGranuleSelected(itemId),
+      setFocusedKey,
     }
   }
 
-  render() {
-    const {
-      results,
-      returnedHits,
-      totalHits,
-      selectCollection,
-      fetchMoreResults,
-      addFilteredGranulesToCart,
-      addFilteredGranulesToCartWarning,
-      collectionTitle,
-      granuleFilter,
-      featuresEnabled,
-    } = this.props
-
-    const {hovering} = this.state
-
-    const showMoreButton =
-      returnedHits < totalHits ? (
-        <Button
-          text="Show More Results"
-          onClick={() => fetchMoreResults()}
-          style={styleShowMore}
-          styleFocus={styleShowMoreFocus}
-        />
-      ) : null
-
-    // custom control for list view
-    let customButtons = []
-
-    if (featuresEnabled.includes(FEATURE_CART)) {
-      customButtons.push(
-        <Button
-          key={'addMatchingToCartButton'}
-          icon={cartIcon}
-          iconAfter={true}
-          styleIcon={styleAddFilteredGranulesToCartButtonIcon}
-          text="Add Matching to Cart"
-          onClick={() => addFilteredGranulesToCart(granuleFilter)}
-          style={styleAddFilteredGranulesToCartButton}
-          styleFocus={styleAddFilteredGranulesToCartButtonFocus}
-          styleText={styleAddFilteredGranulesToCartButtonText}
-        />
-      )
-    }
-
-    let customMessage = addFilteredGranulesToCartWarning ? (
-      <div
-        key="GranuleList::Warning"
-        style={styleWarning(addFilteredGranulesToCartWarning)}
-        role="alert"
-      >
-        {addFilteredGranulesToCartWarning}
-      </div>
+  const showMoreButton =
+    returnedHits < totalHits ? (
+      <Button
+        text="Show More Results"
+        onClick={() => fetchMoreResults()}
+        style={styleShowMore}
+        styleFocus={styleShowMoreFocus}
+      />
     ) : null
 
-    return (
-      <div style={styleCenterContent}>
-        <Meta
-          title={`Files in Collection ${collectionTitle}`}
-          formatTitle={true}
-          robots="noindex"
-        />
-
-        <div style={styleGranuleListWrapper}>
-          <ListView
-            items={results}
-            resultType="matching files"
-            shown={returnedHits}
-            total={totalHits}
-            onItemSelect={selectCollection}
-            ListItemComponent={GranuleListResultContainer}
-            GridItemComponent={null}
-            propsForItem={this.propsForResult}
-            customButtons={customButtons}
-            customMessage={customMessage}
-          />
-          {showMoreButton}
-        </div>
-      </div>
-    )
+  let message = 'No file results'
+  if (totalHits > 0) {
+    message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} matching files`
   }
+  const listHeading = (
+    <h2 key="GranuleList::listHeading" style={styleListHeading}>
+      {message} within&nbsp;
+      <Link
+        style={styleLink(focusingCollectionLink)}
+        to={`/collections/details/${collectionId}`}
+        title={'Return to collection details.'}
+        onFocus={() => setFocusingCollectionLink(true)}
+        onBlur={() => setFocusingCollectionLink(false)}
+      >
+        collection
+      </Link>
+    </h2>
+  )
+
+  const granuleListCustomActions = [
+    {
+      text: 'Add Matching to Cart',
+      title: 'Add Matching to Cart',
+      icon: cartIcon,
+      showText: false,
+      handler: () => addFilteredGranulesToCart(granuleFilter),
+      notification: 'Adding all files matching this search to cart.',
+    },
+  ]
+
+  let customMessage = addFilteredGranulesToCartWarning ? (
+    <div
+      key="GranuleList::Warning"
+      style={styleWarning(addFilteredGranulesToCartWarning)}
+      role="alert"
+    >
+      {addFilteredGranulesToCartWarning}
+    </div>
+  ) : null
+
+  return (
+    <div style={styleCenterContent}>
+      <Meta
+        title={`Files in Collection ${collectionTitle}`}
+        formatTitle={true}
+        robots="noindex"
+      />
+
+      <div style={styleGranuleListWrapper}>
+        <ListView
+          items={results}
+          ListItemComponent={GranuleListItem}
+          GridItemComponent={null}
+          propsForItem={propsForItem}
+          heading={listHeading}
+          customActions={granuleListCustomActions}
+          customMessage={customMessage}
+        />
+        {showMoreButton}
+      </div>
+    </div>
+  )
 }
 
 GranuleList.propTypes = {

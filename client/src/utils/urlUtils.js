@@ -18,6 +18,13 @@ export const processUrl = url => {
   }
 }
 
+export const isFTP = url => {
+  if (typeof url === 'string') {
+    return url.toLowerCase().startsWith('ftp')
+  }
+  return false
+}
+
 export const govExternalPopupMsg = `The site you are navigating to is not hosted by the US Government.
 
 Thank you for visiting our site. We have provided \
@@ -90,6 +97,19 @@ export const ROUTE = Object.freeze({
   help: {path: '/help', regex: /\/help/},
   error: {path: '/error', regex: /\/error/},
 })
+
+export const routeA11yAnnouncer = path => {
+  if (isHome(path)) return 'OneStop home page showing'
+  if (isRoute(path, ROUTE.collections))
+    return 'collection search results page showing'
+  if (isRoute(path, ROUTE.details)) return 'collection page showing'
+  if (isRoute(path, ROUTE.granules)) return 'file results page showing'
+  if (isRoute(path, ROUTE.cart)) return 'download cart page showing'
+  if (isRoute(path, ROUTE.about)) return 'about OneStop page showing'
+  if (isRoute(path, ROUTE.help)) return 'help page showing'
+  if (isRoute(path, ROUTE.error)) return 'error page showing'
+  return ''
+}
 
 export const isRoute = (path, route) => {
   return route.regex.exec(path)

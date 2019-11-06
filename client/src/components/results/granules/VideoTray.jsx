@@ -137,7 +137,7 @@ class VideoTray extends React.Component {
       this.animateClose()
     }
   }
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.animateTransition(nextProps.showVideo)
   }
   componentWillUnmount() {

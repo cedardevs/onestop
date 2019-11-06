@@ -518,11 +518,7 @@ const TimeRelationIllustration = ({relation, hasStart, hasEnd}) => {
   return (
     <div>
       <LiveAnnouncer>
-        <LiveMessage
-          message={notification}
-          aria-live="polite"
-          style={defaultStyles.hideOffscreen}
-        />
+        <LiveMessage message={notification} aria-live="polite" />
       </LiveAnnouncer>
       <TimeLineQuery query={query} outputs={outputs} />
     </div>
