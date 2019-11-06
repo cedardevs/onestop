@@ -5,16 +5,16 @@ OneStop UI features are fully accessible via use of the keyboard. A lot of funct
 
 If you encounter issues being able to focus via the keyboard on a Mac while using Firefox, there is likely an OS level preference causing this. There are two ways around this:
 
-1 - System Preferences
-  - > Keybaord 
-  - > Shortcuts (pane) 
-  - > `check` "all controls" radio button at bottom
-1 - [Firefox Configuration]()
-  - > enter `about:config` into the URL bar 
-  - > Right click in the table 
-  - > New > Integer 
-  - > Preference Name = "accessibility.tabfocus" 
-  - > Value = 7
+1. System Preferences
+    - → Keybaord 
+    - → Shortcuts (pane) 
+    - → Check "all controls" radio button at bottom
+1. [Firefox Configuration]()
+    - → Enter `about:config` into the URL bar 
+    - → Right click in the table 
+    - → New > Integer 
+    - → Preference Name = "accessibility.tabfocus" 
+    - → Value = 7
 
 ![Firefox on Mac Focus Configuration](/onestop/images/dev/firefox-a11y-tabfocus.png)
 
