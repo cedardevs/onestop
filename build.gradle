@@ -38,7 +38,7 @@ subprojects {
   project.ext {
     schemasVersion = '0.4.1'
     esVersion = '6.8.2'
-    spockVersion = '1.2-groovy-2.5'
+    spockVersion = '1.3-groovy-2.5'
     testContainersVersion = '1.12.2'
     groovyVersion = '2.5.8'
     openSAMLVersion = '3.4.3'
