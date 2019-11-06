@@ -8,11 +8,12 @@ import (
 
 const scdrFileCmd = "scdr-files"
 const typeFlag = "type"
+
 // const regexFileCmd = "re-file"
 const typeDescription = "Search only for files of the specified data collection using the collection's file identfier. Using this option is highly recommended for any kind of file searches. Collection identifiers are case sensitive."
 const regexDescription = "Locate files whose names match the case-insensitive regular expression REGEX. Only one regular expression is allowed, not longer than 100 characters."
 
-func setScdrFlags(){
+func setScdrFlags() {
 	//flags are in onestop-flags.go
 	cli.AddFlag(scdrFileCmd, dateFilterFlag, "", dateDescription, "")
 	cli.AddFlag(scdrFileCmd, typeFlag, "", typeDescription, "")
@@ -33,12 +34,11 @@ func setScdrFlags(){
 	})
 }
 
-
 func marshalScdrResponse(data interface{}) interface{} {
 	responseMap := make(map[string]interface{})
 	links := []string{}
 	m := data.(map[string]interface{})
-	items := m["data"].([]interface {})
+	items := m["data"].([]interface{})
 	if len(items) > 0 {
 		for _, v := range items {
 			value := v.(map[string]interface{})

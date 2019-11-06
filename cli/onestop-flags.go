@@ -22,21 +22,21 @@ const offsetDescription = "Page number starting at 0"
 
 func setOneStopFlags() {
 	//func AddFlag(path, name, short, description string, defaultValue interface{})
-  cli.AddFlag(searchCollectionCmd, textQueryFlag, "", queryDescription, "")
-  cli.AddFlag(searchGranuleCmd, textQueryFlag, "", queryDescription, "")
+	cli.AddFlag(searchCollectionCmd, textQueryFlag, "", queryDescription, "")
+	cli.AddFlag(searchGranuleCmd, textQueryFlag, "", queryDescription, "")
 	cli.AddFlag(searchFlattenedGranuleCmd, textQueryFlag, "", queryDescription, "")
 
-  cli.AddFlag(searchCollectionCmd, dateFilterFlag, "", dateDescription, "")
-  cli.AddFlag(searchGranuleCmd, dateFilterFlag, "", dateDescription, "")
-  cli.AddFlag(searchFlattenedGranuleCmd, dateFilterFlag, "", dateDescription, "")
+	cli.AddFlag(searchCollectionCmd, dateFilterFlag, "", dateDescription, "")
+	cli.AddFlag(searchGranuleCmd, dateFilterFlag, "", dateDescription, "")
+	cli.AddFlag(searchFlattenedGranuleCmd, dateFilterFlag, "", dateDescription, "")
 
-  cli.AddFlag(searchCollectionCmd, spatialFilterFlag, "", areaDescription, "")
-  cli.AddFlag(searchGranuleCmd, spatialFilterFlag, "", areaDescription, "")
-  cli.AddFlag(searchFlattenedGranuleCmd, spatialFilterFlag, "", areaDescription, "")
+	cli.AddFlag(searchCollectionCmd, spatialFilterFlag, "", areaDescription, "")
+	cli.AddFlag(searchGranuleCmd, spatialFilterFlag, "", areaDescription, "")
+	cli.AddFlag(searchFlattenedGranuleCmd, spatialFilterFlag, "", areaDescription, "")
 
-  cli.RegisterBefore(searchCollectionCmd, parseOneStopRequestFlags)
-  cli.RegisterBefore(searchGranuleCmd, parseOneStopRequestFlags)
-  cli.RegisterBefore(searchFlattenedGranuleCmd, parseOneStopRequestFlags)
+	cli.RegisterBefore(searchCollectionCmd, parseOneStopRequestFlags)
+	cli.RegisterBefore(searchGranuleCmd, parseOneStopRequestFlags)
+	cli.RegisterBefore(searchFlattenedGranuleCmd, parseOneStopRequestFlags)
 
 	cli.AddFlag(searchCollectionCmd, maxFlag, "", maxDescription, "")
 	cli.AddFlag(searchGranuleCmd, maxFlag, "", maxDescription, "")
