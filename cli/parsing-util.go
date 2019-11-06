@@ -134,6 +134,9 @@ func parseDate(params *viper.Viper) []string {
 
 func parseParentIdentifier(params *viper.Viper) []string {
 	parentId := params.GetString("type")
+	if len(parentId) <= 0 {
+		parentId = params.GetString("available")
+	}
 	if len(parentId) == 0 {
 		return []string{}
 	}
