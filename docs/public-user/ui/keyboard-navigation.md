@@ -6,7 +6,7 @@ OneStop UI features are fully accessible via use of the keyboard. A lot of funct
 If you encounter issues being able to focus via the keyboard on a Mac while using Firefox, there is likely an OS level preference causing this. There are two ways around this:
 
 1. System Preferences
-    - → Keybaord 
+    - → Keyboard 
     - → Shortcuts (pane) 
     - → Check "all controls" radio button at bottom
 1. Firefox Configuration
