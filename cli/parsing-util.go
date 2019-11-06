@@ -66,7 +66,7 @@ func parseRequestMeta(params *viper.Viper) string {
 	return page
 }
 
-func parseTimeFlags(params *viper.Viper) string, string {
+func parseTimeFlags(params *viper.Viper) (string, string) {
 	startTime := params.GetString("start-time")
 	if len(startTime) == 0 {
 		startTime = params.GetString("stime")
@@ -75,12 +75,13 @@ func parseTimeFlags(params *viper.Viper) string, string {
 	if len(endTime) == 0 {
 		endTime = params.GetString("etime")
 	}
-	return startTime, endTime 
+	return startTime, endTime
 }
 
+//TODO: WIP - this needs work
 func parseStartAndEndTime(params *viper.Viper) []string {
 
-  startTime, endTime = parseTimeFlags(params)
+  startTime, endTime := parseTimeFlags(params)
 
 	if len(startTime) == 0 && len(endTime) == 0 {
 		return []string{}
