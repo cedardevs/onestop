@@ -9,7 +9,7 @@ If you encounter issues being able to focus via the keyboard on a Mac while usin
     - → Keybaord 
     - → Shortcuts (pane) 
     - → Check "all controls" radio button at bottom
-1. [Firefox Configuration]()
+1. Firefox Configuration
     - → Enter `about:config` into the URL bar 
     - → Right click in the table 
     - → New > Integer 
