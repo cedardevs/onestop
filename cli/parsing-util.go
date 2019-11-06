@@ -1,29 +1,30 @@
 package main
 
 import (
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
-	"gopkg.in/h2non/gentleman.v2"
 	"strconv"
-	"strings"
 	"time"
+	"strings"
+  "github.com/rs/zerolog/log"
+  "gopkg.in/h2non/gentleman.v2"
 )
 
-func parseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
-	filters := []string{}
-	queries := []string{}
 
-	dateTimeFilter := parseDate(params)
-	filters = append(filters, dateTimeFilter...)
-	geoSpatialFilter := parsePolygon(params)
-	filters = append(filters, geoSpatialFilter...)
-	query := parseTextQuery(params)
-	queries = append(queries, query...)
+func parseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
+  filters := []string{}
+  queries := []string{}
+
+  dateTimeFilter := parseDate(params)
+  filters = append(filters, dateTimeFilter...)
+  geoSpatialFilter := parsePolygon(params)
+  filters = append(filters, geoSpatialFilter...)
+  query := parseTextQuery(params)
+  queries = append(queries, query...)
 	requestMeta := parseRequestMeta(params)
-	if len(queries) > 0 || len(filters) > 0 {
+  if len(queries) > 0 || len(filters) > 0  {
 		req.AddHeader("content-type", "application/json")
-		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
-	}
+    req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
+  }
 }
 
 func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
@@ -46,9 +47,9 @@ func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	queries = append(queries, query...)
 	requestMeta := parseRequestMeta(params)
 
-	if len(queries) > 0 || len(filters) > 0 {
+	if len(queries) > 0 || len(filters) > 0  {
 		req.AddHeader("content-type", "application/json")
-		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
+		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "],"+ requestMeta +"}")
 	}
 }
 
@@ -80,13 +81,13 @@ func parseTimeFlags(params *viper.Viper) (string, string) {
 //TODO: WIP - this needs work
 func parseStartAndEndTime(params *viper.Viper) []string {
 
-	startTime, endTime := parseTimeFlags(params)
+  startTime, endTime := parseTimeFlags(params)
 
 	if len(startTime) == 0 && len(endTime) == 0 {
 		return []string{}
 	}
 
-	layout := "2006-01-02"
+	layout := "2006/01/02"
 	t1, _ := time.Parse(layout, startTime)
 	t2, _ := time.Parse(layout, endTime)
 
@@ -116,19 +117,19 @@ func parseDate(params *viper.Viper) []string {
 	if len(date) == 0 {
 		return []string{}
 	}
-	layout := "2006-01-02"
+	layout := "2006/01/02"
 	t, err := time.Parse(layout, date)
 	if err != nil {
 		currentTime := time.Now() //support for current year default
-		t, err = time.Parse(layout, strconv.Itoa(currentTime.Year())+"-"+date)
+		t, err = time.Parse(layout, strconv.Itoa(currentTime.Year()) + "/" + date)
 		if err != nil {
-			log.Fatal().Err(err).Msg("Date syntax not supported.")
+      log.Fatal().Err(err).Msg("Date syntax not supported.")
 		}
 	}
 	beginDateTime := t.Format("2006-01-02T00:00:00Z")
-	t2 := t.AddDate(0, 0, 1)
-	endDateTime := t2.Format("2006-01-02T00:00:00Z")
-	return []string{"{\"type\":\"datetime\", \"after\":\"" + beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
+	t2 := t.AddDate(0,0,1)
+  endDateTime := t2.Format("2006-01-02T00:00:00Z")
+	return []string{"{\"type\":\"datetime\", \"after\":\""+ beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
 func parseParentIdentifier(params *viper.Viper) []string {
@@ -177,10 +178,10 @@ func parsePolygon(params *viper.Viper) []string {
 		coords[i] = strings.ReplaceAll(coords[i], " ", ",")
 		coord := strings.Split(coords[i], ",")
 		end := ", "
-		if i+1 == len(coords) {
+		if i + 1 == len(coords){
 			end = ""
 		}
-		geospatialFilter = append(geospatialFilter, "["+coord[0]+","+coord[1]+"]"+end)
+		geospatialFilter = append(geospatialFilter, "[" + coord[0] + "," + coord[1] +"]" + end)
 	}
 	return []string{"{\"geometry\": { \"coordinates\": [[" + strings.Join(geospatialFilter, "") + "]], \"type\": \"Polygon\"}, \"type\": \"geometry\"}"}
 }

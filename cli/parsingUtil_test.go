@@ -7,14 +7,14 @@ import (
 
 func TestParseStartAndEndTime(t *testing.T) {
 	params1 := viper.New()
-	params1.Set("stime", "2018-01-01")
-	params1.Set("etime", "2019-01-01")
+	params1.Set("stime", "2018/01/01")
+	params1.Set("etime", "2019/01/01")
 
 	params2 := viper.New()
-	params2.Set("stime", "2018-01-01")
+	params2.Set("stime", "2018/01/01")
 
 	params3 := viper.New()
-	params3.Set("etime", "2019-01-01")
+	params3.Set("etime", "2019/01/01")
 
 	paramList := []*viper.Viper{params1, params2, params3}
 
@@ -34,10 +34,10 @@ func TestParseStartAndEndTime(t *testing.T) {
 
 func TestParseDateTime(t *testing.T) {
 	params1 := viper.New()
-	params1.Set("date", "2019-01-01")
+	params1.Set("date", "2019/01/01")
 
 	params2 := viper.New()
-	params2.Set("date", "01-01")
+	params2.Set("date", "01/01")
 
 	paramList := []*viper.Viper{params1, params2}
 
