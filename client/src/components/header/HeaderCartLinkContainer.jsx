@@ -2,12 +2,10 @@ import {connect} from 'react-redux'
 import HeaderCartLink from './HeaderCartLink'
 import {withRouter} from 'react-router'
 import {abbreviateNumber} from '../../utils/readableUtils'
-import {getSelectedGranulesFromStorage} from '../../utils/localStorageUtil'
 
 const mapStateToProps = state => {
-  const numberOfGranulesSelected = Object.keys(
-    getSelectedGranulesFromStorage(state)
-  ).length
+  const selectedGranules = state.cart.selectedGranules
+  const numberOfGranulesSelected = Object.keys(selectedGranules).length
   const abbreviatedNumberOfGranulesSelected = abbreviateNumber(
     numberOfGranulesSelected
   )

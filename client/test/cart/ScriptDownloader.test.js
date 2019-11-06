@@ -8,7 +8,6 @@ import history from '../../src/history'
 import ScriptDownloader from '../../src/components/cart/ScriptDownloader'
 import mockCartItems from '../mocks/mockCartItems'
 import {insertSelectedGranule} from '../../src/actions/CartActions'
-import {insertSelectedGranuleIntoLocalStorage} from '../../src/utils/localStorageUtil'
 import {toggleFeatures} from '../../src/actions/ConfigActions'
 
 const debugStore = (label, path) => {
@@ -24,7 +23,6 @@ describe('The ScriptDownloader component', () => {
   beforeAll(async () => {
     // populate redux with mock selected granules
     _.forEach(mockCartItems, (item, itemId) => {
-      insertSelectedGranuleIntoLocalStorage(itemId, item)
       store.dispatch(insertSelectedGranule(item, itemId))
     })
 

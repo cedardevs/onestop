@@ -5,14 +5,11 @@ import Button from '../common/input/Button'
 import {boxShadow} from '../../style/defaultStyles'
 import {identifyProtocol} from '../../utils/resultUtils'
 import clearIcon from 'fa/ban.svg'
-import expandIcon from 'fa/expand.svg'
-import collapseIcon from 'fa/compress.svg'
 
 import {fontFamilySerif} from '../../utils/styleUtils'
 import ScriptDownloader from './ScriptDownloader'
 import {FEATURE_CART} from '../../utils/featureUtils'
 import CartListItem from './CartListItem'
-import collectionDetailFilter from '../../reducers/search/collectionDetailFilter'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -170,7 +167,7 @@ export default class Cart extends React.Component {
         title: 'Clear All Files from Cart',
         icon: clearIcon,
         showText: false,
-        handler: () => deselectAllGranules(),
+        handler: deselectAllGranules,
       },
     }
 

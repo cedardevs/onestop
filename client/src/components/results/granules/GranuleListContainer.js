@@ -3,11 +3,6 @@ import {
   insertSelectedGranule,
   removeSelectedGranule,
 } from '../../../actions/CartActions'
-import {
-  insertSelectedGranuleIntoLocalStorage,
-  removeSelectedGranuleFromLocalStorage,
-  getSelectedGranulesFromStorage,
-} from '../../../utils/localStorageUtil'
 
 import GranuleList from './GranuleList'
 
@@ -34,7 +29,7 @@ const mapStateToProps = state => {
     results: granules,
     totalHits: totalGranuleCount,
     returnedHits: loadedGranuleCount,
-    selectedGranules: getSelectedGranulesFromStorage(state),
+    selectedGranules: state.cart.selectedGranules,
     featuresEnabled: state.config.featuresEnabled,
     granuleFilter: state.search.granuleFilter,
     addFilteredGranulesToCartWarning: state.cart.error,
@@ -57,11 +52,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       )
     },
     selectGranule: (item, itemId) => {
-      insertSelectedGranuleIntoLocalStorage(itemId, item)
       dispatch(insertSelectedGranule(item, itemId))
     },
     deselectGranule: itemId => {
-      removeSelectedGranuleFromLocalStorage(itemId)
       dispatch(removeSelectedGranule(itemId))
     },
   }

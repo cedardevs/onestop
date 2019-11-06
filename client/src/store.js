@@ -1,9 +1,10 @@
-import {createStore, applyMiddleware, compose} from 'redux'
+import {applyMiddleware, compose, createStore} from 'redux'
 import {routerMiddleware} from 'connected-react-router'
-import Immutable from 'seamless-immutable'
 import thunk from 'redux-thunk'
 import history from './history'
 import reducer from './reducer'
+import {preloadState} from './stateManager'
+import {cartMiddleware} from './cartMiddleware'
 
 const getCompose = () => {
   if (
@@ -19,11 +20,12 @@ const composeEnhancers = getCompose()
 
 const store = createStore(
   reducer(history), // root reducer with router state
-  Immutable(), // pre-loaded state
+  preloadState(), // pre-loaded state
   composeEnhancers(
     applyMiddleware(
       routerMiddleware(history), // for dispatching history actions
-      thunk
+      thunk,
+      cartMiddleware
     )
   )
 )

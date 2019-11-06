@@ -2,11 +2,6 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import Cart from './Cart'
 import {
-  getSelectedGranulesFromStorage,
-  removeAllSelectedGranulesFromLocalStorage,
-  removeSelectedGranuleFromLocalStorage,
-} from '../../utils/localStorageUtil'
-import {
   removeAllSelectedGranule,
   removeSelectedGranule,
 } from '../../actions/CartActions'
@@ -14,22 +9,10 @@ import {submitCollectionDetail} from '../../actions/routing/CollectionDetailRout
 
 // import mockCartItems from '../../../test/cart/mockCartItems'
 
-// const mapStateToProps = state => {
-//   const numberOfGranulesSelected = Object.keys(
-//     state.cart.granules.selectedGranules
-//   ).length
-//
-//   return {
-//     loading: state.search.loading ? 1 : 0,
-//     selectedGranules: state.cart.granules.selectedGranules,
-//     numberOfGranulesSelected: numberOfGranulesSelected,
-//   }
-// }
-
 const mapStateToProps = state => {
-  const selectedGranules = getSelectedGranulesFromStorage(state)
+  const selectedGranules = state.cart.selectedGranules // getSelectedGranulesFromStorage(state)
   const numberOfGranulesSelected = selectedGranules
-    ? Object.keys(getSelectedGranulesFromStorage(state)).length
+    ? Object.keys(selectedGranules).length
     : 0
 
   // - these lines are ONLY for testing the cart
@@ -47,11 +30,9 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     deselectGranule: itemId => {
-      removeSelectedGranuleFromLocalStorage(itemId)
       dispatch(removeSelectedGranule(itemId))
     },
     deselectAllGranules: () => {
-      removeAllSelectedGranulesFromLocalStorage()
       dispatch(removeAllSelectedGranule())
     },
     selectCollection: (id, filterState) => {
