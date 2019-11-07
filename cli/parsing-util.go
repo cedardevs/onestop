@@ -16,6 +16,8 @@ func parseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Re
 
   dateTimeFilter := parseDate(params)
   filters = append(filters, dateTimeFilter...)
+	startEndTimeFilter := parseStartAndEndTime(params)
+	filters = append(filters, startEndTimeFilter...)
   geoSpatialFilter := parsePolygon(params)
   filters = append(filters, geoSpatialFilter...)
   query := parseTextQuery(params)
@@ -129,7 +131,7 @@ func parseDate(params *viper.Viper) []string {
 	beginDateTime := t.Format("2006-01-02T00:00:00Z")
 	t2 := t.AddDate(0,0,1)
   endDateTime := t2.Format("2006-01-02T00:00:00Z")
-	return []string{"{\"type\":\"datetime\", \"after\":\""+ beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
+	return []string{"{\"type\":\"datetime\", \"relation\": \"within\", \"after\":\""+ beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
 func parseParentIdentifier(params *viper.Viper) []string {
@@ -160,7 +162,10 @@ func parseParentIdentifierRegex(params *viper.Viper) []string {
 }
 
 func parseTextQuery(params *viper.Viper) []string {
-	query := params.GetString("q")
+	query := params.GetString("query")
+	if len(query) == 0 {
+		query = params.GetString("metadata")
+	}
 	if len(query) == 0 {
 		return []string{}
 	}
