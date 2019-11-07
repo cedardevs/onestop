@@ -552,39 +552,6 @@ class IndexingHelpersSpec extends Specification {
     stagingDoc.services == ""
   }
 
-  @Ignore
-  def 'Valid XML file translated to valid ParsedRecord'() {
-    // TODO Simple happy case test; no need to check fields here
-  }
-
-  @Ignore
-  def 'Malformed XML throws error, no ParsedRecord created'() {
-    // TODO
-  }
-
-  @Ignore
-  def "When creating ParsedRecord from XML, record type is #type when #situation"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream(path).text
-
-    when:
-    def result = IndexingHelpers.xmlToParsedRecord(document)
-
-    then:
-    !result.containsKey('error')
-
-    and:
-    ParsedRecord parsedRecord = result.parsedRecord
-    parsedRecord.type == type
-
-    where:
-    type                  | path                             | situation
-    RecordType.granule    | 'test-iso-granule-type.xml'      | 'hln is granule and pid present'
-    RecordType.collection | 'test-iso-collection-type-1.xml' | 'hln is present but not granule'
-    RecordType.collection | 'test-iso-collection-type-2.xml' | 'hln is null'
-    null                  | 'test-iso-error-type.xml'        | 'hln is granule but no pid present'
-  }
-
   def "science keywords are parsed as expected from iso" () {
     when:
     Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(inputStreamKeywords.text)
@@ -672,71 +639,22 @@ class IndexingHelpersSpec extends Specification {
     }
   }
 
-  def "Temporal bounding is correctly parsed"() {
+  def "temporal bounding with #testCase dates is prepared correctly"() {
     given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+    def bounding = TemporalBounding.newBuilder().setBeginDate(begin).setEndDate(end).build()
+    def analysis = Analyzers.analyzeTemporalBounding(Discovery.newBuilder().setTemporalBounding(bounding).build())
 
-    when:
-    def record = buildRecordFromXML(document)
+    expect:
+    IndexingHelpers.readyDatesForSearch(bounding, analysis) == result
 
-    Map stagingDoc = IndexingHelpers.reformatMessageForSearch(record)
-
-    then:
-    stagingDoc.temporalBounding == [
-        beginDate:'2005-05-09T00:00:00Z',
-        endDate:'2010-10-01T23:59:59Z',
-        beginYear:2005,
-        endYear:2010
-    ]
+    where:
+    testCase      | begin                   | end                     | result
+    'typical'     | '2005-05-09T00:00:00Z'  | '2010-10-01'            | [beginDate:'2005-05-09T00:00:00Z', endDate:'2010-10-01T23:59:59Z', beginYear:2005, endYear:2010]
+    'no timezone' | '2005-05-09T00:00:00'   | '2010-10-01T00:00:00'   | [beginDate:'2005-05-09T00:00:00Z', endDate:'2010-10-01T00:00:00Z', beginYear:2005, endYear:2010]
+    'paleo'       | '-100000001'            | '-1601050'              | [beginDate:null, endDate:'-1601050-12-31T23:59:59Z', beginYear:-100000001, endYear:-1601050]
+    'invalid'     | '1984-04-31'            | '1985-505-09T00:00:00Z' | [beginDate:null, endDate:null, beginYear:null, endYear:null]
   }
 
-  def "Very old temporal bounding is correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-paleo-dates-metadata.xml").text
-
-    when:
-    def record = buildRecordFromXML(document)
-
-    Map stagingDoc = IndexingHelpers.reformatMessageForSearch(record)
-
-    then:
-    stagingDoc.temporalBounding == [
-        beginDate:null,
-        endDate:'-1601050-12-31T23:59:59Z',
-        beginYear:-100000001,
-        endYear:-1601050
-    ]
-  }
-
-  def "Temporal bounding without time zone information is correctly parsed with UTC"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-no-timezone-dates-metadata.xml").text
-
-    when:
-    def record = buildRecordFromXML(document)
-
-    Map stagingDoc = IndexingHelpers.reformatMessageForSearch(record)
-
-    then:
-    stagingDoc.temporalBounding == [
-        beginDate:'2005-05-09T00:00:00Z',
-        endDate:'2010-10-01T00:00:00Z',
-        beginYear:2005,
-        endYear:2010
-    ]
-  }
-
-  def "Invalid temporal bounding is prevented"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-invalid-dates-metadata.xml").text
-
-    when:
-    def record = buildRecordFromXML(document)
-    Map stagingDoc = IndexingHelpers.reformatMessageForSearch(record)
-
-    then:
-    stagingDoc.temporalBounding == [beginDate:null, endDate:null, beginYear:null, endYear:null]
-  }
 
   private static ParsedRecord buildRecordFromXML(String xml) {
     def discovery = ISOParser.parseXMLMetadataToDiscovery(xml)
@@ -755,19 +673,5 @@ class IndexingHelpersSpec extends Specification {
 
     return builder.build()
   }
-
-
-//  def "#testCase temporal bounding is prepared correctly"() {
-//    given:
-//    def bounding = TemporalBounding.newBuilder().setBeginDate().setEndDate(end).build()
-//    def analysis = Analyzers.analyzeTemporalBounding(Discovery.newBuilder().setTemporalBounding(bounding).build())
-//
-//    expect:
-//    IndexingHelpers.readyDatesForSearch(bounding, analysis) == result
-//
-//    where:
-//    testCase  | begin         | end                     | result
-//    'invalid' | '1984-04-31'  | '1985-505-09T00:00:00Z' | [beginDate:null, endDate:null, beginYear:null, endYear:null]
-//  }
 
 }

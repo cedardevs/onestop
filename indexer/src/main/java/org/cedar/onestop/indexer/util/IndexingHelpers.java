@@ -347,12 +347,15 @@ public class IndexingHelpers {
             Collectors.mapping(keyword -> keyword.value, Collectors.<Object>toSet()))); // map the SingleKeywords to their values then collect them in a Set
 
     groupedKeywords.put("keywords", groupsMinusAccessions); // TODO - keywords should end up being a Set<String> of all keyword values from all categories
-    groupedKeywords.put("accessionValues", Collections.emptySet()); // FIXME this needs to be in place until we can use ES6 ignore_missing flags
+
+    // FIXME this needs to be in place until we can use ES6 ignore_missing flags
+    groupedKeywords.put("accessionValues", Collections.emptySet());
     for (KeywordCategory category : KeywordCategory.values()) {
       if (!groupedKeywords.containsKey(category.name())) {
         groupedKeywords.put(category.name(), Collections.emptySet());
       }
     }
+
     return groupedKeywords;
   }
 
