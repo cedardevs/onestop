@@ -87,41 +87,28 @@ public class IndexingHelpers {
     discoveryMap.put("type", record.getType() == RecordType.granule ?
         ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION);
 
-    // create GCMD keywords
-    var gcmdKeywords = createGcmdKeyword(discovery);
-    discoveryMap.putAll(gcmdKeywords);
+    // prepare and apply fields that need to be reformatted for search
+    discoveryMap.putAll(prepareGcmdKeyword(discovery));
+    discoveryMap.put("temporalBounding", prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding()));
+    discoveryMap.put("dataFormat", prepareDataFormats(discovery));
+    discoveryMap.put("linkProtocol", prepareLinkProtocols(discovery));
+    discoveryMap.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
 
-    // create contacts ,creators and publishers
-    var partyData = parseResponsibleParties(discovery.getResponsibleParties());
-    discoveryMap.putAll(partyData);
-
-    // update temporal Bounding
-    var temporalData = readyDatesForSearch(discovery.getTemporalBounding(), analysis.getTemporalBounding());
-    discoveryMap.put("temporalBounding", temporalData);
-
-    // drop fields
+    // split responsibleParties into contacts, creators and publishers
+    discoveryMap.putAll(prepareResponsibleParties(discovery.getResponsibleParties()));
     discoveryMap.remove("responsibleParties");
 
-    List<Service> services = discovery.getServices();
-    discoveryMap.remove("services");
-    discoveryMap.put("serviceLinks", createServices(services));
-
-    // create data format name list for this record
-    discoveryMap.put("dataFormat", createDataFormat(discovery));
-
-    // create protocol list (from links and service links of this record)
-    // https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
-    discoveryMap.put("linkProtocol", createLinkProtocol(discovery));
-    discoveryMap.put("serviceLinkProtocol", createServiceLinkProtocol(discovery));
-
+    // replace "services" with prepared "serviceLinks"
+    discoveryMap.put("serviceLinks", prepareServices(discovery.getServices()));
     discoveryMap.put("services", "");
+
     return discoveryMap;
   }
 
   ////////////////////////////////
   // Services, Links, Protocols //
   ////////////////////////////////
-  static List<Map> createServices(List<Service> services) {
+  static List<Map> prepareServices(List<Service> services) {
     return Optional.ofNullable(services)
         .orElse(Collections.emptyList())
         .stream()
@@ -136,7 +123,8 @@ public class IndexingHelpers {
         .collect(Collectors.toList());
   }
 
-  static Set<String> createServiceLinkProtocol(Discovery discovery) {
+  // see: https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
+  static Set<String> prepareServiceLinkProtocols(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getServices)
         .orElse(Collections.emptyList())
@@ -151,7 +139,8 @@ public class IndexingHelpers {
         .collect(Collectors.toSet());
   }
 
-  static Set<String> createLinkProtocol(Discovery discovery) {
+  // see: https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
+  static Set<String> prepareLinkProtocols(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getLinks)
         .orElse(Collections.emptyList())
@@ -185,7 +174,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Data Formats           //
   ////////////////////////////
-  static Set<String> createDataFormat(Discovery discovery) {
+  static Set<String> prepareDataFormats(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getDataFormats)
         .orElse(Collections.emptyList())
@@ -226,7 +215,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
-  static Map<String, Set<Map>> parseResponsibleParties(List<ResponsibleParty> responsibleParties) {
+  static Map<String, Set<Map>> prepareResponsibleParties(List<ResponsibleParty> responsibleParties) {
     Map<String, Set<Map>> groupedParties = Optional.ofNullable(responsibleParties)
         .orElse(Collections.emptyList())
         .stream()
@@ -263,7 +252,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Dates                  //
   ////////////////////////////
-  static Map readyDatesForSearch(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
+  static Map prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     String beginDate, endDate;
     Long year;
 
@@ -326,7 +315,7 @@ public class IndexingHelpers {
   // Keywords               //
   ////////////////////////////
   // TODO - return Set<String>
-  static Map<String, Set<Object>> createGcmdKeyword(Discovery discovery) {
+  static Map<String, Set<Object>> prepareGcmdKeyword(Discovery discovery) {
     List<KeywordsElement> keywordGroups = Optional.ofNullable(discovery)
         .map(Discovery::getKeywords)
         .orElse(Collections.emptyList());

@@ -1,6 +1,6 @@
 package org.cedar.onestop.indexer.util
 
-import groovy.json.JsonOutput
+
 import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.avro.psi.Analysis
 import org.cedar.schemas.avro.psi.Discovery
@@ -13,7 +13,6 @@ import org.cedar.schemas.avro.psi.TitleAnalysis
 import org.cedar.schemas.avro.psi.ValidDescriptor
 import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.parse.ISOParser
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -555,7 +554,7 @@ class IndexingHelpersSpec extends Specification {
   def "science keywords are parsed as expected from iso" () {
     when:
     Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(inputStreamKeywords.text)
-    Map parsedKeywords = IndexingHelpers.createGcmdKeyword(discovery)
+    Map parsedKeywords = IndexingHelpers.prepareGcmdKeyword(discovery)
 
     then:
     parsedKeywords.gcmdScience == expectedKeywordsFromIso.science
@@ -569,7 +568,7 @@ class IndexingHelpersSpec extends Specification {
   // FIXME less reliance on loading XML here; test with a ParsedRecord
   def "Create GCMD keyword lists"() {
     when:
-    Map parsedKeywords = IndexingHelpers.createGcmdKeyword(inputRecord.discovery)
+    Map parsedKeywords = IndexingHelpers.prepareGcmdKeyword(inputRecord.discovery)
 
     then:
     parsedKeywords.gcmdScienceServices == expectedGcmdKeywords.gcmdScienceServices
@@ -590,7 +589,7 @@ class IndexingHelpersSpec extends Specification {
 
   def "Create contacts, publishers and creators from responsibleParties"() {
     when:
-    Map partiesMap = IndexingHelpers.parseResponsibleParties(inputRecord.discovery.responsibleParties)
+    Map partiesMap = IndexingHelpers.prepareResponsibleParties(inputRecord.discovery.responsibleParties)
 
     then:
     partiesMap.contacts == expectedResponsibleParties.contacts
@@ -600,7 +599,7 @@ class IndexingHelpersSpec extends Specification {
 
   def "When #situation.description, expected temporal bounding generated"() {
     when:
-    def newTimeMetadata = IndexingHelpers.readyDatesForSearch(situation.bounding, situation.analysis)
+    def newTimeMetadata = IndexingHelpers.prepareDates(situation.bounding, situation.analysis)
 
     then:
     newTimeMetadata == expectedResult
@@ -645,7 +644,7 @@ class IndexingHelpersSpec extends Specification {
     def analysis = Analyzers.analyzeTemporalBounding(Discovery.newBuilder().setTemporalBounding(bounding).build())
 
     expect:
-    IndexingHelpers.readyDatesForSearch(bounding, analysis) == result
+    IndexingHelpers.prepareDates(bounding, analysis) == result
 
     where:
     testCase      | begin                   | end                     | result
