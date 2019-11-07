@@ -20,7 +20,7 @@ And then run commands after like so -
 
 For example-
 
-`docker run cedardevs/onestop-cli searchcollection --q="satellite"`
+`docker run cedardevs/onestop-cli searchcollection --query="satellite"`
 
 For more commands and flags -
 
@@ -68,7 +68,7 @@ Get collection by id -
 
 Get collection by file identifier -
 
-`cli searchcollection --q="fileIdentifier:/.*NDBC-COOPS/"`
+`cli searchcollection --query="fileIdentifier:/.*NDBC-COOPS/"`
 
 or the longhand version -
 
@@ -76,13 +76,13 @@ or the longhand version -
 
 Search granule with query text / parent identifier -
 
-`cli searchgranule --q="parentIdentifier:\\"\"gov.noaa.nodc:NDBC-COOPS\\"\""`
+`cli searchgranule --query="parentIdentifier:\\"\"gov.noaa.nodc:NDBC-COOPS\\"\""`
 
 `cli searchgranule queries[]{type:queryText, value:parentIdentifier:\"gov.noaa.nodc:NDBC-COOPS\"}`
 
 Search granule with regex -  
 
-`cli searchgranule --q="parentIdentifier:/.*NDBC-COOPS/"`
+`cli searchgranule --query="parentIdentifier:/.*NDBC-COOPS/"`
 
 `cli searchgranule --verbose queries[]{type:queryText, value:parentIdentifier:/.*NDBC-COOPS/}`
 
@@ -102,13 +102,13 @@ Search collections with a geometry filter -
 
 Complex collections search with a query text, spatial, and temporal filter -
 
-`cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --q="satellite"`
+`cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --query="satellite"`
 
 `cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522,  queries[]{type:queryText, value:satellite}  --verbose`
 
 For complex query and filter structure, refer to these docs for the short hand documentation - https://github.com/danielgtaylor/openapi-cli-generator/tree/master/shorthand
 
-Note: As it is now, you cannot combine the flags with json shorthand. e.g. This will not work - `cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --q="satellite" filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} `
+Note: As it is now, you cannot combine the flags with json shorthand. e.g. This will not work - `cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --query="satellite" filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} `
 
 ## scdr-files usage
 
@@ -130,7 +130,7 @@ Area-
 
 Text Query -
 
-`cli  scdr-files --verbose --q="parentIdentifier:/.*NDBC-COOPS/"`
+`cli  scdr-files --verbose --query="parentIdentifier:/.*NDBC-COOPS/"`
 
 ## Developer notes
 
