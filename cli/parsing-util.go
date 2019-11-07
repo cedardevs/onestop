@@ -104,7 +104,6 @@ func parseStartAndEndTime(params *viper.Viper) []string {
 		beginDateTimeFilter = "\"after\":\"" + beginDateTime + "\""
 		if len(endTime) > 0 {
 			beginDateTimeFilter = beginDateTimeFilter + ", "
-			relation = "\"relation\": \"within\","
 		}
 	}
 
@@ -112,7 +111,7 @@ func parseStartAndEndTime(params *viper.Viper) []string {
 		endDateTimeFilter = "\"before\":\"" + endDateTime + "\""
 	}
 
-	return []string{"{\"type\":\"datetime\", " + relation + beginDateTimeFilter + endDateTimeFilter + "}"}
+	return []string{"{\"type\":\"datetime\", \"relation\": \"within\", " + relation + beginDateTimeFilter + endDateTimeFilter + "}"}
 }
 
 func parseDate(params *viper.Viper) []string {

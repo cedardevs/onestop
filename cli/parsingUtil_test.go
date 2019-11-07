@@ -19,8 +19,8 @@ func TestParseStartAndEndTime(t *testing.T) {
 	paramList := []*viper.Viper{params1, params2, params3}
 
 	expectedResult1 := []string{"{\"type\":\"datetime\", \"relation\": \"within\", \"after\":\"2018-01-01T00:00:00Z\", \"before\":\"2019-01-01T00:00:00Z\"}"}
-	expectedResult2 := []string{"{\"type\":\"datetime\", \"after\":\"2018-01-01T00:00:00Z\"}"}
-	expectedResult3 := []string{"{\"type\":\"datetime\", \"before\":\"2019-01-01T00:00:00Z\"}"}
+	expectedResult2 := []string{"{\"type\":\"datetime\", \"relation\": \"within\", \"after\":\"2018-01-01T00:00:00Z\"}"}
+	expectedResult3 := []string{"{\"type\":\"datetime\", \"relation\": \"within\", \"before\":\"2019-01-01T00:00:00Z\"}"}
 
 	expectedResults := [][]string{expectedResult1, expectedResult2, expectedResult3}
 
