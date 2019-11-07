@@ -88,7 +88,7 @@ Search granule with regex -
 
 Search collections by date -  
 
-`cli searchcollection  --date=2017-01-01`
+`cli searchcollection  --start-time=2016/03/02`
 
 `cli searchcollection filters[]{ type:datetime, after:2017-01-01T00:00:00Z}`
 
@@ -114,15 +114,15 @@ Note: As it is now, you cannot combine the flags with json shorthand. e.g. This 
 
 Type -
 
-`cli scdr-files --type="gov.noaa.nodc:NDBC-COOPS" --verbose`
+`cli scdr-files --type="gov.noaa.nodc:NDBC-COOPS"`
 
 Date -
 
-`cli scdr-files --date=2010-10-01 --verbose`
+`cli scdr-files --date=2016/03/02`
 
 and without year (defaults to current year)-
 
-`cli  scdr-files --date=10-01 --verbose`
+`cli scdr-files --date=10/01`
 
 Area-
 
@@ -130,7 +130,7 @@ Area-
 
 Text Query -
 
-`cli  scdr-files --verbose --query="parentIdentifier:/.*NDBC-COOPS/"`
+`cli  scdr-files --query="parentIdentifier:/.*NDBC-COOPS/"`
 
 ## Developer notes
 
