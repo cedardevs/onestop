@@ -21,9 +21,7 @@ public class IndexingHelpers {
   static final private Logger log = LoggerFactory.getLogger(IndexingHelpers.class);
 
   public static Map validateMessage(String id, ParsedRecord messageMap) {
-
     // FIXME Improve testability of failures by creating an Enum for invalid messages
-
     List<String> errors = new ArrayList<>();
 
     var discovery = messageMap != null ? messageMap.getDiscovery() : null;
@@ -66,32 +64,35 @@ public class IndexingHelpers {
     }
 
     if (errors.size() > 0) {
-      log.info("INVALID RECORD [ $id ]. VALIDATION FAILURES:  $details ");
-      return nullableMap("title", "Invalid record",
-          "detail", String.join(", ", errors),
-          "valid", false);
+      log.info("INVALID RECORD [ " + id + " ]. VALIDATION FAILURES: " + errors);
+      var result = new HashMap<>();
+      result.put("title", "Invalid record");
+      result.put("detail", String.join(", ", errors));
+      result.put("valid", false);
+      return result;
     }
     else {
-      return nullableMap("valid", true);
+      var result = new HashMap<>();
+      result.put("valid", true);
+      return result;
     }
   }
 
-  public static Map reformatMessageForSearch(ParsedRecord record) {
-    Discovery discovery = record.getDiscovery();
-    Analysis analysis = record.getAnalysis();
-
-    Map discoveryMap = AvroUtils.avroToMap(discovery, true);
+  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record) {
+    var discovery = record.getDiscovery();
+    var analysis = record.getAnalysis();
+    var discoveryMap = AvroUtils.avroToMap(discovery, true);
 
     // Records validated before getting to this point to no null record.type possible (always granule or collection)
     discoveryMap.put("type", record.getType() == RecordType.granule ?
         ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION);
 
     // create GCMD keywords
-    Map gcmdKeywords = createGcmdKeyword(discovery);
+    var gcmdKeywords = createGcmdKeyword(discovery);
     discoveryMap.putAll(gcmdKeywords);
 
     // create contacts ,creators and publishers
-    Map<String, Set> partyData = parseResponsibleParties(discovery.getResponsibleParties());
+    var partyData = parseResponsibleParties(discovery.getResponsibleParties());
     discoveryMap.putAll(partyData);
 
     // update temporal Bounding
@@ -117,57 +118,22 @@ public class IndexingHelpers {
     return discoveryMap;
   }
 
-  static List<Link> getLinksForService(Service service) {
-    return Optional.ofNullable(service)
-        .map(Service::getOperations)
-        .map(it -> {
-          it.sort(Link::compareTo);
-          return it;
-        })
-        .orElse(List.of());
-  }
-
+  ////////////////////////////////
+  // Services, Links, Protocols //
+  ////////////////////////////////
   static List<Map> createServices(List<Service> services) {
     return Optional.ofNullable(services)
         .orElse(Collections.emptyList())
         .stream()
-        .map(service -> nullableMap(
-            "title", service.getTitle(),
-            "alternateTitle", service.getAlternateTitle(),
-            "description", service.getDescription(),
-            "links", AvroUtils.avroCollectionToList(new ArrayList<>(getLinksForService(service)), true)))
+        .map(service -> {
+          var result = new HashMap<>();
+          result.put("title", service.getTitle());
+          result.put("alternateTitle", service.getAlternateTitle());
+          result.put("description", service.getDescription());
+          result.put("links", AvroUtils.avroCollectionToList(new ArrayList<>(getLinksForService(service)), true));
+          return result;
+        })
         .collect(Collectors.toList());
-  }
-
-  // create data format names
-  static Set<String> createDataFormat(Discovery discovery) {
-    return Optional.ofNullable(discovery)
-        .map(Discovery::getDataFormats)
-        .orElse(Collections.emptyList())
-        .stream()
-        .flatMap(dataFormat -> {
-          // normalize (clean whitespace/trim/uppercase/nullify empty string) contents of DataFormat to check for uniqueness
-          String dataFormatKeyword = normalizeHierarchicalDataFormat(dataFormat);
-          return dataFormatKeyword != null && !dataFormatKeyword.isEmpty() ?
-              tokenizeHierarchyKeyword(dataFormatKeyword).stream() :
-              Stream.empty();
-        })
-        .collect(Collectors.toSet());
-  }
-
-  // create link protocols
-  static Set<String> createLinkProtocol(Discovery discovery) {
-    return Optional.ofNullable(discovery)
-        .map(Discovery::getLinks)
-        .orElse(Collections.emptyList())
-        .stream()
-        .flatMap(link -> {
-          var linkProtocolKeyword = normalizeLinkProtocol(link);
-          return linkProtocolKeyword != null && !linkProtocolKeyword.isEmpty() ?
-              tokenizeHierarchyKeyword(linkProtocolKeyword).stream() :
-              Stream.empty();
-        })
-        .collect(Collectors.toSet());
   }
 
   static Set<String> createServiceLinkProtocol(Discovery discovery) {
@@ -179,35 +145,236 @@ public class IndexingHelpers {
         .flatMap(serviceLink -> {
           var serviceLinkProtocolKeyword = normalizeLinkProtocol(serviceLink);
           return serviceLinkProtocolKeyword != null && !serviceLinkProtocolKeyword.isEmpty() ?
-              tokenizeHierarchyKeyword(serviceLinkProtocolKeyword).stream() :
+              tokenizeHierarchyKeyword(serviceLinkProtocolKeyword) :
               Stream.empty();
         })
         .collect(Collectors.toSet());
   }
 
+  static Set<String> createLinkProtocol(Discovery discovery) {
+    return Optional.ofNullable(discovery)
+        .map(Discovery::getLinks)
+        .orElse(Collections.emptyList())
+        .stream()
+        .flatMap(link -> {
+          var linkProtocolKeyword = normalizeLinkProtocol(link);
+          return linkProtocolKeyword != null && !linkProtocolKeyword.isEmpty() ?
+              tokenizeHierarchyKeyword(linkProtocolKeyword) :
+              Stream.empty();
+        })
+        .collect(Collectors.toSet());
+  }
+
+  private static List<Link> getLinksForService(Service service) {
+    return Optional.ofNullable(service)
+        .map(Service::getOperations)
+        .map(it -> {
+          it.sort(Link::compareTo);
+          return it;
+        })
+        .orElse(List.of());
+  }
+
+  private static String normalizeLinkProtocol(Link link) {
+    return Optional.ofNullable(link)
+        .map(Link::getLinkProtocol)
+        .map(it -> cleanInternalKeywordWhitespace(it).trim().toUpperCase())
+        .orElse(null);
+  }
+
+  ////////////////////////////
+  // Data Formats           //
+  ////////////////////////////
+  static Set<String> createDataFormat(Discovery discovery) {
+    return Optional.ofNullable(discovery)
+        .map(Discovery::getDataFormats)
+        .orElse(Collections.emptyList())
+        .stream()
+        .flatMap(dataFormat -> {
+          // normalize (clean whitespace/trim/uppercase/nullify empty string) contents of DataFormat to check for uniqueness
+          String dataFormatKeyword = normalizeHierarchicalDataFormat(dataFormat);
+          return dataFormatKeyword != null && !dataFormatKeyword.isEmpty() ?
+              tokenizeHierarchyKeyword(dataFormatKeyword) :
+              Stream.empty();
+        })
+        .collect(Collectors.toSet());
+  }
+
+  private static String normalizeHierarchicalDataFormat(DataFormat dataFormat) {
+    String name = Optional.ofNullable(dataFormat)
+        .map(DataFormat::getName)
+        .filter(Predicate.not(StringUtils::isBlank))
+        .map(it -> cleanInternalKeywordWhitespace(it).trim().toUpperCase())
+        .orElse(null);
+    String version = Optional.ofNullable(dataFormat)
+        .map(DataFormat::getVersion)
+        .filter(Predicate.not(StringUtils::isBlank))
+        .map(it -> cleanInternalKeywordWhitespace(it).trim().toUpperCase())
+        .orElse(null);
+
+    if (name == null) {
+      return null;
+    }
+    else if (version == null) {
+      return name;
+    }
+    else {
+      return name + " > " + version;
+    }
+  }
+
+  ////////////////////////////
+  // Responsible Parties    //
+  ////////////////////////////
+  static Map<String, Set<Map>> parseResponsibleParties(List<ResponsibleParty> responsibleParties) {
+    Map<String, Set<Map>> groupedParties = Optional.ofNullable(responsibleParties)
+        .orElse(Collections.emptyList())
+        .stream()
+        .collect(Collectors.groupingBy(
+            IndexingHelpers.categorizeParty,
+            Collectors.mapping(IndexingHelpers::parseParty, Collectors.toSet())));
+    groupedParties.remove("other");
+    return groupedParties;
+  }
+
+  private static Map<String, String> parseParty(ResponsibleParty party) {
+    if (party == null) {
+      return null;
+    }
+    var result = new HashMap<String, String>();
+    result.put("individualName", party.getIndividualName());
+    result.put("organizationName", party.getOrganizationName());
+    result.put("positionName", party.getPositionName());
+    result.put("role", party.getRole());
+    result.put("email", party.getEmail());
+    result.put("phone", party.getPhone());
+    return result;
+  }
+
+  private static final Set<String> contactRoles = Set.of("pointOfContact", "distributor");
+  private static final Set<String> creatorRoles = Set.of("resourceProvider", "originator", "principalInvestigator", "author", "collaborator", "coAuthor");
+  private static final Set<String> publisherRoles = Set.of("publisher");
+  private static final Function<ResponsibleParty, String> categorizeParty = p ->
+      contactRoles.contains(p.getRole()) ? "contacts" :
+          creatorRoles.contains(p.getRole()) ? "creators" :
+              publisherRoles.contains(p.getRole()) ? "publishers" :
+                  "other";
+
+  ////////////////////////////
+  // Dates                  //
+  ////////////////////////////
+  static Map readyDatesForSearch(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
+    String beginDate, endDate;
+    Long year;
+
+    // If bounding is actually an instant, set search fields accordingly
+    if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT) {
+      beginDate = analysis.getInstantUtcDateTimeString();
+      year = parseYear(beginDate);
+
+      // Add time and/or date to endDate based on precision
+      var precision = analysis.getInstantPrecision();
+      if (precision.equals(ChronoUnit.DAYS.toString())) {
+        // End of day
+        endDate = bounding.getInstant() + "T23:59:59Z";
+      }
+      else if (precision.equals(ChronoUnit.YEARS.toString())) {
+        if (!analysis.getInstantIndexable()) {
+          // Paleo date, so only return year value (null out dates)
+          beginDate = null;
+          endDate = null;
+        }
+        else {
+          // Last day of year + end of day
+          endDate = bounding.getInstant() + "-12-31T23:59:59Z";
+        }
+      }
+      else {
+        // Precision is NANOS so use instant value as-is
+        endDate = beginDate;
+      }
+      var result = new HashMap<>();
+      result.put("beginDate", beginDate);
+      result.put("beginYear", year);
+      result.put("endDate", endDate);
+      result.put("endYear", year);
+      return result;
+    }
+    else {
+      // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
+      // use value from analysis block where dates are UTC datetime normalized
+      var result = new HashMap<>();
+      result.put("beginDate", analysis.getBeginDescriptor() == VALID && analysis.getBeginIndexable() ? analysis.getBeginUtcDateTimeString() : null);
+      result.put("endDate", analysis.getEndDescriptor() == VALID && analysis.getEndIndexable() ? analysis.getEndUtcDateTimeString() : null);
+      result.put("beginYear", parseYear(analysis.getBeginUtcDateTimeString()));
+      result.put("endYear", parseYear(analysis.getEndUtcDateTimeString()));
+      return result;
+    }
+  }
+
+  private static Long parseYear(String utcDateTime) {
+    if (StringUtils.isBlank(utcDateTime)) {
+      return null;
+    }
+    else {
+      // Watch out for BCE years
+      return Long.parseLong(utcDateTime.substring(0, utcDateTime.indexOf('-', 1)));
+    }
+  }
+
+  ////////////////////////////
+  // Keywords               //
+  ////////////////////////////
+  // TODO - return Set<String>
+  static Map<String, Set<Object>> createGcmdKeyword(Discovery discovery) {
+    List<KeywordsElement> keywordGroups = Optional.ofNullable(discovery)
+        .map(Discovery::getKeywords)
+        .orElse(Collections.emptyList());
+    var groupsMinusAccessions = keywordGroups
+        .stream()
+        .filter(group -> !group.getNamespace().equals("NCEI ACCESSION NUMBER"))
+        .map(AvroUtils::avroToMap)
+        .collect(Collectors.<Object>toSet());
+    var groupedKeywords = keywordGroups
+        .stream()
+        .filter(g -> !g.getNamespace().equals("NCEI ACCESSION NUMBER"))
+        .flatMap(g -> g.getValues().stream().map(value -> new SingleKeyword(g.getNamespace(), value)))
+        .filter(k -> k.category != KeywordCategory.other)
+        .map(IndexingHelpers::normalizeKeyword)
+        .flatMap(IndexingHelpers::tokenizeKeyword)
+        .collect(Collectors.groupingBy(
+            keyword -> keyword.category.name(), // group by the category label
+            Collectors.mapping(keyword -> keyword.value, Collectors.<Object>toSet()))); // map the SingleKeywords to their values then collect them in a Set
+
+    groupedKeywords.put("keywords", groupsMinusAccessions); // TODO - keywords should end up being a Set<String> of all keyword values from all categories
+    groupedKeywords.put("accessionValues", Collections.emptySet()); // FIXME this needs to be in place until we can use ES6 ignore_missing flags
+    for (KeywordCategory category : KeywordCategory.values()) {
+      if (!groupedKeywords.containsKey(category.name())) {
+        groupedKeywords.put(category.name(), Collections.emptySet());
+      }
+    }
+    return groupedKeywords;
+  }
+
   private enum KeywordCategory {
-    gcmdScience("gcmdScience", true, false, true),
-    gcmdScienceServices("gcmdScienceServices", true, false, true),
-    gcmdLocations("gcmdLocations", true, false, true),
-    gcmdPlatforms("gcmdPlatforms", false, true, false),
-    gcmdInstruments("gcmdInstruments", false, true, false),
-    gcmdProjects("gcmdProjects", false, true, false),
-    gcmdHorizontalResolution("gcmdHorizontalResolution", false, false, false),
-    gcmdVerticalResolution("gcmdVerticalResolution", false, false, false),
-    gcmdTemporalResolution("gcmdTemporalResolution", false, false, false),
-    gcmdDataCenters("gcmdDataCenters", false, true, false),
-    other("other", false, false, false);
+    gcmdScience(IndexingHelpers::normalizeHierarchyKeyword, IndexingHelpers::tokenizeHierarchyKeyword),
+    gcmdScienceServices(IndexingHelpers::normalizeHierarchyKeyword, IndexingHelpers::tokenizeHierarchyKeyword),
+    gcmdLocations(IndexingHelpers::normalizeHierarchyKeyword, IndexingHelpers::tokenizeHierarchyKeyword),
+    gcmdPlatforms(IndexingHelpers::normalizeNonHierarchicalKeyword, Stream::of),
+    gcmdInstruments(IndexingHelpers::normalizeNonHierarchicalKeyword, Stream::of),
+    gcmdProjects(IndexingHelpers::normalizeNonHierarchicalKeyword, Stream::of),
+    gcmdHorizontalResolution(IndexingHelpers::normalizePlainKeyword, Stream::of),
+    gcmdVerticalResolution(IndexingHelpers::normalizePlainKeyword, Stream::of),
+    gcmdTemporalResolution(IndexingHelpers::normalizePlainKeyword, Stream::of),
+    gcmdDataCenters(IndexingHelpers::normalizeNonHierarchicalKeyword, Stream::of),
+    other(IndexingHelpers::normalizePlainKeyword, Stream::of);
 
-    final String label;
-    final boolean hierarchical;
-    final boolean shortName;
-    final boolean tokenize;
+    final Function<String, String> normalizer;
+    final Function<String, Stream<String>> tokenizer;
 
-    KeywordCategory(String label, boolean hierarchical, boolean shortName, boolean tokenize) {
-      this.label = label;
-      this.hierarchical = hierarchical;
-      this.shortName = shortName;
-      this.tokenize = tokenize;
+    KeywordCategory(Function<String, String> normalizer, Function<String, Stream<String>> tokenizer) {
+      this.normalizer = normalizer;
+      this.tokenizer = tokenizer;
     }
   }
 
@@ -268,212 +435,47 @@ public class IndexingHelpers {
   }
 
   static private SingleKeyword normalizeKeyword(SingleKeyword keyword) {
-    Function<String, String> normalizer =
-        keyword.category.hierarchical ? IndexingHelpers::normalizeHierarchyKeyword :
-            keyword.category.shortName ? IndexingHelpers::normalizeNonHierarchicalKeyword :
-                IndexingHelpers::normalizePlainKeyword;
-    return new SingleKeyword(keyword.namespace, normalizer.apply(keyword.value), keyword.category);
+    Function<String, String> normalizer = keyword.category.normalizer;
+    return new SingleKeyword(keyword.namespace, normalizer.apply(keyword.value), keyword.category); // preserve input category
   }
 
   static private Stream<SingleKeyword> tokenizeKeyword(SingleKeyword keyword) {
-    if (keyword.category.tokenize) {
-      return tokenizeHierarchyKeyword(keyword.value)
-          .stream()
-          .map(s -> new SingleKeyword(keyword.namespace, s, keyword.category)); // preserve input category
-    }
-    return Stream.of(keyword);
+    Function<String, Stream<String>> tokenizer = keyword.category.tokenizer;
+    return tokenizer.apply(keyword.value)
+        .map(s -> new SingleKeyword(keyword.namespace, s, keyword.category)); // preserve input category
   }
 
-  // TODO - return Set<String>
-  static Map<String, Set<Object>> createGcmdKeyword(Discovery discovery) {
-    List<KeywordsElement> keywordGroups = Optional.ofNullable(discovery)
-        .map(Discovery::getKeywords)
-        .orElse(Collections.emptyList());
-    var groupsMinusAccessions = keywordGroups
-        .stream()
-        .filter(group -> !group.getNamespace().equals("NCEI ACCESSION NUMBER"))
-        .map(AvroUtils::avroToMap)
-        .collect(Collectors.<Object>toSet());
-    var groupedKeywords = keywordGroups
-        .stream()
-        .filter(group -> !group.getNamespace().equals("NCEI ACCESSION NUMBER"))
-        .flatMap(group -> group.getValues().stream().map(value -> new SingleKeyword(group.getNamespace(), value)))
-        .filter(keyword -> keyword.category != KeywordCategory.other)
-        .map(IndexingHelpers::normalizeKeyword)
-        .flatMap(IndexingHelpers::tokenizeKeyword)
-        .collect(Collectors.groupingBy(
-            keyword -> keyword.category.label, // group by the category label
-            Collectors.mapping(keyword -> keyword.value, Collectors.<Object>toSet()))); // map the SingleKeywords to their values then collect them in a Set
-
-    groupedKeywords.put("keywords", groupsMinusAccessions); // TODO - keywords should end up being a Set<String> of all keyword values from all categories
-    groupedKeywords.put("accessionValues", Collections.emptySet()); // FIXME this needs to be in place until we can use ES6 ignore_missing flags
-    for (KeywordCategory category : KeywordCategory.values()) {
-      if (!groupedKeywords.containsKey(category.label)) {
-        groupedKeywords.put(category.label, Collections.emptySet());
-      }
-    }
-    return groupedKeywords;
-  }
-
-  /*
-  Create contacts, creators and publishers from responsibleParties
-  */
-  static Map<String, String> parseParty(ResponsibleParty party) {
-    if (party == null) {
-      return null;
-    }
-    return nullableMap(
-        "individualName", party.getIndividualName(),
-        "organizationName", party.getOrganizationName(),
-        "positionName", party.getPositionName(),
-        "role", party.getRole(),
-        "email", party.getEmail(),
-        "phone", party.getPhone());
-  }
-
-  static Map<String, Set> parseResponsibleParties(List<ResponsibleParty> responsibleParties) {
-    Set contacts = new HashSet<String>();
-    Set contactRoles = Set.of("pointOfContact", "distributor");
-    Set creators = new HashSet<String>();
-    Set creatorRoles = Set.of("resourceProvider", "originator", "principalInvestigator", "author", "collaborator", "coAuthor");
-    Set publishers = new HashSet<String>();
-    Set publisherRoles = Set.of("publisher");
-
-    Optional.ofNullable(responsibleParties).orElse(Collections.emptyList()).forEach(party -> {
-      var parsedParty = parseParty(party);
-      log.debug("parsedParty: " + parsedParty);
-      String role = parsedParty.getOrDefault("role", null);
-      if (contactRoles.contains(role)) {
-        contacts.add(parsedParty);
-      }
-      else if (creatorRoles.contains(role)) {
-        creators.add(parsedParty);
-      }
-      else if (publisherRoles.contains(role)) {
-        publishers.add(parsedParty);
-      }
-    });
-    return nullableMap("contacts", contacts, "creators", creators, "publishers", publishers);
-  }
-
-  static Map readyDatesForSearch(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    String beginDate, endDate;
-    Long year;
-
-    // If bounding is actually an instant, set search fields accordingly
-    if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT) {
-      beginDate = analysis.getInstantUtcDateTimeString();
-      year = parseYear(beginDate);
-
-      // Add time and/or date to endDate based on precision
-      var precision = analysis.getInstantPrecision();
-      if (precision == ChronoUnit.DAYS.toString()) {
-        // End of day
-        endDate = bounding.getInstant() + "T23:59:59Z";
-      }
-      else if (precision == ChronoUnit.YEARS.toString()) {
-        if (!analysis.getInstantIndexable()) {
-          // Paleo date, so only return year value (null out dates)
-          beginDate = null;
-          endDate = null;
-        }
-        else {
-          // Last day of year + end of day
-          endDate = bounding.getInstant() + "-12-31T23:59:59Z";
-        }
-      }
-      else {
-        // Precision is NANOS so use instant value as-is
-        endDate = beginDate;
-      }
-      return nullableMap("beginDate", beginDate, "beginYear", year, "endDate", endDate, "endYear", year);
-    }
-    else {
-      // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
-      // use value from analysis block where dates are UTC datetime normalized
-      return nullableMap(
-          "beginDate", analysis.getBeginDescriptor() == VALID && analysis.getBeginIndexable() ? analysis.getBeginUtcDateTimeString() : null,
-          "endDate", analysis.getEndDescriptor() == VALID && analysis.getEndIndexable() ? analysis.getEndUtcDateTimeString() : null,
-          "beginYear", parseYear(analysis.getBeginUtcDateTimeString()),
-          "endYear", parseYear(analysis.getEndUtcDateTimeString())
-      );
-    }
-
-  }
-
-  static Long parseYear(String utcDateTime) {
-    if (StringUtils.isBlank(utcDateTime)) {
-      return null;
-    }
-    else {
-      // Watch out for BCE years
-      return Long.parseLong(utcDateTime.substring(0, utcDateTime.indexOf('-', 1)));
-    }
-
-  }
-
-  // helper functions
-  static String normalizeHierarchicalDataFormat(DataFormat dataFormat) {
-    String name = Optional.ofNullable(dataFormat)
-        .map(DataFormat::getName)
-        .filter(Predicate.not(StringUtils::isBlank))
-        .map(it -> cleanInternalKeywordWhitespace(it).trim().toUpperCase())
-        .orElse(null);
-    String version = Optional.ofNullable(dataFormat)
-        .map(DataFormat::getVersion)
-        .filter(Predicate.not(StringUtils::isBlank))
-        .map(it -> cleanInternalKeywordWhitespace(it).trim().toUpperCase())
-        .orElse(null);
-
-    if (name == null) {
-      return null;
-    }
-    else if (version == null) {
-      return name;
-    }
-    else {
-      return name + " > " + version;
-    }
-  }
-
-  static String normalizeLinkProtocol(Link link) {
-    return Optional.ofNullable(link)
-        .map(Link::getLinkProtocol)
-        .map(it -> cleanInternalKeywordWhitespace(it).trim().toUpperCase())
-        .orElse(null);
-  }
-
-  static String normalizeHierarchyKeyword(String text) {
+  private static String normalizeHierarchyKeyword(String text) {
     var cleanText = cleanInternalKeywordWhitespace(text);
     return WordUtils.capitalizeFully(cleanText, capitalizingDelimiters)
         .replace("Earth Science > ", "").replace("Earth Science Services > ", "");
   }
 
-  static String normalizeNonHierarchicalKeyword(String text) {
+  private static String normalizeNonHierarchicalKeyword(String text) {
     // These are in the format 'Short Name > Long Name', where 'Short Name' is likely an acronym. This normalizing allows
     // for title casing the 'Long Name' if and only if it's given in all caps or all lowercase (so we don't title case an
     // acronym here)
     var cleanText = cleanInternalKeywordWhitespace(text);
     var elements = Arrays.asList(cleanText.split(" > "));
     String longName = elements.get(elements.size() - 1);
-    if (longName == longName.toUpperCase() || longName == longName.toLowerCase()) {
+    if (longName.equals(longName.toUpperCase()) || longName.equals(longName.toLowerCase())) {
       longName = WordUtils.capitalizeFully(longName, capitalizingDelimiters);
       elements.set(elements.size() - 1, longName);
     }
     return String.join(" > ", elements);
   }
 
-  static String normalizePlainKeyword(String text) {
+  private static String normalizePlainKeyword(String text) {
     return WordUtils.capitalizeFully(text, capitalizingDelimiters);
   }
 
   private static final char[] capitalizingDelimiters = new char[]{' ', '/', '.', '(', '-', '_'};
 
-  static String cleanInternalKeywordWhitespace(String text) {
+  private static String cleanInternalKeywordWhitespace(String text) {
     return text.replaceAll("\\s+", " ");
   }
 
-  static List<String> tokenizeHierarchyKeyword(String text) {
+  private static Stream<String> tokenizeHierarchyKeyword(String text) {
     var result = new ArrayList<String>();
     var i = text.length();
     while (i > 0) {
@@ -481,16 +483,7 @@ public class IndexingHelpers {
       result.add(text);
       i = text.lastIndexOf('>', i);
     }
-    return result;
+    return result.stream();
   }
 
-  private static Map nullableMap(Object... args) {
-    var result = new HashMap<>();
-    var i = 0;
-    while (args.length - i >= 2) {
-      result.put(args[i], args[i+1]);
-      i += 2;
-    }
-    return result;
-  }
 }
