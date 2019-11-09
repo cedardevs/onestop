@@ -8,12 +8,12 @@ class ElasticsearchConfig {
   Logger log = LoggerFactory.getLogger(ElasticsearchConfig)
 
   // index aliases
-  String COLLECTION_SEARCH_INDEX_ALIAS = "search_collection"
-  String COLLECTION_STAGING_INDEX_ALIAS = "staging_collection"
-  String GRANULE_SEARCH_INDEX_ALIAS = "search_granule"
-  String GRANULE_STAGING_INDEX_ALIAS = "staging_granule"
-  String FLAT_GRANULE_SEARCH_INDEX_ALIAS = "search_flattened_granule"
-  String SITEMAP_INDEX_ALIAS = "sitemap"
+  public String COLLECTION_SEARCH_INDEX_ALIAS = "search_collection"
+  public String COLLECTION_STAGING_INDEX_ALIAS = "staging_collection"
+  public String GRANULE_SEARCH_INDEX_ALIAS = "search_granule"
+  public String GRANULE_STAGING_INDEX_ALIAS = "staging_granule"
+  public String FLAT_GRANULE_SEARCH_INDEX_ALIAS = "search_flattened_granule"
+  public String SITEMAP_INDEX_ALIAS = "sitemap"
 
   // pipeline names
   static final String COLLECTION_PIPELINE = "collection_pipeline"

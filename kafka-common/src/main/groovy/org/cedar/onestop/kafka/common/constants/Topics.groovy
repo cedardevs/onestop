@@ -82,6 +82,15 @@ class Topics {
     "${type}-parsed"
   }
 
+  public static List<String> parsedChangelogTopics(String appName) {
+    inputTypes().collect({ type -> parsedChangelogTopic(appName, type) }).flatten() as List<String>
+  }
+
+  public static String parsedChangelogTopic(String appName, RecordType type) {
+    if (!isValidInput(type)) { return null }
+    "$appName-${parsedStore(type)}-changelog"
+  }
+
   public static List<String> toExtractorTopics() {
     inputTypes().collect { type -> toExtractorTopic(type) }
   }

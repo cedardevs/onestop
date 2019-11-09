@@ -78,6 +78,11 @@ public class IndexingHelpers {
     }
   }
 
+  public static ParsedRecord flattenRecords(ParsedRecord child, ParsedRecord parent) {
+    // TODO - implement me!
+    return child;
+  }
+
   public static Map<String, Object> reformatMessageForSearch(ParsedRecord record) {
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
