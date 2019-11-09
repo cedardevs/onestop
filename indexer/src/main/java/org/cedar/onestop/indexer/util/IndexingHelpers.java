@@ -79,7 +79,7 @@ public class IndexingHelpers {
   }
 
   public static ParsedRecord flattenRecords(ParsedRecord child, ParsedRecord parent) {
-    // TODO - implement me!
+    // TODO - implement me! maybe!
     return child;
   }
 
@@ -94,26 +94,95 @@ public class IndexingHelpers {
 
     // prepare and apply fields that need to be reformatted for search
     discoveryMap.putAll(prepareGcmdKeyword(discovery));
-    discoveryMap.put("temporalBounding", prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding()));
+    discoveryMap.putAll(prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding()));
+    discoveryMap.putAll(prepareResponsibleParties(discovery.getResponsibleParties()));
     discoveryMap.put("dataFormat", prepareDataFormats(discovery));
     discoveryMap.put("linkProtocol", prepareLinkProtocols(discovery));
+    discoveryMap.put("serviceLinks", prepareServiceLinks(discovery.getServices()));
     discoveryMap.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
 
-    // split responsibleParties into contacts, creators and publishers
-    discoveryMap.putAll(prepareResponsibleParties(discovery.getResponsibleParties()));
-    discoveryMap.remove("responsibleParties");
-
-    // replace "services" with prepared "serviceLinks"
-    discoveryMap.put("serviceLinks", prepareServices(discovery.getServices()));
-    discoveryMap.put("services", "");
+    // drop fields not used for searching
+    var fieldsToDrop = record.getType() == RecordType.granule ? granuleFieldsToDrop :
+        record.getType() == RecordType.collection ? collectionFieldsToDrop :
+            Collections.emptyList();
+    fieldsToDrop.forEach(discoveryMap::remove);
 
     return discoveryMap;
   }
 
+  private static final List<String> granuleFieldsToDrop = List.of(
+      "purpose",
+      "status",
+      "credit",
+      "hierarchyLevelName",
+      "alternateTitle",
+      "accessionValues",
+      "topicCategories",
+      "temporalBounding",
+      "acquisitionInstruments",
+      "acquisitionOperations",
+      "acquisitionPlatforms",
+      "responsibleParties",
+      "thumbnailDescription",
+      "creationDate",
+      "revisionDate",
+      "publicationDate",
+      "crossReferences",
+      "largerWorks",
+      "useLimitation",
+      "legalConstraints",
+      "accessFeeStatement",
+      "orderingInstructions",
+      "edition",
+      "dsmmAccessibility",
+      "dsmmDataIntegrity",
+      "dsmmDataQualityAssessment",
+      "dsmmDataQualityAssurance",
+      "dsmmDataQualityControlMonitoring",
+      "dsmmPreservability",
+      "dsmmProductionSustainability",
+      "dsmmTransparencyTraceability",
+      "dsmmUsability",
+      "dsmmAverage",
+      "updateFrequency",
+      "presentationForm",
+      "services"
+  );
+  private static final List<String> collectionFieldsToDrop = List.of(
+      "purpose",
+      "status",
+      "credit",
+      "hierarchyLevelName",
+      "alternateTitle",
+      "accessionValues",
+      "topicCategories",
+      "temporalBounding",
+      "acquisitionInstruments",
+      "acquisitionOperations",
+      "acquisitionPlatforms",
+      "responsibleParties",
+      "thumbnailDescription",
+      "creationDate",
+      "revisionDate",
+      "publicationDate",
+      "dsmmAccessibility",
+      "dsmmDataIntegrity",
+      "dsmmDataQualityAssessment",
+      "dsmmDataQualityAssurance",
+      "dsmmDataQualityControlMonitoring",
+      "dsmmPreservability",
+      "dsmmProductionSustainability",
+      "dsmmTransparencyTraceability",
+      "dsmmUsability",
+      "updateFrequency",
+      "presentationForm",
+      "services"
+  );
+
   ////////////////////////////////
   // Services, Links, Protocols //
   ////////////////////////////////
-  static List<Map> prepareServices(List<Service> services) {
+  static List<Map> prepareServiceLinks(List<Service> services) {
     return Optional.ofNullable(services)
         .orElse(Collections.emptyList())
         .stream()
@@ -220,28 +289,24 @@ public class IndexingHelpers {
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
-  static Map<String, Set<Map>> prepareResponsibleParties(List<ResponsibleParty> responsibleParties) {
-    Map<String, Set<Map>> groupedParties = Optional.ofNullable(responsibleParties)
+  static Map<String, Set<String>> prepareResponsibleParties(List<ResponsibleParty> responsibleParties) {
+    Set<String> individualNames = new HashSet<>();
+    Set<String> organizationNames = new HashSet<>();
+    Optional.ofNullable(responsibleParties)
         .orElse(Collections.emptyList())
-        .stream()
-        .collect(Collectors.groupingBy(
-            IndexingHelpers.categorizeParty,
-            Collectors.mapping(IndexingHelpers::parseParty, Collectors.toSet())));
-    groupedParties.remove("other");
-    return groupedParties;
-  }
-
-  private static Map<String, String> parseParty(ResponsibleParty party) {
-    if (party == null) {
-      return null;
-    }
-    var result = new HashMap<String, String>();
-    result.put("individualName", party.getIndividualName());
-    result.put("organizationName", party.getOrganizationName());
-    result.put("positionName", party.getPositionName());
-    result.put("role", party.getRole());
-    result.put("email", party.getEmail());
-    result.put("phone", party.getPhone());
+        .forEach(party -> {
+          var individualName = party.getIndividualName();
+          if (individualName != null && !individualName.isBlank()) {
+            individualNames.add(individualName);
+          }
+          var organizationName = party.getOrganizationName();
+          if (organizationName != null && !organizationName.isBlank()) {
+            organizationNames.add(organizationName);
+          }
+        });
+    var result = new HashMap<String, Set<String>>();
+    result.put("individualNames", individualNames);
+    result.put("organizationNames", organizationNames);
     return result;
   }
 
@@ -257,7 +322,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Dates                  //
   ////////////////////////////
-  static Map prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
+  static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     String beginDate, endDate;
     Long year;
 
@@ -287,7 +352,7 @@ public class IndexingHelpers {
         // Precision is NANOS so use instant value as-is
         endDate = beginDate;
       }
-      var result = new HashMap<>();
+      var result = new HashMap<String, Object>();
       result.put("beginDate", beginDate);
       result.put("beginYear", year);
       result.put("endDate", endDate);
@@ -297,7 +362,7 @@ public class IndexingHelpers {
     else {
       // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
       // use value from analysis block where dates are UTC datetime normalized
-      var result = new HashMap<>();
+      var result = new HashMap<String, Object>();
       result.put("beginDate", analysis.getBeginDescriptor() == VALID && analysis.getBeginIndexable() ? analysis.getBeginUtcDateTimeString() : null);
       result.put("endDate", analysis.getEndDescriptor() == VALID && analysis.getEndIndexable() ? analysis.getEndUtcDateTimeString() : null);
       result.put("beginYear", parseYear(analysis.getBeginUtcDateTimeString()));
@@ -319,37 +384,22 @@ public class IndexingHelpers {
   ////////////////////////////
   // Keywords               //
   ////////////////////////////
-  // TODO - return Set<String>
-  static Map<String, Set<Object>> prepareGcmdKeyword(Discovery discovery) {
-    List<KeywordsElement> keywordGroups = Optional.ofNullable(discovery)
+  static Map<String, Set<String>> prepareGcmdKeyword(Discovery discovery) {
+    var allKeywords = new HashSet<String>();
+    var groupedKeywords = Optional.ofNullable(discovery)
         .map(Discovery::getKeywords)
-        .orElse(Collections.emptyList());
-    var groupsMinusAccessions = keywordGroups
-        .stream()
-        .filter(group -> !group.getNamespace().equals("NCEI ACCESSION NUMBER"))
-        .map(AvroUtils::avroToMap)
-        .collect(Collectors.<Object>toSet());
-    var groupedKeywords = keywordGroups
+        .orElse(Collections.emptyList())
         .stream()
         .filter(g -> !g.getNamespace().equals("NCEI ACCESSION NUMBER"))
         .flatMap(g -> g.getValues().stream().map(value -> new SingleKeyword(g.getNamespace(), value)))
-        .filter(k -> k.category != KeywordCategory.other)
         .map(IndexingHelpers::normalizeKeyword)
         .flatMap(IndexingHelpers::tokenizeKeyword)
+        .peek(k -> allKeywords.add(k.value))
+        .filter(k -> k.category != KeywordCategory.other)
         .collect(Collectors.groupingBy(
             keyword -> keyword.category.name(), // group by the category label
-            Collectors.mapping(keyword -> keyword.value, Collectors.<Object>toSet()))); // map the SingleKeywords to their values then collect them in a Set
-
-    groupedKeywords.put("keywords", groupsMinusAccessions); // TODO - keywords should end up being a Set<String> of all keyword values from all categories
-
-    // FIXME this needs to be in place until we can use ES6 ignore_missing flags
-    groupedKeywords.put("accessionValues", Collections.emptySet());
-    for (KeywordCategory category : KeywordCategory.values()) {
-      if (!groupedKeywords.containsKey(category.name())) {
-        groupedKeywords.put(category.name(), Collections.emptySet());
-      }
-    }
-
+            Collectors.mapping(keyword -> keyword.value, Collectors.toSet()))); // map the SingleKeywords to their values then collect them in a Set
+    groupedKeywords.put("keywords", allKeywords);
     return groupedKeywords;
   }
 
