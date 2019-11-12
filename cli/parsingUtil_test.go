@@ -41,8 +41,8 @@ func TestParseDateTime(t *testing.T) {
 
 	paramList := []*viper.Viper{params1, params2}
 
-	expectedResult1 := []string{"{\"type\":\"datetime\", \"relation\": \"within\", \"after\":\"2019-01-01T00:00:00Z\", \"before\":\"2019-01-02T00:00:00Z\"}"}
-	expectedResult2 := []string{"{\"type\":\"datetime\", \"relation\": \"within\", \"after\":\"2019-01-01T00:00:00Z\", \"before\":\"2019-01-02T00:00:00Z\"}"}
+	expectedResult1 := []string{"{\"type\":\"datetime\", \"after\":\"2019-01-01T00:00:00Z\", \"before\":\"2019-01-02T00:00:00Z\"}"}
+	expectedResult2 := []string{"{\"type\":\"datetime\", \"after\":\"2019-01-01T00:00:00Z\", \"before\":\"2019-01-02T00:00:00Z\"}"}
 
 	expectedResults := [][]string{expectedResult1, expectedResult2}
 	for i := 1; i < len(expectedResults); i++ {
