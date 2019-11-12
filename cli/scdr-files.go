@@ -79,11 +79,16 @@ func scdrRegister() {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
 
-				links := decoded["links"].([]string)
-
-				for _, link := range links {
-					fmt.Println(strings.TrimSpace(link))
+				// links := []string
+				if links, ok := decoded["links"].([]string); ok {
+					// links = links.([]string)
+					for _, link := range links {
+						fmt.Println(strings.TrimSpace(link))
+					}
+				}else{
+					fmt.Println("No results")
 				}
+
 
 			},
 		}
