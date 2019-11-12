@@ -78,17 +78,22 @@ func scdrRegister() {
 				if err != nil {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
-
-				// links := []string
-				if links, ok := decoded["links"].([]string); ok {
-					// links = links.([]string)
-					for _, link := range links {
-						fmt.Println(strings.TrimSpace(link))
+				// --available returns count, dont strip data response
+				if len(params.GetString("available")) == 0 {
+					// links := []string
+					if links, ok := decoded["links"].([]string); ok {
+						// links = links.([]string)
+						for _, link := range links {
+							fmt.Println(strings.TrimSpace(link))
+						}
+					}else{
+						fmt.Println("No results")
 					}
-				}else{
-					fmt.Println("No results")
+				}else {
+					if err := cli.Formatter.Format(decoded); err != nil {
+						log.Fatal().Err(err).Msg("Formatting failed")
+					}
 				}
-
 
 			},
 		}
