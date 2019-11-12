@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/h2non/gentleman.v2"
+	"fmt"
+	"strings"
 )
 
 func ScdrSearchFlattenedGranule(params *viper.Viper, body string) (*gentleman.Response, map[string]interface{}, error) {
@@ -77,8 +79,10 @@ func scdrRegister() {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
 
-				if err := cli.Formatter.Format(decoded); err != nil {
-					log.Fatal().Err(err).Msg("Formatting failed")
+				links := decoded["links"].([]string)
+
+				for _, link := range links {
+					fmt.Println(strings.TrimSpace(link))
 				}
 
 			},
