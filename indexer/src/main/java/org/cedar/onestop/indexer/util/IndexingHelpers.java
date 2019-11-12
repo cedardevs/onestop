@@ -297,11 +297,11 @@ public class IndexingHelpers {
         .forEach(party -> {
           var individualName = party.getIndividualName();
           if (individualName != null && !individualName.isBlank()) {
-            individualNames.add(individualName);
+            individualNames.add(normalizePlainKeyword(individualName));
           }
           var organizationName = party.getOrganizationName();
           if (organizationName != null && !organizationName.isBlank()) {
-            organizationNames.add(organizationName);
+            organizationNames.add(normalizePlainKeyword(organizationName));
           }
         });
     var result = new HashMap<String, Set<String>>();
