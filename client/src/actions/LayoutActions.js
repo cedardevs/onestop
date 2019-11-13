@@ -33,6 +33,18 @@ export const toggleMap = () => {
     type: TOGGLE_MAP,
   }
 }
+export const TOGGLE_MAP_OPEN = 'TOGGLE_MAP_OPEN'
+export const toggleMapOpen = () => {
+  return {
+    type: TOGGLE_MAP_OPEN,
+  }
+}
+export const TOGGLE_MAP_CLOSE = 'TOGGLE_MAP_CLOSE'
+export const toggleMapClose = () => {
+  return {
+    type: TOGGLE_MAP_CLOSE,
+  }
+}
 
 export const SET_HEADER_MENU_OPEN = 'SET_HEADER_MENU_OPEN'
 export const setHeaderMenuOpen = isOpen => {
