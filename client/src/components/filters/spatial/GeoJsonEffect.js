@@ -5,16 +5,10 @@ import {
 } from '../../../utils/geoUtils'
 
 export function useGeoJson(geoJSON){
-  // internalGeoJSON: null,
-  // west: '',
-  // south: '',
-  // east: '',
-  // north: '',
   const [ west, setWest ] = useState('')
   const [ south, setSouth ] = useState('')
   const [ east, setEast ] = useState('')
   const [ north, setNorth ] = useState('')
-  // const [ internalGeoJSON, setInternalGeoJson ] = useState(null)
 
   const clear = () => {
     setWest('')

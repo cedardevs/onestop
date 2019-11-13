@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {styleForm} from '../common/styleFilters'
 import FilterFieldset from '../FilterFieldset'
-import InputRow from './InputRow' // TODO rename input row
+import CoordinateTextbox from './CoordinateTextbox'
 
 const GeoFieldset = ({bounds, handleKeyDown}) => {
   return (
@@ -12,25 +12,25 @@ const GeoFieldset = ({bounds, handleKeyDown}) => {
         aria-describedby="mapFilterInstructions"
       >
         <FilterFieldset legendText="Bounding Box Coordinates:">
-          <InputRow
+          <CoordinateTextbox
             direction="west"
             placeholder="-180.0 to 180.0"
             value={bounds.west}
             onChange={e => bounds.setWest(e.target.value)}
           />
-          <InputRow
+          <CoordinateTextbox
             direction="south"
             placeholder=" -90.0 to  90.0"
             value={bounds.south}
             onChange={e => bounds.setSouth(e.target.value)}
           />
-          <InputRow
+          <CoordinateTextbox
             direction="east"
             placeholder="-180.0 to 180.0"
             value={bounds.east}
             onChange={e => bounds.setEast(e.target.value)}
           />
-          <InputRow
+          <CoordinateTextbox
             direction="north"
             placeholder=" -90.0 to  90.0"
             value={bounds.north}

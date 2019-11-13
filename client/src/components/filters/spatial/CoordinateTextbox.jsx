@@ -31,26 +31,20 @@ const styleTextBox = {
   borderRadius: '0.309em',
 }
 
-const InputRow = ({
-  direction, // TODO rename to 'name'
-  value,
-  placeholderValue,
-  onChange,
-}) => {
-  // let value = this.state[direction]
-  let id = `MapFilterCoordinatesInput::${direction}`
+const CoordinateTextbox = ({name, value, placeholder, onChange}) => {
+  let id = `MapFilterCoordinatesInput::${name}`
   return (
     <div style={styleInputRow}>
       <label htmlFor={id} style={styleLabel}>
-        {_.capitalize(direction)}
+        {_.capitalize(name)}
       </label>
       <div style={styleCoordWrapper}>
         <input
           type="text"
           id={id}
-          name={direction}
-          placeholder={placeholderValue}
-          aria-placeholder={placeholderValue}
+          name={name}
+          placeholder={placeholder}
+          aria-placeholder={placeholder}
           value={value}
           style={styleTextBox}
           onChange={onChange}
@@ -59,4 +53,4 @@ const InputRow = ({
     </div>
   )
 }
-export default InputRow
+export default CoordinateTextbox

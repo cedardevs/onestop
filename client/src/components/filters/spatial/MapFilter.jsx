@@ -11,6 +11,8 @@ import Checkbox from '../../common/input/Checkbox'
 import Button from '../../common/input/Button'
 import {Key} from '../../../utils/keyboardUtils'
 
+import {SiteColors} from '../../../style/defaultStyles'
+
 import mapIcon from '../../../../img/font-awesome/white/svg/globe.svg'
 
 import {styleFilterPanel, styleFieldsetBorder} from '../common/styleFilters'
@@ -50,8 +52,8 @@ const warningStyle = warning => {
 const MapFilter = ({
   geoJSON,
   geoRelationship,
-  isOpen,
-  showMap,
+  isOpen, // state of if this filter is open and not collapsed
+  showMap, // state of if map is showing
   openMap,
   closeMap,
   excludeGlobal,
@@ -72,22 +74,14 @@ const MapFilter = ({
 
   useEffect(() => {
     return () => {
-      console.log('unmount', showMap, isOpen)
-      console.log('closing map')
-      closeMap()
-      // if (showMap) {
-      //   toggleMap()
-      // }
+      closeMap() // unmount
     }
   }, [])
+
   useEffect(
     () => {
       if (!isOpen) {
-        // from component will recieve props
-        // console.log("?????", showMap, isOpen)
-        //   toggleMap()
-        closeMap()
-        console.log('closing map (because not open)')
+        closeMap() // closing expandable containing filter
       }
     },
     [ isOpen ]
@@ -115,26 +109,14 @@ const MapFilter = ({
     removeGeometry()
     submit()
 
-    bounds.clear() // TODO probably not needed, should cascade from removeGeometry()?
-    setWarning('') // TODO probably not needed, should cascade from removeGeometry()?
+    // need to clear local state, since it's not reflected in redux if there was an error:
+    bounds.clear()
+    setWarning('')
   }
+
   const toggleExcludeGlobalResults = () => {
     toggleExcludeGlobal()
     submit()
-  }
-
-  const handleShowMap = () => {
-    // if (!showMap && toggleMap) {
-    //   toggleMap()
-    // }
-    openMap()
-  }
-
-  const handleHideMap = () => {
-    // if (showMap && toggleMap) {
-    //   toggleMap()
-    // }
-    closeMap()
   }
 
   const showMapText = showMap ? 'Hide Map' : 'Show Map'
@@ -145,7 +127,7 @@ const MapFilter = ({
       icon={mapIcon}
       text={showMapText}
       onClick={() => {
-        showMap ? handleHideMap() : handleShowMap()
+        showMap ? closeMap() : openMap()
       }}
       style={styleButtonShowMap}
       styleIcon={{
