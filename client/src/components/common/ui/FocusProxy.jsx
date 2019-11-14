@@ -89,7 +89,7 @@ export const useFocusProxy = (
         const leavingFromFirst =
           first && tabReverse && first.isEqualNode(previouslyActiveElement)
         const leavingFromLast =
-          last && !tabReverse && last.isSameNode(document.activeElement)
+          last && !tabReverse && last.isSameNode(previouslyActiveElement)
         setPreviouslyActiveElement(document.activeElement)
 
         // PROXY FOCUS AND ENTER TARGET
