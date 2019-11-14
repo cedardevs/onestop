@@ -6,7 +6,7 @@ import {
   collectionRemoveGeometry,
   collectionUpdateGeoRelation,
 } from '../../../actions/routing/CollectionSearchStateActions'
-import {toggleMap} from '../../../actions/LayoutActions'
+import {toggleMapOpen, toggleMapClose} from '../../../actions/LayoutActions'
 import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 import {withRouter} from 'react-router'
@@ -31,8 +31,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     submit: () => {
       dispatch(submitCollectionSearch(ownProps.history))
     },
-    toggleMap: () => {
-      dispatch(toggleMap())
+    openMap: () => {
+      dispatch(toggleMapOpen())
+    },
+    closeMap: () => {
+      dispatch(toggleMapClose())
     },
     removeGeometry: () => dispatch(collectionRemoveGeometry()),
     handleNewGeometry: geoJSON => dispatch(collectionUpdateGeometry(geoJSON)),
