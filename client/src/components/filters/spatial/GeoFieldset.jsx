@@ -13,25 +13,25 @@ const GeoFieldset = ({bounds, handleKeyDown}) => {
       >
         <FilterFieldset legendText="Bounding Box Coordinates:">
           <CoordinateTextbox
-            direction="west"
+            name="west"
             placeholder="-180.0 to 180.0"
             value={bounds.west}
             onChange={e => bounds.setWest(e.target.value)}
           />
           <CoordinateTextbox
-            direction="south"
+            name="south"
             placeholder=" -90.0 to  90.0"
             value={bounds.south}
             onChange={e => bounds.setSouth(e.target.value)}
           />
           <CoordinateTextbox
-            direction="east"
+            name="east"
             placeholder="-180.0 to 180.0"
             value={bounds.east}
             onChange={e => bounds.setEast(e.target.value)}
           />
           <CoordinateTextbox
-            direction="north"
+            name="north"
             placeholder=" -90.0 to  90.0"
             value={bounds.north}
             onChange={e => bounds.setNorth(e.target.value)}
