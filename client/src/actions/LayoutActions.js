@@ -27,10 +27,16 @@ export const closeRight = () => {
   }
 }
 
-export const TOGGLE_MAP = 'TOGGLE_MAP'
-export const toggleMap = () => {
+export const TOGGLE_MAP_OPEN = 'TOGGLE_MAP_OPEN'
+export const toggleMapOpen = () => {
   return {
-    type: TOGGLE_MAP,
+    type: TOGGLE_MAP_OPEN,
+  }
+}
+export const TOGGLE_MAP_CLOSE = 'TOGGLE_MAP_CLOSE'
+export const toggleMapClose = () => {
+  return {
+    type: TOGGLE_MAP_CLOSE,
   }
 }
 

@@ -258,7 +258,7 @@ class FeaturedDatasets extends React.Component {
     this.setTimerState()
   }
 
-  componentWillReceiveProps({featured}) {
+  UNSAFE_componentWillReceiveProps({featured}) {
     this.setupTimer(featured)
   }
 

@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import {Route, Switch} from 'react-router'
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 
 import Layout from '../layout/Layout'
 
@@ -27,6 +28,7 @@ import {
   isGranuleListPage,
   isHome,
   isSearch,
+  routeA11yAnnouncer,
   ROUTE,
   validHomePaths,
 } from '../../utils/urlUtils'
@@ -95,8 +97,13 @@ const Root = props => {
     </Switch>
   )
 
+  let message = routeA11yAnnouncer(location.pathname)
+
   const middle = (
     <div style={{width: '100%'}}>
+      <LiveAnnouncer>
+        <LiveMessage message={message} aria-live="polite" />
+      </LiveAnnouncer>
       <Switch>
         {/*Each page inside this switch should have a Meta!*/}
         <Route path={`/:path(${validHomePaths.join('|')})`} exact>

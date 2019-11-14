@@ -4,23 +4,19 @@ import {
   assembleSearchRequest,
   encodeLocationDescriptor,
 } from '../../utils/queryUtils'
-import {ROUTE, isPathNew} from '../../utils/urlUtils'
+import {isPathNew, ROUTE} from '../../utils/urlUtils'
 import {
+  granuleMoreResultsReceived,
+  granuleMoreResultsRequested,
   granuleNewSearchRequested,
   granuleNewSearchResetFiltersRequested,
-  granuleMoreResultsRequested,
   granuleNewSearchResultsReceived,
-  granuleMoreResultsReceived,
   granuleSearchError,
-  granulesForCartRequested,
-  granulesForCartError,
-  granulesForCartResultsReceived,
   granulesForCartClearError,
+  granulesForCartError,
+  granulesForCartRequested,
+  granulesForCartResultsReceived,
 } from './GranuleSearchStateActions'
-import {
-  getSelectedGranulesFromStorage,
-  insertGranules,
-} from '../../utils/localStorageUtil'
 import {
   warningExceedsMaxAddition,
   warningNothingNew,
@@ -88,7 +84,7 @@ const newSearchSuccessHandler = dispatch => {
 
 const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
   const stateSnapshot = getState()
-  const cartGranules = getSelectedGranulesFromStorage(stateSnapshot)
+  const cartGranules = stateSnapshot.cart.selectedGranules
 
   return payload => {
     const granules = payload.data
@@ -135,9 +131,6 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
         return
       }
     }
-
-    // add to local storage
-    insertGranules(granules)
 
     // and then add to redux state
     dispatch(granulesForCartResultsReceived(granules, total))

@@ -1,17 +1,7 @@
 import React from 'react'
-import {boxShadow} from '../../style/defaultStyles'
 import Button from '../common/input/Button'
 import remove from 'fa/remove.svg'
 import email from 'fa/envelope.svg'
-
-const styleActionPanel = {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  boxShadow: boxShadow,
-  padding: '0.309em',
-  borderRadius: '0 0.309em 0.309em 0',
-}
 
 const styleButton = color => {
   return {
@@ -52,7 +42,7 @@ const styleDeleteButton = {...styleButton('#851A11'), fontSize: '1em'}
 const styleDeleteButtonHover = styleButtonHover('#851A11')
 const styleDeleteButtonFocus = styleButtonFocus('#851A11')
 
-export default class ActionPane extends React.Component {
+export default class CartListItemActions extends React.Component {
   render() {
     const {expanded, item, itemId, deselectGranule} = this.props
 
@@ -91,7 +81,7 @@ export default class ActionPane extends React.Component {
     )
 
     return (
-      <div style={styleActionPanel}>
+      <div>
         {expandableButtons}
         {deleteButton}
       </div>

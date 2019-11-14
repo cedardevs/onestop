@@ -6,7 +6,7 @@ import {
   granuleRemoveGeometry,
   granuleUpdateGeoRelation,
 } from '../../../actions/routing/GranuleSearchStateActions'
-import {toggleMap} from '../../../actions/LayoutActions'
+import {toggleMapOpen, toggleMapClose} from '../../../actions/LayoutActions'
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 import {withRouter} from 'react-router'
@@ -31,8 +31,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     submit: () => {
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
-    toggleMap: () => {
-      dispatch(toggleMap())
+    openMap: () => {
+      dispatch(toggleMapOpen())
+    },
+    closeMap: () => {
+      dispatch(toggleMapClose())
     },
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
     handleNewGeometry: geoJSON => dispatch(granuleUpdateGeometry(geoJSON)),

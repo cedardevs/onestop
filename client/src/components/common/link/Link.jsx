@@ -12,7 +12,7 @@ const stylePressDefault = {}
 const styleFocusDefault = {}
 
 class Link extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       hovering: false,
       pressing: false,
