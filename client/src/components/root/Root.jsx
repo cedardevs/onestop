@@ -2,7 +2,6 @@ import React, {useState} from 'react'
 import {Route, Switch} from 'react-router'
 
 import Layout from '../layout/Layout'
-import DrawerContent from '../filters/spatial/DrawerContent'
 
 import DisclaimerContainer from '../disclaimer/DisclaimerContainer'
 import HeaderContainer from '../header/HeaderContainer'
@@ -35,7 +34,6 @@ import NotFoundContainer from '../404/NotFoundContainer'
 
 import earth from '../../../img/Earth.jpg'
 import {isBrowserUnsupported} from '../../utils/browserUtils'
-import FocusProxy, {FocusTarget, useFocusProxy} from '../common/ui/FocusProxy'
 
 const styleBrowserWarning = {
   background: SiteColors.WARNING,
@@ -73,14 +71,7 @@ const BrowserUnsupportedWarning = () => {
 }
 
 const Root = props => {
-  const {location, leftOpen, rightOpen, showMap} = props
-
-  const {
-    proxyRef,
-    setProxyFocusing,
-    targetRef,
-    setTargetBlurring,
-  } = useFocusProxy(true, false, false)
+  const {location, leftOpen, rightOpen} = props
 
   // store browser support in component state to prevent checking every render
   const [ browserUnsupported, _ ] = useState(isBrowserUnsupported())
@@ -92,7 +83,6 @@ const Root = props => {
   const leftVisible = isSearch(location.pathname)
   const onGranuleListPage = isGranuleListPage(location.pathname)
   const rightVisible = false
-  const drawerOpen = showMap
 
   const hiddenAccessibilityHeading = (
     <Switch>
@@ -103,24 +93,6 @@ const Root = props => {
         <h1 key="granule-result-title">Granule search results</h1>
       </Route>
     </Switch>
-  )
-
-  const drawerProxy = (
-    <FocusProxy
-      key="drawerProxy"
-      ref={proxyRef}
-      onFocus={() => setProxyFocusing(true)}
-    />
-  )
-
-  const drawer = (
-    <FocusTarget
-      key="drawer"
-      ref={targetRef}
-      onBlur={() => setTargetBlurring(true)}
-    >
-      <DrawerContent />
-    </FocusTarget>
   )
 
   const middle = (
@@ -191,7 +163,7 @@ const Root = props => {
       /* - Left - */
       left={
         leftOpen ? (
-          <FiltersContainer drawerProxy={drawerProxy} />
+          <FiltersContainer />
         ) : (
           <FiltersHiddenContainer
             text={onGranuleListPage ? 'File Filters' : 'Collection Filters'}
@@ -201,9 +173,6 @@ const Root = props => {
       leftWidth={leftOpen ? '20em' : '2em'}
       leftOpen={leftOpen}
       leftVisible={leftVisible}
-      /* - Drawer - */
-      drawer={drawer}
-      drawerOpen={drawerOpen}
       /* - Middle - */
       middle={middle}
       /* - Right - */

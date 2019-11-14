@@ -23,10 +23,6 @@ export default class Content extends React.Component {
       leftOpen,
       leftVisible,
       leftStyle,
-      drawer,
-      drawerOpen,
-      onDrawerOpen,
-      onDrawerClose,
       right,
       rightWidth,
       rightOpen,
@@ -51,10 +47,6 @@ export default class Content extends React.Component {
             content={middle}
             maxWidth={middleMaxWidth}
             padding={padding}
-            drawer={drawer}
-            drawerOpen={drawerOpen}
-            onDrawerOpen={onDrawerOpen}
-            onDrawerClose={onDrawerClose}
             key={'middle'}
           />,
           right ? (

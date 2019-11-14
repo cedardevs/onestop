@@ -83,7 +83,6 @@ class GranuleFilters extends React.Component {
   }
 
   createFilters = () => {
-    const {drawerProxy} = this.props
     return [
       {
         name: 'text',
@@ -99,12 +98,7 @@ class GranuleFilters extends React.Component {
       {
         name: 'location',
         heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
-        content: (
-          <GranuleMapFilterContainer
-            isOpen={this.state.location}
-            drawerProxy={drawerProxy}
-          />
-        ),
+        content: <GranuleMapFilterContainer isOpen={this.state.location} />,
       },
       {
         name: 'time',

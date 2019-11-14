@@ -16,21 +16,9 @@ const styleMiddle = () => {
 
 export default class Middle extends React.Component {
   render() {
-    const {
-      content,
-      drawer,
-      drawerOpen,
-      onDrawerOpen,
-      onDrawerClose,
-    } = this.props
+    const {content} = this.props
     const contentElement = (
       <main id="mainBlock" tabIndex="-1" style={styleMiddle()}>
-        <Drawer
-          content={drawer}
-          open={drawerOpen}
-          onOpen={onDrawerOpen}
-          onClose={onDrawerClose}
-        />
         {content}
       </main>
     )

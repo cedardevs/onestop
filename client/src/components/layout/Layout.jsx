@@ -33,10 +33,6 @@ export default class Layout extends React.Component {
       leftOpen,
       leftVisible,
       leftStyle,
-      drawer,
-      drawerOpen,
-      onDrawerOpen,
-      onDrawerClose,
       middle,
       middleMaxWidth,
       right,
@@ -71,10 +67,6 @@ export default class Layout extends React.Component {
               leftOpen={leftOpen}
               leftVisible={leftVisible}
               leftStyle={leftStyle}
-              drawer={drawer}
-              drawerOpen={drawerOpen}
-              onDrawerOpen={onDrawerOpen}
-              onDrawerClose={onDrawerClose}
               middle={middle}
               middleMaxWidth={middleMaxWidth}
               right={right}

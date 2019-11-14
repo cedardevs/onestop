@@ -9,10 +9,10 @@ const Filters = props => {
   return (
     <Switch>
       <Route path={ROUTE.collections.path} exact>
-        <CollectionFiltersContainer drawerProxy={drawerProxy} />
+        <CollectionFiltersContainer />
       </Route>
       <Route path={ROUTE.granules.parameterized}>
-        <GranuleFiltersContainer drawerProxy={drawerProxy} />
+        <GranuleFiltersContainer />
       </Route>
     </Switch>
   )
