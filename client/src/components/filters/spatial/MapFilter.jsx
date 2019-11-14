@@ -258,6 +258,7 @@ export default class MapFilter extends React.Component {
   }
 
   render() {
+    const {drawerProxy} = this.props
     const showMapText = this.props.showMap ? 'Hide Map' : 'Show Map'
 
     const buttonShowMap = (
@@ -299,6 +300,7 @@ export default class MapFilter extends React.Component {
           </div>,
           <FormSeparator key="MapFilter::InputColumn::OR" text="OR" />,
           buttonShowMap,
+          drawerProxy,
         ]}
       />
     )

@@ -7,6 +7,7 @@ import Banner from './Banner'
 import Content from './Content'
 import Footer from './Footer'
 import Disclaimer from './Disclaimer'
+import HiddenAccessibilityHeading from './HiddenAccessibilityHeading'
 
 const defaultPadding = '1em'
 
@@ -26,12 +27,16 @@ export default class Layout extends React.Component {
       bannerHeight,
       bannerArcHeight,
       bannerVisible,
-      title,
+      hiddenAccessibilityHeading,
       left,
       leftWidth,
       leftOpen,
       leftVisible,
       leftStyle,
+      drawer,
+      drawerOpen,
+      onDrawerOpen,
+      onDrawerClose,
       middle,
       middleMaxWidth,
       right,
@@ -56,13 +61,20 @@ export default class Layout extends React.Component {
               visible={bannerVisible}
               key={'banner'}
             />,
-            <Content middle={title} key={'title'} />,
+            <HiddenAccessibilityHeading
+              content={hiddenAccessibilityHeading}
+              key={'hiddenAccessibilityHeading'}
+            />,
             <Content
               left={left}
               leftWidth={leftWidth}
               leftOpen={leftOpen}
               leftVisible={leftVisible}
               leftStyle={leftStyle}
+              drawer={drawer}
+              drawerOpen={drawerOpen}
+              onDrawerOpen={onDrawerOpen}
+              onDrawerClose={onDrawerClose}
               middle={middle}
               middleMaxWidth={middleMaxWidth}
               right={right}

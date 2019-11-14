@@ -80,11 +80,17 @@ class CollectionFilters extends React.Component {
   }
 
   createFilters = () => {
+    const {drawerProxy} = this.props
     return [
       {
         name: 'location',
         heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
-        content: <CollectionMapFilterContainer isOpen={this.state.location} />,
+        content: (
+          <CollectionMapFilterContainer
+            isOpen={this.state.location}
+            drawerProxy={drawerProxy}
+          />
+        ),
       },
       {
         name: 'time',

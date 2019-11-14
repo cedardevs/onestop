@@ -1,4 +1,4 @@
-export const browserUnsupported = () => {
+export const isBrowserUnsupported = () => {
   let unsupported = false
 
   // check for flex support
