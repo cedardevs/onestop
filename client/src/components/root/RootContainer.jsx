@@ -6,6 +6,7 @@ const mapStateToProps = state => {
   return {
     leftOpen: state.layout.leftOpen,
     rightOpen: state.layout.rightOpen,
+    showMap: state.layout.showMap,
   }
 }
 

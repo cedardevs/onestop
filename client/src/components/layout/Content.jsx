@@ -29,6 +29,8 @@ export default class Content extends React.Component {
       rightVisible,
       middle,
       middleMaxWidth,
+      modal,
+      modalOpen,
     } = this.props
     const styles = Object.assign({}, styleContent, style)
     return (
@@ -45,6 +47,8 @@ export default class Content extends React.Component {
           />,
           <Middle
             content={middle}
+            modal={modal}
+            modalOpen={modalOpen}
             maxWidth={middleMaxWidth}
             padding={padding}
             key={'middle'}

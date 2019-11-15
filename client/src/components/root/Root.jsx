@@ -37,6 +37,8 @@ import NotFoundContainer from '../404/NotFoundContainer'
 import earth from '../../../img/Earth.jpg'
 import {isBrowserUnsupported} from '../../utils/browserUtils'
 
+import {ModalContext, useModal} from '../common/ui/Modal'
+
 const styleBrowserWarning = {
   background: SiteColors.WARNING,
   textAlign: 'center',
@@ -72,8 +74,12 @@ const BrowserUnsupportedWarning = () => {
   )
 }
 
+export const MapModalContext = ModalContext()
+
 const Root = props => {
-  const {location, leftOpen, rightOpen} = props
+  const mapModal = useModal()
+
+  const {location, leftOpen, rightOpen, showMap} = props
 
   // store browser support in component state to prevent checking every render
   const [ browserUnsupported, _ ] = useState(isBrowserUnsupported())
@@ -155,41 +161,47 @@ const Root = props => {
   )
 
   return (
-    <Layout
-      location={location}
-      /* - Disclaimer - */
-      disclaimer={<DisclaimerContainer />}
-      /* - Header - */
-      header={<HeaderContainer showSearchInput={!isHome(location.pathname)} />}
-      /* - Banner - */
-      bannerGraphic={earth}
-      bannerHeight={'30em'}
-      bannerArcHeight={'15em'}
-      bannerVisible={bannerVisible}
-      hiddenAccessibilityHeading={hiddenAccessibilityHeading}
-      /* - Left - */
-      left={
-        leftOpen ? (
-          <FiltersContainer />
-        ) : (
-          <FiltersHiddenContainer
-            text={onGranuleListPage ? 'File Filters' : 'Collection Filters'}
-          />
-        )
-      }
-      leftWidth={leftOpen ? '20em' : '2em'}
-      leftOpen={leftOpen}
-      leftVisible={leftVisible}
-      /* - Middle - */
-      middle={middle}
-      /* - Right - */
-      right={rightOpen ? null : null}
-      rightWidth={rightOpen ? '20em' : '2em'}
-      rightOpen={rightOpen}
-      rightVisible={rightVisible}
-      /* - Footer - */
-      footer={<FooterContainer />}
-    />
+    <MapModalContext.Provider value={mapModal}>
+      <Layout
+        location={location}
+        /* - Disclaimer - */
+        disclaimer={<DisclaimerContainer />}
+        /* - Header - */
+        header={
+          <HeaderContainer showSearchInput={!isHome(location.pathname)} />
+        }
+        /* - Banner - */
+        bannerGraphic={earth}
+        bannerHeight={'30em'}
+        bannerArcHeight={'15em'}
+        bannerVisible={bannerVisible}
+        hiddenAccessibilityHeading={hiddenAccessibilityHeading}
+        /* - Left - */
+        left={
+          leftOpen ? (
+            <FiltersContainer />
+          ) : (
+            <FiltersHiddenContainer
+              text={onGranuleListPage ? 'File Filters' : 'Collection Filters'}
+            />
+          )
+        }
+        leftWidth={leftOpen ? '20em' : '2em'}
+        leftOpen={leftOpen}
+        leftVisible={leftVisible}
+        /* - Middle - */
+        middle={middle}
+        modal={mapModal}
+        modalOpen={showMap}
+        /* - Right - */
+        right={rightOpen ? null : null}
+        rightWidth={rightOpen ? '20em' : '2em'}
+        rightOpen={rightOpen}
+        rightVisible={rightVisible}
+        /* - Footer - */
+        footer={<FooterContainer />}
+      />
+    </MapModalContext.Provider>
   )
 }
 

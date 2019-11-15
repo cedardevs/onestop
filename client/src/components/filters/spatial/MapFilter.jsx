@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import _ from 'lodash'
 
 import {useGeoJson} from './GeoJsonEffect'
@@ -11,15 +11,15 @@ import Checkbox from '../../common/input/Checkbox'
 import Button from '../../common/input/Button'
 import {Key} from '../../../utils/keyboardUtils'
 
-import {boxShadow, clipPath, SiteColors} from '../../../style/defaultStyles'
+import {SiteColors} from '../../../style/defaultStyles'
 
 import mapIcon from '../../../../img/font-awesome/white/svg/globe.svg'
 
-import {styleFilterPanel, styleFieldsetBorder} from '../common/styleFilters'
+import {styleFieldsetBorder, styleFilterPanel} from '../common/styleFilters'
 import ApplyClearRow from '../common/ApplyClearRow'
-import Drawer from '../../layout/Drawer'
 import InteractiveMap from './InteractiveMap'
-import {useMeasure} from '../../../effects/CommonEffects'
+import ModalContent from '../../common/ui/Modal'
+import {MapModalContext} from '../../root/Root'
 
 const styleMapFilter = {
   ...styleFilterPanel,
@@ -66,8 +66,6 @@ const MapFilter = ({
   updateGeoRelationship,
   submit,
 }) => {
-  const [ bind, measure ] = useMeasure()
-
   const [ bounds ] = useGeoJson(geoJSON)
   const [ warning, setWarning ] = useState('')
   useEffect(
@@ -200,37 +198,15 @@ const MapFilter = ({
     )
   }
 
-  const stylePopout = {
-    position: 'relative',
-    left: '100%',
-    top: '0',
-    bottom: '0',
-    zIndex: 3,
-  }
-
-  const stylePopoutAbsolute = visible => {
-    console.log('measure', measure)
-    return {
-      position: 'absolute',
-      top: `-${measure.height + 19.776}px`,
-      width: visible ? '50vw' : 0,
-      boxShadow: boxShadow,
-      clipPath: clipPath,
-      background: 'rgb(159, 215, 252)',
-    }
-  }
-
-  const popout = (
-    <div style={stylePopout}>
-      <div style={stylePopoutAbsolute(showMap)}>
-        <Drawer content={<InteractiveMap />} open={showMap} />
-      </div>
-    </div>
-  )
+  const mapModal = showMap ? (
+    <ModalContent context={MapModalContext}>
+      <InteractiveMap />
+    </ModalContent>
+  ) : null
 
   return (
     <div>
-      <div style={styleMapFilter} {...bind}>
+      <div style={styleMapFilter}>
         <fieldset style={styleFieldsetBorder}>
           <legend id="mapFilterInstructions" style={styleDescription}>
             Type coordinates or draw on the map. Use the Clear button to reset
@@ -239,7 +215,8 @@ const MapFilter = ({
           {inputColumn}
         </fieldset>
       </div>
-      {popout}
+
+      {mapModal}
 
       <div style={styleMapFilter}>
         <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>

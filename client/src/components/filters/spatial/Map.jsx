@@ -32,6 +32,7 @@ const styleMapContainer = (open, display, maxHeight, width) => {
 
 const styleMapText = (open, opacity, flex) => {
   return {
+    color: '#FFF',
     zIndex: 1,
     padding: '0.309em 0.618em',
     margin: '0 auto',

@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import ResizeObserver from 'resize-observer-polyfill'
+import {boxShadow, clipPath} from '../style/defaultStyles'
 
 export function usePrevious(value){
   const ref = useRef(null)
