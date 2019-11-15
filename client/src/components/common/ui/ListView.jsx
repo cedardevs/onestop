@@ -1,43 +1,32 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React, {useEffect, useRef, useState} from 'react'
 import PropTypes from 'prop-types'
-import _ from 'lodash'
-import Button from '../input/Button'
+import ListViewController from './ListViewController'
+import {mapFromObject} from '../../../utils/objectUtils'
+import FlexRow from './FlexRow'
+import {FilterStyles} from '../../../style/defaultStyles'
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 import gridIcon from 'fa/th.svg'
 import listIcon from 'fa/th-list.svg'
-import {fontFamilySerif} from '../../../utils/styleUtils'
-import FlexRow from './FlexRow'
+import expandIcon from 'fa/expand.svg'
+import collapseIcon from 'fa/compress.svg'
 
 const styleListView = {
   marginLeft: '1.618em',
 }
 
-const styleTopRow = {
+const styleHeading = {
   justifyContent: 'space-between',
   alignItems: 'center',
-  margin: '0 1.618em 0 0',
-}
-
-const styleListInfo = {
-  fontFamily: fontFamilySerif(),
-  fontSize: '1.2em',
-  padding: 0,
-  margin: '0 0 0.618em',
-}
-
-const styleListControl = {
-  display: 'flex',
-  justifyContent: 'space-around',
-  padding: '0.618em',
-  backgroundColor: 'rgba(0,0,0, 0.2)',
+  margin: '0 1.618em 0.618em 0',
+  paddingLeft: '1em',
   borderRadius: '0.309em',
-  margin: '0 1.618em 1em 0',
+  ...FilterStyles.DARKEST,
 }
 
-const styleControlButtonIcon = {
-  width: '1em',
-  height: '1em',
-  marginRight: '0.309em',
+const styleList = {
+  display: 'flex',
+  flexDirection: 'column',
+  flexWrap: 'nowrap',
 }
 
 const styleGrid = {
@@ -49,219 +38,249 @@ const styleGrid = {
   alignContent: 'flex-start',
 }
 
-const styleList = {
-  display: 'flex',
-  flexDirection: 'column',
-  flexWrap: 'nowrap',
+const styleDefaultItem = focusing => {
+  const styleDefaultFocus = {
+    outline: 'none',
+    border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
+    padding: '.259em',
+    margin: '.259em',
+  }
+  return {
+    display: 'block',
+    margin: '0 1.618em 0 0',
+    ...(focusing ? styleDefaultFocus : {}),
+  }
 }
 
-const styleFallbackItem = {
-  display: 'block',
-  margin: '0 1.618em 0 0',
+function usePrevious(value, defaultValue = undefined){
+  const ref = useRef()
+  useEffect(
+    () => {
+      ref.current = value
+    },
+    [ value ]
+  )
+  return ref.current ? ref.current : defaultValue
 }
 
-const styleFocusDefault = {
-  outline: 'none',
-  border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
-  padding: '.259em',
-  margin: '.259em',
+function useItems(items){
+  const [ itemsMap, setItemsMap ] = useState(mapFromObject(items))
+
+  // keep track of previous items map
+  const previousItemsMap = usePrevious(itemsMap, new Map())
+
+  const [ focusedKey, setFocusedKey ] = useState(undefined)
+  const [ lastItem, setLastItem ] = useState(undefined)
+
+  // this effect tracks when the items supplied to ListView changes
+  useEffect(
+    () => {
+      // ensure our items are stored as a JavaScript `Map`
+      // as a `Map` can iterate elements in insertion order and easily
+      // retrieve the size of the items, without counting keys
+      setItemsMap(mapFromObject(items))
+    },
+    [ items ]
+  )
+
+  // this effect tracks when the derived itemsMap changes
+  useEffect(
+    () => {
+      const keysAfter = [ ...itemsMap.keys() ]
+
+      const nextKey = keysAfter.indexOf(lastItem) + 1
+      setFocusedKey(keysAfter[nextKey])
+
+      const lastKey =
+        itemsMap.size > 0
+          ? Array.from(itemsMap)[itemsMap.size - 1][0]
+          : undefined
+      setLastItem(lastKey)
+    },
+    [ itemsMap ]
+  )
+
+  return [ itemsMap, previousItemsMap, focusedKey, setFocusedKey ]
 }
 
-export default class ListView extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      showAsGrid: !!props.GridItemComponent,
-      previousResultsLength: null,
+// TODO: eventually ListView won't take control over its own global expanded state, but will be stored
+// in local storage (if available) and redux state to preserve expanded states between pages and refreshes, etc...
+function useCycleState(steadyStateValue){
+  const [ state, cycleValue ] = useState(steadyStateValue)
+  useEffect(() => {
+    if (state !== steadyStateValue) {
+      cycleValue(steadyStateValue)
     }
-  }
+  })
+  return [ state, cycleValue ]
+}
 
-  toggleShowAsGrid = event => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        showAsGrid: !prevState.showAsGrid,
-      }
+export default function ListView(props){
+  const {
+    items,
+    ListItemComponent,
+    GridItemComponent,
+    propsForItem,
+    heading,
+    // add any provided custom actions to the control element
+    // e.g. -
+    // [
+    //   {
+    //     text: "Clear All",
+    //     notification: 'Clearing all.', // a11y feature to notifiy users of AT that something elsewhere on the page is changing
+    //     icon: clearIcon, // `import clearIcon from 'fa/remove.svg'`
+    //     handler: ({
+    //       itemsMap,
+    //       previousItemsMap,
+    //       focusedKey,
+    //       ListItemComponent,
+    //       GridItemComponent,
+    //       showAsGrid
+    //     }) => { ... } // action handler for when button is activated
+    //   }
+    // ]
+    customActions,
+    customMessage,
+  } = props
+
+  const [ notification, setNotification ] = useState('')
+
+  const [ itemsMap, previousItemsMap, focusedKey, setFocusedKey ] = useItems(
+    items
+  )
+  const [ showAsGrid, setShowAsGrid ] = useState(
+    !!props.showAsGrid && !!props.GridItemComponent
+  )
+
+  const [ focusingDefaultItem, setFocusingDefaultItem ] = useState(false)
+  const [ expanded, cycleExpanded ] = useCycleState(null)
+
+  const actions = []
+
+  // if both list and grid components are provided,
+  // we can show a toggle between views
+  if (ListItemComponent && GridItemComponent) {
+    actions.push({
+      text: 'Toggle',
+      title: showAsGrid ? 'List View' : 'Grid View',
+      icon: showAsGrid ? listIcon : gridIcon,
+      showText: false,
+      handler: () => setShowAsGrid(!showAsGrid),
+      notification: showAsGrid
+        ? 'Displaying as list.'
+        : 'Displaying as grid view.',
     })
   }
 
-  componentDidMount() {
-    if (this.focusItem) {
-      ReactDOM.findDOMNode(this.focusItem).focus()
-    }
+  // if a list component is provided and we are currently showing as a list
+  const numItems = itemsMap ? itemsMap.size : 0
+  if (ListItemComponent && !showAsGrid && numItems > 0) {
+    actions.push({
+      text: 'Expand',
+      title: 'Expand All',
+      icon: expandIcon,
+      showText: false,
+      handler: () => cycleExpanded(true),
+      notification: 'Expanding all results in list.',
+    })
+    actions.push({
+      text: 'Collapse',
+      title: 'Collapse All',
+      icon: collapseIcon,
+      showText: false,
+      handler: () => cycleExpanded(false),
+      notification: 'Collapsing all results in list.',
+    })
   }
-
-  componentWillReceiveProps(nextProps) {
-    const currResultsLength = Object.keys(this.props.items).length
-    const nextResultsLength = Object.keys(nextProps.items).length
-    this.setState({
-      previousResultsLength: currResultsLength,
+  if (customActions) {
+    customActions.forEach(action => {
+      actions.push(action)
     })
   }
 
-  handleFocus = e => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: true,
-      }
-    })
-  }
+  // list view controller
+  const controlElement = (
+    <ListViewController
+      key={'ListViewController'}
+      itemsMap={itemsMap}
+      previousItemsMap={previousItemsMap}
+      propsForItem={propsForItem}
+      focusedKey={focusedKey}
+      ListItemComponent={ListItemComponent}
+      GridItemComponent={GridItemComponent}
+      showAsGrid={showAsGrid}
+      notification={setNotification}
+      actions={actions}
+    />
+  )
 
-  handleBlur = e => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: false,
-      }
-    })
-  }
+  let itemElements = []
+  itemsMap.forEach((item, key) => {
+    let itemElement = null
 
-  render() {
-    const {
-      items,
-      resultType,
-      resultsMessage,
-      resultsMessageEmpty,
-      searchTerms,
-      shown,
-      total,
-      onItemSelect,
-      ListItemComponent,
-      GridItemComponent,
-      propsForItem,
-      customControl,
-      customButtons,
-      customMessage,
-    } = this.props
+    const shouldFocus = key === focusedKey
+    const itemProps = propsForItem
+      ? propsForItem(item, key, setFocusedKey)
+      : null
 
-    let countMessage = `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} ${resultType
-      ? resultType
-      : 'results'} ${searchTerms ? 'for "' + searchTerms + '"' : ''}`
-
-    let message = `${resultsMessage ? resultsMessage : countMessage}`
-
-    if (total === 0) {
-      message = resultsMessageEmpty ? resultsMessageEmpty : 'No Results'
-    }
-
-    const listInfo = (
-      <div key="list-view-info">
-        <h2 style={styleListInfo}>{message}</h2>
-      </div>
-    )
-
-    // initialize vars for control elements
-    let controlElement = null
-    let buttons = []
-
-    // if both list and grid components are provided,
-    // we can show a toggle between views
-    const toggleAvailable = ListItemComponent && GridItemComponent
-    if (toggleAvailable) {
-      buttons.push(
-        <Button
-          text={this.state.showAsGrid ? 'Show List' : 'Show Grid'}
-          icon={this.state.showAsGrid ? listIcon : gridIcon}
-          styleIcon={styleControlButtonIcon}
-          onClick={this.toggleShowAsGrid}
+    // list item element
+    if (!showAsGrid && ListItemComponent) {
+      itemElement = (
+        <ListItemComponent
+          key={key}
+          itemId={key}
+          item={item}
+          expanded={expanded}
+          shouldFocus={shouldFocus}
+          {...itemProps}
         />
       )
     }
-
-    // add any provided custom buttons to the control element
-    const customButtonsAvailable = customButtons && customButtons.length > 0
-    if (customButtonsAvailable) {
-      buttons = buttons.concat(customButtons)
+    else if (showAsGrid && GridItemComponent) {
+      // grid item element
+      itemElement = (
+        <GridItemComponent
+          key={key}
+          itemId={key}
+          item={item}
+          shouldFocus={shouldFocus}
+          {...itemProps}
+        />
+      )
     }
-
-    // if any control buttons are available to show, show them
-    if (buttons.length > 0) {
-      controlElement = <div style={styleListControl}>{buttons}</div>
-    }
-
-    let itemElements = []
-    this.focusItem = null
-    _.forOwn(items, (item, key) => {
-      const isNextFocus =
-        this.state.previousResultsLength > 0 &&
-        this.state.previousResultsLength == itemElements.length
-
-      const styleFocused = {
-        ...(this.state.focusing ? styleFocusDefault : {}),
-      }
-
-      const styleOverallItemApplied = {
-        ...styleFallbackItem,
-        ...styleFocused,
-      }
-      let itemElement = (
+    else {
+      // default item element
+      itemElement = (
         <div
           key={key}
           tabIndex={-1}
-          ref={item => {
-            if (isNextFocus) {
-              this.focusItem = item
-            }
-          }}
-          style={styleOverallItemApplied}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
-        >
-          {key}
-        </div>
+          style={styleDefaultItem(focusingDefaultItem)}
+          onFocus={() => setFocusingDefaultItem(true)}
+          onBlur={() => setFocusingDefaultItem(false)}
+          children={key}
+        />
       )
+    }
+    itemElements.push(itemElement)
+  })
 
-      const itemProps = propsForItem ? propsForItem(item, key) : null
-
-      if (this.state.showAsGrid && GridItemComponent) {
-        itemElement = (
-          <GridItemComponent
-            item={item}
-            key={key}
-            onClick={() => onItemSelect(key)}
-            shouldFocus={isNextFocus}
-            {...itemProps}
-          />
-        )
-      }
-      else if (!this.state.showAsGrid && ListItemComponent) {
-        itemElement = (
-          <ListItemComponent
-            itemId={key}
-            item={item}
-            key={key}
-            onClick={() => onItemSelect(key)}
-            shouldFocus={isNextFocus}
-            {...itemProps}
-          />
-        )
-      }
-      itemElements.push(itemElement)
-    })
-
-    return (
-      <div style={styleListView}>
-        <FlexRow style={styleTopRow} items={[ listInfo, customControl ]} />
-        {controlElement}
-        {customMessage}
-        <div style={this.state.showAsGrid ? styleGrid : styleList}>
-          {itemElements}
-        </div>
-      </div>
-    )
-
-    return <div>{itemElements}</div>
-  }
+  return (
+    <div style={styleListView}>
+      <FlexRow style={styleHeading} items={[ heading, controlElement ]} />
+      <LiveAnnouncer>
+        <LiveMessage message={notification} aria-live="polite" />
+      </LiveAnnouncer>
+      {customMessage}
+      <div style={showAsGrid ? styleGrid : styleList}>{itemElements}</div>
+    </div>
+  )
 }
 
 ListView.propTypes = {
   items: PropTypes.object,
-  shown: PropTypes.number,
-  total: PropTypes.number,
   showAsGrid: PropTypes.bool,
-  onItemsSelect: PropTypes.func,
-  ListComponent: PropTypes.func,
-  GridComponent: PropTypes.func,
+  ListItemComponent: PropTypes.func,
+  GridItemComponent: PropTypes.func,
   propsForItem: PropTypes.func,
+  customActions: PropTypes.array,
 }

@@ -1,17 +1,15 @@
 import React from 'react'
 import Meta from 'react-helmet'
 import ListView from '../common/ui/ListView'
-import CartItem from './CartItem'
 import Button from '../common/input/Button'
 import {boxShadow} from '../../style/defaultStyles'
 import {identifyProtocol} from '../../utils/resultUtils'
-import cancel from 'fa/ban.svg'
+import clearIcon from 'fa/ban.svg'
+
 import {fontFamilySerif} from '../../utils/styleUtils'
 import ScriptDownloader from './ScriptDownloader'
 import {FEATURE_CART} from '../../utils/featureUtils'
-import {Route} from 'react-router'
-import {ROUTE} from '../../utils/urlUtils'
-import CartContainer from './CartContainer'
+import CartListItem from './CartListItem'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -30,6 +28,11 @@ const styleCartListWrapper = {
   color: '#222',
 }
 
+const styleListHeading = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.2em',
+}
+
 const styleCartActions = {
   margin: '0 1.618em 1.618em 1.618em',
 }
@@ -39,24 +42,6 @@ const styleCartActionsTitle = {
   fontSize: '1.2em',
   margin: '0 0 0.618em 0',
   padding: 0,
-}
-
-const styleClearCartButton = {
-  fontSize: '1em',
-  display: 'inline-flex',
-  padding: '0.309em 0.618em 0.309em 0.309em',
-  marginBottom: '0.618em',
-}
-
-const styleClearCartButtonFocus = {
-  outline: '2px dashed #5C87AC',
-  outlineOffset: '.118em',
-}
-
-const styleClearCartIcon = {
-  width: '1.618em',
-  height: '1.618em',
-  marginRight: '0.309em',
 }
 
 const styleShowMore = {
@@ -79,13 +64,21 @@ export default class Cart extends React.Component {
     this.props = props
   }
 
-  propsForResult = (item, itemId) => {
-    const {deselectGranule} = this.props
-    let resultProps = {}
-    return {deselectGranule: deselectGranule}
+  propsForItem = (item, itemId, setFocusedKey) => {
+    const {
+      collectionDetailFilter,
+      selectCollection,
+      deselectGranule,
+    } = this.props
+    const collectionId = item.internalParentIdentifier
+    return {
+      onSelect: key => {
+        selectCollection(collectionId, collectionDetailFilter)
+      },
+      setFocusedKey,
+      deselectGranule,
+    }
   }
-
-  handleSelectItem = e => {}
 
   handleShowMore = () => {
     const {numberOfGranulesSelected} = this.props
@@ -159,18 +152,34 @@ export default class Cart extends React.Component {
         </div>
       )
 
-    const clearCartButton = (
-      <Button
-        key={'clearCartButton'}
-        style={styleClearCartButton}
-        styleFocus={styleClearCartButtonFocus}
-        title={'Clear All Granules from Cart'}
-        text={'Clear All'}
-        icon={cancel}
-        styleIcon={styleClearCartIcon}
-        onClick={deselectAllGranules}
-      />
+    let message = 'No files selected for download'
+    if (selectedGranulesCount > 0) {
+      message = `Showing ${shownGranules.toLocaleString()} of ${selectedGranulesCount.toLocaleString()} files for download`
+    }
+    const listHeading = (
+      <h2 key="Cart::listHeading" style={styleListHeading}>
+        {message}
+      </h2>
     )
+
+    const cartListCustomActions = [
+      {
+        text: 'Clear All',
+        title: 'Clear All Files from Cart',
+        icon: clearIcon,
+        showText: false,
+        handler: deselectAllGranules,
+        notification: 'Clearing all files from cart',
+      },
+    ]
+    // filter map down to size of results in cart we want (# shownGranules)
+    const allowed = Object.keys(selectedGranules).slice(0, shownGranules)
+    const subset = Object.keys(selectedGranules)
+      .filter(key => allowed.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = selectedGranules[key]
+        return obj
+      }, {})
 
     return (
       <div style={styleCenterContent}>
@@ -179,16 +188,12 @@ export default class Cart extends React.Component {
         <div style={styleCartListWrapper}>
           {cartActionsWrapper}
           <ListView
-            items={selectedGranules}
-            resultsMessage={'Files for download'}
-            resultsMessageEmpty={'No files selected for download'}
-            shown={shownGranules}
-            total={selectedGranulesCount}
-            onItemSelect={this.handleSelectItem}
-            ListItemComponent={CartItem}
+            items={subset}
+            ListItemComponent={CartListItem}
             GridItemComponent={null}
-            propsForItem={this.propsForResult}
-            customControl={selectedGranulesCount > 0 ? clearCartButton : null}
+            propsForItem={this.propsForItem}
+            heading={listHeading}
+            customActions={cartListCustomActions}
           />
           {showMoreButton}
         </div>

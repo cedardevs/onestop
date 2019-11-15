@@ -109,7 +109,7 @@ const styleOnestopO = {
 //-- Component
 
 export default class Logo extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       focusingImage: false,
       focusingText: false,

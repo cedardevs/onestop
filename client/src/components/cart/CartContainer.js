@@ -2,33 +2,17 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import Cart from './Cart'
 import {
-  removeAllGranulesFromLocalStorage,
-  removeGranuleFromLocalStorage,
-  getSelectedGranulesFromStorage,
-} from '../../utils/localStorageUtil'
-import {
   removeAllSelectedGranule,
   removeSelectedGranule,
 } from '../../actions/CartActions'
+import {submitCollectionDetail} from '../../actions/routing/CollectionDetailRouteActions'
 
 // import mockCartItems from '../../../test/cart/mockCartItems'
 
-// const mapStateToProps = state => {
-//   const numberOfGranulesSelected = Object.keys(
-//     state.cart.granules.selectedGranules
-//   ).length
-//
-//   return {
-//     loading: state.search.loading ? 1 : 0,
-//     selectedGranules: state.cart.granules.selectedGranules,
-//     numberOfGranulesSelected: numberOfGranulesSelected,
-//   }
-// }
-
 const mapStateToProps = state => {
-  const selectedGranules = getSelectedGranulesFromStorage(state)
+  const selectedGranules = state.cart.selectedGranules
   const numberOfGranulesSelected = selectedGranules
-    ? Object.keys(getSelectedGranulesFromStorage(state)).length
+    ? Object.keys(selectedGranules).length
     : 0
 
   // - these lines are ONLY for testing the cart
@@ -39,18 +23,20 @@ const mapStateToProps = state => {
     featuresEnabled: state.config.featuresEnabled,
     selectedGranules: selectedGranules,
     numberOfGranulesSelected: numberOfGranulesSelected,
+    collectionDetailFilter: state.search.collectionFilter, // just used to submit collection detail correctly
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     deselectGranule: itemId => {
-      removeGranuleFromLocalStorage(itemId)
       dispatch(removeSelectedGranule(itemId))
     },
     deselectAllGranules: () => {
-      removeAllGranulesFromLocalStorage()
       dispatch(removeAllSelectedGranule())
+    },
+    selectCollection: (id, filterState) => {
+      dispatch(submitCollectionDetail(ownProps.history, id, filterState))
     },
   }
 }

@@ -180,7 +180,7 @@ class Map extends React.Component {
     this.fitMapToResults()
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     let {map} = this.state
     if (map) {
       map.invalidateSize()
@@ -225,7 +225,7 @@ class Map extends React.Component {
     }
   }
 
-  componentWillUpdate(nextProps) {
+  UNSAFE_componentWillUpdate(nextProps) {
     // Add/remove layers on map to reflect store
     const {selection, features} = this.props
     const {initialized} = this.state

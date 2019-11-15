@@ -97,6 +97,7 @@ export const SiteColors = {
   HEADER: '#242C36',
   HEADER_TEXT: '#FFF',
   LINK: '#2f668a',
+  LINK_LIGHT: '#9fd7fc',
 }
 export const SiteStyles = {
   HEADER: {
