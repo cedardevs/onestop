@@ -63,6 +63,29 @@ class JsonValidator {
     final report = schema.validate(requestJson)
 
     if (report.success) {
+
+      // validate geometry point limitations, since the schema no longer does so for us.
+      JsonNode coords = requestJson.findPath('coordinates')
+      if(coords != null && coords.isArray()) {
+        if(!coords.get(0).isArray()) {
+          def longitude = Math.abs(coords.get(0).intValue()) < 360
+          def latitude = Math.abs(coords.get(1).intValue()) < 90
+          if(!longitude || !latitude) {
+            log.debug("invalid point geometry ${schemaName}: ${coords}")
+            throw new Exception("Invalid geometry, not a valid request")
+          }
+        } else {
+          coords.get(0).elements().each{
+            def longitude = Math.abs(it.get(0).intValue()) < 360
+            def latitude = Math.abs(it.get(1).intValue()) < 90
+            if(!longitude || !latitude) {
+              log.debug("invalid polygon geometry ${schemaName}: ${coords}")
+              throw new Exception("Invalid geometry, not a valid request")
+            }
+          }
+        }
+      }
+
       return [success: true]
     } else {
       log.debug("invalid schema ${schemaName}: ${report}")
