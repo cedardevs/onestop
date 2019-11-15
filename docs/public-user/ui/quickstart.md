@@ -21,7 +21,7 @@ From the landing page, there are 3 ways to populate the initial text query:
 
 We'll use the query text field and search for the term `water level`.
 
-![Landing page with "water level" in text bar and "Weather" topic in focus](/onestop/images/guide-landing-page.png)
+![Landing page with "water level" in text bar and "Weather" topic in focus](/onestop/images/ui-qs/landing-page.png)
 
 **Note**: Check out that dashed line around the `Weather` icon. The UI fully supports keyboard navigation, and the current focus is frequently denoted by a dashed line (other visual focus cues are sometimes used when the dashed line is otherwise more difficult to discern). A later guide in this series covers keyboard navigation in depth.
 
@@ -30,7 +30,7 @@ You've started exploring the data at last! The first results you encounter are c
 
 As you can see below, we found 482 collections matching our search term, and they seem to all be quite different...
 
-![Collection results page for "water level" query](/onestop/images/guide-collection-results.png)
+![Collection results page for "water level" query](/onestop/images/ui-qs/collection-results.png)
 
 ### Step Three: Filtering Collection Results
 On the left hand side of the page you'll notice the `Collection Filters` panel. There are three general types of filters available to narrow your results:
@@ -42,26 +42,26 @@ A deeper dive into every feature of the UI can be found on the next page in this
 
 In the meantime, let's narrow our results by applying a `Data Theme` keyword to our search. These keywords in particular are hierarchically organized, and any level of the hierarchy can be selected. We'll drill down to `Atmosphere > Atmospheric Winds > Surface Winds`, which will narrow our result set size down to 30. 
 
-![Collection results page with applied Data Theme keyword filter](/onestop/images/guide-collection-filter.png)
+![Collection results page with applied Data Theme keyword filter](/onestop/images/ui-qs/collection-filter.png)
 
 ### Step Four: Exploring A Collection
 Results on OneStop are returned in relevance order. Click the tile for the first result to go to that collection's landing page.
 
-![Collection detail page for selected collection](/onestop/images/guide-collection-details.png)
+![Collection detail page for selected collection](/onestop/images/ui-qs/collection-details.png)
 
 The collection detail page summarizes several key details about a given collection. The title and description are fully presented, along with it's temporal and spatial bounds. Some high level collection access details are given, if available, on the `Access` tab view. If a collection has granules and they are indexed within OneStop, the top right of the detail page provides a link to all of them.
 
 ### Step Five: Exploring A Collection's Granules
 Click on the `Show all 24 files in collection` link to start narrowing down specific granules (data files). The granule results page looks similar to the collection results page, but an additional filter is available and the tiles are now more detailed.
 
-![Granule results page showing all searchable files for the collection](/onestop/images/guide-granule-results.png)
+![Granule results page showing all searchable files for the collection](/onestop/images/ui-qs/granule-results.png)
 
 ### Step Six: Filtering Granule Results
 At this point, 24 matching files is a pretty small quantity that in reality is a quite reasonable number to download directly all at once. However, many of NOAA's OneStop holdings are collections with granule counts in the millions. For a case like that, taking advantage of `File Filters` can save you a lot of time and effort getting to the data you need.
 
 For this guide, we'll narrow down our results to just the ones intersecting any date in the year 2017.
 
-![Granule results page showing a "Date" filter being applied](/onestop/images/guide-granule-filter.png)
+![Granule results page showing a "Date" filter being applied](/onestop/images/ui-qs/granule-filter.png)
 
 ### Step Seven: Downloading Granules
 Having applied a time filter to our search, we now have 10 matching files! It's time to download some data.
@@ -70,11 +70,11 @@ From this view, you can add files individually to your cart using the checkbox o
 
 The shopping cart icon in the page header will now update to reflect the number of items in the cart.
 
-![View of the header with the shopping cart icon showing a count of 10](/onestop/images/guide-cart-update.png)
+![View of the header with the shopping cart icon showing a count of 10](/onestop/images/ui-qs/cart-update.png)
 
 Clicking that icon will take you to the cart page, where you can generate a list of link URLs for your matching files based on access type (HTTP, FTP, THREDDS, etc.) that you can use with the tool of your choice to retrieve the files.
 
-![Cart page showing 10 files ready to generate a URL list for](/onestop/images/guide-cart-page.png)
+![Cart page showing 10 files ready to generate a URL list for](/onestop/images/ui-qs/cart-page.png)
 
 <hr>
 <div align="center"><a href="/onestop/public-user">Previous</a> | <a href="#user-interface-quick-start-guide">Top of Page</a> | <a href="/onestop/public-user/ui/features-in-depth">Next</a></div>
