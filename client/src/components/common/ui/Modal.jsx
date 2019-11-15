@@ -3,6 +3,8 @@ import {consolidateStyles} from '../../../utils/styleUtils'
 import ResizeObserver from 'resize-observer-polyfill'
 import AnimateHeight from 'react-animate-height'
 
+const ANIMATION_DURATION = 200
+
 export const ModalContext = () => {
   return React.createContext({})
 }
@@ -12,37 +14,28 @@ export function useModal(){
   const relativeRef = useRef(null)
   const contentRef = useRef(null)
 
-  const styleContent = (left, top, width) => {
+  const styleContent = (left, top) => {
     return {
       position: 'absolute',
       top: `${top}px`,
       left: `${left}px`,
-      width: `${width}px`,
-      transition: 'opacity 1s',
+      transition: `width ${ANIMATION_DURATION}ms`,
     }
   }
 
+  const [ width, setWidth ] = useState(0)
   const [ visible, setVisible ] = useState(false)
-  const [ style, setStyle ] = useState(styleContent(0, 0, 0))
+  const [ style, setStyle ] = useState(styleContent(0, 0))
   const [ modalHeight, setModalHeight ] = useState(0)
 
   const resize = (modalElement, contentRelativeElement, contentElement) => {
     let localX = 0
     let localY = 0
-    let width = 0
     if (modalElement && contentRelativeElement && contentElement) {
-      console.log('VISIBLE', visible)
-
-      // obtain the *viewport* coordinates of the modal region
+      // obtain the *viewport* coordinates of the modal region, relative modal content wrapper, and modal content
       const modalRect = modalElement.getBoundingClientRect()
-      console.log('MODALRECT', modalRect)
-
-      // obtain the *viewport* coordinates of the content to be placed over the modal region
       const contentRelativeRect = contentRelativeElement.getBoundingClientRect()
-      console.log('CONTENTRELATIVERECT', contentRelativeRect)
-
       const contentRect = contentElement.getBoundingClientRect()
-      console.log('CONTENTRECT', contentRect)
 
       // now that our modal region position and modal content's position are in the same *viewport* coordinate system,
       // the difference translates the modal region into the coordinates relative to wherever the modal content actually
@@ -63,34 +56,31 @@ export function useModal(){
       const paddingRight = parseInt(contentCSS.paddingRight, radix)
 
       // subtract left and right (margin+borderWidth+padding) to get effective width that won't overflow modal region
-      width =
+      setWidth(
         -(marginLeft + borderLeftWidth + paddingLeft) +
-        modalRect.width -
-        (paddingRight + borderRightWidth + marginRight)
+          modalRect.width -
+          (paddingRight + borderRightWidth + marginRight)
+      )
 
       // y-axis considerations
-      const borderTopWidth = parseInt(contentCSS.borderTopWidth, radix)
-      const borderBottomWidth = parseInt(contentCSS.borderBottomWidth, radix)
-      const marginTop = parseInt(contentCSS.marginTop, radix)
-      const marginBottom = parseInt(contentCSS.marginBottom, radix)
-      const paddingTop = parseInt(contentCSS.paddingTop, radix)
-      const paddingBottom = parseInt(contentCSS.paddingBottom, radix)
+      // const borderTopWidth = parseInt(contentCSS.borderTopWidth, radix)
+      // const borderBottomWidth = parseInt(contentCSS.borderBottomWidth, radix)
+      // const marginTop = parseInt(contentCSS.marginTop, radix)
+      // const marginBottom = parseInt(contentCSS.marginBottom, radix)
+      // const paddingTop = parseInt(contentCSS.paddingTop, radix)
+      // const paddingBottom = parseInt(contentCSS.paddingBottom, radix)
 
       console.log(
-        'Translating position of modal region {',
-        modalRect.left,
-        ',',
-        modalRect.top,
-        ' ( width = ',
-        modalRect.width,
-        ') }',
-        'relative to content element {',
-        localX,
-        ',',
-        localY,
-        '}'
+        `Translating position of modal region ${JSON.stringify(modalRect)}`
       )
-      setStyle(styleContent(localX, localY, width))
+      console.log(
+        `Relative to modal content: {left: ${localX}, top: ${localY}}`
+      )
+      console.log(
+        `Width (accounting for margin, border, and padding): ${width}px`
+      )
+
+      setStyle(styleContent(localX, localY))
       setModalHeight(contentRect.height)
     }
   }
@@ -117,10 +107,9 @@ export function useModal(){
     modalHeight,
     visible,
     setVisible,
+    width,
   }
 }
-
-const ANIMATION_DURATION = 200
 
 const styleModal = {
   padding: 0,
@@ -130,8 +119,6 @@ const styleModal = {
 
 export const Modal = props => {
   const {modal, open} = props
-
-  console.log('Modal::modal', modal)
 
   const handleAnimationStart = newHeight => {
     if (modal.setVisible && !open) {
@@ -144,7 +131,6 @@ export const Modal = props => {
       modal.setVisible(true)
     }
   }
-  console.log('SET HEIGHT:', modal.modalHeight)
 
   return (
     <AnimateHeight
@@ -180,7 +166,12 @@ const ModalContent = props => {
             <div
               style={consolidateStyles(props.style, {
                 ...modal.style,
-                opacity: modal.visible ? 1 : 0,
+                // `modal.visible` is true when the height animation of the modal region is fully open; otherwise, false
+                width: modal.visible ? modal.width : 0,
+                // Animating width has visual side-effects with overflow and wrapping, so we must
+                // prevent these effects while the modal is not completely visible
+                overflow: modal.visible ? 'initial' : 'hidden',
+                whiteSpace: modal.visible ? 'initial' : 'nowrap',
               })}
               ref={modal.contentRef}
             >

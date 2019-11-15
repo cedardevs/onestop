@@ -14,6 +14,8 @@ const COLOR_GREEN = '#00FFC8'
 
 const MAP_HEIGHT = '400px'
 
+// TODO: functionalize this component and make sure the map is redrawing on resize events properly in the new context
+
 const styleMapContainer = (open, display, maxHeight, width) => {
   return {
     boxSizing: 'border-box',
