@@ -11,12 +11,15 @@ import Checkbox from '../../common/input/Checkbox'
 import Button from '../../common/input/Button'
 import {Key} from '../../../utils/keyboardUtils'
 
-import {SiteColors} from '../../../style/defaultStyles'
+import {boxShadow, clipPath, SiteColors} from '../../../style/defaultStyles'
 
 import mapIcon from '../../../../img/font-awesome/white/svg/globe.svg'
 
 import {styleFilterPanel, styleFieldsetBorder} from '../common/styleFilters'
 import ApplyClearRow from '../common/ApplyClearRow'
+import Drawer from '../../layout/Drawer'
+import InteractiveMap from './InteractiveMap'
+import {useMeasure} from '../../../effects/CommonEffects'
 
 const styleMapFilter = {
   ...styleFilterPanel,
@@ -63,6 +66,8 @@ const MapFilter = ({
   updateGeoRelationship,
   submit,
 }) => {
+  const [ bind, measure ] = useMeasure()
+
   const [ bounds ] = useGeoJson(geoJSON)
   const [ warning, setWarning ] = useState('')
   useEffect(
@@ -195,33 +200,67 @@ const MapFilter = ({
     )
   }
 
+  const stylePopout = {
+    position: 'relative',
+    left: '100%',
+    top: '0',
+    bottom: '0',
+    zIndex: 3,
+  }
+
+  const stylePopoutAbsolute = visible => {
+    console.log('measure', measure)
+    return {
+      position: 'absolute',
+      top: `-${measure.height + 19.776}px`,
+      width: visible ? '50vw' : 0,
+      boxShadow: boxShadow,
+      clipPath: clipPath,
+      background: 'rgb(159, 215, 252)',
+    }
+  }
+
+  const popout = (
+    <div style={stylePopout}>
+      <div style={stylePopoutAbsolute(showMap)}>
+        <Drawer content={<InteractiveMap />} open={showMap} />
+      </div>
+    </div>
+  )
+
   return (
-    <div style={styleMapFilter}>
-      <fieldset style={styleFieldsetBorder}>
-        <legend id="mapFilterInstructions" style={styleDescription}>
-          Type coordinates or draw on the map. Use the Clear button to reset the
-          location filter.
-        </legend>
-        {inputColumn}
-      </fieldset>
-      <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
-        Additional Filtering Options:
-      </h4>
-      {excludeGlobalCheckbox}
-      <Relation
-        id="geoRelation"
-        relation={geoRelationship}
-        onUpdate={relation => {
-          if (relation != geoRelationship) {
-            updateGeoRelationship(relation)
-          }
-          if (!_.isEmpty(geoJSON)) {
-            // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
-            submit()
-          }
-        }}
-        illustration={illustration}
-      />
+    <div>
+      <div style={styleMapFilter} {...bind}>
+        <fieldset style={styleFieldsetBorder}>
+          <legend id="mapFilterInstructions" style={styleDescription}>
+            Type coordinates or draw on the map. Use the Clear button to reset
+            the location filter.
+          </legend>
+          {inputColumn}
+        </fieldset>
+      </div>
+      {popout}
+
+      <div style={styleMapFilter}>
+        <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
+          Additional Filtering Options:
+        </h4>
+        {excludeGlobalCheckbox}
+        <Relation
+          id="geoRelation"
+          relation={geoRelationship}
+          onUpdate={relation => {
+            if (relation != geoRelationship) {
+              updateGeoRelationship(relation)
+            }
+            if (!_.isEmpty(geoJSON)) {
+              // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
+              submit()
+            }
+          }}
+          illustration={illustration}
+        />
+      </div>
     </div>
   )
 }

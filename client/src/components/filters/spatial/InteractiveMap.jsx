@@ -4,7 +4,7 @@ import {ROUTE} from '../../../utils/urlUtils'
 import CollectionMapContainer from '../collections/CollectionMapContainer'
 import GranuleMapContainer from '../granules/GranuleMapContainer'
 
-const DrawerContent = () => {
+const InteractiveMap = () => {
   return (
     <Switch>
       <Route path={ROUTE.collections.path} exact>
@@ -17,4 +17,4 @@ const DrawerContent = () => {
   )
 }
 
-export default DrawerContent
+export default InteractiveMap

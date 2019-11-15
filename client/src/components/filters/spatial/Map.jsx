@@ -7,6 +7,7 @@ import * as E from 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
 import {recenterGeometry} from '../../../utils/geoUtils'
+import {consolidateStyles} from '../../../utils/styleUtils'
 
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
@@ -365,9 +366,15 @@ class Map extends React.Component {
 
   render() {
     const {open, display, flex, maxHeight, width, opacity} = this.state
+
+    const styleMapContainerMerged = consolidateStyles(
+      styleMapContainer(open, display, maxHeight, width),
+      this.props.style ? this.props.style : null
+    )
+
     return (
       <div
-        style={styleMapContainer(open, display, maxHeight, width)}
+        style={styleMapContainerMerged}
         ref={container => {
           this.container = container
         }}
