@@ -1,9 +1,0 @@
-{
-  "name": "onestop-schema-deref",
-  "scripts": {
-    "buildRequest": "json-dereference -s schema/request.json -o build/resources/main/onestop-request-schema.json"
-  },
-  "dependencies": {
-    "json-dereference-cli": "^0.1.2"
-  }
-}

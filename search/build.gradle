@@ -5,7 +5,6 @@ plugins {
   id 'groovy'
   id 'org.springframework.boot' // version declared in top-level buildscript
   id 'io.spring.dependency-management'
-  id "com.moowork.node"
   id 'com.google.cloud.tools.jib' version '1.6.1'
 }
 
@@ -173,12 +172,10 @@ task integrationTest(type: Test) {
   reports.junitXml.destination = file("${buildDir}/integration-test-results")
   reports.html.destination = file("${buildDir}/reports/integrationTests")
   environment project.envVars as Map<String, ?>
-  dependsOn 'generateJsonSchema'
 }
 check.dependsOn integrationTest
 
 bootWar {
-  dependsOn { ['generateJsonSchema'] }
 
   from("${buildDir}/resources/main") {
     include "onestop-request-schema.json"
@@ -194,7 +191,6 @@ bootWar {
 // variables are not set and can require different values (e.g. - keystore path/file)
 //task environmentVariables(type: Exec) {
 bootRun {
-  dependsOn { ['generateJsonSchema'] }
   environment project.envVars as Map<String, ?>
 }
 
@@ -208,32 +204,10 @@ task setupOpenapiGenPart1(type: Copy) {
   into "${buildDir}/tmp/schema"
 }
 
-node {
-  version = '10.15.3'
-  npmVersion = '6.1.0'
-  download = true
-}
-
-task ensureRequestSchemaPath(type: Task) {
-  File requestSchemaPath = new File("${buildDir}/resources/main")
-  requestSchemaPath.mkdirs()
-}
-
-// NOTE: The 'buildRequest' task defined in package.json generates json dereference
-task generateJsonSchema(type: NpmTask) {
-  outputs.upToDateWhen { false }
-  dependsOn { [ 'ensureRequestSchemaPath', 'npmInstall' ] }
-  args = ['run', 'buildRequest']
-}
-tasks.assemble.dependsOn generateJsonSchema
-
-// copy schemas for testing
-task copyPartialSchemas(type: Copy) {
-  from 'schema/'
-  into "${buildDir}/resources/test/schema/"
-}
-
-test.dependsOn 'copyPartialSchemas', 'generateJsonSchema'
+// task ensureRequestSchemaPath(type: Task) {
+//   File requestSchemaPath = new File("${buildDir}/resources/main")
+//   requestSchemaPath.mkdirs()
+// }
 
 processResources {
   outputs.upToDateWhen { false }
