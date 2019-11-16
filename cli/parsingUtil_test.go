@@ -35,7 +35,7 @@ func TestParseStartAndEndTime(t *testing.T) {
 	params7 := viper.New()
 	params7.Set("stime", "March 31st 2003 at 17:30")
 	params7.Set("etime", "2003-04-01 10:32:50")
-
+// -stime "March 31st 2003 at 17:30" -etime "2003-04-01 10:32:49"
 	paramList := []*viper.Viper{params1, params2, params3, params4, params5, params6, params7}
 
 	expectedResult1 := []string{"{\"type\":\"datetime\", \"after\":\"2018-01-01T00:00:00Z\", \"before\":\"2019-01-01T00:00:00Z\"}"}
