@@ -89,12 +89,40 @@ func parseStartAndEndTime(params *viper.Viper) []string {
 		return []string{}
 	}
 
-	layout := "2006/01/02"
-	t1, _ := time.Parse(layout, startTime)
-	t2, _ := time.Parse(layout, endTime)
+	layout1 := "2006-01-02"
+	layout2 := "2003-01-02 00:00"
+	layout3 := "January 2 2006 15:04:05"
+	layout4 := "January 2nd 2006"
+	layout5 := "Jan 2, 2006 at 3:04pm"
+	// "Jan 2, 2006 at 3:04pm (MST)"
+	supportedLayouts := []string{layout1, layout2, layout3, layout4, layout5}
 
-	beginDateTime := t1.Format("2006-01-02T00:00:00Z")
-	endDateTime := t2.Format("2006-01-02T00:00:00Z")
+	beginDateTime := ""
+	endDateTime := ""
+
+	for _, layout := range supportedLayouts {
+		if beginDateTime == "" && len(startTime) > 0 {
+			t1, err1 := time.Parse(layout, startTime)
+			if err1 == nil {
+				// log.Info().Msg(t1.String())
+				beginDateTime = t1.Format("2006-01-02T15:04:05Z")
+			} else {
+				// fmt.Printf("error: for %q got %q; expected %q\n", startTime, t1, layout)
+				// log.Info().Err(err1).Msg("Date syntax not supported.")
+				// log.Fatal().Err(err1).Msg("Date syntax not supported.")
+			}
+		}
+		if endDateTime == "" && len(endTime) > 0 {
+			t2, err2 := time.Parse(layout, endTime)
+			if err2 == nil {
+				endDateTime = t2.Format("2006-01-02T00:00:00Z")
+			} else {
+				// log.Info().Err(err2).Msg("Date syntax not supported.")
+
+				// log.Fatal().Err(err2).Msg("Date syntax not supported.")
+			}
+		}
+	}
 
 	beginDateTimeFilter := ""
 	endDateTimeFilter := ""
