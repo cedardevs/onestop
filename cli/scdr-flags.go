@@ -7,11 +7,12 @@ import (
 )
 
 const scdrFileCmd = "scdr-files"
+
 // const regexFileCmd = "re-file"
 const typeDescription = "Search only for files of the specified data collection using the collection's file identfier. Using this option is highly recommended for any kind of file searches. Collection identifiers are case sensitive."
 const regexDescription = "Locate files whose names match the case-insensitive regular expression REGEX. Only one regular expression is allowed, not longer than 100 characters."
 
-func setScdrFlags(){
+func setScdrFlags() {
 	//flags are in onestop-flags.go
 	cli.AddFlag(scdrFileCmd, dateFilterFlag, dateFilterShortFlag, dateDescription, "")
 	cli.AddFlag(scdrFileCmd, typeFlag, typeShortFlag, typeDescription, "")
@@ -39,13 +40,13 @@ func marshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
 	dataMap := data.(map[string]interface{})
 	responseMap := make(map[string]interface{})
 	if len(collection) > 0 {
-		meta := dataMap["meta"].(map[string]interface {})
+		meta := dataMap["meta"].(map[string]interface{})
 		count := meta["total"]
 		responseMap["count"] = count
-	}else{
+	} else {
 		links := []string{}
 		dataMap := data.(map[string]interface{})
-		items := dataMap["data"].([]interface {})
+		items := dataMap["data"].([]interface{})
 		if len(items) > 0 {
 			for _, v := range items {
 				value := v.(map[string]interface{})
