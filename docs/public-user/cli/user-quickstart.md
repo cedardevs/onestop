@@ -4,24 +4,51 @@ The `onestop-cli` tool provides a convenient command line interface for the OneS
 
 Read the [OneStop OpenAPI spec 2.0.0](https://app.swaggerhub.com/apis/cedardevs/one-stop_search_api/2.0.0).
 
-## Requirements -
-Either golang, docker, or java.  
+## Installation
 
-## Install and run using a docker container (golang not required)
+### Requirements -
+
+Either golang, or docker. Direct downloads of binaries will be available in the future.
+
+### Install and run using a docker container (golang not required)
 
 Pull the image from Docker Hub (version 2.4.0 and up available).
 
-`docker run cedardevs/onestop-cli:2.4.0 <CMD>`
+`docker run cedardevs/onestop-cli:2.4.0-SNAPSHOT <CMD>`
 
 For example-
 
-`docker run cedardevs/onestop-cli searchcollection --query="satellite"`
+`docker run cedardevs/onestop-cli:2.4.0-SNAPSHOT searchcollection --query="satellite"`
 
 For more commands and flags -
 
-`docker run cedardevs/onestop-cli <CMD> --help`
+`docker run cedardevs/onestop-cli:2.4.0-SNAPSHOT <CMD> --help`
+
+
+### Download and use as Go package
+
+Download the cli:
+
+`go get github.com/cedardevs/onestop/cli`
+
+or to get it from a specific branch:
+
+`GO111MODULE=on go get github.com/cedardevs/onestop/cli@[branchname]`
+
+Run the cli:
+
+`~/go/bin/cli --help`
+
+or
+
+`PATH=$PATH:~/go/bin cli`
+
+or
+
+`export PATH=$PATH:~/go/bin` after which you can just calll `cli`
 
 ## Usage
+
 Get collection by id -
 
 `cli getcollectionbyid ecb087a6-25cf-4bfa-8165-2d374c701646`

@@ -9,11 +9,8 @@ golang {
 }
 
 goBuild {
-  environment 'GOOS', 'linux'
-  environment 'GOARCH', 'amd64'
-  environment 'GCO_ENABLED', '0'
 
-  targetPlatform = ['linux-amd64']
+  targetPlatform = ['linux-amd64', 'darwin-amd64']
 }
 
 dependencies {
