@@ -12,6 +12,12 @@ const scdrFileCmd = "scdr-files"
 const typeDescription = "Search only for files of the specified data collection using the collection's file identfier. Using this option is highly recommended for any kind of file searches. Collection identifiers are case sensitive."
 const regexDescription = "Locate files whose names match the case-insensitive regular expression REGEX. Only one regular expression is allowed, not longer than 100 characters."
 
+const scdrExampleCommands = `scdr-files --available 5b58de08-afef-49fb-99a1-9c5d5c003bde
+scdr-files --type 5b58de08-afef-49fb-99a1-9c5d5c003bde
+scdr-files --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"
+scdr-files --date=10/01
+scdr-files --stime "March 31st 2003 at 17:30" --etime "2003-04-01 10:32:49"
+`
 func setScdrFlags() {
 	//flags are in onestop-flags.go
 	cli.AddFlag(scdrFileCmd, dateFilterFlag, dateFilterShortFlag, dateDescription, "")

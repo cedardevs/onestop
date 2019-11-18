@@ -60,7 +60,7 @@ func scdrRegister() {
 	func() {
 		params := viper.New()
 
-		var examples string
+		var examples string = scdrExampleCommands
 
 		cmd := &cobra.Command{
 			Use:     "scdr-files",
