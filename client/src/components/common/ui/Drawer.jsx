@@ -1,6 +1,6 @@
-import React, {useState, useReducer, useContext, useRef, useEffect} from 'react'
-import {useSpring, useChain, animated} from 'react-spring'
-import {useMeasure, usePrevious} from '../../effects/CommonEffects'
+import React, {useRef, useState} from 'react'
+import {animated, useChain, useSpring} from 'react-spring'
+import {useMeasure, usePrevious} from '../../../effects/CommonEffects'
 
 const Drawer = ({
   content,
@@ -10,8 +10,8 @@ const Drawer = ({
   heightUnit,
   noWrap,
   open,
-  onOpen,
-  onClose,
+  onAnimationStart,
+  onAnimationEnd,
 }) => {
   const defaultSpringConfig = {
     mass: 1,
@@ -65,11 +65,20 @@ const Drawer = ({
   const {springHeight} = useSpring({
     from: {springHeight: fromHeight},
     to: {springHeight: toHeight},
+    onStart: () => {
+      // starting to open drawer
+      if (drawer.open) {
+        if (onAnimationStart) {
+          onAnimationStart(true)
+        }
+      }
+    },
     onRest: () => {
       setDown(drawer.open)
+      // drawer is fully closed
       if (!drawer.open && !down) {
-        if (onClose) {
-          onClose()
+        if (onAnimationEnd) {
+          onAnimationEnd(false)
         }
       }
     },
@@ -78,15 +87,27 @@ const Drawer = ({
   })
 
   const overRef = useRef()
+
+  console.log(`down:${down}, open:${open}`)
+
   const {springFractionalUnit} = useSpring({
     from: {springFractionalUnit: 0},
     // don't trigger until all the way down
     to: {springFractionalUnit: down ? 1 : 0},
+    onStart: () => {
+      // starting to close drawer
+      if (!drawer.open) {
+        if (onAnimationStart) {
+          onAnimationStart(false)
+        }
+      }
+    },
     onRest: () => {
+      // drawer is fully open
       if (drawer.open && down) {
-        if (onOpen) {
+        if (onAnimationEnd) {
           const rect = bind.ref.current.getBoundingClientRect()
-          onOpen(rect)
+          onAnimationEnd(true, rect)
         }
       }
     },

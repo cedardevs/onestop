@@ -1,7 +1,7 @@
-import React, {useRef, useState, useEffect} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {consolidateStyles} from '../../../utils/styleUtils'
 import ResizeObserver from 'resize-observer-polyfill'
-import AnimateHeight from 'react-animate-height'
+import Drawer from './Drawer'
 
 const ANIMATION_DURATION = 200
 
@@ -24,9 +24,9 @@ export function useModal(open){
   }
 
   const [ width, setWidth ] = useState(0)
+  const [ height, setHeight ] = useState(0)
   const [ visible, setVisible ] = useState(false)
   const [ style, setStyle ] = useState(styleContent(0, 0))
-  const [ modalHeight, setModalHeight ] = useState(0)
 
   const resize = (modalElement, contentRelativeElement, contentElement) => {
     let localX = 0
@@ -43,7 +43,8 @@ export function useModal(open){
       localX = modalRect.left - contentRelativeRect.left
       localY = modalRect.top - contentRelativeRect.top
 
-      // account for border of content (as `.getBoundingClientRect()` values are relative to outer-most boundary)
+      // account for margin, border width, and padding of content
+      // `.getBoundingClientRect()` values are relative to outer-most boundary
       const contentCSS = window.getComputedStyle(contentElement)
       const radix = 10
 
@@ -81,7 +82,7 @@ export function useModal(open){
       )
 
       setStyle(styleContent(localX, localY))
-      setModalHeight(contentRect.height)
+      setHeight(contentRect.height)
     }
   }
 
@@ -104,7 +105,7 @@ export function useModal(open){
     relativeRef,
     contentRef,
     style,
-    modalHeight,
+    height,
     open,
     visible,
     setVisible,
@@ -134,24 +135,25 @@ const Modal = props => {
   }
 
   if (context) {
+    const content = modal => (
+      <div
+        style={{
+          width: '100%',
+          height: modal.height ? modal.height : '100%',
+        }}
+        ref={modal.modalRef}
+      />
+    )
+
     return (
       <context.Consumer>
         {modal => (
-          <AnimateHeight
-            duration={ANIMATION_DURATION}
-            height={modal.open ? 'auto' : 0}
-            style={styleModal}
+          <Drawer
+            content={content(modal)}
+            open={modal.open}
             onAnimationStart={() => handleAnimationStart(modal)}
             onAnimationEnd={() => handleAnimationEnd(modal)}
-          >
-            <div
-              style={{
-                width: '100%',
-                height: modal.modalHeight ? modal.modalHeight : '100%',
-              }}
-              ref={modal.modalRef}
-            />
-          </AnimateHeight>
+          />
         )}
       </context.Consumer>
     )
