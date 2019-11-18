@@ -77,9 +77,9 @@ const BrowserUnsupportedWarning = () => {
 export const MapModalContext = ModalContext()
 
 const Root = props => {
-  const mapModal = useModal()
-
   const {location, leftOpen, rightOpen, showMap} = props
+
+  const mapModal = useModal(showMap)
 
   // store browser support in component state to prevent checking every render
   const [ browserUnsupported, _ ] = useState(isBrowserUnsupported())
@@ -191,8 +191,6 @@ const Root = props => {
         leftVisible={leftVisible}
         /* - Middle - */
         middle={middle}
-        modal={mapModal}
-        modalOpen={showMap}
         /* - Right - */
         right={rightOpen ? null : null}
         rightWidth={rightOpen ? '20em' : '2em'}

@@ -9,7 +9,7 @@ export const ModalContext = () => {
   return React.createContext({})
 }
 
-export function useModal(){
+export function useModal(open){
   const modalRef = useRef(null)
   const relativeRef = useRef(null)
   const contentRef = useRef(null)
@@ -105,6 +105,7 @@ export function useModal(){
     contentRef,
     style,
     modalHeight,
+    open,
     visible,
     setVisible,
     width,
@@ -117,46 +118,53 @@ const styleModal = {
   border: 0,
 }
 
-export const Modal = props => {
-  const {modal, open} = props
+const Modal = props => {
+  const {context} = props
 
-  const handleAnimationStart = newHeight => {
-    if (modal.setVisible && !open) {
+  const handleAnimationStart = modal => {
+    if (modal.setVisible && !modal.open) {
       modal.setVisible(false)
     }
   }
 
-  const handleAnimationEnd = newHeight => {
-    if (modal.setVisible && open) {
+  const handleAnimationEnd = modal => {
+    if (modal.setVisible && modal.open) {
       modal.setVisible(true)
     }
   }
 
-  return (
-    <AnimateHeight
-      duration={ANIMATION_DURATION}
-      height={open ? 'auto' : 0}
-      style={styleModal}
-      onAnimationStart={handleAnimationStart}
-      onAnimationEnd={handleAnimationEnd}
-    >
-      <div
-        style={{
-          width: '100%',
-          height: modal.modalHeight ? modal.modalHeight : '100%',
-        }}
-        ref={modal.modalRef}
-      />
-    </AnimateHeight>
-  )
+  if (context) {
+    return (
+      <context.Consumer>
+        {modal => (
+          <AnimateHeight
+            duration={ANIMATION_DURATION}
+            height={modal.open ? 'auto' : 0}
+            style={styleModal}
+            onAnimationStart={() => handleAnimationStart(modal)}
+            onAnimationEnd={() => handleAnimationEnd(modal)}
+          >
+            <div
+              style={{
+                width: '100%',
+                height: modal.modalHeight ? modal.modalHeight : '100%',
+              }}
+              ref={modal.modalRef}
+            />
+          </AnimateHeight>
+        )}
+      </context.Consumer>
+    )
+  }
 }
+export default Modal
 
 const styleModalRelative = {
   position: 'relative',
   top: '0',
   zIndex: 3,
 }
-const ModalContent = props => {
+export const ModalContent = props => {
   const {context} = props
   if (context) {
     return (
@@ -183,5 +191,3 @@ const ModalContent = props => {
     )
   }
 }
-
-export default ModalContent

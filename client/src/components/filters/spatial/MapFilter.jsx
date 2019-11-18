@@ -18,7 +18,7 @@ import mapIcon from '../../../../img/font-awesome/white/svg/globe.svg'
 import {styleFieldsetBorder, styleFilterPanel} from '../common/styleFilters'
 import ApplyClearRow from '../common/ApplyClearRow'
 import InteractiveMap from './InteractiveMap'
-import ModalContent from '../../common/ui/Modal'
+import {ModalContent} from '../../common/ui/Modal'
 import {MapModalContext} from '../../root/Root'
 
 const styleMapFilter = {

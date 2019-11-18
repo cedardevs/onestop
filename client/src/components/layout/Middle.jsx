@@ -1,5 +1,6 @@
 import React from 'react'
-import {Modal} from '../common/ui/Modal'
+import Modal from '../common/ui/Modal'
+import {MapModalContext} from '../root/Root'
 
 const styleMiddle = () => {
   return {
@@ -15,11 +16,11 @@ const styleMiddle = () => {
 }
 
 const Middle = props => {
-  const {content, modal, modalOpen} = props
+  const {content} = props
 
   const contentElement = (
     <main id="mainBlock" tabIndex="-1" style={styleMiddle()}>
-      <Modal modal={modal} open={modalOpen} />
+      <Modal context={MapModalContext} />
       {content}
     </main>
   )
