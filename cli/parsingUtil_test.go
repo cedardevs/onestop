@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"testing"
 )
@@ -11,6 +10,7 @@ import (
 // layout3 := "January 2nd 2006 00:00:00"
 // layout4 := "January 2nd 2006"
 func TestParseStartAndEndTime(t *testing.T) {
+
 	params1 := viper.New()
 	params1.Set("stime", "2018-01-01")
 	params1.Set("etime", "2019-01-01")
@@ -51,8 +51,6 @@ func TestParseStartAndEndTime(t *testing.T) {
 	for i := 1; i < len(expectedResults); i++ {
 		got := parseStartAndEndTime(paramList[i])
 		if got[0] != expectedResults[i][0] {
-			log.Info().Msg(got[0])
-			log.Info().Msg(expectedResults[i][0])
 			t.Error("TestParseStartAndEndTime Failed")
 		}
 	}
