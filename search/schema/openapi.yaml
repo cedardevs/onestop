@@ -53,10 +53,6 @@ paths:
       responses:
         '200':
           description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getByIdResponse'
         '404':
           description: Request Parsing Error
     get:

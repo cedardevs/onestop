@@ -47,6 +47,13 @@ go install
 and run with `cli`
 (This will put dependencies in ~/go)
 
+## Changing openapi.yml
+
+First: `go get -u github.com/danielgtaylor/openapi-cli-generator`
+Then: ```
+cd cli
+~/go/bin/openapi-cli-generator generate ../search/schema/openapi.yaml
+```
 
 ## Developer notes
 
