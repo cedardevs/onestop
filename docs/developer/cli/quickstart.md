@@ -60,3 +60,5 @@ cd cli
 The openapi.go file was generated using the `openapi-cli-generator` tool linked above. If you have `go` set up as mentioned above, you can get it with `go get github.com/danielgtaylor/openapi-cli-generator`. This will make `openapi-cli-generator` available. Refer to that repos documentation for more information.
 
 That library generated a command line client that allows us to inject our own middleware to marshal requests and responses. You can find these custom flags applied in scdr-flags.go and the parsing functions in parsing-util.go.
+
+The names of commands in openapi.go are determined based on the `operationId` in openapi.yaml.

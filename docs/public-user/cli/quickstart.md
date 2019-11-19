@@ -50,6 +50,19 @@ or
 
 ## Usage
 
+### Verbose
+
+Add `--verbose` to get more complete output. For example, to see what server is being used by default.
+
+### Run against a test or local API
+
+Add the `--server` flag:
+- `--server=data.noaa.gov/onestop-search/`
+- `--server=https://sciapps.colorado.edu/onestop-search/`
+- `--server=localhost:8080/onestop-search/`
+
+###
+
 Get collection by id -
 
 `cli getcollectionbyid ecb087a6-25cf-4bfa-8165-2d374c701646`
