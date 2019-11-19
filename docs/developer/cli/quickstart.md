@@ -52,7 +52,7 @@ and run with `cli`
 First: `go get -u github.com/danielgtaylor/openapi-cli-generator`
 Then: ```
 cd cli
-~/go/bin/openapi-cli-generator generate ../search/schema/openapi.yaml
+~/go/bin/openapi-cli-generator generate ../search/src/main/resources/openapi.yaml
 ```
 
 ## Developer notes

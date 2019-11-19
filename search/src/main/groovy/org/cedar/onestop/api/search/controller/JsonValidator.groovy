@@ -35,7 +35,7 @@ class JsonValidator {
 
   static Map validateRequestAgainstSpec(def params, String schemaName){
     ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory())
-    JsonNode apiSpec = yamlMapper.readTree(this.classLoader.getResource('schema/openapi.yml').text)
+    JsonNode apiSpec = yamlMapper.readTree(this.classLoader.getResource('openapi.yaml').text)
     JsonNode schemaJson = apiSpec.get('components').get('schemas').get(schemaName)
     ObjectNode schemaJsonObj = (ObjectNode)schemaJson
 

@@ -42,7 +42,7 @@ class JsonValidatorSpec extends Specification {
     ObjectMapper mapper = new ObjectMapper()
     ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory())
     JsonNode jsonSchema = mapper.readTree(this.getClass().classLoader.getResource('json-schema-draft4.json').text)
-    JsonNode apiSpec = yamlMapper.readTree(this.getClass().classLoader.getResource('schema/openapi.yml').text)
+    JsonNode apiSpec = yamlMapper.readTree(this.getClass().classLoader.getResource('openapi.yaml').text)
     JsonNode requestSchema = apiSpec.get('components').get('schemas').get('requestBody')
 
     final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
