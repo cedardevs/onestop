@@ -11,8 +11,6 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
-  implementation("org.codehaus.groovy:groovy:${project.groovyVersion}")
-  implementation("org.codehaus.groovy:groovy-json:${project.groovyVersion}")
   implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
   implementation("org.apache.avro:avro:1.8.2")
   implementation("org.slf4j:slf4j-api:1.7.25")
