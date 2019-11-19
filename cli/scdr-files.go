@@ -1,13 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/danielgtaylor/openapi-cli-generator/cli"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/h2non/gentleman.v2"
-	"fmt"
 	"strings"
 )
 
@@ -60,7 +60,7 @@ func scdrRegister() {
 	func() {
 		params := viper.New()
 
-		var examples string
+		var examples string = scdrExampleCommands
 
 		cmd := &cobra.Command{
 			Use:     "scdr-files",
@@ -86,10 +86,10 @@ func scdrRegister() {
 						for _, link := range links {
 							fmt.Println(strings.TrimSpace(link))
 						}
-					}else{
+					} else {
 						fmt.Println("No results")
 					}
-				}else {
+				} else {
 					if err := cli.Formatter.Format(decoded); err != nil {
 						log.Fatal().Err(err).Msg("Formatting failed")
 					}

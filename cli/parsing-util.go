@@ -1,39 +1,38 @@
 package main
 
 import (
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+	"gopkg.in/h2non/gentleman.v2"
 	"strconv"
-	"time"
 	"strings"
-  "github.com/rs/zerolog/log"
-  "gopkg.in/h2non/gentleman.v2"
+	"time"
 )
 
-
 func parseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
-  filters := []string{}
-  queries := []string{}
+	filters := []string{}
+	queries := []string{}
 
-  dateTimeFilter := parseDate(params)
-  filters = append(filters, dateTimeFilter...)
+	dateTimeFilter := parseDateArgs(params)
+	filters = append(filters, dateTimeFilter...)
 	startEndTimeFilter := parseStartAndEndTime(params)
 	filters = append(filters, startEndTimeFilter...)
-  geoSpatialFilter := parsePolygon(params)
-  filters = append(filters, geoSpatialFilter...)
-  query := parseTextQuery(params)
-  queries = append(queries, query...)
+	geoSpatialFilter := parsePolygon(params)
+	filters = append(filters, geoSpatialFilter...)
+	query := parseTextQuery(params)
+	queries = append(queries, query...)
 	requestMeta := parseRequestMeta(params)
-  if len(queries) > 0 || len(filters) > 0  {
+	if len(queries) > 0 || len(filters) > 0 {
 		req.AddHeader("content-type", "application/json")
-    req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
-  }
+		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
+	}
 }
 
 func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
 	filters := []string{}
 	queries := []string{}
 
-	dateTimeFilter := parseDate(params)
+	dateTimeFilter := parseDateArgs(params)
 	filters = append(filters, dateTimeFilter...)
 	startEndTimeFilter := parseStartAndEndTime(params)
 	filters = append(filters, startEndTimeFilter...)
@@ -49,9 +48,9 @@ func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	queries = append(queries, query...)
 	requestMeta := parseRequestMeta(params)
 
-	if len(queries) > 0 || len(filters) > 0  {
+	if len(queries) > 0 || len(filters) > 0 {
 		req.AddHeader("content-type", "application/json")
-		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "],"+ requestMeta +"}")
+		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
 	}
 }
 
@@ -68,6 +67,18 @@ func parseRequestMeta(params *viper.Viper) string {
 	return page
 }
 
+func parseStartAndEndTime(params *viper.Viper) []string {
+
+	startTimeArg, endTimeArg := parseTimeFlags(params)
+	beginDateTime, endDateTime := formatBeginAndEnd(startTimeArg, endTimeArg)
+	beginDateTimeFilter, endDateTimeFilter := formatDateRange(beginDateTime, endDateTime)
+	if len(beginDateTimeFilter) == 0 && len(endDateTimeFilter) == 0 {
+		return []string{}
+	}
+
+	return []string{"{\"type\":\"datetime\", " + beginDateTimeFilter + endDateTimeFilter + "}"}
+}
+
 func parseTimeFlags(params *viper.Viper) (string, string) {
 	startTime := params.GetString("start-time")
 	if len(startTime) == 0 {
@@ -80,59 +91,99 @@ func parseTimeFlags(params *viper.Viper) (string, string) {
 	return startTime, endTime
 }
 
-//TODO: WIP - this needs work
-func parseStartAndEndTime(params *viper.Viper) []string {
+func formatBeginAndEnd(startTime string, endTime string) (string, string) {
+	beginDateTime := parseDate(startTime)
+	endDateTime := parseDate(endTime)
+	return beginDateTime, endDateTime
+}
 
-  startTime, endTime := parseTimeFlags(params)
-
-	if len(startTime) == 0 && len(endTime) == 0 {
-		return []string{}
-	}
-
-	layout := "2006/01/02"
-	t1, _ := time.Parse(layout, startTime)
-	t2, _ := time.Parse(layout, endTime)
-
-	beginDateTime := t1.Format("2006-01-02T00:00:00Z")
-	endDateTime := t2.Format("2006-01-02T00:00:00Z")
-
+func formatDateRange(beginDateTime string, endDateTime string) (string, string) {
 	beginDateTimeFilter := ""
 	endDateTimeFilter := ""
-	relation := ""
-
-	if len(startTime) > 0 {
+	if len(beginDateTime) > 0 {
 		beginDateTimeFilter = "\"after\":\"" + beginDateTime + "\""
-		if len(endTime) > 0 {
+		if len(endDateTime) > 0 {
 			beginDateTimeFilter = beginDateTimeFilter + ", "
 		}
 	}
-
-	if len(endTime) > 0 {
+	if len(endDateTime) > 0 {
 		endDateTimeFilter = "\"before\":\"" + endDateTime + "\""
 	}
-
-	return []string{"{\"type\":\"datetime\", " + relation + beginDateTimeFilter + endDateTimeFilter + "}"}
+	return beginDateTimeFilter, endDateTimeFilter
 }
 
-func parseDate(params *viper.Viper) []string {
+func parseDate(dateString string) string {
+
+	supportedLayouts := []string{
+		time.UnixDate,
+		"2006-01-02",
+		"2006-01-02 15:04",
+		"2006-01-02 15:04:05",
+		"2006-01-02 15:04:05 MST",
+		"2006/01/02",
+		"2006/01/02 15:04",
+		"2006/01/02 15:04:05",
+		"2006/01/02 15:04:05 MST",
+		"January 2 2006 15:04",
+		"January 2 2006 15:04:05",
+		"Jan 2, 2006 at 3:04pm",
+		"January 2st 2006",
+		"January 2nd 2006",
+		"January 2rd 2006",
+		"January 2th 2006",
+		"January 2 2006 15:04",
+		"January 2st 2006 15:04",
+		"January 2nd 2006 15:04",
+		"January 2rd 2006 15:04",
+		"January 2th 2006 15:04",
+		"January 2 2006 15:04:05",
+		"January 2st 2006 15:04:05",
+		"January 2nd 2006 15:04:05",
+		"January 2rd 2006 15:04:05",
+		"January 2th 2006 15:04:05",
+		"January 2 2006 at 15:04",
+		"January 2st 2006 at 15:04",
+		"January 2nd 2006 at 15:04",
+		"January 2rd 2006 at 15:04",
+		"January 2th 2006 at 15:04",
+		"January 2 2006 at 15:04:05",
+		"January 2st 2006 at 15:04:05",
+		"January 2nd 2006 at 15:04:05",
+		"January 2rd 2006 at 15:04:05",
+		"January 2th 2006 at 15:04:05",
+	}
+	formattedDate := ""
+	for _, layout := range supportedLayouts {
+		if formattedDate == "" && len(dateString) > 0 {
+			t1, err1 := time.Parse(layout, dateString)
+			if err1 == nil {
+				formattedDate = t1.UTC().Format("2006-01-02T15:04:05Z")
+			}
+		}
+	}
+	if len(formattedDate) < 0 {
+		log.Fatal().Msg("Date syntax not supported- " + dateString)
+	}
+	return formattedDate
+}
+
+func parseDateArgs(params *viper.Viper) []string {
 	//parse date flags, add filter
 	date := params.GetString("date")
 	if len(date) == 0 {
 		return []string{}
 	}
-	layout := "2006/01/02"
-	t, err := time.Parse(layout, date)
-	if err != nil {
+	beginDateTime := parseDate(date)
+	if len(beginDateTime) == 0 {
 		currentTime := time.Now() //support for current year default
-		t, err = time.Parse(layout, strconv.Itoa(currentTime.Year()) + "/" + date)
-		if err != nil {
-      log.Fatal().Err(err).Msg("Date syntax not supported.")
+		beginDateTime = parseDate(strconv.Itoa(currentTime.Year()) + "/" + date)
+		if len(beginDateTime) == 0 {
+			beginDateTime = parseDate(strconv.Itoa(currentTime.Year()) + "-" + date)
 		}
 	}
-	beginDateTime := t.Format("2006-01-02T00:00:00Z")
-	t2 := t.AddDate(0,0,1)
-  endDateTime := t2.Format("2006-01-02T00:00:00Z")
-	return []string{"{\"type\":\"datetime\", \"after\":\""+ beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
+	t2, _ := time.Parse("2006-01-02T00:00:00Z", beginDateTime)
+	endDateTime := t2.AddDate(0, 0, 1).Format("2006-01-02T00:00:00Z")
+	return []string{"{\"type\":\"datetime\", \"after\":\"" + beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
 func parseParentIdentifier(params *viper.Viper) []string {
@@ -187,10 +238,10 @@ func parsePolygon(params *viper.Viper) []string {
 		coords[i] = strings.ReplaceAll(coords[i], " ", ",")
 		coord := strings.Split(coords[i], ",")
 		end := ", "
-		if i + 1 == len(coords){
+		if i+1 == len(coords) {
 			end = ""
 		}
-		geospatialFilter = append(geospatialFilter, "[" + coord[0] + "," + coord[1] +"]" + end)
+		geospatialFilter = append(geospatialFilter, "["+coord[0]+","+coord[1]+"]"+end)
 	}
 	return []string{"{\"geometry\": { \"coordinates\": [[" + strings.Join(geospatialFilter, "") + "]], \"type\": \"Polygon\"}, \"type\": \"geometry\"}"}
 }
