@@ -46,9 +46,13 @@ func TestParseStartAndEndTime(t *testing.T) {
 	params10.Set("stime", "March 4th 2003")
 
 	params11 := viper.New()
+	params11.Set("stime", "2003-04-01 10:32:49 PST")
 	params11.Set("etime", "October 10th 2010 at 17:30")
 
-	paramList := []*viper.Viper{params1, params2, params3, params4, params5, params6, params7, params8, params9, params10, params11 }
+	params12 := viper.New()
+	params12.Set("stime", "Sun Oct 10 10:30:00 MST 2019")
+
+	paramList := []*viper.Viper{params1, params2, params3, params4, params5, params6, params7, params8, params9, params10, params11, params12}
 
 	expectedResults := [][]string{
 		[]string{"{\"type\":\"datetime\", \"after\":\"2018-01-01T00:00:00Z\", \"before\":\"2019-01-01T00:00:00Z\"}"},
@@ -61,7 +65,8 @@ func TestParseStartAndEndTime(t *testing.T) {
 		[]string{"{\"type\":\"datetime\", \"after\":\"2003-03-02T00:00:00Z\"}"},
 		[]string{"{\"type\":\"datetime\", \"after\":\"2003-03-03T00:00:00Z\"}"},
 		[]string{"{\"type\":\"datetime\", \"after\":\"2003-03-04T00:00:00Z\"}"},
-		[]string{"{\"type\":\"datetime\", \"before\":\"2010-10-10T17:30:00Z\"}"},
+		[]string{"{\"type\":\"datetime\", \"after\":\"2003-04-01T10:32:49Z\", \"before\":\"2010-10-10T17:30:00Z\"}"},
+		[]string{"{\"type\":\"datetime\", \"after\":\"2019-10-10T17:30:00Z\"}"},
 	}
 
 	for i := 1; i < len(expectedResults); i++ {
@@ -70,7 +75,7 @@ func TestParseStartAndEndTime(t *testing.T) {
 			log.Info().Msg(got[0])
 			log.Info().Msg(expectedResults[i][0])
 			t.Error("TestParseStartAndEndTime Failed")
-		}else if len(got) == 0 {
+		} else if len(got) == 0 {
 			log.Info().Msg("Empty stime/etime result")
 			log.Info().Msg(expectedResults[i][0])
 			t.Error("TestParseStartAndEndTime Failed")
@@ -85,15 +90,21 @@ func TestParseDateTime(t *testing.T) {
 	params2 := viper.New()
 	params2.Set("date", "01/01")
 
-	paramList := []*viper.Viper{params1, params2}
+	params3 := viper.New()
+	params3.Set("date", "01-01")
+
+	paramList := []*viper.Viper{params1, params2, params3}
 
 	expectedResult1 := []string{"{\"type\":\"datetime\", \"after\":\"2019-01-01T00:00:00Z\", \"before\":\"2019-01-02T00:00:00Z\"}"}
 	expectedResult2 := []string{"{\"type\":\"datetime\", \"after\":\"2019-01-01T00:00:00Z\", \"before\":\"2019-01-02T00:00:00Z\"}"}
+	expectedResult3 := []string{"{\"type\":\"datetime\", \"after\":\"2019-01-01T00:00:00Z\", \"before\":\"2019-01-02T00:00:00Z\"}"}
 
-	expectedResults := [][]string{expectedResult1, expectedResult2}
+	expectedResults := [][]string{expectedResult1, expectedResult2, expectedResult3}
 	for i := 1; i < len(expectedResults); i++ {
-		got := parseDate(paramList[i])
+		got := parseDateArgs(paramList[i])
 		if got[0] != expectedResults[i][0] {
+			log.Info().Msg(got[0])
+			log.Info().Msg(expectedResults[i][0])
 			t.Error("TestParseDateTime Failed")
 		}
 	}

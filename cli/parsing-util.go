@@ -13,7 +13,7 @@ func parseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Re
 	filters := []string{}
 	queries := []string{}
 
-	dateTimeFilter := parseDate(params)
+	dateTimeFilter := parseDateArgs(params)
 	filters = append(filters, dateTimeFilter...)
 	startEndTimeFilter := parseStartAndEndTime(params)
 	filters = append(filters, startEndTimeFilter...)
@@ -32,7 +32,7 @@ func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	filters := []string{}
 	queries := []string{}
 
-	dateTimeFilter := parseDate(params)
+	dateTimeFilter := parseDateArgs(params)
 	filters = append(filters, dateTimeFilter...)
 	startEndTimeFilter := parseStartAndEndTime(params)
 	filters = append(filters, startEndTimeFilter...)
@@ -92,11 +92,38 @@ func parseTimeFlags(params *viper.Viper) (string, string) {
 }
 
 func formatBeginAndEnd(startTime string, endTime string) (string, string) {
+	beginDateTime := parseDate(startTime)
+	endDateTime := parseDate(endTime)
+	return beginDateTime, endDateTime
+}
+
+func formatDateRange(beginDateTime string, endDateTime string) (string, string) {
+	beginDateTimeFilter := ""
+	endDateTimeFilter := ""
+	if len(beginDateTime) > 0 {
+		beginDateTimeFilter = "\"after\":\"" + beginDateTime + "\""
+		if len(endDateTime) > 0 {
+			beginDateTimeFilter = beginDateTimeFilter + ", "
+		}
+	}
+	if len(endDateTime) > 0 {
+		endDateTimeFilter = "\"before\":\"" + endDateTime + "\""
+	}
+	return beginDateTimeFilter, endDateTimeFilter
+}
+
+func parseDate(dateString string) string {
 
 	supportedLayouts := []string{
+		time.UnixDate,
 		"2006-01-02",
 		"2006-01-02 15:04",
 		"2006-01-02 15:04:05",
+		"2006-01-02 15:04:05 MST",
+		"2006/01/02",
+		"2006/01/02 15:04",
+		"2006/01/02 15:04:05",
+		"2006/01/02 15:04:05 MST",
 		"January 2 2006 15:04",
 		"January 2 2006 15:04:05",
 		"Jan 2, 2006 at 3:04pm",
@@ -125,63 +152,37 @@ func formatBeginAndEnd(startTime string, endTime string) (string, string) {
 		"January 2rd 2006 at 15:04:05",
 		"January 2th 2006 at 15:04:05",
 	}
-
-	beginDateTime := ""
-	endDateTime := ""
-
+	formattedDate := ""
 	for _, layout := range supportedLayouts {
-		if beginDateTime == "" && len(startTime) > 0 {
-			t1, err1 := time.Parse(layout, startTime)
+		if formattedDate == "" && len(dateString) > 0 {
+			t1, err1 := time.Parse(layout, dateString)
 			if err1 == nil {
-				beginDateTime = t1.Format("2006-01-02T15:04:05Z")
-			}
-		}
-		if endDateTime == "" && len(endTime) > 0 {
-			t2, err2 := time.Parse(layout, endTime)
-			if err2 == nil {
-				endDateTime = t2.Format("2006-01-02T15:04:05Z")
+				formattedDate = t1.UTC().Format("2006-01-02T15:04:05Z")
 			}
 		}
 	}
-	if len(beginDateTime) < 0 && len(endDateTime) < 0 {
-		log.Fatal().Msg("Date syntax not supported.")
+	if len(formattedDate) < 0 {
+		log.Fatal().Msg("Date syntax not supported- " + dateString)
 	}
-	return beginDateTime, endDateTime
+	return formattedDate
 }
 
-func formatDateRange(beginDateTime string, endDateTime string) (string, string) {
-	beginDateTimeFilter := ""
-	endDateTimeFilter := ""
-	if len(beginDateTime) > 0 {
-		beginDateTimeFilter = "\"after\":\"" + beginDateTime + "\""
-		if len(endDateTime) > 0 {
-			beginDateTimeFilter = beginDateTimeFilter + ", "
-		}
-	}
-	if len(endDateTime) > 0 {
-		endDateTimeFilter = "\"before\":\"" + endDateTime + "\""
-	}
-	return beginDateTimeFilter, endDateTimeFilter
-}
-
-func parseDate(params *viper.Viper) []string {
+func parseDateArgs(params *viper.Viper) []string {
 	//parse date flags, add filter
 	date := params.GetString("date")
 	if len(date) == 0 {
 		return []string{}
 	}
-	layout := "2006/01/02"
-	t, err := time.Parse(layout, date)
-	if err != nil {
+	beginDateTime := parseDate(date)
+	if len(beginDateTime) == 0 {
 		currentTime := time.Now() //support for current year default
-		t, err = time.Parse(layout, strconv.Itoa(currentTime.Year())+"/"+date)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Date syntax not supported.")
+		beginDateTime = parseDate(strconv.Itoa(currentTime.Year()) + "/" + date)
+		if len(beginDateTime) == 0 {
+			beginDateTime = parseDate(strconv.Itoa(currentTime.Year()) + "-" + date)
 		}
 	}
-	beginDateTime := t.Format("2006-01-02T00:00:00Z")
-	t2 := t.AddDate(0, 0, 1)
-	endDateTime := t2.Format("2006-01-02T00:00:00Z")
+	t2, _ := time.Parse("2006-01-02T00:00:00Z", beginDateTime)
+	endDateTime := t2.AddDate(0, 0, 1).Format("2006-01-02T00:00:00Z")
 	return []string{"{\"type\":\"datetime\", \"after\":\"" + beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
