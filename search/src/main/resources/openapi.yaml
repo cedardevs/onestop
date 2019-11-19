@@ -209,7 +209,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/granuleInfoResponse'
+                $ref: '#/components/schemas/flattenedGranuleInfoResponse'
   /flattened-granule/{id}:
     head:
       operationId: headFlattenedGranuleById
@@ -595,10 +595,41 @@ components:
       properties:
         data:
           items:
-            $ref: '#/components/schemas/responseItem'
+            additionalProperties: false
+            properties:
+              count:
+                type: integer
+              id:
+                enum:
+                  - collection
+                type: string
+              type:
+                enum:
+                  - count
+                type: string
+            type: object
           type: array
-        meta:
-          $ref : '#/components/schemas/collectionMetadataObject'
+      type: object
+    flattenedGranuleInfoResponse:
+      additionalProperties: false
+      description: "High-level information on a resource."
+      properties:
+        data:
+          items:
+            additionalProperties: false
+            properties:
+              count:
+                type: integer
+              id:
+                enum:
+                  - flattened-granule
+                type: string
+              type:
+                enum:
+                  - count
+                type: string
+            type: object
+          type: array
       type: object
     granuleInfoResponse:
       additionalProperties: false
@@ -606,7 +637,19 @@ components:
       properties:
         data:
           items:
-            $ref: '#/components/schemas/responseItem'
+            additionalProperties: false
+            properties:
+              count:
+                type: integer
+              id:
+                enum:
+                  - granule
+                type: string
+              type:
+                enum:
+                  - count
+                type: string
+            type: object
           type: array
       type: object
     internalParentIdentifier:
@@ -733,21 +776,21 @@ components:
           type: boolean
       title: "Search Request"
       type: object
-    responseItem:
-      additionalProperties: false
-      properties:
-        count:
-          type: integer
-        id:
-          enum:
-            - collection
-            - granule
-          type: string
-        type:
-          enum:
-            - count
-          type: string
-      type: object
+    # responseItem:
+    #   additionalProperties: false
+    #   properties:
+    #     count:
+    #       type: integer
+    #     id:
+    #       enum:
+    #         - collection
+    #         - granule
+    #       type: string
+    #     type:
+    #       enum:
+    #         - count
+    #       type: string
+    #   type: object
     searchDataFullObject:
       properties:
         attributes:
