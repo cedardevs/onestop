@@ -3,7 +3,7 @@ import {consolidateStyles} from '../../../utils/styleUtils'
 import ResizeObserver from 'resize-observer-polyfill'
 import Drawer from './Drawer'
 
-const ANIMATION_DURATION = 200
+const ANIMATION_DURATION = 2000
 
 export const ModalContext = () => {
   return React.createContext({})
@@ -122,14 +122,16 @@ const styleModal = {
 const Modal = props => {
   const {context} = props
 
-  const handleAnimationStart = modal => {
-    if (modal.setVisible && !modal.open) {
+  const drawerAnimationStart = (modal, drawerOpen) => {
+    if (!drawerOpen && modal.setVisible) {
+      console.log("not visible")
       modal.setVisible(false)
     }
   }
 
-  const handleAnimationEnd = modal => {
-    if (modal.setVisible && modal.open) {
+  const drawerAnimationEnd = (modal, drawerOpen) => {
+    if (drawerOpen && modal.setVisible) {
+      console.log("visible")
       modal.setVisible(true)
     }
   }
@@ -138,7 +140,6 @@ const Modal = props => {
     const content = modal => (
       <div
         style={{
-          width: '100%',
           height: modal.height ? modal.height : '100%',
         }}
         ref={modal.modalRef}
@@ -151,8 +152,8 @@ const Modal = props => {
           <Drawer
             content={content(modal)}
             open={modal.open}
-            onAnimationStart={() => handleAnimationStart(modal)}
-            onAnimationEnd={() => handleAnimationEnd(modal)}
+            onAnimationStart={drawerOpen => drawerAnimationStart(modal, drawerOpen)}
+            onAnimationEnd={drawerOpen => drawerAnimationEnd(modal, drawerOpen)}
           />
         )}
       </context.Consumer>
@@ -171,24 +172,28 @@ export const ModalContent = props => {
   if (context) {
     return (
       <context.Consumer>
-        {modal => (
-          <div style={styleModalRelative} ref={modal.relativeRef}>
-            <div
-              style={consolidateStyles(props.style, {
-                ...modal.style,
-                // `modal.visible` is true when the height animation of the modal region is fully open; otherwise, false
-                width: modal.visible ? modal.width : 0,
-                // Animating width has visual side-effects with overflow and wrapping, so we must
-                // prevent these effects while the modal is not completely visible
-                overflow: modal.visible ? 'initial' : 'hidden',
-                whiteSpace: modal.visible ? 'initial' : 'nowrap',
-              })}
-              ref={modal.contentRef}
-            >
-              {props.children}
+        {modal => {
+          return (
+            <div style={styleModalRelative} ref={modal.relativeRef}>
+              <div
+                style={consolidateStyles(props.style, {
+                  ...modal.style,
+
+                  // `modal.visible` is true when the height animation of the modal region is fully open; otherwise, false
+                  width: modal.visible ? modal.width : 0,
+
+                  // Animating width has visual side-effects with overflow and wrapping, so we must
+                  // prevent these effects while the modal is not completely visible
+                  // TODO: make visible and animating that actually reflect singular points in time and don't get retriggered many times
+                  overflow: modal.visible ? 'initial' : 'hidden',
+                  whiteSpace: modal.visible ? 'initial' : 'nowrap',
+                })}
+                ref={modal.contentRef}
+              >
+                {props.children}
+              </div>
             </div>
-          </div>
-        )}
+        )}}
       </context.Consumer>
     )
   }
