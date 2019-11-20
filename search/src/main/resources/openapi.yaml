@@ -73,7 +73,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/getByIdResponse'
+                $ref: '#/components/schemas/getCollectionByIdResponse'
         '404':
           description: Request Parsing Error
   /search/collection:
@@ -164,7 +164,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/getByIdResponse'
+                $ref: '#/components/schemas/getGranuleByIdResponse'
         '404':
           description: Request Parsing Error
   /search/granule:
@@ -246,7 +246,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/getByIdResponse'
+                $ref: '#/components/schemas/getFlattenedGranuleByIdResponse'
         '404':
           description: Request Parsing Error
   /search/flattened-granule:
@@ -339,15 +339,18 @@ components:
       required:
         - type
         - coordinates
-    accessFeeStatement:
+    accessFeeStatement: # TODO is this an array? # TODO description
       type: string
     beginDate:
+      description: Begin date of temporal bounding. This will be null if the record has a year further back than -100,000,000.
       format: date
       type: string
     beginYear:
-      format: date
-      type: string
+      description: Begin year of temporal bounding.
+      format: int64
+      type: integer
     citeAsStatements:
+      # description: TODO
       items:
         type: string
       type: array
@@ -376,6 +379,7 @@ components:
           type: integer
       type: object
     crossReferences:
+      # TODO description
       items:
         properties:
           date:
@@ -384,24 +388,22 @@ components:
             $ref: "#/components/schemas/links"
           title:
             type: string
-        required:
-          - date
-          - links
-          - title
         type: object
       type: array
     dataFormat:
+      description: DEPRECATED. List of data format names.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
     dataFormats:
+      description: List of data formats, indicating both format name, and version.
       items:
         properties:
           name:
-            pattern: ^(.*)$
+            example: NETCDF
             type: string
           version:
+            example: netCDF-3
             type: string
         required:
           - name
@@ -437,17 +439,54 @@ components:
       title: "Datetime Filter"
       type: object
     description:
+      description: Long description of this record.
       type: string
     doi:
+      description: Optional DOI identifier for this record.
       type: string
     dsmmAverage:
-      default: 0
+      description: |
+        The mean average calculation of the numerical scores of the following measures. Each measure is scored on the following scale.
+
+        ---
+
+        Measures:
+
+          * Accessibility
+          * DataIntegrity
+          * DataQualityAssessment
+          * DataQualityAssurance
+          * DataQualityControlMonitoring
+          * Preservability
+          * ProductionSustainability
+          * TransparencyTraceability
+          * Usability
+
+        Scale:
+
+          * notAvailable	0
+          * adHoc	1
+          * minimal	2
+          * intermediate	3
+          * advanced	4
+          * optimal	5
       type: number
+      format: float
+      minimum: 0
+      maximum: 5
+      default: 0.0
     edition:
+      #TODO or array?
+      #TODO description
       type: string
-    endYear:
+    endDate:
+      description: End date of temporal bounding. This will be null if the record has a year further back than -100,000,000.
       format: date
       type: string
+    endYear:
+      description: End year of temporal bounding.
+      format: int64
+      type: integer
     excludeGlobalFilter:
       additionalProperties: false
       description: "Flag to request that geospatially global results be excluded. Defaults to false if not provided."
@@ -501,55 +540,356 @@ components:
       title: "Facet Filter"
       type: object
     fileIdentifier:
-      pattern: ^(.*)$
+      description: Identifier for this record.
       type: string
-    getByIdResponse:
-      description: Full records for matching item
+    getCollectionByIdResponse:
+      description: Full collection record.
+      type: object
+      required:
+        - data
+        - meta
       properties:
         data:
           items:
-            $ref: "#/components/schemas/searchDataFullObject"
+            properties:
+              attributes:
+                properties:
+                  accessFeeStatement:
+                    $ref : "#/components/schemas/accessFeeStatement"
+                  beginDate:
+                    $ref : "#/components/schemas/beginDate"
+                  beginYear:
+                    $ref : "#/components/schemas/beginYear"
+                  citeAsStatements:
+                    $ref: "#/components/schemas/citeAsStatements"
+                  crossReferences:
+                    $ref: "#/components/schemas/crossReferences"
+                  dataFormat:
+                    $ref: "#/components/schemas/dataFormat"
+                  dataFormats:
+                    $ref: "#/components/schemas/dataFormats"
+                  description:
+                    $ref: "#/components/schemas/description"
+                  doi:
+                    $ref: "#/components/schemas/doi"
+                  dsmmAverage:
+                    $ref: "#/components/schemas/dsmmAverage"
+                  edition:
+                    $ref: "#/components/schemas/edition"
+                  endDate:
+                    $ref: "#/components/schemas/endDate"
+                  endYear:
+                    $ref: "#/components/schemas/endYear"
+                  fileIdentifier:
+                    $ref: "#/components/schemas/fileIdentifier"
+                  gcmdDataCenters:
+                    $ref: "#/components/schemas/gcmdDataCenters"
+                  gcmdHorizontalResolution:
+                    $ref: "#/components/schemas/gcmdHorizontalResolution"
+                  gcmdInstruments:
+                    $ref: "#/components/schemas/gcmdInstruments"
+                  gcmdLocations:
+                    $ref: "#/components/schemas/gcmdLocations"
+                  gcmdPlatforms:
+                    $ref: "#/components/schemas/gcmdPlatforms"
+                  gcmdProjects:
+                    $ref: "#/components/schemas/gcmdProjects"
+                  gcmdScience:
+                    $ref: "#/components/schemas/gcmdScience"
+                  gcmdScienceServices:
+                    $ref: "#/components/schemas/gcmdScienceServices"
+                  gcmdTemporalResolution:
+                    $ref: "#/components/schemas/gcmdTemporalResolution"
+                  gcmdVerticalResolution:
+                    $ref: "#/components/schemas/gcmdVerticalResolution"
+                  individualNames:
+                    $ref: "#/components/schemas/individualNames"
+                  isGlobal:
+                    $ref: "#/components/schemas/isGlobal"
+                  keywords:
+                    $ref: "#/components/schemas/keywords"
+                  largerWorks:
+                    $ref: "#/components/schemas/largerWorks"
+                  legalConstraints:
+                    $ref: "#/components/schemas/legalConstraints"
+                  linkProtocol:
+                    $ref: "#/components/schemas/linkProtocol"
+                  links:
+                    $ref: "#/components/schemas/links"
+                  orderingInstructions:
+                    $ref: "#/components/schemas/orderingInstructions"
+                  organizationNames:
+                    $ref: "#/components/schemas/organizationNames"
+                  parentIdentifier:
+                    $ref: "#/components/schemas/parentIdentifier"
+                  serviceLinkProtocol:
+                    $ref: "#/components/schemas/serviceLinkProtocol"
+                  serviceLinks:
+                    $ref: "#/components/schemas/serviceLinks"
+                  spatialBounding:
+                    $ref: "#/components/schemas/geometry"
+                  stagedDate:
+                    $ref: "#/components/schemas/stagedDate"
+                  thumbnail:
+                    $ref: "#/components/schemas/thumbnail"
+                  title:
+                    $ref: "#/components/schemas/title"
+                  useLimitation:
+                    $ref: "#/components/schemas/useLimitation"
+                type: object
+                required:
+                  - fileIdentifier
+            required:
+              - attributes
+            type: object
           type: array
-        # meta:
-        #   $ref: "#/components/schemas/collectionMetadataObject"
+        meta:
+          properties:
+            totalGranules:
+              description: Count of the granules belonging to this collection record.
+              type: integer
+              minimum: 0
+              default: 0
+          type: object
+          required:
+            - totalGranules
+    getFlattenedGranuleByIdResponse:
       type: object
+      required:
+        - data
+      description: Full flattened granule record.
+      properties:
+        data:
+          items:
+            properties:
+              attributes:
+                properties:
+                  accessFeeStatement:
+                    $ref : "#/components/schemas/accessFeeStatement"
+                  beginDate:
+                    $ref : "#/components/schemas/beginDate"
+                  beginYear:
+                    $ref : "#/components/schemas/beginYear"
+                  citeAsStatements:
+                    $ref: "#/components/schemas/citeAsStatements"
+                  crossReferences:
+                    $ref: "#/components/schemas/crossReferences"
+                  dataFormat:
+                    $ref: "#/components/schemas/dataFormat"
+                  dataFormats:
+                    $ref: "#/components/schemas/dataFormats"
+                  description:
+                    $ref: "#/components/schemas/description"
+                  doi:
+                    $ref: "#/components/schemas/doi"
+                  dsmmAverage:
+                    $ref: "#/components/schemas/dsmmAverage"
+                  edition:
+                    $ref: "#/components/schemas/edition"
+                  endDate:
+                    $ref: "#/components/schemas/endDate"
+                  endYear:
+                    $ref: "#/components/schemas/endYear"
+                  fileIdentifier:
+                    $ref: "#/components/schemas/fileIdentifier"
+                  gcmdDataCenters:
+                    $ref: "#/components/schemas/gcmdDataCenters"
+                  gcmdHorizontalResolution:
+                    $ref: "#/components/schemas/gcmdHorizontalResolution"
+                  gcmdInstruments:
+                    $ref: "#/components/schemas/gcmdInstruments"
+                  gcmdLocations:
+                    $ref: "#/components/schemas/gcmdLocations"
+                  gcmdPlatforms:
+                    $ref: "#/components/schemas/gcmdPlatforms"
+                  gcmdProjects:
+                    $ref: "#/components/schemas/gcmdProjects"
+                  gcmdScience:
+                    $ref: "#/components/schemas/gcmdScience"
+                  gcmdScienceServices:
+                    $ref: "#/components/schemas/gcmdScienceServices"
+                  gcmdTemporalResolution:
+                    $ref: "#/components/schemas/gcmdTemporalResolution"
+                  gcmdVerticalResolution:
+                    $ref: "#/components/schemas/gcmdVerticalResolution"
+                  individualNames:
+                    $ref: "#/components/schemas/individualNames"
+                  internalParentIdentifier:
+                    $ref: "#/components/schemas/internalParentIdentifier"
+                  isGlobal:
+                    $ref: "#/components/schemas/isGlobal"
+                  keywords:
+                    $ref: "#/components/schemas/keywords"
+                  largerWorks:
+                    $ref: "#/components/schemas/largerWorks"
+                  legalConstraints:
+                    $ref: "#/components/schemas/legalConstraints"
+                  linkProtocol:
+                    $ref: "#/components/schemas/linkProtocol"
+                  links:
+                    $ref: "#/components/schemas/links"
+                  orderingInstructions:
+                    $ref: "#/components/schemas/orderingInstructions"
+                  organizationNames:
+                    $ref: "#/components/schemas/organizationNames"
+                  parentIdentifier:
+                    $ref: "#/components/schemas/parentIdentifier"
+                  serviceLinkProtocol:
+                    $ref: "#/components/schemas/serviceLinkProtocol"
+                  serviceLinks:
+                    $ref: "#/components/schemas/serviceLinks"
+                  spatialBounding:
+                    $ref: "#/components/schemas/geometry"
+                  stagedDate:
+                    $ref: "#/components/schemas/stagedDate"
+                  thumbnail:
+                    $ref: "#/components/schemas/thumbnail"
+                  title:
+                    $ref: "#/components/schemas/title"
+                  useLimitation:
+                    $ref: "#/components/schemas/useLimitation"
+                type: object
+                required:
+                  - fileIdentifier
+                  - parentIdentifier
+                  - internalParentIdentifier
+            required:
+              - attributes
+            type: object
+          type: array
+    getGranuleByIdResponse:
+      type: object
+      required:
+        - data
+      description: Full granule record.
+      properties:
+        data:
+          items:
+            properties:
+              attributes:
+                properties:
+                  beginDate:
+                    $ref : "#/components/schemas/beginDate"
+                  beginYear:
+                    $ref : "#/components/schemas/beginYear"
+                  citeAsStatements:
+                    $ref: "#/components/schemas/citeAsStatements"
+                  dataFormat:
+                    $ref: "#/components/schemas/dataFormat"
+                  dataFormats:
+                    $ref: "#/components/schemas/dataFormats"
+                  description:
+                    $ref: "#/components/schemas/description"
+                  doi:
+                    $ref: "#/components/schemas/doi"
+                  endDate:
+                    $ref: "#/components/schemas/endDate"
+                  endYear:
+                    $ref: "#/components/schemas/endYear"
+                  fileIdentifier:
+                    $ref: "#/components/schemas/fileIdentifier"
+                  gcmdDataCenters:
+                    $ref: "#/components/schemas/gcmdDataCenters"
+                  gcmdHorizontalResolution:
+                    $ref: "#/components/schemas/gcmdHorizontalResolution"
+                  gcmdInstruments:
+                    $ref: "#/components/schemas/gcmdInstruments"
+                  gcmdLocations:
+                    $ref: "#/components/schemas/gcmdLocations"
+                  gcmdPlatforms:
+                    $ref: "#/components/schemas/gcmdPlatforms"
+                  gcmdProjects:
+                    $ref: "#/components/schemas/gcmdProjects"
+                  gcmdScience:
+                    $ref: "#/components/schemas/gcmdScience"
+                  gcmdScienceServices:
+                    $ref: "#/components/schemas/gcmdScienceServices"
+                  gcmdTemporalResolution:
+                    $ref: "#/components/schemas/gcmdTemporalResolution"
+                  gcmdVerticalResolution:
+                    $ref: "#/components/schemas/gcmdVerticalResolution"
+                  internalParentIdentifier:
+                    $ref: "#/components/schemas/internalParentIdentifier"
+                  isGlobal:
+                    $ref: "#/components/schemas/isGlobal"
+                  keywords:
+                    $ref: "#/components/schemas/keywords"
+                  linkProtocol:
+                    $ref: "#/components/schemas/linkProtocol"
+                  links:
+                    $ref: "#/components/schemas/links"
+                  parentIdentifier:
+                    $ref: "#/components/schemas/parentIdentifier"
+                  serviceLinkProtocol:
+                    $ref: "#/components/schemas/serviceLinkProtocol"
+                  serviceLinks:
+                    $ref: "#/components/schemas/serviceLinks"
+                  spatialBounding:
+                    $ref: "#/components/schemas/geometry"
+                  stagedDate:
+                    $ref: "#/components/schemas/stagedDate"
+                  thumbnail:
+                    $ref: "#/components/schemas/thumbnail"
+                  title:
+                    $ref: "#/components/schemas/title"
+                type: object
+                required:
+                  - fileIdentifier
+                  - parentIdentifier
+                  - internalParentIdentifier
+            required:
+              - attributes
+            type: object
+          type: array
     gcmdDataCenters:
+      description: GCMD Data Center keywords. These keywords are normalized.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
     gcmdHorizontalResolution:
+      description: GCMD Horizontal Data Resolution keywords. These keywords are normalized.
+      items:
+        type: string
       type: array
     gcmdInstruments:
+      description: GCMD Instrument keywords. These keywords are normalized.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
     gcmdLocations:
+      description: GCMD Location and Place keywords. These keywords are normalized.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
     gcmdPlatforms:
+      description: GCMD Platform keywords. These keywords are normalized.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
     gcmdProjects:
+      description: GCMD Project keywords. These keywords are normalized.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
     gcmdScience:
+      description: GCMD Earth Science keyords. These keywords are normalized, and 'Earth Science' is removed from the values.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
     gcmdScienceServices:
+      description: GCMD Earth Science Services keywords. These keywords are normalized, and 'Earth Science Services' is removed from the values.
+      items:
+        type: string
       type: array
     gcmdTemporalResolution:
+      description: GCMD Temporal Data Resolution keywords. These keywords are normalized.
+      items:
+        type: string
       type: array
     gcmdVerticalResolution:
+      description: GCMD Vertical Data Resolution keywords. These keywords are normalized.
+      items:
+        type: string
       type: array
     geometry:
       description: "One geometry as defined by GeoJSON. Can be a point, multipoint, linestring, mutlilinestring, polygon, or multipolygon."
@@ -585,11 +925,11 @@ components:
       title: "Geometry Filter"
       type: object
     individualNames:
+      description: Individual names from all contacts and creators.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
-    collectionInfoResponse:
+    collectionInfoResponse: # TODO this isn't in alphebetical order like everything else
       additionalProperties: false
       description: "High-level information on a resource."
       properties:
@@ -653,21 +993,30 @@ components:
           type: array
       type: object
     internalParentIdentifier:
-      pattern: ^(.*)$
+      description: UUID of the parent collection record.
       type: string
     isGlobal:
+      description: This field is calculated upon ingest of the spatialBounding and set to **true** if and only if the data is a bounding box from [-180, 180] longitude and [-90 to 90] latitude.
       default: false
       type: boolean
     keywords:
+      description: Keywords from all vocabularies.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
-    largerWorks:
-      type: array
-    legalConstraints:
+    largerWorks: # TODO description
       items:
-        pattern: ^(.*)$
+        properties:
+          title:
+            type: string
+          date:
+            type: string
+          links:
+            $ref: "#/components/schemas/links"
+        type: object
+      type: array
+    legalConstraints: # TODO description
+      items:
         type: string
       type: array
     lineString:
@@ -683,19 +1032,37 @@ components:
     link:
       properties:
         linkDescription:
+          description: Long description of the link.
           type: string
         linkFunction:
-          type: string
+          description: A high level category the link belongs to.
+          oneOf:
+            - $ref: "#/components/schemas/linkFunction"
+            - type: string
         linkName:
+          description: Short description of the link. Equivalent to a title.
           type: string
         linkProtocol:
+          description: A protocol describing the type of link. This is often more specific than the URL protocol. 'THREDDS' and 'OPENDAP:HYRAX' are examples of these types of protocols.
+          example: HTTPS
           type: string
         linkUrl:
+          description: URL of the link.
           type: string
+      required:
+        - linkUrl
       type: object
+    linkFunction:
+      enum:
+        - information
+        - search
+        - download
+        - order
+        - offlineAccess
+      type: string
     linkProtocol:
+      description: DEPRECATED. List of protocols in the links.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
     links:
@@ -705,10 +1072,10 @@ components:
             $ref: "#/components/schemas/link"
       type: array
     orderingInstructions:
-      type: string
+      type: string # TODO or array? # TODO descrption
     organizationNames:
+      description: Organization names from all contacts, creators, and publishers.
       items:
-        pattern: ^(.*)$
         type: string
       type: array
     page:
@@ -726,7 +1093,7 @@ components:
           type: number
       type: object
     parentIdentifier:
-      pattern: ^(.*)$
+      description: The fileIdentifier or DOI of the parent record.
       type: string
     polygon:
       description: "An array of linear rings"
@@ -796,11 +1163,11 @@ components:
         attributes:
           properties:
             accessFeeStatement:
-              $ref: "#/components/schemas/accessFeeStatement"
+              $ref : "#/components/schemas/accessFeeStatement"
             beginDate:
-              $ref: "#/components/schemas/beginDate"
+              $ref : "#/components/schemas/beginDate"
             beginYear:
-              $ref: "#/components/schemas/beginYear"
+              $ref : "#/components/schemas/beginYear"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             crossReferences:
@@ -817,6 +1184,8 @@ components:
               $ref: "#/components/schemas/dsmmAverage"
             edition:
               $ref: "#/components/schemas/edition"
+            endDate:
+              $ref: "#/components/schemas/endDate"
             endYear:
               $ref: "#/components/schemas/endYear"
             fileIdentifier:
@@ -843,8 +1212,6 @@ components:
               $ref: "#/components/schemas/gcmdVerticalResolution"
             individualNames:
               $ref: "#/components/schemas/individualNames"
-            internalParentIdentifier:
-              $ref: "#/components/schemas/internalParentIdentifier"
             isGlobal:
               $ref: "#/components/schemas/isGlobal"
             keywords:
@@ -878,22 +1245,36 @@ components:
             useLimitation:
               $ref: "#/components/schemas/useLimitation"
           type: object
+          required:
+            - fileIdentifier
       required:
         - attributes
-        - id
-        - type
+        # - id
+        # - type
       type: object
     searchDataSummaryObject:
       properties:
         attributes:
           description: "Summary of the result. If search specified summary:false, this could be the entire result instead."
           properties:
+            beginDate:
+              description: Begin date of temporal bounding. This will be null if the record has a year further back than -100,000,000.
+              format: date
+              type: string
             beginYear:
-              $ref: "#/components/schemas/beginYear"
+              description: Begin year of temporal bounding.
+              format: int64
+              type: integer
+            endDate:
+              description: End date of temporal bounding. This will be null if the record has a year further back than -100,000,000.
+              format: date
+              type: string
+            endYear:
+              description: End year of temporal bounding.
+              format: int64
+              type: integer
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
-            endYear:
-              $ref: "#/components/schemas/endYear"
             links:
               $ref: "#/components/schemas/links"
             serviceLinks:
@@ -938,21 +1319,31 @@ components:
           $ref: "#/components/schemas/searchMetadataObject"
       type: object
     serviceLinkProtocol:
+      description: DEPRECATED. No longer in use. Expect an empty array.
+      items:
+        type: string
       type: array
     serviceLinks:
-      properties:
-        alternateTitle:
-          type: string
-        description:
-          type: string
-        links:
-          items:
-            $ref: "#/components/schemas/link"
-          type: array
-        title:
-          type: string
-      type: object
+      description: Links to services related to this record.
+      items:
+        properties:
+          alternateTitle:
+            type: string
+          description:
+            description: Long description of the service referenced by this record.
+            type: string
+          links:
+            items:
+              $ref: "#/components/schemas/link"
+            type: array
+          title:
+            description: Title of the service referenced by this record.
+            type: string
+        type: object
+      type: array
     stagedDate:
+      description: (DEPRECATED) Unix timestamp of when ISO metadata record was ingested. This field exists entirely for internal management purposes. In practice it is the timestamp of when the data was loaded or most recently updated.
+      format: int64 # it's ES's epoch_millis date format
       type: integer
     textQuery:
       additionalProperties: false
@@ -972,14 +1363,13 @@ components:
       title: "Text Query"
       type: object
     thumbnail:
-      pattern: ^(.*)$
+      description: URL to a thumbnail graphic for this record.
       type: string
     title:
-      pattern: ^(.*)$
+      description: Title of this record.
       type: string
     useLimitation:
-      pattern: ^(.*)$
-      type: string
+      type: string # TODO is this an array? look for an example # TODO description
     yearFilter:
       additionalProperties: false
       description: "Filter results by before, after, or a date range. Differs from the Datetime Filter in that it handles year values only."
