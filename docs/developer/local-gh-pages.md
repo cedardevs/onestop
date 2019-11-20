@@ -29,6 +29,11 @@ Configuration file: /Users/neo/git/onestop/docs/_config.yml
   Server running... press ctrl-c to stop.
 ```
 
+Finally, when you're editing a page locally, you will need to manually reload pages to see your edits as Jekyll does not auto-reload for you.
+
+## Page Standards
+Adding estimated reading time to articles -- https://niram.org/read/
+
 ## Errors Encountered
 If you run into something frustrating somewhere and figure out how to fix it, save your teammates some grief and add your fix below!
 ### Liquid Error When No One's Using Liquid To Begin With...
