@@ -58,7 +58,7 @@ class JsonValidator {
       def paths = ref.textValue().replace('#/', '').split('/')
       JsonNode deref = apiSpec
       paths.each{
-        deref = deref.findValue(it)
+        deref = deref.get(it)
       }
       ObjectNode parent = schemaJsonObj.findParent('$ref')
       parent.remove('$ref')
