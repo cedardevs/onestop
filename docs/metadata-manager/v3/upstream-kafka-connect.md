@@ -1,5 +1,5 @@
 ## Integrating upstream application to the underlying Kafka system
-Metadata can be published into the OneStop system in two different ways, using Registry application rest api See [onestop-metadata-loading](docs/metadata-manager/v3/onestop-metadata-loading.md) documentation for detail or directly 
+Metadata can be published into the OneStop system in two different ways, using Registry application rest api See [onestop-metadata-loading](onestop-metadata-loading.md) documentation for detail or directly 
 integrating upstream applications to the underline OneStop kafka cluster.  
 This documentation will take a look at some approaches for integrating upstream applications and Kafka, and look at some examples regarding the tools Kafka supports.
 
@@ -24,10 +24,11 @@ See [Apache NiFi website](https://nifi.apache.org/) page for details.
 A simple use case of NiFi is to act as a Kafka producer, which can bring data from sources directly to a NiFi instance, which can then deliver 
 data to the appropriate Kafka topic. Each instance of PublishKafka could have concurrent tasks executing and each of this tasks publishes messages independently.
 
-Sample template for generating a workflow to produce an avro format data to kafka. 
+Here is the NiFi template with two processors and controller services configuration:
 
 ![sample kafka publishing flow](sampleCode/nifiKafkaFlow.png)
 
+The above example uses GenerateFlowFile processor to create FlowFiles of random data and PublishKafkaRecord processor with the Confluent Schema Registry to publish records to kafka.   
 Sample Nifi template [download the sample nifi template](sampleCode/nifi-kafkaPublishing-template.xml).  
 
 #### Nifi as bidirectional Data Flows
@@ -101,6 +102,8 @@ public class KafkaProducerTest {
   }
 }
 ```
+The builder is setting the require fields which is define here in the [Input avro schema definition](https://github.com/cedardevs/schemas/blob/master/schemas-core/src/main/resources/avro/psi/input.avsc).
+
 see [sample kafka producer java code](sampleCode/kafkaSampleTest.java) file for detail.
 
 ### Kafka connects
