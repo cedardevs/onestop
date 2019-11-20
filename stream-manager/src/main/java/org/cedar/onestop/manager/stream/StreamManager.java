@@ -8,8 +8,10 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
+import org.cedar.onestop.kafka.common.conf.AppConfig;
+import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
-import org.cedar.onestop.manager.config.ManagerConfig;
+import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.cedar.onestop.manager.util.RecordParser;
 import org.cedar.onestop.manager.util.RoutingUtils;
 import org.cedar.schemas.analyze.Analyzers;
@@ -31,7 +33,7 @@ import static org.cedar.onestop.kafka.common.constants.Topics.*;
 public class StreamManager {
   private static final Logger log = LoggerFactory.getLogger(StreamManager.class);
 
-  public static KafkaStreams buildStreamsApp(ManagerConfig config) {
+  public static KafkaStreams buildStreamsApp(AppConfig config) {
     var killSwitch = new CompletableFuture<KafkaStreams.State>();
     killSwitch.thenAcceptAsync((state) -> {
       throw new IllegalStateException("KafkaStreams app entered bad state: " + state);
@@ -93,13 +95,17 @@ public class StreamManager {
     }
   }
 
-  static Properties streamsConfig(String appId, ManagerConfig config) {
+  static Properties streamsConfig(String appId, AppConfig config) {
+    // Filter to only valid config values -- Streams config + possible internal Producer & Consumer config
+    var kafkaConfigs = DataUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
+    var filteredConfigs = DataUtils.filterMapKeys(KafkaConfigNames.streams, kafkaConfigs);
+
     log.info("Building kafka streams appConfig for {}", appId);
     Properties streamsConfiguration = new Properties();
     streamsConfiguration.put(APPLICATION_ID_CONFIG, appId);
     streamsConfiguration.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     streamsConfiguration.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
-    streamsConfiguration.putAll(config.getCurrentConfigMap());
+    streamsConfiguration.putAll(filteredConfigs);
     return streamsConfiguration;
   }
 }

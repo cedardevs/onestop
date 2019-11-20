@@ -1,0 +1,6 @@
+---
+kafka:
+  bootstrap:
+    servers: "http://localhost:9092"
+test:
+  default: thetestvalue

@@ -1,0 +1,130 @@
+package org.cedar.onestop.kafka.common.conf;
+
+import org.cedar.onestop.kafka.common.util.DataUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+
+public class AppConfig {
+  private static final Logger log = LoggerFactory.getLogger(AppConfig.class);
+
+  private final Map<String, Object> defaults;
+  private final Map<Object, Object> systemProperties;
+  private final Map<String, String> environmentVariables;
+  private final Map<String, Object> configFileProperties;
+  private final Map<String, Object> combined;
+
+  public AppConfig() {
+    this(null);
+  }
+
+  public AppConfig(String filePath) {
+    this.defaults = getDefaults();
+    this.systemProperties = System.getProperties();
+    this.environmentVariables = getEnv();
+    this.configFileProperties = parseYamlConfigFile(filePath);
+    this.combined = buildCombinedMap();
+  }
+
+  private Map<String, Object> buildCombinedMap() {
+    // Starting with defaults, merge in order of least --> most preferred props (defaults, sys, env, file).
+    var combinedConfig = new LinkedHashMap<>(defaults);
+    systemProperties.forEach((k, v) -> combinedConfig.put(normalizeKey(k.toString()), v));
+    environmentVariables.forEach((k, v) -> combinedConfig.put(normalizeKey(k), v));
+    configFileProperties.forEach((k, v) -> combinedConfig.put(normalizeKey(k), v));
+
+    if (log.isDebugEnabled()) {
+      log.debug("Combined app config:");
+      combinedConfig.forEach((s, o) -> log.debug("  " + s + ": " + o));
+    }
+
+    return combinedConfig;
+  }
+
+  private static Map<String, Object> parseYamlConfigFile(String filePath) {
+    if (filePath == null || filePath.isBlank()) {
+      return Collections.emptyMap();
+    }
+    try {
+      Yaml yaml = new Yaml();
+      InputStream inputStream = Files.newInputStream(Path.of(filePath));
+      Map<String, Object> configFileMap = yaml.load(inputStream);
+      return DataUtils.consolidateNestedKeysInMap(null, ".", configFileMap);
+    }
+    catch (IOException e) {
+      log.error("Cannot open config file path [ " + filePath + " ]. Using defaults and/or system/environment variables.");
+    }
+    catch (Exception e) {
+      // In case there's any other exception trying to parse the file...
+      log.error("Cannot parse config file path [ " + filePath + " ] as YAML. Using defaults and/or system/environment variables.");
+    }
+    return new LinkedHashMap<>();
+  }
+
+  private static Map<String, Object> getDefaults() {
+    Yaml yaml = new Yaml();
+    InputStream input = ClassLoader.getSystemClassLoader().getResourceAsStream("application.yml");
+    if (input == null) {
+      return Collections.emptyMap();
+    }
+    else {
+      Map<String, Object> config = yaml.load(input);
+      return DataUtils.consolidateNestedKeysInMap(null, ".", config);
+    }
+  }
+
+  private static Map<String, String> getEnv() {
+    try {
+      return System.getenv();
+    }
+    catch (SecurityException e) {
+      log.error("Application does not have permission to read environment variables. Using defaults.");
+      return Collections.emptyMap();
+    }
+  }
+
+  // lower case, replace '_' and '-' with '.'
+  static private String normalizeKey(String key) {
+    return Optional.ofNullable(key)
+        .map(String::toLowerCase)
+        .map(s -> s.replaceAll("[_-]", "."))
+        .orElse(null);
+  }
+
+  /**
+   * Returns an unmodifiable map reflecting the current internal map of config values. Future changes to
+   * the internal map will not be reflected here.
+   *
+   * @return Map containing entries of ManagerConfig's map
+   */
+  public Map<String, Object> getCurrentConfigMap() {
+    return Map.copyOf(combined);
+  }
+
+  public int size() {
+    return combined.size();
+  }
+
+  public boolean isEmpty() {
+    return combined.isEmpty();
+  }
+
+  public boolean containsKey(Object key) {
+    return combined.containsKey(key);
+  }
+
+  public boolean containsValue(Object value) {
+    return combined.containsValue(value);
+  }
+
+  public Object get(Object key) {
+    return combined.get(key);
+  }
+
+}
