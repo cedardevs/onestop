@@ -30,13 +30,38 @@ paths:
       tags:
         - collection
       summary: Get Collection Info
+      description: Get the total number of collections available.
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/collectionInfoResponse'
+                additionalProperties: false
+                properties:
+                  data:
+                    minItems: 1
+                    maxItems: 1
+                    items:
+                      required:
+                        - count
+                        - id
+                        - type
+                      additionalProperties: false
+                      properties:
+                        count:
+                          description: Number of records indexed
+                          type: integer
+                          default: 0
+                        id:
+                          $ref: '#/components/schemas/collectionEnum'
+                        type:
+                          enum:
+                            - count
+                          type: string
+                      type: object
+                    type: array
+                type: object
   /collection/{id}:
     head:
       operationId: headCollectionById
@@ -150,13 +175,38 @@ paths:
       tags:
         - granule
       summary: Get Granule Info
+      description: Get the total number of granules available.
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/granuleInfoResponse'
+                additionalProperties: false
+                properties:
+                  data:
+                    minItems: 1
+                    maxItems: 1
+                    items:
+                      required:
+                        - count
+                        - id
+                        - type
+                      additionalProperties: false
+                      properties:
+                        count:
+                          description: Number of records indexed
+                          type: integer
+                          default: 0
+                        id:
+                          $ref: '#/components/schemas/granuleEnum'
+                        type:
+                          enum:
+                            - count
+                          type: string
+                      type: object
+                    type: array
+                type: object
   /granule/{id}:
     head:
       operationId: headGranuleById
@@ -250,13 +300,38 @@ paths:
       tags:
         - flattened-granule
       summary: Get Flattened Granule Info
+      description: Get the total number of flattened granules available.
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/flattenedGranuleInfoResponse'
+                additionalProperties: false
+                properties:
+                  data:
+                    minItems: 1
+                    maxItems: 1
+                    items:
+                      required:
+                        - count
+                        - id
+                        - type
+                      additionalProperties: false
+                      properties:
+                        count:
+                          description: Number of records indexed
+                          type: integer
+                          default: 0
+                        id:
+                          $ref: '#/components/schemas/flattenedGranuleEnum'
+                        type:
+                          enum:
+                            - count
+                          type: string
+                      type: object
+                    type: array
+                type: object
   /flattened-granule/{id}:
     head:
       operationId: headFlattenedGranuleById
@@ -1328,71 +1403,6 @@ components:
           type: integer
       type: object
 
-
-
-    collectionInfoResponse: # TODO this isn't in alphebetical order like everything else
-      additionalProperties: false
-      description: "High-level information on a resource."
-      properties:
-        data:
-          items:
-            additionalProperties: false
-            properties:
-              count:
-                type: integer
-              id:
-                enum:
-                  - collection
-                type: string
-              type:
-                enum:
-                  - count
-                type: string
-            type: object
-          type: array
-      type: object
-    flattenedGranuleInfoResponse:
-      additionalProperties: false
-      description: "High-level information on a resource."
-      properties:
-        data:
-          items:
-            additionalProperties: false
-            properties:
-              count:
-                type: integer
-              id:
-                enum:
-                  - flattened-granule
-                type: string
-              type:
-                enum:
-                  - count
-                type: string
-            type: object
-          type: array
-      type: object
-    granuleInfoResponse:
-      additionalProperties: false
-      description: "High-level information on a resource."
-      properties:
-        data:
-          items:
-            additionalProperties: false
-            properties:
-              count:
-                type: integer
-              id:
-                enum:
-                  - granule
-                type: string
-              type:
-                enum:
-                  - count
-                type: string
-            type: object
-          type: array
-      type: object
 
     requestBody:
       additionalProperties: false
