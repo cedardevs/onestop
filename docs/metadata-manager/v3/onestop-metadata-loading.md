@@ -265,15 +265,15 @@ Unsuccessful operations will return a response body with an error message format
 #### OneStop Required fields
 For a records to be indexed and searchable by the downstream OneStop client, a record must include the follow discovery fields: 
 
-####required Collection fields:
-    - fileIdentifier
-    - title
+Required Collection fields:
+- fileIdentifier
+- title
     
-####required Granule fields:
-    - fileIdentifier
-    - parentIdentifier
-    - hierarchyLevelName
-    - title
+Required Granule fields:
+- fileIdentifier
+- parentIdentifier
+- hierarchyLevelName
+- title
     
 ### Integrating upstream application to the underlying Kafka system
 
