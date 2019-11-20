@@ -813,8 +813,38 @@ components:
       required:
         - attributes
       type: object
-
     # Filters
+    requestBody:
+      additionalProperties: false
+      description: "The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata. Collections are returned by default unless a collection filter is included, resulting in granules being returned."
+      properties:
+        facets:
+          default: false
+          description: "Flag to request counts of results by GCMD keywords in addition to results."
+          type: boolean
+        filters:
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/dateTimeFilter"
+              - $ref: "#/components/schemas/yearFilter"
+              - $ref: "#/components/schemas/facetFilter"
+              - $ref: "#/components/schemas/geometryFilter"
+              - $ref: "#/components/schemas/collectionFilter"
+              - $ref: "#/components/schemas/excludeGlobalFilter"
+          type: array
+        page:
+          $ref: "#/components/schemas/page"
+        queries:
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/textQuery"
+          type: array
+        summary:
+          default: true
+          description: "Flag to request summary of search results instead of full set of attributes."
+          type: boolean
+      title: "Search Request"
+      type: object
     collectionFilter:
       additionalProperties: false
       description: "Filter granules by specific collection(s). If multiple collection filters are used, or multiple values in a single collection filter, then the search is performed with a logical OR."
@@ -996,7 +1026,6 @@ components:
         - type
       title: "Year Filter"
       type: object
-
     # Record field schemas
     accessFeeStatement: # TODO is this an array? # TODO description
       type: string
@@ -1269,7 +1298,6 @@ components:
     uuid:
       description: UUID for this record.
       type: string
-
     # GeoJSON
     LineString:
       properties:
@@ -1352,9 +1380,13 @@ components:
         - minItems: 2
       description: "An array of two or more positions"
     linearRing:
+      # type: array
       allOf:
         - $ref: "#/components/schemas/positionArray"
         - minItems: 4
+      # items:
+      #   - $ref: "#/components/schemas/position"
+      # minItems: 4
       description: "An array of four positions where the first equals the last"
     polygon:
       description: "An array of linear rings"
@@ -1373,7 +1405,6 @@ components:
       items:
         $ref: "#/components/schemas/position"
       type: array
-
     # HELPER SCHEMAS
     granuleEnum:
       title: enum
@@ -1393,48 +1424,7 @@ components:
       enum:
         - collection
       type: string
-
-
     # TODO misc
-
-    collectionMetadataObject:
-      properties:
-        totalGranules:
-          type: integer
-      type: object
-
-
-    requestBody:
-      additionalProperties: false
-      description: "The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata. Collections are returned by default unless a collection filter is included, resulting in granules being returned."
-      properties:
-        facets:
-          default: false
-          description: "Flag to request counts of results by GCMD keywords in addition to results."
-          type: boolean
-        filters:
-          items:
-            anyOf:
-              - $ref: "#/components/schemas/dateTimeFilter"
-              - $ref: "#/components/schemas/yearFilter"
-              - $ref: "#/components/schemas/facetFilter"
-              - $ref: "#/components/schemas/geometryFilter"
-              - $ref: "#/components/schemas/collectionFilter"
-              - $ref: "#/components/schemas/excludeGlobalFilter"
-          type: array
-        page:
-          $ref: "#/components/schemas/page"
-        queries:
-          items:
-            oneOf:
-              - $ref: "#/components/schemas/textQuery"
-          type: array
-        summary:
-          default: true
-          description: "Flag to request summary of search results instead of full set of attributes."
-          type: boolean
-      title: "Search Request"
-      type: object
     searchMetadataObject:
       properties:
         facets: # TODO describe this sucker!
@@ -1446,7 +1436,6 @@ components:
           description: "total number of results matching the search"
           type: integer
       type: object
-
 
   examples:
     payload0:

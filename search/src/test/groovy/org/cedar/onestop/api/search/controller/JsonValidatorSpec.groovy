@@ -234,7 +234,7 @@ class JsonValidatorSpec extends Specification {
     'geometry' | 'point has too many values' |
         """{"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [0, 0,0]}}"""
     'geometry' | 'polygon exceeds allowed lat/long bounds' | """{"type": "geometry", "relation": "contains", "geometry": {"type": "Polygon", "coordinates": [[-100,100],[50,200],[400,0],[-100,100]]}}"""
-'geometry' | 'polygon has too few points' | """{"type": "geometry", "relation": "contains", "geometry": {"type": "Polygon", "coordinates": [[0,0]]}}"""
+    'geometry' | 'polygon has too few points' | """{"type": "geometry", "relation": "contains", "geometry": {"type": "Polygon", "coordinates": [[0,0]]}}"""
   }
 
   def 'valid search requests: #desc'() {
