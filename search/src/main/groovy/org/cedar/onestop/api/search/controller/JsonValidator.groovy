@@ -40,19 +40,30 @@ class JsonValidator {
     ObjectNode schemaJsonObj = (ObjectNode)schemaJson
 
     // dereference the requestBody schema, so it can be used correctly for validation
-    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].each{ // TODO should be while loop, but this does, hilariously, cover it
+    // [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].each{ // TODO should be while loop, but this does, hilariously, cover it
       // TODO probably horribly inefficient - cache this ?
     JsonNode ref = schemaJson.findValue('$ref')
-    if(ref != null) {
+    // if(ref != null) {
+    //   def paths = ref.textValue().replace('#/', '').split('/')
+    //   JsonNode deref = apiSpec
+    //   paths.each{
+    //     deref = deref.findValue(it)
+    //   }
+    //   ObjectNode parent = schemaJsonObj.findParent('$ref')
+    //   parent.remove('$ref')
+    //   parent.setAll(deref)
+    //   }
+    // }
+    while(ref != null) {
       def paths = ref.textValue().replace('#/', '').split('/')
       JsonNode deref = apiSpec
       paths.each{
-        deref = deref.findValue(it)
+        deref = deref.get(it)
       }
       ObjectNode parent = schemaJsonObj.findParent('$ref')
       parent.remove('$ref')
       parent.setAll(deref)
-      }
+      ref = schemaJson.findValue('$ref')
     }
 
     final factory = JsonSchemaFactory.byDefault()
