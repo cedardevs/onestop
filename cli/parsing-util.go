@@ -32,26 +32,45 @@ func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	filters := []string{}
 	queries := []string{}
 
-	dateTimeFilter := parseDateArgs(params)
-	filters = append(filters, dateTimeFilter...)
-	startEndTimeFilter := parseStartAndEndTime(params)
-	filters = append(filters, startEndTimeFilter...)
-	geoSpatialFilter := parsePolygon(params)
-	filters = append(filters, geoSpatialFilter...)
-	parentIdentifierQuery := parseParentIdentifier(params)
-	queries = append(queries, parentIdentifierQuery...)
-	fileIdentifierQuery := parseFileIdentifier(params)
-	queries = append(queries, fileIdentifierQuery...)
-	regexQuery := parseParentIdentifierRegex(params)
-	queries = append(queries, regexQuery...)
-	query := parseTextQuery(params)
-	queries = append(queries, query...)
-	requestMeta := parseRequestMeta(params)
+	isSummaryWithType := params.GetString("available") == "true" && len(params.GetString("type")) > 0
 
-	if len(queries) > 0 || len(filters) > 0 {
-		req.AddHeader("content-type", "application/json")
-		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
+	if isSummaryWithType { // then it's a GET, not a POST
+		req.BodyString("")
+	} else {
+		dataCenterFacetFilter := parseAvailableFlag(params)
+		filters = append(filters, dataCenterFacetFilter...)
+		dateTimeFilter := parseDateArgs(params)
+		filters = append(filters, dateTimeFilter...)
+		startEndTimeFilter := parseStartAndEndTime(params)
+		filters = append(filters, startEndTimeFilter...)
+		geoSpatialFilter := parsePolygon(params)
+		filters = append(filters, geoSpatialFilter...)
+		parentIdentifierQuery := parseParentIdentifier(params)
+		queries = append(queries, parentIdentifierQuery...)
+		fileIdentifierQuery := parseFileIdentifier(params)
+		queries = append(queries, fileIdentifierQuery...)
+		regexQuery := parseParentIdentifierRegex(params)
+		queries = append(queries, regexQuery...)
+		query := parseTextQuery(params)
+		queries = append(queries, query...)
+		requestMeta := parseRequestMeta(params)
+
+		if len(queries) > 0 || len(filters) > 0 {
+			req.AddHeader("content-type", "application/json")
+			req.BodyString("{\"summary\":false, \"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
+		} else {
+			req.AddHeader("content-type", "application/json")
+			req.BodyString("{\"summary\":false, " + requestMeta + "}")
+		}
 	}
+}
+
+func parseAvailableFlag(params *viper.Viper) []string {
+	facetFilter := []string{}
+	if params.GetString(availableFlag) == "true" {
+		facetFilter = []string{"{\"type\":\"facet\",\"name\":\"dataCenters\",\"values\":[\"DOC/NOAA/NESDIS/STAR > Center for Satellite Applications and Research, NESDIS, NOAA, U.S. Department of Commerce\"]}"}
+	}
+	return facetFilter
 }
 
 func parseRequestMeta(params *viper.Viper) string {
@@ -68,15 +87,16 @@ func parseRequestMeta(params *viper.Viper) string {
 }
 
 func parseStartAndEndTime(params *viper.Viper) []string {
-
+	filter := []string{}
 	startTimeArg, endTimeArg := parseTimeFlags(params)
 	beginDateTime, endDateTime := formatBeginAndEnd(startTimeArg, endTimeArg)
 	beginDateTimeFilter, endDateTimeFilter := formatDateRange(beginDateTime, endDateTime)
-	if len(beginDateTimeFilter) == 0 && len(endDateTimeFilter) == 0 {
-		return []string{}
+
+	if len(beginDateTimeFilter) > 0 || len(endDateTimeFilter) > 0 {
+		filter = []string{"{\"type\":\"datetime\", " + beginDateTimeFilter + endDateTimeFilter + "}"}
 	}
 
-	return []string{"{\"type\":\"datetime\", " + beginDateTimeFilter + endDateTimeFilter + "}"}
+	return filter
 }
 
 func parseTimeFlags(params *viper.Viper) (string, string) {
@@ -188,9 +208,6 @@ func parseDateArgs(params *viper.Viper) []string {
 
 func parseParentIdentifier(params *viper.Viper) []string {
 	parentId := params.GetString("type")
-	if len(parentId) <= 0 {
-		parentId = params.GetString("available")
-	}
 	if len(parentId) == 0 {
 		return []string{}
 	}
