@@ -17,7 +17,7 @@ class JsonValidatorSpec extends Specification {
     def jsonSlurper = new JsonSlurper()
     Map params = jsonSlurper.parseText(request)
     try {
-      return JsonValidator.validateRequestAgainstSpec(params, schema)
+      return JsonValidator.validateRequestAgainstSpec(params, new SchemaParser(schema))
     } catch (e) {
       println("failed with: ${request}")
       println(e)
@@ -52,6 +52,29 @@ class JsonValidatorSpec extends Specification {
 
     then: "The validation is successful"
     globalReport.success
+  }
+
+  def 'SchemaParser effectively caches the dereferenced schema'() {
+    given:
+    def singleQuery = """{ "filters": [ {"type": "year", "before": 1000, "after": -1234567890} ] }"""
+    def schemaParser = Spy(SchemaParser, constructorArgs: ["requestBody"])
+
+    when:
+    JsonValidator.validateRequestAgainstSpec([:], schemaParser)
+    JsonValidator.validateRequestAgainstSpec([:], schemaParser)
+    JsonValidator.validateRequestAgainstSpec([:], schemaParser)
+    JsonValidator.validateRequestAgainstSpec([:], schemaParser)
+    JsonValidator.validateRequestAgainstSpec([:], schemaParser)
+    JsonValidator.validateRequestAgainstSpec([:], schemaParser)
+    JsonValidator.validateRequestAgainstSpec([:], schemaParser)
+    JsonValidator.validateRequestAgainstSpec([:], schemaParser)
+    JsonValidator.validateRequestAgainstSpec([:], schemaParser)
+    JsonValidator.validateRequestAgainstSpec([:], schemaParser)
+
+    then:
+    10 * schemaParser.validate(_)
+    10 * schemaParser.checkSpec()
+    1 * schemaParser.loadSpec()
   }
 
   def 'valid pagination: #desc'() {
