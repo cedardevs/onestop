@@ -11,15 +11,15 @@ If you're unsure of something pertaining to the query syntax, feel free to searc
 ## Features
 All of the following features can be used in combination with each other to adjust the match precision of your query to your results. Introduce some slack by modifying the proximity and fuzziness match levels, or narrow down the specifics with boolean operators and explicit fields.
 
+- [Default Query Behavior](#default-query-behavior)
 - [Terms, Phrases, And Groups](#terms-phrases-and-groups)
 - [Boolean Operators](#boolean-operators)
 - [Fuzziness Matching](#fuzziness-matching)
 - [Proximity Searches](#proximity-searches)
 - [Boosting Search Clause Relevance](#boosting-search-clause-relevance)
 - [Search By Field Name](#search-by-field-name)
-  - [Specifying Ranges](#specifying-ranges)
+- [Wildcards](#wildcards)
 - [Regular Expressions](#regular-expressions)
-  - [Wildcards In Searches](#wildcards-in-searches)
 
 ### Default Query Behavior
 The primary goal of the OneStop query is to enable the user to quickly discover relevant results with nothing more than a simple term or phrase as input. Given that broad goal, the default behavior of the query is to look for *case-insensitive* matches against the most generically informative and universally populated fields of the metadata: primarily `title`, `description`, and `keywords`. These fields have different weights that will affect the overall relevance score of a match with your query text: matches in the `title` hold more weight than those in `keywords`, which holds more weight than those in `description`. This is done based on the assumption that the more succinct a field is, the more critical every word in that field becomes. However, based on user feedback and evolution in metadata parsing, the default fields searched against will always contain more than just these three fields. 
