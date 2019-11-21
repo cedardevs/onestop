@@ -813,6 +813,7 @@ components:
       required:
         - attributes
       type: object
+
     # Filters
     requestBody:
       additionalProperties: false
@@ -1026,6 +1027,7 @@ components:
         - type
       title: "Year Filter"
       type: object
+
     # Record field schemas
     accessFeeStatement: # TODO is this an array? # TODO description
       type: string
@@ -1298,6 +1300,7 @@ components:
     uuid:
       description: UUID for this record.
       type: string
+
     # GeoJSON
     LineString:
       properties:
@@ -1405,6 +1408,7 @@ components:
       items:
         $ref: "#/components/schemas/position"
       type: array
+
     # HELPER SCHEMAS
     granuleEnum:
       title: enum
@@ -1424,11 +1428,109 @@ components:
       enum:
         - collection
       type: string
+
     # TODO misc
     searchMetadataObject:
       properties:
-        facets: # TODO describe this sucker!
-          description: "included if search request specified facets:true"
+        facets:
+          description: "Included based on the 'facets' flag in the request. These are aggregations indicating total counts for a variety of facets that can be used in the facet filter to refine results."
+          properties:
+            dataFormats:
+              additionalProperties:
+                description: The key / property name is a Data Format. These are always upper case. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            linkProtocols:
+              additionalProperties:
+                description: The key / property name is a Protocl. These are always upper case. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            serviceLinkProtocols:
+              additionalProperties:
+                description: The key / property name is a Protocl. These are always upper case. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            science:
+              additionalProperties:
+                description: The key / property name is a GCMD Earth Science keyword. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            services:
+              additionalProperties:
+                description: The key / property name is a GCMD Earth Science Services keyword. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            locations:
+              additionalProperties:
+                description: The key / property name is a GCMD Location or Place keyword. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            platforms:
+              additionalProperties:
+                description: The key / property name is a GCMD Platform keyword. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            projects:
+              additionalProperties:
+                description: The key / property name is a GCMD Project keyword. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            dataCenters:
+              additionalProperties:
+                description: The key / property name is a GCMD Data Center keyword. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            horizontalResolution:
+              additionalProperties:
+                description: The key / property name is a GCMD Horizontal Data Resolution keyword. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            verticalResolution:
+              additionalProperties:
+                description: The key / property name is a GCMD Vertical Data Resolution keyword. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
+            temporalResolution:
+              additionalProperties:
+                description: The key / property name is a GCMD Temporal Data Resolution keyword. # TODO how do I word this?
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    minimum: 1
           type: object
         took: # TODO add a description
           type: integer
