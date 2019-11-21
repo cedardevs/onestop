@@ -4,7 +4,12 @@ import (
 	"github.com/danielgtaylor/openapi-cli-generator/cli"
 )
 
+//flags in flags.go
 func setOneStopFlags() {
+	cli.RegisterBefore(searchCollectionCmd, parseOneStopRequestFlags)
+	cli.RegisterBefore(searchGranuleCmd, parseOneStopRequestFlags)
+	cli.RegisterBefore(searchFlattenedGranuleCmd, parseOneStopRequestFlags)
+
 	//func AddFlag(path, name, short, description string, defaultValue interface{})
 	cli.AddFlag(searchCollectionCmd, textQueryFlag, textQueryShortFlag, queryDescription, "")
 	cli.AddFlag(searchGranuleCmd, textQueryFlag, textQueryShortFlag, queryDescription, "")
@@ -17,10 +22,6 @@ func setOneStopFlags() {
 	cli.AddFlag(searchCollectionCmd, spatialFilterFlag, spatialFilterShortFlag, areaDescription, "")
 	cli.AddFlag(searchGranuleCmd, spatialFilterFlag, spatialFilterShortFlag, areaDescription, "")
 	cli.AddFlag(searchFlattenedGranuleCmd, spatialFilterFlag, spatialFilterShortFlag, areaDescription, "")
-
-	cli.RegisterBefore(searchCollectionCmd, parseOneStopRequestFlags)
-	cli.RegisterBefore(searchGranuleCmd, parseOneStopRequestFlags)
-	cli.RegisterBefore(searchFlattenedGranuleCmd, parseOneStopRequestFlags)
 
 	cli.AddFlag(searchCollectionCmd, maxFlag, maxShortFlag, maxDescription, "")
 	cli.AddFlag(searchGranuleCmd, maxFlag, maxShortFlag, maxDescription, "")
