@@ -198,11 +198,11 @@ const MapFilter = ({
     )
   }
 
-  const mapModal = showMap ? (
-    <ModalContent context={MapModalContext}>
+  const mapModal = (
+    <ModalContent context={MapModalContext} zIndex={3}>
       <InteractiveMap />
     </ModalContent>
-  ) : null
+  )
 
   return (
     <div>

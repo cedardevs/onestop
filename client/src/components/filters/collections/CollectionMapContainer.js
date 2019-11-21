@@ -1,19 +1,19 @@
 import {connect} from 'react-redux'
-import Map from '../spatial/Map'
 import {
-  collectionUpdateGeometry,
   collectionRemoveGeometry,
+  collectionUpdateGeometry,
 } from '../../../actions/routing/CollectionSearchStateActions'
 import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 import {withRouter} from 'react-router'
+import MapFxn from '../spatial/MapFxn'
 
 const mapStateToProps = state => {
   const {geoJSON} = state.search.collectionFilter
   return {
     filterType: 'collectionFilter',
     geoJsonSelection: geoJSON,
-    showMap: state.layout.showMap,
+    open: state.layout.showMap,
   }
 }
 
@@ -28,7 +28,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 }
 
 const CollectionMapContainer = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(Map)
+  connect(mapStateToProps, mapDispatchToProps)(MapFxn)
 )
 
 export default CollectionMapContainer
