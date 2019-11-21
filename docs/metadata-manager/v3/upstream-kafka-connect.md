@@ -1,13 +1,18 @@
 ## Integrating upstream application to the underlying Kafka system
 Metadata can be published into the OneStop system in two different ways, using Registry application rest api See [onestop-metadata-loading](onestop-metadata-loading.md) documentation for detail or directly 
 integrating upstream applications to the underline OneStop kafka cluster.  
-This documentation will take a look at some approaches for integrating upstream applications and Kafka, and look at some examples regarding the tools Kafka supports.
+This guide will take a look at some approaches for integrating upstream applications and Kafka, and look at some examples regarding the tools Kafka supports.
 
 Before we dive in, its worth mentioning the single common data format, Apache Avro, which OnesStop application is using for ensuring all data sources and integration points comply to it.  
 Apache Avro is an [open source data serialization format](http://avro.apache.org/docs/1.9.1/). it relies on schema that define fields and their type. Avro also supports schema evolution.
 See [our avro schema project](https://github.com/cedardevs/schemas/tree/master/schemas-core) for detail implementation. 
 
-### Using Apache NiFi
+## Features
+  - [Using Apache NiFi](#Using-Apache-NiFi)
+  - [Using kafka producer](#kafka-producer)
+  - [Using Kafka connects](#Kafka connects)
+
+### Apache NiFi
 NiFi is a highly scalable and user friendly UI based System that provides support for data collection and processing. In this case, 
 Nifi can act as a source and sink to bring data to and from Kafka, which helps in automating the flow of data between systems in a Reliable, efficient, and manageable way.
 
@@ -17,7 +22,7 @@ NiFi is able to support multiple versions of the Kafka client in a single NiFi i
 - ConsumeKafka_1_0 & PublishKafka_1_0 using the 1.0 client
 - ConsumeKafka_2_0 & PublishKafka_2_0 using the 2.0 client
 
-Kafka does not necessarily provide backward compatibility between versions, use kafka processors that is compatible with the OneStop kafka broker version. 
+Kafka does not necessarily provide backward compatibility between versions, so use kafka processors that is compatible with the OneStop kafka broker version. 
 See [Apache NiFi website](https://nifi.apache.org/) page for details. 
 
 #### Nifi as a Producer
