@@ -1,3 +1,5 @@
+**Estimated Reading Time: 5 minutes**
+
 # User Interface Quick Start Guide
 The OneStop UI is designed to be useful and intuitive for a large cross-section of end-users: scientists, researchers, students, and the average person in general. It's a great starting point when trying to discover and download scientific data, and is designed to help users find more specific services of interest as well. 
 

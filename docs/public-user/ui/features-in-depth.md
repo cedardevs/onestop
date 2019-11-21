@@ -1,10 +1,12 @@
+**Estimated Reading Time: 15 minutes**
+
 # UI Features In Depth
 While it's entirely possible to narrow your search on OneStop down with just a few steps, as demonstrated in the previous quick start guide, many features enable very precise queries to be submitted.
 
 The goal for this guide is to explain all the functionality available on the UI. Features are described in the order they are encountered -- from the landing page, through collection results, all the way to file (granule) downloading.
 
 ## Features
-  - [Query Text Bar](#query-text-bar)
+  - [Query Text Box](#query-text-box)
   - [Popular Topics and Featured Data Sets](#popular-topics-and-featured-data-sets)
   - [Collection Results](#collection-results)
   - [Grid View and List View](#grid-view-and-list-view)
@@ -24,9 +26,18 @@ The goal for this guide is to explain all the functionality available on the UI.
   - [Cart](#cart)
 
 
-### Query Text Bar
+### Query Text Box
+The query text box is the main starting point for searching on the OneStop UI. The query box is featured front-and-center on the landing page of OneStop, and is how a search is initiated.
 
-# TODO need to create a doc on this in detail to refer to from UI and API
+![Query text box on landing page](/onestop/images/ui-id/landing-page-query-box.png)
+
+Once you've begun searching, however, the query box migrates to the site header. 
+
+![Query text box in site header](/onestop/images/ui-id/header-query-box.png)
+
+Entering text in the query box will always start a new search on OneStop, resetting any filters you may have added in an existing search. The text entered for your query can be a simple term or phrase, but can also support a much richer syntax allowing for a very precise request. 
+
+Check out our guide on [Query Syntax](/onestop/public-user/api/query-syntax) for thorough coverage of available options.
 
 ### Popular Topics and Featured Data Sets
 Both of these features found on the landing page pre-populate a query for the user. The Popular Topics are simple high level categories from which to explore and discover data. On the other hand, Featured Data Sets queries are tailored to match a specific collection or set of collections. The Featured Data Sets are customizable by the site administrator and are therefore subject to change.
@@ -35,7 +46,7 @@ Both of these features found on the landing page pre-populate a query for the us
 All queries on the UI currently initialize to a search against collections. Collections are a high level grouping of similar data files -- they can represent all the data gathered by a single instrument on a satellite to a poster about a hurricane, and everything in between.
 
 ### Grid View and List View
-The collection results can be displayed in grid or list view. The default, grid view, displays a representative image for the collection with the title overlaid. Putting the tile in focus (via mouse hover, tabbing to it, etc.) expands the visible title length to three lines of text as opposed to one. 
+The collection results can be displayed in grid or list view. The default, grid view, displays a representative image for the collection (or map of spatial bounds if none is available) with the title overlaid. Putting the tile in focus (via mouse hover, tabbing to it, etc.) expands the visible title length to three lines of text as opposed to one. 
 
 Default out-of-focus grid collection tile appearance:
 
@@ -51,7 +62,7 @@ In order to view the collection results in list view format, click the list butt
 
 All results in list view default to a collapsed "card" showing just the full collection title and an option to "Show Details". The expanded list card shows the collection's spatial and temporal bounds in addition to the same representative image as the grid tile.
 
-![Expanded list card example](/onestop/images/ui-id/expanded-list-card.png)
+![Expanded list card example](/onestop/images/ui-id/expanded-collection-list-card.png)
 
 The buttons on the right-hand side of the result count header above the results enable you to return to grid view, expand all list cards, and collapse all list cards, respectively.
 
@@ -202,10 +213,30 @@ Switching over to the `Access` tab view, you can find a variety of high level ac
 ![The Access tab of a collection detail page](/onestop/images/ui-id/access-collection-detail.png)
 
 ### File-Level Results
+If a collection has files whose metadata has been loaded into OneStop, it is possible to search across them from the `Show __ matching files of __ in collection` link at the top of the collection detail page. The file results initialize with [the](#location-filters) [same](#date-filters) [filters](#attributes-filters), if any, used in your collection search. These can be removed or modified as desired.
+
+File Results are only viewable in [list view](#grid-view-and-list-view) (no grid view). Every card in the list initializes as collapsed, but all cards can be expanded at once using the "Expand All" button in the results count header (likewise, the "Collapse All" button does the inverse operation). Unlike the result count header buttons in the collection results, however, file results have a shopping cart button at the top of the list. Selecting this button is a quick way to add every matching file in the results to your [cart](#cart) for downloading. Alternatively, files can be added on an individual level from each list card.
+
+![An expanded file list card](/onestop/images/ui-id/expanded-granule-list-card.png)
+
+Selecting `show details` to the right of the title on a card will expand the card to reveal the file's representative image (or map of spatial bounds if none is available), access links, temporal bounding, and spatial extent in addition to the title. The bottom of the card has an `Add to cart` checkbox that will automatically add (or remove) the file from your cart when selected.
 
 ### Filename Filter
+The first filter in the Filters sidebar for File Results _only_ is the `Filename` filter. This filter searches against only the filenames, and can help serve as the final narrowing down of results to locate exactly what you're looking for.
+
+![The Filename Filter expanded with the associated filter tag also visible](/onestop/images/ui-id/filename-filter.png)
 
 ### Cart
+Once you have found and added files to your cart, you'll want to download them for use. From the cart page, you can generate a list of links from your chosen files by file access type (e.g., FTP or THREDDS). This list can then be used in concert with a downloading utility, like `wget`, to download the actual data to your machine. If, however, you would like to empty your cart, this can be accomplished by selecting the "Clear All Files From Cart" button on the very left edge of the cart's count header above the list of files. 
+
+A view of the cart page with info section expanded:
+
+![Cart page with info section expanded](/onestop/images/ui-id/cart-page.png)
+
+An example of file access types shown in the file link type drop-down list:
+
+![Example of file link type drop-down list](/onestop/images/ui-id/file-link-type-dropdown.png)
+
 
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/quickstart">Previous</a> | <a href="#ui-features-in-deptch">Top of Page</a> | <a href="/onestop/public-user/ui/keyboard-navigation">Next</a></div>
+<div align="center"><a href="/onestop/public-user/ui/quickstart">Previous</a> | <a href="#ui-features-in-depth">Top of Page</a> | <a href="/onestop/public-user/ui/keyboard-navigation">Next</a></div>
