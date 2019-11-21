@@ -14,6 +14,8 @@ import java.util.*;
 public class AppConfig {
   private static final Logger log = LoggerFactory.getLogger(AppConfig.class);
 
+  public static final String CONFIG_FILE_ENV_VAR = "CONFIG_LOCATION";
+
   private final Map<String, Object> defaults;
   private final Map<Object, Object> systemProperties;
   private final Map<String, String> environmentVariables;
@@ -21,14 +23,10 @@ public class AppConfig {
   private final Map<String, Object> combined;
 
   public AppConfig() {
-    this(null);
-  }
-
-  public AppConfig(String filePath) {
     this.defaults = getDefaults();
     this.systemProperties = System.getProperties();
     this.environmentVariables = getEnv();
-    this.configFileProperties = parseYamlConfigFile(filePath);
+    this.configFileProperties = parseYamlConfigFile(this.environmentVariables.get(CONFIG_FILE_ENV_VAR));
     this.combined = buildCombinedMap();
   }
 
@@ -125,6 +123,10 @@ public class AppConfig {
 
   public Object get(Object key) {
     return combined.get(key);
+  }
+
+  public Object getOrDefault(Object key, Object defaultValue) {
+    return combined.getOrDefault(key, defaultValue);
   }
 
 }
