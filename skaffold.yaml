@@ -31,6 +31,28 @@ kind: Config
           delay:
             initial: 60000
 
+.onestop-indexer: &onestop-indexer
+  name: onestop-indexer
+  chartPath: helm/onestop-indexer
+  values:
+    # skaffold may not build/deploy w/the latest if this is not set here
+    image: cedardevs/onestop-indexer
+  imageStrategy:
+    helm: {}
+  setValues:
+    # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
+    config: |-
+      ---
+      kafka:
+        bootstrap:
+          servers: "PLAINTEXT://onestop-dev-cp-kafka:9092"
+        schema:
+          registry:
+            url: "http://onestop-dev-cp-schema-registry:8081"
+      elasticsearch:
+        host: "elasticsearch"
+      logging.level.org.cedar.onestop.indexer: DEBUG
+
 .onestop-registry: &onestop-registry
   name: onestop-registry
   chartPath: helm/onestop-registry
@@ -134,9 +156,9 @@ kind: Config
 
 build:
   artifacts:
-  - image: cedardevs/onestop-admin
+  - image: cedardevs/onestop-indexer
     jibGradle:
-      project: admin
+      project: indexer
   - image: cedardevs/onestop-registry
     jibGradle:
       project: registry
@@ -153,7 +175,7 @@ build:
 deploy:
   helm:
     releases:
-    - *onestop-admin # depends on both kafka and elasticsearch by default
+    - *onestop-indexer # depends on both kafka and elasticsearch by default
     - *onestop-registry
     - *onestop-manager
     - *onestop-search

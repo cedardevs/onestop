@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "onestop-indexer.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "onestop-indexer.name" . }}
+    helm.sh/chart: {{ include "onestop-indexer.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "onestop-indexer.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- with .Values.config }}
+      annotations:
+        checksum/config: {{ . | sha256sum }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "onestop-indexer.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          # EXPORT ADDITIONAL CONFIG LOCATION (if config provided)
+          {{- if .Values.config }}
+            # if Helm values have a config section, it will be mounted as a YML file
+            # this tells Spring where the additional config file is mounted
+            - name: CONFIG_LOCATION # TODO - use the right env var here
+              value: /etc/conf/application.yml
+          {{- end }}
+          # generic env overrides, for spring properities, etc
+          {{- if .Values.env }}
+            {{- range $envName,$envVal := .Values.env }}
+            - name: {{ $envName }}
+              value: {{ $envVal | quote }}
+            {{- end }}
+          {{- end }}
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          # MOUNT ADDITIONAL CONFIG IN THIS CONTAINER (if config provided)
+          # done via ConfigMap and associated volume
+          {{- if .Values.config }}
+            - name: config-volume
+              mountPath: /etc/conf/
+          {{- end }}
+      volumes:
+      # CREATE VOLUME FOR ADDITIONAL CONFIG (if config provided)
+      # additional location for Spring config allows overriding defaults
+      {{- if .Values.config }}
+        - name: config-volume
+          configMap:
+            name: {{ include "onestop-indexer.configname" . }}
+      {{- end }}
+#      restartPolicy: Always
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
