@@ -12,6 +12,7 @@ import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.util.DataUtils;
+import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.manager.util.RecordParser;
 import org.cedar.onestop.manager.util.RoutingUtils;
 import org.cedar.schemas.analyze.Analyzers;
@@ -23,10 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
 
-import static org.apache.kafka.streams.KafkaStreams.State.ERROR;
-import static org.apache.kafka.streams.KafkaStreams.State.NOT_RUNNING;
 import static org.apache.kafka.streams.StreamsConfig.*;
 import static org.cedar.onestop.kafka.common.constants.Topics.*;
 
@@ -34,21 +32,9 @@ public class StreamManager {
   private static final Logger log = LoggerFactory.getLogger(StreamManager.class);
 
   public static KafkaStreams buildStreamsApp(AppConfig config) {
-    var killSwitch = new CompletableFuture<KafkaStreams.State>();
-    killSwitch.thenAcceptAsync((state) -> {
-      throw new IllegalStateException("KafkaStreams app entered bad state: " + state);
-    });
-    KafkaStreams.StateListener killSwitchListener = (newState, oldState) -> {
-      if (!killSwitch.isDone() && (newState == ERROR || newState == NOT_RUNNING)) {
-        killSwitch.complete(newState);
-      }
-    };
-
     var topology = buildTopology();
     var streamsConfig = streamsConfig(StreamsApps.MANAGER_ID, config);
-    var app = new KafkaStreams(topology, streamsConfig);
-    app.setStateListener(killSwitchListener);
-    return app;
+    return KafkaHelpers.buildStreamsAppWithKillSwitch(topology, streamsConfig);
   }
 
   static Topology buildTopology() {
