@@ -11,16 +11,11 @@ import (
 	"strings"
 )
 
-func ScdrSearchFlattenedGranule(params *viper.Viper, body string) (*gentleman.Response, map[string]interface{}, error) {
+func ScdrSearch(params *viper.Viper, body string) (*gentleman.Response, map[string]interface{}, error) {
 	handlerPath := "scdr-files"
-	server := viper.GetString("server")
-	if server == "" {
-		server = openapiServers()[viper.GetInt("server-index")]["url"]
-	}
 
-	url := server + "/search/flattened-granule"
-
-	req := cli.Client.Post().URL(url)
+	params = translateArgs(params)
+	req := buildRequest(params)
 
 	if body != "" {
 		req = req.AddHeader("Content-Type", "application/json").BodyString(body)
@@ -51,11 +46,68 @@ func ScdrSearchFlattenedGranule(params *viper.Viper, body string) (*gentleman.Re
 	return resp, decoded, nil
 }
 
+func translateArgs(params *viper.Viper) *viper.Viper {
+	typeArg := params.GetString(typeFlag)
+	if len(typeArg) == 0 {
+		return params
+	}
+
+	scdrTypeIds := viper.Get("scdr-files").(map[string]interface{})
+	// fmt.Println(scdrTypeIds["C01501"])
+	uuid := scdrTypeIds[strings.ToLower(typeArg)]
+	params.Set("type", uuid)
+	return params
+}
+
+func buildRequest(params *viper.Viper) *gentleman.Request {
+	server := viper.GetString("server")
+	if server == "" {
+		server = openapiServers()[viper.GetInt("server-index")]["url"]
+	}
+
+	isSummaryWithType := params.GetString(availableFlag) == "true" && len(params.GetString(typeFlag)) > 0
+
+	endpoint := determineEndpoint(params, isSummaryWithType)
+
+	url := server + endpoint
+
+	var req *gentleman.Request
+
+	if isSummaryWithType {
+		req = cli.Client.Get().URL(url)
+	} else {
+		req = cli.Client.Post().URL(url)
+	}
+
+	return req
+}
+
+func determineEndpoint(params *viper.Viper, isSummaryWithType bool) string {
+	endpoint := "/search/flattened-granule"
+
+	if isSummaryWithType {
+		collectionId := params.GetString(typeFlag)
+		endpoint = "/collection/" + collectionId
+	} else if params.GetString(availableFlag) == "true" {
+		endpoint = "/search/collection"
+	}
+	return endpoint
+}
+
 func scdrRegister() {
 	root := cli.Root
-
 	cli.Root.Short = "SCDR OneStop Search API"
 	cli.Root.Long = cli.Markdown("Search Collections and Granules! More information on search request and responses available at [Search API Requests](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests) and [Search API Responses](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Responses).")
+
+//support for scdr-files type
+	viper.SetConfigName("scdr-files-config")
+	viper.AddConfigPath("/etc/scdr-files/")
+	viper.AddConfigPath("$HOME/.scdr-files")
+	viper.AddConfigPath(".")
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
 
 	func() {
 		params := viper.New()
@@ -69,31 +121,19 @@ func scdrRegister() {
 			Example: examples,
 			Args:    cobra.MinimumNArgs(0),
 			Run: func(cmd *cobra.Command, args []string) {
+				for _, arg := range args {
+					log.Info().Msg(arg)
+				}
 				body, err := cli.GetBody("application/json", args[0:])
 				if err != nil {
 					log.Fatal().Err(err).Msg("Unable to get body")
 				}
 
-				_, decoded, err := ScdrSearchFlattenedGranule(params, body)
+				_, decoded, err := ScdrSearch(params, body)
 				if err != nil {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
-				// --available returns count, dont strip data response
-				if len(params.GetString("available")) == 0 {
-					// links := []string
-					if links, ok := decoded["links"].([]string); ok {
-						// links = links.([]string)
-						for _, link := range links {
-							fmt.Println(strings.TrimSpace(link))
-						}
-					} else {
-						fmt.Println("No results")
-					}
-				} else {
-					if err := cli.Formatter.Format(decoded); err != nil {
-						log.Fatal().Err(err).Msg("Formatting failed")
-					}
-				}
+				scdrOutputFormatAndPrint(params, decoded)
 
 			},
 		}
@@ -107,4 +147,22 @@ func scdrRegister() {
 
 	}()
 
+}
+
+func scdrOutputFormatAndPrint(params *viper.Viper, decoded map[string]interface{}){
+	if params.GetString(availableFlag) == "false" {
+		if links, ok := decoded["links"].([]string); ok {
+			for _, link := range links {
+				fmt.Println(strings.TrimSpace(link))
+			}
+		} else {
+			fmt.Println("No results")
+		}
+	} else {
+		if summary, ok := decoded["summary"].([]string); ok {
+			for _, row := range summary {
+				fmt.Println(strings.TrimSpace(row))
+			}
+		}
+	}
 }

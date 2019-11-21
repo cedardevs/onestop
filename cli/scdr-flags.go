@@ -4,6 +4,7 @@ import (
 	"github.com/danielgtaylor/openapi-cli-generator/cli"
 	"github.com/spf13/viper"
 	"gopkg.in/h2non/gentleman.v2"
+	"strconv"
 )
 
 const scdrFileCmd = "scdr-files"
@@ -18,8 +19,11 @@ scdr-files --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537
 scdr-files --date=10/01
 scdr-files --stime "March 31st 2003 at 17:30" --etime "2003-04-01 10:32:49"
 `
+
+var availableSummaryHeader = []string{"Collection | Description ", "---------- | -----------"}
+
 func setScdrFlags() {
-	//flags are in onestop-flags.go
+	//flags are in flags.go
 	cli.AddFlag(scdrFileCmd, dateFilterFlag, dateFilterShortFlag, dateDescription, "")
 	cli.AddFlag(scdrFileCmd, typeFlag, typeShortFlag, typeDescription, "")
 	cli.AddFlag(scdrFileCmd, spatialFilterFlag, spatialFilterShortFlag, areaDescription, "")
@@ -31,7 +35,7 @@ func setScdrFlags() {
 	cli.AddFlag(scdrFileCmd, startTimeScdrFlag, "", startTimeScdrDescription, "")
 	cli.AddFlag(scdrFileCmd, endTimeFlag, endTimeShortFlag, endTimeDescription, "")
 	cli.AddFlag(scdrFileCmd, endTimeScdrFlag, "", endTimeScdrDescription, "")
-	cli.AddFlag(scdrFileCmd, availableFlag, availableShortFlag, availableDescription, "")
+	cli.AddFlag(scdrFileCmd, availableFlag, availableShortFlag, availableDescription, false)
 	cli.AddFlag(scdrFileCmd, metadataFlag, metadataShortFlag, metadataDescription, "")
 
 	cli.RegisterBefore(scdrFileCmd, parseScdrRequestFlags)
@@ -42,27 +46,45 @@ func setScdrFlags() {
 }
 
 func marshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
-	collection := params.GetString("available")
+	isSummary := params.GetString("available")
+
 	dataMap := data.(map[string]interface{})
 	responseMap := make(map[string]interface{})
-	if len(collection) > 0 {
-		meta := dataMap["meta"].(map[string]interface{})
-		count := meta["total"]
-		responseMap["count"] = count
-	} else {
-		links := []string{}
-		dataMap := data.(map[string]interface{})
-		items := dataMap["data"].([]interface{})
-		if len(items) > 0 {
-			for _, v := range items {
-				value := v.(map[string]interface{})
-				attr := value["attributes"].(map[string]interface{})
+	summaryResponse := availableSummaryHeader
+	links := []string{}
+
+	items := dataMap["data"].([]interface{})
+	meta := dataMap["meta"].(map[string]interface{})
+
+	if len(items) > 0 {
+		for _, v := range items {
+			value := v.(map[string]interface{})
+			attr := value["attributes"].(map[string]interface{})
+
+			if isSummary == "true" {
+				fileId := attr["fileIdentifier"].(string)
+				description := attr["title"].(string)
+				row := fileId + " | " + description
+
+				if count, ok := meta["totalGranules"].(float64); ok {
+					summaryResponse[0] = summaryResponse[0] + " |  Total files"
+					summaryResponse[1] = summaryResponse[1] + " |  ----------"
+					countString := strconv.FormatFloat(count, 'f', 0, 64)
+					row = row + " | " + countString
+				}
+				summaryResponse = append(summaryResponse, row)
+			} else {
 				itemLinks := attr["links"].([]interface{})
 				for _, link := range itemLinks {
 					url := link.(map[string]interface{})["linkUrl"].(string)
 					links = append(links, url)
 				}
 			}
+
+		}
+		if isSummary == "true" {
+			responseMap["summary"] = summaryResponse
+		} else {
 			responseMap["links"] = links
 		}
 	}

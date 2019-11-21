@@ -15,10 +15,14 @@ func main() {
 
 	cli.Client.Use(gtls.Config(&tls.Config{InsecureSkipVerify: true}))
 
+  //scdr-files.go
 	setScdrFlags()
 	scdrRegister()
 
+	//onestop-flags.go
 	setOneStopFlags()
+
+	//openapi.go
 	openapiRegister(false)
 
 	cli.Root.Execute()

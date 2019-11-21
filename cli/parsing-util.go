@@ -32,31 +32,43 @@ func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	filters := []string{}
 	queries := []string{}
 
-	dateTimeFilter := parseDateArgs(params)
-	filters = append(filters, dateTimeFilter...)
-	startEndTimeFilter := parseStartAndEndTime(params)
-	filters = append(filters, startEndTimeFilter...)
-	geoSpatialFilter := parsePolygon(params)
-	filters = append(filters, geoSpatialFilter...)
-	parentIdentifierQuery := parseParentIdentifier(params)
-	queries = append(queries, parentIdentifierQuery...)
-	fileIdentifierQuery := parseFileIdentifier(params)
-	queries = append(queries, fileIdentifierQuery...)
-	regexQuery := parseParentIdentifierRegex(params)
-	queries = append(queries, regexQuery...)
-	query := parseTextQuery(params)
-	queries = append(queries, query...)
-	requestMeta := parseRequestMeta(params)
+	isSummaryWithType := params.GetString(availableFlag) == "true" && len(params.GetString("type")) > 0
 
-	if len(queries) > 0 || len(filters) > 0 {
-		req.AddHeader("content-type", "application/json")
-		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
+	if isSummaryWithType { // then it's a GET, not a POST
+		req.BodyString("")
+	} else {
+		dataCenterFacetFilter := parseAvailableFlag(params)
+		filters = append(filters, dataCenterFacetFilter...)
+		dateTimeFilter := parseDateArgs(params)
+		filters = append(filters, dateTimeFilter...)
+		startEndTimeFilter := parseStartAndEndTime(params)
+		filters = append(filters, startEndTimeFilter...)
+		geoSpatialFilter := parsePolygon(params)
+		filters = append(filters, geoSpatialFilter...)
+		parentIdentifierQuery := parseParentIdentifier(params)
+		queries = append(queries, parentIdentifierQuery...)
+		query := parseTextQuery(params)
+		queries = append(queries, query...)
+		requestMeta := parseRequestMeta(params)
+
+		if len(queries) > 0 || len(filters) > 0 {
+			req.AddHeader("content-type", "application/json")
+			req.BodyString("{\"summary\":false, \"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
+		}
 	}
 }
 
+func parseAvailableFlag(params *viper.Viper) []string {
+	facetFilter := []string{}
+	if params.GetString(availableFlag) == "true" {
+		facetFilter = []string{"{\"type\":\"facet\",\"name\":\"dataCenters\",\"values\":[\"DOC/NOAA/NESDIS/STAR > Center for Satellite Applications and Research, NESDIS, NOAA, U.S. Department of Commerce\"]}"}
+	}
+	return facetFilter
+}
+
 func parseRequestMeta(params *viper.Viper) string {
-	max := params.GetString("max")
-	offset := params.GetString("offset")
+	max := params.GetString(maxFlag)
+	offset := params.GetString(offsetFlag)
 	if len(max) == 0 {
 		max = "100"
 	}
@@ -68,32 +80,33 @@ func parseRequestMeta(params *viper.Viper) string {
 }
 
 func parseStartAndEndTime(params *viper.Viper) []string {
-
+	filter := []string{}
 	startTimeArg, endTimeArg := parseTimeFlags(params)
 	beginDateTime, endDateTime := formatBeginAndEnd(startTimeArg, endTimeArg)
 	beginDateTimeFilter, endDateTimeFilter := formatDateRange(beginDateTime, endDateTime)
-	if len(beginDateTimeFilter) == 0 && len(endDateTimeFilter) == 0 {
-		return []string{}
+
+	if len(beginDateTimeFilter) > 0 || len(endDateTimeFilter) > 0 {
+		filter = []string{"{\"type\":\"datetime\", " + beginDateTimeFilter + endDateTimeFilter + "}"}
 	}
 
-	return []string{"{\"type\":\"datetime\", " + beginDateTimeFilter + endDateTimeFilter + "}"}
+	return filter
 }
 
 func parseTimeFlags(params *viper.Viper) (string, string) {
-	startTime := params.GetString("start-time")
+	startTime := params.GetString(startTimeFlag)
 	if len(startTime) == 0 {
-		startTime = params.GetString("stime")
+		startTime = params.GetString(startTimeScdrFlag)
 	}
-	endTime := params.GetString("end-time")
+	endTime := params.GetString(endTimeFlag)
 	if len(endTime) == 0 {
-		endTime = params.GetString("etime")
+		endTime = params.GetString(endTimeScdrFlag)
 	}
 	return startTime, endTime
 }
 
 func formatBeginAndEnd(startTime string, endTime string) (string, string) {
-	beginDateTime := parseDate(startTime)
-	endDateTime := parseDate(endTime)
+	beginDateTime := parseDateFormat(startTime)
+	endDateTime := parseDateFormat(endTime)
 	return beginDateTime, endDateTime
 }
 
@@ -112,7 +125,7 @@ func formatDateRange(beginDateTime string, endDateTime string) (string, string) 
 	return beginDateTimeFilter, endDateTimeFilter
 }
 
-func parseDate(dateString string) string {
+func parseDateFormat(dateString string) string {
 
 	supportedLayouts := []string{
 		time.UnixDate,
@@ -169,16 +182,16 @@ func parseDate(dateString string) string {
 
 func parseDateArgs(params *viper.Viper) []string {
 	//parse date flags, add filter
-	date := params.GetString("date")
+	date := params.GetString(dateFilterFlag)
 	if len(date) == 0 {
 		return []string{}
 	}
-	beginDateTime := parseDate(date)
+	beginDateTime := parseDateFormat(date)
 	if len(beginDateTime) == 0 {
 		currentTime := time.Now() //support for current year default
-		beginDateTime = parseDate(strconv.Itoa(currentTime.Year()) + "/" + date)
+		beginDateTime = parseDateFormat(strconv.Itoa(currentTime.Year()) + "/" + date)
 		if len(beginDateTime) == 0 {
-			beginDateTime = parseDate(strconv.Itoa(currentTime.Year()) + "-" + date)
+			beginDateTime = parseDateFormat(strconv.Itoa(currentTime.Year()) + "-" + date)
 		}
 	}
 	t2, _ := time.Parse("2006-01-02T00:00:00Z", beginDateTime)
@@ -187,36 +200,17 @@ func parseDateArgs(params *viper.Viper) []string {
 }
 
 func parseParentIdentifier(params *viper.Viper) []string {
-	parentId := params.GetString("type")
-	if len(parentId) <= 0 {
-		parentId = params.GetString("available")
-	}
+	parentId := params.GetString(typeFlag)
 	if len(parentId) == 0 {
 		return []string{}
 	}
 	return []string{"{\"type\":\"queryText\", \"value\":\"parentIdentifier:\\\"" + parentId + "\\\"\"}"}
 }
 
-func parseFileIdentifier(params *viper.Viper) []string {
-	fileId := params.GetString("file")
-	if len(fileId) == 0 {
-		return []string{}
-	}
-	return []string{"{\"type\":\"queryText\", \"value\":\"fileIdentifier:\\\"" + fileId + "\\\"\"}"}
-}
-
-func parseParentIdentifierRegex(params *viper.Viper) []string {
-	regex := params.GetString("re-file")
-	if len(regex) == 0 {
-		return []string{}
-	}
-	return []string{"{\"type\":\"queryText\", \"value\":\"parentIdentifier:" + regex + "\"}"}
-}
-
 func parseTextQuery(params *viper.Viper) []string {
-	query := params.GetString("query")
+	query := params.GetString(textQueryFlag)
 	if len(query) == 0 {
-		query = params.GetString("metadata")
+		query = params.GetString(metadataFlag)
 	}
 	if len(query) == 0 {
 		return []string{}
@@ -225,7 +219,7 @@ func parseTextQuery(params *viper.Viper) []string {
 }
 
 func parsePolygon(params *viper.Viper) []string {
-	polygon := params.GetString("area")
+	polygon := params.GetString(spatialFilterFlag)
 	if len(polygon) == 0 {
 		return []string{}
 	}
