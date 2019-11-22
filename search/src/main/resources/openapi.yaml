@@ -1545,7 +1545,6 @@ components:
         queries:
           - type: queryText
             value: climate
-        filters: []
         facets: true
         page:
           max: 20

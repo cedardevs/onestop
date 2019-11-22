@@ -113,48 +113,6 @@ func OpenapiHeadCollection(params *viper.Viper) (*gentleman.Response, interface{
 	return resp, decoded, nil
 }
 
-// OpenapiHeadCollectionById Collection by ID
-func OpenapiHeadCollectionById(paramId string, params *viper.Viper) (*gentleman.Response, interface{}, error) {
-	handlerPath := "headcollectionbyid"
-	if openapiSubcommand {
-		handlerPath = "openapi " + handlerPath
-	}
-
-	server := viper.GetString("server")
-	if server == "" {
-		server = openapiServers()[viper.GetInt("server-index")]["url"]
-	}
-
-	url := server + "/collection/{id}"
-	url = strings.Replace(url, "{id}", paramId, 1)
-
-	req := cli.Client.Head().URL(url)
-
-	cli.HandleBefore(handlerPath, params, req)
-
-	resp, err := req.Do()
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "Request failed")
-	}
-
-	var decoded interface{}
-
-	if resp.StatusCode < 400 {
-		if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
-			return nil, nil, errors.Wrap(err, "Unmarshalling response failed")
-		}
-	} else {
-		return nil, nil, errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())
-	}
-
-	after := cli.HandleAfter(handlerPath, params, resp, decoded)
-	if after != nil {
-		decoded = after
-	}
-
-	return resp, decoded, nil
-}
-
 // OpenapiGetCollectionById Collection by ID
 func OpenapiGetCollectionById(paramId string, params *viper.Viper) (*gentleman.Response, map[string]interface{}, error) {
 	handlerPath := "getcollectionbyid"
@@ -192,6 +150,48 @@ func OpenapiGetCollectionById(paramId string, params *viper.Viper) (*gentleman.R
 	after := cli.HandleAfter(handlerPath, params, resp, decoded)
 	if after != nil {
 		decoded = after.(map[string]interface{})
+	}
+
+	return resp, decoded, nil
+}
+
+// OpenapiHeadCollectionById Collection by ID
+func OpenapiHeadCollectionById(paramId string, params *viper.Viper) (*gentleman.Response, interface{}, error) {
+	handlerPath := "headcollectionbyid"
+	if openapiSubcommand {
+		handlerPath = "openapi " + handlerPath
+	}
+
+	server := viper.GetString("server")
+	if server == "" {
+		server = openapiServers()[viper.GetInt("server-index")]["url"]
+	}
+
+	url := server + "/collection/{id}"
+	url = strings.Replace(url, "{id}", paramId, 1)
+
+	req := cli.Client.Head().URL(url)
+
+	cli.HandleBefore(handlerPath, params, req)
+
+	resp, err := req.Do()
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "Request failed")
+	}
+
+	var decoded interface{}
+
+	if resp.StatusCode < 400 {
+		if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
+			return nil, nil, errors.Wrap(err, "Unmarshalling response failed")
+		}
+	} else {
+		return nil, nil, errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())
+	}
+
+	after := cli.HandleAfter(handlerPath, params, resp, decoded)
+	if after != nil {
+		decoded = after
 	}
 
 	return resp, decoded, nil
@@ -363,47 +363,6 @@ func OpenapiHeadFlattenedGranuleById(paramId string, params *viper.Viper) (*gent
 	return resp, decoded, nil
 }
 
-// OpenapiGetGranule Get Granule Info
-func OpenapiGetGranule(params *viper.Viper) (*gentleman.Response, map[string]interface{}, error) {
-	handlerPath := "getgranule"
-	if openapiSubcommand {
-		handlerPath = "openapi " + handlerPath
-	}
-
-	server := viper.GetString("server")
-	if server == "" {
-		server = openapiServers()[viper.GetInt("server-index")]["url"]
-	}
-
-	url := server + "/granule"
-
-	req := cli.Client.Get().URL(url)
-
-	cli.HandleBefore(handlerPath, params, req)
-
-	resp, err := req.Do()
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "Request failed")
-	}
-
-	var decoded map[string]interface{}
-
-	if resp.StatusCode < 400 {
-		if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
-			return nil, nil, errors.Wrap(err, "Unmarshalling response failed")
-		}
-	} else {
-		return nil, nil, errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())
-	}
-
-	after := cli.HandleAfter(handlerPath, params, resp, decoded)
-	if after != nil {
-		decoded = after.(map[string]interface{})
-	}
-
-	return resp, decoded, nil
-}
-
 // OpenapiHeadGranule Get Granule Info
 func OpenapiHeadGranule(params *viper.Viper) (*gentleman.Response, interface{}, error) {
 	handlerPath := "headgranule"
@@ -445,9 +404,9 @@ func OpenapiHeadGranule(params *viper.Viper) (*gentleman.Response, interface{}, 
 	return resp, decoded, nil
 }
 
-// OpenapiHeadGranuleById Granule by ID
-func OpenapiHeadGranuleById(paramId string, params *viper.Viper) (*gentleman.Response, interface{}, error) {
-	handlerPath := "headgranulebyid"
+// OpenapiGetGranule Get Granule Info
+func OpenapiGetGranule(params *viper.Viper) (*gentleman.Response, map[string]interface{}, error) {
+	handlerPath := "getgranule"
 	if openapiSubcommand {
 		handlerPath = "openapi " + handlerPath
 	}
@@ -457,10 +416,9 @@ func OpenapiHeadGranuleById(paramId string, params *viper.Viper) (*gentleman.Res
 		server = openapiServers()[viper.GetInt("server-index")]["url"]
 	}
 
-	url := server + "/granule/{id}"
-	url = strings.Replace(url, "{id}", paramId, 1)
+	url := server + "/granule"
 
-	req := cli.Client.Head().URL(url)
+	req := cli.Client.Get().URL(url)
 
 	cli.HandleBefore(handlerPath, params, req)
 
@@ -469,7 +427,7 @@ func OpenapiHeadGranuleById(paramId string, params *viper.Viper) (*gentleman.Res
 		return nil, nil, errors.Wrap(err, "Request failed")
 	}
 
-	var decoded interface{}
+	var decoded map[string]interface{}
 
 	if resp.StatusCode < 400 {
 		if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
@@ -481,7 +439,7 @@ func OpenapiHeadGranuleById(paramId string, params *viper.Viper) (*gentleman.Res
 
 	after := cli.HandleAfter(handlerPath, params, resp, decoded)
 	if after != nil {
-		decoded = after
+		decoded = after.(map[string]interface{})
 	}
 
 	return resp, decoded, nil
@@ -524,6 +482,48 @@ func OpenapiGetGranuleById(paramId string, params *viper.Viper) (*gentleman.Resp
 	after := cli.HandleAfter(handlerPath, params, resp, decoded)
 	if after != nil {
 		decoded = after.(map[string]interface{})
+	}
+
+	return resp, decoded, nil
+}
+
+// OpenapiHeadGranuleById Granule by ID
+func OpenapiHeadGranuleById(paramId string, params *viper.Viper) (*gentleman.Response, interface{}, error) {
+	handlerPath := "headgranulebyid"
+	if openapiSubcommand {
+		handlerPath = "openapi " + handlerPath
+	}
+
+	server := viper.GetString("server")
+	if server == "" {
+		server = openapiServers()[viper.GetInt("server-index")]["url"]
+	}
+
+	url := server + "/granule/{id}"
+	url = strings.Replace(url, "{id}", paramId, 1)
+
+	req := cli.Client.Head().URL(url)
+
+	cli.HandleBefore(handlerPath, params, req)
+
+	resp, err := req.Do()
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "Request failed")
+	}
+
+	var decoded interface{}
+
+	if resp.StatusCode < 400 {
+		if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
+			return nil, nil, errors.Wrap(err, "Unmarshalling response failed")
+		}
+	} else {
+		return nil, nil, errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())
+	}
+
+	after := cli.HandleAfter(handlerPath, params, resp, decoded)
+	if after != nil {
+		decoded = after
 	}
 
 	return resp, decoded, nil
@@ -753,14 +753,14 @@ func openapiRegister(subcommand bool) {
 		var examples string
 
 		cmd := &cobra.Command{
-			Use:     "headcollectionbyid id",
+			Use:     "getcollectionbyid id",
 			Short:   "Collection by ID",
 			Long:    cli.Markdown(""),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(1),
 			Run: func(cmd *cobra.Command, args []string) {
 
-				_, decoded, err := OpenapiHeadCollectionById(args[0], params)
+				_, decoded, err := OpenapiGetCollectionById(args[0], params)
 				if err != nil {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
@@ -787,14 +787,14 @@ func openapiRegister(subcommand bool) {
 		var examples string
 
 		cmd := &cobra.Command{
-			Use:     "getcollectionbyid id",
+			Use:     "headcollectionbyid id",
 			Short:   "Collection by ID",
 			Long:    cli.Markdown(""),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(1),
 			Run: func(cmd *cobra.Command, args []string) {
 
-				_, decoded, err := OpenapiGetCollectionById(args[0], params)
+				_, decoded, err := OpenapiHeadCollectionById(args[0], params)
 				if err != nil {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
@@ -957,40 +957,6 @@ func openapiRegister(subcommand bool) {
 		var examples string
 
 		cmd := &cobra.Command{
-			Use:     "getgranule",
-			Short:   "Get Granule Info",
-			Long:    cli.Markdown("Get the total number of granules available."),
-			Example: examples,
-			Args:    cobra.MinimumNArgs(0),
-			Run: func(cmd *cobra.Command, args []string) {
-
-				_, decoded, err := OpenapiGetGranule(params)
-				if err != nil {
-					log.Fatal().Err(err).Msg("Error calling operation")
-				}
-
-				if err := cli.Formatter.Format(decoded); err != nil {
-					log.Fatal().Err(err).Msg("Formatting failed")
-				}
-
-			},
-		}
-		root.AddCommand(cmd)
-
-		cli.SetCustomFlags(cmd)
-
-		if cmd.Flags().HasFlags() {
-			params.BindPFlags(cmd.Flags())
-		}
-
-	}()
-
-	func() {
-		params := viper.New()
-
-		var examples string
-
-		cmd := &cobra.Command{
 			Use:     "headgranule",
 			Short:   "Get Granule Info",
 			Long:    cli.Markdown(""),
@@ -1025,14 +991,14 @@ func openapiRegister(subcommand bool) {
 		var examples string
 
 		cmd := &cobra.Command{
-			Use:     "headgranulebyid id",
-			Short:   "Granule by ID",
-			Long:    cli.Markdown(""),
+			Use:     "getgranule",
+			Short:   "Get Granule Info",
+			Long:    cli.Markdown("Get the total number of granules available."),
 			Example: examples,
-			Args:    cobra.MinimumNArgs(1),
+			Args:    cobra.MinimumNArgs(0),
 			Run: func(cmd *cobra.Command, args []string) {
 
-				_, decoded, err := OpenapiHeadGranuleById(args[0], params)
+				_, decoded, err := OpenapiGetGranule(params)
 				if err != nil {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
@@ -1092,7 +1058,41 @@ func openapiRegister(subcommand bool) {
 
 		var examples string
 
-		examples += "  " + cli.Root.CommandPath() + " searchcollection facets: true, filters: , page{max: 20, offset: 0}, queries[]{type: queryText, value: climate}\n"
+		cmd := &cobra.Command{
+			Use:     "headgranulebyid id",
+			Short:   "Granule by ID",
+			Long:    cli.Markdown(""),
+			Example: examples,
+			Args:    cobra.MinimumNArgs(1),
+			Run: func(cmd *cobra.Command, args []string) {
+
+				_, decoded, err := OpenapiHeadGranuleById(args[0], params)
+				if err != nil {
+					log.Fatal().Err(err).Msg("Error calling operation")
+				}
+
+				if err := cli.Formatter.Format(decoded); err != nil {
+					log.Fatal().Err(err).Msg("Formatting failed")
+				}
+
+			},
+		}
+		root.AddCommand(cmd)
+
+		cli.SetCustomFlags(cmd)
+
+		if cmd.Flags().HasFlags() {
+			params.BindPFlags(cmd.Flags())
+		}
+
+	}()
+
+	func() {
+		params := viper.New()
+
+		var examples string
+
+		examples += "  " + cli.Root.CommandPath() + " searchcollection facets: true, page{max: 20, offset: 0}, queries[]{type: queryText, value: climate}\n"
 
 		cmd := &cobra.Command{
 			Use:     "searchcollection",
