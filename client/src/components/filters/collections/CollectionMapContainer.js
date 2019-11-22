@@ -13,7 +13,7 @@ const mapStateToProps = state => {
   return {
     filterType: 'collectionFilter',
     geoJsonSelection: geoJSON,
-    open: state.layout.showMap,
+    open: true, //state.layout.showMap,
   }
 }
 
