@@ -2,7 +2,7 @@ import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {getIdFromPath} from './urlUtils'
 import {initialState} from '../reducers/search/collectionFilter'
-import {convertBboxToGeoJson, convertBboxString} from './geoUtils'
+import {convertBboxToGeoJson} from './geoUtils'
 import {textToNumber} from './inputUtils'
 
 export const PAGE_SIZE = 20
@@ -198,6 +198,24 @@ const decodeRelationship = text => {
   return null
 }
 
+const convertArgsToBbox = (west, south, east, north) => {
+  return {
+    north: north,
+    east: east,
+    south: south,
+    west: west,
+  }
+}
+
+const decodeBbox = coordString => {
+  const coordArray = coordString.split(',').map(x => parseFloat(x))
+  return convertArgsToBbox(...coordArray)
+}
+
+const encodeBbox = bbox => {
+  return bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : ''
+}
+
 const codecs = [
   {
     longKey: 'queryText',
@@ -216,9 +234,9 @@ const codecs = [
   {
     longKey: 'bbox',
     shortKey: 'g',
-    encode: bbox =>
-      bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : '', // TODO move this to geoUtil?
-    decode: text => convertBboxString(text),
+    encode: bbox => encodeBbox(bbox),
+
+    decode: text => decodeBbox(text),
     encodable: bbox => !_.isEmpty(bbox),
   },
   {

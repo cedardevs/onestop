@@ -5,16 +5,13 @@ import {
   collectionRemoveGeometry,
 } from '../../../actions/routing/CollectionSearchStateActions'
 import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
-import {displayBboxAsMapGeometry} from '../../../utils/geoUtils'
 
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {bbox} = state.search.collectionFilter
-
   return {
     filterType: 'collectionFilter',
-    geoJsonSelection: displayBboxAsMapGeometry(bbox),
+    bbox: state.search.collectionFilter.bbox,
     showMap: state.layout.showMap,
   }
 }

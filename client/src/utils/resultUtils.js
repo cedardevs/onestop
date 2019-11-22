@@ -3,6 +3,11 @@ import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {SvgIcon, cloud, video_camera} from '../components/common/SvgIcon'
 import {fontFamilySansSerif} from './styleUtils'
+import {
+  ensureDatelineFriendlyGeometry,
+  convertGeoJsonToBbox,
+  displayBboxAsLeafletGeoJSON,
+} from './geoUtils'
 
 export const countArray = arr => {
   return (arr && arr.length) || 0
@@ -171,6 +176,21 @@ export const buildCoordinatesString = geometry => {
   else {
     return 'No spatial bounding provided.'
   }
+}
+
+export const renderPointAsPolygon = geometry => {
+  let coords = Array(5).fill(geometry.coordinates)
+  return {
+    type: 'Polygon',
+    coordinates: [ coords ],
+  }
+}
+
+export const displayLeafletGeometry = geometry => {
+  let geo = ensureDatelineFriendlyGeometry(geometry)
+  let bbox = convertGeoJsonToBbox(geo)
+  let geojson = displayBboxAsLeafletGeoJSON(bbox)
+  return geojson ? geojson.geometry : geo
 }
 
 export const buildTimePeriodString = (

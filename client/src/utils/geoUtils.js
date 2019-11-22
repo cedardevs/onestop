@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import {textToNumber} from './inputUtils'
 
+// note: only exported for tests
 export const shiftCoordinate = (coordinate, rotations) => {
   if (rotations === 0) {
     return coordinate
@@ -9,6 +10,7 @@ export const shiftCoordinate = (coordinate, rotations) => {
   return _.concat([ newX ], _.slice(coordinate, 1))
 }
 
+// note: only exported for tests
 export const shiftCoordinates = (coordinates, rotations) => {
   if (rotations === 0) {
     return coordinates
@@ -18,6 +20,7 @@ export const shiftCoordinates = (coordinates, rotations) => {
   )
 }
 
+// note: only exported for tests
 export const findMaxRotations = coordinates => {
   return _.chain(coordinates)
     .map(coordinate => coordinate[0])
@@ -42,14 +45,6 @@ export const recenterGeometry = geometry => {
   return _.assign({}, geometry, {coordinates: newCoordinates})
 }
 
-export const renderPointAsPolygon = geometry => {
-  let coords = Array(5).fill(geometry.coordinates)
-  return {
-    type: 'Polygon',
-    coordinates: [ coords ],
-  }
-}
-
 export const ensureDatelineFriendlyGeometry = geometry => {
   let coords =
     geometry.type.toLowerCase() === 'polygon'
@@ -62,7 +57,7 @@ export const ensureDatelineFriendlyGeometry = geometry => {
   }
 }
 
-export const convertNegativeLongitudes = coordinates => {
+const convertNegativeLongitudes = coordinates => {
   const crossesDateline = coordinates[0][0] > coordinates[1][0]
   return coordinates.map(
     pair =>
@@ -72,6 +67,7 @@ export const convertNegativeLongitudes = coordinates => {
   )
 }
 
+// TODO probably makes more sense to just make it a ring of coords....
 export const convertBboxToGeoJson = (west, south, east, north) => {
   const w = textToNumber(west)
   const s = textToNumber(south)
@@ -113,24 +109,7 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   // }
 }
 
-const convertArgsToBbox = (west, south, east, north) => {
-  return {
-    north: north,
-    east: east,
-    south: south,
-    west: west,
-  }
-}
-export const convertBboxString = coordString => {
-  const coordArray = coordString.split(',').map(x => parseFloat(x))
-  return convertArgsToBbox(...coordArray)
-}
-
-export const convertBboxStringToGeoJson = coordString => {
-  const coordArray = coordString.split(',').map(x => parseFloat(x))
-  return convertBboxToGeoJson(...coordArray)
-}
-
+// allows the map to update the geometry filters
 export const convertGeoJsonToBbox = geometry => {
   let coordinates = geometry.coordinates
   let bbox = null
@@ -163,21 +142,7 @@ export const convertGeoJsonToBbox = geometry => {
   return bbox
 }
 
-export const constructBbox = (west, south, east, north) => {
-  return {
-    west: textToNumber(west),
-    east: textToNumber(east),
-    north: textToNumber(north),
-    south: textToNumber(south),
-  }
-}
-
-export const convertGeoJsonToBboxString = geoJSON => {
-  const bbox = convertGeoJsonToBbox(geoJSON.geometry)
-  return bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : ''
-}
-
-export const displayBboxAsMapGeometry = bbox => {
+export const displayBboxAsLeafletGeoJSON = bbox => {
   let geojson
   if (bbox) {
     if (bbox.west > bbox.east) {
@@ -191,26 +156,10 @@ export const displayBboxAsMapGeometry = bbox => {
         return {
           type: 'Feature',
           properties: {},
-          geometry: recenterGeometry(geojson.geometry), // TODO recenterGeometry method is weird, just have it take geoJSON
+          geometry: recenterGeometry(geojson.geometry),
         }
       }
     }
     return convertBboxToGeoJson(bbox.west, bbox.south, bbox.east, bbox.north)
   }
-}
-export const displayMapGeometry = geometry => {
-  let geo = ensureDatelineFriendlyGeometry(geometry)
-  let bbox = convertGeoJsonToBbox(geo)
-  if (bbox.west > bbox.east) {
-    let geojson = convertBboxToGeoJson(
-      bbox.west,
-      bbox.south,
-      bbox.east + 360,
-      bbox.north
-    )
-    if (geojson) {
-      return recenterGeometry(geojson.geometry)
-    }
-  }
-  return geo
 }

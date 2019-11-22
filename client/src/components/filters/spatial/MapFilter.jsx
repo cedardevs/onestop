@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
-import {useGeoJson} from './GeoJsonEffect'
+import {useBoundingBox} from './BoundingBoxEffect'
 import GeoFieldset from './GeoFieldset'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FormSeparator from '../FormSeparator'
@@ -63,7 +63,7 @@ const MapFilter = ({
   updateGeoRelationship,
   submit,
 }) => {
-  const [ bounds ] = useGeoJson(bbox)
+  const [ bounds ] = useBoundingBox(bbox)
   const [ warning, setWarning ] = useState('')
   useEffect(
     () => {
@@ -216,7 +216,6 @@ const MapFilter = ({
             updateGeoRelationship(relation)
           }
           if (!_.isEmpty(bbox)) {
-            // TODO not sure if this check is still the same, verify!!
             // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
             submit()
           }

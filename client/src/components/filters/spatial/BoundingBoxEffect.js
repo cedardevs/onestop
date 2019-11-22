@@ -1,8 +1,7 @@
 import {useState, useEffect} from 'react'
-import {constructBbox} from '../../../utils/geoUtils'
+import {constructBbox} from '../../../utils/inputUtils'
 
-export function useGeoJson(bbox){
-  // TODO ok useGeoJson isn't really the right anymore...
+export function useBoundingBox(bbox){
   const [ west, setWest ] = useState('')
   const [ south, setSouth ] = useState('')
   const [ east, setEast ] = useState('')
