@@ -2,11 +2,7 @@ import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {getIdFromPath} from './urlUtils'
 import {initialState} from '../reducers/search/collectionFilter'
-import {
-  recenterGeometry,
-  convertBboxStringToGeoJson,
-  convertGeoJsonToBboxString,
-} from './geoUtils'
+import {convertBboxToGeoJson, convertBboxString} from './geoUtils'
 import {textToNumber} from './inputUtils'
 
 export const PAGE_SIZE = 20
@@ -66,12 +62,16 @@ const assembleFacetFilters = ({selectedFacets}) => {
   return _.map(selectedFacets, (v, k) => ({type: 'facet', name: k, values: v}))
 }
 
-const assembleGeometryFilters = ({geoJSON, geoRelationship}) => {
-  if (geoJSON && geoJSON.geometry) {
-    const recenteredGeometry = recenterGeometry(geoJSON.geometry)
+const assembleGeometryFilters = ({bbox, geoRelationship}) => {
+  if (bbox) {
     return {
       type: 'geometry',
-      geometry: recenteredGeometry,
+      geometry: convertBboxToGeoJson(
+        bbox.west,
+        bbox.south,
+        bbox.east,
+        bbox.north
+      ).geometry,
       relation: geoRelationship,
     }
   }
@@ -211,10 +211,11 @@ const codecs = [
     encodable: text => !_.isEmpty(text),
   },
   {
-    longKey: 'geoJSON',
+    longKey: 'bbox',
     shortKey: 'g',
-    encode: geoJSON => convertGeoJsonToBboxString(geoJSON),
-    decode: text => convertBboxStringToGeoJson(text),
+    encode: bbox =>
+      bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : '', // TODO move this to geoUtil?
+    decode: text => convertBboxString(text),
     encodable: getJSON => !_.isEmpty(getJSON),
   },
   {

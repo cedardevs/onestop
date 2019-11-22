@@ -5,21 +5,21 @@ import {
   granuleRemoveGeometry,
 } from '../../../actions/routing/GranuleSearchStateActions'
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
-
+import {displayBboxAsMapGeometry} from '../../../utils/geoUtils'
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {geoJSON} = state.search.granuleFilter
+  const {bbox} = state.search.granuleFilter
   return {
     filterType: 'granuleFilter',
-    geoJsonSelection: geoJSON,
+    geoJsonSelection: displayBboxAsMapGeometry(bbox),
     showMap: state.layout.showMap,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    handleNewGeometry: geoJSON => dispatch(granuleUpdateGeometry(geoJSON)),
+    handleNewGeometry: bbox => dispatch(granuleUpdateGeometry(bbox)),
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
     submit: () => {
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))

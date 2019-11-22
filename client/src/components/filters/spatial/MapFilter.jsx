@@ -50,7 +50,7 @@ const warningStyle = warning => {
 }
 
 const MapFilter = ({
-  geoJSON,
+  bbox,
   geoRelationship,
   isOpen, // state of if this filter is open and not collapsed
   showMap, // state of if map is showing
@@ -63,13 +63,13 @@ const MapFilter = ({
   updateGeoRelationship,
   submit,
 }) => {
-  const [ bounds ] = useGeoJson(geoJSON)
+  const [ bounds ] = useGeoJson(bbox)
   const [ warning, setWarning ] = useState('')
   useEffect(
     () => {
       setWarning('')
     },
-    [ geoJSON ]
+    [ bbox ]
   )
 
   useEffect(() => {
@@ -88,9 +88,9 @@ const MapFilter = ({
   )
 
   const applyGeometry = () => {
-    if (bounds.asGeoJSON()) {
+    if (bounds.asBbox()) {
       // Validation of coordinates is performed in bbox to GeoJSON conversion (geoUtils)
-      handleNewGeometry(bounds.asGeoJSON())
+      handleNewGeometry(bounds.asBbox()) // prevents number vs string js type confusion!
       submit()
     }
     else if (bounds.west && bounds.south && bounds.east && bounds.north) {
@@ -215,7 +215,8 @@ const MapFilter = ({
           if (relation != geoRelationship) {
             updateGeoRelationship(relation)
           }
-          if (!_.isEmpty(geoJSON)) {
+          if (!_.isEmpty(bbox)) {
+            // TODO not sure if this check is still the same, verify!!
             // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
             submit()
           }

@@ -17,7 +17,7 @@ const mapStateToProps = state => {
     endDateTime,
     startYear,
     endYear,
-    geoJSON,
+    bbox,
     excludeGlobal,
   } = state.search.collectionFilter
   return {
@@ -26,7 +26,7 @@ const mapStateToProps = state => {
     endDateTime,
     startYear,
     endYear,
-    geoJSON,
+    bbox,
     excludeGlobal,
     showAppliedFilters: state.layout.showAppliedFilterBubbles,
   }

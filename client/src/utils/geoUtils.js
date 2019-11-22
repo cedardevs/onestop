@@ -55,6 +55,7 @@ export const ensureDatelineFriendlyGeometry = geometry => {
     geometry.type.toLowerCase() === 'polygon'
       ? [ convertNegativeLongitudes(geometry.coordinates[0]) ]
       : convertNegativeLongitudes(geometry.coordinates)
+
   return {
     type: geometry.type,
     coordinates: coords,
@@ -96,25 +97,38 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   const en = [ e, n ] // max x, max y
   const es = [ e, s ]
   const coordinates = [ ws, es, en, wn, ws ] // CCW for exterior polygon
-  if (
-    !_.every(
-      coordinates,
-      p => p[0] >= -180 && p[0] <= 180 && p[1] >= -90 && p[1] <= 90
-    )
-  ) {
-    return undefined
+  // if (
+  //   !_.every(
+  //     coordinates,
+  //     p => p[0] >= -180 && p[0] <= 180 && p[1] >= -90 && p[1] <= 90
+  //   )
+  // ) {
+  //   return undefined
+  // }
+  // else {
+  let datelineFriendlyGeometry = ensureDatelineFriendlyGeometry({
+    coordinates: [ coordinates ],
+    type: 'Polygon',
+  })
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: datelineFriendlyGeometry,
   }
-  else {
-    let datelineFriendlyGeometry = ensureDatelineFriendlyGeometry({
-      coordinates: [ coordinates ],
-      type: 'Polygon',
-    })
-    return {
-      type: 'Feature',
-      properties: {},
-      geometry: datelineFriendlyGeometry,
-    }
+  // }
+}
+
+const convertArgsToBbox = (west, south, east, north) => {
+  return {
+    north: north,
+    east: east,
+    south: south,
+    west: west,
   }
+}
+export const convertBboxString = coordString => {
+  const coordArray = coordString.split(',').map(x => parseFloat(x))
+  return convertArgsToBbox(...coordArray)
 }
 
 export const convertBboxStringToGeoJson = coordString => {
@@ -122,8 +136,8 @@ export const convertBboxStringToGeoJson = coordString => {
   return convertBboxToGeoJson(...coordArray)
 }
 
-export const convertGeoJsonToBbox = geoJSON => {
-  let coordinates = geoJSON.geometry.coordinates
+export const convertGeoJsonToBbox = geometry => {
+  let coordinates = geometry.coordinates
   let bbox = null
   if (coordinates) {
     let west = coordinates[0][0][0]
@@ -154,7 +168,54 @@ export const convertGeoJsonToBbox = geoJSON => {
   return bbox
 }
 
+export const constructBbox = (west, south, east, north) => {
+  return {
+    west: textToNumber(west),
+    east: textToNumber(east),
+    north: textToNumber(north),
+    south: textToNumber(south),
+  }
+}
+
 export const convertGeoJsonToBboxString = geoJSON => {
-  const bbox = convertGeoJsonToBbox(geoJSON)
+  const bbox = convertGeoJsonToBbox(geoJSON.geometry)
   return bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : ''
+}
+
+export const displayBboxAsMapGeometry = bbox => {
+  let geojson
+  if (bbox) {
+    if (bbox.west > bbox.east) {
+      geojson = convertBboxToGeoJson(
+        bbox.west,
+        bbox.south,
+        bbox.east + 360,
+        bbox.north
+      )
+      if (geojson) {
+        return {
+          type: 'Feature',
+          properties: {},
+          geometry: recenterGeometry(geojson.geometry), // TODO recenterGeometry method is weird, just have it take geoJSON
+        }
+      }
+    }
+    return convertBboxToGeoJson(bbox.west, bbox.south, bbox.east, bbox.north)
+  }
+}
+export const displayMapGeometry = geometry => {
+  let geo = ensureDatelineFriendlyGeometry(geometry)
+  let bbox = convertGeoJsonToBbox(geo)
+  if (bbox.west > bbox.east) {
+    let geojson = convertBboxToGeoJson(
+      bbox.west,
+      bbox.south,
+      bbox.east + 360,
+      bbox.north
+    )
+    if (geojson) {
+      return recenterGeometry(geojson.geometry)
+    }
+  }
+  return geo
 }

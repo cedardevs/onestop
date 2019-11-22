@@ -1,10 +1,8 @@
 import {useState, useEffect} from 'react'
-import {
-  convertBboxToGeoJson,
-  convertGeoJsonToBbox,
-} from '../../../utils/geoUtils'
+import {constructBbox} from '../../../utils/geoUtils'
 
-export function useGeoJson(geoJSON){
+export function useGeoJson(bbox){
+  // TODO ok useGeoJson isn't really the right anymore...
   const [ west, setWest ] = useState('')
   const [ south, setSouth ] = useState('')
   const [ east, setEast ] = useState('')
@@ -18,8 +16,7 @@ export function useGeoJson(geoJSON){
   }
   useEffect(
     () => {
-      if (geoJSON) {
-        let bbox = convertGeoJsonToBbox(geoJSON)
+      if (bbox) {
         setWest(bbox.west)
         setSouth(bbox.south)
         setEast(bbox.east)
@@ -29,7 +26,7 @@ export function useGeoJson(geoJSON){
         clear()
       }
     },
-    [ geoJSON ]
+    [ bbox ]
   )
 
   return [
@@ -43,7 +40,7 @@ export function useGeoJson(geoJSON){
       setEast: setEast,
       setNorth: setNorth,
       clear: clear,
-      asGeoJSON: () => convertBboxToGeoJson(west, south, east, north),
+      asBbox: () => constructBbox(west, south, east, north),
     },
   ]
 }

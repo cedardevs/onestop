@@ -6,7 +6,7 @@ import L from 'leaflet'
 import * as E from 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
-import {recenterGeometry} from '../../../utils/geoUtils'
+import {recenterGeometry, convertGeoJsonToBbox} from '../../../utils/geoUtils'
 
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
@@ -330,13 +330,9 @@ class Map extends React.Component {
     if (geoJSON || newGeoJSON) {
       if (newGeoJSON) {
         newGeoJSON.geometry.coordinates[0].reverse() // Change coords from CW to CCW
-        let adjustedGeoJSON = {
-          type: 'Feature',
-          properties: {},
-          geometry: recenterGeometry(newGeoJSON.geometry),
-        }
-
-        handleNewGeometry(adjustedGeoJSON)
+        handleNewGeometry(
+          convertGeoJsonToBbox(recenterGeometry(newGeoJSON.geometry))
+        )
       }
       else {
         removeGeometry()
