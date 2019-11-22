@@ -294,14 +294,16 @@ public class IndexingHelpers {
     Set<String> organizationNames = new HashSet<>();
     Optional.ofNullable(responsibleParties)
         .orElse(Collections.emptyList())
+        .stream()
+        .filter(p -> !categorizeParty.apply(p).equals("other"))
         .forEach(party -> {
           var individualName = party.getIndividualName();
           if (individualName != null && !individualName.isBlank()) {
-            individualNames.add(normalizePlainKeyword(individualName));
+            individualNames.add(individualName);
           }
           var organizationName = party.getOrganizationName();
           if (organizationName != null && !organizationName.isBlank()) {
-            organizationNames.add(normalizePlainKeyword(organizationName));
+            organizationNames.add(organizationName);
           }
         });
     var result = new HashMap<String, Set<String>>();
@@ -392,9 +394,9 @@ public class IndexingHelpers {
         .stream()
         .filter(g -> !g.getNamespace().equals("NCEI ACCESSION NUMBER"))
         .flatMap(g -> g.getValues().stream().map(value -> new SingleKeyword(g.getNamespace(), value)))
+        .peek(k -> allKeywords.add(k.value))
         .map(IndexingHelpers::normalizeKeyword)
         .flatMap(IndexingHelpers::tokenizeKeyword)
-        .peek(k -> allKeywords.add(k.value))
         .filter(k -> k.category != KeywordCategory.other)
         .collect(Collectors.groupingBy(
             keyword -> keyword.category.name(), // group by the category label

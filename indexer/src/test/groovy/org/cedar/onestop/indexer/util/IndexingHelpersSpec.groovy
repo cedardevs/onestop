@@ -25,7 +25,8 @@ class IndexingHelpersSpec extends Specification {
   ////////////////////////////
   // Shared Values          //
   ////////////////////////////
-  static inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json') // from schemas repo
+  static inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
+  // from schemas repo
   static inputRecord = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
 
   static inputStreamKeywords = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-keywords.xml')
@@ -68,60 +69,38 @@ class IndexingHelpersSpec extends Specification {
           ]
       ] as Set]
 
-  static expectedKeywords = [
-      [
-          "values" : [
-              "SIO > Super Important Organization",
-              "OSIO > Other Super Important Organization",
-              "SSIO > Super SIO (Super Important Organization)"
-          ],
-          type     : "dataCenter",
-          namespace: "Global Change Master Directory (GCMD) Data Center Keywords"
-      ], [
-          "values"   : [
-              "EARTH SCIENCE > OCEANS > OCEAN TEMPERATURE > SEA SURFACE TEMPERATURE"
-          ],
-          "type"     : "theme",
-          "namespace": "GCMD Keywords - Earth science services Keywords"
-      ], [
-          "values"   : [
-              "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
-              "Oceans > Salinity/Density > Salinity",
-              "Volcanoes > This Keyword > Is Invalid",
-              "Spectral/Engineering > Microwave > Brightness Temperature",
-              "Spectral/Engineering > Microwave > Temperature Anomalies"
-          ],
-          "type"     : "theme",
-          "namespace": "GCMD Keywords - Earth Science Keywords"
-      ],
-      [
-          "values"   : [
-              "Geographic Region > Arctic",
-              "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
-              "Liquid Earth > This Keyword > Is Invalid"
-          ],
-          "type"     : "place",
-          "namespace": "GCMD Keywords - Locations"
-      ],
-      [
-          "values"   : [
-              "Seasonal"
-          ],
-          "type"     : "dataResolution",
-          "namespace": "Global Change Master Directory Keywords - Temporal Data Resolution"
-      ],
-      [
-          "values"   : [
-              "> 1 Km"
-          ],
-          "type"     : "dataResolution",
-          "namespace": "GCMD Keywords - Vertical Data Resolution"
-      ]
-  ]
+  static expectedOrganizationNames = [
+      'University of Boulder',
+      'US NASA; Jet Propulsion Laboratory (JPL)',
+      'Secret Underground Society',
+      'Super Important Organization',
+  ] as Set
 
+  static expectedIndividualNames = [
+      'John Smith',
+      'Edward M. Armstrong',
+      'Jarianna Whackositz',
+  ] as Set
+
+  static expectedKeywords = [
+      "SIO > Super Important Organization",
+      "OSIO > Other Super Important Organization",
+      "SSIO > Super SIO (Super Important Organization)",
+      "EARTH SCIENCE > OCEANS > OCEAN TEMPERATURE > SEA SURFACE TEMPERATURE",
+      "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
+      "Oceans > Salinity/Density > Salinity",
+      "Volcanoes > This Keyword > Is Invalid",
+      "Spectral/Engineering > Microwave > Brightness Temperature",
+      "Spectral/Engineering > Microwave > Temperature Anomalies",
+      "Geographic Region > Arctic",
+      "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
+      "Liquid Earth > This Keyword > Is Invalid",
+      "Seasonal",
+      "> 1 Km"
+  ] as Set
 
   static expectedKeywordsFromIso = [
-      science : [
+      science       : [
           'Atmosphere > Atmospheric Pressure',
           'Atmosphere',
           'Atmosphere > Atmospheric Temperature',
@@ -145,7 +124,7 @@ class IndexingHelpersSpec extends Specification {
           'Oceans > Coastal Processes > Coastal Elevation',
           'Oceans > Coastal Processes'
       ] as Set,
-      scienceService : [
+      scienceService: [
           'Data Analysis And Visualization > Calibration/Validation > Calibration',
           'Data Analysis And Visualization > Calibration/Validation',
           'Data Analysis And Visualization'
@@ -153,8 +132,7 @@ class IndexingHelpersSpec extends Specification {
   ]
 
   static expectedGcmdKeywords = [
-      gcmdScienceServices     : [
-      ] as Set,
+      gcmdScienceServices     : null,
       gcmdScience             : [
           'Oceans',
           'Oceans > Ocean Temperature',
@@ -171,15 +149,15 @@ class IndexingHelpersSpec extends Specification {
           'Liquid Earth > This Keyword',
           'Liquid Earth > This Keyword > Is Invalid'
       ] as Set,
-      gcmdInstruments         : [] as Set,
-      gcmdPlatforms           : [] as Set,
-      gcmdProjects            : [] as Set,
+      gcmdInstruments         : null,
+      gcmdPlatforms           : null,
+      gcmdProjects            : null,
       gcmdDataCenters         : [
           'SIO > Super Important Organization',
           'OSIO > Other Super Important Organization',
           'SSIO > Super SIO (Super Important Organization)'
       ] as Set,
-      gcmdHorizontalResolution: [] as Set,
+      gcmdHorizontalResolution: null,
       gcmdVerticalResolution  : ['> 1 Km'] as Set,
       gcmdTemporalResolution  : ['Seasonal'] as Set
   ]
@@ -235,59 +213,27 @@ class IndexingHelpersSpec extends Specification {
   // XML To ParsedRecord Tests //
   ///////////////////////////////
   // FIXME remove this big test? should be in schemas not here
-  def 'xml to ParsedRecord to staging doc (test from old MetadataParserSpec)'(){
+  def 'xml to ParsedRecord to staging doc (test from old MetadataParserSpec)'() {
     given:
     def expectedKeywords = [
-        [
-            values: ['SIO > Super Important Organization','OSIO > OTHER SUPER IMPORTANT ORGANIZATION', 'SSIO > Super SIO (Super Important Organization)'],
-            type: 'dataCenter',
-            namespace: 'GCMD Keywords - Data Centers'
-        ],
-        [
-            values: ['EARTH SCIENCE SERVICES > ENVIRONMENTAL ADVISORIES > FIRE ADVISORIES > WILDFIRES', 'EARTH SCIENCE > This Keyword is > Misplaced and Invalid', 'This Keyword > Is Just > WRONG'],
-            type: 'service',
-            namespace: 'Global Change Master Directory Science and Services Keywords'
-        ],
-        [
-            values: ['Air temperature', 'Water temperature'],
-            type: 'theme',
-            namespace: 'Miscellaneous keyword type'
-        ],
-        [
-            values: ['Wind speed', 'Wind direction'],
-            type: 'theme',
-            namespace: 'Miscellaneous keyword type'
-        ],
-        [
-            values: [
-                "EARTH SCIENCE > ATMOSPHERE > ATMOSPHERIC TEMPERATURE > SURFACE TEMPERATURE > DEW POINT TEMPERATURE",
-                "EARTH SCIENCE > OCEANS > SALINITY/DENSITY > SALINITY",
-                "EARTH SCIENCE > VOLCANOES > THIS KEYWORD > IS INVALID",
-                "Earth Science > Spectral/Engineering > microwave > Brightness Temperature",
-                "Earth Science > Spectral/Engineering > microwave > Temperature Anomalies"
-            ],
-            type: 'theme',
-            namespace: 'GCMD Keywords - Science Keywords'
-        ],
-        [
-            values: [
-                "GEOGRAPHIC REGION > ARCTIC",
-                "OCEAN > ATLANTIC OCEAN > NORTH ATLANTIC OCEAN > GULF OF MEXICO",
-                "LIQUID EARTH > THIS KEYWORD > IS INVALID"
-            ],
-            type: 'place',
-            namespace: 'GCMD Keywords - Locations'
-        ],
-        [
-            values: ['SEASONAL'],
-            type: 'dataResolution',
-            namespace: 'Global Change Master Directory Keywords - Temporal Data Resolution'
-        ],
-        [
-            values: ['> 1 km'],
-            type: 'dataResolution',
-            namespace: 'GCMD Keywords - Vertical Data Resolution'
-        ]
+        'SIO > Super Important Organization',
+        'OSIO > OTHER SUPER IMPORTANT ORGANIZATION',
+        'SSIO > Super SIO (Super Important Organization)',
+        'EARTH SCIENCE SERVICES > ENVIRONMENTAL ADVISORIES > FIRE ADVISORIES > WILDFIRES',
+        'EARTH SCIENCE > This Keyword is > Misplaced and Invalid',
+        'This Keyword > Is Just > WRONG',
+        'Air temperature', 'Water temperature',
+        'Wind speed', 'Wind direction',
+        "EARTH SCIENCE > ATMOSPHERE > ATMOSPHERIC TEMPERATURE > SURFACE TEMPERATURE > DEW POINT TEMPERATURE",
+        "EARTH SCIENCE > OCEANS > SALINITY/DENSITY > SALINITY",
+        "EARTH SCIENCE > VOLCANOES > THIS KEYWORD > IS INVALID",
+        "Earth Science > Spectral/Engineering > microwave > Brightness Temperature",
+        "Earth Science > Spectral/Engineering > microwave > Temperature Anomalies",
+        "GEOGRAPHIC REGION > ARCTIC",
+        "OCEAN > ATLANTIC OCEAN > NORTH ATLANTIC OCEAN > GULF OF MEXICO",
+        "LIQUID EARTH > THIS KEYWORD > IS INVALID",
+        'SEASONAL',
+        '> 1 km'
     ]
     List serviceLinks = [
         [
@@ -305,7 +251,7 @@ class IndexingHelpersSpec extends Specification {
             linkFunction   : 'search'
         ]
     ]
-    List expectedServices =[ [
+    List expectedServices = [[
                                  title         : 'Multibeam Bathymetric Surveys ArcGIS Map Service',
                                  alternateTitle: 'Alternate Title for Testing',
                                  description   : "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green.",
@@ -333,18 +279,18 @@ class IndexingHelpersSpec extends Specification {
     assert validationResult.valid
     stagingDoc.fileIdentifier == 'gov.super.important:FILE-ID'
     stagingDoc.parentIdentifier == 'gov.super.important:PARENT-ID'
-    stagingDoc.hierarchyLevelName == 'granule'
+    stagingDoc.hierarchyLevelName == null // removed from search index
     stagingDoc.doi == 'doi:10.5072/FK2TEST'
-    stagingDoc.purpose == 'Provide quality super important data to the user community.'
-    stagingDoc.status == 'completed'
+    stagingDoc.purpose == null // removed from search index
+    stagingDoc.status == null // removed from search index
     stagingDoc.credit == null
     stagingDoc.title == 'Important Organization\'s Important File\'s Super Important Title'
-    stagingDoc.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
+    stagingDoc.alternateTitle == null // removed from search index
     stagingDoc.description == 'Wall of overly detailed, super informative, extra important text.'
     // Deep equality check
     stagingDoc.keywords as Set == expectedKeywords as Set
-    stagingDoc.accessionValues == [] as Set
-    stagingDoc.topicCategories == ['environment', 'oceans']
+    stagingDoc.accessionValues == null
+    stagingDoc.topicCategories == null
     stagingDoc.gcmdLocations == [
         'Geographic Region',
         'Geographic Region > Arctic',
@@ -356,26 +302,24 @@ class IndexingHelpersSpec extends Specification {
         'Liquid Earth > This Keyword',
         'Liquid Earth > This Keyword > Is Invalid'
     ] as Set
-    stagingDoc.gcmdInstruments == [] as Set
-    stagingDoc.gcmdPlatforms == [] as Set
-    stagingDoc.gcmdProjects == [] as Set
+    stagingDoc.gcmdInstruments == null
+    stagingDoc.gcmdPlatforms == null
+    stagingDoc.gcmdProjects == null
     stagingDoc.gcmdDataCenters == [
         'SIO > Super Important Organization',
         'OSIO > Other Super Important Organization',
         'SSIO > Super SIO (Super Important Organization)'
     ] as Set
-    stagingDoc.gcmdHorizontalResolution == [] as Set
+    stagingDoc.gcmdHorizontalResolution == null
     stagingDoc.gcmdVerticalResolution == ['> 1 Km'] as Set
     stagingDoc.gcmdTemporalResolution == ['Seasonal'] as Set
-    stagingDoc.temporalBounding == [
-        beginDate:'2005-05-09T00:00:00Z',
-        endDate:'2010-10-01T23:59:59Z',
-        beginYear:2005,
-        endYear:2010
-    ]
-    stagingDoc.spatialBounding  as String == [
-        type:'Polygon',
-        coordinates:[
+    stagingDoc.beginDate == '2005-05-09T00:00:00Z'
+    stagingDoc.endDate == '2010-10-01T23:59:59Z'
+    stagingDoc.beginYear == 2005
+    stagingDoc.endYear == 2010
+    stagingDoc.spatialBounding as String == [
+        type       : 'Polygon',
+        coordinates: [
             [
                 [-180.0, -90.0],
                 [180.0, -90.0],
@@ -386,34 +330,15 @@ class IndexingHelpersSpec extends Specification {
         ]
     ] as String
     stagingDoc.isGlobal == true
-    stagingDoc.acquisitionInstruments == [
-        [
-            instrumentIdentifier : 'SII > Super Important Instrument',
-            instrumentType       : 'sensor',
-            instrumentDescription: 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
-        ]
-    ]
-    stagingDoc.acquisitionOperations == [
-        [
-            operationDescription: null,
-            operationIdentifier : 'Super Important Project',
-            operationStatus     : null,
-            operationType       : null
-        ]
-    ]
+    stagingDoc.acquisitionInstruments == null
+    stagingDoc.acquisitionOperations == null
+    stagingDoc.acquisitionPlatforms == null
     stagingDoc.dataFormats.sort() == [
         [name: 'NETCDF', version: 'classic'],
         [name: 'NETCDF', version: '4'],
         [name: 'ASCII', version: null],
         [name: 'CSV', version: null]
     ].sort()
-    stagingDoc.acquisitionPlatforms == [
-        [
-            platformIdentifier : 'TS-18 > TumbleSat-18',
-            platformDescription: 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
-            platformSponsor    : ['Super Important Organization', 'Other (Kind Of) Important Organization']
-        ]
-    ]
     stagingDoc.links == [
         [
             linkName       : 'Super Important Access Link',
@@ -424,134 +349,62 @@ class IndexingHelpersSpec extends Specification {
         ]
     ]
 
-    stagingDoc.contacts == [
-        [
-            individualName  : 'John Smith',
-            organizationName: 'University of Awesome',
-            positionName    : 'Chief Awesomeness Officer',
-            role            : 'pointOfContact',
-            email           : 'john.smith@uoa.edu',
-            phone           : '555-555-5555'
-        ],
-        [
-            individualName  : 'Jane Doe',
-            organizationName: 'University of Awesome',
-            positionName    : 'VP of Awesome Behavior',
-            role            : 'distributor',
-            email           : 'jane.doe@uoa.edu',
-            phone           : '555-555-5556'
-        ],
+    stagingDoc.individualNames == [
+        'John Smith',
+        'Jane Doe',
+        'Jarianna Whackositz',
+        'Dr. Quinn McClojure Man',
+        'Zebulon Pike',
+        'Little Rhinoceros',
+        'Skeletor McSkittles',
     ] as Set
 
-    stagingDoc.creators == [
-        [
-            individualName  : 'Jarianna Whackositz',
-            organizationName: 'Secret Underground Society',
-            positionName    : 'Software Developer',
-            role            : 'resourceProvider',
-            email           : 'jw@mock-creator-email.org',
-            phone           : '555-555-5558'
-        ],
-        [
-            individualName  : 'Dr. Quinn McClojure Man',
-            organizationName: 'Soap Boxes Inc.',
-            positionName    : 'Software Developer',
-            role            : 'originator',
-            email           : 'dqmm@mock-creator-email.org',
-            phone           : '555-555-5559'
-        ],
-        [
-            individualName  : 'Zebulon Pike',
-            organizationName: 'Pikes Peak Inc.',
-            positionName    : 'Software Developer',
-            role            : 'principalInvestigator',
-            email           : 'zp@mock-creator-email.org',
-            phone           : '555-555-5560'
-        ],
-        [
-            individualName  : 'Little Rhinoceros',
-            organizationName: 'Alien Infested Spider Monkey Rescue',
-            positionName    : 'Software Developer',
-            role            : 'author',
-            email           : 'lr@mock-creator-email.org',
-            phone           : '555-555-5561'
-        ],
-        [
-            individualName  : 'Skeletor McSkittles',
-            organizationName: 'The Underworld',
-            positionName    : 'Bringer of Skittles',
-            role            : 'collaborator',
-            email           : 'sm@mock-creator-email.org',
-            phone           : '555-555-5562'
-        ],
-    ] as Set
-
-    stagingDoc.publishers == [
-        [
-            individualName  : null,
-            organizationName: 'Super Important Organization',
-            positionName    : null,
-            role            : 'publisher',
-            email           : 'email@sio.co',
-            phone           : '555-123-4567'
-        ],
+    stagingDoc.organizationNames == [
+        'University of Awesome',
+        'Secret Underground Society',
+        'Soap Boxes Inc.',
+        'Pikes Peak Inc.',
+        'Alien Infested Spider Monkey Rescue',
+        'The Underworld',
+        'Super Important Organization',
     ] as Set
 
     stagingDoc.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
-    stagingDoc.thumbnailDescription == 'Preview graphic'
+    stagingDoc.thumbnailDescription == null
     stagingDoc.creationDate == null
-    stagingDoc.revisionDate == '2011-01-02'
-    stagingDoc.publicationDate == '2010-11-15'
+    stagingDoc.revisionDate == null
+    stagingDoc.publicationDate == null
     stagingDoc.citeAsStatements.sort() == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]']
 
-    stagingDoc.crossReferences == [
-        [
-            title: '[TITLE OF PUBLICATION]',
-            date: '9999-01-01',
-            links: [[
-                        linkName: null,
-                        linkProtocol: null,
-                        linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
-                        linkDescription: '[DESCRIPTION OF URL]',
-                        linkFunction: 'information'
-                    ]]
-        ]
-    ]
+    stagingDoc.crossReferences == null
+    stagingDoc.largerWorks == null
 
-    stagingDoc.largerWorks == [
-        [
-            title: '[TITLE OF PROJECT]',
-            date: '9999-10-10',
-            links: []
-        ]
-    ]
+    stagingDoc.useLimitation == null
+    stagingDoc.legalConstraints == null
+    stagingDoc.accessFeeStatement == null
+    stagingDoc.orderingInstructions == null
+    stagingDoc.edition == null
 
-    stagingDoc.useLimitation == '[NOAA LEGAL STATEMENT]'
-    stagingDoc.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]']
-    stagingDoc.accessFeeStatement == 'template fees'
-    stagingDoc.orderingInstructions == 'template ordering instructions'
-    stagingDoc.edition == '[EDITION]'
-
-    stagingDoc.dsmmAccessibility == 4
-    stagingDoc.dsmmDataIntegrity == 0
-    stagingDoc.dsmmDataQualityAssessment == 2
-    stagingDoc.dsmmDataQualityAssurance == 3
-    stagingDoc.dsmmDataQualityControlMonitoring == 1
-    stagingDoc.dsmmPreservability == 5
-    stagingDoc.dsmmProductionSustainability == 4
-    stagingDoc.dsmmTransparencyTraceability == 2
-    stagingDoc.dsmmUsability == 3
-    stagingDoc.updateFrequency == 'asNeeded'
-    stagingDoc.presentationForm == 'tableDigital'
+    stagingDoc.dsmmAccessibility == null
+    stagingDoc.dsmmDataIntegrity == null
+    stagingDoc.dsmmDataQualityAssessment == null
+    stagingDoc.dsmmDataQualityAssurance == null
+    stagingDoc.dsmmDataQualityControlMonitoring == null
+    stagingDoc.dsmmPreservability == null
+    stagingDoc.dsmmProductionSustainability == null
+    stagingDoc.dsmmTransparencyTraceability == null
+    stagingDoc.dsmmUsability == null
+    stagingDoc.updateFrequency == null
+    stagingDoc.presentationForm == null
 
     discoveryMap.services == expectedServices
 //todo metadata team requested this structure for API, which is different than how we currently parse it
     stagingDoc.serviceLinks[0].title == 'Multibeam Bathymetric Surveys ArcGIS Map Service'
     stagingDoc.serviceLinks[0].links == serviceLinks.sort()
-    stagingDoc.services == ""
+    stagingDoc.services == null
   }
 
-  def "science keywords are parsed as expected from iso" () {
+  def "science keywords are parsed as expected from iso"() {
     when:
     Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(inputStreamKeywords.text)
     Map parsedKeywords = IndexingHelpers.prepareGcmdKeyword(discovery)
@@ -582,8 +435,7 @@ class IndexingHelpersSpec extends Specification {
     parsedKeywords.gcmdVerticalResolution == expectedGcmdKeywords.gcmdVerticalResolution
     parsedKeywords.gcmdTemporalResolution == expectedGcmdKeywords.gcmdTemporalResolution
 
-    and: "should recreate keywords with out accession values"
-    parsedKeywords.keywords.namespace.every { it != 'NCEI ACCESSION NUMBER' }
+    and: "should recreate keywords without accession values"
     parsedKeywords.keywords.size() == expectedKeywords.size()
   }
 
@@ -592,9 +444,8 @@ class IndexingHelpersSpec extends Specification {
     Map partiesMap = IndexingHelpers.prepareResponsibleParties(inputRecord.discovery.responsibleParties)
 
     then:
-    partiesMap.contacts == expectedResponsibleParties.contacts
-    partiesMap.creators == expectedResponsibleParties.creators
-    partiesMap.publishers == expectedResponsibleParties.publishers
+    partiesMap.individualNames == expectedIndividualNames
+    partiesMap.organizationNames == expectedOrganizationNames
   }
 
   def "When #situation.description, expected temporal bounding generated"() {
@@ -606,7 +457,7 @@ class IndexingHelpersSpec extends Specification {
 
     // Only include data that will be checked to cut down on size of below tables
     where:
-    situation                | expectedResult
+    situation               | expectedResult
     situations.instantDay   | [beginDate: '1999-12-31T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
     situations.instantYear  | [beginDate: '1999-01-01T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
     situations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000]
@@ -623,9 +474,11 @@ class IndexingHelpersSpec extends Specification {
 
     then:
     result.serviceLinks == []
-    result.accessionValues == [] as Set
+    result.accessionValues == null
 
-    result.temporalBounding == expectedTemporalBounding
+    expectedTemporalBounding.forEach({ k, v ->
+      result.get(k) == v
+    })
 
     result.keywords as Set == expectedKeywords as Set
     expectedGcmdKeywords.each { k, v ->
@@ -633,9 +486,8 @@ class IndexingHelpersSpec extends Specification {
     }
 
     result.responsibleParties == null
-    expectedResponsibleParties.each { k, v ->
-      assert result[k] == v
-    }
+    result.individualNames == expectedIndividualNames
+    result.organizationNames == expectedOrganizationNames
   }
 
   def "temporal bounding with #testCase dates is prepared correctly"() {
@@ -643,15 +495,20 @@ class IndexingHelpersSpec extends Specification {
     def bounding = TemporalBounding.newBuilder().setBeginDate(begin).setEndDate(end).build()
     def analysis = Analyzers.analyzeTemporalBounding(Discovery.newBuilder().setTemporalBounding(bounding).build())
 
-    expect:
-    IndexingHelpers.prepareDates(bounding, analysis) == result
+    when:
+    def result = IndexingHelpers.prepareDates(bounding, analysis)
+
+    then:
+    expected.forEach({ k, v ->
+      assert result.get(k) == v
+    })
 
     where:
-    testCase      | begin                   | end                     | result
-    'typical'     | '2005-05-09T00:00:00Z'  | '2010-10-01'            | [beginDate:'2005-05-09T00:00:00Z', endDate:'2010-10-01T23:59:59Z', beginYear:2005, endYear:2010]
-    'no timezone' | '2005-05-09T00:00:00'   | '2010-10-01T00:00:00'   | [beginDate:'2005-05-09T00:00:00Z', endDate:'2010-10-01T00:00:00Z', beginYear:2005, endYear:2010]
-    'paleo'       | '-100000001'            | '-1601050'              | [beginDate:null, endDate:'-1601050-12-31T23:59:59Z', beginYear:-100000001, endYear:-1601050]
-    'invalid'     | '1984-04-31'            | '1985-505-09T00:00:00Z' | [beginDate:null, endDate:null, beginYear:null, endYear:null]
+    testCase      | begin                  | end                     | expected
+    'typical'     | '2005-05-09T00:00:00Z' | '2010-10-01'            | [beginDate: '2005-05-09T00:00:00Z', endDate: '2010-10-01T23:59:59Z', beginYear: 2005, endYear: 2010]
+    'no timezone' | '2005-05-09T00:00:00'  | '2010-10-01T00:00:00'   | [beginDate: '2005-05-09T00:00:00Z', endDate: '2010-10-01T00:00:00Z', beginYear: 2005, endYear: 2010]
+    'paleo'       | '-100000001'           | '-1601050'              | [beginDate: null, endDate: '-1601050-12-31T23:59:59Z', beginYear: -100000001, endYear: -1601050]
+    'invalid'     | '1984-04-31'           | '1985-505-09T00:00:00Z' | [beginDate: null, endDate: null, beginYear: null, endYear: null]
   }
 
 
@@ -663,7 +520,7 @@ class IndexingHelpersSpec extends Specification {
     // Determine RecordType (aka granule or collection) from Discovery & Analysis info
     String parentIdentifier = discovery.parentIdentifier
     String hierarchyLevelName = discovery.hierarchyLevelName
-    if(hierarchyLevelName == null || hierarchyLevelName != 'granule' || !parentIdentifier) {
+    if (hierarchyLevelName == null || hierarchyLevelName != 'granule' || !parentIdentifier) {
       builder.setType(RecordType.collection)
     }
     else {
