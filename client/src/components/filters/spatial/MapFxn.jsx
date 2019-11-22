@@ -121,7 +121,9 @@ const MapFxn = props => {
     // this ensures the map tiles get loaded properly around the animation
     const property = event.propertyName
     if (property === 'max-height' || property === 'width') {
-      map.invalidateSize()
+      if(map) {
+        map.invalidateSize()
+      }
     }
     if (property === 'max-height') {
       resize()

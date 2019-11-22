@@ -109,8 +109,8 @@ export function useModal(open){
 
       // whenever we resize (we should update the width and height)
       setWidth(width)
-      console.log(`resize::height = ${height}`)
-      setHeight(height)
+      console.log(`resize::height = ${contentRect.height}`)
+      setHeight(contentRect.height)
 
       console.log('ORIGIN = ', origin)
       console.log(`left = ${left}, top = ${top}`)
