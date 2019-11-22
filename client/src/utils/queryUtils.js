@@ -64,15 +64,18 @@ const assembleFacetFilters = ({selectedFacets}) => {
 
 const assembleGeometryFilters = ({bbox, geoRelationship}) => {
   if (bbox) {
-    return {
-      type: 'geometry',
-      geometry: convertBboxToGeoJson(
-        bbox.west,
-        bbox.south,
-        bbox.east,
-        bbox.north
-      ).geometry,
-      relation: geoRelationship,
+    let geometry = convertBboxToGeoJson(
+      bbox.west,
+      bbox.south,
+      bbox.east,
+      bbox.north
+    )
+    if (geometry) {
+      return {
+        type: 'geometry',
+        geometry: geometry.geometry,
+        relation: geoRelationship,
+      }
     }
   }
 }
@@ -216,7 +219,7 @@ const codecs = [
     encode: bbox =>
       bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : '', // TODO move this to geoUtil?
     decode: text => convertBboxString(text),
-    encodable: getJSON => !_.isEmpty(getJSON),
+    encodable: bbox => !_.isEmpty(bbox),
   },
   {
     longKey: 'geoRelationship',
@@ -224,7 +227,7 @@ const codecs = [
     encode: text => encodeRelationship(text),
     decode: text => decodeRelationship(text),
     encodable: (text, queryState) => {
-      return !_.isEmpty(text) && !_.isEmpty(queryState.geoJSON)
+      return !_.isEmpty(text) && !_.isEmpty(queryState.bbox)
     },
   },
   {

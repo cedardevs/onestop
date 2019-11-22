@@ -3,7 +3,13 @@ import moment from 'moment/moment'
 
 // if the input represents a finite number, coerces and returns it, else null
 export const textToNumber = text => {
-  const number = text ? _.toNumber(text) : null
+  const number = text != null ? _.toNumber(text) : null
+  if (_.isNaN(number)) {
+    return null
+  }
+  if (_.isString(text) && _.isEmpty(text)) {
+    return null
+  }
   return _.isFinite(number) ? number : null
 }
 
@@ -32,13 +38,16 @@ export const convertYearToCE = (year, format) => {
   // check for SI year values:
   let yearSI = year.toLowerCase()
   if (yearSI.endsWith('ka')) {
-    value = textToNumber(yearSI.split('ka')[0]) * 1000
+    let num = textToNumber(yearSI.split('ka')[0])
+    value = num ? num * 1000 : NaN
   }
   else if (yearSI.endsWith('ma')) {
-    value = textToNumber(yearSI.split('ma')[0]) * 1000000
+    let num = textToNumber(yearSI.split('ma')[0])
+    value = num ? num * 1000000 : NaN
   }
   else if (yearSI.endsWith('ga')) {
-    value = textToNumber(yearSI.split('ga')[0]) * 1000000000
+    let num = textToNumber(yearSI.split('ga')[0])
+    value = num ? num * 1000000000 : NaN
   }
   if (!Number.isInteger(textToNumber(value))) {
     return year // otherwise we'll always validate against empty string...

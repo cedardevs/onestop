@@ -86,7 +86,7 @@ describe('The inputUtils', function(){
     ]
 
     testCases.forEach(c => {
-      it(`for input ${c.input}`, function(){
+      it(`for input '${c.input}'`, function(){
         expect(textToNumber(c.input)).toBe(c.output)
       })
     })

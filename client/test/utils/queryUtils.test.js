@@ -224,22 +224,11 @@ function collectionTestCases(){
     {
       name: 'a spatial search (default relation)',
       inputState: {
-        geoJSON: {
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ 100.0, 0.0 ],
-                [ 101.0, 0.0 ],
-                [ 101.0, 1.0 ],
-                [ 100.0, 1.0 ],
-                [ 100.0, 0.0 ],
-              ],
-            ],
-          },
-          properties: {
-            description: 'Valid test GeoJSON',
-          },
+        bbox: {
+          west: 100.0,
+          north: 1.0,
+          south: 0.0,
+          east: 101.0,
         },
         pageOffset: 0,
       },
@@ -273,22 +262,11 @@ function collectionTestCases(){
       name: 'a spatial search (intersects relation)',
       inputState: {
         geoRelationship: 'intersects',
-        geoJSON: {
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ 100.0, 0.0 ],
-                [ 101.0, 0.0 ],
-                [ 101.0, 1.0 ],
-                [ 100.0, 1.0 ],
-                [ 100.0, 0.0 ],
-              ],
-            ],
-          },
-          properties: {
-            description: 'Valid test GeoJSON',
-          },
+        bbox: {
+          west: 100.0,
+          north: 1.0,
+          south: 0.0,
+          east: 101.0,
         },
         pageOffset: 0,
       },
@@ -323,22 +301,11 @@ function collectionTestCases(){
       name: 'a spatial search (contains relation)',
       inputState: {
         geoRelationship: 'contains',
-        geoJSON: {
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ 100.0, 0.0 ],
-                [ 101.0, 0.0 ],
-                [ 101.0, 1.0 ],
-                [ 100.0, 1.0 ],
-                [ 100.0, 0.0 ],
-              ],
-            ],
-          },
-          properties: {
-            description: 'Valid test GeoJSON',
-          },
+        bbox: {
+          west: 100.0,
+          north: 1.0,
+          south: 0.0,
+          east: 101.0,
         },
         pageOffset: 0,
       },
@@ -373,22 +340,11 @@ function collectionTestCases(){
       name: 'a spatial search (within relation)',
       inputState: {
         geoRelationship: 'within',
-        geoJSON: {
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ 100.0, 0.0 ],
-                [ 101.0, 0.0 ],
-                [ 101.0, 1.0 ],
-                [ 100.0, 1.0 ],
-                [ 100.0, 0.0 ],
-              ],
-            ],
-          },
-          properties: {
-            description: 'Valid test GeoJSON',
-          },
+        bbox: {
+          west: 100.0,
+          north: 1.0,
+          south: 0.0,
+          east: 101.0,
         },
         pageOffset: 0,
       },
@@ -423,22 +379,11 @@ function collectionTestCases(){
       name: 'a spatial search (disjoint relation)',
       inputState: {
         geoRelationship: 'disjoint',
-        geoJSON: {
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ 100.0, 0.0 ],
-                [ 101.0, 0.0 ],
-                [ 101.0, 1.0 ],
-                [ 100.0, 1.0 ],
-                [ 100.0, 0.0 ],
-              ],
-            ],
-          },
-          properties: {
-            description: 'Valid test GeoJSON',
-          },
+        bbox: {
+          west: 100.0,
+          north: 1.0,
+          south: 0.0,
+          east: 101.0,
         },
         pageOffset: 0,
       },
@@ -496,22 +441,11 @@ function collectionTestCases(){
     {
       name: 'all filters applied',
       inputState: {
-        geoJSON: {
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ 100.0, 0.0 ],
-                [ 101.0, 0.0 ],
-                [ 101.0, 1.0 ],
-                [ 100.0, 1.0 ],
-                [ 100.0, 0.0 ],
-              ],
-            ],
-          },
-          properties: {
-            description: 'Valid test GeoJSON',
-          },
+        bbox: {
+          west: 100.0,
+          north: 1.0,
+          south: 0.0,
+          east: 101.0,
         },
         startDateTime: '2017-01-01',
         endDateTime: '2017-01-20',
@@ -697,22 +631,11 @@ function granuleCountTestCases(){
       name: 'collection and filters',
       inputState: {
         selectedCollectionIds: [ 'ABC123', 'XYZ789' ],
-        geoJSON: {
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ 100.0, 0.0 ],
-                [ 101.0, 0.0 ],
-                [ 101.0, 1.0 ],
-                [ 100.0, 1.0 ],
-                [ 100.0, 0.0 ],
-              ],
-            ],
-          },
-          properties: {
-            description: 'Valid test GeoJSON',
-          },
+        bbox: {
+          west: 100.0,
+          north: 1.0,
+          south: 0.0,
+          east: 101.0,
         },
         startDateTime: '2017-01-01',
         endDateTime: '2017-01-20',
@@ -791,25 +714,25 @@ function specialEncodingQueryTestCases(){
     },
     {
       name:
-        'geo relationship (intersects) does not encode without a geoJSON filter',
+        'geo relationship (intersects) does not encode without a geometry filter',
       string: '',
       state: Immutable.merge(initialState, {geoRelationship: 'intersects'}),
     },
     {
       name:
-        'geo relationship (within) does not encode without a geoJSON filter',
+        'geo relationship (within) does not encode without a geometry filter',
       string: '',
       state: Immutable.merge(initialState, {geoRelationship: 'within'}),
     },
     {
       name:
-        'geo relationship (disjoint) does not encode without a geoJSON filter',
+        'geo relationship (disjoint) does not encode without a geometry filter',
       string: '',
       state: Immutable.merge(initialState, {geoRelationship: 'disjoint'}),
     },
     {
       name:
-        'geo relationship (contains) does not encode without a geoJSON filter',
+        'geo relationship (contains) does not encode without a geometry filter',
       string: '',
       state: Immutable.merge(initialState, {geoRelationship: 'contains'}),
     },
@@ -922,21 +845,11 @@ function queryTestCases(){
       name: 'geometry filter',
       string: 'g=-83.9531,29.234,-70.5938,38.5527&gr=i', // defaults to intersects relation
       state: Immutable.merge(initialState, {
-        geoJSON: {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ -83.9531, 29.234 ],
-                [ -70.5938, 29.234 ],
-                [ -70.5938, 38.5527 ],
-                [ -83.9531, 38.5527 ],
-                [ -83.9531, 29.234 ],
-              ],
-            ],
-          },
+        bbox: {
+          west: -83.9531,
+          south: 29.234,
+          east: -70.5938,
+          north: 38.5527,
         },
       }),
     },
@@ -945,21 +858,11 @@ function queryTestCases(){
       string: 'g=-83,29,-70,38&gr=i', // 1-> 83, 2 -> 29, 3 -> 70, 4 ->38
       state: Immutable.merge(initialState, {
         geoRelationship: 'intersects',
-        geoJSON: {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ -83, 29 ],
-                [ -70, 29 ],
-                [ -70, 38 ],
-                [ -83, 38 ],
-                [ -83, 29 ],
-              ],
-            ],
-          },
+        bbox: {
+          west: -83,
+          south: 29,
+          east: -70,
+          north: 38,
         },
       }),
     },
@@ -968,21 +871,11 @@ function queryTestCases(){
       string: 'g=-83,29,-70,38&gr=c',
       state: Immutable.merge(initialState, {
         geoRelationship: 'contains',
-        geoJSON: {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ -83, 29 ],
-                [ -70, 29 ],
-                [ -70, 38 ],
-                [ -83, 38 ],
-                [ -83, 29 ],
-              ],
-            ],
-          },
+        bbox: {
+          west: -83,
+          south: 29,
+          east: -70,
+          north: 38,
         },
       }),
     },
@@ -991,21 +884,11 @@ function queryTestCases(){
       string: 'g=-83,29,-70,38&gr=w',
       state: Immutable.merge(initialState, {
         geoRelationship: 'within',
-        geoJSON: {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ -83, 29 ],
-                [ -70, 29 ],
-                [ -70, 38 ],
-                [ -83, 38 ],
-                [ -83, 29 ],
-              ],
-            ],
-          },
+        bbox: {
+          west: -83,
+          south: 29,
+          east: -70,
+          north: 38,
         },
       }),
     },
@@ -1014,21 +897,11 @@ function queryTestCases(){
       string: 'g=-83,29,-70,38&gr=d',
       state: Immutable.merge(initialState, {
         geoRelationship: 'disjoint',
-        geoJSON: {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ -83, 29 ],
-                [ -70, 29 ],
-                [ -70, 38 ],
-                [ -83, 38 ],
-                [ -83, 29 ],
-              ],
-            ],
-          },
+        bbox: {
+          west: -83,
+          south: 29,
+          east: -70,
+          north: 38,
         },
       }),
     },
@@ -1046,21 +919,11 @@ function queryTestCases(){
           platforms: [ 'DEM > Digital Elevation Model' ],
         },
         geoRelationship: 'contains',
-        geoJSON: {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [ -83, 29 ],
-                [ -70, 29 ],
-                [ -70, 38 ],
-                [ -83, 38 ],
-                [ -83, 29 ],
-              ],
-            ],
-          },
+        bbox: {
+          west: -83,
+          south: 29,
+          east: -70,
+          north: 38,
         },
       }),
     },
