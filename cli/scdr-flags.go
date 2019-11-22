@@ -9,10 +9,6 @@ import (
 
 const scdrFileCmd = "scdr-files"
 
-// const regexFileCmd = "re-file"
-const typeDescription = "Search only for files of the specified data collection using the collection's file identfier. Using this option is highly recommended for any kind of file searches. Collection identifiers are case sensitive."
-const regexDescription = "Locate files whose names match the case-insensitive regular expression REGEX. Only one regular expression is allowed, not longer than 100 characters."
-
 const scdrExampleCommands = `scdr-files --available -t 5b58de08-afef-49fb-99a1-9c5d5c003bde
 scdr-files --type 5b58de08-afef-49fb-99a1-9c5d5c003bde
 scdr-files --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"
@@ -35,7 +31,10 @@ func setScdrFlags() {
 	cli.AddFlag(scdrFileCmd, endTimeScdrFlag, "", endTimeScdrDescription, "")
 	cli.AddFlag(scdrFileCmd, availableFlag, availableShortFlag, availableDescription, false)
 	cli.AddFlag(scdrFileCmd, metadataFlag, metadataShortFlag, metadataDescription, "")
+	cli.AddFlag(scdrFileCmd, fileFlag, fileShortFlag, fileFlagDescription, "")
+	cli.AddFlag(scdrFileCmd, refileFlag, refileShortFlag, regexDescription, "")
 
+  //parseScdrRequestFlags in parsing-util.go
 	cli.RegisterBefore(scdrFileCmd, parseScdrRequestFlags)
 	cli.RegisterAfter(scdrFileCmd, func(cmd string, params *viper.Viper, resp *gentleman.Response, data interface{}) interface{} {
 		scdrResp := marshalScdrResponse(params, data)
@@ -49,23 +48,24 @@ func marshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
 	return translatedResponseMap
 }
 
-func transformResponse(params *viper.Viper, responseMap map[string]interface{}) map[string]interface{} {
+func transformResponse(params *viper.Viper, responseMap map[string]interface{}) map[string]interface{}{
 	translatedResponseMap := make(map[string]interface{})
+	scdrOuput := []string{}
 
-	if items, ok := responseMap["data"].([]interface{}); ok {
+	if items, ok := responseMap["data"].([]interface {}); ok && len(items) > 0 {
 		isSummary := params.GetString("available")
 		if isSummary == "true" {
 			count := getCount(responseMap)
-			translatedResponseMap["summary"] = buildSummary(items, count)
-		} else {
-			translatedResponseMap["links"] = buildLinkResponse(items)
+			scdrOuput = buildSummary(items, count)
+		}else{
+			scdrOuput = buildLinkResponse(items)
 		}
+		translatedResponseMap["scdr-ouput"] = scdrOuput
 	}
-
 	return translatedResponseMap
 }
 
-func getCount(responseMap map[string]interface{}) string {
+func getCount(responseMap map[string]interface{}) string{
 	meta := responseMap["meta"].(map[string]interface{})
 	count := ""
 	if totalGranules, ok := meta["totalGranules"].(float64); ok {
@@ -74,25 +74,24 @@ func getCount(responseMap map[string]interface{}) string {
 	return count
 }
 
-func buildSummary(items []interface{}, count string) []string {
+func buildSummary(items []interface{},  count string) []string {
 
 	summaryResponse := buildSummaryHeaders(items, count)
 
 	if len(count) > 0 {
-		count = count + " | "
-		countColumnWidth := 15 - len(count)
+		count = count +  " | "
+		//wip- 15 is hardcoded approx length of count headers
+		countColumnWidth :=  15 - len(count)
 		for i := 0; i < countColumnWidth; i++ {
 			count = " " + count
 		}
 	}
-
 	for _, v := range items {
 		value := v.(map[string]interface{})
 		attr := value["attributes"].(map[string]interface{})
-
-		id := value["id"].(string) + " | "
+		id := value["id"].(string)
+		id = reverseLookup(id) +  " | "
 		fileId := attr["fileIdentifier"].(string) + " | "
-
 		description := attr["title"].(string)
 		row := id + fileId + count + description
 
@@ -100,6 +99,16 @@ func buildSummary(items []interface{}, count string) []string {
 	}
 
 	return summaryResponse
+}
+
+func reverseLookup(id string) string{
+	scdrTypeIds := viper.Get("scdr-types").(map[string]interface{})
+	for k, v := range scdrTypeIds{
+		if id == v {
+			return k
+		}
+	}
+	return id
 }
 
 func buildLinkResponse(items []interface{}) []string {
@@ -118,16 +127,13 @@ func buildLinkResponse(items []interface{}) []string {
 
 func buildSummaryHeaders(items []interface{}, count string) []string {
 	uuidHeader, uuidSubHeader := buildIdHeaders(items)
-
-	fileIdentifierHeader, fileIdentifierSubHeader := buildFileIdHeaders(items)
+  fileIdentifierHeader, fileIdentifierSubHeader := buildFileIdHeaders(items)
 	descriptionHeader, descriptionSubHeader := buildDescriptionHeaders(items)
 	countHeader, countSubHeader := buildCountHeader(count)
-
 	summaryResponse := []string{
 		uuidHeader + fileIdentifierHeader + countHeader + descriptionHeader,
 		uuidSubHeader + fileIdentifierSubHeader + countSubHeader + descriptionSubHeader,
 	}
-
 	return summaryResponse
 }
 
@@ -140,46 +146,45 @@ func buildIdHeaders(items []interface{}) (string, string) {
 	return uuidHeader, uuidSubHeader
 }
 
-func buildFileIdHeaders(items []interface{}) (string, string) {
+func buildFileIdHeaders(items[]interface{}) (string, string){
 	fileIdentifierHeader := "FileIdentifier"
 	fileIdentifierSubHeader := "--------------"
 	fileIdentifierLength := len(items[0].(map[string]interface{})["attributes"].(map[string]interface{})["fileIdentifier"].(string))
-	fileIdentifierHeader, fileIdentifierSubHeader = formatHeader(fileIdentifierHeader, fileIdentifierSubHeader, fileIdentifierLength)
-
+  fileIdentifierHeader, fileIdentifierSubHeader = formatHeader(fileIdentifierHeader, fileIdentifierSubHeader, fileIdentifierLength)
 	return fileIdentifierHeader, fileIdentifierSubHeader
 }
 
-func buildDescriptionHeaders(items []interface{}) (string, string) {
+func buildDescriptionHeaders(items[]interface{}) (string, string){
 	descriptionHeader := "Description"
 	descriptionSubHeader := "-----------"
 	descriptionLength := len(items[0].(map[string]interface{})["attributes"].(map[string]interface{})["title"].(string))
+	if descriptionLength > 100 {
+		descriptionLength = 100
+	}
 	descriptionHeader, descriptionSubHeader = formatHeader(descriptionHeader, descriptionSubHeader, descriptionLength)
-
 	return descriptionHeader, descriptionSubHeader
 }
 
-func buildCountHeader(count string) (string, string) {
+func buildCountHeader(count string)(string, string){
 	countHeader := ""
 	countSubHeader := ""
 	countLength := len(count)
-
-	//count does not appear in a summary view without --type
-	if countLength > 0 {
+  //count does not appear in a summary view without --type
+	if countLength >  0 {
 		countHeader = "Total files "
 		countSubHeader = "------------"
 		countHeader, countSubHeader = formatHeader(countHeader, countSubHeader, countLength)
 	}
-
 	return countHeader, countSubHeader
 }
 
-func formatHeader(header string, subHeader string, columnWidth int) (string, string) {
-	headerLength := len(header)
-	for i := 0; i <= columnWidth; i++ {
+func formatHeader(header string, subHeader string, columnWidth int) (string, string){
+  headerLength := len(header)
+	for i := 0 ; i <= columnWidth; i++  {
 		if i == columnWidth {
 			header = header + " | "
 			subHeader = subHeader + " | "
-		} else {
+		}else{
 			if i >= headerLength {
 				header = header + " "
 				subHeader = "-" + subHeader

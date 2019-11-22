@@ -101,7 +101,7 @@ func TestParseDateTime(t *testing.T) {
 
 	expectedResults := [][]string{expectedResult1, expectedResult2, expectedResult3}
 	for i := 1; i < len(expectedResults); i++ {
-		got := parseDateArgs(paramList[i])
+		got := parseDate(paramList[i])
 		if got[0] != expectedResults[i][0] {
 			log.Info().Msg(got[0])
 			log.Info().Msg(expectedResults[i][0])

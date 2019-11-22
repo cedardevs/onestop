@@ -11,6 +11,61 @@ import (
 	"strings"
 )
 
+func scdrRegister() {
+	root := cli.Root
+	cli.Root.Short = "SCDR OneStop Search API"
+	cli.Root.Long = cli.Markdown("Search Collections and Granules! More information on search request and responses available at [Search API Requests](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests) and [Search API Responses](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Responses).")
+
+	//support for scdr-files type
+	viper.SetConfigName("scdr-files-config")
+	viper.AddConfigPath("/etc/scdr-files/")
+	viper.AddConfigPath("$HOME/.scdr-files")
+	viper.AddConfigPath(".")
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
+
+	func() {
+		params := viper.New()
+
+		//scdrExampleCommands ini scdr-files.go
+		var examples string = scdrExampleCommands
+
+		cmd := &cobra.Command{
+			Use:     "scdr-files",
+			Short:   "An SCDR interface for OneStop",
+			Long:    cli.Markdown("Supports SCDR syntax for searching OneStop. See flags for currently supported features."),
+			Example: examples,
+			Args:    cobra.MinimumNArgs(0),
+			Run: func(cmd *cobra.Command, args []string) {
+				for _, arg := range args {
+					log.Info().Msg(arg)
+				}
+				body, err := cli.GetBody("application/json", args[0:])
+				if err != nil {
+					log.Fatal().Err(err).Msg("Unable to get body")
+				}
+
+				_, decoded, err := ScdrSearch(params, body)
+				if err != nil {
+					log.Fatal().Err(err).Msg("Error calling operation")
+				}
+				scdrOutputFormatAndPrint(params, decoded)
+
+			},
+		}
+		root.AddCommand(cmd)
+
+		cli.SetCustomFlags(cmd)
+
+		if cmd.Flags().HasFlags() {
+			params.BindPFlags(cmd.Flags())
+		}
+
+	}()
+}
+
 func ScdrSearch(params *viper.Viper, body string) (*gentleman.Response, map[string]interface{}, error) {
 	handlerPath := "scdr-files"
 
@@ -52,7 +107,6 @@ func translateArgs(params *viper.Viper) *viper.Viper {
 		return params
 	}
 	scdrTypeIds := viper.Get("scdr-files").(map[string]interface{})
-	// fmt.Println(scdrTypeIds["C01501"])
 	uuid := scdrTypeIds[strings.ToLower(typeArg)]
 	params.Set("type", uuid)
 	return params
@@ -93,74 +147,12 @@ func determineEndpoint(params *viper.Viper, isSummaryWithType bool) string {
 	return endpoint
 }
 
-func scdrRegister() {
-	root := cli.Root
-	cli.Root.Short = "SCDR OneStop Search API"
-	cli.Root.Long = cli.Markdown("Search Collections and Granules! More information on search request and responses available at [Search API Requests](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests) and [Search API Responses](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Responses).")
-
-	//support for scdr-files type
-	viper.SetConfigName("scdr-files-config")
-	viper.AddConfigPath("/etc/scdr-files/")
-	viper.AddConfigPath("$HOME/.scdr-files")
-	viper.AddConfigPath(".")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
-	}
-
-	func() {
-		params := viper.New()
-
-		var examples string = scdrExampleCommands
-
-		cmd := &cobra.Command{
-			Use:     "scdr-files",
-			Short:   "An SCDR interface for OneStop",
-			Long:    cli.Markdown("Supports SCDR syntax for searching OneStop. See flags for currently supported features."),
-			Example: examples,
-			Args:    cobra.MinimumNArgs(0),
-			Run: func(cmd *cobra.Command, args []string) {
-				for _, arg := range args {
-					log.Info().Msg(arg)
-				}
-				body, err := cli.GetBody("application/json", args[0:])
-				if err != nil {
-					log.Fatal().Err(err).Msg("Unable to get body")
-				}
-
-				_, decoded, err := ScdrSearch(params, body)
-				if err != nil {
-					log.Fatal().Err(err).Msg("Error calling operation")
-				}
-				scdrOutputFormatAndPrint(params, decoded)
-
-			},
-		}
-		root.AddCommand(cmd)
-
-		cli.SetCustomFlags(cmd)
-
-		if cmd.Flags().HasFlags() {
-			params.BindPFlags(cmd.Flags())
-		}
-
-	}()
-}
-
 func scdrOutputFormatAndPrint(params *viper.Viper, decoded map[string]interface{}) {
-	if params.GetString(availableFlag) == "false" {
-		if links, ok := decoded["links"].([]string); ok {
-			for _, link := range links {
-				fmt.Println(strings.TrimSpace(link))
-			}
-		} else {
-			fmt.Println("No results")
+	if output, ok := decoded["scdr-ouput"].([]string); ok {
+		for _, row := range output {
+			fmt.Println(strings.TrimSpace(row))
 		}
 	} else {
-		if summary, ok := decoded["summary"].([]string); ok {
-			for _, row := range summary {
-				fmt.Println(strings.TrimSpace(row))
-			}
-		}
+		fmt.Println("No results")
 	}
 }

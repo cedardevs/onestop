@@ -9,11 +9,12 @@ import (
 	"time"
 )
 
+//this function is pre-request RegisterBefore
 func parseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
 	filters := []string{}
 	queries := []string{}
 
-	dateTimeFilter := parseDateArgs(params)
+	dateTimeFilter := parseDate(params)
 	filters = append(filters, dateTimeFilter...)
 	startEndTimeFilter := parseStartAndEndTime(params)
 	filters = append(filters, startEndTimeFilter...)
@@ -29,42 +30,55 @@ func parseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Re
 }
 
 func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
-	filters := []string{}
+
+  //apply a default filter for STAR
+	filters := []string{"{\"type\":\"facet\",\"name\":\"dataCenters\",\"values\":[\"DOC/NOAA/NESDIS/STAR > Center for Satellite Applications and Research, NESDIS, NOAA, U.S. Department of Commerce\"]}"}
 	queries := []string{}
 
-	isSummaryWithType := params.GetString(availableFlag) == "true" && len(params.GetString("type")) > 0
+	// isSummaryWithType := params.GetString(availableFlag) == "true" && len(params.GetString("type")) > 0
 
-	if isSummaryWithType { // then it's a GET, not a POST
-		req.BodyString("")
-	} else {
-		dataCenterFacetFilter := parseAvailableFlag(params)
-		filters = append(filters, dataCenterFacetFilter...)
-		dateTimeFilter := parseDateArgs(params)
-		filters = append(filters, dateTimeFilter...)
-		startEndTimeFilter := parseStartAndEndTime(params)
-		filters = append(filters, startEndTimeFilter...)
-		geoSpatialFilter := parsePolygon(params)
-		filters = append(filters, geoSpatialFilter...)
-		parentIdentifierQuery := parseParentIdentifier(params)
-		queries = append(queries, parentIdentifierQuery...)
-		query := parseTextQuery(params)
-		queries = append(queries, query...)
-		requestMeta := parseRequestMeta(params)
+	collectionIdFilter := parseTypeFlag(params)
+	filters = append(filters, collectionIdFilter...)
+	// datacenterFilter := parseAvailableFlag(params)
+	// filters = append(filters, datacenterFilter...)
+	dateTimeFilter := parseDate(params)
+	filters = append(filters, dateTimeFilter...)
+	startEndTimeFilter := parseStartAndEndTime(params)
+	filters = append(filters, startEndTimeFilter...)
+	geoSpatialFilter := parsePolygon(params)
+	filters = append(filters, geoSpatialFilter...)
+	fileNameQuery := parseFileName(params)
+	queries = append(queries, fileNameQuery...)
+	refileNameQuery := parseRegexFileName(params)
+	queries = append(queries, refileNameQuery...)
+	query := parseTextQuery(params)
+	queries = append(queries, query...)
+	requestMeta := parseRequestMeta(params)
 
-		if len(queries) > 0 || len(filters) > 0 {
-			req.AddHeader("content-type", "application/json")
-			req.BodyString("{\"summary\":false, \"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
-		}
+	if len(queries) > 0 || len(filters) > 0 {
+		req.AddHeader("content-type", "application/json")
+		req.BodyString("{\"summary\":false, \"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
 	}
+
 }
 
-func parseAvailableFlag(params *viper.Viper) []string {
+func parseTypeFlag(params *viper.Viper) []string {
 	facetFilter := []string{}
-	if params.GetString(availableFlag) == "true" {
-		facetFilter = []string{"{\"type\":\"facet\",\"name\":\"dataCenters\",\"values\":[\"DOC/NOAA/NESDIS/STAR > Center for Satellite Applications and Research, NESDIS, NOAA, U.S. Department of Commerce\"]}"}
+	typeArg := params.GetString(typeFlag)
+	if len(typeArg) > 0 {
+		// {"type":"collection","values":["88888888-8888-8888-8888-888888888888"]}
+		facetFilter = []string{"{\"type\":\"collection\", \"values\":[\"" + typeArg + "\"]}"}
 	}
 	return facetFilter
 }
+
+// func parseAvailableFlag(params *viper.Viper) []string {
+// 	facetFilter := []string{}
+// 	if params.GetString(availableFlag) == "true" {
+// 		facetFilter = []string{"{\"type\":\"facet\",\"name\":\"dataCenters\",\"values\":[\"DOC/NOAA/NESDIS/STAR > Center for Satellite Applications and Research, NESDIS, NOAA, U.S. Department of Commerce\"]}"}
+// 	}
+// 	return facetFilter
+// }
 
 func parseRequestMeta(params *viper.Viper) string {
 	max := params.GetString(maxFlag)
@@ -79,6 +93,7 @@ func parseRequestMeta(params *viper.Viper) string {
 	return page
 }
 
+//support for stime and start-time, same same
 func parseStartAndEndTime(params *viper.Viper) []string {
 	filter := []string{}
 	startTimeArg, endTimeArg := parseTimeFlags(params)
@@ -180,7 +195,7 @@ func parseDateFormat(dateString string) string {
 	return formattedDate
 }
 
-func parseDateArgs(params *viper.Viper) []string {
+func parseDate(params *viper.Viper) []string {
 	//parse date flags, add filter
 	date := params.GetString(dateFilterFlag)
 	if len(date) == 0 {
@@ -199,12 +214,20 @@ func parseDateArgs(params *viper.Viper) []string {
 	return []string{"{\"type\":\"datetime\", \"after\":\"" + beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
-func parseParentIdentifier(params *viper.Viper) []string {
-	parentId := params.GetString(typeFlag)
-	if len(parentId) == 0 {
+func parseFileName(params *viper.Viper) []string {
+	fileName := params.GetString(fileFlag)
+	if len(fileName) == 0 {
 		return []string{}
 	}
-	return []string{"{\"type\":\"queryText\", \"value\":\"parentIdentifier:\\\"" + parentId + "\\\"\"}"}
+	return []string{"{\"type\":\"queryText\", \"value\":\"title:" + fileName + "\"}"}
+}
+
+func parseRegexFileName(params *viper.Viper) []string {
+	regex := params.GetString(refileFlag)
+	if len(regex) == 0 {
+		return []string{}
+	}
+	return []string{"{\"type\":\"queryText\", \"value\":\"title:/" + regex + "/\"}"}
 }
 
 func parseTextQuery(params *viper.Viper) []string {
