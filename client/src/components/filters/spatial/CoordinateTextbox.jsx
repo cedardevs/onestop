@@ -1,10 +1,9 @@
 import React, {useState} from 'react'
-import {FilterColors} from '../../../style/defaultStyles'
+import FlexRow from '../../common/ui/FlexRow'
+import {FilterColors, SiteColors} from '../../../style/defaultStyles'
 import {fontFamilyMonospace} from '../../../utils/styleUtils'
 
 const styleInputRow = {
-  display: 'flex',
-  flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
   margin: '0.618em 0',
@@ -31,26 +30,41 @@ const styleTextBox = {
   borderRadius: '0.309em',
 }
 
-const CoordinateTextbox = ({name, value, placeholder, onChange}) => {
+const styleInputValidity = isValid => {
+  return {
+    paddingLeft: '5px',
+    width: '1em',
+    color: isValid ? SiteColors.VALID : SiteColors.WARNING,
+  }
+}
+
+const CoordinateTextbox = ({name, value, valid, placeholder, onChange}) => {
   let id = `MapFilterCoordinatesInput::${name}`
   return (
-    <div style={styleInputRow}>
-      <label htmlFor={id} style={styleLabel}>
-        {_.capitalize(name)}
-      </label>
-      <div style={styleCoordWrapper}>
-        <input
-          type="text"
-          id={id}
-          name={name}
-          placeholder={placeholder}
-          aria-placeholder={placeholder}
-          value={value}
-          style={styleTextBox}
-          onChange={onChange}
-        />
-      </div>
-    </div>
+    <FlexRow
+      style={styleInputRow}
+      items={[
+        <label key="label" htmlFor={id} style={styleLabel}>
+          {_.capitalize(name)}
+        </label>,
+        <div key="input" style={styleCoordWrapper}>
+          <input
+            type="text"
+            id={id}
+            name={name}
+            placeholder={placeholder}
+            aria-placeholder={placeholder}
+            aria-invalid={!valid}
+            value={value}
+            style={styleTextBox}
+            onChange={onChange}
+          />
+        </div>,
+        <span key="valid" aria-hidden="true" style={styleInputValidity(valid)}>
+          {valid ? '✓' : '✖'}
+        </span>,
+      ]}
+    />
   )
 }
 export default CoordinateTextbox

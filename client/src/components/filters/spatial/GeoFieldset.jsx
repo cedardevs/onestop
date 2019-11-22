@@ -15,26 +15,30 @@ const GeoFieldset = ({bounds, handleKeyDown}) => {
           <CoordinateTextbox
             name="west"
             placeholder="-180.0 to 180.0"
-            value={bounds.west}
-            onChange={e => bounds.setWest(e.target.value)}
+            value={bounds.west.get}
+            valid={bounds.west.valid}
+            onChange={e => bounds.west.set(e.target.value)}
           />
           <CoordinateTextbox
             name="south"
             placeholder=" -90.0 to  90.0"
-            value={bounds.south}
-            onChange={e => bounds.setSouth(e.target.value)}
+            value={bounds.south.get}
+            valid={bounds.south.valid}
+            onChange={e => bounds.south.set(e.target.value)}
           />
           <CoordinateTextbox
             name="east"
             placeholder="-180.0 to 180.0"
-            value={bounds.east}
-            onChange={e => bounds.setEast(e.target.value)}
+            value={bounds.east.get}
+            valid={bounds.east.valid}
+            onChange={e => bounds.east.set(e.target.value)}
           />
           <CoordinateTextbox
             name="north"
             placeholder=" -90.0 to  90.0"
-            value={bounds.north}
-            onChange={e => bounds.setNorth(e.target.value)}
+            value={bounds.north.get}
+            valid={bounds.north.valid}
+            onChange={e => bounds.north.set(e.target.value)}
           />
         </FilterFieldset>
       </form>

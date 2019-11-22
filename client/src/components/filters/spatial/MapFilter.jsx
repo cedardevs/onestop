@@ -10,13 +10,11 @@ import GeoRelationIllustration from './GeoRelationIllustration'
 import Checkbox from '../../common/input/Checkbox'
 import Button from '../../common/input/Button'
 import {Key} from '../../../utils/keyboardUtils'
-
 import {SiteColors} from '../../../style/defaultStyles'
-
 import mapIcon from '../../../../img/font-awesome/white/svg/globe.svg'
-
 import {styleFilterPanel, styleFieldsetBorder} from '../common/styleFilters'
 import ApplyClearRow from '../common/ApplyClearRow'
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 
 const styleMapFilter = {
   ...styleFilterPanel,
@@ -32,8 +30,8 @@ const styleButtonShowMap = {
   fontSize: '1.05em',
 }
 
-const warningStyle = warning => {
-  if (_.isEmpty(warning)) {
+const warningStyle = valid => {
+  if (valid) {
     return {
       display: 'none',
     }
@@ -64,13 +62,6 @@ const MapFilter = ({
   submit,
 }) => {
   const [ bounds ] = useBoundingBox(bbox)
-  const [ warning, setWarning ] = useState('')
-  useEffect(
-    () => {
-      setWarning('')
-    },
-    [ bbox ]
-  )
 
   useEffect(() => {
     return () => {
@@ -88,20 +79,9 @@ const MapFilter = ({
   )
 
   const applyGeometry = () => {
-    if (bounds.asBbox()) {
-      // Validation of coordinates is performed in bbox to GeoJSON conversion (geoUtils)
-      handleNewGeometry(bounds.asBbox()) // prevents number vs string js type confusion!
+    if (bounds.valid && bounds.asBbox()) {
+      handleNewGeometry(bounds.asBbox())
       submit()
-    }
-    else if (bounds.west && bounds.south && bounds.east && bounds.north) {
-      setWarning(
-        'Invalid coordinates entered. Valid longitudes are between -180 and 180. Valid latitudes are between -90 and 90, where North is always greater than South.'
-      )
-    }
-    else {
-      setWarning(
-        'Incomplete coordinates entered. Ensure all four fields are populated.'
-      )
     }
   }
 
@@ -111,7 +91,6 @@ const MapFilter = ({
 
     // need to clear local state, since it's not reflected in redux if there was an error:
     bounds.clear()
-    setWarning('')
   }
 
   const toggleExcludeGlobalResults = () => {
@@ -164,11 +143,14 @@ const MapFilter = ({
         />,
         <div
           key="MapFilter::InputColumn::Warning"
-          style={warningStyle(warning)}
-          role="alert"
+          style={warningStyle(bounds.valid)}
+          aria-hidden={true}
         >
-          {warning}
+          {bounds.reason}
         </div>,
+        <LiveAnnouncer key="alert::annoucement">
+          <LiveMessage message={bounds.reason} aria-live="polite" />
+        </LiveAnnouncer>,
         <FormSeparator key="MapFilter::InputColumn::OR" text="OR" />,
         buttonShowMap,
       ]}
