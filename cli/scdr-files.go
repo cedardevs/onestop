@@ -51,7 +51,6 @@ func translateArgs(params *viper.Viper) *viper.Viper {
 	if len(typeArg) == 0 {
 		return params
 	}
-
 	scdrTypeIds := viper.Get("scdr-files").(map[string]interface{})
 	// fmt.Println(scdrTypeIds["C01501"])
 	uuid := scdrTypeIds[strings.ToLower(typeArg)]
@@ -99,7 +98,7 @@ func scdrRegister() {
 	cli.Root.Short = "SCDR OneStop Search API"
 	cli.Root.Long = cli.Markdown("Search Collections and Granules! More information on search request and responses available at [Search API Requests](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests) and [Search API Responses](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Responses).")
 
-//support for scdr-files type
+	//support for scdr-files type
 	viper.SetConfigName("scdr-files-config")
 	viper.AddConfigPath("/etc/scdr-files/")
 	viper.AddConfigPath("$HOME/.scdr-files")
@@ -146,10 +145,9 @@ func scdrRegister() {
 		}
 
 	}()
-
 }
 
-func scdrOutputFormatAndPrint(params *viper.Viper, decoded map[string]interface{}){
+func scdrOutputFormatAndPrint(params *viper.Viper, decoded map[string]interface{}) {
 	if params.GetString(availableFlag) == "false" {
 		if links, ok := decoded["links"].([]string); ok {
 			for _, link := range links {

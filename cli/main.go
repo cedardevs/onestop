@@ -15,7 +15,7 @@ func main() {
 
 	cli.Client.Use(gtls.Config(&tls.Config{InsecureSkipVerify: true}))
 
-  //scdr-files.go
+	//scdr-files.go
 	setScdrFlags()
 	scdrRegister()
 
