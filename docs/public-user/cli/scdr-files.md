@@ -18,8 +18,8 @@ and without year (defaults to current year)-
 
 Area-
 
-`cli  scdr-files --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"`
+`cli scdr-files --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"`
 
 Text Query -
 
-`cli  scdr-files --query="parentIdentifier:/.*NDBC-COOPS/"`
+`cli scdr-files --query="parentIdentifier:/.*NDBC-COOPS/"`

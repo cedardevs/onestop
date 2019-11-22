@@ -46,9 +46,11 @@ or
 
 or
 
-`export PATH=$PATH:~/go/bin` after which you can just calll `cli`
+`export PATH=$PATH:~/go/bin` after which you can just call `cli`
 
 ## Usage
+
+**Note: the following example commands assume you installed the cli using `go get` mentioned above.**
 
 ### Verbose
 
@@ -61,52 +63,81 @@ Add the `--server` flag:
 - `--server=https://sciapps.colorado.edu/onestop-search/`
 - `--server=localhost:8080/onestop-search/`
 
-###
+### Get
 
-Get collection by id -
+The `getcollectionbyid`, `getgranulebyid` and `getflattenedgranulebyid` work the same way.
+
+Get collection by id:
 
 `cli getcollectionbyid ecb087a6-25cf-4bfa-8165-2d374c701646`
 
-Get collection by file identifier -
+### Search
 
-`cli searchcollection --query="fileIdentifier:/.*NDBC-COOPS/"`
+The `searchcollection`, `searchgranule` and `searchflattenedgranule` work the same way.
 
-or the longhand version -
+There are two ways to specify queries and filters. A shorthand version and a longhand version. The shorthand uses flags, and the longhand is based on the JSON that would be required to curl the API directly.
+
+#### by identifier
+
+Find collection by file identifier:
+
+`cli searchcollection --query="fileIdentifier:/gov.noaa.nodc:NDBC-COOPS/"`
+
+which is equivalent to the longhand version:
 
 `cli searchcollection queries[]{type:queryText, value:fileIdentifier:\"gov.noaa.nodc:NDBC-COOPS\"}`
 
-Search granule with query text / parent identifier -
+#### by parent identifier
+
+Search granule with parent identifier:
 
 `cli searchgranule --query="parentIdentifier:\\"\"gov.noaa.nodc:NDBC-COOPS\\"\""`
 
+which is equivalent to:
+
 `cli searchgranule queries[]{type:queryText, value:parentIdentifier:\"gov.noaa.nodc:NDBC-COOPS\"}`
 
-Search granule with regex -  
+#### by date
 
-`cli searchgranule --query="parentIdentifier:/.*NDBC-COOPS/"`
-
-`cli searchgranule --verbose queries[]{type:queryText, value:parentIdentifier:/.*NDBC-COOPS/}`
-
-Search collections by date -  
+Search collections start date:
 
 `cli searchcollection  --start-time=2016/03/02`
 
-`cli searchcollection filters[]{ type:datetime, after:2017-01-01T00:00:00Z}`
+which is equivalent to:
+
+`cli searchcollection filters[]{ type:datetime, after:2016-03-02T00:00:00Z}`
+
+Or search by both start and end date:
+
+`cli searchcollection  --start-time=2016/03/02 --end-time=2017/02/01`
+
+which is equivalent to:
 
 `cli searchcollection filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z}`
 
-Search collections with a geometry filter -
+#### by geometry
+
+Shorthand geometries use WKT, as opposed to the longhand which is a polygon (such as would be represented in geoJSON).
+
+Search collections with a geometry filter:
 
 `cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"`
 
+which is equivalent to:
+
 `cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522`
 
-Complex collections search with a query text, spatial, and temporal filter -
+#### combinations
+
+
+Collections search with a query and filters:
 
 `cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --query="satellite"`
 
+Longhand query, including the `--verbose` flag to provide more logging:
+
 `cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522,  queries[]{type:queryText, value:satellite}  --verbose`
 
-For complex query and filter structure, refer to these docs for the short hand documentation - https://github.com/danielgtaylor/openapi-cli-generator/tree/master/shorthand
+For complex query and filter structure, refer to the [short hand documentation](https://github.com/danielgtaylor/openapi-cli-generator/tree/master/shorthand).
 
 Note: As it is now, you cannot combine the flags with json shorthand. e.g. This will not work - `cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --query="satellite" filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} `
