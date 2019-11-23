@@ -2,12 +2,13 @@ import {useState, useEffect} from 'react'
 import {constructBbox, textToNumber} from '../../../utils/inputUtils'
 
 function useCoordinate(name, defaultValue, typeName, limit){
-  const [ value, setValue ] = useState(defaultValue)
+  const [ value, setValue ] = useState(`${defaultValue}`)
+  const [ numeric, setNumeric ] = useState(null)
   const [ valid, setValid ] = useState(true)
   const [ reason, setReason ] = useState('')
 
   const reset = () => {
-    setValue(defaultValue)
+    setValue(`${defaultValue}`)
   }
 
   useEffect(
@@ -19,6 +20,8 @@ function useCoordinate(name, defaultValue, typeName, limit){
         return
       }
       const num = textToNumber(value)
+      setNumeric(num)
+
       if (num == null) {
         setValid(false)
         setReason(`${name}: Invalid coordinates entered.`)
@@ -43,8 +46,8 @@ function useCoordinate(name, defaultValue, typeName, limit){
     valid: valid,
     reason: reason,
     reset: reset,
-    isSet: () => textToNumber(value) != null,
-    asNumber: () => textToNumber(value),
+    isSet: () => numeric != null,
+    number: numeric,
   }
 }
 
@@ -112,18 +115,18 @@ export function useBoundingBox(bbox){
       return false
     }
     if (north.isSet() && south.isSet() && east.isSet() && west.isSet()) {
-      if (north.asNumber() < south.asNumber()) {
+      if (north.number < south.number) {
         setValidCumulative(false)
         setReasonCumulative('North is always greater than South.')
         return false
       }
 
-      if (north.asNumber() == south.asNumber()) {
+      if (north.number == south.number) {
         setValidCumulative(false)
         setReasonCumulative('North cannot be the same as South.')
         return false
       }
-      if (east.asNumber() == west.asNumber()) {
+      if (east.number == west.number) {
         setValidCumulative(false)
         setReasonCumulative('East cannot be the same as West.')
         return false
@@ -152,7 +155,14 @@ export function useBoundingBox(bbox){
       reason: {individual: reasonIndividual, cumulative: reasonCumulative},
       validate: validate,
       clear: clear,
-      asBbox: () => constructBbox(west.get, south.get, east.get, north.get), // constructBbox is responsible for string->num type conversion (although maybe that should me moved internal to this effect, since I have to convert to numbers for validation anyway...) TODO
+      asBbox: () => {
+        return {
+          west: west.number,
+          south: south.number,
+          east: east.number,
+          north: north.number,
+        }
+      },
     },
   ]
 }

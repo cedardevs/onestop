@@ -139,13 +139,3 @@ export const isValidDateRange = (startMap, endMap) => {
     return true
   }
 }
-
-// make sure all the values in bbox are numbers, not strings
-export const constructBbox = (west, south, east, north) => {
-  return {
-    west: textToNumber(west),
-    east: textToNumber(east),
-    north: textToNumber(north),
-    south: textToNumber(south),
-  }
-}
