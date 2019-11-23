@@ -5,7 +5,7 @@ Take a look at our navigational suggestions below, or simply click the `Next` li
 
 ## Table of Contents
 * User Interface
-  1. [Quick Start](/onestop/public-user/ui/quickstart)
+  1. [Quick Start](public-user/ui/quickstart)
   1. [UI Features In Depth](/onestop/public-user/ui/features-in-depth)
   1. [Keyboard Navigation Guide](/onestop/public-user/ui/keyboard-navigation)
   1. [Accessibility](/onestop/public-user/ui/accessibility)
