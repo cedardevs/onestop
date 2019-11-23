@@ -30,8 +30,8 @@ const styleButtonShowMap = {
   fontSize: '1.05em',
 }
 
-const warningStyle = valid => {
-  if (valid) {
+const warningStyle = validReason => {
+  if (_.isEmpty(validReason.individual) && _.isEmpty(validReason.cumulative)) {
     return {
       display: 'none',
     }
@@ -79,7 +79,7 @@ const MapFilter = ({
   )
 
   const applyGeometry = () => {
-    if (bounds.valid && bounds.asBbox()) {
+    if (bounds.validate() && bounds.asBbox()) {
       handleNewGeometry(bounds.asBbox())
       submit()
     }
@@ -143,13 +143,16 @@ const MapFilter = ({
         />,
         <div
           key="MapFilter::InputColumn::Warning"
-          style={warningStyle(bounds.valid)}
+          style={warningStyle(bounds.reason)}
           aria-hidden={true}
         >
-          {bounds.reason}
+          {bounds.reason.individual} {bounds.reason.cumulative}
         </div>,
         <LiveAnnouncer key="alert::annoucement">
-          <LiveMessage message={bounds.reason} aria-live="polite" />
+          <LiveMessage
+            message={`${bounds.reason.individual} ${bounds.reason.cumulative}`}
+            aria-live="polite"
+          />
         </LiveAnnouncer>,
         <FormSeparator key="MapFilter::InputColumn::OR" text="OR" />,
         buttonShowMap,
