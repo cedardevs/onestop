@@ -60,7 +60,7 @@ function useCoordinate(name, defaultValue, typeName, limit){
   )
 
   return {
-    get: value,
+    value: value,
     set: setValue,
     validInternal: validInternal,
     setValidExternal: setValidExternal,
@@ -98,7 +98,7 @@ export function useBoundingBox(bbox){
       south.setValidExternal(true)
       setReasonCumulative('')
     },
-    [ east.get, north.get, south.get, west.get ]
+    [ east.value, north.value, south.value, west.value ]
   )
 
   useEffect(
