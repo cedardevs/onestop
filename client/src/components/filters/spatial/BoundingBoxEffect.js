@@ -1,22 +1,40 @@
 import {useState, useEffect} from 'react'
+import _ from 'lodash'
 import {constructBbox, textToNumber} from '../../../utils/inputUtils'
 
 function useCoordinate(name, defaultValue, typeName, limit){
+  // value is a string, tied to a text input
   const [ value, setValue ] = useState(`${defaultValue}`)
+  // numeric is the number representation of value (for validation and submitting filters)
   const [ numeric, setNumeric ] = useState(null)
+  // validation of this specific field (in isolation)
+  const [ validInternal, setValidInternal ] = useState(true)
+  // validation of this field as part of the set
+  const [ validExternal, setValidExternal ] = useState(true)
+  // total valid status (used for display)
   const [ valid, setValid ] = useState(true)
+  // reason (internal) for validation failure
   const [ reason, setReason ] = useState('')
+
+  useEffect(
+    // keep valid in sync
+    () => {
+      setValid(validInternal && validExternal)
+    },
+    [ validInternal, validExternal ]
+  )
 
   const reset = () => {
     setValue(`${defaultValue}`)
+    // internal validation is automatically updated when the value changes
   }
 
   useEffect(
     () => {
-      // validate
+      // validate when value changes, and update other calculated fields
       if (value == '') {
         setNumeric(null)
-        setValid(true)
+        setValidInternal(true)
         setReason('')
         return
       }
@@ -24,18 +42,18 @@ function useCoordinate(name, defaultValue, typeName, limit){
       setNumeric(num)
 
       if (num == null) {
-        setValid(false)
+        setValidInternal(false)
         setReason(`${name}: Invalid coordinates entered.`)
         return
       }
       if (Math.abs(num) > limit) {
-        setValid(false)
+        setValidInternal(false)
         setReason(
           `Invalid coordinates entered. Valid ${typeName} are between -${limit} and ${limit}.`
         )
         return
       }
-      setValid(true)
+      setValidInternal(true)
       setReason('')
     },
     [ value ]
@@ -44,6 +62,8 @@ function useCoordinate(name, defaultValue, typeName, limit){
   return {
     get: value,
     set: setValue,
+    validInternal: validInternal,
+    setValidExternal: setValidExternal,
     valid: valid,
     reason: reason,
     reset: reset,
@@ -53,12 +73,11 @@ function useCoordinate(name, defaultValue, typeName, limit){
 }
 
 export function useBoundingBox(bbox){
-  const west = useCoordinate('west', '', 'longitude', 180)
-  const south = useCoordinate('south', '', 'latitude', 90)
-  const east = useCoordinate('east', '', 'longitude', 180)
-  const north = useCoordinate('north', '', 'latitude', 90)
-  const [ validIndividual, setValidIndividual ] = useState(true)
-  const [ validCumulative, setValidCumulative ] = useState(true)
+  const west = useCoordinate('West', '', 'longitude', 180)
+  const south = useCoordinate('South', '', 'latitude', 90)
+  const east = useCoordinate('East', '', 'longitude', 180)
+  const north = useCoordinate('North', '', 'latitude', 90)
+  // track validation problems with both individual fields and combinations of fields to report errors to the user:
   const [ reasonIndividual, setReasonIndividual ] = useState('')
   const [ reasonCumulative, setReasonCumulative ] = useState('')
 
@@ -67,14 +86,25 @@ export function useBoundingBox(bbox){
     north.reset()
     east.reset()
     south.reset()
-    setValidCumulative(true)
     setReasonCumulative('')
   }
 
   useEffect(
     () => {
+      // reset external validation each time *any* field changes, since old validation no longer applies
+      east.setValidExternal(true)
+      west.setValidExternal(true)
+      north.setValidExternal(true)
+      south.setValidExternal(true)
+      setReasonCumulative('')
+    },
+    [ east.get, north.get, south.get, west.get ]
+  )
+
+  useEffect(
+    // update/reset fields when prop changes
+    () => {
       if (bbox) {
-        setValidCumulative(true)
         setReasonCumulative('')
         west.set(bbox.west)
         south.set(bbox.south)
@@ -89,59 +119,78 @@ export function useBoundingBox(bbox){
   )
 
   const validateIndividualFields = () => {
-    if (!west.valid || !south.valid || !east.valid || !north.valid) {
-      setValidIndividual(false)
+    if (
+      !west.validInternal ||
+      !south.validInternal ||
+      !east.validInternal ||
+      !north.validInternal
+    ) {
       setReasonIndividual(
-        west.reason || south.reason || east.reason || north.reason
+        `${west.reason} ${south.reason} ${east.reason} ${north.reason}`
       )
       return false
     }
-    setValidIndividual(true)
     setReasonIndividual('')
     return true
   }
 
   const validate = () => {
-    if (!validIndividual) {
+    // perform full validation only on submit request, since things being flagged 'invalid' while you are typing in a different field is horrible
+    if (!_.isEmpty(reasonIndividual)) {
       return false
     }
     if (
       (north.isSet() || south.isSet() || east.isSet() || west.isSet()) &&
       !(north.isSet() && south.isSet() && east.isSet() && west.isSet())
     ) {
-      setValidCumulative(false)
       setReasonCumulative(
         'Incomplete coordinates entered. Ensure all four fields are populated.'
       )
+      // mark whichever fields are not set as invalid:
+      if (!north.isSet()) {
+        north.setValidExternal(false)
+      }
+      if (!south.isSet()) {
+        south.setValidExternal(false)
+      }
+      if (!east.isSet()) {
+        east.setValidExternal(false)
+      }
+      if (!west.isSet()) {
+        west.setValidExternal(false)
+      }
       return false
     }
     if (north.isSet() && south.isSet() && east.isSet() && west.isSet()) {
       if (north.number < south.number) {
-        setValidCumulative(false)
         setReasonCumulative('North is always greater than South.')
+        north.setValidExternal(false)
+        south.setValidExternal(false)
         return false
       }
 
       if (north.number == south.number) {
-        setValidCumulative(false)
         setReasonCumulative('North cannot be the same as South.')
+        north.setValidExternal(false)
+        south.setValidExternal(false)
         return false
       }
       if (east.number == west.number) {
-        setValidCumulative(false)
         setReasonCumulative('East cannot be the same as West.')
+        east.setValidExternal(false)
+        west.setValidExternal(false)
         return false
       }
     }
 
     // nothing is set, which is valid by default
-    setValidCumulative(true)
     setReasonCumulative('')
     return true
   }
 
   useEffect(
     () => {
+      // check the individual validation status of each field any time something changes
       validateIndividualFields()
     },
     [ north, south, east, west ]
