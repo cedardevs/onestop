@@ -15,6 +15,7 @@ function useCoordinate(name, defaultValue, typeName, limit){
     () => {
       // validate
       if (value == '') {
+        setNumeric(null)
         setValid(true)
         setReason('')
         return
