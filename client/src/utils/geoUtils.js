@@ -67,8 +67,7 @@ const convertNegativeLongitudes = coordinates => {
   )
 }
 
-// TODO probably makes more sense to just make it a ring of coords....
-export const convertBboxToGeoJson = (west, south, east, north) => {
+const bboxAsCoordinates = (west, south, east, north) => {
   const w = textToNumber(west)
   const s = textToNumber(south)
   const e = textToNumber(east)
@@ -87,7 +86,30 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   const wn = [ w, n ]
   const en = [ e, n ] // max x, max y
   const es = [ e, s ]
-  const coordinates = [ ws, es, en, wn, ws ] // CCW for exterior polygon
+  return [ ws, es, en, wn, ws ] // CCW for exterior polygon
+}
+
+export const convertBboxToGeoJson = (west, south, east, north) => {
+  const coordinates = bboxAsCoordinates(west, south, east, north)
+  if (coordinates == null) {
+    return null
+  }
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      coordinates: [ coordinates ],
+      type: 'Polygon',
+    },
+  }
+}
+
+// TODO probably makes more sense to just make it a ring of coords....
+export const convertBboxToLeafletGeoJson = (west, south, east, north) => {
+  const coordinates = bboxAsCoordinates(west, south, east, north)
+  if (coordinates == null) {
+    return null
+  }
   // if (
   //   !_.every(
   //     coordinates,
@@ -146,7 +168,7 @@ export const displayBboxAsLeafletGeoJSON = bbox => {
   let geojson
   if (bbox) {
     if (bbox.west > bbox.east) {
-      geojson = convertBboxToGeoJson(
+      geojson = convertBboxToLeafletGeoJson(
         bbox.west,
         bbox.south,
         bbox.east + 360,
@@ -160,6 +182,11 @@ export const displayBboxAsLeafletGeoJSON = bbox => {
         }
       }
     }
-    return convertBboxToGeoJson(bbox.west, bbox.south, bbox.east, bbox.north)
+    return convertBboxToLeafletGeoJson(
+      bbox.west,
+      bbox.south,
+      bbox.east,
+      bbox.north
+    )
   }
 }
