@@ -113,11 +113,12 @@ export const isValidDate = (year, month, day) => {
     dateMap.year !== null &&
     dateMap.year <= now.year() &&
     dateMap.year >= 0
-  let validMonth = (month
-    ? dateMap.month !== null &&
-      dateMap.year !== null &&
-      moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)
-    : true) && !missingMonth
+  let validMonth =
+    (month
+      ? dateMap.month !== null &&
+        dateMap.year !== null &&
+        moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)
+      : true) && !missingMonth
   let validDay = day
     ? dateMap.day !== null &&
       givenDate.isValid() &&
