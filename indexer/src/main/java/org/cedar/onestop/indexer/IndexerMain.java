@@ -12,7 +12,6 @@ import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import static org.apache.kafka.streams.StreamsConfig.*;
@@ -21,19 +20,25 @@ import static org.cedar.onestop.indexer.SearchIndexTopology.buildSearchIndexTopo
 public class IndexerMain {
   private static final Logger log = LoggerFactory.getLogger(IndexerMain.class);
 
-  public static void main(String[] args) throws IOException {
-    var config = new AppConfig();
+  public static void main(String[] args) {
+    try {
+      var config = new AppConfig();
 
-    var elasticClient = ElasticsearchFactory.buildElasticClient(config);
-    var elasticConfig = ElasticsearchFactory.buildElasticConfig(config, elasticClient);
-    var elasticInitializer = new ElasticsearchService(elasticClient, elasticConfig);
-    elasticInitializer.initializeCluster();
+      var elasticClient = ElasticsearchFactory.buildElasticClient(config);
+      var elasticConfig = ElasticsearchFactory.buildElasticConfig(config, elasticClient);
+      var elasticInitializer = new ElasticsearchService(elasticClient, elasticConfig);
+      elasticInitializer.initializeCluster();
 
-    var searchIndexingTopology = buildSearchIndexTopology(elasticClient, elasticConfig, config);
-    var streamsConfig = buildStreamsConfig(config);
-    var streamsApp = KafkaHelpers.buildStreamsAppWithKillSwitch(searchIndexingTopology, streamsConfig);
-    Runtime.getRuntime().addShutdownHook(new Thread(streamsApp::close));
-    streamsApp.start();
+      var searchIndexingTopology = buildSearchIndexTopology(elasticClient, elasticConfig, config);
+      var streamsConfig = buildStreamsConfig(config);
+      var streamsApp = KafkaHelpers.buildStreamsAppWithKillSwitch(searchIndexingTopology, streamsConfig);
+      Runtime.getRuntime().addShutdownHook(new Thread(streamsApp::close));
+      streamsApp.start();
+    }
+    catch (Exception e) {
+      log.error("Application failed", e);
+      System.exit(1);
+    }
   }
 
   private static Properties buildStreamsConfig(AppConfig config) {
