@@ -49,27 +49,27 @@ const DateFieldset = ({name, date, onDateChange}) => {
       <div style={styleDate}>
         <YearField
           name={name}
-          value={date.year}
-          valid={date.yearValid}
-          onChange={e => date.setYear(e.target.value)}
+          value={date.year.value}
+          valid={date.year.valid}
+          onChange={e => date.year.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
         />
         <MonthField
           name={name}
-          value={date.month}
-          valid={date.monthValid}
-          onChange={e => date.setMonth(e.target.value)}
+          value={date.month.value}
+          valid={date.month.valid}
+          onChange={e => date.month.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
         />
         <DayField
           name={name}
-          value={date.day}
-          valid={date.dayValid}
-          onChange={e => date.setDay(e.target.value)}
+          value={date.day.value}
+          valid={date.day.valid}
+          onChange={e => date.day.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleField={styleField}
