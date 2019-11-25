@@ -9,10 +9,12 @@ public class Topics {
 
   public static final String DEFAULT_SOURCE = "unknown";
 
-  public static final Map<RecordType, List<String>> INPUTS = Map.of(
-      RecordType.collection, List.of("comet", DEFAULT_SOURCE),
-      RecordType.granule   , List.of("common-ingest", "class", DEFAULT_SOURCE)
-  );
+  public static final Map<RecordType, List<String>> INPUTS = new HashMap<>();
+  static {
+    // wrap immutable lists with regular ones so they can be queried with `null`
+    INPUTS.put(RecordType.collection, new ArrayList<>(List.of("comet", DEFAULT_SOURCE)));
+    INPUTS.put(RecordType.granule, new ArrayList<>(List.of("common-ingest", "class", DEFAULT_SOURCE)));
+  }
 
   public static Set<RecordType> inputTypes() {
     return INPUTS.keySet();
