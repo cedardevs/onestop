@@ -37,12 +37,12 @@ public class SearchIndexTopology {
     var collectionIndex = esConfig.COLLECTION_SEARCH_INDEX_ALIAS;
     var collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection);
     var inputCollections = streamsBuilder.<String, ParsedRecord>stream(collectionTopic);
-    var collectionRequests = inputCollections.mapValues((readOnlyKey, value) -> buildRequest(collectionIndex, readOnlyKey, value));
+    var collectionRequests = inputCollections.mapValues((readOnlyKey, value) -> buildRequest(esConfig, collectionIndex, readOnlyKey, value));
 
     var granuleIndex = esConfig.GRANULE_SEARCH_INDEX_ALIAS;
     var granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule);
     var inputGranules = streamsBuilder.<String, ParsedRecord>stream(granuleTopic);
-    var granuleRequests = inputGranules.mapValues((readOnlyKey, value) -> buildRequest(granuleIndex, readOnlyKey, value));
+    var granuleRequests = inputGranules.mapValues((readOnlyKey, value) -> buildRequest(esConfig, granuleIndex, readOnlyKey, value));
 
     var indexResults = collectionRequests.merge(granuleRequests)
         .filter((key, value) -> value != null)
@@ -93,13 +93,13 @@ public class SearchIndexTopology {
     return streamsBuilder.build();
   }
 
-  private static DocWriteRequest buildRequest(String index, String key, ParsedRecord value) {
+  private static DocWriteRequest buildRequest(ElasticsearchConfig config, String index, String key, ParsedRecord value) {
     if (value == null || (value.getPublishing() != null && value.getPublishing().getIsPrivate())) {
       return new DeleteRequest(index).id(key);
     }
     try {
       var formattedRecord = IndexingHelpers.reformatMessageForSearch(value);
-      return new IndexRequest(index).id(key).source(formattedRecord);
+      return new IndexRequest(index).id(key).source(formattedRecord).type(config.TYPE);
     } catch (ElasticsearchGenerationException e) {
       log.error("Failed to serialize record with key [" + key + "] to json", e);
       return null;
