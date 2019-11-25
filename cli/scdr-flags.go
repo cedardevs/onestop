@@ -90,7 +90,11 @@ func buildSummary(items []interface{},  count string) []string {
 		value := v.(map[string]interface{})
 		attr := value["attributes"].(map[string]interface{})
 		id := value["id"].(string)
-		id = reverseLookup(id) +  " | "
+		err := viper.ReadInConfig()
+		if err == nil {
+			id = reverseLookup(id)
+		}
+		id = id + " | "
 		fileId := attr["fileIdentifier"].(string) + " | "
 		description := attr["title"].(string)
 		row := id + fileId + count + description
@@ -141,7 +145,12 @@ func buildIdHeaders(items []interface{}) (string, string) {
 	uuidHeader := "OneStop ID "
 	uuidSubHeader := "-----------"
 	//calculate subheader length based on the first IDs length
-	idLength := len(items[0].(map[string]interface{})["id"].(string))
+	id := items[0].(map[string]interface{})["id"].(string)
+	err := viper.ReadInConfig()
+	if err == nil {
+		id = reverseLookup(id)
+	}
+	idLength := len(id)
 	uuidHeader, uuidSubHeader = formatHeader(uuidHeader, uuidSubHeader, idLength)
 	return uuidHeader, uuidSubHeader
 }

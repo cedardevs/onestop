@@ -21,10 +21,8 @@ func scdrRegister() {
 	viper.AddConfigPath("/etc/scdr-files/")
 	viper.AddConfigPath("$HOME/.scdr-files")
 	viper.AddConfigPath(".")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
-	}
+	//this is for the container
+	viper.AddConfigPath("/")
 
 	func() {
 		params := viper.New()
@@ -103,10 +101,11 @@ func ScdrSearch(params *viper.Viper, body string) (*gentleman.Response, map[stri
 
 func translateArgs(params *viper.Viper) *viper.Viper {
 	typeArg := params.GetString(typeFlag)
-	if len(typeArg) == 0 {
+	err := viper.ReadInConfig()
+	if err != nil {
 		return params
 	}
-	scdrTypeIds := viper.Get("scdr-files").(map[string]interface{})
+	scdrTypeIds := viper.Get("scdr-types").(map[string]interface{})
 	uuid := scdrTypeIds[strings.ToLower(typeArg)]
 	params.Set("type", uuid)
 	return params

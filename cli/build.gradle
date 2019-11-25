@@ -48,7 +48,8 @@ jib {
   extraDirectories {
     paths = ["${projectDir}/.gogradle".toString()]
     permissions = [
-      '/cli-linux-amd64': '755'
+      '/cli-linux-amd64': '755',
+      '/scdr-files.config.yaml' : '555'
       ]
   }
 
@@ -78,3 +79,10 @@ build {
 clean {
     delete "${projectDir}/.gogradle"
 }
+
+//move config into .gogradle so it is moved during extraDirectories step.
+task copyConfigFile(type: Copy) {
+  from file('scdr-files-config.yaml')
+  into file('.gogradle/.scdr-files')
+}
+tasks.jib.dependsOn copyConfigFile
