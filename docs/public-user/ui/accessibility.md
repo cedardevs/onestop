@@ -1,3 +1,9 @@
+<div align="center"><a href="/onestop/public-user">Public User Navigation Guide Home</a></div>
+<div align="center"><a href="/onestop/public-user/ui/keyboard-navigation">Previous: UI Keyboard Navigation</a> | <a href="/onestop/public-user/api/quickstart">Next: API Quick Start</a></div>
+<hr>
+
+**Estimated Reading Time:**
+
 # Site Accessibility
 
 
