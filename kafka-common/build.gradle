@@ -11,11 +11,11 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
+  compileOnly("org.slf4j:slf4j-api:1.7.25")
+
   implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
   implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
   implementation("org.apache.avro:avro:1.8.2")
-  implementation("org.slf4j:slf4j-api:1.7.25")
-  implementation("ch.qos.logback:logback-classic:1.2.3")
   implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
   implementation('org.yaml:snakeyaml:1.24')
 

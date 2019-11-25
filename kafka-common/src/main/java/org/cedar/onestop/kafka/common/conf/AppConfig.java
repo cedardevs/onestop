@@ -23,10 +23,14 @@ public class AppConfig {
   private final Map<String, Object> combined;
 
   public AppConfig() {
+    this(System.getenv(CONFIG_FILE_ENV_VAR));
+  }
+
+  public AppConfig(String filePath) {
     this.defaults = getDefaults();
     this.systemProperties = System.getProperties();
     this.environmentVariables = getEnv();
-    this.configFileProperties = parseYamlConfigFile(this.environmentVariables.get(CONFIG_FILE_ENV_VAR));
+    this.configFileProperties = parseYamlConfigFile(filePath);
     this.combined = buildCombinedMap();
   }
 
