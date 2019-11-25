@@ -3,6 +3,7 @@ package org.cedar.onestop.indexer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.cedar.onestop.indexer.util.ElasticsearchFactory;
+import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
@@ -25,6 +26,8 @@ public class IndexerMain {
 
     var elasticClient = ElasticsearchFactory.buildElasticClient(config);
     var elasticConfig = ElasticsearchFactory.buildElasticConfig(config, elasticClient);
+    var elasticInitializer = new ElasticsearchService(elasticClient, elasticConfig);
+    elasticInitializer.initializeCluster();
 
     var searchIndexingTopology = buildSearchIndexTopology(elasticClient, elasticConfig, config);
     var streamsConfig = buildStreamsConfig(config);
