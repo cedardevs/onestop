@@ -129,24 +129,29 @@ describe('The inputUtils', function(){
 
   describe('can check date validity', function(){
     const testCases = [
-      {year: '', month: '', day: '', output: true},
-      {year: '2000', month: '', day: '', output: true},
-      {year: '2000', month: '4', day: '', output: true},
-      {year: '2000', month: '4', day: '24', output: true},
-      {year: '2000', month: '0', day: '1', output: true},
-      {year: '2000', month: '', day: '1', output: false},
-      {year: 'notayear', month: '', day: '', output: false},
-      {year: '1.23', month: '', day: '', output: false},
-      {year: '2000', month: 'notamonth', day: '', output: false},
-      {year: '2000', month: '1.23', day: '', output: false},
-      {year: '2000', month: '0', day: 'notaday', output: false},
-      {year: '2000', month: '0', day: '1.23', output: false},
-      {year: '200000000', month: '', day: '', output: false}, // in the future
+      {year: '', month: '', day: '', output: [ true, true, true ]},
+      {year: '2000', month: '', day: '', output: [ true, true, true ]},
+      {year: '2000', month: '4', day: '', output: [ true, true, true ]},
+      {year: '2000', month: '4', day: '24', output: [ true, true, true ]},
+      {year: '2000', month: '0', day: '1', output: [ true, true, true ]},
+      {year: '2000', month: '', day: '1', output: [ true, false, true ]},
+      {year: 'notayear', month: '', day: '', output: [ false, true, true ]},
+      {year: '1.23', month: '', day: '', output: [ false, true, true ]},
+      {
+        year: '2000',
+        month: 'notamonth',
+        day: '',
+        output: [ true, false, true ],
+      },
+      {year: '2000', month: '1.23', day: '', output: [ true, false, true ]},
+      {year: '2000', month: '0', day: 'notaday', output: [ true, true, false ]},
+      {year: '2000', month: '0', day: '1.23', output: [ true, true, false ]},
+      {year: '200000000', month: '', day: '', output: [ false, true, true ]}, // in the future
     ]
 
     testCases.forEach(c => {
       it(`for input date ${c.year}-${c.month}-${c.day}`, function(){
-        expect(isValidDate(c.year, c.month, c.day)).toBe(c.output)
+        expect(isValidDate(c.year, c.month, c.day)).toEqual(c.output)
       })
     })
   })
