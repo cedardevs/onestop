@@ -20,6 +20,7 @@ import ApplyClearRow from '../../common/ApplyClearRow'
 import Relation from '../../Relation'
 import TimeRelationIllustration from '../TimeRelationIllustration'
 import {useDatetime} from './DateTimeEffect'
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 
 const warningStyle = warning => {
   if (_.isEmpty(warning)) {
@@ -120,16 +121,6 @@ const DateTimeFilter = ({
     />
   )
 
-  const warningMessage = (
-    <div
-      key="DateFilter::InputColumn::Warning"
-      style={warningStyle(warning)}
-      role="alert"
-    >
-      {warning}
-    </div>
-  )
-
   const illustration = relation => {
     return (
       <TimeRelationIllustration
@@ -157,7 +148,22 @@ const DateTimeFilter = ({
           Provide a start date, end date, or both. Day and month are optional.
           Future dates are not accepted.
         </legend>
-        <FlexColumn items={[ form, buttons, warningMessage ]} />
+        <FlexColumn
+          items={[
+            form,
+            buttons,
+            <div
+              key="DateFilter::InputColumn::Warning"
+              style={warningStyle(warning)}
+              aria-hidden={true}
+            >
+              {warning}
+            </div>,
+            <LiveAnnouncer key="alert::annoucement">
+              <LiveMessage message={warning} aria-live="polite" />
+            </LiveAnnouncer>,
+          ]}
+        />
       </fieldset>
       <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
         Additional Filtering Options:

@@ -36,6 +36,7 @@ const styleField = {
 const styleInputValidity = isValid => {
   return {
     paddingLeft: '5px',
+    width: '1em',
     color: isValid ? SiteColors.VALID : SiteColors.WARNING,
   }
 }
@@ -49,6 +50,7 @@ const DateFieldset = ({name, date, onDateChange}) => {
         <YearField
           name={name}
           value={date.year}
+          valid={date.yearValid}
           onChange={e => date.setYear(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
@@ -57,6 +59,7 @@ const DateFieldset = ({name, date, onDateChange}) => {
         <MonthField
           name={name}
           value={date.month}
+          valid={date.monthValid}
           onChange={e => date.setMonth(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
@@ -65,6 +68,7 @@ const DateFieldset = ({name, date, onDateChange}) => {
         <DayField
           name={name}
           value={date.day}
+          valid={date.dayValid}
           onChange={e => date.setDay(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}

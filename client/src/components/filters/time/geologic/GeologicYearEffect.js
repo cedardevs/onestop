@@ -1,7 +1,6 @@
 import {useState, useEffect} from 'react'
 
 import moment from 'moment/moment'
-import {ymdToDateMap, isValidDate} from '../../../../utils/inputUtils'
 import {isValidYear, convertYearToCE} from '../../../../utils/inputUtils'
 
 export function useYear(yearInt, format, afterValidate){

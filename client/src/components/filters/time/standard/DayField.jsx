@@ -7,7 +7,15 @@ const styleDay = {
 }
 
 const DayField = props => {
-  const {name, value, onChange, styleLayout, styleLabel, styleField} = props
+  const {
+    name,
+    value,
+    valid,
+    onChange,
+    styleLayout,
+    styleLabel,
+    styleField,
+  } = props
   const styleFieldApplied = {
     ...styleDay,
     ...styleField,
@@ -28,6 +36,7 @@ const DayField = props => {
         placeholder="DD"
         aria-placeholder="D D"
         value={value}
+        aria-invalid={!valid}
         onChange={onChange}
         maxLength="2"
         style={styleFieldApplied}

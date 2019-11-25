@@ -7,7 +7,15 @@ const styleMonth = {
 }
 
 const MonthField = props => {
-  const {name, value, onChange, styleLayout, styleLabel, styleField} = props
+  const {
+    name,
+    value,
+    valid,
+    onChange,
+    styleLayout,
+    styleLabel,
+    styleField,
+  } = props
   const styleFieldApplied = {
     ...styleMonth,
     ...styleField,
@@ -28,6 +36,7 @@ const MonthField = props => {
         onChange={onChange}
         style={styleFieldApplied}
         aria-label={label}
+        aria-invalid={!valid}
       >
         <option value="">(none)</option>
         <option value="0">January</option>

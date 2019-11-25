@@ -11,6 +11,7 @@ const YearField = props => {
   const {
     name,
     value,
+    valid,
     onChange,
     label,
     styleLayout,
@@ -43,6 +44,7 @@ const YearField = props => {
           _.isEmpty(ariaPlaceholder) ? 'Y Y Y Y' : ariaPlaceholder
         }
         value={value}
+        aria-invalid={!valid}
         onChange={onChange}
         maxLength={maxLength | 4}
         style={styleFieldApplied}
