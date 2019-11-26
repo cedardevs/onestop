@@ -4,6 +4,14 @@ const searchCollectionCmd = "searchcollection"
 const searchGranuleCmd = "searchgranule"
 const searchFlattenedGranuleCmd = "searchflattenedgranule"
 
+const cloudServerFlag = "cloud"
+const cloudServerShortFlag = "c"
+const cloudServerDescription = "Use cloud intance."
+
+const testServerFlag = "test"
+const testServerShortFlag = "u"
+const testServerDescription = "Use test intance."
+
 const textQueryFlag = "query"
 const textQueryShortFlag = "q"
 const queryDescription = "Search flattened granules with text query"
@@ -48,6 +56,7 @@ const metadataDescription = "Text search against available metadata."
 
 const typeFlag = "type"
 const typeShortFlag = "t"
+
 // const regexFileCmd = "re-file"
 const typeDescription = "Search only for files of the specified data collection using the collection's file identfier. Using this option is highly recommended for any kind of file searches. Collection identifiers are case sensitive."
 
@@ -58,3 +67,6 @@ const fileFlagDescription = "Locate files with exact FILENAME."
 const refileFlag = "re-file"
 const refileShortFlag = "r"
 const regexDescription = "Locate files whose names match the case-insensitive regular expression REGEX. Only one regular expression is allowed, not longer than 100 characters."
+
+const satnameFlag = "satname"
+const satnameDescription = "Select files from the SATNAME satellite."

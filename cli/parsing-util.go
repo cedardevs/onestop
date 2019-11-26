@@ -31,7 +31,7 @@ func parseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Re
 
 func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
 
-  //apply a default filter for STAR
+	//apply a default filter for STAR
 	filters := []string{"{\"type\":\"facet\",\"name\":\"dataCenters\",\"values\":[\"DOC/NOAA/NESDIS/STAR > Center for Satellite Applications and Research, NESDIS, NOAA, U.S. Department of Commerce\"]}"}
 	queries := []string{}
 
@@ -47,6 +47,9 @@ func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	filters = append(filters, startEndTimeFilter...)
 	geoSpatialFilter := parsePolygon(params)
 	filters = append(filters, geoSpatialFilter...)
+
+	satnameQuery := parseSatName(params)
+	queries = append(queries, satnameQuery...)
 	fileNameQuery := parseFileName(params)
 	queries = append(queries, fileNameQuery...)
 	refileNameQuery := parseRegexFileName(params)
@@ -79,6 +82,16 @@ func parseTypeFlag(params *viper.Viper) []string {
 // 	}
 // 	return facetFilter
 // }
+
+func parseSatName(params *viper.Viper) []string {
+	// {"type":"queryText", "value":"gcmdPlatforms:/GOES-16.*/"}
+	satname := params.GetString(satnameFlag)
+	querySatFilter := []string{}
+	if len(satname) > 0 {
+		querySatFilter = []string{"{\"type\":\"queryText\", \"value\":\"gcmdPlatforms:/" + satname + ".*/\"}"}
+	}
+	return querySatFilter
+}
 
 func parseRequestMeta(params *viper.Viper) string {
 	max := params.GetString(maxFlag)
