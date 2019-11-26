@@ -3,7 +3,7 @@
     <img src="images/cedar_devs_logo.png" alt="Cedardevs logo" width="100" height="100">
   </a>
 </p>
-<h3 align="center">Cedardevs</h3>
+<h3 align="center">OneStop</h3>
 
 <p align="center">
   distributed, scalable, event-driven database and search engine for environmental data.
@@ -11,9 +11,9 @@
   <a href="https://cedardevs.github.io/onestop/"><strong>Explore OneStop docs »</strong></a>
   <br>
   <br>
-  <a href="https://github.com/cedardevs/onestop/issues/new?template=bug.md">Report bug</a>
+  <a href="https://github.com/cedardevs/feedback/issues/new?template=bug.md">Report bug</a>
   ·
-  <a href="https://github.com/cedardevs/onestop/issues/new?template=feature.md&labels=feature">Request feature</a>
+  <a href="https://github.com/cedardevs/feedback/issues/new?template=feature.md&labels=feature">Request feature</a>
 </p>
 
 ## Table of contents
@@ -45,13 +45,13 @@ OneStop has an enormous amount to offer, but it can be difficult to know how and
 
 ### By User Type
 What's important to you when using OneStop varies significantly based on what you need to accomplish. Select the role below that most closely represents you to get started.
-* [Public User](#quickstart)
+* [Public User](public-user.md)
   * You're using the UI, API, or CLI in order to find data
-* [Metadata Manager](/onestop/metadata-manager)
+* [Metadata Manager](metadata-manager.md)
   * You're responsible for loading or maintaining metadata records
-* [Operator](/onestop/operator)
+* [Operator](operator.md)
   * You're deploying, upgrading, or maintaining an instance of OneStop in a production setting
-* [Developer](/onestop/developer)
+* [Developer](developer.md)
   * You're contributing to the code or even just trying to run a local instance on your personal machine
 
 
