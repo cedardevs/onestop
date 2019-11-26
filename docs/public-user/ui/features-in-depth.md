@@ -243,4 +243,4 @@ An example of file access types shown in the file link type drop-down list:
 
 
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/quickstart">Previous</a> | <a href="#ui-features-in-depth">Top of Page</a> | <a href="/onestop/public-user/ui/keyboard-navigation">Next</a></div>
+<div align="center"><a href="/onestop/public-user/ui/quickstart">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/ui/keyboard-navigation">Next</a></div>

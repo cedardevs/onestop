@@ -1,6 +1,5 @@
 ## Loading Metadata Into PSI
-Metadata can be published into the OneStop system using Registry application rest api. Use the Registry API   
-`/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload Metadata records. The application is also   
+Metadata can be published into the OneStop system using Registry application REST API. Use the Registry API `/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload Metadata records. The application is also 
 equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
 NOTE: The REST API is also secured via CAS authentication, for more detail see [OneStop Registry Security documentation](doc/operator/security/registry-security.md). 
     
@@ -184,7 +183,7 @@ Input json Template:
   }
 }
 ```
-Note: Refer for officially supported discovery metadata [fields](https://sciapps.colorado.edu/registry/openapi.yaml).
+Note: Refer to supported discovery metadata [fields](https://sciapps.colorado.edu/registry/openapi.yaml).
 
 Example: Uploading a GRANULE type JSON file from a source COMMON-INGEST with trackingId/UUID 11111111-1111-1111-1111-111111111: 
 ```
@@ -275,7 +274,6 @@ Required Granule fields:
 - hierarchyLevelName
 - title
     
-### Integrating upstream application to the underlying Kafka system
-
-See the [integrating upstream application](upstream-kafka-connect.md) for more details.
+<hr>
+<div align="center"><a href="/onestop/metadata-manager/#Metadata-Manager-Navigation-Guide">Previous</a> | <a href="#loading-metadata-into-psi">Top of Page</a> | <a href="upstream-kafka-connect">Next</a></div>
 

@@ -22,9 +22,9 @@ If you encounter issues being able to focus via the keyboard on a Mac while usin
     - → Preference Name = "accessibility.tabfocus" 
     - → Value = 7
 
-![Firefox on Mac Focus Configuration](/onestop/images/dev/firefox-a11y-tabfocus.png)
+![Firefox on Mac Focus Configuration](../../images/dev/firefox-a11y-tabfocus.png)
 
 For more context on this issue, see this [Stack Overflow post](https://stackoverflow.com/questions/11704828/how-to-allow-keyboard-focus-of-links-in-firefox#answer-11713537)
 
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/features-in-depth">Previous</a> | <a href="#keyboard-navigation-guide">Top of Page</a> | <a href="/onestop/public-user/ui/accessibility">Next</a></div>
+<div align="center"><a href="/onestop/public-user/ui/features-in-depth">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/ui/accessibility">Next</a></div>
