@@ -51,8 +51,10 @@ What's important to you when using OneStop varies significantly based on what yo
   * You're responsible for loading or maintaining metadata records
 * [Operator](operator.md)
   * You're deploying, upgrading, or maintaining an instance of OneStop in a production setting
-* [Developer](developer.md)
-  * You're contributing to the code or even just trying to run a local instance on your personal machine
+* [External Developer](external-developer.md)
+  * You're developing external software that needs to interact with a running OneStop deployment
+* [Internal Developer](internal-developer.md)
+  * You're contributing to the OneStop code or even just trying to run a local instance on your personal machine
 
 
 ### By Project Component

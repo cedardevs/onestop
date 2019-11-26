@@ -1,4 +1,4 @@
 <div align="center"><a href="/onestop/">Documentation Home</a></div>
 <hr>
 
-# Architectural Overview
+# External Developer Navigation Guide

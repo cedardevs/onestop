@@ -1,3 +1,7 @@
+<div align="center"><a href="/onestop/public-user">Public User Navigation Guide Home</a></div>
+<div align="center"><a href="/onestop/public-user/ui/features-in-depth">Next: UI Features In Depth</a></div>
+<hr>
+
 **Estimated Reading Time: 5 minutes**
 
 # User Interface Quick Start Guide

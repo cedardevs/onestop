@@ -1,4 +1,7 @@
-# Developer Navigation Guide
+<div align="center"><a href="/onestop/">Documentation Home</a></div>
+<hr>
+
+# OneStop Developer Navigation Guide
 
 ## Table of Contents
 * [Quickstart](developer/quickstart.md)

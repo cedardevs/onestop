@@ -1,3 +1,7 @@
+<div align="center"><a href="/onestop/public-user">Public User Navigation Guide Home</a></div>
+<div align="center"><a href="/onestop/public-user/ui/features-in-depth#query-text-box">Return to UI Guide</a> | <a href="/onestop/public-user/api/quickstart">Return to API Guide</a></div>
+<hr>
+
 **Estimated Reading Time: 10 minutes**
 
 # Query Syntax
