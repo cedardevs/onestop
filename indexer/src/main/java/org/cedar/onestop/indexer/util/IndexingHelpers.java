@@ -111,18 +111,6 @@ public class IndexingHelpers {
     return discoveryMap;
   }
 
-  private static String prepareInternalParentIdentifier(ParsedRecord record) {
-    return Optional.ofNullable(record)
-        .filter(r -> r.getType() == RecordType.granule)
-        .map(ParsedRecord::getRelationships)
-        .orElse(Collections.emptyList())
-        .stream()
-        .filter(rel -> rel.getType() == RelationshipType.COLLECTION)
-        .findFirst()
-        .map(Relationship::getId)
-        .orElse(null);
-  }
-
   private static final List<String> granuleFieldsToDrop = List.of(
       "purpose",
       "status",
@@ -191,6 +179,21 @@ public class IndexingHelpers {
       "presentationForm",
       "services"
   );
+
+  ////////////////////////////////
+  // Identifiers                //
+  ////////////////////////////////
+  private static String prepareInternalParentIdentifier(ParsedRecord record) {
+    return Optional.ofNullable(record)
+        .filter(r -> r.getType() == RecordType.granule)
+        .map(ParsedRecord::getRelationships)
+        .orElse(Collections.emptyList())
+        .stream()
+        .filter(rel -> rel.getType() == RelationshipType.COLLECTION)
+        .findFirst()
+        .map(Relationship::getId)
+        .orElse(null);
+  }
 
   ////////////////////////////////
   // Services, Links, Protocols //

@@ -1,6 +1,7 @@
 package org.cedar.onestop.indexer.util
 
-
+import groovy.json.JsonSlurper
+import org.cedar.onestop.elastic.common.FileUtil
 import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.avro.psi.Analysis
 import org.cedar.schemas.avro.psi.Discovery
@@ -29,7 +30,7 @@ class IndexingHelpersSpec extends Specification {
   // from schemas repo
   static inputRecord = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
 
-  static inputStreamKeywords = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-keywords.xml')
+  static inputStreamKeywords = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml')
 
   static expectedResponsibleParties = [
       contacts  : [
@@ -208,6 +209,27 @@ class IndexingHelpersSpec extends Specification {
     !IndexingHelpers.validateMessage('dummy id', record)?.valid
   }
 
+  ///////////////////////////////
+  // Indexed Fields Tests      //
+  ///////////////////////////////
+  def "only mapped #type fields are indexed"() {
+    def indexDef = FileUtil.textFromClasspathFile(mappingSource)
+    def fields = new JsonSlurper().parseText(indexDef).mappings.doc.properties.keySet()
+
+    when:
+    def xml = ClassLoader.systemClassLoader.getResourceAsStream(dataSource).text
+    def record = buildRecordFromXML(xml)
+    def result = IndexingHelpers.reformatMessageForSearch(record)
+
+    then:
+    result.keySet().each({ assert fields.contains(it) })
+
+    where:
+    type          | mappingSource                               | dataSource
+    'collection'  | 'mappings/ES6/search_collectionIndex.json'  | 'test-iso-collection.xml'
+    'granule'     | 'mappings/ES6/search_granuleIndex.json'     | 'test-iso-granule.xml'
+  }
+
 
   ///////////////////////////////
   // XML To ParsedRecord Tests //
@@ -267,7 +289,7 @@ class IndexingHelpersSpec extends Specification {
                                  ],
                                  operations    : serviceLinks
                              ]]
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-granule.xml").text
 
     when:
     ParsedRecord record = buildRecordFromXML(document)
