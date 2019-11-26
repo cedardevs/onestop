@@ -55,3 +55,8 @@ See [our branching model guidelines](Internal-Development-Practices#git-workflow
 [github issues]: https://github.com/cires-ncei/onestop/issues
 [code coverage]: https://en.wikipedia.org/wiki/Code_coverage
 [code climate]: https://codeclimate.com/
+
+
+<hr>
+<div align="center"><a href="/onestop/developer/api-validation">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/internal-practices">Next</a></div>
+

@@ -248,9 +248,11 @@ Otherwise, using Skaffold, these environment variables are managed for you. You 
 
 There is currently no configmap in the `onestop-admin` deployment to make changes to the security configuration (such as adding yourself as an admin). If you need to add one, see the search API config for how to add a configmap. The configuration needed is:
 ```
----
 spring:
   profiles: icam
   user.roles: yourOfficalEmail:ADMIN
 ```
 This structure essentially provides a new application-icam.yml to the application.
+
+<hr>
+<div align="center"><a href="/onestop/developer">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/client">Next</a></div>

@@ -268,3 +268,6 @@ Follow these steps to confirm that core behavior is working as expected, as well
 
 - Paleo date filtering
 - Time filtering with different relationships
+
+<hr>
+<div align="center"><a href="/onestop/developer/hotfix-strategy">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/testing/integration-tests">Next</a></div>

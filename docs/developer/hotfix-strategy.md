@@ -46,3 +46,6 @@ Write the release notes on GitHub:
 ## Manually publishing with jib
 
 `(export DOCKER_USER=<user>; export DOCKER_PASSWORD=<password>; ./gradlew jib)`
+
+<hr>
+<div align="center"><a href="/onestop/developer/internal-practices">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/testing/onestop-release-checklist">Next</a></div>
