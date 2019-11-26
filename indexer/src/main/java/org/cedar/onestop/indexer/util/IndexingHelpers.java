@@ -2,7 +2,6 @@ package org.cedar.onestop.indexer.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
-import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.schemas.avro.psi.*;
 import org.cedar.schemas.avro.util.AvroUtils;
 import org.slf4j.Logger;
@@ -93,10 +92,10 @@ public class IndexingHelpers {
     discoveryMap.putAll(prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding()));
     discoveryMap.put("dataFormat", prepareDataFormats(discovery));
     discoveryMap.put("linkProtocol", prepareLinkProtocols(discovery));
-    discoveryMap.put("serviceLinks", prepareServiceLinks(discovery.getServices()));
+    discoveryMap.put("serviceLinks", prepareServiceLinks(discovery));
     discoveryMap.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
     if (record.getType() == RecordType.collection) {
-      discoveryMap.putAll(prepareResponsibleParties(discovery.getResponsibleParties()));
+      discoveryMap.putAll(prepareResponsibleParties(discovery));
     }
     if (record.getType() == RecordType.granule) {
       discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
@@ -183,7 +182,7 @@ public class IndexingHelpers {
   ////////////////////////////////
   // Identifiers                //
   ////////////////////////////////
-  private static String prepareInternalParentIdentifier(ParsedRecord record) {
+  static String prepareInternalParentIdentifier(ParsedRecord record) {
     return Optional.ofNullable(record)
         .filter(r -> r.getType() == RecordType.granule)
         .map(ParsedRecord::getRelationships)
@@ -198,8 +197,9 @@ public class IndexingHelpers {
   ////////////////////////////////
   // Services, Links, Protocols //
   ////////////////////////////////
-  static List<Map> prepareServiceLinks(List<Service> services) {
-    return Optional.ofNullable(services)
+  static List<Map> prepareServiceLinks(Discovery discovery) {
+    return Optional.ofNullable(discovery)
+        .map(Discovery::getServices)
         .orElse(Collections.emptyList())
         .stream()
         .map(service -> {
@@ -305,10 +305,11 @@ public class IndexingHelpers {
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
-  static Map<String, Set<String>> prepareResponsibleParties(List<ResponsibleParty> responsibleParties) {
+  static Map<String, Set<String>> prepareResponsibleParties(Discovery discovery) {
     Set<String> individualNames = new HashSet<>();
     Set<String> organizationNames = new HashSet<>();
-    Optional.ofNullable(responsibleParties)
+    Optional.ofNullable(discovery)
+        .map(Discovery::getResponsibleParties)
         .orElse(Collections.emptyList())
         .stream()
         .filter(p -> p.getRole() != null && !p.getRole().isBlank())

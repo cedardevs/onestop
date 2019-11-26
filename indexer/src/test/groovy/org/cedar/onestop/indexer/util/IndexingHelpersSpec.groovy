@@ -8,6 +8,8 @@ import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.IdentificationAnalysis
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
+import org.cedar.schemas.avro.psi.Relationship
+import org.cedar.schemas.avro.psi.RelationshipType
 import org.cedar.schemas.avro.psi.TemporalBounding
 import org.cedar.schemas.avro.psi.TemporalBoundingAnalysis
 import org.cedar.schemas.avro.psi.TitleAnalysis
@@ -26,62 +28,12 @@ class IndexingHelpersSpec extends Specification {
   ////////////////////////////
   // Shared Values          //
   ////////////////////////////
-  static inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
   // from schemas repo
+  static inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
   static inputRecord = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
 
-  static inputStreamKeywords = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml')
-
-  static expectedResponsibleParties = [
-      contacts  : [
-          [
-              individualName  : 'John Smith',
-              organizationName: 'University of Boulder',
-              positionName    : 'Chief Awesomeness Officer',
-              role            : 'pointOfContact',
-              email           : "NCEI.Info@noaa.gov",
-              phone           : '555-555-5555'
-          ]] as Set,
-      creators  : [
-          [
-              individualName  : 'Edward M. Armstrong',
-              organizationName: 'US NASA; Jet Propulsion Laboratory (JPL)',
-              positionName    : null,
-              role            : 'originator',
-              email           : 'edward.m.armstrong@jpl.nasa.gov',
-              phone           : '555-555-5559'
-          ],
-          [
-              individualName  : 'Jarianna Whackositz',
-              organizationName: 'Secret Underground Society',
-              positionName    : 'Software Developer',
-              role            : 'resourceProvider',
-              email           : 'jw@mock-creator-email.org',
-              phone           : '555-555-5558'
-          ]] as Set,
-      publishers: [
-          [
-              individualName  : null,
-              organizationName: 'Super Important Organization',
-              positionName    : null,
-              role            : 'publisher',
-              email           : 'email@sio.co',
-              phone           : '555-123-4567'
-          ]
-      ] as Set]
-
-  static expectedOrganizationNames = [
-      'University of Boulder',
-      'US NASA; Jet Propulsion Laboratory (JPL)',
-      'Secret Underground Society',
-      'Super Important Organization',
-  ] as Set
-
-  static expectedIndividualNames = [
-      'John Smith',
-      'Edward M. Armstrong',
-      'Jarianna Whackositz',
-  ] as Set
+  static inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml').text
+  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-granule.xml').text
 
   static expectedKeywords = [
       "SIO > Super Important Organization",
@@ -99,38 +51,6 @@ class IndexingHelpersSpec extends Specification {
       "Seasonal",
       "> 1 Km"
   ] as Set
-
-  static expectedKeywordsFromIso = [
-      science       : [
-          'Atmosphere > Atmospheric Pressure',
-          'Atmosphere',
-          'Atmosphere > Atmospheric Temperature',
-          'Atmosphere > Atmospheric Water Vapor > Water Vapor Indicators > Humidity > Relative Humidity',
-          'Atmosphere > Atmospheric Water Vapor > Water Vapor Indicators > Humidity',
-          'Atmosphere > Atmospheric Water Vapor > Water Vapor Indicators',
-          'Atmosphere > Atmospheric Water Vapor',
-          'Atmosphere > Atmospheric Winds > Surface Winds > Wind Direction',
-          'Atmosphere > Atmospheric Winds > Surface Winds',
-          'Atmosphere > Atmospheric Winds',
-          'Atmosphere > Atmospheric Winds > Surface Winds > Wind Speed',
-          'Oceans > Bathymetry/Seafloor Topography > Seafloor Topography',
-          'Oceans > Bathymetry/Seafloor Topography',
-          'Oceans',
-          'Oceans > Bathymetry/Seafloor Topography > Bathymetry',
-          'Oceans > Bathymetry/Seafloor Topography > Water Depth',
-          'Land Surface > Topography > Terrain Elevation',
-          'Land Surface > Topography',
-          'Land Surface',
-          'Land Surface > Topography > Topographical Relief Maps',
-          'Oceans > Coastal Processes > Coastal Elevation',
-          'Oceans > Coastal Processes'
-      ] as Set,
-      scienceService: [
-          'Data Analysis And Visualization > Calibration/Validation > Calibration',
-          'Data Analysis And Visualization > Calibration/Validation',
-          'Data Analysis And Visualization'
-      ] as Set
-  ]
 
   static expectedGcmdKeywords = [
       gcmdScienceServices     : null,
@@ -161,13 +81,6 @@ class IndexingHelpersSpec extends Specification {
       gcmdHorizontalResolution: null,
       gcmdVerticalResolution  : ['> 1 Km'] as Set,
       gcmdTemporalResolution  : ['Seasonal'] as Set
-  ]
-
-  static expectedTemporalBounding = [
-      beginDate: '2002-06-01T00:00:00Z',
-      beginYear: 2002,
-      endDate  : '2011-10-04T23:59:59Z',
-      endYear  : 2011
   ]
 
   ////////////////////////////
@@ -210,7 +123,7 @@ class IndexingHelpersSpec extends Specification {
   }
 
   ///////////////////////////////
-  // Indexed Fields Tests      //
+  // Generic Indexed Fields    //
   ///////////////////////////////
   def "only mapped #type fields are indexed"() {
     def indexDef = FileUtil.textFromClasspathFile(mappingSource)
@@ -230,34 +143,41 @@ class IndexingHelpersSpec extends Specification {
     'granule'     | 'mappings/ES6/search_granuleIndex.json'     | 'test-iso-granule.xml'
   }
 
+  ////////////////////////////////
+  // Identifiers                //
+  ////////////////////////////////
+  def "produces internalParentIdentifier for collection record correctly"() {
+    expect:
+    IndexingHelpers.prepareInternalParentIdentifier(inputRecord) == null
+  }
 
-  ///////////////////////////////
-  // XML To ParsedRecord Tests //
-  ///////////////////////////////
-  // FIXME remove this big test? should be in schemas not here
-  def 'xml to ParsedRecord to staging doc (test from old MetadataParserSpec)'() {
-    given:
-    def expectedKeywords = [
-        'SIO > Super Important Organization',
-        'OSIO > OTHER SUPER IMPORTANT ORGANIZATION',
-        'SSIO > Super SIO (Super Important Organization)',
-        'EARTH SCIENCE SERVICES > ENVIRONMENTAL ADVISORIES > FIRE ADVISORIES > WILDFIRES',
-        'EARTH SCIENCE > This Keyword is > Misplaced and Invalid',
-        'This Keyword > Is Just > WRONG',
-        'Air temperature', 'Water temperature',
-        'Wind speed', 'Wind direction',
-        "EARTH SCIENCE > ATMOSPHERE > ATMOSPHERIC TEMPERATURE > SURFACE TEMPERATURE > DEW POINT TEMPERATURE",
-        "EARTH SCIENCE > OCEANS > SALINITY/DENSITY > SALINITY",
-        "EARTH SCIENCE > VOLCANOES > THIS KEYWORD > IS INVALID",
-        "Earth Science > Spectral/Engineering > microwave > Brightness Temperature",
-        "Earth Science > Spectral/Engineering > microwave > Temperature Anomalies",
-        "GEOGRAPHIC REGION > ARCTIC",
-        "OCEAN > ATLANTIC OCEAN > NORTH ATLANTIC OCEAN > GULF OF MEXICO",
-        "LIQUID EARTH > THIS KEYWORD > IS INVALID",
-        'SEASONAL',
-        '> 1 km'
-    ]
-    List serviceLinks = [
+  def "produces internalParentIdentifier for granule record correctly"() {
+    def testId = "ABC"
+    def record = ParsedRecord.newBuilder(inputRecord)
+        .setType(RecordType.granule)
+        .setRelationships([
+            Relationship.newBuilder().setType(RelationshipType.COLLECTION).setId(testId).build()
+        ])
+        .build()
+
+    expect:
+    IndexingHelpers.prepareInternalParentIdentifier(record) == testId
+  }
+
+  ////////////////////////////////
+  // Services, Links, Protocols //
+  ////////////////////////////////
+  def "prepares service links"() {
+    when:
+    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def result = IndexingHelpers.prepareServiceLinks(discovery)
+
+    then:
+    result.size() == 1
+    result[0].title == "Multibeam Bathymetric Surveys ArcGIS Map Service"
+    result[0].alternateTitle == "Alternate Title for Testing"
+    result[0].description == "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green."
+    result[0].links as Set == [
         [
             linkProtocol   : 'http',
             linkUrl        : 'https://maps.ngdc.noaa.gov/arcgis/services/web_mercator/multibeam_dynamic/MapServer/WMSServer?request=GetCapabilities&service=WMS',
@@ -272,207 +192,83 @@ class IndexingHelpersSpec extends Specification {
             linkDescription: 'Capabilities document for Open Geospatial Consortium Web Map Service for Multibeam Bathymetric Surveys',
             linkFunction   : 'search'
         ]
-    ]
-    List expectedServices = [[
-                                 title         : 'Multibeam Bathymetric Surveys ArcGIS Map Service',
-                                 alternateTitle: 'Alternate Title for Testing',
-                                 description   : "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green.",
-                                 date          : '2012-01-01',
-                                 dateType      : 'creation',
-                                 pointOfContact: [
-                                     individualName  : '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
-                                     organizationName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
-                                     positionName    : '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
-                                     role            : 'pointOfContact',
-                                     email           : 'TEMPLATE@EMAIL.GOV',
-                                     phone           : null
-                                 ],
-                                 operations    : serviceLinks
-                             ]]
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-granule.xml").text
-
-    when:
-    ParsedRecord record = buildRecordFromXML(document)
-    Map validationResult = IndexingHelpers.validateMessage('parsed_record_test_id', record)
-    Map discoveryMap = AvroUtils.avroToMap(record.discovery, true)
-    Map stagingDoc = IndexingHelpers.reformatMessageForSearch(record)
-
-    then:
-    assert validationResult.valid
-    stagingDoc.fileIdentifier == 'gov.super.important:FILE-ID'
-    stagingDoc.parentIdentifier == 'gov.super.important:PARENT-ID'
-    stagingDoc.hierarchyLevelName == null // removed from search index
-    stagingDoc.doi == 'doi:10.5072/FK2TEST'
-    stagingDoc.purpose == null // removed from search index
-    stagingDoc.status == null // removed from search index
-    stagingDoc.credit == null
-    stagingDoc.title == 'Important Organization\'s Important File\'s Super Important Title'
-    stagingDoc.alternateTitle == null // removed from search index
-    stagingDoc.description == 'Wall of overly detailed, super informative, extra important text.'
-    // Deep equality check
-    stagingDoc.keywords as Set == expectedKeywords as Set
-    stagingDoc.accessionValues == null
-    stagingDoc.topicCategories == null
-    stagingDoc.gcmdLocations == [
-        'Geographic Region',
-        'Geographic Region > Arctic',
-        'Ocean',
-        'Ocean > Atlantic Ocean',
-        'Ocean > Atlantic Ocean > North Atlantic Ocean',
-        'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
-        'Liquid Earth',
-        'Liquid Earth > This Keyword',
-        'Liquid Earth > This Keyword > Is Invalid'
     ] as Set
-    stagingDoc.gcmdInstruments == null
-    stagingDoc.gcmdPlatforms == null
-    stagingDoc.gcmdProjects == null
-    stagingDoc.gcmdDataCenters == [
-        'SIO > Super Important Organization',
-        'OSIO > Other Super Important Organization',
-        'SSIO > Super SIO (Super Important Organization)'
+  }
+
+  def "prepares service link protocols"() {
+    Set protocols = ['HTTP']
+    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+
+    expect:
+    IndexingHelpers.prepareServiceLinkProtocols(discovery) == protocols
+  }
+
+  def "prepares link protocols"() {
+    Set protocols = ['HTTP']
+    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+
+    expect:
+    IndexingHelpers.prepareLinkProtocols(discovery) == protocols
+  }
+
+  ////////////////////////////
+  // Data Formats           //
+  ////////////////////////////
+  def "prepares data formats"() {
+    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+
+    expect:
+    IndexingHelpers.prepareDataFormats(discovery) == [
+        "ASCII",
+        "CSV",
+        "NETCDF",
+        "NETCDF > 4",
+        "NETCDF > CLASSIC",
     ] as Set
-    stagingDoc.gcmdHorizontalResolution == null
-    stagingDoc.gcmdVerticalResolution == ['> 1 Km'] as Set
-    stagingDoc.gcmdTemporalResolution == ['Seasonal'] as Set
-    stagingDoc.beginDate == '2005-05-09T00:00:00Z'
-    stagingDoc.endDate == '2010-10-01T23:59:59Z'
-    stagingDoc.beginYear == 2005
-    stagingDoc.endYear == 2010
-    stagingDoc.spatialBounding as String == [
-        type       : 'Polygon',
-        coordinates: [
-            [
-                [-180.0, -90.0],
-                [180.0, -90.0],
-                [180.0, 90.0],
-                [-180.0, 90.0],
-                [-180.0, -90.0]
-            ]
-        ]
-    ] as String
-    stagingDoc.isGlobal == true
-    stagingDoc.acquisitionInstruments == null
-    stagingDoc.acquisitionOperations == null
-    stagingDoc.acquisitionPlatforms == null
-    stagingDoc.dataFormats.sort() == [
-        [name: 'NETCDF', version: 'classic'],
-        [name: 'NETCDF', version: '4'],
-        [name: 'ASCII', version: null],
-        [name: 'CSV', version: null]
-    ].sort()
-    stagingDoc.links == [
-        [
-            linkName       : 'Super Important Access Link',
-            linkProtocol   : 'HTTP',
-            linkUrl        : 'http://www.example.com',
-            linkDescription: 'Everything Important, All In One Place',
-            linkFunction   : 'search'
-        ]
-    ]
-
-    // TODO - add tests for collection-level contact parsing
-    stagingDoc.individualNames == null
-//    stagingDoc.individualNames == [
-//        'John Smith',
-//        'Jane Doe',
-//        'Jarianna Whackositz',
-//        'Dr. Quinn McClojure Man',
-//        'Zebulon Pike',
-//        'Little Rhinoceros',
-//        'Skeletor McSkittles',
-//    ] as Set
-
-    stagingDoc.organizationNames == null
-//    stagingDoc.organizationNames == [
-//        'University of Awesome',
-//        'Secret Underground Society',
-//        'Soap Boxes Inc.',
-//        'Pikes Peak Inc.',
-//        'Alien Infested Spider Monkey Rescue',
-//        'The Underworld',
-//        'Super Important Organization',
-//    ] as Set
-
-    stagingDoc.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
-    stagingDoc.thumbnailDescription == null
-    stagingDoc.creationDate == null
-    stagingDoc.revisionDate == null
-    stagingDoc.publicationDate == null
-    stagingDoc.citeAsStatements.sort() == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]']
-
-    stagingDoc.crossReferences == null
-    stagingDoc.largerWorks == null
-
-    stagingDoc.useLimitation == null
-    stagingDoc.legalConstraints == null
-    stagingDoc.accessFeeStatement == null
-    stagingDoc.orderingInstructions == null
-    stagingDoc.edition == null
-
-    stagingDoc.dsmmAccessibility == null
-    stagingDoc.dsmmDataIntegrity == null
-    stagingDoc.dsmmDataQualityAssessment == null
-    stagingDoc.dsmmDataQualityAssurance == null
-    stagingDoc.dsmmDataQualityControlMonitoring == null
-    stagingDoc.dsmmPreservability == null
-    stagingDoc.dsmmProductionSustainability == null
-    stagingDoc.dsmmTransparencyTraceability == null
-    stagingDoc.dsmmUsability == null
-    stagingDoc.updateFrequency == null
-    stagingDoc.presentationForm == null
-
-    discoveryMap.services == expectedServices
-//todo metadata team requested this structure for API, which is different than how we currently parse it
-    stagingDoc.serviceLinks[0].title == 'Multibeam Bathymetric Surveys ArcGIS Map Service'
-    stagingDoc.serviceLinks[0].links == serviceLinks.sort()
-    stagingDoc.services == null
   }
 
-  def "science keywords are parsed as expected from iso"() {
+  ////////////////////////////
+  // Responsible Parties    //
+  ////////////////////////////
+  def "prepares responsible party names"() {
     when:
-    Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(inputStreamKeywords.text)
-    Map parsedKeywords = IndexingHelpers.prepareGcmdKeyword(discovery)
+    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def result = IndexingHelpers.prepareResponsibleParties(discovery)
 
     then:
-    parsedKeywords.gcmdScience == expectedKeywordsFromIso.science
-    parsedKeywords.gcmdScienceServices == expectedKeywordsFromIso.scienceService
+    result.individualNames == [
+        'John Smith',
+        'Jane Doe',
+        'Jarianna Whackositz',
+        'Dr. Quinn McClojure Man',
+        'Zebulon Pike',
+        'Little Rhinoceros',
+        'Skeletor McSkittles',
+    ] as Set
+    result.organizationNames == [
+        'University of Awesome',
+        'Secret Underground Society',
+        'Soap Boxes Inc.',
+        'Pikes Peak Inc.',
+        'Alien Infested Spider Monkey Rescue',
+        'The Underworld',
+        'Super Important Organization',
+    ] as Set
   }
 
-  ///////////////////////////////////////
-  // Reformat Message For Search Tests //
-  ///////////////////////////////////////
-
-  // FIXME less reliance on loading XML here; test with a ParsedRecord
-  def "Create GCMD keyword lists"() {
+  def "party names are not included in granule search info"() {
     when:
-    Map parsedKeywords = IndexingHelpers.prepareGcmdKeyword(inputRecord.discovery)
+    def record = buildRecordFromXML(inputGranuleXml) // <-- granule!
+    def result = IndexingHelpers.reformatMessageForSearch(record) // <-- top level reformat method!
 
     then:
-    parsedKeywords.gcmdScienceServices == expectedGcmdKeywords.gcmdScienceServices
-    parsedKeywords.gcmdScience == expectedGcmdKeywords.gcmdScience
-    parsedKeywords.gcmdLocations == expectedGcmdKeywords.gcmdLocations
-    parsedKeywords.gcmdInstruments == expectedGcmdKeywords.gcmdInstruments
-    parsedKeywords.gcmdPlatforms == expectedGcmdKeywords.gcmdPlatforms
-    parsedKeywords.gcmdProjects == expectedGcmdKeywords.gcmdProjects
-    parsedKeywords.gcmdDataCenters == expectedGcmdKeywords.gcmdDataCenters
-    parsedKeywords.gcmdHorizontalResolution == expectedGcmdKeywords.gcmdHorizontalResolution
-    parsedKeywords.gcmdVerticalResolution == expectedGcmdKeywords.gcmdVerticalResolution
-    parsedKeywords.gcmdTemporalResolution == expectedGcmdKeywords.gcmdTemporalResolution
-
-    and: "should recreate keywords without accession values"
-    parsedKeywords.keywords.size() == expectedKeywords.size()
+    result.individualNames == null
+    result.organizationNames == null
   }
 
-  def "Create contacts, publishers and creators from responsibleParties"() {
-    when:
-    Map partiesMap = IndexingHelpers.prepareResponsibleParties(inputRecord.discovery.responsibleParties)
-
-    then:
-    partiesMap.individualNames == expectedIndividualNames
-    partiesMap.organizationNames == expectedOrganizationNames
-  }
-
+  ////////////////////////////
+  // Dates                  //
+  ////////////////////////////
   def "When #situation.description, expected temporal bounding generated"() {
     when:
     def newTimeMetadata = IndexingHelpers.prepareDates(situation.bounding, situation.analysis)
@@ -491,28 +287,6 @@ class IndexingHelpersSpec extends Specification {
     situations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000]
     situations.ongoing      | [beginDate: '1975-06-15T12:30:00Z', endDate: null, beginYear: 1975, endYear: null]
     situations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null]
-  }
-
-  def "new record is ready for onestop"() {
-    when:
-    def result = IndexingHelpers.reformatMessageForSearch(inputRecord)
-
-    then:
-    result.serviceLinks == []
-    result.accessionValues == null
-
-    expectedTemporalBounding.forEach({ k, v ->
-      result.get(k) == v
-    })
-
-    result.keywords as Set == expectedKeywords as Set
-    expectedGcmdKeywords.each { k, v ->
-      assert result[k] == v
-    }
-
-    result.responsibleParties == null
-    result.individualNames == expectedIndividualNames
-    result.organizationNames == expectedOrganizationNames
   }
 
   def "temporal bounding with #testCase dates is prepared correctly"() {
@@ -536,6 +310,78 @@ class IndexingHelpersSpec extends Specification {
     'invalid'     | '1984-04-31'           | '1985-505-09T00:00:00Z' | [beginDate: null, endDate: null, beginYear: null, endYear: null]
   }
 
+  ////////////////////////////
+  // Keywords               //
+  ////////////////////////////
+  def "Create GCMD keyword lists"() {
+    when:
+    Map parsedKeywords = IndexingHelpers.prepareGcmdKeyword(inputRecord.discovery)
+
+    then:
+    parsedKeywords.gcmdScienceServices == expectedGcmdKeywords.gcmdScienceServices
+    parsedKeywords.gcmdScience == expectedGcmdKeywords.gcmdScience
+    parsedKeywords.gcmdLocations == expectedGcmdKeywords.gcmdLocations
+    parsedKeywords.gcmdInstruments == expectedGcmdKeywords.gcmdInstruments
+    parsedKeywords.gcmdPlatforms == expectedGcmdKeywords.gcmdPlatforms
+    parsedKeywords.gcmdProjects == expectedGcmdKeywords.gcmdProjects
+    parsedKeywords.gcmdDataCenters == expectedGcmdKeywords.gcmdDataCenters
+    parsedKeywords.gcmdHorizontalResolution == expectedGcmdKeywords.gcmdHorizontalResolution
+    parsedKeywords.gcmdVerticalResolution == expectedGcmdKeywords.gcmdVerticalResolution
+    parsedKeywords.gcmdTemporalResolution == expectedGcmdKeywords.gcmdTemporalResolution
+
+    and: "should recreate keywords without accession values"
+    parsedKeywords.keywords.size() == expectedKeywords.size()
+  }
+
+  def "science keywords are parsed as expected from iso"() {
+    def expectedKeywordsFromIso = [
+        science       : [
+            'Atmosphere > Atmospheric Pressure',
+            'Atmosphere',
+            'Atmosphere > Atmospheric Temperature',
+            'Atmosphere > Atmospheric Water Vapor > Water Vapor Indicators > Humidity > Relative Humidity',
+            'Atmosphere > Atmospheric Water Vapor > Water Vapor Indicators > Humidity',
+            'Atmosphere > Atmospheric Water Vapor > Water Vapor Indicators',
+            'Atmosphere > Atmospheric Water Vapor',
+            'Atmosphere > Atmospheric Winds > Surface Winds > Wind Direction',
+            'Atmosphere > Atmospheric Winds > Surface Winds',
+            'Atmosphere > Atmospheric Winds',
+            'Atmosphere > Atmospheric Winds > Surface Winds > Wind Speed',
+            'Oceans > Bathymetry/Seafloor Topography > Seafloor Topography',
+            'Oceans > Bathymetry/Seafloor Topography',
+            'Oceans',
+            'Oceans > Bathymetry/Seafloor Topography > Bathymetry',
+            'Oceans > Bathymetry/Seafloor Topography > Water Depth',
+            'Land Surface > Topography > Terrain Elevation',
+            'Land Surface > Topography',
+            'Land Surface',
+            'Land Surface > Topography > Topographical Relief Maps',
+            'Oceans > Coastal Processes > Coastal Elevation',
+            'Oceans > Coastal Processes'
+        ] as Set,
+        scienceService: [
+            'Data Analysis And Visualization > Calibration/Validation > Calibration',
+            'Data Analysis And Visualization > Calibration/Validation',
+            'Data Analysis And Visualization'
+        ] as Set
+    ]
+
+    when:
+    Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(inputCollectionXml)
+    Map parsedKeywords = IndexingHelpers.prepareGcmdKeyword(discovery)
+
+    then:
+    parsedKeywords.gcmdScience == expectedKeywordsFromIso.science
+    parsedKeywords.gcmdScienceServices == expectedKeywordsFromIso.scienceService
+  }
+
+  def "accession values are not included"() {
+    when:
+    def result = IndexingHelpers.reformatMessageForSearch(inputRecord)
+
+    then:
+    result.accessionValues == null
+  }
 
   private static ParsedRecord buildRecordFromXML(String xml) {
     def discovery = ISOParser.parseXMLMetadataToDiscovery(xml)
