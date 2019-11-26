@@ -83,6 +83,6 @@ clean {
 //move config into .gogradle so it is moved during extraDirectories step.
 task copyConfigFile(type: Copy) {
   from file('scdr-files-config.yaml')
-  into file('.gogradle/.scdr-files')
+  into file('.gogradle/')
 }
 tasks.jib.dependsOn copyConfigFile
