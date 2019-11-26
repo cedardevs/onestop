@@ -141,3 +141,6 @@ Longhand query, including the `--verbose` flag to provide more logging:
 For complex query and filter structure, refer to the [short hand documentation](https://github.com/danielgtaylor/openapi-cli-generator/tree/master/shorthand).
 
 Note: As it is now, you cannot combine the flags with json shorthand. e.g. This will not work - `cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --query="satellite" filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} `
+
+<hr>
+<div align="center"><a href="/onestop/public-user">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/cli/scdr-files">Next</a></div>

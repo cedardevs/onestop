@@ -38,3 +38,6 @@ Text Query -
 `cli scdr-files -q "gcmdPlatforms:/GOES-16.*/"`
 
 `cli scdr-files --query "parentIdentifier:/.*NDBC-COOPS/"`
+
+<hr>
+<div align="center"><a href="/onestop/public-user/cli/quickstart">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user">Next</a></div>
