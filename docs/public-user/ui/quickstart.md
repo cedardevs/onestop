@@ -83,4 +83,4 @@ Clicking that icon will take you to the cart page, where you can generate a list
 ![Cart page showing 10 files ready to generate a URL list for](../../images/ui-qs/cart-page.png)
 
 <hr>
-<div align="center"><a href="/onestop/public-user">Previous</a> | <a href="#user-interface-quick-start-guide">Top of Page</a> | <a href="/onestop/public-user/ui/features-in-depth">Next</a></div>
+<div align="center"><a href="/onestop/public-user">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/ui/features-in-depth">Next</a></div>

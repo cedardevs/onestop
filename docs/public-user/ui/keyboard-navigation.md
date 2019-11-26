@@ -27,4 +27,4 @@ If you encounter issues being able to focus via the keyboard on a Mac while usin
 For more context on this issue, see this [Stack Overflow post](https://stackoverflow.com/questions/11704828/how-to-allow-keyboard-focus-of-links-in-firefox#answer-11713537)
 
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/features-in-depth">Previous</a> | <a href="#keyboard-navigation-guide">Top of Page</a> | <a href="/onestop/public-user/ui/accessibility">Next</a></div>
+<div align="center"><a href="/onestop/public-user/ui/features-in-depth">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/ui/accessibility">Next</a></div>
