@@ -8,15 +8,15 @@ As a metadata manager for a OneStop deployment, you will likely be tasked with l
 Take a look at our navigational suggestions below, or simply click the `Next` link at the bottom of the page to start at the top and work your way down.
 
 ## Table of Contents
-* Architectural Overview
-* Creating Metadata
-  - Supported Metadata Formats
-  - Subject Matter Expert (SME) Scripts
+* [Architectural Overview](/onestop/metadata-manager/architectural-overview)
+* Creating Metadata:
+  - [Supported Metadata Formats](/onestop/metadata-manager/metadata-formats)
+  - [Subject Matter Expert (SME) Scripts](/onestop/metadata-manager/sme-scripts)
   - Metadata To UI: Best Practices
-* Loading Metadata
+* Loading Metadata:
   - Non-OneStop NOAA Tools Overview
   - Loading From The Registry API
-* Maintaining Metadata
+* Maintaining Metadata:
   - Registry Analysis
   - Kibana Dashboards
   - Modifying From The Registry API
