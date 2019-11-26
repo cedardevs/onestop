@@ -349,25 +349,28 @@ class IndexingHelpersSpec extends Specification {
         ]
     ]
 
-    stagingDoc.individualNames == [
-        'John Smith',
-        'Jane Doe',
-        'Jarianna Whackositz',
-        'Dr. Quinn McClojure Man',
-        'Zebulon Pike',
-        'Little Rhinoceros',
-        'Skeletor McSkittles',
-    ] as Set
+    // TODO - add tests for collection-level contact parsing
+    stagingDoc.individualNames == null
+//    stagingDoc.individualNames == [
+//        'John Smith',
+//        'Jane Doe',
+//        'Jarianna Whackositz',
+//        'Dr. Quinn McClojure Man',
+//        'Zebulon Pike',
+//        'Little Rhinoceros',
+//        'Skeletor McSkittles',
+//    ] as Set
 
-    stagingDoc.organizationNames == [
-        'University of Awesome',
-        'Secret Underground Society',
-        'Soap Boxes Inc.',
-        'Pikes Peak Inc.',
-        'Alien Infested Spider Monkey Rescue',
-        'The Underworld',
-        'Super Important Organization',
-    ] as Set
+    stagingDoc.organizationNames == null
+//    stagingDoc.organizationNames == [
+//        'University of Awesome',
+//        'Secret Underground Society',
+//        'Soap Boxes Inc.',
+//        'Pikes Peak Inc.',
+//        'Alien Infested Spider Monkey Rescue',
+//        'The Underworld',
+//        'Super Important Organization',
+//    ] as Set
 
     stagingDoc.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
     stagingDoc.thumbnailDescription == null
