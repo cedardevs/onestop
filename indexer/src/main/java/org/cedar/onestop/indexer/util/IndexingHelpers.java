@@ -88,18 +88,19 @@ public class IndexingHelpers {
     var analysis = record.getAnalysis();
     var discoveryMap = AvroUtils.avroToMap(discovery, true);
 
-    // Records validated before getting to this point to no null record.type possible (always granule or collection)
-    discoveryMap.put("type", record.getType() == RecordType.granule ?
-        ElasticsearchConfig.TYPE_GRANULE : ElasticsearchConfig.TYPE_COLLECTION);
-
     // prepare and apply fields that need to be reformatted for search
     discoveryMap.putAll(prepareGcmdKeyword(discovery));
     discoveryMap.putAll(prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding()));
-    discoveryMap.putAll(prepareResponsibleParties(discovery.getResponsibleParties()));
     discoveryMap.put("dataFormat", prepareDataFormats(discovery));
     discoveryMap.put("linkProtocol", prepareLinkProtocols(discovery));
     discoveryMap.put("serviceLinks", prepareServiceLinks(discovery.getServices()));
     discoveryMap.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
+    if (record.getType() == RecordType.collection) {
+      discoveryMap.putAll(prepareResponsibleParties(discovery.getResponsibleParties()));
+    }
+    if (record.getType() == RecordType.granule) {
+      discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    }
 
     // drop fields not used for searching
     var fieldsToDrop = record.getType() == RecordType.granule ? granuleFieldsToDrop :
@@ -108,6 +109,18 @@ public class IndexingHelpers {
     fieldsToDrop.forEach(discoveryMap::remove);
 
     return discoveryMap;
+  }
+
+  private static String prepareInternalParentIdentifier(ParsedRecord record) {
+    return Optional.ofNullable(record)
+        .filter(r -> r.getType() == RecordType.granule)
+        .map(ParsedRecord::getRelationships)
+        .orElse(Collections.emptyList())
+        .stream()
+        .filter(rel -> rel.getType() == RelationshipType.COLLECTION)
+        .findFirst()
+        .map(Relationship::getId)
+        .orElse(null);
   }
 
   private static final List<String> granuleFieldsToDrop = List.of(
@@ -295,6 +308,7 @@ public class IndexingHelpers {
     Optional.ofNullable(responsibleParties)
         .orElse(Collections.emptyList())
         .stream()
+        .filter(p -> p.getRole() != null && !p.getRole().isBlank())
         .filter(p -> !categorizeParty.apply(p).equals("other"))
         .forEach(party -> {
           var individualName = party.getIndividualName();

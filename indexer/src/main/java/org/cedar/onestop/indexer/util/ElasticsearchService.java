@@ -77,7 +77,7 @@ public class ElasticsearchService {
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     String jsonIndexMapping = mapper.writeValueAsString(((Map) parsedDefinition.get("mappings")).get("doc"));
     var request = new CreateIndexRequest(indexName)
-        .source(jsonIndexMapping, XContentType.JSON)
+        .mapping(jsonIndexMapping, XContentType.JSON)
         .alias(new Alias(alias));
     var result = client.indices().create(request, RequestOptions.DEFAULT);
     log.debug("Created new index [" + indexName + "] with alias [" + alias + "]");

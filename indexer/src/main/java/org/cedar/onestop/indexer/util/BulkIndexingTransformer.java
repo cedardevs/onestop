@@ -54,9 +54,9 @@ public class BulkIndexingTransformer implements Transformer<String, DocWriteRequ
       return;
     }
     try {
-      log.debug("Submitting bulk request wth [" + numActions + "] actions");
+      log.info("Submitting bulk request wth [" + numActions + "] actions and approximately [" + request.estimatedSizeInBytes() + "] bytes");
       var response = client.bulk(request, RequestOptions.DEFAULT);
-      log.info("Completed bulk request wth [" + numActions + "] actions in [ " + response.getTook() + "]");
+      log.info("Completed bulk request wth [" + numActions + "] actions in [" + response.getTook() + "]");
       response.iterator().forEachRemaining(item -> {
         var id = item.getId();
         context.forward(id, item);
@@ -65,7 +65,7 @@ public class BulkIndexingTransformer implements Transformer<String, DocWriteRequ
               + item.getFailureMessage(), item.getFailure().getCause());
         }
         else {
-          log.info(item.getOpType() + " record with key [" + id + "] and index [" + item.getIndex() + "] succeeded");
+          log.debug(item.getOpType() + " record with key [" + id + "] and index [" + item.getIndex() + "] succeeded");
         }
       });
       this.context.commit();

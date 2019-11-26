@@ -49,9 +49,11 @@ kind: Config
         schema:
           registry:
             url: "http://onestop-dev-cp-schema-registry:8081"
+        commit:
+          interval:
+            ms: 1000
       elasticsearch:
         host: "elasticsearch"
-      logging.level.org.cedar.onestop.indexer: DEBUG
 
 .onestop-registry: &onestop-registry
   name: onestop-registry
@@ -62,7 +64,7 @@ kind: Config
     # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
     # all features default to "false" in base chart, unless otherwise overridden
     features.cas: false
-    replicaCount: 2
+    replicaCount: 1
     # if true, `kubectl port-forward onestop-registry-0 5005:5005` to expose JDWP for debugging
     # then, create a "Remote" Debug Configuration in intelliJ (Host: 127.0.0.1, Port: 5005)
     debug: false
