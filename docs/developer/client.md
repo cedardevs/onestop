@@ -1,7 +1,7 @@
 # OneStop Browser Client
 
 ## Getting started
-This guide focuses on running the OneStop browser client via `Node` for local development. To run the search API (used by the client) and other components, refer to the more expansive [Developer Guide](/docs/developer).
+This guide focuses on running the OneStop browser client via `Node` for local development. To run the search API (used by the client) and other components, refer to the more expansive [Developer Guide](developer).
 
 1. Clone this repo
 1. `cd client`

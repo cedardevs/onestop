@@ -14,7 +14,7 @@ Take a look at our navigational suggestions below, or simply click the `Next` li
   - [Supported Metadata Formats](metadata-manager/metadata-formats.md)
   - [Subject Matter Expert (SME) Scripts](metadata-manager/sme-scripts.md)
 * Loading and Maintaining Metadata:
-  - Non-OneStop NOAA Tools Overview
+  - [NOAA Tools Overview (External to OneStop)](metadata-manager/v3/setup-datastream-pipeline.md)
   - [The Registry API Guide](metadata-manager/v3/onestop-metadata-loading.md)
 * Troubleshooting:
   - Ingest To Discoverability: Best Practices
