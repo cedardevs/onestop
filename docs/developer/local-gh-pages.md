@@ -29,7 +29,7 @@ Configuration file: /Users/neo/git/onestop/docs/_config.yml
   Server running... press ctrl-c to stop.
 ```
 
-Finally, when you're editing a page locally, you will need to manually reload pages to see your edits as Jekyll does not auto-reload for you.
+Finally, when you're editing a page locally, you will need to manually reload pages to see your edits as Jekyll does not auto-reload for you. In some cases, as you're working on new pages, Jekyll may not render an `.md` link as an HTML page -- just restart the Jekyll server to rebuild pages in this case.
 
 ## Page Standards
 
