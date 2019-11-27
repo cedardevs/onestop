@@ -1,7 +1,7 @@
 ## Loading Metadata Into PSI
 Metadata can be published into the OneStop system using Registry application REST API. Use the Registry API `/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload Metadata records. The application is also 
 equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
-NOTE: The REST API is also secured via CAS authentication, for more detail see [OneStop Registry Security documentation](doc/operator/security/registry-security.md). 
+NOTE: The REST API is also secured via CAS authentication, for more detail see [OneStop Registry Security documentation](../../operator/security/registry-security.md). 
     
 ### Available methods
 Registry resource has various endpoints that are also described in the [user docs about the REST API](../registry-api.md) and
