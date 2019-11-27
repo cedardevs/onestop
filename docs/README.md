@@ -20,7 +20,7 @@
 
 - [Project Overview](#project-overview)
 - [Navigating The Documentation](#navigating-the-documentation)
-  - [By Use Case](#by-user-type)
+  - [By User Type](#by-user-type)
   - [By Project Component](#by-project-component)
 - [External Documentation](#external-documentation)
 - [Further Issues or Questions](#further-issues-or-questions)
