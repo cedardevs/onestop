@@ -5,3 +5,7 @@
 **Estimated Reading Time:**
 
 # Supported Metadata Formats
+
+
+<hr>
+<div align="center"><a href="/onestop/metadata-manager/architectural-overview">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/metadata-manager/sme-scripts">Next</a></div>

@@ -2,8 +2,9 @@
 <hr>
 
 # Metadata Manager Navigation Guide
-As a metadata manager for a OneStop deployment, you will likely be tasked with loading metadata into OneStop and making sure it is searchable and rendering well in the UI. 
+As a metadata manager for a OneStop deployment, you will likely be tasked with loading metadata into OneStop and making sure it is searchable and rendering well in the UI. Since this role requires interacting with several components of the OneStop ecosystem, you are encouraged to start with an architectural overview. The guide then takes you through your three most common goals as a metadata manager: creating, loading, and maintaining your metadata within the OneStop system.
 
+Please note that for the Metadata Manager documentation, we are assuming that you will use existing tools to integrate your metadata with OneStop and that you will not be responsible for connecting your own software to the underlying components. If you _do_ need information pertaining to connecting your own software with a OneStop deployment, you can find it in the [External Developer Navigation Guide](external-developer.md).
 
 Take a look at our navigational suggestions below, or simply click the `Next` link at the bottom of the page to start at the top and work your way down.
 
@@ -12,14 +13,13 @@ Take a look at our navigational suggestions below, or simply click the `Next` li
 * Creating Metadata:
   - [Supported Metadata Formats](metadata-manager/metadata-formats.md)
   - [Subject Matter Expert (SME) Scripts](metadata-manager/sme-scripts.md)
-  - Metadata To UI: Best Practices
-* Loading Metadata:
+* Loading and Maintaining Metadata:
   - Non-OneStop NOAA Tools Overview
-  - [Loading From The Registry API](metadata-manager/v3/onestop-metadata-loading.md)
-* Maintaining Metadata:
+  - [The Registry API Guide](metadata-manager/v3/onestop-metadata-loading.md)
+* Troubleshooting:
+  - Ingest To Discoverability: Best Practices
   - Registry Analysis
   - Kibana Dashboards
-  - Modifying From The Registry API
 
 <hr>
 <div align="center"><a href="/onestop/">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/metadata-manager/architectural-overview">Next</a></div>
