@@ -14,8 +14,9 @@ Take a look at our navigational suggestions below, or simply click the `Next` li
   - [Subject Matter Expert (SME) Scripts](metadata-manager/sme-scripts.md)
   - Metadata To UI: Best Practices
 * Loading Metadata:
-  - Non-OneStop NOAA Tools Overview
+  - [Non-OneStop NOAA Tools Overview](metadata-manager/v3/setup-datastream-pipeline.md)
   - [Loading From The Registry API](metadata-manager/v3/onestop-metadata-loading.md)
+  - [Integrating upstream applications with kafka](metadata-manager/v3/upstream-kafka-connect.md)
 * Maintaining Metadata:
   - Registry Analysis
   - Kibana Dashboards
