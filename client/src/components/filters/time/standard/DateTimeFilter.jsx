@@ -47,16 +47,55 @@ const DateTimeFilter = ({
   clear,
   applyFilter,
 }) => {
-  const [ dateRangeValid, setDateRangeValid ] = useState(true)
   const [ warning, setWarning ] = useState('')
-  const [ start ] = useDatetime(startDateTime, date => {
-    setWarning('')
-    setDateRangeValid(isValidDateRange(date, end.asMap()))
-  })
-  const [ end ] = useDatetime(endDateTime, date => {
-    setWarning('')
-    setDateRangeValid(isValidDateRange(start.asMap(), date))
-  })
+  const [ start ] = useDatetime('Start', startDateTime)
+  const [ end ] = useDatetime('End', endDateTime)
+  const [ reasonCumulative, setReasonCumulative ] = useState('')
+  const [ reasonIndividual, setReasonIndividual] = useState('')
+
+  useEffect(
+    () => {
+      // reset external validation each time *any* field changes, since old validation no longer applies
+      start.setValidExternal(true)
+      end.setValidExternal(true)
+      setReasonCumulative('') // TODO end and start date same (ie 2019/12/2 for both) is valid
+    },
+    [ start.asMap, end.asMap ]
+  )
+
+  useEffect(
+    () => {
+      let errors = new Array()
+      console.log(start, end)
+      start.errors.year.forEach((err, index) => {
+        errors.push( `start year ${err}`)
+      })
+      start.errors.month.forEach((err, index) => {
+        errors.push( `start month ${err}`)
+      })
+      start.errors.day.forEach((err, index) => {
+        errors.push( `start day ${err}`)
+      })
+      end.errors.year.forEach((err, index) => {
+        errors.push( `end year ${err}`)
+      })
+      end.errors.month.forEach((err, index) => {
+        errors.push( `end month ${err}`)
+      })
+      end.errors.day.forEach((err, index) => {
+        errors.push( `end day ${err}`)
+      })
+
+      setReasonIndividual(_.join(errors, ', '))
+    },
+    [ start.errors, end.errors ]
+  )
+
+  useEffect(
+    ()=> {
+      setWarning(createWarning())
+    }, [reasonCumulative, reasonIndividual]
+  )
 
   const clearDates = () => {
     clear()
@@ -64,32 +103,63 @@ const DateTimeFilter = ({
     end.clear()
     setDateRangeValid(true)
     setWarning('')
+    setReasonCumulative('')
   }
 
   const applyDates = () => {
-    if (!start.valid || !end.valid || !dateRangeValid) {
-      setWarning(createWarning())
-    }
-    else {
-      let startMap = start.asMap()
-      let startDateString = !_.every(startMap, _.isNull)
-        ? moment(startMap).utc().startOf('day').format()
-        : null
-      let endMap = end.asMap()
-      let endDateString = !_.every(endMap, _.isNull)
-        ? moment(endMap).utc().startOf('day').format()
-        : null
+    if(start.valid && end.valid) {
+      let isValid = isValidDateRange(start.asMap, end.asMap)
+      if (!isValid) {
+        setReasonCumulative('Invalid date range.') // TODO this isn't making it into the error display
+      }
+      start.setValidExternal(isValid)
+      end.setValidExternal(isValid)
+      if (isValid) {
+        let startMap = start.asMap
+        let startDateString = !_.every(startMap, _.isNull)
+          ? moment(startMap).utc().startOf('day').format()
+          : null
+        let endMap = end.asMap
+        let endDateString = !_.every(endMap, _.isNull)
+          ? moment(endMap).utc().startOf('day').format()
+          : null
 
-      applyFilter(startDateString, endDateString)
+        applyFilter(startDateString, endDateString)
+      }
     }
   }
 
   const createWarning = () => {
-    if (!start.valid && !end.valid) return 'Invalid start and end date.'
-    if (!start.valid) return 'Invalid start date.'
-    if (!end.valid) return 'Invalid end date.'
-    if (!dateRangeValid) return 'Invalid date range.'
-    return 'Unknown error'
+    let starterrlistyear = start.errors.year.map((err, index) => {
+      return <li key={index}>start year {err}</li>
+    })
+    let starterrlistmonth = start.errors.month.map((err, index) => {
+      return <li key={index}>start month {err}</li>
+    })
+    let starterrlistday = start.errors.day.map((err, index) => {
+      return <li key={index}>start day {err}</li>
+    })
+    let enderrlistyear = end.errors.year.map((err, index) => {
+      return <li key={index}>end year {err}</li>
+    })
+    let enderrlistmonth = end.errors.month.map((err, index) => {
+      return <li key={index}>end month {err}</li>
+    })
+    let enderrlistday = end.errors.day.map((err, index) => {
+      return <li key={index}>end day {err}</li>
+    })
+    let rangeErr = _.isEmpty(reasonCumulative)  ? null : (<li key="range">{reasonCumulative}</li>)
+    return (
+      <ul>
+        {rangeErr}
+        {starterrlistyear}
+        {starterrlistmonth}
+        {starterrlistday}
+        {enderrlistyear}
+        {enderrlistmonth}
+        {enderrlistday}
+      </ul>
+    )
   }
 
   const handleKeyDown = event => {
@@ -160,7 +230,7 @@ const DateTimeFilter = ({
               {warning}
             </div>,
             <LiveAnnouncer key="alert::annoucement">
-              <LiveMessage message={warning} aria-live="polite" />
+              <LiveMessage message={`${reasonIndividual} ${reasonCumulative}`} aria-live="polite" />
             </LiveAnnouncer>,
           ]}
         />

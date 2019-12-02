@@ -91,9 +91,15 @@ export const isValidYearRange = (start, end) => {
 }
 
 export const isValidDate = (year, month, day) => {
+  let problems = new Array()
+  let errors = {
+    year: new Array(),
+    month: new Array(),
+    day: new Array(),
+  }
   // No date given is technically valid (since a complete range is unnecessary)
   if (_.isEmpty(year) && _.isEmpty(month) && _.isEmpty(day)) {
-    return [ true, true, true ]
+    return errors
   }
 
   // Valid date can be year only, year & month only, or full date
@@ -101,6 +107,8 @@ export const isValidDate = (year, month, day) => {
   if (!_.isEmpty(year) && _.isEmpty(month) && !_.isEmpty(day)) {
     // Year + day is not valid
     missingMonth = true
+    problems.push('month required when day is set.')
+    errors.month.push('required')
   }
 
   let dateMap = ymdToDateMap(year, month, day)
@@ -113,19 +121,61 @@ export const isValidDate = (year, month, day) => {
     dateMap.year !== null &&
     dateMap.year <= now.year() &&
     dateMap.year >= 0
+  if (year) {
+    if (dateMap.year == null) {
+      errors.year.push('invalid')
+    }
+    if (dateMap.year > now.year()) {
+      errors.year.push('cannot be in the future')
+    }
+    if (dateMap.year < 0) {
+      errors.year.push('must be greater than zero')
+    }
+  }
+  else {
+    errors.year.push('required') // TODO make year field actually have aria indicating it's required? dynamic?
+  }
   let validMonth =
     (month
       ? dateMap.month !== null &&
         dateMap.year !== null &&
         moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)
       : true) && !missingMonth
+  if (month) {
+    if (dateMap.month == null) {
+      problems.push('month invalid.')
+      errors.month.push('invalid')
+    }
+    if (dateMap.year == null) {
+      problems.push('month cannot be set without also setting year.')
+      errors.month.push('requires year to be set')
+    }
+    if (!moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)) {
+      problems.push('date cannot be in the future.')
+      errors.month.push('cannot be in the future')
+    }
+  }
   let validDay = day
     ? dateMap.day !== null &&
       givenDate.isValid() &&
       givenDate.isSameOrBefore(now)
     : true
+  if (day) {
+    if (dateMap.day == null) {
+      problems.push('day invalid.')
+      errors.day.push('invalid')
+    }
+    if (!givenDate.isValid()) {
+      problems.push('date is invalid.')
+      errors.day.push('invalid')
+    }
+    else if (!givenDate.isSameOrBefore(now)) {
+      problems.push('date cannot be in the future.')
+      errors.day.push('cannot be in the future')
+    }
+  }
 
-  return [ validYear, validMonth, validDay ]
+  return errors
 }
 
 export const isValidDateRange = (startMap, endMap) => {
