@@ -48,7 +48,7 @@ What's important to you when using OneStop varies significantly based on what yo
 * [Public User](public-user.md)
   * You're using the UI, API, or CLI in order to find data
 * [Metadata Manager](metadata-manager.md)
-  * You're responsible for loading or maintaining metadata records
+  * You're responsible for metadata records that end up in OneStop, and are in search of info on loading, maintaining, or troubleshooting the records
 * [Operator](operator.md)
   * You're deploying, upgrading, or maintaining an instance of OneStop in a production setting
 * [External Developer](external-developer.md)
