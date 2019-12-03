@@ -2,7 +2,11 @@ import {useState, useEffect} from 'react'
 
 import _ from 'lodash'
 import moment from 'moment/moment'
-import {ymdToDateMap, isValidDate} from '../../../../utils/inputUtils'
+import {
+  ymdToDateMap,
+  isValidDate,
+  isValidDateRange,
+} from '../../../../utils/inputUtils'
 
 function useDatePart(){
   const [ value, setValue ] = useState('')
@@ -65,12 +69,7 @@ export function useDatetime(name, dateString){
 
   useEffect(
     () => {
-
-      const errors = isValidDate(
-        year.value,
-        month.value,
-        day.value
-      )
+      const errors = isValidDate(year.value, month.value, day.value)
       setReasons(errors)
       year.setValid(_.isEmpty(errors.year))
       month.setValid(_.isEmpty(errors.month))
@@ -115,29 +114,89 @@ export function useDatetime(name, dateString){
   ]
 }
 
-// export function useDateRange(submitClear) {
-//   const [ dateRangeValid, setDateRangeValid ] = useState(true)
-//
-//   const [ start ] = useDatetime(startDateTime, date => {
-//     setWarning('')
-//     setDateRangeValid(isValidDateRange(date, end.asMap()))
-//   })
-//   const [ end ] = useDatetime(endDateTime, date => {
-//     setWarning('')
-//     setDateRangeValid(isValidDateRange(start.asMap(), date))
-//   })
-//   const clear = () => {
-//     submitClear()
-//     start.clear()
-//     end.clear()
-//     setDateRangeValid(true)
-//     setWarning('')
-//   }
-//
-//   const validate = () => {
-//     if (!start.valid && !end.valid) return 'Invalid start and end date.'
-//     if (!start.valid) return 'Invalid start date.'
-//     if (!end.valid) return 'Invalid end date.'
-//     if (!dateRangeValid) return 'Invalid date range.'
-//   }
-// }
+export function useDateRange(startDateTime, endDateTime, applyFilter){
+  const [ start ] = useDatetime('Start', startDateTime)
+  const [ end ] = useDatetime('End', endDateTime)
+  const [ reasonCumulative, setReasonCumulative ] = useState('') // TODO replace with layered
+  const [ reasonIndividual, setReasonIndividual ] = useState('')
+  const [ errors, setErrors ] = useState(new Array())
+
+  useEffect(
+    () => {
+      // reset external validation each time *any* field changes, since old validation no longer applies
+      start.setValidExternal(true)
+      end.setValidExternal(true)
+      setReasonCumulative('') // TODO end and start date same (ie 2019/12/2 for both) is valid
+    },
+    [ start.asMap, end.asMap ]
+  )
+
+  useEffect(
+    // any time individual field(set)s have errors, build up the overall error message
+    () => {
+      let errors = new Array()
+      start.errors.year.forEach((err, index) => {
+        errors.push(`start year ${err}`)
+      })
+      start.errors.month.forEach((err, index) => {
+        errors.push(`start month ${err}`)
+      })
+      start.errors.day.forEach((err, index) => {
+        errors.push(`start day ${err}`)
+      })
+      end.errors.year.forEach((err, index) => {
+        errors.push(`end year ${err}`)
+      })
+      end.errors.month.forEach((err, index) => {
+        errors.push(`end month ${err}`)
+      })
+      end.errors.day.forEach((err, index) => {
+        errors.push(`end day ${err}`)
+      })
+
+      setErrors(errors)
+      setReasonIndividual(_.join(errors, ', '))
+    },
+    [ start.errors, end.errors ]
+  )
+  const clear = () => {
+    clear()
+    start.clear()
+    end.clear()
+    setDateRangeValid(true)
+    setReasonCumulative('')
+  }
+
+  const applyDates = () => {
+    if (start.valid && end.valid) {
+      let isValid = isValidDateRange(start.asMap, end.asMap)
+      if (!isValid) {
+        setReasonCumulative('Invalid date range.')
+      }
+      start.setValidExternal(isValid)
+      end.setValidExternal(isValid)
+      if (isValid) {
+        let startMap = start.asMap
+        let startDateString = !_.every(startMap, _.isNull)
+          ? moment(startMap).utc().startOf('day').format()
+          : null
+        let endMap = end.asMap
+        let endDateString = !_.every(endMap, _.isNull)
+          ? moment(endMap).utc().startOf('day').format()
+          : null
+
+        applyFilter(startDateString, endDateString)
+      }
+    }
+  }
+
+  return [
+    start,
+    end,
+    clear,
+    applyDates,
+    errors,
+    reasonCumulative,
+    reasonIndividual,
+  ]
+}
