@@ -27,7 +27,7 @@ const styleLabel = {
 }
 
 const styleLabelInvalid = {
-  textDecoration: `underline wavy ${SiteColors.WARNING}`,
+  textDecoration: `underline dashed ${SiteColors.WARNING}`,
 }
 
 const styleField = {

@@ -10,12 +10,12 @@ import {
 
 function useDatePart(){
   const [ value, setValue ] = useState('')
-  const [ valid, setValid ] = useState(true) // TODO useLayeredValidation (so fields can be marked invalid when external validation is set)
+  const valid = useLayeredValidation()
 
   useEffect(
     () => {
       if (value == '') {
-        setValid(true)
+        valid.setInternal(true)
       }
     },
     [ value ]
@@ -24,14 +24,15 @@ function useDatePart(){
   return {
     value: value,
     set: setValue,
-    valid: valid,
-    setValid: setValid,
+    valid: valid.valid,
+    setValidInternal: valid.setInternal,
+    setValidExternal: valid.setExternal,
   }
 }
 
 export function useLayeredValidation(){
   const [ internal, setInternal ] = useState(true)
-  const [ external, setExternal ] = useState(true) // TODO mark fields as invalid (aria) when this is set?
+  const [ external, setExternal ] = useState(true)
   const [ valid, setValid ] = useState(true)
   useEffect(
     () => {
@@ -52,9 +53,9 @@ export function useDatetime(name, dateString){
   const year = useDatePart()
   const month = useDatePart()
   const day = useDatePart()
-  const valid = useLayeredValidation()
+  const [ valid, setValid ] = useState(true)
   const [ reasons, setReasons ] = useState({
-    year: new Array(),
+    year: new Array(), // TODO move into useDatePart?
     month: new Array(),
     day: new Array(),
   })
@@ -62,7 +63,7 @@ export function useDatetime(name, dateString){
 
   useEffect(
     () => {
-      valid.setInternal(year.valid && month.valid && day.valid)
+      setValid(year.valid && month.valid && day.valid)
     },
     [ year.valid, month.valid, day.valid ]
   )
@@ -71,9 +72,9 @@ export function useDatetime(name, dateString){
     () => {
       const errors = isValidDate(year.value, month.value, day.value)
       setReasons(errors)
-      year.setValid(_.isEmpty(errors.year))
-      month.setValid(_.isEmpty(errors.month))
-      day.setValid(_.isEmpty(errors.day))
+      year.setValidInternal(_.isEmpty(errors.year))
+      month.setValidInternal(_.isEmpty(errors.month))
+      day.setValidInternal(_.isEmpty(errors.day))
       setAsMap(ymdToDateMap(year.value, month.value, day.value))
     },
     [ year.value, month.value, day.value ]
@@ -105,11 +106,15 @@ export function useDatetime(name, dateString){
       year: year,
       month: month,
       day: day,
-      valid: valid.valid,
+      valid: valid,
       errors: reasons,
       asMap: asMap,
       clear: clear,
-      setValidExternal: valid.setExternal,
+      setValidExternal: isValid => {
+        year.setValidExternal(isValid)
+        month.setValidExternal(isValid)
+        day.setValidExternal(isValid)
+      },
     },
   ]
 }
@@ -118,7 +123,6 @@ export function useDateRange(startDateTime, endDateTime, applyFilter){
   const [ start ] = useDatetime('Start', startDateTime)
   const [ end ] = useDatetime('End', endDateTime)
   const [ reasonCumulative, setReasonCumulative ] = useState('') // TODO replace with layered
-  // const [ reasonIndividual, setReasonIndividual ] = useState('')
   const [ errors, setErrors ] = useState(new Array())
 
   useEffect(
@@ -154,7 +158,6 @@ export function useDateRange(startDateTime, endDateTime, applyFilter){
         errors.push(`end day ${err}`)
       })
 
-      // setReasonIndividual(_.join(errors, ', '))
       if (!_.isEmpty(reasonCumulative)) {
         errors.push(reasonCumulative)
       }
@@ -166,7 +169,6 @@ export function useDateRange(startDateTime, endDateTime, applyFilter){
   const clear = () => {
     start.clear()
     end.clear()
-    // setDateRangeValid(true)
     setReasonCumulative('')
   }
 
@@ -179,18 +181,6 @@ export function useDateRange(startDateTime, endDateTime, applyFilter){
       start.setValidExternal(isValid)
       end.setValidExternal(isValid)
       return isValid
-      // if (isValid) {
-      //   let startMap = start.asMap
-      //   let startDateString = !_.every(startMap, _.isNull)
-      //     ? moment(startMap).utc().startOf('day').format()
-      //     : null
-      //   let endMap = end.asMap
-      //   let endDateString = !_.every(endMap, _.isNull)
-      //     ? moment(endMap).utc().startOf('day').format()
-      //     : null
-      //
-      //   applyFilter(startDateString, endDateString)
-      // }
     }
     return false
   }
@@ -208,13 +198,5 @@ export function useDateRange(startDateTime, endDateTime, applyFilter){
     return [ startDateString, endDateString ]
   }
 
-  return [
-    start,
-    end,
-    clear,
-    // applyDates,
-    validate,
-    asDateStrings,
-    errors,
-  ]
+  return [ start, end, clear, validate, asDateStrings, errors ]
 }

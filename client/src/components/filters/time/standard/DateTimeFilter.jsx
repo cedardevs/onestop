@@ -52,12 +52,9 @@ const DateTimeFilter = ({
     start,
     end,
     clearDateRange,
-    // applyDates,
     validate,
     asDateStrings,
     errors,
-    // reasonCumulative,
-    // reasonIndividual,
   ] = useDateRange(startDateTime, endDateTime)
 
   useEffect(
@@ -82,9 +79,6 @@ const DateTimeFilter = ({
   }
 
   const createWarning = () => {
-    // let rangeErr = _.isEmpty(reasonCumulative) ? null : (
-    //   <li key="range">{reasonCumulative}</li>
-    // )
     let errList = errors.map((err, index) => {
       return <li key={index}>{err}</li>
     })
