@@ -9,7 +9,7 @@ import (
 
 const scdrFileCmd = "scdr-files"
 
-const scdrExampleCommands = `scdr-files --available -t 5b58de08-afef-49fb-99a1-9c5d5c003bde
+const scdrExampleCommands = `scdr-files --available -t ABI-L1b-Rad
 scdr-files --type 5b58de08-afef-49fb-99a1-9c5d5c003bde
 scdr-files --area "POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"
 scdr-files --date 10/01
@@ -21,10 +21,6 @@ func setScdrFlags() {
 	cli.AddFlag(scdrFileCmd, dateFilterFlag, dateFilterShortFlag, dateDescription, "")
 	cli.AddFlag(scdrFileCmd, typeFlag, typeShortFlag, typeDescription, "")
 	cli.AddFlag(scdrFileCmd, spatialFilterFlag, spatialFilterShortFlag, areaDescription, "")
-	// cli.AddFlag(scdrFileCmd, regexFileCmd, "", regexDescription, "")
-	cli.AddFlag(scdrFileCmd, textQueryFlag, textQueryShortFlag, queryDescription, "")
-	cli.AddFlag(scdrFileCmd, maxFlag, maxShortFlag, maxDescription, "")
-	cli.AddFlag(scdrFileCmd, offsetFlag, offsetShortFlag, offsetDescription, "")
 	cli.AddFlag(scdrFileCmd, startTimeFlag, startTimeShortFlag, startTimeDescription, "")
 	cli.AddFlag(scdrFileCmd, startTimeScdrFlag, "", startTimeScdrDescription, "")
 	cli.AddFlag(scdrFileCmd, endTimeFlag, endTimeShortFlag, endTimeDescription, "")
@@ -36,6 +32,10 @@ func setScdrFlags() {
 	cli.AddFlag(scdrFileCmd, satnameFlag, "", satnameDescription, "")
 	cli.AddFlag(scdrFileCmd, yearFlag, yearShortFlag, yearDescription, "")
 
+//not scdr-files specific
+	cli.AddFlag(scdrFileCmd, maxFlag, maxShortFlag, maxDescription, "")
+	cli.AddFlag(scdrFileCmd, offsetFlag, offsetShortFlag, offsetDescription, "")
+	cli.AddFlag(scdrFileCmd, textQueryFlag, textQueryShortFlag, queryDescription, "")
 	cli.AddFlag(scdrFileCmd, cloudServerFlag, cloudServerShortFlag, cloudServerDescription, false)
 	cli.AddFlag(scdrFileCmd, testServerFlag, testServerShortFlag, testServerDescription, false)
 
