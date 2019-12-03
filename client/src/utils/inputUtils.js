@@ -123,7 +123,7 @@ export const isValidDate = (year, month, day, nowOverride) => {
 
   if (!_.isEmpty(month)) {
     if (dateMap.month == null) {
-      // hard to reproduce with a dropdown, but 'foo', presumably '-1' TODO
+      // hard to reproduce with a dropdown, but 'foo', presumably '-1'
       errors.month.field = 'invalid'
     }
     else if (_.isEmpty(year)) {

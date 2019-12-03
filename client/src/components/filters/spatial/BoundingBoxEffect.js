@@ -52,7 +52,7 @@ function useCoordinate(name, defaultValue, typeName, limit){
     validInternal: field.valid,
     setValidExternal: fieldset.setValid,
     valid: valid,
-    reason: field.error, // TODO rename 'reason'
+    error: field.error,
     reset: reset,
     isSet: () => numeric != null,
     number: numeric,
@@ -65,7 +65,7 @@ export function useBoundingBox(bbox){
   const east = useCoordinate('East', '', 'longitude', 180)
   const north = useCoordinate('North', '', 'latitude', 90)
   // track validation problems with both individual fields and combinations of fields to report errors to the user:
-  const [ reasonIndividual, setReasonIndividual ] = useState('')
+  const [ reasonIndividual, setReasonIndividual ] = useState('') // TODO A: use layered, B: tie geometry errors correctly to fields with aria, C: rename 'reason' to 'error', generally speaking
   const [ reasonCumulative, setReasonCumulative ] = useState('')
 
   const clear = () => {
@@ -113,7 +113,7 @@ export function useBoundingBox(bbox){
       !north.validInternal
     ) {
       setReasonIndividual(
-        `${west.reason} ${south.reason} ${east.reason} ${north.reason}`
+        `${west.error} ${south.error} ${east.error} ${north.error}`
       )
       return false
     }

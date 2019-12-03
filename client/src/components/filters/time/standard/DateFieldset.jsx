@@ -65,9 +65,9 @@ const DateFieldset = ({
         <YearField
           name={name}
           value={date.year.value}
-          required={date.year.aria.required}
+          required={date.year.required}
           errorId={yearErrorId}
-          valid={date.year.aria.valid}
+          valid={date.year.valid}
           onChange={e => date.year.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
@@ -78,9 +78,9 @@ const DateFieldset = ({
         <MonthField
           name={name}
           value={date.month.value}
-          required={date.month.aria.required}
+          required={date.month.required}
           errorId={monthErrorId}
-          valid={date.month.aria.valid}
+          valid={date.month.valid}
           onChange={e => date.month.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
@@ -91,9 +91,9 @@ const DateFieldset = ({
         <DayField
           name={name}
           value={date.day.value}
-          required={date.day.aria.required}
+          required={date.day.required}
           errorId={dayErrorId}
-          valid={date.day.aria.valid}
+          valid={date.day.valid}
           onChange={e => date.day.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}

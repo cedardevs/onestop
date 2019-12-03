@@ -56,7 +56,7 @@ export function useYear(yearInt, format){
         field: field.error,
         fieldset: fieldset.error,
       },
-      setError: isValid => {
+      setValid: isValid => {
         fieldset.setValid(isValid)
       },
     },

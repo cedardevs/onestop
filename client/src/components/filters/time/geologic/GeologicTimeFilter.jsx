@@ -65,15 +65,15 @@ const GeologicTimeFilter = ({
     if (!isValid) {
       setWarning('Start year must be before end year.')
     }
-    start.setError(isValid)
-    end.setError(isValid)
+    start.setValid(isValid)
+    end.setValid(isValid)
     return isValid
   }
 
   useEffect(
     () => {
-      start.setError(true) //TODO rename setError to setValid or something?
-      end.setError(true)
+      start.setValid(true)
+      end.setValid(true)
       setWarning('')
     },
     [ start.year, end.year ]

@@ -34,9 +34,18 @@ function useDatePart(){
   return {
     value: value,
     set: setValue,
-    aria: {
-      valid: valid,
-      required: required,
+
+    valid: valid,
+    required: required,
+
+    setRequired: required => {
+      setRequired(required)
+      fieldset.setValid(true) // setRequired is called as value is changed, so clear valid and error...
+      fieldset.setError('')
+    },
+    errors: {
+      field: field.error,
+      fieldset: fieldset.error,
       setField: error => {
         field.setValid(_.isEmpty(error))
         field.setError(error)
@@ -45,21 +54,13 @@ function useDatePart(){
         fieldset.setValid(_.isEmpty(error))
         fieldset.setError(error)
       },
-      setRequired: required => {
-        setRequired(required)
-        fieldset.setValid(true) // setRequired is called as value is changed, so clear valid and error...
-        fieldset.setError('')
-      },
+
       setInvalidRange: () => {
         fieldset.setValid(false)
       },
       clearFieldsetValidity: () => {
         fieldset.setValid(true)
       },
-    },
-    errors: {
-      field: field.error,
-      fieldset: fieldset.error,
     },
   }
 }
@@ -79,9 +80,9 @@ export function useDatetime(name, dateString){
   useEffect(
     // keep valid in sync
     () => {
-      setValid(year.aria.valid && month.aria.valid && day.aria.valid)
+      setValid(year.valid && month.valid && day.valid)
     },
-    [ year.aria.valid, month.aria.valid, day.aria.valid ]
+    [ year.valid, month.valid, day.valid ]
   )
 
   useEffect(
@@ -89,20 +90,20 @@ export function useDatetime(name, dateString){
     () => {
       const errors = isValidDate(year.value, month.value, day.value)
 
-      year.aria.setField(
+      year.errors.setField(
         _.isEmpty(errors.year.field) ? '' : `${name} year ${errors.year.field}.`
       )
-      year.aria.setRequired(errors.year.required)
-      month.aria.setField(
+      year.setRequired(errors.year.required)
+      month.errors.setField(
         _.isEmpty(errors.month.field)
           ? ''
           : `${name} month ${errors.month.field}.`
       )
-      month.aria.setRequired(errors.month.required)
-      day.aria.setField(
+      month.setRequired(errors.month.required)
+      day.errors.setField(
         _.isEmpty(errors.day.field) ? '' : `${name} day ${errors.day.field}.`
       )
-      day.aria.setRequired(errors.day.required)
+      day.setRequired(errors.day.required)
 
       setAsMap(ymdToDateMap(year.value, month.value, day.value))
     },
@@ -142,12 +143,12 @@ export function useDatetime(name, dateString){
       clear: clear,
       validate: () => {
         let isValid = true
-        if (year.aria.required && _.isEmpty(year.value)) {
-          year.aria.setFieldset(`${name} year required.`)
+        if (year.required && _.isEmpty(year.value)) {
+          year.errors.setFieldset(`${name} year required.`)
           isValid = false
         }
-        if (month.aria.required && _.isEmpty(month.value)) {
-          month.aria.setFieldset(`${name} month required.`) // TODO aria.setFieldset makes no sense btw - rename that
+        if (month.required && _.isEmpty(month.value)) {
+          month.errors.setFieldset(`${name} month required.`)
           isValid = false
         }
         return isValid
@@ -155,14 +156,14 @@ export function useDatetime(name, dateString){
       setValidDaterange: isValid => {
         // when there is something wrong externally (date range problem), mark all fields as invalid since there is no way to know which must be changed to fix the problem
         if (isValid) {
-          year.aria.clearFieldsetValidity()
-          month.aria.clearFieldsetValidity()
-          day.aria.clearFieldsetValidity()
+          year.errors.clearFieldsetValidity()
+          month.errors.clearFieldsetValidity()
+          day.errors.clearFieldsetValidity()
         }
         else {
-          year.aria.setInvalidRange()
-          month.aria.setInvalidRange()
-          day.aria.setInvalidRange()
+          year.errors.setInvalidRange()
+          month.errors.setInvalidRange()
+          day.errors.setInvalidRange()
         }
       },
     },
