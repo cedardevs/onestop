@@ -8,14 +8,23 @@ import {
   isValidDateRange,
 } from '../../../../utils/inputUtils'
 
+/**
+  Corresponds to a value, tied to a single form field.
+**/
 function useDatePart(){
+  // value is a string, tied to an input
   const [ value, setValue ] = useState('')
+  // valid status, including controls for display validity, validitiy of this field (internal), and validity as part of a larger set (external)
   const valid = useLayeredValidation()
+  // array of error messages on the field
+  const [ errors, setErrors ] = useState(new Array())
 
   useEffect(
+    // reset the validity and error messages when the field is reset to a blank value
     () => {
       if (value == '') {
         valid.setInternal(true)
+        setErrors(new Array())
       }
     },
     [ value ]
@@ -27,14 +36,21 @@ function useDatePart(){
     valid: valid.valid,
     setValidInternal: valid.setInternal,
     setValidExternal: valid.setExternal,
+    errors: errors,
+    setErrors: setErrors,
   }
 }
 
 export function useLayeredValidation(){
+  // validation of this specific field (in isolation)
   const [ internal, setInternal ] = useState(true)
+  // validation of this field as part of the set
   const [ external, setExternal ] = useState(true)
+  // total valid status (used for display)
   const [ valid, setValid ] = useState(true)
+
   useEffect(
+    // keep valid in sync (it's always calculated from internal and external values)
     () => {
       setValid(internal && external)
     },
@@ -49,19 +65,20 @@ export function useLayeredValidation(){
   }
 }
 
-export function useDatetime(name, dateString){
+/**
+  Corresponds to a fieldset for datetime, controlled with a year, month, and day field.
+**/
+export function useDatetime(dateString){
   const year = useDatePart()
   const month = useDatePart()
   const day = useDatePart()
+  // validity of the date, computed from validity of each field. used to display validity for the fieldset.
   const [ valid, setValid ] = useState(true)
-  const [ reasons, setReasons ] = useState({
-    year: new Array(), // TODO move into useDatePart?
-    month: new Array(),
-    day: new Array(),
-  })
+  // computed representation of the date in a map format
   const [ asMap, setAsMap ] = useState(ymdToDateMap('', '', ''))
 
   useEffect(
+    // keep valid in sync
     () => {
       setValid(year.valid && month.valid && day.valid)
     },
@@ -69,9 +86,12 @@ export function useDatetime(name, dateString){
   )
 
   useEffect(
+    // validate the date whenever any component of it changes, and update other calculated fields
     () => {
       const errors = isValidDate(year.value, month.value, day.value)
-      setReasons(errors)
+      year.setErrors(errors.year)
+      month.setErrors(errors.month)
+      day.setErrors(errors.day)
       year.setValidInternal(_.isEmpty(errors.year))
       month.setValidInternal(_.isEmpty(errors.month))
       day.setValidInternal(_.isEmpty(errors.day))
@@ -81,12 +101,14 @@ export function useDatetime(name, dateString){
   )
 
   const clear = () => {
+    // reset all fields to defaults (validity should be updated automatically)
     year.set('')
     month.set('')
     day.set('')
   }
 
   useEffect(
+    // update/reset fields when prop changes
     () => {
       if (dateString != null) {
         let dateObj = moment(dateString).utc()
@@ -107,10 +129,10 @@ export function useDatetime(name, dateString){
       month: month,
       day: day,
       valid: valid,
-      errors: reasons,
       asMap: asMap,
       clear: clear,
       setValidExternal: isValid => {
+        // when there is something wrong externally (date range problem), mark all fields as invalid since there is no way to know which must be changed to fix the problem
         year.setValidExternal(isValid)
         month.setValidExternal(isValid)
         day.setValidExternal(isValid)
@@ -119,10 +141,15 @@ export function useDatetime(name, dateString){
   ]
 }
 
-export function useDateRange(startDateTime, endDateTime, applyFilter){
-  const [ start ] = useDatetime('Start', startDateTime)
-  const [ end ] = useDatetime('End', endDateTime)
-  const [ reasonCumulative, setReasonCumulative ] = useState('') // TODO replace with layered
+/**
+  Corresponds to the start and end date fields, and controls validation of the set.
+**/
+export function useDateRange(startDateTime, endDateTime){
+  const [ start ] = useDatetime(startDateTime)
+  const [ end ] = useDatetime(endDateTime)
+  // error for the combination of a valid start and end date (basically: is the date range valid)
+  const [ errorCumulative, setErrorCumulative ] = useState('') // TODO replace with layered ?
+  // computed array of all the errors for the fields
   const [ errors, setErrors ] = useState(new Array())
 
   useEffect(
@@ -130,53 +157,61 @@ export function useDateRange(startDateTime, endDateTime, applyFilter){
       // reset external validation each time *any* field changes, since old validation no longer applies
       start.setValidExternal(true)
       end.setValidExternal(true)
-      setReasonCumulative('') // TODO end and start date same (ie 2019/12/2 for both) is valid
+      setErrorCumulative('') // TODO end and start date same (ie 2019/12/2 for both) is valid
     },
     [ start.asMap, end.asMap ]
   )
 
   useEffect(
-    // any time individual field(set)s have errors, build up the overall error message
+    // compute the overall error messages
     () => {
       let errors = new Array()
-      start.errors.year.forEach((err, index) => {
+      start.year.errors.forEach((err, index) => {
         errors.push(`start year ${err}`)
       })
-      start.errors.month.forEach((err, index) => {
+      start.month.errors.forEach((err, index) => {
         errors.push(`start month ${err}`)
       })
-      start.errors.day.forEach((err, index) => {
+      start.day.errors.forEach((err, index) => {
         errors.push(`start day ${err}`)
       })
-      end.errors.year.forEach((err, index) => {
+      end.year.errors.forEach((err, index) => {
         errors.push(`end year ${err}`)
       })
-      end.errors.month.forEach((err, index) => {
+      end.month.errors.forEach((err, index) => {
         errors.push(`end month ${err}`)
       })
-      end.errors.day.forEach((err, index) => {
+      end.day.errors.forEach((err, index) => {
         errors.push(`end day ${err}`)
       })
 
-      if (!_.isEmpty(reasonCumulative)) {
-        errors.push(reasonCumulative)
+      if (!_.isEmpty(errorCumulative)) {
+        errors.push(errorCumulative)
       }
       setErrors(errors)
     },
-    [ start.errors, end.errors, reasonCumulative ]
+    [
+      start.year.errors,
+      start.month.errors,
+      start.day.errors,
+      end.year.errors,
+      end.month.errors,
+      end.day.errors,
+      errorCumulative,
+    ]
   )
 
   const clear = () => {
     start.clear()
     end.clear()
-    setReasonCumulative('')
+    setErrorCumulative('')
   }
 
   const validate = () => {
     if (start.valid && end.valid) {
       let isValid = isValidDateRange(start.asMap, end.asMap)
       if (!isValid) {
-        setReasonCumulative('Start date must be before end date.')
+        setErrorCumulative('Start date must be before end date.')
       }
       start.setValidExternal(isValid)
       end.setValidExternal(isValid)
@@ -186,6 +221,7 @@ export function useDateRange(startDateTime, endDateTime, applyFilter){
   }
 
   const asDateStrings = () => {
+    // convert (assumed valid) dates into datestrings, required to submit the filter
     let startMap = start.asMap
     let startDateString = !_.every(startMap, _.isNull)
       ? moment(startMap).utc().startOf('day').format()

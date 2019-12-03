@@ -45,7 +45,9 @@ const DateTimeFilter = ({
   clear,
   applyFilter,
 }) => {
+  // component (visual) error display
   const [ warning, setWarning ] = useState(null)
+  // text-only (screen reader) error announcement (TODO it would be better to just live-announce the warning section)
   const [ ariaWarning, setAriaWarning ] = useState('')
 
   const [
