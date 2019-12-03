@@ -26,6 +26,10 @@ const styleLabel = {
   marginBottom: '0.25em',
 }
 
+const styleLabelInvalid = {
+  textDecoration: `underline wavy ${SiteColors.WARNING}`,
+}
+
 const styleField = {
   color: FilterColors.TEXT,
   height: '2em',
@@ -54,6 +58,7 @@ const DateFieldset = ({name, date, onDateChange}) => {
           onChange={e => date.year.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
+          styleLabelInvalid={styleLabelInvalid}
           styleField={styleField}
         />
         <MonthField
@@ -63,6 +68,7 @@ const DateFieldset = ({name, date, onDateChange}) => {
           onChange={e => date.month.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
+          styleLabelInvalid={styleLabelInvalid}
           styleField={styleField}
         />
         <DayField
@@ -72,6 +78,7 @@ const DateFieldset = ({name, date, onDateChange}) => {
           onChange={e => date.day.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
+          styleLabelInvalid={styleLabelInvalid}
           styleField={styleField}
         />
 

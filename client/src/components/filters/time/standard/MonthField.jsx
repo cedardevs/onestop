@@ -1,5 +1,7 @@
 import React from 'react'
 
+import {consolidateStyles} from '../../../../utils/styleUtils'
+
 const styleMonth = {
   width: '7em',
   margin: 0,
@@ -14,6 +16,7 @@ const MonthField = props => {
     onChange,
     styleLayout,
     styleLabel,
+    styleLabelInvalid,
     styleField,
   } = props
   const styleFieldApplied = {
@@ -26,7 +29,10 @@ const MonthField = props => {
 
   return (
     <div style={styleLayout}>
-      <label style={styleLabel} htmlFor={id}>
+      <label
+        style={consolidateStyles(styleLabel, valid ? null : styleLabelInvalid)}
+        htmlFor={id}
+      >
         Month
       </label>
       <select

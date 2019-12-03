@@ -10,7 +10,7 @@ import {
 
 function useDatePart(){
   const [ value, setValue ] = useState('')
-  const [ valid, setValid ] = useState(true)
+  const [ valid, setValid ] = useState(true) // TODO useLayeredValidation (so fields can be marked invalid when external validation is set)
 
   useEffect(
     () => {
@@ -118,7 +118,7 @@ export function useDateRange(startDateTime, endDateTime, applyFilter){
   const [ start ] = useDatetime('Start', startDateTime)
   const [ end ] = useDatetime('End', endDateTime)
   const [ reasonCumulative, setReasonCumulative ] = useState('') // TODO replace with layered
-  const [ reasonIndividual, setReasonIndividual ] = useState('')
+  // const [ reasonIndividual, setReasonIndividual ] = useState('')
   const [ errors, setErrors ] = useState(new Array())
 
   useEffect(
@@ -154,49 +154,67 @@ export function useDateRange(startDateTime, endDateTime, applyFilter){
         errors.push(`end day ${err}`)
       })
 
+      // setReasonIndividual(_.join(errors, ', '))
+      if (!_.isEmpty(reasonCumulative)) {
+        errors.push(reasonCumulative)
+      }
       setErrors(errors)
-      setReasonIndividual(_.join(errors, ', '))
     },
-    [ start.errors, end.errors ]
+    [ start.errors, end.errors, reasonCumulative ]
   )
+
   const clear = () => {
-    clear()
     start.clear()
     end.clear()
-    setDateRangeValid(true)
+    // setDateRangeValid(true)
     setReasonCumulative('')
   }
 
-  const applyDates = () => {
+  const validate = () => {
     if (start.valid && end.valid) {
       let isValid = isValidDateRange(start.asMap, end.asMap)
       if (!isValid) {
-        setReasonCumulative('Invalid date range.')
+        setReasonCumulative('Start date must be before end date.')
       }
       start.setValidExternal(isValid)
       end.setValidExternal(isValid)
-      if (isValid) {
-        let startMap = start.asMap
-        let startDateString = !_.every(startMap, _.isNull)
-          ? moment(startMap).utc().startOf('day').format()
-          : null
-        let endMap = end.asMap
-        let endDateString = !_.every(endMap, _.isNull)
-          ? moment(endMap).utc().startOf('day').format()
-          : null
-
-        applyFilter(startDateString, endDateString)
-      }
+      return isValid
+      // if (isValid) {
+      //   let startMap = start.asMap
+      //   let startDateString = !_.every(startMap, _.isNull)
+      //     ? moment(startMap).utc().startOf('day').format()
+      //     : null
+      //   let endMap = end.asMap
+      //   let endDateString = !_.every(endMap, _.isNull)
+      //     ? moment(endMap).utc().startOf('day').format()
+      //     : null
+      //
+      //   applyFilter(startDateString, endDateString)
+      // }
     }
+    return false
+  }
+
+  const asDateStrings = () => {
+    let startMap = start.asMap
+    let startDateString = !_.every(startMap, _.isNull)
+      ? moment(startMap).utc().startOf('day').format()
+      : null
+    let endMap = end.asMap
+    let endDateString = !_.every(endMap, _.isNull)
+      ? moment(endMap).utc().startOf('day').format()
+      : null
+
+    return [ startDateString, endDateString ]
   }
 
   return [
     start,
     end,
     clear,
-    applyDates,
+    // applyDates,
+    validate,
+    asDateStrings,
     errors,
-    reasonCumulative,
-    reasonIndividual,
   ]
 }

@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
-// import moment from 'moment/moment'
 import FlexColumn from '../../../common/ui/FlexColumn'
 import FlexRow from '../../../common/ui/FlexRow'
 import Button from '../../../common/input/Button'
@@ -47,23 +46,34 @@ const DateTimeFilter = ({
   applyFilter,
 }) => {
   const [ warning, setWarning ] = useState(null)
+  const [ ariaWarning, setAriaWarning ] = useState('')
 
   const [
     start,
     end,
     clearDateRange,
-    applyDates,
+    // applyDates,
+    validate,
+    asDateStrings,
     errors,
-    reasonCumulative,
-    reasonIndividual,
-  ] = useDateRange(startDateTime, endDateTime, applyFilter)
+    // reasonCumulative,
+    // reasonIndividual,
+  ] = useDateRange(startDateTime, endDateTime)
 
   useEffect(
     () => {
       setWarning(createWarning())
+      setAriaWarning(_.join(errors, ', '))
     },
-    [ errors, reasonCumulative ]
+    [ errors ]
   )
+
+  const applyDates = () => {
+    if (validate()) {
+      const [ startDateString, endDateString ] = asDateStrings()
+      applyFilter(startDateString, endDateString)
+    }
+  }
 
   const clearDates = () => {
     clear()
@@ -72,18 +82,13 @@ const DateTimeFilter = ({
   }
 
   const createWarning = () => {
-    let rangeErr = _.isEmpty(reasonCumulative) ? null : (
-      <li key="range">{reasonCumulative}</li>
-    )
+    // let rangeErr = _.isEmpty(reasonCumulative) ? null : (
+    //   <li key="range">{reasonCumulative}</li>
+    // )
     let errList = errors.map((err, index) => {
       return <li key={index}>{err}</li>
     })
-    return (
-      <ul>
-        {errList}
-        {rangeErr}
-      </ul>
-    )
+    return <ul>{errList}</ul>
   }
 
   const handleKeyDown = event => {
@@ -154,10 +159,7 @@ const DateTimeFilter = ({
               {warning}
             </div>,
             <LiveAnnouncer key="alert::annoucement">
-              <LiveMessage
-                message={`${reasonIndividual} ${reasonCumulative}`}
-                aria-live="polite"
-              />
+              <LiveMessage message={ariaWarning} aria-live="polite" />
             </LiveAnnouncer>,
           ]}
         />

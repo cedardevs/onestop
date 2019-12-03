@@ -1,6 +1,8 @@
 import React from 'react'
 import _ from 'lodash'
 
+import {consolidateStyles} from '../../../../utils/styleUtils'
+
 const styleYear = {
   width: '2.618em',
   margin: 0,
@@ -16,6 +18,7 @@ const YearField = props => {
     label,
     styleLayout,
     styleLabel,
+    styleLabelInvalid,
     styleField,
     maxLength,
     placeholder,
@@ -32,7 +35,10 @@ const YearField = props => {
 
   return (
     <div style={styleLayout}>
-      <label style={styleLabel} htmlFor={id}>
+      <label
+        style={consolidateStyles(styleLabel, valid ? null : styleLabelInvalid)}
+        htmlFor={id}
+      >
         {labelText}
       </label>
       <input

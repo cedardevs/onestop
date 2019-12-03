@@ -1,5 +1,7 @@
 import React from 'react'
 
+import {consolidateStyles} from '../../../../utils/styleUtils'
+
 const styleDay = {
   width: '1.309em',
   margin: 0,
@@ -14,6 +16,7 @@ const DayField = props => {
     onChange,
     styleLayout,
     styleLabel,
+    styleLabelInvalid,
     styleField,
   } = props
   const styleFieldApplied = {
@@ -26,7 +29,10 @@ const DayField = props => {
 
   return (
     <div style={styleLayout}>
-      <label style={styleLabel} htmlFor={id}>
+      <label
+        style={consolidateStyles(styleLabel, valid ? null : styleLabelInvalid)}
+        htmlFor={id}
+      >
         Day
       </label>
       <input
