@@ -27,7 +27,11 @@ const styleLabel = {
 }
 
 const styleLabelInvalid = {
-  textDecoration: `underline dashed ${SiteColors.WARNING}`,
+  textDecoration: `underline wavy ${SiteColors.WARNING}`,
+}
+
+const styleRequiredIndicator = {
+  color: `${SiteColors.WARNING}`,
 }
 
 const styleField = {
@@ -45,7 +49,14 @@ const styleInputValidity = isValid => {
   }
 }
 
-const DateFieldset = ({name, date, onDateChange}) => {
+const DateFieldset = ({
+  name,
+  date,
+  onDateChange,
+  yearErrorId,
+  monthErrorId,
+  dayErrorId,
+}) => {
   const legendText = `${_.capitalize(name)} Date:`
 
   return (
@@ -54,31 +65,40 @@ const DateFieldset = ({name, date, onDateChange}) => {
         <YearField
           name={name}
           value={date.year.value}
-          valid={date.year.valid}
+          required={date.year.aria.required}
+          errorId={yearErrorId}
+          valid={date.year.aria.valid}
           onChange={e => date.year.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleLabelInvalid={styleLabelInvalid}
+          styleRequiredIndicator={styleRequiredIndicator}
           styleField={styleField}
         />
         <MonthField
           name={name}
           value={date.month.value}
-          valid={date.month.valid}
+          required={date.month.aria.required}
+          errorId={monthErrorId}
+          valid={date.month.aria.valid}
           onChange={e => date.month.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleLabelInvalid={styleLabelInvalid}
+          styleRequiredIndicator={styleRequiredIndicator}
           styleField={styleField}
         />
         <DayField
           name={name}
           value={date.day.value}
-          valid={date.day.valid}
+          required={date.day.aria.required}
+          errorId={dayErrorId}
+          valid={date.day.aria.valid}
           onChange={e => date.day.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleLabelInvalid={styleLabelInvalid}
+          styleRequiredIndicator={styleRequiredIndicator}
           styleField={styleField}
         />
 

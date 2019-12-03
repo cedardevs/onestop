@@ -131,136 +131,220 @@ describe('The inputUtils', function(){
 
   describe('can check date validity', function(){
     const testCases = [
-      {year: '', month: '', day: '', output: {year: [], month: [], day: []}},
+      {
+        year: '',
+        month: '',
+        day: '',
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
+      },
       {
         year: '2000',
         month: '',
         day: '',
-        output: {year: [], month: [], day: []},
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2000',
         month: '4',
         day: '',
-        output: {year: [], month: [], day: []},
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2000',
         month: '4',
         day: '24',
-        output: {year: [], month: [], day: []},
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2000',
         month: '0',
         day: '1',
-        output: {year: [], month: [], day: []},
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2000',
         month: '',
         day: '1',
-        output: {year: [], month: [ 'required' ], day: []},
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: true},
+          day: {field: '', required: false},
+        },
       },
       {
         year: 'notayear',
         month: '',
         day: '',
-        output: {year: [ 'invalid' ], month: [], day: []},
+        output: {
+          year: {field: 'invalid', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '1.23',
         month: '',
         day: '',
-        output: {year: [ 'invalid' ], month: [], day: []},
+        output: {
+          year: {field: 'invalid', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '-1',
         month: '-2',
         day: '-3',
         output: {
-          year: [ 'must be greater than zero' ],
-          month: [ 'cannot be in the future' ],
-          day: [ 'invalid' ],
+          year: {field: 'must be greater than zero', required: false},
+          month: {field: 'cannot be in the future', required: false},
+          day: {field: 'invalid', required: false},
         },
       }, // cannot be in the future is a weird error there
       {
         year: '2000',
         month: 'notamonth',
         day: '',
-        output: {year: [], month: [ 'invalid' ], day: []},
+        output: {
+          year: {field: '', required: false},
+          month: {field: 'invalid', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2000',
         month: '1.23',
         day: '',
-        output: {year: [], month: [ 'invalid' ], day: []},
+        output: {
+          year: {field: '', required: false},
+          month: {field: 'invalid', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2000',
         month: '0',
         day: 'notaday',
-        output: {year: [], month: [], day: [ 'invalid' ]},
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: 'invalid', required: false},
+        },
       },
       {
         year: '2000',
         month: '0',
         day: '1.23',
-        output: {year: [], month: [], day: [ 'invalid' ]},
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: 'invalid', required: false},
+        },
       },
       {
         year: '200000000',
         month: '',
         day: '',
-        output: {year: [ 'cannot be in the future' ], month: [], day: []},
-      }, // in the future
-
+        output: {
+          year: {field: 'cannot be in the future', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
+      },
       {
         year: '',
         month: '4',
         day: '',
-        output: {year: [ 'required' ], month: [], day: []},
+        output: {
+          year: {field: '', required: true},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '',
         month: '',
         day: '1',
-        output: {year: [ 'required' ], month: [ 'required' ], day: []},
+        output: {
+          year: {field: '', required: true},
+          month: {field: '', required: true},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2001',
         month: '',
         day: '',
         now: moment(ymdToDateMap('2000', '5', '5')),
-        output: {year: [ 'cannot be in the future' ], month: [], day: []},
+        output: {
+          year: {field: 'cannot be in the future', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2001',
         month: '6',
         day: '6',
         now: moment(ymdToDateMap('2000', '5', '5')),
-        output: {year: [ 'cannot be in the future' ], month: [], day: []},
+        output: {
+          year: {field: 'cannot be in the future', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2000',
         month: '6',
         day: '',
         now: moment(ymdToDateMap('2000', '5', '5')),
-        output: {year: [], month: [ 'cannot be in the future' ], day: []},
+        output: {
+          year: {field: '', required: false},
+          month: {field: 'cannot be in the future', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2000',
         month: '6',
         day: '1',
         now: moment(ymdToDateMap('2000', '5', '5')),
-        output: {year: [], month: [ 'cannot be in the future' ], day: []},
+        output: {
+          year: {field: '', required: false},
+          month: {field: 'cannot be in the future', required: false},
+          day: {field: '', required: false},
+        },
       },
       {
         year: '2000',
         month: '5',
         day: '6',
         now: moment(ymdToDateMap('2000', '5', '5')),
-        output: {year: [], month: [], day: [ 'cannot be in the future' ]},
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: 'cannot be in the future', required: false},
+        },
       },
     ]
 

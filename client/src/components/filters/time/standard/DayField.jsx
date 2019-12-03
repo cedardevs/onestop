@@ -11,13 +11,16 @@ const styleDay = {
 const DayField = props => {
   const {
     name,
+    required,
     value,
     valid,
     onChange,
     styleLayout,
     styleLabel,
     styleLabelInvalid,
+    styleRequiredIndicator,
     styleField,
+    errorId,
   } = props
   const styleFieldApplied = {
     ...styleDay,
@@ -33,7 +36,7 @@ const DayField = props => {
         style={consolidateStyles(styleLabel, valid ? null : styleLabelInvalid)}
         htmlFor={id}
       >
-        Day
+        Day{required ? <span style={styleRequiredIndicator}>*</span> : null}
       </label>
       <input
         type="text"
@@ -43,6 +46,8 @@ const DayField = props => {
         aria-placeholder="D D"
         value={value}
         aria-invalid={!valid}
+        aria-required={required}
+        aria-errormessage={errorId}
         onChange={onChange}
         maxLength="2"
         style={styleFieldApplied}

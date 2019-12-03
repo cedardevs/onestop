@@ -18,23 +18,18 @@ import ApplyClearRow from '../../common/ApplyClearRow'
 import Relation from '../../Relation'
 import TimeRelationIllustration from '../TimeRelationIllustration'
 import {useDateRange} from './DateTimeEffect'
-import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
+import {consolidateStyles} from '../../../../utils/styleUtils'
 
-const warningStyle = warning => {
-  if (!warning) {
-    return {
-      display: 'none',
-    }
-  }
-  else {
-    return {
+const warningStyle = (startValid, endValid) => {
+  return consolidateStyles(
+    {
       color: SiteColors.WARNING,
       textAlign: 'center',
-      margin: '0.75em 0 0.5em',
       fontWeight: 'bold',
       fontSize: '1.15em',
-    }
-  }
+    },
+    !startValid || !endValid ? {margin: '0.75em 0 0.5em'} : null
+  )
 }
 
 const DateTimeFilter = ({
@@ -45,27 +40,14 @@ const DateTimeFilter = ({
   clear,
   applyFilter,
 }) => {
-  // component (visual) error display
-  const [ warning, setWarning ] = useState(null)
-  // text-only (screen reader) error announcement (TODO it would be better to just live-announce the warning section)
-  const [ ariaWarning, setAriaWarning ] = useState('')
-
   const [
     start,
     end,
     clearDateRange,
     validate,
     asDateStrings,
-    errors,
+    errorCumulative,
   ] = useDateRange(startDateTime, endDateTime)
-
-  useEffect(
-    () => {
-      setWarning(createWarning())
-      setAriaWarning(_.join(errors, ', '))
-    },
-    [ errors ]
-  )
 
   const applyDates = () => {
     if (validate()) {
@@ -77,14 +59,14 @@ const DateTimeFilter = ({
   const clearDates = () => {
     clear()
     clearDateRange()
-    setWarning(null)
   }
 
-  const createWarning = () => {
-    let errList = errors.map((err, index) => {
-      return <li key={index}>{err}</li>
-    })
-    return <ul>{errList}</ul>
+  const renderErrors = ({field, fieldset}) => {
+    return (
+      <div>
+        {field} {fieldset}
+      </div>
+    )
   }
 
   const handleKeyDown = event => {
@@ -101,8 +83,56 @@ const DateTimeFilter = ({
         onKeyDown={handleKeyDown}
         aria-describedby="timeFilterInstructions"
       >
-        <DateFieldset name="start" date={start} />
-        <DateFieldset name="end" date={end} />
+        <DateFieldset
+          name="start"
+          date={start}
+          yearErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterStartYearErrors'
+            )
+          }
+          monthErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterStartMonthErrors'
+            )
+          }
+          dayErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterStartDayErrors'
+            )
+          }
+        />
+        <DateFieldset
+          name="end"
+          date={end}
+          yearErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterEndYearErrors'
+            )
+          }
+          monthErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterEndMonthErrors'
+            )
+          }
+          dayErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterEndDayErrors'
+            )
+          }
+        />
       </form>
     </div>
   )
@@ -149,14 +179,32 @@ const DateTimeFilter = ({
             buttons,
             <div
               key="DateFilter::InputColumn::Warning"
-              style={warningStyle(warning)}
-              aria-hidden={true}
+              style={warningStyle(start.valid, end.valid)}
+              role="alert"
+              aria-live="polite"
             >
-              {warning}
+              <div id="dateFilterStartYearErrors">
+                {renderErrors(start.year.errors)}
+              </div>
+              <div id="dateFilterStartMonthErrors">
+                {renderErrors(start.month.errors)}
+              </div>
+              <div id="dateFilterStartDayErrors">
+                {renderErrors(start.day.errors)}
+              </div>
+              <div id="dateFilterEndYearErrors">
+                {renderErrors(end.year.errors)}
+              </div>
+              <div id="dateFilterEndMonthErrors">
+                {renderErrors(end.month.errors)}
+              </div>
+              <div id="dateFilterEndDayErrors">
+                {renderErrors(end.day.errors)}
+              </div>
+              <div id="dateFilterRangeErrors">
+                {!_.isEmpty(errorCumulative) ? errorCumulative : null}
+              </div>
             </div>,
-            <LiveAnnouncer key="alert::annoucement">
-              <LiveMessage message={ariaWarning} aria-live="polite" />
-            </LiveAnnouncer>,
           ]}
         />
       </fieldset>

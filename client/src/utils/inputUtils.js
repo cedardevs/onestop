@@ -92,9 +92,9 @@ export const isValidYearRange = (start, end) => {
 
 export const isValidDate = (year, month, day, nowOverride) => {
   let errors = {
-    year: new Array(),
-    month: new Array(),
-    day: new Array(),
+    year: {field: '', required: false},
+    month: {field: '', required: false},
+    day: {field: '', required: false},
   }
 
   // No date given is technically valid (since a complete range is unnecessary)
@@ -110,24 +110,24 @@ export const isValidDate = (year, month, day, nowOverride) => {
   if (!_.isEmpty(year)) {
     if (dateMap.year == null) {
       // catches problems like 'foo'
-      errors.year.push('invalid')
+      errors.year.field = 'invalid'
     }
     if (dateMap.year > now.year()) {
-      errors.year.push('cannot be in the future')
+      errors.year.field = 'cannot be in the future'
     }
     if (dateMap.year < 0) {
       // moment() gets choked by negative years
-      errors.year.push('must be greater than zero')
+      errors.year.field = 'must be greater than zero'
     }
   }
 
   if (!_.isEmpty(month)) {
     if (dateMap.month == null) {
       // hard to reproduce with a dropdown, but 'foo', presumably '-1' TODO
-      errors.month.push('invalid')
+      errors.month.field = 'invalid'
     }
     else if (_.isEmpty(year)) {
-      errors.year.push('required') // TODO dynamically set aria-required property on fields?
+      errors.year.required = true
     }
     else if (
       dateMap.year != null &&
@@ -135,28 +135,22 @@ export const isValidDate = (year, month, day, nowOverride) => {
       !moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)
     ) {
       // only indicate month cannot be in the future if year alone is *not* in the future
-      errors.month.push('cannot be in the future')
+      errors.month.field = 'cannot be in the future'
     }
   }
 
   if (!_.isEmpty(day)) {
     if (!givenDate.isValid()) {
-      // TODO this is a weird one I don't know how to manually reproduce - try to verify it in tests ('-1'?)
-      errors.day.push('invalid')
+      // TODO this is a weird one I don't know how to manually reproduce
+      errors.day.field = 'invalid'
     }
 
     if (dateMap.day == null) {
-      errors.day.push('invalid')
+      errors.day.field = 'invalid'
     }
-    else if (!_.isEmpty(year) && _.isEmpty(month)) {
-      // TODO indicate aria-required on field?
-      errors.month.push('required')
-    }
-    else if (_.isEmpty(year) && _.isEmpty(month)) {
-      // TODO indicate aria-required on field?
-      // don't duplicate marking year required if month is set and will catch it (so only mark start year required if month is ALSO empty)
-      errors.year.push('required')
-      errors.month.push('required')
+    else if (_.isEmpty(year) || _.isEmpty(month)) {
+      errors.year.required = _.isEmpty(year)
+      errors.month.required = _.isEmpty(month)
     }
     else if (
       dateMap.year <= now.year() &&
@@ -164,7 +158,7 @@ export const isValidDate = (year, month, day, nowOverride) => {
       !givenDate.isSameOrBefore(now)
     ) {
       // only indicate month cannot be in the future if year and month alone is *not* in the future
-      errors.day.push('cannot be in the future')
+      errors.day.field = 'cannot be in the future'
     }
   }
 

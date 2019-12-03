@@ -11,13 +11,16 @@ const styleMonth = {
 const MonthField = props => {
   const {
     name,
+    required,
     value,
     valid,
     onChange,
     styleLayout,
     styleLabel,
     styleLabelInvalid,
+    styleRequiredIndicator,
     styleField,
+    errorId,
   } = props
   const styleFieldApplied = {
     ...styleMonth,
@@ -33,7 +36,7 @@ const MonthField = props => {
         style={consolidateStyles(styleLabel, valid ? null : styleLabelInvalid)}
         htmlFor={id}
       >
-        Month
+        Month{required ? <span style={styleRequiredIndicator}>*</span> : null}
       </label>
       <select
         id={id}
@@ -43,6 +46,8 @@ const MonthField = props => {
         style={styleFieldApplied}
         aria-label={label}
         aria-invalid={!valid}
+        aria-required={required}
+        aria-errormessage={errorId}
       >
         <option value="">(none)</option>
         <option value="0">January</option>

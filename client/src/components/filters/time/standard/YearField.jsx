@@ -12,6 +12,7 @@ const styleYear = {
 const YearField = props => {
   const {
     name,
+    required,
     value,
     valid,
     onChange,
@@ -19,10 +20,12 @@ const YearField = props => {
     styleLayout,
     styleLabel,
     styleLabelInvalid,
+    styleRequiredIndicator,
     styleField,
     maxLength,
     placeholder,
     ariaPlaceholder,
+    errorId,
   } = props
   const styleFieldApplied = {
     ...styleYear,
@@ -40,6 +43,7 @@ const YearField = props => {
         htmlFor={id}
       >
         {labelText}
+        {required ? <span style={styleRequiredIndicator}>*</span> : null}
       </label>
       <input
         type="text"
@@ -51,6 +55,8 @@ const YearField = props => {
         }
         value={value}
         aria-invalid={!valid}
+        aria-required={required}
+        aria-errormessage={errorId}
         onChange={onChange}
         maxLength={maxLength | 4}
         style={styleFieldApplied}
