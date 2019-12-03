@@ -56,7 +56,6 @@ const TimeFilter = ({
         }
       }}
       applyFilter={(startDate, endDate) => {
-        console.log('submitting', startDate, endDate)
         removeYearRange()
         updateDateRange(startDate, endDate)
         submit()

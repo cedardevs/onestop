@@ -14,7 +14,7 @@ import {SiteColors} from '../../../style/defaultStyles'
 import mapIcon from '../../../../img/font-awesome/white/svg/globe.svg'
 import {styleFilterPanel, styleFieldsetBorder} from '../common/styleFilters'
 import ApplyClearRow from '../common/ApplyClearRow'
-import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
+import {consolidateStyles} from '../../../utils/styleUtils'
 
 const styleMapFilter = {
   ...styleFilterPanel,
@@ -31,20 +31,17 @@ const styleButtonShowMap = {
 }
 
 const warningStyle = validReason => {
-  if (_.isEmpty(validReason.individual) && _.isEmpty(validReason.cumulative)) {
-    return {
-      display: 'none',
-    }
-  }
-  else {
-    return {
+  return consolidateStyles(
+    {
       color: SiteColors.WARNING,
       textAlign: 'center',
-      margin: '0.75em 0 0.5em',
       fontWeight: 'bold',
       fontSize: '1.15em',
-    }
-  }
+    },
+    !_.isEmpty(validReason.individual) || !_.isEmpty(validReason.cumulative)
+      ? {margin: '0.75em 0 0.5em'}
+      : null
+  )
 }
 
 const MapFilter = ({
@@ -144,16 +141,11 @@ const MapFilter = ({
         <div
           key="MapFilter::InputColumn::Warning"
           style={warningStyle(bounds.reason)}
-          aria-hidden={true}
+          role="alert"
+          aria-live="polite"
         >
           {bounds.reason.individual} {bounds.reason.cumulative}
         </div>,
-        <LiveAnnouncer key="alert::annoucement">
-          <LiveMessage
-            message={`${bounds.reason.individual} ${bounds.reason.cumulative}`}
-            aria-live="polite"
-          />
-        </LiveAnnouncer>,
         <FormSeparator key="MapFilter::InputColumn::OR" text="OR" />,
         buttonShowMap,
       ]}
