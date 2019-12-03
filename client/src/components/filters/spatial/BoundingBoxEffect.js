@@ -1,28 +1,15 @@
 import {useState, useEffect} from 'react'
 import _ from 'lodash'
 import {constructBbox, textToNumber} from '../../../utils/inputUtils'
+import {useLayeredValidation} from '../LayeredValidationEffect'
 
 function useCoordinate(name, defaultValue, typeName, limit){
   // value is a string, tied to a text input
   const [ value, setValue ] = useState(`${defaultValue}`)
   // numeric is the number representation of value (for validation and submitting filters)
   const [ numeric, setNumeric ] = useState(null)
-  // validation of this specific field (in isolation)
-  const [ validInternal, setValidInternal ] = useState(true)
-  // validation of this field as part of the set
-  const [ validExternal, setValidExternal ] = useState(true)
-  // total valid status (used for display)
-  const [ valid, setValid ] = useState(true)
-  // reason (internal) for validation failure
-  const [ reason, setReason ] = useState('')
-
-  useEffect(
-    // keep valid in sync
-    () => {
-      setValid(validInternal && validExternal)
-    },
-    [ validInternal, validExternal ]
-  )
+  // valid status, including controls for display validity, validitiy of this field, and validity as part of a larger fieldset
+  const [ valid, field, fieldset ] = useLayeredValidation()
 
   const reset = () => {
     setValue(`${defaultValue}`)
@@ -34,27 +21,27 @@ function useCoordinate(name, defaultValue, typeName, limit){
       // validate when value changes, and update other calculated fields
       if (value == '') {
         setNumeric(null)
-        setValidInternal(true)
-        setReason('')
+        field.setValid(true)
+        field.setError('')
         return
       }
       const num = textToNumber(value)
       setNumeric(num)
 
       if (num == null) {
-        setValidInternal(false)
-        setReason(`${name}: Invalid coordinates entered.`)
+        field.setValid(false)
+        field.setError(`${name}: Invalid coordinates entered.`)
         return
       }
       if (Math.abs(num) > limit) {
-        setValidInternal(false)
-        setReason(
+        field.setValid(false)
+        field.setError(
           `Invalid coordinates entered. Valid ${typeName} are between -${limit} and ${limit}.`
         )
         return
       }
-      setValidInternal(true)
-      setReason('')
+      field.setValid(true)
+      field.setError('')
     },
     [ value ]
   )
@@ -62,10 +49,10 @@ function useCoordinate(name, defaultValue, typeName, limit){
   return {
     value: value,
     set: setValue,
-    validInternal: validInternal,
-    setValidExternal: setValidExternal,
+    validInternal: field.valid,
+    setValidExternal: fieldset.setValid,
     valid: valid,
-    reason: reason,
+    reason: field.error, // TODO rename 'reason'
     reset: reset,
     isSet: () => numeric != null,
     number: numeric,

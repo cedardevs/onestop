@@ -1,26 +1,30 @@
 import {useState, useEffect} from 'react'
 
+import _ from 'lodash'
 import moment from 'moment/moment'
-import {isValidYear, convertYearToCE} from '../../../../utils/inputUtils'
 
-export function useYear(yearInt, format, afterValidate){
+import {isValidYear, convertYearToCE} from '../../../../utils/inputUtils'
+import {useLayeredValidation} from '../../LayeredValidationEffect'
+
+export function useYear(yearInt, format){
   const [ year, setYear ] = useState('') // user entered values (tied to text box)
   const [ CE, setCE ] = useState('') // converted value
-  const [ valid, setValid ] = useState(true)
+  const [ valid, field, fieldset ] = useLayeredValidation()
 
   useEffect(
     () => {
       let yearCE = convertYearToCE(year, format)
-      setValid(isValidYear(yearCE))
+      let message = isValidYear(yearCE)
+      field.setValid(_.isEmpty(message))
+      field.setError(message)
       setCE(yearCE)
-      afterValidate(yearCE)
     },
     [ year ]
   )
 
   const clear = () => {
     setYear('')
-    setValid(true)
+    field.setValid(true)
   }
 
   useEffect(
@@ -48,6 +52,13 @@ export function useYear(yearInt, format, afterValidate){
       valid: valid,
       setYear: setYear,
       clear: clear,
+      errors: {
+        field: field.error,
+        fieldset: fieldset.error,
+      },
+      setError: isValid => {
+        fieldset.setValid(isValid)
+      },
     },
   ]
 }

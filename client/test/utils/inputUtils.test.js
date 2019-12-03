@@ -42,14 +42,14 @@ describe('The inputUtils', function(){
 
   describe('validates geologic years', function(){
     const testCases = [
-      {input: '', output: true},
-      {input: null, output: true},
-      {input: 20000, output: true}, /// TODO BAD (integer input in general is not good here)
-      {input: 'notanumber', output: false},
-      {input: '200000', output: false}, // in the future
-      {input: '-3000000000', output: true},
-      {input: '2019', output: true},
-      {input: '1ka', output: false}, // doesn't allow unconverted years
+      {input: '', output: ''},
+      {input: null, output: ''},
+      {input: 20000, output: ''}, /// TODO BAD (integer input in general is not good here)
+      {input: 'notanumber', output: 'invalid'},
+      {input: '200000', output: 'cannot be in the future'}, // in the future
+      {input: '-3000000000', output: ''},
+      {input: '2019', output: ''},
+      {input: '1ka', output: 'invalid'}, // doesn't allow unconverted years
     ]
 
     testCases.forEach(c => {

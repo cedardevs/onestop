@@ -69,16 +69,16 @@ export const isValidYear = year => {
 
   // No date given is technically valid (since a complete range is unnecessary)
   if (_.isEmpty(year)) {
-    return true
+    return ''
   }
 
   if (!Number.isInteger(textToNumber(year))) {
-    return false
+    return 'invalid'
   }
 
   const now = moment()
 
-  return textToNumber(year) <= now.year()
+  return textToNumber(year) <= now.year() ? '' : 'cannot be in the future'
 }
 
 export const isValidYearRange = (start, end) => {

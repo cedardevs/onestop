@@ -20,7 +20,7 @@ import TimeRelationIllustration from '../TimeRelationIllustration'
 import {useDateRange} from './DateTimeEffect'
 import {consolidateStyles} from '../../../../utils/styleUtils'
 
-const warningStyle = (startValid, endValid) => {
+const warningStyle = (startValid, endValid, errorMessage) => {
   return consolidateStyles(
     {
       color: SiteColors.WARNING,
@@ -28,7 +28,9 @@ const warningStyle = (startValid, endValid) => {
       fontWeight: 'bold',
       fontSize: '1.15em',
     },
-    !startValid || !endValid ? {margin: '0.75em 0 0.5em'} : null
+    !startValid || !endValid || !_.isEmpty(errorMessage)
+      ? {margin: '0.75em 0 0.5em'}
+      : null
   )
 }
 
@@ -179,7 +181,7 @@ const DateTimeFilter = ({
             buttons,
             <div
               key="DateFilter::InputColumn::Warning"
-              style={warningStyle(start.valid, end.valid)}
+              style={warningStyle(start.valid, end.valid, errorCumulative)}
               role="alert"
               aria-live="polite"
             >
