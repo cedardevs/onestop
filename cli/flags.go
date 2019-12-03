@@ -70,3 +70,8 @@ const regexDescription = "Locate files whose names match the case-insensitive re
 
 const satnameFlag = "satname"
 const satnameDescription = "Select files from the SATNAME satellite."
+
+
+const yearFlag = "year"
+const yearShortFlag = "y"
+const yearDescription = "Specifies a year. YEAR must be a positive integer, ranging between 1978 and current year. Files with data start times in that year will be listed."

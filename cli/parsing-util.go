@@ -43,6 +43,8 @@ func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	// filters = append(filters, datacenterFilter...)
 	dateTimeFilter := parseDate(params)
 	filters = append(filters, dateTimeFilter...)
+	yearFilter := parseYear(params)
+	filters = append(filters, yearFilter...)
 	startEndTimeFilter := parseStartAndEndTime(params)
 	filters = append(filters, startEndTimeFilter...)
 	geoSpatialFilter := parsePolygon(params)
@@ -218,7 +220,7 @@ func parseDate(params *viper.Viper) []string {
 	if len(beginDateTime) == 0 {
 		currentTime := time.Now() //support for current year default
 		beginDateTime = parseDateFormat(strconv.Itoa(currentTime.Year()) + "/" + date)
-		if len(beginDateTime) == 0 {
+		if len(beginDateTime) == 0 { //stupid way to check for format "/" or "-"
 			beginDateTime = parseDateFormat(strconv.Itoa(currentTime.Year()) + "-" + date)
 		}
 	}
@@ -232,7 +234,19 @@ func parseFileName(params *viper.Viper) []string {
 	if len(fileName) == 0 {
 		return []string{}
 	}
-	return []string{"{\"type\":\"queryText\", \"value\":\"title:" + fileName + "\"}"}
+	return []string{"{\"type\":\"queryText\", \"value\":\"title:\\\"" + fileName + "\\\"\"}"}
+}
+
+func parseYear(params *viper.Viper) []string {
+	year := params.GetString(yearFlag)
+	if len(year) == 0 {
+		return []string{}
+	}
+	beginDate := year + "-01-01"
+	beginDateTime := parseDateFormat(beginDate)
+	t2, _ := time.Parse("2006-01-02T00:00:00Z", beginDateTime)
+	endDateTime := t2.AddDate(1, 0, 0).Format("2006-01-02T00:00:00Z")
+	return []string{"{\"type\":\"datetime\", \"after\":\"" + beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
 func parseRegexFileName(params *viper.Viper) []string {

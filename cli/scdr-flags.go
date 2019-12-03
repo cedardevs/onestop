@@ -34,6 +34,7 @@ func setScdrFlags() {
 	cli.AddFlag(scdrFileCmd, fileFlag, fileShortFlag, fileFlagDescription, "")
 	cli.AddFlag(scdrFileCmd, refileFlag, refileShortFlag, regexDescription, "")
 	cli.AddFlag(scdrFileCmd, satnameFlag, "", satnameDescription, "")
+	cli.AddFlag(scdrFileCmd, yearFlag, yearShortFlag, yearDescription, "")
 
 	cli.AddFlag(scdrFileCmd, cloudServerFlag, cloudServerShortFlag, cloudServerDescription, false)
 	cli.AddFlag(scdrFileCmd, testServerFlag, testServerShortFlag, testServerDescription, false)
