@@ -8,6 +8,8 @@ import {
   isValidYearRange,
 } from '../../src/utils/inputUtils'
 
+import moment from 'moment/moment'
+
 describe('The inputUtils', function(){
   describe('converts geologic year to CE', function(){
     const testCases = [
@@ -129,29 +131,142 @@ describe('The inputUtils', function(){
 
   describe('can check date validity', function(){
     const testCases = [
-      {year: '', month: '', day: '', output: [ true, true, true ]},
-      {year: '2000', month: '', day: '', output: [ true, true, true ]},
-      {year: '2000', month: '4', day: '', output: [ true, true, true ]},
-      {year: '2000', month: '4', day: '24', output: [ true, true, true ]},
-      {year: '2000', month: '0', day: '1', output: [ true, true, true ]},
-      {year: '2000', month: '', day: '1', output: [ true, false, true ]},
-      {year: 'notayear', month: '', day: '', output: [ false, true, true ]},
-      {year: '1.23', month: '', day: '', output: [ false, true, true ]},
+      {year: '', month: '', day: '', output: {year: [], month: [], day: []}},
+      {
+        year: '2000',
+        month: '',
+        day: '',
+        output: {year: [], month: [], day: []},
+      },
+      {
+        year: '2000',
+        month: '4',
+        day: '',
+        output: {year: [], month: [], day: []},
+      },
+      {
+        year: '2000',
+        month: '4',
+        day: '24',
+        output: {year: [], month: [], day: []},
+      },
+      {
+        year: '2000',
+        month: '0',
+        day: '1',
+        output: {year: [], month: [], day: []},
+      },
+      {
+        year: '2000',
+        month: '',
+        day: '1',
+        output: {year: [], month: [ 'required' ], day: []},
+      },
+      {
+        year: 'notayear',
+        month: '',
+        day: '',
+        output: {year: [ 'invalid' ], month: [], day: []},
+      },
+      {
+        year: '1.23',
+        month: '',
+        day: '',
+        output: {year: [ 'invalid' ], month: [], day: []},
+      },
+      {
+        year: '-1',
+        month: '-2',
+        day: '-3',
+        output: {
+          year: [ 'must be greater than zero' ],
+          month: [ 'cannot be in the future' ],
+          day: [ 'invalid' ],
+        },
+      }, // cannot be in the future is a weird error there
       {
         year: '2000',
         month: 'notamonth',
         day: '',
-        output: [ true, false, true ],
+        output: {year: [], month: [ 'invalid' ], day: []},
       },
-      {year: '2000', month: '1.23', day: '', output: [ true, false, true ]},
-      {year: '2000', month: '0', day: 'notaday', output: [ true, true, false ]},
-      {year: '2000', month: '0', day: '1.23', output: [ true, true, false ]},
-      {year: '200000000', month: '', day: '', output: [ false, true, true ]}, // in the future
+      {
+        year: '2000',
+        month: '1.23',
+        day: '',
+        output: {year: [], month: [ 'invalid' ], day: []},
+      },
+      {
+        year: '2000',
+        month: '0',
+        day: 'notaday',
+        output: {year: [], month: [], day: [ 'invalid' ]},
+      },
+      {
+        year: '2000',
+        month: '0',
+        day: '1.23',
+        output: {year: [], month: [], day: [ 'invalid' ]},
+      },
+      {
+        year: '200000000',
+        month: '',
+        day: '',
+        output: {year: [ 'cannot be in the future' ], month: [], day: []},
+      }, // in the future
+
+      {
+        year: '',
+        month: '4',
+        day: '',
+        output: {year: [ 'required' ], month: [], day: []},
+      },
+      {
+        year: '',
+        month: '',
+        day: '1',
+        output: {year: [ 'required' ], month: [ 'required' ], day: []},
+      },
+      {
+        year: '2001',
+        month: '',
+        day: '',
+        now: moment(ymdToDateMap('2000', '5', '5')),
+        output: {year: [ 'cannot be in the future' ], month: [], day: []},
+      },
+      {
+        year: '2001',
+        month: '6',
+        day: '6',
+        now: moment(ymdToDateMap('2000', '5', '5')),
+        output: {year: [ 'cannot be in the future' ], month: [], day: []},
+      },
+      {
+        year: '2000',
+        month: '6',
+        day: '',
+        now: moment(ymdToDateMap('2000', '5', '5')),
+        output: {year: [], month: [ 'cannot be in the future' ], day: []},
+      },
+      {
+        year: '2000',
+        month: '6',
+        day: '1',
+        now: moment(ymdToDateMap('2000', '5', '5')),
+        output: {year: [], month: [ 'cannot be in the future' ], day: []},
+      },
+      {
+        year: '2000',
+        month: '5',
+        day: '6',
+        now: moment(ymdToDateMap('2000', '5', '5')),
+        output: {year: [], month: [], day: [ 'cannot be in the future' ]},
+      },
     ]
 
     testCases.forEach(c => {
       it(`for input date ${c.year}-${c.month}-${c.day}`, function(){
-        expect(isValidDate(c.year, c.month, c.day)).toEqual(c.output)
+        expect(isValidDate(c.year, c.month, c.day, c.now)).toEqual(c.output)
       })
     })
   })

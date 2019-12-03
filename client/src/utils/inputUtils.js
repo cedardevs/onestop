@@ -90,87 +90,80 @@ export const isValidYearRange = (start, end) => {
   return textToNumber(start) < textToNumber(end)
 }
 
-export const isValidDate = (year, month, day) => {
-  let problems = new Array()
+export const isValidDate = (year, month, day, nowOverride) => {
   let errors = {
     year: new Array(),
     month: new Array(),
     day: new Array(),
   }
+
   // No date given is technically valid (since a complete range is unnecessary)
   if (_.isEmpty(year) && _.isEmpty(month) && _.isEmpty(day)) {
     return errors
   }
 
-  // Valid date can be year only, year & month only, or full date
-  let missingMonth = false
-  if (!_.isEmpty(year) && _.isEmpty(month) && !_.isEmpty(day)) {
-    // Year + day is not valid
-    missingMonth = true
-    problems.push('month required when day is set.')
-    errors.month.push('required')
-  }
-
   let dateMap = ymdToDateMap(year, month, day)
 
-  const now = moment()
+  const now = nowOverride ? nowOverride : moment()
   const givenDate = moment(dateMap)
 
-  let validYear =
-    year &&
-    dateMap.year !== null &&
-    dateMap.year <= now.year() &&
-    dateMap.year >= 0
-  if (year) {
+  if (!_.isEmpty(year)) {
     if (dateMap.year == null) {
+      // catches problems like 'foo'
       errors.year.push('invalid')
     }
     if (dateMap.year > now.year()) {
       errors.year.push('cannot be in the future')
     }
     if (dateMap.year < 0) {
+      // moment() gets choked by negative years
       errors.year.push('must be greater than zero')
     }
   }
-  else {
-    errors.year.push('required') // TODO make year field actually have aria indicating it's required? dynamic?
-  }
-  let validMonth =
-    (month
-      ? dateMap.month !== null &&
-        dateMap.year !== null &&
-        moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)
-      : true) && !missingMonth
-  if (month) {
+
+  if (!_.isEmpty(month)) {
     if (dateMap.month == null) {
-      problems.push('month invalid.')
+      // hard to reproduce with a dropdown, but 'foo', presumably '-1' TODO
       errors.month.push('invalid')
     }
-    if (dateMap.year == null) {
-      problems.push('month cannot be set without also setting year.')
-      errors.month.push('requires year to be set')
+    else if (_.isEmpty(year)) {
+      errors.year.push('required') // TODO dynamically set aria-required property on fields?
     }
-    if (!moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)) {
-      problems.push('date cannot be in the future.')
+    else if (
+      dateMap.year != null &&
+      dateMap.year <= now.year() &&
+      !moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)
+    ) {
+      // only indicate month cannot be in the future if year alone is *not* in the future
       errors.month.push('cannot be in the future')
     }
   }
-  let validDay = day
-    ? dateMap.day !== null &&
-      givenDate.isValid() &&
-      givenDate.isSameOrBefore(now)
-    : true
-  if (day) {
-    if (dateMap.day == null) {
-      problems.push('day invalid.')
-      errors.day.push('invalid')
-    }
+
+  if (!_.isEmpty(day)) {
     if (!givenDate.isValid()) {
-      problems.push('date is invalid.')
+      // TODO this is a weird one I don't know how to manually reproduce - try to verify it in tests ('-1'?)
       errors.day.push('invalid')
     }
-    else if (!givenDate.isSameOrBefore(now)) {
-      problems.push('date cannot be in the future.')
+
+    if (dateMap.day == null) {
+      errors.day.push('invalid')
+    }
+    else if (!_.isEmpty(year) && _.isEmpty(month)) {
+      // TODO indicate aria-required on field?
+      errors.month.push('required')
+    }
+    else if (_.isEmpty(year) && _.isEmpty(month)) {
+      // TODO indicate aria-required on field?
+      // don't duplicate marking year required if month is set and will catch it (so only mark start year required if month is ALSO empty)
+      errors.year.push('required')
+      errors.month.push('required')
+    }
+    else if (
+      dateMap.year <= now.year() &&
+      moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now) &&
+      !givenDate.isSameOrBefore(now)
+    ) {
+      // only indicate month cannot be in the future if year and month alone is *not* in the future
       errors.day.push('cannot be in the future')
     }
   }
