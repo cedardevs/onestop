@@ -16,6 +16,8 @@ const mapStateToProps = state => {
     results: collections,
     totalHits: totalCollectionCount,
     returnedHits: loadedCollectionCount,
+    searchTerms: state.search.collectionFilter.queryText,
+    loading: state.search.collectionRequest.inFlight,
     collectionDetailFilter: state.search.collectionFilter, // just used to submit collection detail correctly
     pageSize,
   }

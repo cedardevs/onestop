@@ -9,6 +9,7 @@ import cartIcon from 'fa/cart-plus.svg'
 import GranuleListItem from './GranuleListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {Link} from 'react-router-dom'
+import {asterisk, SvgIcon} from '../../common/SvgIcon'
 
 const styleCenterContent = {
   display: 'flex',
@@ -78,6 +79,7 @@ export default function GranuleList(props){
     selectedGranules,
     selectGranule,
     deselectGranule,
+    loading,
   } = props
 
   const [ focusingCollectionLink, setFocusingCollectionLink ] = useState(false)
@@ -118,7 +120,19 @@ export default function GranuleList(props){
     ) : null
 
   let message = 'No file results'
-  if (totalHits > 0) {
+  if (loading) {
+    message = (
+      <span>
+        <SvgIcon
+          style={{fill: 'white', animation: 'rotation 2s infinite linear'}}
+          path={asterisk}
+          size=".9em"
+          verticalAlign="unset"
+        />&nbsp;Loading files
+      </span>
+    )
+  }
+  else if (totalHits > 0) {
     message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} matching files`
   }
   const listHeading = (
