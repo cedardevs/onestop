@@ -9,7 +9,7 @@ import (
 
 const scdrFileCmd = "scdr-files"
 
-const scdrExampleCommands = `scdr-files --available -t ABI-L1b-Rad
+const scdrExampleCommands = `scdr-files --available -t ABI-L1b-Rad --cloud
 scdr-files --type 5b58de08-afef-49fb-99a1-9c5d5c003bde
 scdr-files --area "POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"
 scdr-files --date 10/01
