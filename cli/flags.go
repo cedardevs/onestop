@@ -18,7 +18,7 @@ const queryDescription = "Search flattened granules with text query"
 
 const dateFilterFlag = "date"
 const dateFilterShortFlag = "d"
-const dateDescription = "DATE must be a string describing a date. Format YYYY/MM/DD. Current year is assumed if the year part in DATE is ommited, e.g. 01-30. Any time information in DATE is disregarded. Files with data between DATE midnight and next day midnight are selected."
+const dateDescription = "DATE must be a string describing a date. Current year is assumed if the year part in DATE is ommited, e.g. 01-30. Any time information in DATE is disregarded. Files with data between DATE midnight and next day midnight are selected."
 
 const spatialFilterFlag = "area"
 const spatialFilterShortFlag = "g" //as in geometry
@@ -34,17 +34,17 @@ const offsetDescription = "Page number starting at 0"
 
 const startTimeFlag = "start-time"
 const startTimeShortFlag = "s"
-const startTimeDescription = "Match files occurring on or after this date. Format YYYY/MM/DD."
+const startTimeDescription = "Match files occurring on or after this date."
 
 const startTimeScdrFlag = "stime"
-const startTimeScdrDescription = "Same behavior as start-time, but short hand flag for scdr files. Format YYYY/MM/DD."
+const startTimeScdrDescription = "Same behavior as start-time, but short hand flag for scdr files."
 
 const endTimeFlag = "end-time"
 const endTimeShortFlag = "e"
-const endTimeDescription = "Match files occurring on or before this date. Format YYYY/MM/DD."
+const endTimeDescription = "Match files occurring on or before this date."
 
 const endTimeScdrFlag = "etime"
-const endTimeScdrDescription = "Same behavior as end-time, but short hand flag for scdr files. Format YYYY/MM/DD."
+const endTimeScdrDescription = "Same behavior as end-time, but short hand flag for scdr files."
 
 const availableFlag = "available"
 const availableShortFlag = "a"
