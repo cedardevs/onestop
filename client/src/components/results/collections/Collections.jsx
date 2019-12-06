@@ -6,6 +6,7 @@ import ListView from '../../common/ui/ListView'
 import Meta from '../../helmet/Meta'
 import CollectionListItem from './CollectionListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
+import {asterisk, SvgIcon} from '../../common/SvgIcon'
 
 const styleCollections = {
   color: '#222',
@@ -26,18 +27,32 @@ const styleShowMoreFocus = {
 
 export default function Collections(props){
   const {
+    searchTerms,
     results,
     returnedHits,
     totalHits,
     fetchMoreResults,
     selectCollection,
     collectionDetailFilter,
+    loading,
   } = props
   const queryText = props.collectionDetailFilter.queryText
 
-  let message = 'No collection results'
-  if (totalHits > 0) {
-    message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} collection results`
+  let message = `No collection results matched '${searchTerms}'`
+  if (loading) {
+    message = (
+      <span>
+        <SvgIcon
+          style={{fill: 'white', animation: 'rotation 2s infinite linear'}}
+          path={asterisk}
+          size=".9em"
+          verticalAlign="unset"
+        />&nbsp;Loading collections
+      </span>
+    )
+  }
+  else if (totalHits > 0) {
+    message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} collection results matching '${searchTerms}'`
   }
   const listHeading = (
     <h2 key="Collections::listHeading" style={styleListHeading}>
