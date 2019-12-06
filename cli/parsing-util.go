@@ -58,6 +58,8 @@ func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	queries = append(queries, refileNameQuery...)
 	query := parseTextQuery(params)
 	queries = append(queries, query...)
+	keyWordFilter := parseKeyword(params)
+	queries = append(queries, keyWordFilter...)
 	requestMeta := parseRequestMeta(params)
 
 	if len(queries) > 0 || len(filters) > 0 {
@@ -288,4 +290,12 @@ func parsePolygon(params *viper.Viper) []string {
 		geospatialFilter = append(geospatialFilter, "["+coord[0]+","+coord[1]+"]"+end)
 	}
 	return []string{"{\"geometry\": { \"coordinates\": [[" + strings.Join(geospatialFilter, "") + "]], \"type\": \"Polygon\"}, \"type\": \"geometry\"}"}
+}
+
+func parseKeyword(params *viper.Viper) []string {
+	keyword := params.GetString(keywordFlag)
+	if len(keyword) == 0 {
+		return []string{}
+	}
+	return []string{"{\"type\":\"queryText\",\"value\":\"+keywords:\\\"" + keyword + "\\\"\"}"}
 }
