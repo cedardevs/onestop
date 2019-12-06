@@ -5,15 +5,22 @@
 **Estimated Reading Time: 10 minutes**
 
 # Query Syntax
-OneStop query text offers a variety of ways in which to specify exactly what you seek -- whether it be starting out with a high-level broad search or fine-tuning parameters with exact fields and operators. 
+OneStop query text offers a variety of ways in which to specify exactly what you seek -- whether it be starting out with a high-level broad search or fine-tuning parameters with exact fields and operators. This guide can be approached in two ways: look for answers in the Common Use Cases section, or learn about each feature one at a time in the Features section.
 
-The underlying query is an Elasticsearch [query string query](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-query-string-query.html#query-string-syntax). Much of the Elasticsearch guide information is relevant to OneStop, but below you will find information on default behavior, explanations of the advanced syntax features in relation to the OneStop-specific indices, and exactly what is and is not supported. 
 
-## Requesting Help
-If you're unsure of something pertaining to the query syntax, feel free to search through existing issues in our [Feedback repository on GitHub](https://github.com/cedardevs/feedback/issues?utf8=%E2%9C%93&q=is%3Aissue) or open a [new issue](https://github.com/cedardevs/feedback/issues/new?assignees=&labels=help&template=help-request.md&title=Help+Request+--+) if you cannot find what you're looking for.
+## Table of Contents
+
+
+## Common Use Cases
+- Match An Exact Phrase
+- Search Against A Specific Field
+- Search Fields Requiring An Exact Match With An Inexact Query
+- Specify What Should And Should Not Appear In My Results
+
+
 
 ## Features
-All of the following features can be used in combination with each other to adjust the match precision of your query to your results. Introduce some slack by modifying the proximity and fuzziness match levels, or narrow down the specifics with boolean operators and explicit fields.
+OneStop's underlying query is an Elasticsearch [query string query](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-query-string-query.html#query-string-syntax). Much of the Elasticsearch guide information is relevant to OneStop, but below you will find information on default behavior, explanations of the advanced syntax features in relation to the OneStop-specific indices, and exactly what is and is not supported.  All of the following features can be used in combination with each other to adjust the match precision of your query to your results. Introduce some slack by modifying the proximity and fuzziness match levels, or narrow down the specifics with boolean operators and explicit fields.
 
 - [Default Query Behavior](#default-query-behavior)
 - [Terms, Phrases, And Groups](#terms-phrases-and-groups)
@@ -102,9 +109,9 @@ To search multiple fields at once, just add them to your query string with paren
 
 For OneStop specifically, there are three different types of fields in the index: free-text searchable fields, exact-match searchable fields, and non-searchable fields. For free-text fields, you can use any of the operators that are in this guide for fine-tuning your search in a case-insensitive manner. On the other hand, exact-match fields _are_ case sensitive and the content of the field must match your query exactly in order for that record to be returned. Usage of [regular expressions](#regular-expressions) enable patterns in lieu of verbatim text for finding exact matches in these types of fields. Finally, non-searchable fields exist to provide additional information about results but have very little benefit for searchability, for example URL strings.
 
-Information on all fields for a running version of OneStop can be acquired by sending a `GET` request to the OneStop Search API host + `/search/{type}`, for example:
+Information on all fields for a running version of OneStop can be acquired by sending a `GET` request to the OneStop Search API endpoint `{host}/docs/{type}/attributes`, for example:
 
-`$ curl https://data.noaa.gov/onestop-search/search/collection`
+`$ curl https://data.noaa.gov/onestop-search/docs/collection/attributes`
 
 ### Wildcards
 A wildcard can be placed in individual terms for one character -- `?` -- or zero or more characters -- `*`. OneStop has disabled the use of a wildcard at the start of your query, and will respond with an error if you attempt to do so via either the UI or API. Wildcard queries can be particularly memory intensive and thus perform poorly if written in such a way that causes every record to be analyzed. As such, it is very much encouraged that they are used judiciously. Oftentimes you can have greater success in both response time and result quality by using [fuzziness](#fuzziness-matching) or [proximity](#proximity-searches) operators instead, or at the very least ensuring you've filtered down your results to a reasonable quantity (low thousands or less) before including a wildcard in your query.
@@ -150,6 +157,10 @@ In order to narrow down OneStop data to OER video collections by "cruiseId", you
 
 
 As you can see, regular expressions are incredibly powerful tools in your searching toolbox. For an overview of all of the available regex operators, see Elasticsearch's guide on [Regular Expression Syntax](https://www.elastic.co/guide/en/elasticsearch/reference/current/regexp-syntax.html).
+
+
+## Requesting Help
+If you're unsure of something pertaining to the query syntax, feel free to search through existing issues in our [Feedback repository on GitHub](https://github.com/cedardevs/feedback/issues?utf8=%E2%9C%93&q=is%3Aissue) or open a [new issue](https://github.com/cedardevs/feedback/issues/new?assignees=&labels=help&template=help-request.md&title=Help+Request+--+) if you cannot find what you're looking for.
 
 
 <hr>
