@@ -92,7 +92,7 @@ func parseSatName(params *viper.Viper) []string {
 	satname := params.GetString(satnameFlag)
 	querySatFilter := []string{}
 	if len(satname) > 0 {
-		querySatFilter = []string{"{\"type\":\"queryText\", \"value\":\"gcmdPlatforms:/" + satname + ".*/\"}"}
+		querySatFilter = []string{"{\"type\":\"queryText\", \"value\":\"+gcmdPlatforms:/" + satname + ".*/\"}"}
 	}
 	return querySatFilter
 }
@@ -256,7 +256,7 @@ func parseRegexFileName(params *viper.Viper) []string {
 	if len(regex) == 0 {
 		return []string{}
 	}
-	return []string{"{\"type\":\"queryText\", \"value\":\"title:\\\\\\\"/" + regex + "/\\\\\\\"\"}"}
+	return []string{"{\"type\":\"queryText\", \"value\":\"title:/" + regex + "/\"}"}
 }
 
 func parseTextQuery(params *viper.Viper) []string {
