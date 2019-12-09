@@ -31,6 +31,7 @@ func setScdrFlags() {
 	cli.AddFlag(scdrFileCmd, refileFlag, refileShortFlag, regexDescription, "")
 	cli.AddFlag(scdrFileCmd, satnameFlag, "", satnameDescription, "")
 	cli.AddFlag(scdrFileCmd, yearFlag, yearShortFlag, yearDescription, "")
+	cli.AddFlag(scdrFileCmd, keywordFlag, keywordShortFlag, keywordDescription, "")
 
 //not scdr-files specific
 	cli.AddFlag(scdrFileCmd, maxFlag, maxShortFlag, maxDescription, "")

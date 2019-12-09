@@ -58,6 +58,8 @@ func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	queries = append(queries, refileNameQuery...)
 	query := parseTextQuery(params)
 	queries = append(queries, query...)
+	keyWordFilter := parseKeyword(params)
+	queries = append(queries, keyWordFilter...)
 	requestMeta := parseRequestMeta(params)
 
 	if len(queries) > 0 || len(filters) > 0 {
@@ -90,7 +92,7 @@ func parseSatName(params *viper.Viper) []string {
 	satname := params.GetString(satnameFlag)
 	querySatFilter := []string{}
 	if len(satname) > 0 {
-		querySatFilter = []string{"{\"type\":\"queryText\", \"value\":\"gcmdPlatforms:/" + satname + ".*/\"}"}
+		querySatFilter = []string{"{\"type\":\"queryText\", \"value\":\"+gcmdPlatforms:/" + satname + ".*/\"}"}
 	}
 	return querySatFilter
 }
@@ -254,7 +256,7 @@ func parseRegexFileName(params *viper.Viper) []string {
 	if len(regex) == 0 {
 		return []string{}
 	}
-	return []string{"{\"type\":\"queryText\", \"value\":\"title:\\\\\\\"/" + regex + "/\\\\\\\"\"}"}
+	return []string{"{\"type\":\"queryText\", \"value\":\"title:/" + regex + "/\"}"}
 }
 
 func parseTextQuery(params *viper.Viper) []string {
@@ -288,4 +290,12 @@ func parsePolygon(params *viper.Viper) []string {
 		geospatialFilter = append(geospatialFilter, "["+coord[0]+","+coord[1]+"]"+end)
 	}
 	return []string{"{\"geometry\": { \"coordinates\": [[" + strings.Join(geospatialFilter, "") + "]], \"type\": \"Polygon\"}, \"type\": \"geometry\"}"}
+}
+
+func parseKeyword(params *viper.Viper) []string {
+	keyword := params.GetString(keywordFlag)
+	if len(keyword) == 0 {
+		return []string{}
+	}
+	return []string{"{\"type\":\"queryText\",\"value\":\"+keywords:\\\"" + keyword + "\\\"\"}"}
 }
