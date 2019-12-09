@@ -18,14 +18,14 @@ const queryDescription = "Search flattened granules with text query"
 
 const dateFilterFlag = "date"
 const dateFilterShortFlag = "d"
-const dateDescription = "DATE must be a string describing a date. Format YYYY/MM/DD. Current year is assumed if the year part in DATE is ommited, e.g. 01-30. Any time information in DATE is disregarded. Files with data between DATE midnight and next day midnight are selected."
+const dateDescription = "DATE must be a string describing a date. Current year is assumed if the year part in DATE is ommited, e.g. 01-30. Any time information in DATE is disregarded. Files with data between DATE midnight and next day midnight are selected."
 
 const spatialFilterFlag = "area"
 const spatialFilterShortFlag = "g" //as in geometry
 const areaDescription = "Locate files which intersect with the specified polygon AREA. The polygon must be a regular one (closed, no self-intersection, no hole) with coordinates (longitude, latitude) separated by \",\" like POLYGON((30.31 60.2, 31.21 60.2, 31.21 60.76, 30.31 60.76, 30.31 60.2)) "
 
 const maxFlag = "max"
-const maxShortFlag = "l"
+const maxShortFlag = "n"
 const maxDescription = "Maximum number of results returned."
 
 const offsetFlag = "offset"
@@ -34,17 +34,17 @@ const offsetDescription = "Page number starting at 0"
 
 const startTimeFlag = "start-time"
 const startTimeShortFlag = "s"
-const startTimeDescription = "Match files occurring on or after this date. Format YYYY/MM/DD."
+const startTimeDescription = "Match files occurring on or after this date."
 
 const startTimeScdrFlag = "stime"
-const startTimeScdrDescription = "Same behavior as start-time, but short hand flag for scdr files. Format YYYY/MM/DD."
+const startTimeScdrDescription = "Same behavior as start-time, but short hand flag for scdr files."
 
 const endTimeFlag = "end-time"
 const endTimeShortFlag = "e"
-const endTimeDescription = "Match files occurring on or before this date. Format YYYY/MM/DD."
+const endTimeDescription = "Match files occurring on or before this date."
 
 const endTimeScdrFlag = "etime"
-const endTimeScdrDescription = "Same behavior as end-time, but short hand flag for scdr files. Format YYYY/MM/DD."
+const endTimeScdrDescription = "Same behavior as end-time, but short hand flag for scdr files."
 
 const availableFlag = "available"
 const availableShortFlag = "a"
@@ -75,3 +75,7 @@ const satnameDescription = "Select files from the SATNAME satellite."
 const yearFlag = "year"
 const yearShortFlag = "y"
 const yearDescription = "Specifies a year. YEAR must be a positive integer, ranging between 1978 and current year. Files with data start times in that year will be listed."
+
+const keywordFlag = "label"
+const keywordShortFlag = "l"
+const keywordDescription = "Pick files tagged with a label whose value is LABEL. Files can be tagged with more than one label. Satellite names (see option --satname) are just one type of labels."

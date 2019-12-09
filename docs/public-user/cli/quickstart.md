@@ -15,15 +15,15 @@ Either golang, or docker. Direct downloads of binaries will be available in the 
 
 Pull the image from Docker Hub (version 2.4.0 and up available).
 
-`docker run cedardevs/onestop-cli:2.4.0-SNAPSHOT <CMD>`
+`docker run cedardevs/onestop-cli:2.4.0 <CMD>`
 
 For example-
 
-`docker run cedardevs/onestop-cli:2.4.0-SNAPSHOT searchcollection --query="satellite"`
+`docker run cedardevs/onestop-cli:2.4.0 searchcollection --query="satellite"`
 
 For more commands and flags -
 
-`docker run cedardevs/onestop-cli:2.4.0-SNAPSHOT <CMD> --help`
+`docker run cedardevs/onestop-cli:2.4.0 <CMD> --help`
 
 
 ### Download and use as Go package
