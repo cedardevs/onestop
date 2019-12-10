@@ -311,6 +311,11 @@ jobs:
             else
               ./gradlew cli:jib --image=cedardevs/onestop-cli:2.4.0-$CIRCLE_BRANCH
             fi
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - cli/.gogradle
+            - cli/vendor
   finalize:
     <<: *defaults
     steps:
