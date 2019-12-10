@@ -172,7 +172,7 @@ func parseDateFormat(dateString string) string {
 		"January 2 2006 15:04",
 		"January 2 2006 15:04:05",
 		"Jan 2, 2006 at 3:04pm",
-		"January 2st 2006",
+		"January 2st 2006", //this looks crazy, but is necessary to support ordinal indicators
 		"January 2nd 2006",
 		"January 2rd 2006",
 		"January 2th 2006",
