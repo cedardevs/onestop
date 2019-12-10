@@ -10,7 +10,7 @@ class SearchRequestParserService {
 
   private SearchConfig config
 
-  private final Map<String, String> facetNameMappings = DocumentationService.facetNameMappings
+  private static final Map<String, String> facetNameMappings = DocumentationService.facetNameMappings
 
   @Autowired
   SearchRequestParserService(SearchConfig config) {
