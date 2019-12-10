@@ -79,3 +79,6 @@ const yearDescription = "Specifies a year. YEAR must be a positive integer, rang
 const keywordFlag = "label"
 const keywordShortFlag = "l"
 const keywordDescription = "Pick files tagged with a label whose value is LABEL. Files can be tagged with more than one label. Satellite names (see option --satname) are just one type of labels."
+
+const cloudFlag = "cloud"
+const cloudUrl = "http://acf3425c8d41b11e9a12912cf37a7528-1694331899.us-east-1.elb.amazonaws.com/onestop-search"

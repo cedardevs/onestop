@@ -117,8 +117,8 @@ func buildRequest(params *viper.Viper) *gentleman.Request {
 		viper.Set("server-index", 1)
 	}
 	//since we dont have the aws instance in the openapi spec.
-	if params.GetString("cloud") == "true" {
-		server = "http://acf3425c8d41b11e9a12912cf37a7528-1694331899.us-east-1.elb.amazonaws.com/onestop-search/"
+	if params.GetString(cloudFlag) == "true" {
+		server = cloudUrl
 	}
 	if server == "" {
 		server = openapiServers()[viper.GetInt("server-index")]["url"]
