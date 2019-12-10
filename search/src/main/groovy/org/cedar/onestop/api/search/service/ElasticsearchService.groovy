@@ -286,7 +286,7 @@ class ElasticsearchService {
     if (!aggregations) {
       return null
     }
-    def facetNames = searchRequestParserService.facetNameMappings.keySet()
+    def facetNames = DocumentationService.facetNameMappings.keySet()
     def hasFacets = false
     def result = [:]
     facetNames.each { name ->

@@ -10,21 +10,7 @@ class SearchRequestParserService {
 
   private SearchConfig config
 
-  public static final Map<String, String> facetNameMappings = [
-      'dataFormats'         : 'dataFormat',
-      'linkProtocols'       : 'linkProtocol',
-      'serviceLinkProtocols': 'serviceLinkProtocol',
-      'science'             : 'gcmdScience',
-      'services'            : 'gcmdScienceServices',
-      'locations'           : 'gcmdLocations',
-      'instruments'         : 'gcmdInstruments',
-      'platforms'           : 'gcmdPlatforms',
-      'projects'            : 'gcmdProjects',
-      'dataCenters'         : 'gcmdDataCenters',
-      'horizontalResolution': 'gcmdHorizontalResolution',
-      'verticalResolution'  : 'gcmdVerticalResolution',
-      'temporalResolution'  : 'gcmdTemporalResolution',
-  ]
+  private final Map<String, String> facetNameMappings = DocumentationService.facetNameMappings
 
   @Autowired
   SearchRequestParserService(SearchConfig config) {
