@@ -3,6 +3,10 @@
 ***
 
 ## Table of Contents
-* [System Requirements for Integration Tests](/docs/developer/testing/integration-testson-tests/docker-elastic-dependencies.md)
-* [Bulk Data in ES](/docs/developer/testing/integration-testson-tests/bulk-data.md)
-* [Time Filter](/docs/developer/testing/integration-testson-tests/time-filter.md)
+* [System Requirements for Integration Tests](docker-elastic-dependencies.md)
+* [Bulk Data in ES](bulk-data.md)
+* [Time Filter](time-filter.md)
+
+<hr>
+<div align="center"><a href="/onestop/developer">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/testing/integration-tests/docker-elastic-dependencies">Next</a></div>
+

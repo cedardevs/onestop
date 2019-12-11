@@ -1,14 +1,19 @@
 ## Integrating upstream application to the underlying Kafka system
-Metadata can be published into the OneStop system in two different ways, using Registry application rest api See [onestop-metadata-loading](onestop-metadata-loading.md) documentation for detail or directly 
+Metadata can be published into the OneStop system in two different ways, using Registry application [REST API](onestop-metadata-loading.md) or directly 
 integrating upstream applications to the underline OneStop kafka cluster.  
-This documentation will take a look at some approaches for integrating upstream applications and Kafka, and look at some examples regarding the tools Kafka supports.
+This guide will take a look at some approaches for integrating upstream applications and Kafka, and look at some examples regarding the tools Kafka supports.
 
-Before we dive in, its worth mentioning the single common data format, Apache Avro, which OnesStop application is using for ensuring all data sources and integration points comply to it.  
-Apache Avro is an [open source data serialization format](http://avro.apache.org/docs/1.9.1/). it relies on schema that define fields and their type. Avro also supports schema evolution.
-See [our avro schema project](https://github.com/cedardevs/schemas/tree/master/schemas-core) for detail implementation. 
+Before we dive in, it's worth mentioning the single common data format, Apache Avro, which OneStop application is using for ensuring all data sources and integration points comply to it.  
+Apache Avro is an [open source data serialization format](http://avro.apache.org/docs/1.9.1/). It relies on schema that define fields and their type. Avro also supports schema evolution.
+See [Avro schema project](https://github.com/cedardevs/schemas/tree/master/schemas-core) for details. 
 
-### Using Apache NiFi
-NiFi is a highly scalable and user friendly UI based System that provides support for data collection and processing. In this case, 
+## Features
+  - [Using Apache NiFi](#apache-niFi)
+  - [Using kafka producer](#kafka-producer)
+  - [Using Kafka connects](#kafka-connects)
+
+### Apache NiFi
+NiFi is a highly scalable and user friendly UI based system that provides support for data collection and processing. In this case, 
 Nifi can act as a source and sink to bring data to and from Kafka, which helps in automating the flow of data between systems in a Reliable, efficient, and manageable way.
 
 NiFi is able to support multiple versions of the Kafka client in a single NiFi instance. The Apache NiFi 1.10.0 release contains the following Kafka processors:
@@ -17,7 +22,7 @@ NiFi is able to support multiple versions of the Kafka client in a single NiFi i
 - ConsumeKafka_1_0 & PublishKafka_1_0 using the 1.0 client
 - ConsumeKafka_2_0 & PublishKafka_2_0 using the 2.0 client
 
-Kafka does not necessarily provide backward compatibility between versions, use kafka processors that is compatible with the OneStop kafka broker version. 
+Kafka does not necessarily provide backward compatibility between versions, so use kafka processors that is compatible with the OneStop kafka broker version. 
 See [Apache NiFi website](https://nifi.apache.org/) page for details. 
 
 #### Nifi as a Producer
@@ -32,18 +37,18 @@ The above example uses GenerateFlowFile processor to create FlowFiles of random 
 Sample Nifi template [download the sample nifi template](sampleCode/nifi-kafkaPublishing-template.xml).  
 
 #### Nifi as bidirectional Data Flows
-Additional and more complex use case is combining tools such as Kafka, and kafka stream processing platform with Nifi to create a self adjusting data flow. Kafka Stream is a lightweight library for creating stream processing applications. 
-In this case, NiFi brings data to Kafka which makes it available to a stream processing platform with the results being written back to a different Kafka topic for down stream consumers.  
+Additional and more complex use case is combining tools such as Kafka, and kafka stream processing platform with Nifi to create a self-adjusting data flow. Kafka Stream is a lightweight library for creating stream processing applications. 
+In this case, NiFi brings data to Kafka which makes it available to a stream processing platform with the results being written back to a different Kafka topic for downstream consumers.  
 
 ### kafka producer
-kafka producer uses a kafka producer API to write a producer that can be used to published record directly to kafka broker. see [kafka producer Confluent docs](https://docs.confluent.io/current/clients/producer.html) page for details.
+kafka producer uses a Kafka producer API to write a producer that can be used to published record directly to kafka broker. see [kafka producer Confluent docs](https://docs.confluent.io/current/clients/producer.html) page for details.
 
-Lets look at a simple kakfa producer implementation using java. 
+Let's look at a simple Kafka producer implementation using java. 
 
 To create a Kafka producer, you need to pass a list of bootstrap servers/Kafka brokers and also specify a client.id that uniquely identifies this Producer client.
-you will need to specify a Key serializer and a value serializer, which Kafka will use to encode the message id as a Kafka record key, and the message body as the Kafka record value.
+you will need to specify a Key_serializer and a value_serializer, which Kafka will use to encode the message id as a Kafka record key, and the message body as the Kafka record value.
 
-Import the Kafka packages and define a constant for the producer to connect to the kafka broker.
+Import the Kafka packages and define a constant for the producer to connect to the Kafka broker.
 ```java
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
@@ -77,9 +82,9 @@ The CLIENT_ID_CONFIG value is an id to pass to the server when making requests s
 
 The KEY_SERIALIZER_CLASS_CONFIG value is a Kafka Serializer class for Kafka record keys that implements the Kafka Serializer interface. Notice that we set this to StringSerializer as the message ids type.
 
-The VALUE_SERIALIZER_CLASS_CONFIG value is a Kafka Serializer class for Kafka record values that implements the Kafka Serializer interface. Notice that we set this to AbstractKafkaAvroSerDeConfig as the message body in oneStop is in Avro format.
+The VALUE_SERIALIZER_CLASS_CONFIG value is a Kafka Serializer class for Kafka record values that implements the Kafka Serializer interface. Notice that we set this to AbstractKafkaAvroSerDeConfig as the message body in OneStop is in Avro format.
 
-Import an Avro schema packages and changing an incoming message to avro format. 
+Import an Avro schema packages and changing an incoming message to Avro format. 
 ```java
 import org.cedar.schemas.avro.psi.Input;
 import org.cedar.schemas.avro.psi.Method;
@@ -108,4 +113,9 @@ see [sample kafka producer java code](sampleCode/kafkaSampleTest.java) file for 
 
 ### Kafka connects
 Kafka connect, which includes source and sink, can also be used to published data from upstream source into kafka broker. 
-see [kafka connect Confluent docs](https://docs.confluent.io/current/connect/index.html) for more details. 
+see [kafka connect Confluent page](https://docs.confluent.io/current/connect/index.html) for more details. 
+
+<hr>
+<div align="center"><a href="/onestop/metadata-manager/v3/onestop-metadata-loading">Previous</a> | <a href="#integrating-upstream-application-to-the-underlying-kafka-system">Top of Page</a> 
+| <a href="/onestop/">Next</a></div>
+

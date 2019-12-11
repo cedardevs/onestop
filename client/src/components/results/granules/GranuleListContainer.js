@@ -33,6 +33,7 @@ const mapStateToProps = state => {
     featuresEnabled: state.config.featuresEnabled,
     granuleFilter: state.search.granuleFilter,
     addFilteredGranulesToCartWarning: state.cart.error,
+    loading: state.search.granuleRequest.inFlight,
   }
 }
 
