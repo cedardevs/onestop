@@ -5,6 +5,7 @@ import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.indexer.util.IndexingHelpers;
 import org.cedar.onestop.kafka.common.util.TimestampedValue;
 import org.cedar.schemas.avro.psi.ParsedRecord;
+import org.cedar.schemas.avro.psi.Publishing;
 import org.elasticsearch.ElasticsearchGenerationException;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -12,20 +13,22 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BulkRequestMapper implements ValueMapperWithKey<String, TimestampedValue<ParsedRecord>, DocWriteRequest> {
-  private static final Logger log = LoggerFactory.getLogger(BulkRequestMapper.class);
+import java.util.Optional;
+
+public class ElasticsearchRequestMapper implements ValueMapperWithKey<String, TimestampedValue<ParsedRecord>, DocWriteRequest> {
+  private static final Logger log = LoggerFactory.getLogger(ElasticsearchRequestMapper.class);
 
   private final ElasticsearchConfig esConfig;
   private final String indexName;
 
-  public BulkRequestMapper(ElasticsearchConfig esConfig, String indexName) {
+  public ElasticsearchRequestMapper(ElasticsearchConfig esConfig, String indexName) {
     this.esConfig = esConfig;
     this.indexName = indexName;
   }
 
   @Override
   public DocWriteRequest apply(String readOnlyKey, TimestampedValue<ParsedRecord> value) {
-    if (value == null || value.data == null || (value.data.getPublishing() != null && value.data.getPublishing().getIsPrivate())) {
+    if (isTombstone(value) || isPrivate(value)) {
       return new DeleteRequest(indexName).id(readOnlyKey);
     }
     try {
@@ -36,4 +39,16 @@ public class BulkRequestMapper implements ValueMapperWithKey<String, Timestamped
       return null;
     }
   }
+
+  private boolean isTombstone(TimestampedValue<ParsedRecord> value) {
+    return value == null || value.data == null;
+  }
+
+  private boolean isPrivate(TimestampedValue<ParsedRecord> value) {
+    var optionalPublishing = Optional.of(value).map(TimestampedValue::getData).map(ParsedRecord::getPublishing);
+    var isPrivate = optionalPublishing.map(Publishing::getIsPrivate).orElse(false);
+    var until = optionalPublishing.map(Publishing::getUntil).orElse(null);
+    return (until == null || until > System.currentTimeMillis()) ? isPrivate : !isPrivate;
+  }
+
 }

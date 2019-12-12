@@ -4,10 +4,9 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
-import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.elastic.common.FileUtil;
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
-import org.cedar.onestop.indexer.stream.BulkRequestMapper;
+import org.cedar.onestop.indexer.stream.ElasticsearchRequestMapper;
 import org.cedar.onestop.indexer.stream.FlatteningTriggerTransformer;
 import org.cedar.onestop.indexer.stream.SitemapIndexer;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
@@ -20,7 +19,6 @@ import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
 import org.cedar.schemas.avro.psi.Relationship;
 import org.cedar.schemas.avro.psi.RelationshipType;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,13 +46,13 @@ public class SearchIndexTopology {
     var collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection);
     var inputCollections = streamsBuilder.<String, ParsedRecord>stream(collectionTopic);
     var timestampedInputCollections = inputCollections.transformValues((ValueTransformerSupplier<ParsedRecord, TimestampedValue<ParsedRecord>>) Timestamper::new);
-    var collectionRequests = timestampedInputCollections.mapValues(new BulkRequestMapper(esService.config(), collectionIndex));
+    var collectionRequests = timestampedInputCollections.mapValues(new ElasticsearchRequestMapper(esService.config(), collectionIndex));
 
     var granuleIndex = esService.config().GRANULE_SEARCH_INDEX_ALIAS;
     var granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule);
     var inputGranules = streamsBuilder.<String, ParsedRecord>stream(granuleTopic);
     var timestampedInputGranules = inputGranules.transformValues((ValueTransformerSupplier<ParsedRecord, TimestampedValue<ParsedRecord>>) Timestamper::new);
-    var granuleRequests = timestampedInputGranules.mapValues(new BulkRequestMapper(esService.config(), granuleIndex));
+    var granuleRequests = timestampedInputGranules.mapValues(new ElasticsearchRequestMapper(esService.config(), granuleIndex));
 
     var indexResults = collectionRequests.merge(granuleRequests)
         .filter((key, value) -> value != null)

@@ -8,8 +8,17 @@ public class TimestampedValue<T> {
   public final long timestampMs;
   public final T data;
 
-  TimestampedValue(long timestampMs, T data) {
+  public TimestampedValue(long timestampMs, T data) {
     this.timestampMs = timestampMs;
     this.data = data;
   }
+
+  public long getTimestampMs() {
+    return timestampMs;
+  }
+
+  public T getData() {
+    return data;
+  }
+
 }
