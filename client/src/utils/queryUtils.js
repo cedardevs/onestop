@@ -2,7 +2,7 @@ import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {getIdFromPath} from './urlUtils'
 import {initialState} from '../reducers/search/collectionFilter'
-import {convertBboxToGeoJson} from './geoUtils'
+import {convertBboxToQueryGeoJson} from './geoUtils'
 import {textToNumber} from './inputUtils'
 
 export const PAGE_SIZE = 20
@@ -64,7 +64,7 @@ const assembleFacetFilters = ({selectedFacets}) => {
 
 const assembleGeometryFilters = ({bbox, geoRelationship}) => {
   if (bbox) {
-    let geometry = convertBboxToGeoJson(
+    let geometry = convertBboxToQueryGeoJson(
       bbox.west,
       bbox.south,
       bbox.east,

@@ -104,6 +104,13 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   }
 }
 
+export const convertBboxToQueryGeoJson = (west, south, east, north) => {
+  if (west > east) {
+    return convertBboxToGeoJson(west - 360, south, east, north)
+  }
+  return convertBboxToGeoJson(west, south, east, north)
+}
+
 // TODO probably makes more sense to just make it a ring of coords....
 export const convertBboxToLeafletGeoJson = (west, south, east, north) => {
   const coordinates = bboxAsCoordinates(west, south, east, north)

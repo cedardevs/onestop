@@ -415,6 +415,45 @@ function collectionTestCases(){
       },
     },
     {
+      name: 'a spatial search crossing the antimeridian shifts coordinates',
+      inputState: {
+        geoRelationship: 'intersects',
+        bbox: {
+          west: 120.0,
+          north: 63.0,
+          south: 0.0,
+          east: 7.0,
+        },
+        pageOffset: 0,
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            relation: 'intersects',
+            type: 'geometry',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [ -240.0, 0.0 ],
+                  [ 7.0, 0.0 ],
+                  [ 7.0, 63.0 ],
+                  [ -240.0, 63.0 ],
+                  [ -240.0, 0.0 ],
+                ],
+              ],
+            },
+          },
+        ],
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0,
+        },
+      },
+    },
+    {
       name: 'a facet search',
       inputState: {
         selectedFacets: {
