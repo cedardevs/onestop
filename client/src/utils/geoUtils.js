@@ -197,3 +197,21 @@ export const displayBboxAsLeafletGeoJSON = bbox => {
     )
   }
 }
+
+export const isPolygonABoundingBox = coordinates => {
+  return (
+    coordinates[0].length === 5 && // if is bbox
+    // 2 distinct latitudes
+    new Set(
+      coordinates[0].map(it => {
+        return it[1]
+      })
+    ).size == 2 &&
+    // 2 distinct longitues
+    new Set(
+      coordinates[0].map(it => {
+        return it[0]
+      })
+    ).size == 2
+  )
+}

@@ -42,7 +42,7 @@ class MapThumbnail extends React.Component {
         geometry = renderPointAsPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
       }
       else {
-        geometry = displayLeafletGeometry(this.props.geometry)
+        geometry = this.props.geometry
       }
       geoJsonLayer = L.GeoJSON.geometryToLayer({
         type: 'Feature',

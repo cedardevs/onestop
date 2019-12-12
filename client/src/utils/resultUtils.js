@@ -3,11 +3,7 @@ import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {SvgIcon, cloud, video_camera} from '../components/common/SvgIcon'
 import {fontFamilySansSerif} from './styleUtils'
-import {
-  ensureDatelineFriendlyGeometry,
-  convertGeoJsonToBbox,
-  displayBboxAsLeafletGeoJSON,
-} from './geoUtils'
+import {isPolygonABoundingBox} from './geoUtils'
 
 export const countArray = arr => {
   return (arr && arr.length) || 0
@@ -150,24 +146,6 @@ export const renderBadgeIcon = protocol => {
   return <span>{protocol.id}</span>
 }
 
-const isPolygonABoundingBox = coordinates => {
-  return (
-    coordinates[0].length === 5 && // if is bbox
-    // 2 distinct latitudes
-    new Set(
-      coordinates[0].map(it => {
-        return it[1]
-      })
-    ).size == 2 &&
-    // 2 distinct longitues
-    new Set(
-      coordinates[0].map(it => {
-        return it[0]
-      })
-    ).size == 2
-  )
-}
-
 const deg = '\u00B0'
 
 const buildPointString = coordinates => {
@@ -237,12 +215,12 @@ export const renderPointAsPolygon = geometry => {
   }
 }
 
-export const displayLeafletGeometry = geometry => {
-  let geo = ensureDatelineFriendlyGeometry(geometry)
-  let bbox = convertGeoJsonToBbox(geo)
-  let geojson = displayBboxAsLeafletGeoJSON(bbox)
-  return geojson ? geojson.geometry : geo
-}
+// export const displayLeafletGeometry = geometry => {
+//   let geo = ensureDatelineFriendlyGeometry(geometry)
+//   let bbox = convertGeoJsonToBbox(geo)
+//   let geojson = displayBboxAsLeafletGeoJSON(bbox)
+//   return geojson ? geojson.geometry : geo
+// }
 
 export const buildTimePeriodString = (
   beginDate,
