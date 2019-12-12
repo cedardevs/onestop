@@ -150,27 +150,78 @@ export const renderBadgeIcon = protocol => {
   return <span>{protocol.id}</span>
 }
 
+const isPolygonABoundingBox = coordinates => {
+  return (
+    coordinates[0].length === 5 && // if is bbox
+    // 2 distinct latitudes
+    new Set(
+      coordinates[0].map(it => {
+        return it[1]
+      })
+    ).size == 2 &&
+    // 2 distinct longitues
+    new Set(
+      coordinates[0].map(it => {
+        return it[0]
+      })
+    ).size == 2
+  )
+}
+
+const deg = '\u00B0'
+
+const buildPointString = coordinates => {
+  return `${coordinates[0]}${deg}, ${coordinates[1]}${deg} (longitude, latitude)`
+}
+
+const buildLineString = coordinates => {
+  return `${coordinates[0][0]}${deg}, ${coordinates[0][1]}${deg} (WS) to ${coordinates[1][0]}${deg}, ${coordinates[1][1]}${deg} (EN)`
+}
+
+const buildBoundingBoxString = coordinates => {
+  return `${coordinates[0][0][0]}${deg}, ${coordinates[0][2][1]}${deg}, ${coordinates[0][2][0]}${deg}, ${coordinates[0][0][1]}${deg} (W, N, E, S)`
+}
+
+const buildPolygonString = coordinates => {
+  var coords = coordinates[0].slice(0, -1)
+  return `${coords
+    .map(it => {
+      return `(${it[0]}${deg}, ${it[1]}${deg})`
+    })
+    .join(', ')}`
+}
+
+const buildMultiPolygonString = coordinates => {
+  return `${coordinates
+    .map(it => {
+      return `${buildPolygonOrBboxString(it)}`
+    })
+    .join(' and ')}`
+}
+
+const buildPolygonOrBboxString = coordinates => {
+  if (isPolygonABoundingBox(coordinates)) {
+    return `Bounding Box covering ${buildBoundingBoxString(coordinates)}`
+  }
+
+  return `Polygon bounded by ${buildPolygonString(coordinates)}`
+}
+
 export const buildCoordinatesString = geometry => {
-  // For point, want: "Point at [0], [1] (longitude, latitude)"
-  // For line, want: "Line from [0][0] (WS), [0][1] to [1][0], [1][1] (EN).
-  // For polygon want: "Bounding box covering [0][0], [0][1], [2][0], [2][1] (N, W, S, E)"
   if (geometry) {
-    const deg = '\u00B0'
     if (geometry.type.toLowerCase() === 'point') {
-      return `Point at ${geometry.coordinates[0]}${deg}, ${geometry
-        .coordinates[1]}${deg} (longitude, latitude).`
+      return `Point at ${buildPointString(geometry.coordinates)}.`
     }
     else if (geometry.type.toLowerCase() === 'linestring') {
-      return `Line from ${geometry.coordinates[0][0]}${deg}, ${geometry
-        .coordinates[0][1]}${deg} (WS) to ${geometry
-        .coordinates[1][0]}${deg}, ${geometry.coordinates[1][1]}${deg} (EN).`
+      return `Line from ${buildLineString(geometry.coordinates)}.`
+    }
+    else if (geometry.type.toLowerCase() === 'multipolygon') {
+      return `MultiPolygon made up of ${buildMultiPolygonString(
+        geometry.coordinates
+      )}.`
     }
     else {
-      return `Bounding box covering ${geometry
-        .coordinates[0][0][0]}${deg}, ${geometry
-        .coordinates[0][0][1]}${deg}, ${geometry
-        .coordinates[0][2][0]}${deg}, ${geometry
-        .coordinates[0][2][1]}${deg} (W, N, E, S).`
+      return `${buildPolygonOrBboxString(geometry.coordinates)}.`
     }
   }
   else {
