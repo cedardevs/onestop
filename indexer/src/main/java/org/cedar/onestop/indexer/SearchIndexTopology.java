@@ -1,25 +1,30 @@
 package org.cedar.onestop.indexer;
 
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.kstream.*;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
-import org.cedar.onestop.indexer.util.BulkIndexingTransformer;
-import org.cedar.onestop.indexer.util.IndexingHelpers;
+import org.cedar.onestop.elastic.common.FileUtil;
+import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
+import org.cedar.onestop.indexer.stream.BulkRequestMapper;
+import org.cedar.onestop.indexer.stream.FlatteningTriggerTransformer;
+import org.cedar.onestop.indexer.stream.SitemapIndexer;
+import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.constants.Topics;
+import org.cedar.onestop.kafka.common.util.TimestampedValue;
+import org.cedar.onestop.kafka.common.util.Timestamper;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
 import org.cedar.schemas.avro.psi.Relationship;
 import org.cedar.schemas.avro.psi.RelationshipType;
-import org.elasticsearch.ElasticsearchGenerationException;
-import org.elasticsearch.action.DocWriteRequest;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -28,46 +33,75 @@ import java.util.stream.Collectors;
 
 public class SearchIndexTopology {
   private static final Logger log = LoggerFactory.getLogger(SearchIndexTopology.class);
+  private static final String FLATTEN_SCRIPT_PATH = "scripts/flattenGranules.painless";
 
-  public static Topology buildSearchIndexTopology(RestHighLevelClient client, ElasticsearchConfig esConfig, AppConfig appConfig) {
+  public static Topology buildSearchIndexTopology(ElasticsearchService esService, AppConfig appConfig) throws IOException {
     var streamsBuilder = new StreamsBuilder();
     long bulkIntervalMillis = Long.parseLong(appConfig.getOrDefault("elasticsearch.bulk.interval.ms", "10000").toString());
     long bulkMaxBytes = Long.parseLong(appConfig.getOrDefault("elasticsearch.bulk.max.bytes", "10000000").toString());
+    var flatteningScript = FileUtil.textFromClasspathFile(FLATTEN_SCRIPT_PATH);
+    if (flatteningScript == null || flatteningScript.isEmpty()) {
+      throw new IllegalStateException("Unable to load required flattening script from [" + FLATTEN_SCRIPT_PATH + "]");
+    }
 
-    var collectionIndex = esConfig.COLLECTION_SEARCH_INDEX_ALIAS;
+    var collectionIndex = esService.config().COLLECTION_SEARCH_INDEX_ALIAS;
     var collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection);
     var inputCollections = streamsBuilder.<String, ParsedRecord>stream(collectionTopic);
-    var collectionRequests = inputCollections.mapValues((readOnlyKey, value) -> buildRequest(esConfig, collectionIndex, readOnlyKey, value));
+    var timestampedInputCollections = inputCollections.transformValues((ValueTransformerSupplier<ParsedRecord, TimestampedValue<ParsedRecord>>) Timestamper::new);
+    var collectionRequests = timestampedInputCollections.mapValues(new BulkRequestMapper(esService.config(), collectionIndex));
 
-    var granuleIndex = esConfig.GRANULE_SEARCH_INDEX_ALIAS;
+    var granuleIndex = esService.config().GRANULE_SEARCH_INDEX_ALIAS;
     var granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule);
     var inputGranules = streamsBuilder.<String, ParsedRecord>stream(granuleTopic);
-    var granuleRequests = inputGranules.mapValues((readOnlyKey, value) -> buildRequest(esConfig, granuleIndex, readOnlyKey, value));
+    var timestampedInputGranules = inputGranules.transformValues((ValueTransformerSupplier<ParsedRecord, TimestampedValue<ParsedRecord>>) Timestamper::new);
+    var granuleRequests = timestampedInputGranules.mapValues(new BulkRequestMapper(esService.config(), granuleIndex));
 
     var indexResults = collectionRequests.merge(granuleRequests)
         .filter((key, value) -> value != null)
-        .transform(() -> new BulkIndexingTransformer(client, Duration.ofMillis(bulkIntervalMillis), bulkMaxBytes));
+        .transform(() -> new BulkIndexingTransformer(esService.client(), Duration.ofMillis(bulkIntervalMillis), bulkMaxBytes));
 
     var successfullyIndexed = indexResults.filter((key, value) -> value != null && !value.isFailed());
     var successfulCollections = successfullyIndexed.filter((key, value) -> value.getIndex().equals(collectionIndex));
     var successfulGranules = successfullyIndexed.filter((key, value) -> value.getIndex().equals(granuleIndex));
 
-    // stream of granule_id => [related_collection_ids]
-//    var collectionsByGranule = inputGranules.mapValues(SearchIndexTopology::getParentIds);
-//    collectionsByGranule.join(
-//        successfulGranules,
-//        (collectionIds, bulkItemResponse) -> collectionIds,
-//        JoinWindows.of(Duration.ofMillis(bulkTimeoutMillis * 2))
-//    ).flatMapValues((readOnlyKey, value) -> value)
-//        .selectKey((key, value) -> value)
-//        .merge(successfulCollections.mapValues((readOnlyKey, value) -> readOnlyKey))
-//        .groupByKey()
-//        .windowedBy(TimeWindows.of(Duration.ofMillis(bulkTimeoutMillis)))
-//        .count()
-//        .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
-//        .
+    // join the successfully-uploaded granules back to their inputs in order to retrieve their timestamps,
+    // then re-key the stream based on those granules' parentIds to get a stream of collections that need
+    // to be re-flattened and the timestamps from which flattening should start
+    var flatteningUpdatesFromGranules = successfulGranules
+        .join(
+            timestampedInputGranules,
+            (bulkItemResponse, inputGranule) -> inputGranule,
+            JoinWindows.of(Duration.ofMillis(bulkIntervalMillis * 5)) // TODO - is this long enough?
+        ) // stream of granuleId => timestampedInputGranule with same id
+        .flatMap((granuleId, inputGranule) ->
+          getParentIds(inputGranule.data).stream()
+              .map(parentId -> new KeyValue<>(parentId, inputGranule.timestampMs))
+              .collect(Collectors.toList())
+        ); // stream of collectionId => timestamp of updated granule belonging to collection
 
+    var flatteningUpdatesFromCollections = successfulCollections
+        .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
 
+    flatteningUpdatesFromCollections.merge(flatteningUpdatesFromGranules)
+        .through("NEW_TOPIC_NAME") // re-partition so all triggers for a given collection go to the same consumer
+        .groupByKey()
+        .windowedBy(TimeWindows.of(Duration.ofMillis(bulkIntervalMillis))) // TODO - separate config value?
+        .reduce(Math::min) // each trigger uses the *earliest* time value in the window so all related granules are flattened
+        .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
+        .toStream()
+        .transform(() -> new FlatteningTriggerTransformer(esService, flatteningScript))
+        .filter((k, v) -> !v.successful)
+        .mapValues(v -> v.timestamp)
+        .to("NEW_TOPIC_NAME");
+
+    timestampedInputCollections
+        .mapValues(v -> v.timestampMs)
+        .groupByKey()
+        .windowedBy(TimeWindows.of(Duration.ofSeconds(1))) // TODO - make configurable
+        .reduce(Math::max)
+        .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
+        .toStream()
+        .foreach((k, v) -> SitemapIndexer.buildSitemap(esService, v));
 
 
     // potential example of streaming flattening:
@@ -91,19 +125,6 @@ public class SearchIndexTopology {
 //        .foreach((key, value) -> bulkProcessor.add(value));
 
     return streamsBuilder.build();
-  }
-
-  private static DocWriteRequest buildRequest(ElasticsearchConfig config, String index, String key, ParsedRecord value) {
-    if (value == null || (value.getPublishing() != null && value.getPublishing().getIsPrivate())) {
-      return new DeleteRequest(index).id(key);
-    }
-    try {
-      var formattedRecord = IndexingHelpers.reformatMessageForSearch(value);
-      return new IndexRequest(index).id(key).source(formattedRecord).type(config.TYPE);
-    } catch (ElasticsearchGenerationException e) {
-      log.error("Failed to serialize record with key [" + key + "] to json", e);
-      return null;
-    }
   }
 
   private static List<String> getParentIds(ParsedRecord value) {

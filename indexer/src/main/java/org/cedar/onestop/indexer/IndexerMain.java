@@ -26,10 +26,10 @@ public class IndexerMain {
 
       var elasticClient = ElasticsearchFactory.buildElasticClient(config);
       var elasticConfig = ElasticsearchFactory.buildElasticConfig(config, elasticClient);
-      var elasticInitializer = new ElasticsearchService(elasticClient, elasticConfig);
-      elasticInitializer.initializeCluster();
+      var elasticService = new ElasticsearchService(elasticClient, elasticConfig);
+      elasticService.initializeCluster();
 
-      var searchIndexingTopology = buildSearchIndexTopology(elasticClient, elasticConfig, config);
+      var searchIndexingTopology = buildSearchIndexTopology(elasticService, config);
       var streamsConfig = buildStreamsConfig(config);
       var streamsApp = KafkaHelpers.buildStreamsAppWithKillSwitch(searchIndexingTopology, streamsConfig);
       Runtime.getRuntime().addShutdownHook(new Thread(streamsApp::close));

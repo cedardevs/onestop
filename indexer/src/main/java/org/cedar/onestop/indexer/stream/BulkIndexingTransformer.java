@@ -1,8 +1,7 @@
-package org.cedar.onestop.indexer.util;
+package org.cedar.onestop.indexer.stream;
 
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
-import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.elasticsearch.action.DocWriteRequest;

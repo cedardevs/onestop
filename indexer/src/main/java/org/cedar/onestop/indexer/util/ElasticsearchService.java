@@ -4,18 +4,27 @@ import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.Version;
 import org.elasticsearch.action.admin.indices.alias.Alias;
+import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
+import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.AliasActions;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.metrics.max.Max;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ElasticsearchService {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchService.class);
@@ -28,8 +37,16 @@ public class ElasticsearchService {
     this.client = client;
     this.config = config;
     if (config.version.before(Version.V_6_0_0)) {
-      throw new IllegalStateException("The indexer service does not work against Elasticsearch prior to version 6, please use the admin service instead");
+      throw new IllegalStateException("The indexer service does not work against Elasticsearch prior to version 6");
     }
+  }
+
+  public RestHighLevelClient client() {
+    return client;
+  }
+
+  public ElasticsearchConfig config() {
+    return config;
   }
 
   public void initializeCluster() throws IOException {
@@ -51,10 +68,12 @@ public class ElasticsearchService {
 
   private void ensureAliasWithIndex(String alias) throws IOException {
     var aliasExists = checkAliasExists(alias);
-    if (aliasExists){
-      putMapping(alias);
-    } else {
-      createIndexWithAlias(alias);
+    if (aliasExists) {
+      var mapping = getMappingByAlias(alias);
+      putMapping(alias, mapping);
+    }
+    else {
+      createIndex(alias, true);
     }
   }
 
@@ -62,26 +81,81 @@ public class ElasticsearchService {
     return client.indices().existsAlias(new GetAliasesRequest(alias), RequestOptions.DEFAULT);
   }
 
-  private boolean putMapping(String indexOrAlias) throws IOException {
-    String jsonIndexDef = config.jsonMapping(indexOrAlias);
-    Map parsedMapping = mapper.readValue(jsonIndexDef, Map.class);
-    String jsonIndexMapping = mapper.writeValueAsString(((Map) parsedMapping.get("mappings")).get("doc"));
-    var request = new PutMappingRequest(indexOrAlias).source(jsonIndexMapping, XContentType.JSON);
+  private boolean putMapping(String indexOrAlias, String mapping) throws IOException {
+    var request = new PutMappingRequest(indexOrAlias).source(mapping, XContentType.JSON);
     var result = client.indices().putMapping(request, RequestOptions.DEFAULT);
     return result.isAcknowledged();
   }
 
-  private CreateIndexResponse createIndexWithAlias(String alias) throws IOException {
-    var indexName = alias + "-" +System.currentTimeMillis();
+  public String createIndex(String aliasName) throws IOException {
+    return createIndex(aliasName, false);
+  }
+
+  public String createIndex(String aliasName, boolean applyAlias) throws IOException {
+    String indexName = newIndexName(aliasName);
+    var jsonIndexMapping = getMappingByAlias(aliasName);
+    var request = new CreateIndexRequest(indexName)
+        .mapping(jsonIndexMapping, XContentType.JSON);
+    if (applyAlias) {
+      request.alias(new Alias(aliasName));
+    }
+    var result = client.indices().create(request, RequestOptions.DEFAULT);
+    log.debug("Created new index [" + indexName + "] with alias [" + aliasName + "]");
+    return result.index();
+  }
+
+  public boolean moveAliasToIndex(String alias, String index) throws IOException {
+    return moveAliasToIndex(alias, index, false);
+  }
+
+  public boolean moveAliasToIndex(String alias, String index, Boolean dropOldIndices) throws IOException {
+    var oldIndices = getIndicesForAlias(alias);
+    var aliasRequest = new IndicesAliasesRequest();
+    oldIndices.forEach(oldName -> aliasRequest.addAliasAction(AliasActions.remove().index(oldName).alias(alias)));
+    aliasRequest.addAliasAction(AliasActions.add().index(index).alias(alias));
+    var aliasResponse = client.indices().updateAliases(aliasRequest, RequestOptions.DEFAULT);
+    if (dropOldIndices && aliasResponse.isAcknowledged()) {
+      return dropIndex((String[]) oldIndices.toArray());
+    }
+    else {
+      return aliasResponse.isAcknowledged();
+    }
+  }
+
+  private Set<String> getIndicesForAlias(String alias) throws IOException {
+    return client.indices().getAlias(new GetAliasesRequest(alias), RequestOptions.DEFAULT)
+        .getAliases().keySet().stream().filter(it -> it.startsWith(alias)).collect(Collectors.toSet());
+  }
+
+  private boolean dropIndex(String index) throws IOException {
+    return dropIndex(new String[]{index});
+  }
+
+  private boolean dropIndex(String... index) throws IOException {
+    return client.indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT).isAcknowledged();
+  }
+
+  private String getMappingByAlias(String alias) throws IOException {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
-    String jsonIndexMapping = mapper.writeValueAsString(((Map) parsedDefinition.get("mappings")).get("doc"));
-    var request = new CreateIndexRequest(indexName)
-        .mapping(jsonIndexMapping, XContentType.JSON)
-        .alias(new Alias(alias));
-    var result = client.indices().create(request, RequestOptions.DEFAULT);
-    log.debug("Created new index [" + indexName + "] with alias [" + alias + "]");
-    return result;
+    return mapper.writeValueAsString(((Map) parsedDefinition.get("mappings")).get("doc"));
+  }
+
+  private String newIndexName(String alias) {
+    return alias + "-" + System.currentTimeMillis();
+  }
+
+  public double maxValue(String index, String field) throws IOException {
+    var aggName = "max_" + field;
+    var searchBuilder = new SearchSourceBuilder()
+        .aggregation(AggregationBuilders.max(aggName).field(field))
+        .size(0);
+    var searchRequest = new SearchRequest(index)
+        .source(searchBuilder);
+
+    var response = client.search(searchRequest, RequestOptions.DEFAULT);
+    Max max = response.getAggregations().get(aggName);
+    return max.getValue();
   }
 
 }
