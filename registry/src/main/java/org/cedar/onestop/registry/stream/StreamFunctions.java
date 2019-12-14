@@ -11,10 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Pattern;
 
 import static org.cedar.schemas.avro.psi.Method.*;
 
@@ -143,6 +141,19 @@ public class StreamFunctions {
           .build();
       builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error));
       return null;
+    }
+  }
+
+  public static boolean isUUID(String key) {
+    final String uuidPattern = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
+    Pattern pattern = Pattern.compile(uuidPattern);
+    boolean valid = pattern.matcher(key.toString()).matches();
+    if(valid){
+      return true;
+    }
+    else {
+      log.error("Invalid UUID String, The UUID is {}" , key);
+      return false;
     }
   }
 

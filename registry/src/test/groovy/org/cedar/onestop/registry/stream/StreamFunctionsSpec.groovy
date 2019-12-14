@@ -12,6 +12,17 @@ class StreamFunctionsSpec extends Specification {
 
   final static String testGranuleJson = ClassLoader.systemClassLoader.getResourceAsStream("test_granule.json").text
 
+  def 'validate UUID string'() {
+    def invalidId = 'This-is-not-a-UUID'
+    def validId = '5fc03087-d265-11e7-b8c6-83e29cd24f4c'
+
+    expect:
+    !StreamFunctions.isUUID(invalidId)
+
+    and:
+    StreamFunctions.isUUID(validId)
+  }
+
   def 'identity reducer returns the next value'() {
     def curr = 'A'
     def next = 'B'
