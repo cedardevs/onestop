@@ -40,18 +40,49 @@ class ElasticsearchService {
     this.esConfig = elasticsearchConfig
   }
 
-  Map searchFlattenedGranules(Map searchParams) {
-    return searchFromRequest(searchParams, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+  ////////////
+  // Counts //
+  ////////////
+  Map totalCollections() {
+    return totalCounts(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
   }
 
-  Map searchGranules(Map searchParams) {
-    return searchFromRequest(searchParams, esConfig.GRANULE_SEARCH_INDEX_ALIAS)
+  Map totalGranules() {
+    return totalCounts(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
   }
 
-  Map searchCollections(Map searchParams) {
-    return searchFromRequest(searchParams, esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+  Map totalFlattenedGranules() {
+    return totalCounts(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
   }
 
+  private Map totalCounts(String alias) {
+    String endpoint = "/${alias}/_search"
+    HttpEntity requestQuery = new NStringEntity(JsonOutput.toJson([
+        query: [
+            match_all: [:]
+        ],
+        size : 0
+    ]), ContentType.APPLICATION_JSON)
+    Request totalCountsRequest = new Request('GET', endpoint)
+    totalCountsRequest.entity = requestQuery
+    Response totalCountsResponse = restClient.performRequest(totalCountsRequest)
+    Map parsedResponse = parseSearchResponse(totalCountsResponse)
+
+    return [
+        data: [
+            [
+                type : "count",
+                id   : esConfig.typeFromAlias(alias),
+                count: getHitsTotal(parsedResponse)
+            ]
+        ]
+    ]
+  }
+
+
+  ///////////////
+  // Get By ID //
+  ///////////////
   Map getCollectionById(String id) {
     def getCollection = getById(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, id)
 
@@ -83,8 +114,96 @@ class ElasticsearchService {
     return getById(esConfig.GRANULE_SEARCH_INDEX_ALIAS, id)
   }
 
+  Map getFlattenedGranuleById(String id) {
+    return getById(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS, id)
+  }
+
   Map getSitemapById(String id) {
     return getById(esConfig.SITEMAP_INDEX_ALIAS, id)
+  }
+
+  private Map getById(String alias, String id) {
+    String endpoint = "/${alias}/${esConfig.TYPE}/${id}"
+    log.debug("Get by ID against endpoint: ${endpoint}")
+    Request idRequest = new Request('GET', endpoint)
+    Response idResponse = restClient.performRequest(idRequest)
+    Map collectionDocument = parseSearchResponse(idResponse)
+    String type = esConfig.typeFromAlias(alias)
+    if (collectionDocument.found) {
+      return [
+          data: [[
+                     id        : getId(collectionDocument),
+                     type      : esConfig.typeFromAlias(alias),
+                     attributes: getSource(collectionDocument)
+                 ]]
+      ]
+    }
+    else {
+      return [
+          status: HttpStatus.NOT_FOUND.value(),
+          title : 'No such document',
+          detail: "Record type ${type} with Elasticsearch ID [ ${id} ] does not exist."
+      ]
+    }
+  }
+
+
+  //////////////
+  // Mappings //
+  //////////////
+  Map getCollectionMapping() {
+    return getIndexMapping(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+  }
+
+  Map getGranuleMapping() {
+    return getIndexMapping(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
+  }
+
+  Map getFlattenedGranuleMapping() {
+    return getIndexMapping(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+  }
+
+  Map getIndexMapping(String alias) {
+    String endpoint = "/${alias}"
+    log.debug("GET mapping for ${alias}")
+
+    def request = new Request('GET', endpoint)
+    def response = restClient.performRequest(request)
+    Map result = parseSearchResponse(response)
+
+    if(!result.error) {
+      def indexName = result.keySet().first() // Actual timestamped name is used, not the alias
+      return [
+          data: [[
+              id: alias,
+              type: 'index-map',
+              attributes: result.get(indexName)
+          ]]
+      ]
+    }
+    else {
+      return [
+          status: HttpStatus.NOT_FOUND.value(),
+          title : 'No such index',
+          detail: "Index with alias [ ${alias} ] does not exist."
+      ]
+    }
+  }
+
+
+  //////////////
+  // Searches //
+  //////////////
+  Map searchCollections(Map searchParams) {
+    return searchFromRequest(searchParams, esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+  }
+
+  Map searchGranules(Map searchParams) {
+    return searchFromRequest(searchParams, esConfig.GRANULE_SEARCH_INDEX_ALIAS)
+  }
+
+  Map searchFlattenedGranules(Map searchParams) {
+    return searchFromRequest(searchParams, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
   }
 
   Map searchSitemap() {
@@ -111,70 +230,25 @@ class ElasticsearchService {
     return result
   }
 
+  Map searchFromRequest(Map params, String index) {
+    def requestBody = buildRequestBody(params)
 
-  Map getFlattenedGranuleById(String id) {
-    return getById(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS, id)
-  }
-
-  Map totalCollections() {
-    return totalCounts(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
-  }
-
-  Map totalGranules() {
-    return totalCounts(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
-  }
-
-  Map totalFlattenedGranules() {
-    return totalCounts(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
-  }
-
-  Map totalCounts(String alias) {
-    String endpoint = "/${alias}/_search"
-    HttpEntity requestQuery = new NStringEntity(JsonOutput.toJson([
-        query: [
-            match_all: [:]
-        ],
-        size : 0
-    ]), ContentType.APPLICATION_JSON)
-    Request totalCountsRequest = new Request('GET', endpoint)
-    totalCountsRequest.entity = requestQuery
-    Response totalCountsResponse = restClient.performRequest(totalCountsRequest)
-    Map parsedResponse = parseSearchResponse(totalCountsResponse)
-
-    return [
-        data: [
-            [
-                type : "count",
-                id   : esConfig.typeFromAlias(alias),
-                count: getHitsTotal(parsedResponse)
-            ]
+    Map searchResponse = queryElasticsearch(requestBody, index)
+    def result = [
+        data: getDocuments(searchResponse).collect {
+          [id: getId(it), type: esConfig.typeFromIndex(getIndex(it)), attributes: getSource(it)]
+        },
+        meta: [
+            took : getTook(searchResponse),
+            total: getHitsTotal(searchResponse)
         ]
     ]
-  }
 
-  private Map getById(String alias, String id) {
-    String endpoint = "/${alias}/${esConfig.TYPE}/${id}"
-    log.debug("Get by ID against endpoint: ${endpoint}")
-    Request idRequest = new Request('GET', endpoint)
-    Response idResponse = restClient.performRequest(idRequest)
-    Map collectionDocument = parseSearchResponse(idResponse)
-    String type = esConfig.typeFromAlias(alias)
-    if (collectionDocument.found) {
-      return [
-          data: [[
-                     id        : getId(collectionDocument),
-                     type      : esConfig.typeFromAlias(alias),
-                     attributes: getSource(collectionDocument)
-                 ]]
-      ]
+    def facets = prepareFacets(searchResponse)
+    if (facets) {
+      result.meta.facets = facets
     }
-    else {
-      return [
-          status: HttpStatus.NOT_FOUND.value(),
-          title : 'No such document',
-          detail: "Record type ${type} with Elasticsearch ID [ ${id} ] does not exist."
-      ]
-    }
+    return result
   }
 
   Map queryElasticsearch(Map query, String index) {
@@ -207,28 +281,6 @@ class ElasticsearchService {
     }
     requestBody = pruneEmptyElements(requestBody)
     return requestBody
-  }
-
-  Map searchFromRequest(Map params, String index) {
-    // TODO: does this parse step need to change based on new different endpoints?
-    def requestBody = buildRequestBody(params)
-
-    Map searchResponse = queryElasticsearch(requestBody, index)
-    def result = [
-        data: getDocuments(searchResponse).collect {
-          [id: getId(it), type: esConfig.typeFromIndex(getIndex(it)), attributes: getSource(it)]
-        },
-        meta: [
-            took : getTook(searchResponse),
-            total: getHitsTotal(searchResponse)
-        ]
-    ]
-
-    def facets = prepareFacets(searchResponse)
-    if (facets) {
-      result.meta.facets = facets
-    }
-    return result
   }
 
   private Map addAggregations(Map query, boolean getFacets) {
