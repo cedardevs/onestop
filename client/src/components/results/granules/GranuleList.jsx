@@ -10,6 +10,8 @@ import GranuleListItem from './GranuleListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {Link} from 'react-router-dom'
 import {asterisk, SvgIcon} from '../../common/SvgIcon'
+import PageView from '../../common/ui/PageView'
+// import {PAGE_SIZE} from '../../../utils/queryUtils'
 
 const styleCenterContent = {
   display: 'flex',
@@ -82,7 +84,10 @@ export default function GranuleList(props){
     loading,
   } = props
 
+  const PAGE_SIZE = 2
   const [ focusingCollectionLink, setFocusingCollectionLink ] = useState(false)
+  const [ offset, setOffset ] = useState(0)
+  const [ currentPage, setCurrentPage ] = useState(1)
 
   const isGranuleSelected = itemId => {
     const checkIt = Object.keys(selectedGranules).includes(itemId)
@@ -100,6 +105,17 @@ export default function GranuleList(props){
     }
   }
 
+  const currentResults = () => {
+    if (returnedHits < totalHits && offset + PAGE_SIZE >= returnedHits) {
+      fetchMoreResults()
+    }
+    let pageResult = Object.keys(selectedGranules).slice(
+      offset,
+      offset + PAGE_SIZE
+    )
+    return pageResult
+  }
+
   const propsForItem = (item, itemId, setFocusedKey) => {
     return {
       onSelect: () => {},
@@ -108,16 +124,6 @@ export default function GranuleList(props){
       setFocusedKey,
     }
   }
-
-  const showMoreButton =
-    returnedHits < totalHits ? (
-      <Button
-        text="Show More Results"
-        onClick={() => fetchMoreResults()}
-        style={styleShowMore}
-        styleFocus={styleShowMoreFocus}
-      />
-    ) : null
 
   let message = 'No file results'
   if (loading) {
@@ -133,7 +139,12 @@ export default function GranuleList(props){
     )
   }
   else if (totalHits > 0) {
-    message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} matching files`
+    var size = 0
+    for (const key in currentResults()) {
+      size++
+    }
+    message = `Showing ${offset + 1} - ${offset +
+      size} of ${totalHits.toLocaleString()} matching files`
   }
   const listHeading = (
     <h2 key="GranuleList::listHeading" style={styleListHeading}>
@@ -181,7 +192,7 @@ export default function GranuleList(props){
 
       <div style={styleGranuleListWrapper}>
         <ListView
-          items={results}
+          items={currentResults()}
           ListItemComponent={GranuleListItem}
           GridItemComponent={null}
           propsForItem={propsForItem}
@@ -189,7 +200,16 @@ export default function GranuleList(props){
           customActions={granuleListCustomActions}
           customMessage={customMessage}
         />
-        {showMoreButton}
+        <PageView
+          totalRecords={totalHits}
+          pageLimit={PAGE_SIZE}
+          pageNeighbours={3}
+          setOffset={offset => {
+            setOffset(offset)
+          }}
+          currentPage={currentPage}
+          setCurrentPage={page => setCurrentPage(page)}
+        />
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import Meta from 'react-helmet'
 import ListView from '../common/ui/ListView'
 import Button from '../common/input/Button'
@@ -10,6 +10,7 @@ import {fontFamilySerif} from '../../utils/styleUtils'
 import ScriptDownloader from './ScriptDownloader'
 import {FEATURE_CART} from '../../utils/featureUtils'
 import CartListItem from './CartListItem'
+import PageView from '../common/ui/PageView'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -44,32 +45,51 @@ const styleCartActionsTitle = {
   padding: 0,
 }
 
-const styleShowMore = {
-  margin: '1em auto 1.618em auto',
-}
-const styleShowMoreFocus = {
-  outline: '2px dashed #5C87AC',
-  outlineOffset: '.118em',
-}
+// export default class Cart extends React.Component {
+export default function Cart(props){
+  const {
+    featuresEnabled,
+    // loading, TODO does this need to wire up specific loading state somewhere else correctly now?
+    selectedGranules,
+    numberOfGranulesSelected,
+    deselectAllGranules,
+  } = props
 
-export default class Cart extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      numShownItems:
-        props.numberOfGranulesSelected < SHOW_MORE_INCREMENT
-          ? props.numberOfGranulesSelected
-          : SHOW_MORE_INCREMENT,
-    }
-    this.props = props
+  if (!featuresEnabled.includes(FEATURE_CART)) {
+    return null
   }
+  
+  const numShownItems =
+    numberOfGranulesSelected < SHOW_MORE_INCREMENT
+      ? numberOfGranulesSelected
+      : SHOW_MORE_INCREMENT
 
-  propsForItem = (item, itemId, setFocusedKey) => {
-    const {
-      collectionDetailFilter,
-      selectCollection,
-      deselectGranule,
-    } = this.props
+  const shownGranules =
+    numberOfGranulesSelected < numShownItems
+      ? numberOfGranulesSelected
+      : numShownItems
+  // keep track of used protocols in results to avoid unnecessary legend keys
+  const usedProtocols = new Set()
+
+  const [ offset, setOffset ] = useState(0)
+  const [ currentPage, setCurrentPage ] = useState(1)
+
+  // filter map down to size of results in cart we want (# shownGranules)
+  // const allowed = Object.keys(selectedGranules).slice(0, shownGranules)
+  const allowed = Object.keys(selectedGranules).slice(
+    offset,
+    offset + SHOW_MORE_INCREMENT
+  )
+
+  const subset = Object.keys(selectedGranules)
+    .filter(key => allowed.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = selectedGranules[key]
+      return obj
+    }, {})
+
+  const propsForItem = (item, itemId, setFocusedKey) => {
+    const {collectionDetailFilter, selectCollection, deselectGranule} = props
     const collectionId = item.internalParentIdentifier
     return {
       onSelect: key => {
@@ -80,124 +100,74 @@ export default class Cart extends React.Component {
     }
   }
 
-  handleShowMore = () => {
-    const {numberOfGranulesSelected} = this.props
-    const {numShownItems} = this.state
-    if (numShownItems < numberOfGranulesSelected) {
-      const nextNumShownItems =
-        numShownItems + SHOW_MORE_INCREMENT > numberOfGranulesSelected
-          ? numberOfGranulesSelected
-          : numShownItems + SHOW_MORE_INCREMENT
-
-      this.setState(prevState => {
-        return {
-          ...prevState,
-          numShownItems: nextNumShownItems,
-        }
+  for (let key in selectedGranules) {
+    if (selectedGranules.hasOwnProperty(key)) {
+      const value = selectedGranules[key]
+      _.forEach(value.links, link => {
+        // if(link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess') {
+        return usedProtocols.add(identifyProtocol(link))
+        // }
       })
     }
   }
 
-  render() {
-    const {
-      featuresEnabled,
-      // loading, TODO does this need to wire up specific loading state somewhere else correctly now?
-      selectedGranules,
-      numberOfGranulesSelected,
-      deselectAllGranules,
-    } = this.props
-
-    if (!featuresEnabled.includes(FEATURE_CART)) {
-      return null
-    }
-
-    const {numShownItems} = this.state
-    const selectedGranulesCount = Object.keys(selectedGranules).length
-    const shownGranules =
-      selectedGranulesCount < numShownItems
-        ? selectedGranulesCount
-        : numShownItems
-    // keep track of used protocols in results to avoid unnecessary legend keys
-    const usedProtocols = new Set()
-
-    for (let key in selectedGranules) {
-      if (selectedGranules.hasOwnProperty(key)) {
-        const value = selectedGranules[key]
-        _.forEach(value.links, link => {
-          // if(link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess') {
-          return usedProtocols.add(identifyProtocol(link))
-          // }
-        })
-      }
-    }
-
-    const showMoreButton =
-      numShownItems < numberOfGranulesSelected ? (
-        <Button
-          text="Show More"
-          onClick={this.handleShowMore}
-          style={styleShowMore}
-          styleFocus={styleShowMoreFocus}
+  const cartActionsWrapper =
+    numberOfGranulesSelected === 0 ? null : (
+      <div style={styleCartActions}>
+        <h1 style={styleCartActionsTitle}>Cart Actions</h1>
+        <ScriptDownloader
+          key="scriptDownloaderButton"
+          selectedGranules={selectedGranules}
         />
-      ) : null
-
-    const cartActionsWrapper =
-      selectedGranulesCount === 0 ? null : (
-        <div style={styleCartActions}>
-          <h1 style={styleCartActionsTitle}>Cart Actions</h1>
-          <ScriptDownloader
-            key="scriptDownloaderButton"
-            selectedGranules={selectedGranules}
-          />
-        </div>
-      )
-
-    let message = 'No files selected for download'
-    if (selectedGranulesCount > 0) {
-      message = `Showing ${shownGranules.toLocaleString()} of ${selectedGranulesCount.toLocaleString()} files for download`
-    }
-    const listHeading = (
-      <h2 key="Cart::listHeading" style={styleListHeading}>
-        {message}
-      </h2>
-    )
-
-    const cartListCustomActions = [
-      {
-        text: 'Clear All',
-        title: 'Clear All Files from Cart',
-        icon: clearIcon,
-        showText: false,
-        handler: deselectAllGranules,
-        notification: 'Clearing all files from cart',
-      },
-    ]
-    // filter map down to size of results in cart we want (# shownGranules)
-    const allowed = Object.keys(selectedGranules).slice(0, shownGranules)
-    const subset = Object.keys(selectedGranules)
-      .filter(key => allowed.includes(key))
-      .reduce((obj, key) => {
-        obj[key] = selectedGranules[key]
-        return obj
-      }, {})
-
-    return (
-      <div style={styleCenterContent}>
-        <Meta title="File Access Cart" robots="noindex" />
-
-        <div style={styleCartListWrapper}>
-          {cartActionsWrapper}
-          <ListView
-            items={subset}
-            ListItemComponent={CartListItem}
-            GridItemComponent={null}
-            propsForItem={this.propsForItem}
-            heading={listHeading}
-            customActions={cartListCustomActions}
-          />
-          {showMoreButton}
-        </div>
       </div>
     )
+
+  let message = 'No files selected for download'
+  if (numberOfGranulesSelected > 0) {
+    message = `Showing ${shownGranules.toLocaleString()} of ${numberOfGranulesSelected.toLocaleString()} files for download`
   }
+  const listHeading = (
+    <h2 key="Cart::listHeading" style={styleListHeading}>
+      {message}
+    </h2>
+  )
+
+  const cartListCustomActions = [
+    {
+      text: 'Clear All',
+      title: 'Clear All Files from Cart',
+      icon: clearIcon,
+      showText: false,
+      handler: deselectAllGranules,
+      notification: 'Clearing all files from cart',
+    },
+  ]
+
+  return (
+    <div style={styleCenterContent}>
+      <Meta title="File Access Cart" robots="noindex" />
+
+      <div style={styleCartListWrapper}>
+        {cartActionsWrapper}
+        <ListView
+          items={subset}
+          ListItemComponent={CartListItem}
+          GridItemComponent={null}
+          propsForItem={propsForItem}
+          heading={listHeading}
+          customActions={cartListCustomActions}
+        />
+        <PageView
+          totalRecords={numberOfGranulesSelected}
+          pageLimit={SHOW_MORE_INCREMENT}
+          pageNeighbours={2}
+          setOffset={offset => {
+            setOffset(offset)
+          }}
+          currentPage={currentPage}
+          setCurrentPage={page => setCurrentPage(page)}
+        />
+      </div>
+    </div>
+  )
 }

@@ -27,7 +27,6 @@ const pageActiveStyle = {
   backgroundColor: '#3895d3',
   borderColor: '#3895d3',
   color: '#fff',
-
 }
 
 function PageView(props){
