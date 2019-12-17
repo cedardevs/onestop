@@ -1,7 +1,6 @@
 import React, {useState} from 'react'
 import Meta from 'react-helmet'
 import ListView from '../common/ui/ListView'
-import Button from '../common/input/Button'
 import {boxShadow} from '../../style/defaultStyles'
 import {identifyProtocol} from '../../utils/resultUtils'
 import clearIcon from 'fa/ban.svg'
@@ -65,8 +64,7 @@ export default function Cart(props){
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
 
-  // filter map down to size of results in cart we want (# shownGranules)
-  // const allowed = Object.keys(selectedGranules).slice(0, shownGranules)
+  //only show granules for this page
   const allowed = Object.keys(selectedGranules).slice(
     offset,
     offset + SHOW_MORE_INCREMENT
@@ -115,7 +113,9 @@ export default function Cart(props){
 
   let message = 'No files selected for download'
   if (numberOfGranulesSelected > 0) {
-    message = `Showing ${offset + 1} - ${offset + Object.keys(subset).length} of ${numberOfGranulesSelected.toLocaleString()} files for download`
+    message = `Showing ${offset + 1} - ${offset +
+      Object.keys(subset)
+        .length} of ${numberOfGranulesSelected.toLocaleString()} files for download`
   }
   const listHeading = (
     <h2 key="Cart::listHeading" style={styleListHeading}>

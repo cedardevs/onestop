@@ -11,7 +11,7 @@ import {fontFamilySerif} from '../../../utils/styleUtils'
 import {Link} from 'react-router-dom'
 import {asterisk, SvgIcon} from '../../common/SvgIcon'
 import PageView from '../../common/ui/PageView'
-// import {PAGE_SIZE} from '../../../utils/queryUtils'
+import {PAGE_SIZE} from '../../../utils/queryUtils'
 
 const styleCenterContent = {
   display: 'flex',
@@ -36,14 +36,6 @@ const styleLink = focusing => {
     outline: focusing ? '2px dashed white' : 'none',
     outlineOffset: focusing ? '0.309em' : 'initial',
   }
-}
-
-const styleShowMore = {
-  margin: '1em auto 1.618em auto',
-}
-const styleShowMoreFocus = {
-  outline: '2px dashed #5C87AC',
-  outlineOffset: '.118em',
 }
 
 const styleWarning = warning => {
@@ -84,7 +76,6 @@ export default function GranuleList(props){
     loading,
   } = props
 
-  const PAGE_SIZE = 2
   const [ focusingCollectionLink, setFocusingCollectionLink ] = useState(false)
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
@@ -106,13 +97,18 @@ export default function GranuleList(props){
   }
 
   const currentResults = () => {
+    let pageResult = {}
+    let index = 0
+
     if (returnedHits < totalHits && offset + PAGE_SIZE >= returnedHits) {
       fetchMoreResults()
     }
-    let pageResult = Object.keys(selectedGranules).slice(
-      offset,
-      offset + PAGE_SIZE
-    )
+    for (const id in results) {
+      if (index >= offset && index < offset + PAGE_SIZE) {
+        pageResult[id] = results[id]
+      }
+      index++
+    }
     return pageResult
   }
 
