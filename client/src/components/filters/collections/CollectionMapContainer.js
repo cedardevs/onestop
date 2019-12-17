@@ -6,7 +6,7 @@ import {
 import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 
 import {withRouter} from 'react-router'
-import MapFxn from '../spatial/MapFxn'
+import Map from '../spatial/Map'
 
 const mapStateToProps = state => {
   const {geoJSON} = state.search.collectionFilter
@@ -28,7 +28,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 }
 
 const CollectionMapContainer = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(MapFxn)
+  connect(mapStateToProps, mapDispatchToProps)(Map)
 )
 
 export default CollectionMapContainer

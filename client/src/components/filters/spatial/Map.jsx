@@ -58,7 +58,7 @@ const drawStyle = {
   opacity: 0.65,
 }
 
-const MapFxn = props => {
+const Map = props => {
   const {
     selection,
     geoJsonSelection,
@@ -287,9 +287,9 @@ const MapFxn = props => {
   )
 }
 
-MapFxn.defaultProps = {
+Map.defaultProps = {
   selection: false,
   features: true,
 }
 
-export default MapFxn
+export default Map

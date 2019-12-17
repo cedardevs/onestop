@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import MapFxn from '../spatial/MapFxn'
+import Map from '../spatial/Map'
 import {
   granuleUpdateGeometry,
   granuleRemoveGeometry,
@@ -28,7 +28,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 }
 
 const GranuleMapContainer = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(MapFxn)
+  connect(mapStateToProps, mapDispatchToProps)(Map)
 )
 
 export default GranuleMapContainer
