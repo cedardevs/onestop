@@ -29,9 +29,8 @@ class DocumentationService {
   ]
 
   static {
-    List<String> facetFields = facetNameMappings.values().toList()
-    facetFields.each { String field ->
-      filterableFields.put(field, 'facetFilter')
+    facetNameMappings.each { String name, String field ->
+      filterableFields.put(field, "facetFilter with 'name' value of '$name'")
     }
   }
 

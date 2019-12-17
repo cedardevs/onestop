@@ -44,6 +44,13 @@ class DocumentationController {
       def attributes = DocumentationService.generateAttributesInfo(esMapResponse)
       response.status = HttpStatus.OK.value()
       return [
+          meta: [
+              info: [
+                  queryable: 'Whether an attribute can be searched against. Non-queryable fields provide supplemental information about a record only, such as link URLs.',
+                  exactMatchRequired: 'Only applicable to queryable fields. If true, text must match exactly or a regular expression pattern must exactly match the full text. If false, partial matches will return results.',
+                  applicableFilter: 'Filter correlating to this attribute. Filters are faster and more precise in narrowing results but do not affect search rankings.'
+              ]
+          ],
           data: [[
                      id: esMapResponse.data[0].id,
                      type: 'docs-attributes',
