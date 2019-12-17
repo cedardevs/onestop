@@ -58,16 +58,7 @@ export default function Cart(props){
   if (!featuresEnabled.includes(FEATURE_CART)) {
     return null
   }
-  
-  const numShownItems =
-    numberOfGranulesSelected < SHOW_MORE_INCREMENT
-      ? numberOfGranulesSelected
-      : SHOW_MORE_INCREMENT
 
-  const shownGranules =
-    numberOfGranulesSelected < numShownItems
-      ? numberOfGranulesSelected
-      : numShownItems
   // keep track of used protocols in results to avoid unnecessary legend keys
   const usedProtocols = new Set()
 
@@ -124,7 +115,7 @@ export default function Cart(props){
 
   let message = 'No files selected for download'
   if (numberOfGranulesSelected > 0) {
-    message = `Showing ${shownGranules.toLocaleString()} of ${numberOfGranulesSelected.toLocaleString()} files for download`
+    message = `Showing ${offset + 1} - ${offset + Object.keys(subset).length} of ${numberOfGranulesSelected.toLocaleString()} files for download`
   }
   const listHeading = (
     <h2 key="Cart::listHeading" style={styleListHeading}>
