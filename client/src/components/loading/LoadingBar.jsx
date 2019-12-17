@@ -46,7 +46,6 @@ export class LoadingBar extends React.Component {
                 aria-live="polite"
               />
             </LiveAnnouncer>
-            <div className={loading ? 'loadingContainer' : null} />
             {displayErrors}
           </div>
         </Route>

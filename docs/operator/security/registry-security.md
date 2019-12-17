@@ -1,6 +1,5 @@
 # OneStop Registry Security
-
-The REST API for OneStop Registry is now secured via CAS authentication. The endpoints that now require credentials are described below.
+The OneStop REST API endpoints that use for publishing, updating and removing a record are secured via CAS authentication. 
 
 The following endpoints that use HTTP Methods POST, PUT, PATCH, or DELETE:
 - `/metadata/**`
@@ -41,8 +40,7 @@ However it is accomplished, it is required to provide the `Authorization` header
 Authorization (privileged users) is a configuration on the OneStop Registry API. For CAS users who need the privileges to use the secured endpoints described above, they will need to be added to the `ROLE_ADMIN` role. In order to give this privilege to a new user, the security configuration will need to be updated:
 
 ### For example:
-```yml
----
+``` yml
 spring:
   profiles: cas
 
@@ -76,3 +74,7 @@ OneStop Registry is not a UI or browser frontend, and is not intended to be expo
   - https://apereo.github.io/cas/6.0.x/protocol/REST-Protocol.html#rest-protocol
 1. Pac4j Guidance on Securing REST APIs
   - https://www.pac4j.org/blog/spring-webmvc-pac4j-vs-spring-security-round-2-rest-apis.html  
+
+<hr>
+<div align="center"><a href="/onestop/operator">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/">Next</a></div>
+

@@ -29,6 +29,17 @@ Configuration file: /Users/neo/git/onestop/docs/_config.yml
   Server running... press ctrl-c to stop.
 ```
 
+Finally, when you're editing a page locally, you will need to manually reload pages to see your edits as Jekyll does not auto-reload for you. In some cases, as you're working on new pages, Jekyll may not render an `.md` link as an HTML page -- just restart the Jekyll server to rebuild pages in this case.
+
+## Page Standards
+
+### Estimated Reading Time on pages
+Add estimated reading time to top of articles -- https://niram.org/read/ -- and round to the nearest minute. Keep in mind an article with a lot of images might have an inflated estimate due to alternative text and URLs, so use your best judgement here.
+`**Estimated Reading Time: 10 minutes**`
+
+### Generate a TOC 
+Once you've finished an article, it might be helpful to add a table of contents at the top for quick access. This site makes doing so quick and easy: https://imthenachoman.github.io/nGitHubTOC/
+
 ## Errors Encountered
 If you run into something frustrating somewhere and figure out how to fix it, save your teammates some grief and add your fix below!
 ### Liquid Error When No One's Using Liquid To Begin With...

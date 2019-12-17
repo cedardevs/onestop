@@ -60,3 +60,6 @@ We introduce new features and major changes with the following steps:
 [releases]: https://github.com/cedardevs/onestop/releases
 [semantic versioning]: http://semver.org/
 [github issues]: https://github.com/cedardevs/onestop/issues/new
+
+<hr>
+<div align="center"><a href="/onestop/developer/contribution-guidelines">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/hotfix-strategy">Next</a></div>
