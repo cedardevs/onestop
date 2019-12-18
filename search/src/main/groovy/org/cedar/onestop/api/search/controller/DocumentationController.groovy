@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse
 import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD
 
+import org.cedar.onestop.api.search.service.DocumentationService
+
 @Slf4j
 @RestController
 class DocumentationController {
@@ -41,7 +43,9 @@ class DocumentationController {
 
   private Map getAttributesResponse(HttpServletResponse response, Map esMapResponse) {
     if(esMapResponse.data) {
-      def attributes = DocumentationService.generateAttributesInfo(esMapResponse.data.attributes.mappings as Map)
+
+      def attributes = DocumentationService.generateAttributesInfo(esMapResponse.data[0].attributes.mappings as Map)
+
       response.status = HttpStatus.OK.value()
       return [
           meta: [
