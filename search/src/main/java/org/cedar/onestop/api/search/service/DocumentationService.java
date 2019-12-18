@@ -32,7 +32,7 @@ public class DocumentationService {
     filterableFields.put("internalParentIdentifier" , "collectionFilter");
 
     facetNameMappings.forEach( (name, field) ->
-        filterableFields.put(field, "facetFilter with \"name\" value of " + name)
+        filterableFields.put(field, "facetFilter with 'name' value of " + name)
     );
   }
 
