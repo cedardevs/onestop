@@ -13,6 +13,9 @@ import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+
+import java.util.stream.Collectors
+
 import static org.cedar.onestop.elastic.common.DocumentUtil.*
 
 @Slf4j
@@ -172,7 +175,9 @@ class ElasticsearchService {
     Map result = parseSearchResponse(response)
 
     if(!result.error) {
-      def indexName = result.keySet().first() // Actual timestamped name is used, not the alias
+      // Actual timestamped name is used, not the alias, but need to drop the "statusCode"
+      def keys = result.keySet().stream().filter({String key -> !key.equals('statusCode')}).collect(Collectors.toList())
+      def indexName = keys.first()
       return [
           data: [[
               id: alias,

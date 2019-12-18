@@ -1,7 +1,7 @@
 package org.cedar.onestop.api.search.controller
 
 import groovy.util.logging.Slf4j
-import org.cedar.onestop.api.search.service.DocumentationService
+
 import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -41,7 +41,7 @@ class DocumentationController {
 
   private Map getAttributesResponse(HttpServletResponse response, Map esMapResponse) {
     if(esMapResponse.data) {
-      def attributes = DocumentationService.generateAttributesInfo(esMapResponse)
+      def attributes = DocumentationService.generateAttributesInfo(esMapResponse.data.attributes.mappings as Map)
       response.status = HttpStatus.OK.value()
       return [
           meta: [
