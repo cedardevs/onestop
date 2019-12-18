@@ -7,11 +7,15 @@ import 'leaflet-draw'
 import _ from 'lodash'
 import {recenterGeometry} from '../../../utils/geoUtils'
 import {consolidateStyles} from '../../../utils/styleUtils'
+import CloseButton from '../../common/ui/CloseButton'
 
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
 
 const MAP_HEIGHT = '400px'
+
+const MARGIN_EMS = 1.618
+const WIDTH_CLOSE_BUTTON = 3
 
 const styleMapContainer = {
   boxSizing: 'border-box',
@@ -22,13 +26,20 @@ const styleMapContainer = {
   width: '100%',
 }
 
+const styleMapContainerHeading = {
+  display: 'flex',
+  backgroundColor: '#18478F',
+  paddingLeft: `${MARGIN_EMS}em`,
+}
+
 const styleMapText = {
   color: '#FFF',
   zIndex: 1,
   padding: '0.309em 0.618em',
   margin: '0 auto',
-  backgroundColor: '#18478F',
   textAlign: 'center',
+  flexGrow: 1,
+  paddingRight: `${MARGIN_EMS + WIDTH_CLOSE_BUTTON}em`,
 }
 
 const styleMap = {
@@ -58,18 +69,18 @@ const drawStyle = {
   opacity: 0.65,
 }
 
-const Map = props => {
-  const {
-    selection,
-    geoJsonSelection,
-    features,
-    filterType,
-    geoJSON,
-    handleNewGeometry,
-    removeGeometry,
-    submit,
-  } = props
-
+const Map = ({
+  style,
+  selection,
+  geoJsonSelection,
+  features,
+  filterType,
+  geoJSON,
+  handleNewGeometry,
+  removeGeometry,
+  submit,
+  closeMap,
+}) => {
   const containerRef = useRef(null)
   const mapRef = useRef(null)
   const [ initialized, setInitialized ] = useState(false)
@@ -266,21 +277,26 @@ const Map = props => {
     }
   })
 
-  const styleMapContainerMerged = consolidateStyles(
-    styleMapContainer,
-    props.style
-  )
+  const styleMapContainerMerged = consolidateStyles(styleMapContainer, style)
 
   return (
     <div style={styleMapContainerMerged} ref={containerRef}>
-      <div style={styleMapText}>
-        <p>
-          Use the square button on the top right of the map to draw a bounding
-          box.
-        </p>
-        <p>
-          For accessibility, the Bounding Box form is an alternative to drawing.
-        </p>
+      <div style={styleMapContainerHeading}>
+        <CloseButton
+          title={'Hide Map'}
+          onClose={closeMap}
+          size={`${WIDTH_CLOSE_BUTTON}em`}
+        />
+        <div style={styleMapText}>
+          <p>
+            Use the square button on the top right of the map to draw a bounding
+            box.
+          </p>
+          <p>
+            For accessibility, the Bounding Box form is an alternative to
+            drawing.
+          </p>
+        </div>
       </div>
       <div style={styleMap} ref={mapRef} />
     </div>

@@ -7,6 +7,7 @@ import {
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 import {withRouter} from 'react-router'
+import {toggleMapClose} from '../../../actions/LayoutActions'
 
 const mapStateToProps = state => {
   const {geoJSON} = state.search.granuleFilter
@@ -23,6 +24,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
     submit: () => {
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
+    },
+    closeMap: () => {
+      dispatch(toggleMapClose())
     },
   }
 }

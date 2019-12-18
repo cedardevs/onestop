@@ -129,8 +129,32 @@ export function useModal(open){
     }
   }
 
+  useEffect(() => {
+    // due to position changes happening without triggering renders,
+    // this interval triggers and update to the content style to account for this
+    const styleInterval = setInterval(() => {
+      if (contentRef.current && targetRef.current) {
+        updateStyleContent()
+      }
+    }, 200)
+    return () => {
+      if (styleInterval) {
+        clearInterval(styleInterval)
+      }
+    }
+  }, [])
+
+  useEffect(
+    () => {
+      // when the contentRef or targetRef change, re-evaluate the content style
+      updateStyleContent()
+    },
+    [ contentRef.current, targetRef.current ]
+  )
+
   const [ roc ] = useState(() => {
     return new ResizeObserver((entries, observer) => {
+      // when the content has resized, re-evaluate the content style
       updateStyleContent()
     })
   })
@@ -138,6 +162,7 @@ export function useModal(open){
   const [ rot ] = useState(
     () =>
       new ResizeObserver((entries, observer) => {
+        // when the target has resized, re-evaluate the content style
         updateStyleContent()
       })
   )
@@ -203,7 +228,35 @@ const ModalContentComponent = ({
   relativeRef,
   contentRef,
   styleContent,
+  updateStyleContent,
 }) => {
+  useEffect(() => {
+    // update the content style when content is mounted initially
+    updateStyleContent()
+  }, [])
+
+  const handleTransitionStart = event => {
+    // update the content style when the content style transitions start
+    updateStyleContent()
+  }
+
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.addEventListener(
+        'transitionstart',
+        handleTransitionStart
+      )
+    }
+    return () => {
+      if (contentRef.current) {
+        contentRef.current.removeEventListener(
+          'transitionstart',
+          handleTransitionStart
+        )
+      }
+    }
+  })
+
   return (
     <div style={styleRelative(zIndex)} ref={relativeRef}>
       <div style={{...styleContent, opacity: open ? 1 : 0}} ref={contentRef}>

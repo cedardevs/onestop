@@ -7,6 +7,7 @@ import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchR
 
 import {withRouter} from 'react-router'
 import Map from '../spatial/Map'
+import {toggleMapClose} from '../../../actions/LayoutActions'
 
 const mapStateToProps = state => {
   const {geoJSON} = state.search.collectionFilter
@@ -23,6 +24,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     removeGeometry: () => dispatch(collectionRemoveGeometry()),
     submit: () => {
       dispatch(submitCollectionSearch(ownProps.history))
+    },
+    closeMap: () => {
+      dispatch(toggleMapClose())
     },
   }
 }
