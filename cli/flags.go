@@ -25,7 +25,7 @@ const spatialFilterShortFlag = "g" //as in geometry
 const areaDescription = "Locate files which intersect with the specified polygon AREA. The polygon must be a regular one (closed, no self-intersection, no hole) with coordinates (longitude, latitude) separated by \",\" like POLYGON((30.31 60.2, 31.21 60.2, 31.21 60.76, 30.31 60.76, 30.31 60.2)) "
 
 const maxFlag = "max"
-const maxShortFlag = "l"
+const maxShortFlag = "n"
 const maxDescription = "Maximum number of results returned."
 
 const offsetFlag = "offset"
@@ -75,3 +75,10 @@ const satnameDescription = "Select files from the SATNAME satellite."
 const yearFlag = "year"
 const yearShortFlag = "y"
 const yearDescription = "Specifies a year. YEAR must be a positive integer, ranging between 1978 and current year. Files with data start times in that year will be listed."
+
+const keywordFlag = "label"
+const keywordShortFlag = "l"
+const keywordDescription = "Pick files tagged with a label whose value is LABEL. Files can be tagged with more than one label. Satellite names (see option --satname) are just one type of labels."
+
+const cloudFlag = "cloud"
+const cloudUrl = "http://acf3425c8d41b11e9a12912cf37a7528-1694331899.us-east-1.elb.amazonaws.com/onestop-search"

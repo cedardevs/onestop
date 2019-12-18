@@ -11,7 +11,7 @@ export SPRING_PROFILES_ACTIVE="sitemap,login-gov"
 * [Client features Feature](#client-features)
 
 ## Registry Service 
-Cas profile ensure that the OneStop publishing service only accept queries sent with credentials.  
+Cas profile ensures that the OneStop publishing service only accept queries sent with credentials.  
 
 | Profile | Feature Description | Default Value |
 | --- | --- | --- |

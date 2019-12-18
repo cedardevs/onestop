@@ -92,7 +92,8 @@ export default class CartSelect extends React.Component {
           aria-labelledby="cartDownloadOptionsLabel"
           placeholder="Select file link type"
           defaultValue={defaultValue}
-          options={options}
+          // options={options} // when a single item is in cart this options are not regular obj which cause an error on the page
+          options={JSON.parse(JSON.stringify(options))} // this solved the problem but it needs further investigation
           formatOptionLabel={formatOptionLabel}
           onChange={onChange}
           onMenuOpen={onMenuOpen}
