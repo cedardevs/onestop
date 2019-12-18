@@ -12,6 +12,11 @@ const styleButton = {
   padding: 0,
 }
 
+const styleButtonFocused = {
+  outline: '2px dashed white',
+  fill: SiteColors.LINK_LIGHT,
+}
+
 const styleSVG = {
   outline: 'none',
   fill: 'white',
@@ -22,10 +27,7 @@ const styleSVGHover = {
 
 const styleSVGPress = {}
 
-const styleSVGFocus = {
-  outline: '2px dashed white',
-  fill: SiteColors.LINK_LIGHT,
-}
+const styleSVGFocus = {}
 
 function usePrevious(value, defaultValue = undefined){
   const ref = useRef()
@@ -107,6 +109,11 @@ const CloseButton = ({title, onClose, size}) => {
     }
   }, [])
 
+  const styleButtonMerged = consolidateStyles(
+    styleButton,
+    focusing ? styleButtonFocused : {}
+  )
+
   const styleSVGMerged = consolidateStyles(
     styleSVG,
     hovering ? styleSVGHover : {},
@@ -119,7 +126,7 @@ const CloseButton = ({title, onClose, size}) => {
       ref={buttonRef}
       title={title}
       aria-label={title}
-      style={styleButton}
+      style={styleButtonMerged}
       onClick={onClose}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
