@@ -164,7 +164,7 @@ class ElasticsearchService {
   }
 
   Map getIndexMapping(String alias) {
-    String endpoint = "/${alias}"
+    String endpoint = "/${alias}?include_type_name=false"
     log.debug("GET mapping for ${alias}")
 
     def request = new Request('GET', endpoint)
