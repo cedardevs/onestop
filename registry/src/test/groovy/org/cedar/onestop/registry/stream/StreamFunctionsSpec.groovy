@@ -17,10 +17,10 @@ class StreamFunctionsSpec extends Specification {
     def validId = '5fc03087-d265-11e7-b8c6-83e29cd24f4c'
 
     expect:
-    !StreamFunctions.isUUID(invalidId)
+    !StreamFunctions.filterUuid(invalidId)
 
     and:
-    StreamFunctions.isUUID(validId)
+    StreamFunctions.filterUuid(validId)
   }
 
   def 'identity reducer returns the next value'() {
