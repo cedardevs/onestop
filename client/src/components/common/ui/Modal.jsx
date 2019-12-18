@@ -130,6 +130,10 @@ export function useModal(open){
     }
   }
 
+  // TODO: setting this interval is not ideal, it causes rendering regularly when it may not be needed
+  // this could result in significant performance problems, even if this hack seems "okay" now
+  // we should instead figure out how to capture when the *position* of either the relative or target elements
+  // have moved and call an update to style only then.
   useEffect(() => {
     // due to position changes happening without triggering renders,
     // this interval triggers and update to the content style to account for this
