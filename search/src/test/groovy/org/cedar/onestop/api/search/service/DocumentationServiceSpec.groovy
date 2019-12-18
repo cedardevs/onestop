@@ -33,7 +33,7 @@ class DocumentationServiceSpec extends Specification {
     ]
   }
 
-  def 'generateAttributesInfo correctly identifies a queryable field'() {
+  def 'generateAttributesInfo correctly identifies a queryable field #field'() {
     when:
     Map result = DocumentationService.generateAttributesInfo(input)
 
@@ -53,7 +53,7 @@ class DocumentationServiceSpec extends Specification {
     'keywords2' | [properties: [(field): [type: 'text', index: true]]]
   }
 
-  def 'generateAttributesInfo correctly identifies the filter that applies to a field'() {
+  def 'generateAttributesInfo correctly identifies the filter that applies to field #field'() {
     given:
     def input = [
         properties: [
