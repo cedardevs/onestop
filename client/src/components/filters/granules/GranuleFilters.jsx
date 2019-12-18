@@ -85,6 +85,16 @@ class GranuleFilters extends React.Component {
   createFilters = () => {
     return [
       {
+        name: 'location',
+        heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
+        content: <GranuleMapFilterContainer isOpen={this.state.location} />,
+      },
+      {
+        name: 'time',
+        heading: <FilterHeading icon={timeFilterIcon} text="Date" />,
+        content: <GranuleTimeFilterContainer />,
+      },
+      {
         name: 'text',
         heading: <FilterHeading icon={fileIcon} text="Filename" />,
         content: (
@@ -94,16 +104,6 @@ class GranuleFilters extends React.Component {
             query={this.props.queryString}
           />
         ),
-      },
-      {
-        name: 'location',
-        heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
-        content: <GranuleMapFilterContainer isOpen={this.state.location} />,
-      },
-      {
-        name: 'time',
-        heading: <FilterHeading icon={timeFilterIcon} text="Date" />,
-        content: <GranuleTimeFilterContainer />,
       },
       {
         name: 'keywords',

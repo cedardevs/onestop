@@ -2,6 +2,7 @@ import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import ResizeObserver from 'resize-observer-polyfill'
 
 const ANIMATION_DURATION = 200
+const RESTYLE_INTERVAL = 500
 
 export const ModalContext = () => {
   return React.createContext({})
@@ -136,7 +137,7 @@ export function useModal(open){
       if (contentRef.current && targetRef.current) {
         updateStyleContent()
       }
-    }, 200)
+    }, RESTYLE_INTERVAL)
     return () => {
       if (styleInterval) {
         clearInterval(styleInterval)
