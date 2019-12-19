@@ -41,7 +41,7 @@ public class TopologyBuilders {
         .collect(Collectors.toMap(
             source -> source,
             source -> builder.<String, Input>stream(Topics.inputTopic(type, source))
-                .filterNot((k, v) -> !StreamFunctions.filterUuid(k))
+                .filter((k, v) -> StreamFunctions.filterUuid(k))
                 .transformValues((ValueTransformerSupplier<Input, TimestampedValue<Input>>) Timestamper::new)
                 .groupByKey()
                 .aggregate(
