@@ -181,10 +181,6 @@ const Map = ({
     }
   }
 
-  const onMapClick = event => {
-    console.log('onMapClick::event', event)
-  }
-
   const loadDrawEventHandlers = () => {
     map.on('draw:drawstart', e => {
       updateGeometryAndSubmit()
@@ -200,7 +196,6 @@ const Map = ({
     map.on('draw:deleted', e => {
       updateGeometryAndSubmit()
     })
-    map.on('click', onMapClick)
   }
 
   // this effect replaces UNSAFE_componentWillUpdate / getSnapshotBeforeUpdate
