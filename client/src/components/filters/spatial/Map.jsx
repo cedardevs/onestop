@@ -252,14 +252,14 @@ class Map extends React.Component {
 
   updateSelectionLayer() {
     let {filterType} = this.props
-    let {editableLayers, style} = this.state
+    let {editableLayers} = this.state
     let w = watch(store.getState, 'search.' + filterType + '.bbox')
     store.subscribe(
       w(newBbox => {
         let newGeoJson = displayBboxAsLeafletGeoJSON(newBbox)
         editableLayers.clearLayers()
         if (!_.isEmpty(newGeoJson)) {
-          let layer = L.geoJson(newGeoJson, {style: style})
+          let layer = L.geoJson(newGeoJson, {style: geoJsonStyle})
           editableLayers.addLayer(layer)
           this.state.map.panTo(layer.getBounds().getCenter())
         }
