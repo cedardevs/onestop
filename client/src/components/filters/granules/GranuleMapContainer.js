@@ -14,7 +14,6 @@ const mapStateToProps = state => {
   return {
     filterType: 'granuleFilter',
     geoJsonSelection: geoJSON,
-    showMap: state.layout.showMap,
   }
 }
 

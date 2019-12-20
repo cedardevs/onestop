@@ -14,7 +14,6 @@ const mapStateToProps = state => {
   return {
     filterType: 'collectionFilter',
     geoJsonSelection: geoJSON,
-    open: true, //state.layout.showMap,
   }
 }
 
