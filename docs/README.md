@@ -58,7 +58,7 @@ What's important to you when using OneStop varies significantly based on what yo
 
 
 ### By Project Component
-If you're interested in learning about the finer details of the "components" described above in the overview, head over to our [Architectural Overview](/onestop/architectural-overview) page to begin your deep-dive journey.
+If you're interested in learning about the finer details of the "components" described above in the overview, head over to our [Architectural Overview](architectural-overview.md) page to begin your deep-dive journey.
 
 
 ## External Documentation
