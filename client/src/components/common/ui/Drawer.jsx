@@ -131,7 +131,6 @@ const Drawer = ({
   const styleContent = {
     overflow: 'hidden',
     whiteSpace: noWrap ? 'nowrap' : 'initial',
-    background: 'blue',
   }
 
   // Target Height:
