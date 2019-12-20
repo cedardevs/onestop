@@ -73,7 +73,7 @@ And some tools and services may treat the polygon as though it is this one inste
 
 ### Correction with MultiPolygons (recommended)
 
-The preferred way to write GeoJSON geometries to prevent these errors is by splitting into a MultiPolygon. This is to support interoperability between systems that require longitudes be restricted to values in the range -180 to 180.
+The preferred way to write GeoJSON geometries to prevent these errors is by splitting into a MultiPolygon. This is to support interoperability between systems that require longitudes be restricted to values in the range &#177;180.
 
 ![Bounding box broken into two shapes: the first covering the North Pacific Ocean starting at the antimeridian, including Alaska, and the majority of North America, and the North Atlantic Ocean, and the second that covers the portion of the North Pacific Ocean including parts of Russia.](../../images/api/antimeridian-bbox-corrected.png)
 

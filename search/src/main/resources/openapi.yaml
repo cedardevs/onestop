@@ -1397,7 +1397,7 @@ components:
         $ref: "#/components/schemas/linearRing"
       type: array
     position:
-      description: "A single position. [Longitude, Latitude]. Longitude must be within the range 360 to -360. Latitude must be within the range 90 to -90."
+      description: "A single position. [Longitude, Latitude]. Longitude must be within the range ±360. Latitude must be within the range ±90."
       items:
         description: coordinate
         type: number
