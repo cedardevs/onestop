@@ -117,15 +117,7 @@ export const convertBboxToLeafletGeoJson = (west, south, east, north) => {
   if (coordinates == null) {
     return null
   }
-  // if (
-  //   !_.every(
-  //     coordinates,
-  //     p => p[0] >= -180 && p[0] <= 180 && p[1] >= -90 && p[1] <= 90
-  //   )
-  // ) {
-  //   return undefined
-  // }
-  // else {
+
   let datelineFriendlyGeometry = ensureDatelineFriendlyGeometry({
     coordinates: [ coordinates ],
     type: 'Polygon',
@@ -135,7 +127,6 @@ export const convertBboxToLeafletGeoJson = (west, south, east, north) => {
     properties: {},
     geometry: datelineFriendlyGeometry,
   }
-  // }
 }
 
 // allows the map to update the geometry filters

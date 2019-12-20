@@ -215,13 +215,6 @@ export const renderPointAsPolygon = geometry => {
   }
 }
 
-// export const displayLeafletGeometry = geometry => {
-//   let geo = ensureDatelineFriendlyGeometry(geometry)
-//   let bbox = convertGeoJsonToBbox(geo)
-//   let geojson = displayBboxAsLeafletGeoJSON(bbox)
-//   return geojson ? geojson.geometry : geo
-// }
-
 export const buildTimePeriodString = (
   beginDate,
   beginYear,
