@@ -76,8 +76,8 @@ const MapFilter = ({
   )
 
   const applyGeometry = () => {
-    if (bounds.validate() && bounds.asBbox()) {
-      handleNewGeometry(bounds.asBbox())
+    if (bounds.validate() && bounds.asBbox) {
+      handleNewGeometry(bounds.asBbox)
       submit()
     }
   }

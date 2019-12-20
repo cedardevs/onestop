@@ -192,13 +192,11 @@ export function useBoundingBox(bbox){
       reason: {individual: reasonIndividual, cumulative: reasonCumulative},
       validate: validate,
       clear: clear,
-      asBbox: () => {
-        return {
-          west: west.number,
-          south: south.number,
-          east: east.number,
-          north: north.number,
-        }
+      asBbox: {
+        west: west.number,
+        south: south.number,
+        east: east.number,
+        north: north.number,
       },
     },
   ]
