@@ -346,6 +346,26 @@ describe('The inputUtils', function(){
           day: {field: 'cannot be in the future', required: false},
         },
       },
+      {
+        year: '2000',
+        month: '1',
+        day: '39',
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: 'invalid', required: false},
+        },
+      },
+      {
+        year: '2000',
+        month: '1',
+        day: '-1',
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: 'invalid', required: false},
+        },
+      },
     ]
 
     testCases.forEach(c => {

@@ -144,8 +144,7 @@ export const isValidDate = (year, month, day, nowOverride) => {
       // TODO this is a weird one I don't know how to manually reproduce
       errors.day.field = 'invalid'
     }
-
-    if (dateMap.day == null) {
+    else if (dateMap.day == null) {
       errors.day.field = 'invalid'
     }
     else if (_.isEmpty(year) || _.isEmpty(month)) {
