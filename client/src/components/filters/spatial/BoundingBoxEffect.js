@@ -162,7 +162,10 @@ export function useBoundingBox(bbox){
         south.setValidExternal(false)
         return false
       }
-      if (east.number == west.number) {
+      if (
+        east.number == west.number ||
+        (west.number == 180 && east.number == -180)
+      ) {
         setReasonCumulative('East cannot be the same as West.')
         east.setValidExternal(false)
         west.setValidExternal(false)
