@@ -8,6 +8,7 @@ import _ from 'lodash'
 import {recenterGeometry} from '../../../utils/geoUtils'
 import {consolidateStyles} from '../../../utils/styleUtils'
 import CloseButton from '../../common/ui/CloseButton'
+import {Key} from '../../../utils/keyboardUtils'
 
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
@@ -277,10 +278,25 @@ const Map = ({
     }
   })
 
+  const handleKeyPressed = event => {
+    // do nothing if modifiers are pressed
+    if (event.metaKey || event.shiftKey || event.ctrlKey || event.altKey) {
+      return
+    }
+    event.stopPropagation()
+    if (event.keyCode === Key.ESCAPE) {
+      closeMap()
+    }
+  }
+
   const styleMapContainerMerged = consolidateStyles(styleMapContainer, style)
 
   return (
-    <div style={styleMapContainerMerged} ref={containerRef}>
+    <div
+      style={styleMapContainerMerged}
+      ref={containerRef}
+      onKeyUp={handleKeyPressed}
+    >
       <div style={styleMapContainerHeading}>
         <CloseButton
           title={'Hide Map'}

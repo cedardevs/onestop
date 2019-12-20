@@ -12,6 +12,8 @@ export const ProxyContext = () => {
 const styleRelative = zIndex => {
   return {
     position: 'relative',
+    // although this may have no impact on our calculated relative position, it ensures a common understanding of
+    // where that measurement is being taken from, relative to where the relative element `ProxyContent` is placed
     top: 0,
     zIndex: zIndex ? zIndex : 0,
   }
