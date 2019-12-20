@@ -1,6 +1,6 @@
 import React from 'react'
-import Modal from '../common/ui/Modal'
-import {MapModalContext} from '../root/Root'
+import Proxy from '../common/ui/Proxy'
+import {MapProxyContext} from '../root/Root'
 
 const styleMiddle = () => {
   return {
@@ -20,7 +20,7 @@ const Middle = props => {
 
   const contentElement = (
     <main id="mainBlock" tabIndex="-1" style={styleMiddle()}>
-      <Modal context={MapModalContext} />
+      <Proxy context={MapProxyContext} />
       {content}
     </main>
   )

@@ -5,7 +5,7 @@ import 'geometry-polyfill' // handle browsers not supporting DOMRect
 const ANIMATION_DURATION = 200
 const RESTYLE_INTERVAL = 500
 
-export const ModalContext = () => {
+export const ProxyContext = () => {
   return React.createContext({})
 }
 
@@ -28,7 +28,7 @@ const styleAbsolute = (left, top, width) => {
   }
 }
 
-export function useModal(open){
+export function useProxy(open){
   const targetRef = useRef(null)
   const relativeRef = useRef(null)
   const contentRef = useRef(null)
@@ -186,27 +186,27 @@ export function useModal(open){
   }, [])
 
   return {
-    // open is a passthrough param to `useModal` which triggers the overall state of the modal
+    // open is a passthrough param to `useProxy` which triggers the overall state of the proxy
     // the internal animation state is handled automatically
     open,
 
-    // modal refs
+    // proxy refs
     targetRef,
     relativeRef,
     contentRef,
 
-    // modal content height
+    // proxy content height
     contentHeight,
     setContentHeight,
 
-    // modal style content
+    // proxy style content
     styleContent,
     setStyleContent,
     updateStyleContent,
   }
 }
 
-const ModalComponent = ({targetRef, open, contentHeight}) => {
+const ProxyComponent = ({targetRef, open, contentHeight}) => {
   const styleTarget = {
     width: '100%',
     height: open ? `${contentHeight}px` : 0,
@@ -215,19 +215,19 @@ const ModalComponent = ({targetRef, open, contentHeight}) => {
   return <div style={styleTarget} ref={targetRef} />
 }
 
-const Modal = props => {
+const Proxy = props => {
   const {context} = props
   if (context) {
     return (
       <context.Consumer>
-        {modal => <ModalComponent {...modal} />}
+        {proxy => <ProxyComponent {...proxy} />}
       </context.Consumer>
     )
   }
 }
-export default Modal
+export default Proxy
 
-const ModalContentComponent = ({
+const ProxyContentComponent = ({
   open,
   zIndex,
   children,
@@ -272,16 +272,16 @@ const ModalContentComponent = ({
   )
 }
 
-export const ModalContent = props => {
+export const ProxyContent = props => {
   const {context, zIndex, children} = props
   if (context) {
     return (
       <context.Consumer>
-        {modal => (
-          <ModalContentComponent
+        {proxy => (
+          <ProxyContentComponent
             zIndex={zIndex}
             children={children}
-            {...modal}
+            {...proxy}
           />
         )}
       </context.Consumer>

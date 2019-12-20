@@ -37,7 +37,7 @@ import NotFoundContainer from '../404/NotFoundContainer'
 import earth from '../../../img/Earth.jpg'
 import {isBrowserUnsupported} from '../../utils/browserUtils'
 
-import {ModalContext, useModal} from '../common/ui/Modal'
+import {ProxyContext, useProxy} from '../common/ui/Proxy'
 
 const styleBrowserWarning = {
   background: SiteColors.WARNING,
@@ -74,12 +74,12 @@ const BrowserUnsupportedWarning = () => {
   )
 }
 
-export const MapModalContext = ModalContext()
+export const MapProxyContext = ProxyContext()
 
 const Root = props => {
   const {location, leftOpen, rightOpen, showMap} = props
 
-  const mapModal = useModal(showMap)
+  const mapProxy = useProxy(showMap)
 
   // store browser support in component state to prevent checking every render
   const [ browserUnsupported, _ ] = useState(isBrowserUnsupported())
@@ -161,7 +161,7 @@ const Root = props => {
   )
 
   return (
-    <MapModalContext.Provider value={mapModal}>
+    <MapProxyContext.Provider value={mapProxy}>
       <Layout
         location={location}
         /* - Disclaimer - */
@@ -199,7 +199,7 @@ const Root = props => {
         /* - Footer - */
         footer={<FooterContainer />}
       />
-    </MapModalContext.Provider>
+    </MapProxyContext.Provider>
   )
 }
 

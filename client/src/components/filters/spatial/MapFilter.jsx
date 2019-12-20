@@ -18,8 +18,8 @@ import mapIcon from '../../../../img/font-awesome/white/svg/globe.svg'
 import {styleFieldsetBorder, styleFilterPanel} from '../common/styleFilters'
 import ApplyClearRow from '../common/ApplyClearRow'
 import InteractiveMap from './InteractiveMap'
-import {ModalContent} from '../../common/ui/Modal'
-import {MapModalContext} from '../../root/Root'
+import {ProxyContent} from '../../common/ui/Proxy'
+import {MapProxyContext} from '../../root/Root'
 
 const styleMapFilter = {
   ...styleFilterPanel,
@@ -199,9 +199,9 @@ const MapFilter = ({
   }
 
   const mapModal = (
-    <ModalContent context={MapModalContext} zIndex={3}>
+    <ProxyContent context={MapProxyContext} zIndex={3}>
       <InteractiveMap />
-    </ModalContent>
+    </ProxyContent>
   )
 
   return (
