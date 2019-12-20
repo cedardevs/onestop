@@ -19,7 +19,9 @@ function useCoordinate(name, defaultValue, typeName, limit){
   useEffect(
     () => {
       // validate when value changes, and update other calculated fields
-      if (value == '') {
+
+      // === instead of == makes sure it can't somehow get a int 0 for a value and fail this check
+      if (value === '') {
         setNumeric(null)
         field.setValid(true)
         field.setError('')
@@ -93,10 +95,11 @@ export function useBoundingBox(bbox){
     () => {
       if (bbox) {
         setReasonCumulative('')
-        west.set(bbox.west)
-        south.set(bbox.south)
-        east.set(bbox.east)
-        north.set(bbox.north)
+        // only set string representations of the numbers:
+        west.set(`${bbox.west}`)
+        south.set(`${bbox.south}`)
+        east.set(`${bbox.east}`)
+        north.set(`${bbox.north}`)
       }
       else {
         clear()
