@@ -294,7 +294,7 @@ const Map = ({
     >
       <div style={styleMapContainerHeading}>
         <CloseButton
-          title={'Hide Map'}
+          title={'Close Map'}
           onClose={closeMap}
           size={`${WIDTH_CLOSE_BUTTON}em`}
         />

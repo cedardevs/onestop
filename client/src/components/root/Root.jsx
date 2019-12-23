@@ -106,7 +106,7 @@ const Root = props => {
   let message = routeA11yAnnouncer(location.pathname)
 
   const middle = (
-    <div style={{width: '100%'}}>
+    <div style={{width: '100%', zIndex: 4}}>
       <LiveAnnouncer>
         <LiveMessage message={message} aria-live="polite" />
       </LiveAnnouncer>

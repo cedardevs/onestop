@@ -1,27 +1,16 @@
-import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import ResizeObserver from 'resize-observer-polyfill' // handle browsers not supporting ResizeObserver
 import 'geometry-polyfill' // handle browsers not supporting DOMRect
 
 const ANIMATION_DURATION = 200
-const RESTYLE_INTERVAL = 500
 
 export const ProxyContext = () => {
   return React.createContext({})
 }
 
-const styleRelative = zIndex => {
+const styleFixed = (left, top, width) => {
   return {
-    position: 'relative',
-    // although this may have no impact on our calculated relative position, it ensures a common understanding of
-    // where that measurement is being taken from, relative to where the relative element `ProxyContent` is placed
-    top: 0,
-    zIndex: zIndex ? zIndex : 0,
-  }
-}
-
-const styleAbsolute = (left, top, width) => {
-  return {
-    position: 'absolute',
+    position: 'fixed',
     left: `${left}px`,
     top: `${top}px`,
     width: `${width}px`,
@@ -32,67 +21,24 @@ const styleAbsolute = (left, top, width) => {
 
 export function useProxy(open){
   const targetRef = useRef(null)
-  const relativeRef = useRef(null)
   const contentRef = useRef(null)
 
   // tracks the fully open height of the content, given it spans the same '100%' width of the target
   const [ contentHeight, setContentHeight ] = useState(null)
 
+  const [ ticking, setTicking ] = useState(false)
+
   const [ styleContent, setStyleContent ] = useState(() => {
-    styleAbsolute(0, 0, 0)
+    styleFixed(0, 0, 0)
   })
 
-  const calculateRelativePosition = () => {
+  const calculateTargetRect = () => {
     const targetElement = targetRef.current
-    const relativeElement = relativeRef.current
-
-    // fallback rects (left: 0, top: 0)
-    let targetRect = new DOMRect()
-    let relativeRect = new DOMRect()
-    if (targetElement) {
-      targetRect = targetElement.getBoundingClientRect()
-    }
-    if (relativeElement) {
-      relativeRect = relativeElement.getBoundingClientRect()
-    }
-
-    // viewport coordinates of the target and proxy elements
-    const {left: xTarget, top: yTarget} = targetRect
-    const {left: xRelative, top: yRelative} = relativeRect
-
-    // relative coordinates of target element
-    return {left: xTarget - xRelative, top: yTarget - yRelative}
-  }
-
-  const calculateTargetWidth = () => {
-    const contentElement = contentRef.current
-    const targetElement = targetRef.current
-    // allow the target room for the content's margin, border width, and padding
-    // `.getBoundingClientRect()` values are relative to outer-most boundary
-    let space = 0
-    if (contentElement) {
-      const contentCSS = window.getComputedStyle(contentElement)
-      const radix = 10
-
-      // x-axis considerations
-      const borderLeftWidth = parseInt(contentCSS.borderLeftWidth, radix)
-      const borderRightWidth = parseInt(contentCSS.borderRightWidth, radix)
-      const marginLeft = parseInt(contentCSS.marginLeft, radix)
-      const marginRight = parseInt(contentCSS.marginRight, radix)
-      const paddingLeft = parseInt(contentCSS.paddingLeft, radix)
-      const paddingRight = parseInt(contentCSS.paddingRight, radix)
-
-      // subtract space to get effective dimensions of content that won't overflow target region
-      const leftSpace = marginLeft + borderLeftWidth + paddingLeft
-      const rightSpace = paddingRight + borderRightWidth + marginRight
-      space = leftSpace + rightSpace
-    }
-
     let targetRect = new DOMRect()
     if (targetElement) {
       targetRect = targetElement.getBoundingClientRect()
     }
-    return targetRect.width - space
+    return targetRect
   }
 
   const calculateContentHeight = () => {
@@ -124,40 +70,34 @@ export function useProxy(open){
 
   const updateStyleContent = () => {
     if (contentRef.current && targetRef.current) {
-      const {left, top} = calculateRelativePosition()
-      const targetWidth = calculateTargetWidth()
+      const targetRect = calculateTargetRect()
       const contentHeight = calculateContentHeight()
       setContentHeight(contentHeight)
-      const newStyle = styleAbsolute(left, top, targetWidth)
+      const newStyle = styleFixed(
+        targetRect.left,
+        targetRect.top,
+        targetRect.width
+      )
       setStyleContent(newStyle)
     }
   }
 
-  // TODO: setting this interval is not ideal, it causes rendering regularly when it may not be needed
-  // this could result in significant performance problems, even if this hack seems "okay" now
-  // we should instead figure out how to capture when the *position* of either the relative or target elements
-  // have moved and call an update to style only then.
-  useEffect(() => {
-    // due to position changes happening without triggering renders,
-    // this interval triggers and update to the content style to account for this
-    const styleInterval = setInterval(() => {
-      if (contentRef.current && targetRef.current) {
+  const updateScroll = event => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
         updateStyleContent()
-      }
-    }, RESTYLE_INTERVAL)
-    return () => {
-      if (styleInterval) {
-        clearInterval(styleInterval)
-      }
+        setTicking(false)
+      })
     }
-  }, [])
+    setTicking(true)
+  }
 
   useEffect(
     () => {
-      // when the contentRef or targetRef change, re-evaluate the content style
+      // when the open state, contentRef or targetRef change, re-evaluate the content style
       updateStyleContent()
     },
-    [ contentRef.current, targetRef.current ]
+    [ open, contentRef.current, targetRef.current ]
   )
 
   const [ roc ] = useState(() => {
@@ -174,6 +114,13 @@ export function useProxy(open){
         updateStyleContent()
       })
   )
+
+  useEffect(() => {
+    window.addEventListener('scroll', updateScroll)
+    return () => {
+      window.removeEventListener('scroll', updateScroll)
+    }
+  }, [])
 
   // observe resize changes to the content
   useEffect(() => {
@@ -194,7 +141,6 @@ export function useProxy(open){
 
     // proxy refs
     targetRef,
-    relativeRef,
     contentRef,
 
     // proxy content height
@@ -233,7 +179,6 @@ const ProxyContentComponent = ({
   open,
   zIndex,
   children,
-  relativeRef,
   contentRef,
   styleContent,
   updateStyleContent,
@@ -266,10 +211,11 @@ const ProxyContentComponent = ({
   })
 
   return (
-    <div style={styleRelative(zIndex)} ref={relativeRef}>
-      <div style={{...styleContent, opacity: open ? 1 : 0}} ref={contentRef}>
-        {open ? children : null}
-      </div>
+    <div
+      style={{...styleContent, opacity: open ? 1 : 0, zIndex: zIndex}}
+      ref={contentRef}
+    >
+      {open ? children : null}
     </div>
   )
 }
