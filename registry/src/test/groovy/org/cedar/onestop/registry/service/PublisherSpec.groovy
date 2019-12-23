@@ -20,6 +20,7 @@ class PublisherSpec extends Specification {
 
   def mockProducer = Mock(Producer)
   def publisher = new Publisher(mockProducer)
+  static testId = "3a1bdce6-1111-4edd-920c-f4bd4bf5e841"
 
   def 'publishes valid #type metadata as #contentType with #source id'() {
     setup:
@@ -44,10 +45,10 @@ class PublisherSpec extends Specification {
 
     where:
     source          | type       | id    | contentType        | data
-    'common-ingest' | granule    | 'ABC' | 'application/xml'  | '<text>xml woooo....</text>'
-    'common-ingest' | granule    | 'ABC' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
-    'comet'         | collection | 'ABC' | 'application/xml'  | '<text>xml woooo....</text>'
-    'comet'         | collection | 'ABC' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    'common-ingest' | granule    | testId | 'application/xml'  | '<text>xml woooo....</text>'
+    'common-ingest' | granule    | testId | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    'comet'         | collection | testId | 'application/xml'  | '<text>xml woooo....</text>'
+    'comet'         | collection | testId | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
   }
 
   def 'publishes valid #type metadata as #contentType with existing id'() {
@@ -72,10 +73,10 @@ class PublisherSpec extends Specification {
 
     where:
     type       | id    | contentType        | data
-    granule    | 'ABC' | 'application/xml'  | '<text>xml woooo....</text>'
-    granule    | 'ABC' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
-    collection | 'ABC' | 'application/xml'  | '<text>xml woooo....</text>'
-    collection | 'ABC' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    granule    | testId | 'application/xml'  | '<text>xml woooo....</text>'
+    granule    | testId | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    collection | testId | 'application/xml'  | '<text>xml woooo....</text>'
+    collection | testId | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
   }
 
   def 'publishes valid #type metadata as #contentType with no id'() {
@@ -105,6 +106,23 @@ class PublisherSpec extends Specification {
     collection | 'application/xml'  | '<text>xml woooo....</text>'
     collection | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
   }
+
+  def 'publishes nothing for invalid id'() {
+    setup:
+    String id = '123'
+    RecordType type = null
+    String data = '{"message":"I am incorrect"}'
+    String requestUri = "/metadata/$type/$id"
+    String method = 'POST'
+    def request = new MockHttpServletRequest(method,requestUri)
+    request.contentType = 'application/json'
+
+    when:
+    publisher.publishMetadata(request, type, data, Topics.DEFAULT_SOURCE, id)
+
+    then:
+    0 * mockProducer.send(_)
+  }
   
   def 'publishes nothing for malformed #contentType'() {
     setup:
@@ -129,7 +147,7 @@ class PublisherSpec extends Specification {
 
   def 'publishes nothing for invalid type'() {
     setup:
-    String type = null
+    RecordType type = null
     String data = '{"message":"I am incorrect"}'
     String requestUri = "/metadata/$type"
     String method = 'POST'
@@ -145,7 +163,7 @@ class PublisherSpec extends Specification {
 
   def 'handle delete requests (no contentType and data)'() {
     setup:
-    String id = '123'
+    String id = '111111111-1111-1111-1111-1111111111111'
     RecordType type = granule
     String data = null
     String requestUri = "/metadata/$type/$id"
@@ -169,7 +187,7 @@ class PublisherSpec extends Specification {
 
   def 'handle resurrection requests'() {
     setup:
-    String id = '123'
+    String id = '111111111-1111-1111-1111-1111111111111'
     RecordType type = granule
     String data = null
     String requestUri = "/metadata/$type/$id/resurrection"

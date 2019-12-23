@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
+import org.cedar.onestop.registry.util.ValidUUIDValidator
 import org.cedar.schemas.avro.psi.Input
 import org.cedar.schemas.avro.psi.Method
 import org.cedar.schemas.avro.psi.RecordType
@@ -37,6 +38,11 @@ class Publisher {
   }
 
   Map publishMetadata(HttpServletRequest request, RecordType type, String data, String source, String id = null) {
+    // check for valid UUID String
+    if(id != null && !ValidUUIDValidator.isValid(id)){
+      return ValidUUIDValidator.uuidErrorMsg(id)
+    }
+    //check for malformed content
     Map isValidContent = isContentValid(data, request.contentType)
     if (!isValidContent.isValid) {
       return isValidContent

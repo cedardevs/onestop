@@ -6,16 +6,17 @@ import org.cedar.schemas.avro.psi.AggregatedInput
 import org.cedar.schemas.avro.psi.ErrorEvent
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletResponse
 
+@ExtendWith(SpringExtension.class)
 class MetadataRestControllerSpec extends Specification {
-  // Creating a valid UUID
   static final testId = '8834cfd3-3b71-40b8-b037-315607a30c42'
-  static final testUUId = UUID.fromString(testId)
   static final testType = RecordType.collection
   static final testSource = Topics.DEFAULT_SOURCE
   static final testAggInput = AggregatedInput.newBuilder()
@@ -30,14 +31,15 @@ class MetadataRestControllerSpec extends Specification {
   MetadataRestController controller = new MetadataRestController(mockMetadataStore, mockApiRootGenerator)
   HttpServletResponse mockResponse = new MockHttpServletResponse()
 
-  def 'invalid UUID throws exception'() {
-    def path = "/metadata/${testType}/${'abc'}"
+  def 'validate an incoming UUID string'() throws Exception {
+    def path = "/metadata/${testType}/${"abc"}"
     def request = buildMockRequest(path)
     when:
-    def result = controller.retrieveInput(testType.toString(), 'abc' as UUID, request, mockResponse)
+    def result = controller.retrieveInput(testType.toString(), "abc", request, mockResponse)
 
     then:
-    thrown(Exception)
+    result.status == 500
+    result.content == ["errors":["title":"Invalid UUID String abc"]]
   }
 
   def 'returns input with default source'() {
@@ -45,7 +47,7 @@ class MetadataRestControllerSpec extends Specification {
     def request = buildMockRequest(path)
 
     when:
-    def result = controller.retrieveInput(testType.toString(), testUUId, request, mockResponse)
+    def result = controller.retrieveInput(testType.toString(), testId, request, mockResponse)
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
@@ -54,7 +56,7 @@ class MetadataRestControllerSpec extends Specification {
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.links.parsed == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
-    result.data.id == testUUId
+    result.data.id == testId
     result.data.type == testType.toString()
     result.data.attributes == testAggInput
     result.errors == null
@@ -65,7 +67,7 @@ class MetadataRestControllerSpec extends Specification {
     def request = buildMockRequest(path)
 
     when:
-    def result = controller.retrieveInput(testType.toString(), testSource, testUUId, request, mockResponse)
+    def result = controller.retrieveInput(testType.toString(), testSource, testId, request, mockResponse)
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
@@ -74,7 +76,7 @@ class MetadataRestControllerSpec extends Specification {
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.links.parsed == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
-    result.data.id == testUUId
+    result.data.id == testId
     result.data.type == testType.toString()
     result.data.attributes == testAggInput
     result.errors == null
@@ -85,7 +87,7 @@ class MetadataRestControllerSpec extends Specification {
     def request = buildMockRequest(path)
 
     when:
-    def result = controller.retrieveParsed(testType.toString(), testUUId, request, mockResponse)
+    def result = controller.retrieveParsed(testType.toString(), testId, request, mockResponse)
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
@@ -94,7 +96,7 @@ class MetadataRestControllerSpec extends Specification {
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
     result.links.input == "http://localhost:8080/metadata/$testType/$testSource/$testId"
-    result.data.id == testUUId
+    result.data.id == testId
     result.data.type == testType.toString()
     result.data.attributes == testParsed
     result.errors == null
@@ -105,7 +107,7 @@ class MetadataRestControllerSpec extends Specification {
     def request = buildMockRequest(path)
 
     when:
-    def result = controller.retrieveParsed(testType.toString(), testSource, testUUId, request, mockResponse)
+    def result = controller.retrieveParsed(testType.toString(), testSource, testId, request, mockResponse)
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
@@ -114,7 +116,7 @@ class MetadataRestControllerSpec extends Specification {
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
     result.links.input == "http://localhost:8080/metadata/$testType/$testSource/$testId"
-    result.data.id == testUUId
+    result.data.id == testId
     result.data.type == testType.toString()
     result.data.attributes == testParsed
     result.errors == null
@@ -125,7 +127,7 @@ class MetadataRestControllerSpec extends Specification {
     def request = buildMockRequest(path)
 
     when:
-    def result = controller.retrieveInput(testType.toString(), testUUId, request, mockResponse)
+    def result = controller.retrieveInput(testType.toString(), testId, request, mockResponse)
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
@@ -148,7 +150,7 @@ class MetadataRestControllerSpec extends Specification {
     def request = buildMockRequest(path)
 
     when:
-    def result = controller.retrieveParsed(testType.toString(), testUUId, request, mockResponse)
+    def result = controller.retrieveParsed(testType.toString(), testId, request, mockResponse)
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
@@ -175,7 +177,7 @@ class MetadataRestControllerSpec extends Specification {
     def request = buildMockRequest(path)
 
     when:
-    def result = controller.retrieveParsed(testType.toString(), testUUId, request, mockResponse)
+    def result = controller.retrieveParsed(testType.toString(), testId, request, mockResponse)
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
@@ -200,7 +202,7 @@ class MetadataRestControllerSpec extends Specification {
     def request = buildMockRequest(path)
 
     when:
-    def result = controller.retrieveInput(testType.toString(), testSource, testUUId, request, mockResponse)
+    def result = controller.retrieveInput(testType.toString(), testSource, testId, request, mockResponse)
 
     then:
     _ * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
