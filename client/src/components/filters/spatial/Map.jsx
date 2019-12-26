@@ -220,6 +220,7 @@ const Map = ({
     // on mount
     let geoJsonSelection = displayBboxAsLeafletGeoJSON(bbox)
     if (geoJsonSelection) {
+      geoJsonSelection.geometry = recenterGeometry(geoJsonSelection.geometry)
       let geoJSONLayer = L.geoJson(geoJsonSelection, {style: geoJsonStyle})
       editableLayers.addLayer(geoJSONLayer)
     }
