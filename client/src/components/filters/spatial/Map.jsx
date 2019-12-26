@@ -80,7 +80,6 @@ const Map = ({
   bbox,
   features,
   filterType,
-  geoJSON,
   handleNewGeometry,
   removeGeometry,
   submit,

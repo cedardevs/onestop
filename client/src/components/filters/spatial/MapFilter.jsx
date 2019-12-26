@@ -175,7 +175,7 @@ const MapFilter = ({
     )
   }
 
-  const mapModal = (
+  const mapProxyContent = (
     <ProxyContent context={MapProxyContext} zIndex={3}>
       <InteractiveMap />
     </ProxyContent>
@@ -193,7 +193,7 @@ const MapFilter = ({
         </fieldset>
       </div>
 
-      {mapModal}
+      {mapProxyContent}
 
       <div style={styleMapFilter}>
         <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
