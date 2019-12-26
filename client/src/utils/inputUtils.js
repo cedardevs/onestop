@@ -3,7 +3,13 @@ import moment from 'moment/moment'
 
 // if the input represents a finite number, coerces and returns it, else null
 export const textToNumber = text => {
-  const number = text ? _.toNumber(text) : null
+  const number = text != null ? _.toNumber(text) : null
+  if (_.isNaN(number)) {
+    return null
+  }
+  if (_.isString(text) && _.isEmpty(text)) {
+    return null
+  }
   return _.isFinite(number) ? number : null
 }
 
@@ -32,13 +38,16 @@ export const convertYearToCE = (year, format) => {
   // check for SI year values:
   let yearSI = year.toLowerCase()
   if (yearSI.endsWith('ka')) {
-    value = textToNumber(yearSI.split('ka')[0]) * 1000
+    let num = textToNumber(yearSI.split('ka')[0])
+    value = num ? num * 1000 : NaN
   }
   else if (yearSI.endsWith('ma')) {
-    value = textToNumber(yearSI.split('ma')[0]) * 1000000
+    let num = textToNumber(yearSI.split('ma')[0])
+    value = num ? num * 1000000 : NaN
   }
   else if (yearSI.endsWith('ga')) {
-    value = textToNumber(yearSI.split('ga')[0]) * 1000000000
+    let num = textToNumber(yearSI.split('ga')[0])
+    value = num ? num * 1000000000 : NaN
   }
   if (!Number.isInteger(textToNumber(value))) {
     return year // otherwise we'll always validate against empty string...
@@ -60,16 +69,16 @@ export const isValidYear = year => {
 
   // No date given is technically valid (since a complete range is unnecessary)
   if (_.isEmpty(year)) {
-    return true
+    return ''
   }
 
   if (!Number.isInteger(textToNumber(year))) {
-    return false
+    return 'invalid'
   }
 
   const now = moment()
 
-  return textToNumber(year) <= now.year()
+  return textToNumber(year) <= now.year() ? '' : 'cannot be in the future'
 }
 
 export const isValidYearRange = (start, end) => {
@@ -81,40 +90,78 @@ export const isValidYearRange = (start, end) => {
   return textToNumber(start) < textToNumber(end)
 }
 
-export const isValidDate = (year, month, day) => {
-  // No date given is technically valid (since a complete range is unnecessary)
-  if (_.isEmpty(year) && _.isEmpty(month) && _.isEmpty(day)) {
-    return true
+export const isValidDate = (year, month, day, nowOverride) => {
+  let errors = {
+    year: {field: '', required: false},
+    month: {field: '', required: false},
+    day: {field: '', required: false},
   }
 
-  // Valid date can be year only, year & month only, or full date
-  if (!_.isEmpty(year) && _.isEmpty(month) && !_.isEmpty(day)) {
-    // Year + day is not valid
-    return false
+  // No date given is technically valid (since a complete range is unnecessary)
+  if (_.isEmpty(year) && _.isEmpty(month) && _.isEmpty(day)) {
+    return errors
   }
 
   let dateMap = ymdToDateMap(year, month, day)
 
-  const now = moment()
+  const now = nowOverride ? nowOverride : moment()
   const givenDate = moment(dateMap)
 
-  let validYear =
-    year &&
-    dateMap.year !== null &&
-    dateMap.year <= now.year() &&
-    dateMap.year >= 0
-  let validMonth = month
-    ? dateMap.month !== null &&
-      dateMap.year !== null &&
-      moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)
-    : true
-  let validDay = day
-    ? dateMap.day !== null &&
-      givenDate.isValid() &&
-      givenDate.isSameOrBefore(now)
-    : true
+  if (!_.isEmpty(year)) {
+    if (dateMap.year == null) {
+      // catches problems like 'foo'
+      errors.year.field = 'invalid'
+    }
+    if (dateMap.year > now.year()) {
+      errors.year.field = 'cannot be in the future'
+    }
+    if (dateMap.year < 0) {
+      // moment() gets choked by negative years
+      errors.year.field = 'must be greater than zero'
+    }
+  }
 
-  return validYear && validMonth && validDay
+  if (!_.isEmpty(month)) {
+    if (dateMap.month == null) {
+      // hard to reproduce with a dropdown, but 'foo', presumably '-1'
+      errors.month.field = 'invalid'
+    }
+    else if (_.isEmpty(year)) {
+      errors.year.required = true
+    }
+    else if (
+      dateMap.year != null &&
+      dateMap.year <= now.year() &&
+      !moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)
+    ) {
+      // only indicate month cannot be in the future if year alone is *not* in the future
+      errors.month.field = 'cannot be in the future'
+    }
+  }
+
+  if (!_.isEmpty(day)) {
+    if (!givenDate.isValid()) {
+      // TODO this is a weird one I don't know how to manually reproduce
+      errors.day.field = 'invalid'
+    }
+    else if (dateMap.day == null) {
+      errors.day.field = 'invalid'
+    }
+    else if (_.isEmpty(year) || _.isEmpty(month)) {
+      errors.year.required = _.isEmpty(year)
+      errors.month.required = _.isEmpty(month)
+    }
+    else if (
+      dateMap.year <= now.year() &&
+      moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now) &&
+      !givenDate.isSameOrBefore(now)
+    ) {
+      // only indicate month cannot be in the future if year and month alone is *not* in the future
+      errors.day.field = 'cannot be in the future'
+    }
+  }
+
+  return errors
 }
 
 export const isValidDateRange = (startMap, endMap) => {

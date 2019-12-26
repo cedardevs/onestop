@@ -1,6 +1,31 @@
 import * as geoUtils from '../../src/utils/geoUtils'
 
 describe('The geoUtils', function(){
+  it('Query shifts bbox coordinates', function(){
+    // query version shifts the west coordinate
+    let queryCoordinates = geoUtils.convertBboxToQueryGeoJson(120, 0, 7, 63)
+      .geometry.coordinates
+    expect(queryCoordinates).toEqual([
+      [ [ -240, 0 ], [ 7, 0 ], [ 7, 63 ], [ -240, 63 ], [ -240, 0 ] ],
+    ])
+    // regular bbox to geojson (such as for drawing on a map) does not
+    let coordinates = geoUtils.convertBboxToGeoJson(120, 0, 7, 63).geometry
+      .coordinates
+    expect(coordinates).toEqual([
+      [ [ 120, 0 ], [ 7, 0 ], [ 7, 63 ], [ 120, 63 ], [ 120, 0 ] ],
+    ])
+  })
+
+  it('Query shifts bbox coordinates within API longitude bounds', function(){
+    // shifts the east coordinate instead of the west
+    // this is important, because longitudes outside the bounds of |360| are invalid in the API
+    let queryCoordinates = geoUtils.convertBboxToQueryGeoJson(-73, -50, -83, 43)
+      .geometry.coordinates
+    expect(queryCoordinates).toEqual([
+      [ [ -73, -50 ], [ 277, -50 ], [ 277, 43 ], [ -73, 43 ], [ -73, -50 ] ],
+    ])
+  })
+
   describe('single coordinate', function(){
     const coord = [ 20, 45 ]
 

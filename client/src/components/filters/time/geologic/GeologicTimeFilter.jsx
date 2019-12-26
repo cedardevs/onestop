@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
 import FlexColumn from '../../../common/ui/FlexColumn'
@@ -12,7 +12,7 @@ import GeologicFieldset from './GeologicFieldset'
 import GeologicFormatFieldset from './GeologicFormatFieldset'
 import GeologicPresets from './GeologicPresets'
 import {useYear} from './GeologicYearEffect'
-
+import {consolidateStyles} from '../../../../utils/styleUtils'
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
 
 import Relation from '../../Relation'
@@ -25,21 +25,18 @@ import {
 } from '../../common/styleFilters'
 import ApplyClearRow from '../../common/ApplyClearRow'
 
-const warningStyle = warning => {
-  if (_.isEmpty(warning)) {
-    return {
-      display: 'none',
-    }
-  }
-  else {
-    return {
+const warningStyle = (startValid, endValid, errorMessage) => {
+  return consolidateStyles(
+    {
       color: SiteColors.WARNING,
       textAlign: 'center',
-      margin: '0.75em 0 0.5em',
       fontWeight: 'bold',
       fontSize: '1.15em',
-    }
-  }
+    },
+    !startValid || !endValid || !_.isEmpty(errorMessage)
+      ? {margin: '0.75em 0 0.5em'}
+      : null
+  )
 }
 
 const GeologicTimeFilter = ({
@@ -52,40 +49,40 @@ const GeologicTimeFilter = ({
 }) => {
   const [ format, setFormat ] = useState('CE')
 
-  const [ start ] = useYear(startYear, format, year => {
-    setWarning('')
-    setDateRangeValid(isValidYearRange(year, end.CE))
-  })
-  const [ end ] = useYear(endYear, format, year => {
-    setWarning('')
-    setDateRangeValid(isValidYearRange(start.CE, year))
-  })
-  const [ dateRangeValid, setDateRangeValid ] = useState(true)
+  const [ start ] = useYear(startYear, format)
+  const [ end ] = useYear(endYear, format)
   const [ warning, setWarning ] = useState('')
 
   const clearDates = () => {
     clear()
     start.clear()
     end.clear()
-    setDateRangeValid(true)
     setWarning('')
   }
 
-  const applyDates = () => {
-    if (!start.valid || !end.valid || !dateRangeValid) {
-      setWarning(createWarning())
+  const validate = () => {
+    let isValid = isValidYearRange(start.CE, end.CE)
+    if (!isValid) {
+      setWarning('Start year must be before end year.')
     }
-    else {
-      applyFilter(textToNumber(start.CE), textToNumber(end.CE))
-    }
+    start.setValid(isValid)
+    end.setValid(isValid)
+    return isValid
   }
 
-  const createWarning = () => {
-    if (!start.valid && !end.valid) return 'Invalid start and end date.'
-    if (!start.valid) return 'Invalid start date.'
-    if (!end.valid) return 'Invalid end date.'
-    if (!dateRangeValid) return 'Invalid date range.'
-    return 'Unknown error'
+  useEffect(
+    () => {
+      start.setValid(true)
+      end.setValid(true)
+      setWarning('')
+    },
+    [ start.year, end.year ]
+  )
+
+  const applyDates = () => {
+    if (start.valid && end.valid && validate()) {
+      applyFilter(textToNumber(start.CE), textToNumber(end.CE))
+    }
   }
 
   const handleKeyDown = event => {
@@ -111,7 +108,25 @@ const GeologicTimeFilter = ({
           geologicFormat={format}
           onFormatChange={onFormatChange}
         />
-        <GeologicFieldset start={start} end={end} format={format} />
+        <GeologicFieldset
+          start={start}
+          end={end}
+          format={format}
+          startYearErrorId={
+            !_.isEmpty(warning) ? (
+              'geologicDateFilterRangeErrors'
+            ) : (
+              'geologicDateFilterStartYearErrors'
+            )
+          }
+          endYearErrorId={
+            !_.isEmpty(warning) ? (
+              'geologicDateFilterRangeErrors'
+            ) : (
+              'geologicDateFilterEndYearErrors'
+            )
+          }
+        />
       </form>
     </div>
   )
@@ -125,13 +140,32 @@ const GeologicTimeFilter = ({
     />
   )
 
+  const renderErrors = (name, errors) => {
+    let {field, fieldset} = errors
+    return (
+      <div>
+        {_.isEmpty(field) ? '' : `${name} ${field}.`}{' '}
+        {_.isEmpty(fieldset) ? '' : `${name} ${fieldset}.`}
+      </div>
+    )
+  }
+
   const warningMessage = (
     <div
       key="GeologicDateFilter::InputColumn::Warning"
-      style={warningStyle(warning)}
+      style={warningStyle(start.valid, end.valid, warning)}
       role="alert"
+      aria-live="polite"
     >
-      {warning}
+      <div id="geologicDateFilterStartYearErrors">
+        {renderErrors('Start', start.errors)}
+      </div>
+      <div id="geologicDateFilterEndYearErrors">
+        {renderErrors('End', end.errors)}
+      </div>
+      <div id="geologicDateFilterRangeErrors">
+        {!_.isEmpty(warning) ? warning : null}
+      </div>
     </div>
   )
 
