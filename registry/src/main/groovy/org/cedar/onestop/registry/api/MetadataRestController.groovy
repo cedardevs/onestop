@@ -49,8 +49,7 @@ class MetadataRestController {
       @PathVariable String id,
       HttpServletRequest request,
       HttpServletResponse response) throws Exception {
-    def valid = UUIDValidator.isValid(id)
-    if(!valid){
+    if(!UUIDValidator.isValid(id)){
       return UUIDValidator.uuidErrorMsg(id)
     }
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
@@ -118,8 +117,7 @@ class MetadataRestController {
       @PathVariable String id,
       HttpServletRequest request,
       HttpServletResponse response) {
-    def valid = UUIDValidator.isValid(id)
-    if(!valid){
+    if(!UUIDValidator.isValid(id)){
       return UUIDValidator.uuidErrorMsg(id)
     }
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
