@@ -35,6 +35,7 @@ const styleField = {
 const styleInputValidity = isValid => {
   return {
     paddingLeft: '5px',
+    width: '1em',
     color: isValid ? SiteColors.VALID : SiteColors.WARNING,
   }
 }
@@ -50,6 +51,7 @@ const GeologicFieldset = ({start, end, format}) => {
           label="Start:"
           maxLength={14}
           value={start.year}
+          valid={start.valid}
           onChange={e => start.setYear(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
@@ -73,6 +75,7 @@ const GeologicFieldset = ({start, end, format}) => {
           label="End:"
           maxLength={14}
           value={end.year}
+          valid={end.valid}
           onChange={e => end.setYear(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}

@@ -180,10 +180,9 @@ export default class AppliedFilters extends React.Component {
   }
 
   buildSpaceBubbles = () => {
-    const {geoJSON, excludeGlobal} = this.props
+    const {bbox, excludeGlobal} = this.props
     let spaceBubbles = []
-    if (geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates) {
-      let bbox = geoUtils.convertGeoJsonToBbox(geoJSON)
+    if (bbox) {
       const {west, south, east, north} = bbox
       spaceBubbles.push(
         <AppliedFilterBubble

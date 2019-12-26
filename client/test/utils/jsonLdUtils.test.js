@@ -552,7 +552,7 @@ describe('In the jsonLdUtils', function(){
     })
   })
 
-  describe('a collection with a line', function(){
+  describe('a collection with a point', function(){
     const input = {
       title: 'the title of the record',
       spatialBounding: {
@@ -612,6 +612,182 @@ describe('In the jsonLdUtils', function(){
             }
           ]
         }`
+      )
+    })
+  })
+
+  describe('a collection with a polygon', function(){
+    const input = {
+      title: 'the title of the record',
+      spatialBounding: {
+        coordinates: [
+          [ [ 1, 2 ], [ 3, 4 ], [ 5, 6 ], [ 7, 8 ], [ 9, 10 ], [ 1, 2 ] ],
+        ],
+        type: 'Polygon',
+      },
+    }
+
+    it('generates a geo shape', function(){
+      jsonEquals(
+        util.geoListItem(input),
+        `{
+          "@type": "Place",
+          "name": "geographic polygon",
+          "geo": {
+            "@type": "GeoShape",
+            "description": "y,x y,x ...",
+            "polygon": "2,1 4,3 6,5 8,7 10,9 2,1"
+          }
+        }`
+      )
+    })
+
+    it('generates a spatial block', function(){
+      jsonEquals(
+        util.spatialCoverageField(input),
+        `"spatialCoverage": [
+          {
+            "@type": "Place",
+            "name": "geographic polygon",
+            "geo": {
+              "@type": "GeoShape",
+              "description": "y,x y,x ...",
+              "polygon": "2,1 4,3 6,5 8,7 10,9 2,1"
+            }
+          }
+        ]`
+      )
+    })
+
+    it('generates json-ld', function(){
+      jsonEquals(
+        util.toJsonLd(null, input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "spatialCoverage": [
+            {
+              "@type": "Place",
+              "name": "geographic polygon",
+              "geo": {
+                "@type": "GeoShape",
+                "description": "y,x y,x ...",
+                "polygon": "2,1 4,3 6,5 8,7 10,9 2,1"
+              }
+            }
+          ]
+        }`
+      )
+    })
+  })
+
+  describe('a collection with a multipolygon', function(){
+    const input = {
+      title: 'the title of the record',
+      spatialBounding: {
+        coordinates: [
+          [
+            [
+              //bbox
+              [ -180, -81.3282 ],
+              [ 6.2995, -81.3282 ],
+              [ 6.2995, 81.3282 ],
+              [ -180, 81.3282 ],
+              [ -180, -81.3282 ],
+            ],
+          ],
+          [
+            [
+              // 5 sides
+              [ 141.7005, -81.3282 ],
+              [ 180, -81.3282 ],
+              [ 180, 81.3282 ],
+              [ 141.7005, 81.3282 ],
+              [ 131.5429, 0 ],
+              [ 141.7005, -81.3282 ],
+            ],
+          ],
+        ],
+        type: 'MultiPolygon',
+      },
+    }
+
+    it('generates a geo shape', function(){
+      jsonEquals(
+        util.geoListItem(input),
+        `{
+            "@type": "Place",
+            "name": "geographic bounding box",
+            "geo": {
+              "@type": "GeoShape",
+              "description": "minY,minX maxY,maxX",
+              "box": "-81.3282,-180 81.3282,6.2995"
+            }
+          }, {
+            "@type": "Place",
+            "name": "geographic polygon",
+            "geo": {
+              "@type": "GeoShape",
+              "description": "y,x y,x ...",
+              "polygon": "-81.3282,141.7005 -81.3282,180 81.3282,180 81.3282,141.7005 0,131.5429 -81.3282,141.7005"
+            }
+          }`
+      )
+    })
+
+    it('generates a spatial block', function(){
+      jsonEquals(
+        util.spatialCoverageField(input),
+        `"spatialCoverage": [
+            {
+              "@type": "Place",
+              "name": "geographic bounding box",
+              "geo": {
+                "@type": "GeoShape",
+                "description": "minY,minX maxY,maxX",
+                "box": "-81.3282,-180 81.3282,6.2995"
+              }
+            }, {
+              "@type": "Place",
+              "name": "geographic polygon",
+              "geo": {
+                "@type": "GeoShape",
+                "description": "y,x y,x ...",
+                "polygon": "-81.3282,141.7005 -81.3282,180 81.3282,180 81.3282,141.7005 0,131.5429 -81.3282,141.7005"
+              }
+            }
+          ]`
+      )
+    })
+
+    it('generates json-ld', function(){
+      jsonEquals(
+        util.toJsonLd(null, input),
+        `{
+            "@context": "http://schema.org",
+            "@type": "Dataset",
+            "name": "the title of the record",
+            "spatialCoverage": [
+              {
+                "@type": "Place",
+                "name": "geographic bounding box",
+                "geo": {
+                  "@type": "GeoShape",
+                  "description": "minY,minX maxY,maxX",
+                  "box": "-81.3282,-180 81.3282,6.2995"
+                }
+              }, {
+                "@type": "Place",
+                "name": "geographic polygon",
+                "geo": {
+                  "@type": "GeoShape",
+                  "description": "y,x y,x ...",
+                  "polygon": "-81.3282,141.7005 -81.3282,180 81.3282,180 81.3282,141.7005 0,131.5429 -81.3282,141.7005"
+                }
+              }
+            ]
+          }`
       )
     })
   })

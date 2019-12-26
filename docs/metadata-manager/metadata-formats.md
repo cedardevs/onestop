@@ -5,6 +5,22 @@
 **Estimated Reading Time:**
 
 # Supported Metadata Formats
+When considering the supported formats in the OneStop ecosystem, it's imperative to understand that each component maintains a different level of stringency for accepted formats based on the overall purpose of said component. 
+
+## What Can Be Stored
+
+
+## What Can Be Parsed
+
+
+### XML: ISO 19115-2
+[ISO Indexing Mapping](iso-indexing-mapping.md)
+[NOAA NCEI Metadata Homepage](https://ncei.noaa.gov/metadata)
+
+### JSON: CEDAR Schemas
+
+
+## What Can Be Searched
 
 
 <hr>

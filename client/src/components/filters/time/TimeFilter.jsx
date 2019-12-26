@@ -45,12 +45,7 @@ const TimeFilter = ({
       timeRelationship={timeRelationship}
       updateTimeRelationship={relation => {
         if (relation != timeRelationship) updateTimeRelation(relation)
-        if (
-          startYear != null ||
-          endYear != null ||
-          !_.isEmpty(startDateTime) ||
-          !_.isEmpty(endDateTime)
-        ) {
+        if (!_.isEmpty(startDateTime) || !_.isEmpty(endDateTime)) {
           // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
           submit()
         }
@@ -72,7 +67,11 @@ const TimeFilter = ({
       endYear={endYear}
       timeRelationship={timeRelationship}
       updateTimeRelationship={relation => {
-        updateTimeRelation(relation)
+        if (relation != timeRelationship) updateTimeRelation(relation)
+        if (startYear != null || endYear != null) {
+          // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
+          submit()
+        }
       }}
       applyFilter={(startYear, endYear) => {
         removeDateRange()

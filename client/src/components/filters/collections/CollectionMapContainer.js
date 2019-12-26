@@ -9,17 +9,16 @@ import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchR
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {geoJSON} = state.search.collectionFilter
   return {
     filterType: 'collectionFilter',
-    geoJsonSelection: geoJSON,
+    bbox: state.search.collectionFilter.bbox,
     showMap: state.layout.showMap,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    handleNewGeometry: geoJSON => dispatch(collectionUpdateGeometry(geoJSON)),
+    handleNewGeometry: bbox => dispatch(collectionUpdateGeometry(bbox)),
     removeGeometry: () => dispatch(collectionRemoveGeometry()),
     submit: () => {
       dispatch(submitCollectionSearch(ownProps.history))

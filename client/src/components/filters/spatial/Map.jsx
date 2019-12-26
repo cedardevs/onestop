@@ -6,7 +6,11 @@ import L from 'leaflet'
 import * as E from 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
-import {recenterGeometry} from '../../../utils/geoUtils'
+import {
+  recenterGeometry,
+  convertGeoJsonToBbox,
+  displayBboxAsLeafletGeoJSON,
+} from '../../../utils/geoUtils'
 
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
@@ -107,11 +111,12 @@ class Map extends React.Component {
   }
 
   initialState = () => {
-    const {geoJsonSelection, features} = this.props
+    const {bbox, features} = this.props
 
     let resultsLayers = new L.FeatureGroup()
     let editableLayers = new L.FeatureGroup()
 
+    let geoJsonSelection = displayBboxAsLeafletGeoJSON(bbox)
     if (geoJsonSelection) {
       let geoJSONLayer = L.geoJson(geoJsonSelection, {style: geoJsonStyle})
       editableLayers.addLayer(geoJSONLayer)
@@ -247,13 +252,14 @@ class Map extends React.Component {
 
   updateSelectionLayer() {
     let {filterType} = this.props
-    let {editableLayers, style} = this.state
-    let w = watch(store.getState, 'search.' + filterType + '.geoJSON')
+    let {editableLayers} = this.state
+    let w = watch(store.getState, 'search.' + filterType + '.bbox')
     store.subscribe(
-      w(newGeoJson => {
+      w(newBbox => {
+        let newGeoJson = displayBboxAsLeafletGeoJSON(newBbox)
         editableLayers.clearLayers()
         if (!_.isEmpty(newGeoJson)) {
-          let layer = L.geoJson(newGeoJson, {style: style})
+          let layer = L.geoJson(newGeoJson, {style: geoJsonStyle})
           editableLayers.addLayer(layer)
           this.state.map.panTo(layer.getBounds().getCenter())
         }
@@ -326,17 +332,13 @@ class Map extends React.Component {
   }
 
   updateGeometryAndSubmit = newGeoJSON => {
-    const {geoJSON, handleNewGeometry, removeGeometry, submit} = this.props
-    if (geoJSON || newGeoJSON) {
+    const {bbox, handleNewGeometry, removeGeometry, submit} = this.props
+    if (bbox || newGeoJSON) {
       if (newGeoJSON) {
         newGeoJSON.geometry.coordinates[0].reverse() // Change coords from CW to CCW
-        let adjustedGeoJSON = {
-          type: 'Feature',
-          properties: {},
-          geometry: recenterGeometry(newGeoJSON.geometry),
-        }
-
-        handleNewGeometry(adjustedGeoJSON)
+        handleNewGeometry(
+          convertGeoJsonToBbox(recenterGeometry(newGeoJSON.geometry)) // TODO does this actually need to recenter?
+        )
       }
       else {
         removeGeometry()

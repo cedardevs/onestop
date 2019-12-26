@@ -200,6 +200,11 @@ class JsonValidatorSpec extends Specification {
           {"type": "Polygon", "coordinates": [[[-5.99, 45.99], [-5.99, 36.49], [36.49, 30.01], [36.49, 45.99], [-5.99, 45.99]]]}
         }
         """
+    'polygon at extreme bounds' | """
+    {"type": "geometry", "relation": "intersects", "geometry":
+      {"type": "Polygon", "coordinates": [[[-360,0],[360,-90],[360,90],[-360,90],[-360,-90]]]}
+    }
+    """
     'atmosphere' |
         """{"type": "facet", "name": "science", "values": ["Atmosphere"]}"""
     'horizontal resolution > 1 km' |
