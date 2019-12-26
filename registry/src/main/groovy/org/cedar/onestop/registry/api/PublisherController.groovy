@@ -3,6 +3,7 @@ package org.cedar.onestop.registry.api
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.kafka.common.constants.Topics
+import org.cedar.onestop.registry.service.Publisher
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,7 +23,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*
 class PublisherController {
 
   @Autowired
-  org.cedar.onestop.registry.service.Publisher publisher
+  Publisher publisher
 
   @RequestMapping(value = "/{type}/{source}/{id}", method = [POST, PUT], consumes = ["application/xml", "application/json"], produces = 'application/json')
   Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type, @PathVariable String source, @PathVariable UUID id) throws Exception {

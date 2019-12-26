@@ -1,25 +1,23 @@
-import {connect} from 'react-redux'
 import Map from '../spatial/Map'
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
+import {toggleMapClose} from '../../../actions/LayoutActions'
 import {
   granuleUpdateGeometry,
   granuleRemoveGeometry,
 } from '../../../actions/routing/GranuleSearchStateActions'
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
-import {withRouter} from 'react-router'
-import {toggleMapClose} from '../../../actions/LayoutActions'
-
 const mapStateToProps = state => {
-  const {geoJSON} = state.search.granuleFilter
   return {
     filterType: 'granuleFilter',
-    geoJsonSelection: geoJSON,
+    bbox: state.search.granuleFilter.bbox,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    handleNewGeometry: geoJSON => dispatch(granuleUpdateGeometry(geoJSON)),
+    handleNewGeometry: bbox => dispatch(granuleUpdateGeometry(bbox)),
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
     submit: () => {
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))

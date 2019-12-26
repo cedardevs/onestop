@@ -35,7 +35,7 @@ class MetadataRestController {
   @RequestMapping(path = '/metadata/{type}/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveInput(
       @PathVariable String type,
-      @PathVariable String id,
+      @PathVariable UUID id,
       HttpServletRequest request,
       HttpServletResponse response) {
     retrieveInput(type, Topics.DEFAULT_SOURCE, id, request, response)
@@ -45,12 +45,12 @@ class MetadataRestController {
   Map retrieveInput(
       @PathVariable String type,
       @PathVariable String source,
-      @PathVariable String id,
+      @PathVariable UUID id,
       HttpServletRequest request,
       HttpServletResponse response) {
 
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
-    def result = metadataStore.retrieveInput(recordType, source, id)
+    def result = metadataStore.retrieveInput(recordType, source, id as String)
     def links = buildLinks(request, type, source, id)
     links.self = links.remove('input')
 
@@ -101,7 +101,7 @@ class MetadataRestController {
   @RequestMapping(path = '/metadata/{type}/{id}/parsed', method = [GET, HEAD], produces = 'application/json')
   Map retrieveParsed(
       @PathVariable String type,
-      @PathVariable String id,
+      @PathVariable UUID id,
       HttpServletRequest request,
       HttpServletResponse response) {
     retrieveParsed(type, Topics.DEFAULT_SOURCE, id, request, response)
@@ -111,13 +111,13 @@ class MetadataRestController {
   Map retrieveParsed(
       @PathVariable String type,
       @PathVariable String source,
-      @PathVariable String id,
+      @PathVariable UUID id,
       HttpServletRequest request,
       HttpServletResponse response) {
 
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def links = buildLinks(request, type, source, id)
-    def result = metadataStore.retrieveParsed(recordType, source, id)
+    def result = metadataStore.retrieveParsed(recordType, source, id as String)
     links.self = links.remove('parsed')
 
     if (result) {
@@ -153,7 +153,7 @@ class MetadataRestController {
     }
   }
 
-  private Map buildLinks(HttpServletRequest request, String type, String source, String id) {
+  private Map buildLinks(HttpServletRequest request, String type, String source, UUID id) {
     def root = apiLinkGenerator.getApiRoot(request)
     return [
         input : "${root}/metadata/${type}/${source}/${id}" as String,
@@ -161,7 +161,7 @@ class MetadataRestController {
     ]
   }
 
-  private String buildResurrectionLink(HttpServletRequest request, String type, String source, String id) {
+  private String buildResurrectionLink(HttpServletRequest request, String type, String source, UUID id) {
     def root = apiLinkGenerator.getApiRoot(request)
     return "${root}/metadata/${type}/${source}/${id}/resurrection" as String
   }

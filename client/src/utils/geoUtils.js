@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import {textToNumber} from './inputUtils'
 
+// note: only exported for tests
 export const shiftCoordinate = (coordinate, rotations) => {
   if (rotations === 0) {
     return coordinate
@@ -9,6 +10,7 @@ export const shiftCoordinate = (coordinate, rotations) => {
   return _.concat([ newX ], _.slice(coordinate, 1))
 }
 
+// note: this is a helper function, only exported outside this file for tests
 export const shiftCoordinates = (coordinates, rotations) => {
   if (rotations === 0) {
     return coordinates
@@ -18,6 +20,7 @@ export const shiftCoordinates = (coordinates, rotations) => {
   )
 }
 
+// note: only exported for tests
 export const findMaxRotations = coordinates => {
   return _.chain(coordinates)
     .map(coordinate => coordinate[0])
@@ -42,26 +45,19 @@ export const recenterGeometry = geometry => {
   return _.assign({}, geometry, {coordinates: newCoordinates})
 }
 
-export const renderPointAsPolygon = geometry => {
-  let coords = Array(5).fill(geometry.coordinates)
-  return {
-    type: 'Polygon',
-    coordinates: [ coords ],
-  }
-}
-
 export const ensureDatelineFriendlyGeometry = geometry => {
   let coords =
     geometry.type.toLowerCase() === 'polygon'
       ? [ convertNegativeLongitudes(geometry.coordinates[0]) ]
       : convertNegativeLongitudes(geometry.coordinates)
+
   return {
     type: geometry.type,
     coordinates: coords,
   }
 }
 
-export const convertNegativeLongitudes = coordinates => {
+const convertNegativeLongitudes = coordinates => {
   const crossesDateline = coordinates[0][0] > coordinates[1][0]
   return coordinates.map(
     pair =>
@@ -71,19 +67,14 @@ export const convertNegativeLongitudes = coordinates => {
   )
 }
 
-export const convertBboxToGeoJson = (west, south, east, north) => {
+const bboxAsCoordinates = (west, south, east, north) => {
   const w = textToNumber(west)
   const s = textToNumber(south)
   const e = textToNumber(east)
   const n = textToNumber(north)
 
   // Invalid coordinates checks
-  if (
-    (!w && w !== 0) ||
-    (!s && s !== 0) ||
-    (!e && e !== 0) ||
-    (!n && n !== 0)
-  ) {
+  if (w == null || e == null || s == null || n == null) {
     return null
   }
 
@@ -95,35 +86,55 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   const wn = [ w, n ]
   const en = [ e, n ] // max x, max y
   const es = [ e, s ]
-  const coordinates = [ ws, es, en, wn, ws ] // CCW for exterior polygon
-  if (
-    !_.every(
-      coordinates,
-      p => p[0] >= -180 && p[0] <= 180 && p[1] >= -90 && p[1] <= 90
-    )
-  ) {
-    return undefined
+  return [ ws, es, en, wn, ws ] // CCW for exterior polygon
+}
+
+export const convertBboxToGeoJson = (west, south, east, north) => {
+  const coordinates = bboxAsCoordinates(west, south, east, north)
+  if (coordinates == null) {
+    return null
   }
-  else {
-    let datelineFriendlyGeometry = ensureDatelineFriendlyGeometry({
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: {
       coordinates: [ coordinates ],
       type: 'Polygon',
-    })
-    return {
-      type: 'Feature',
-      properties: {},
-      geometry: datelineFriendlyGeometry,
-    }
+    },
   }
 }
 
-export const convertBboxStringToGeoJson = coordString => {
-  const coordArray = coordString.split(',').map(x => parseFloat(x))
-  return convertBboxToGeoJson(...coordArray)
+export const convertBboxToQueryGeoJson = (west, south, east, north) => {
+  if (west > east) {
+    if (west - 360 < -360) {
+      return convertBboxToGeoJson(west, south, east + 360, north)
+    }
+    return convertBboxToGeoJson(west - 360, south, east, north)
+  }
+  return convertBboxToGeoJson(west, south, east, north)
 }
 
-export const convertGeoJsonToBbox = geoJSON => {
-  let coordinates = geoJSON.geometry.coordinates
+// TODO probably makes more sense to just make it a ring of coords....
+export const convertBboxToLeafletGeoJson = (west, south, east, north) => {
+  const coordinates = bboxAsCoordinates(west, south, east, north)
+  if (coordinates == null) {
+    return null
+  }
+
+  let datelineFriendlyGeometry = ensureDatelineFriendlyGeometry({
+    coordinates: [ coordinates ],
+    type: 'Polygon',
+  })
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: datelineFriendlyGeometry,
+  }
+}
+
+// allows the map to update the geometry filters
+export const convertGeoJsonToBbox = geometry => {
+  let coordinates = geometry.coordinates
   let bbox = null
   if (coordinates) {
     let west = coordinates[0][0][0]
@@ -154,7 +165,47 @@ export const convertGeoJsonToBbox = geoJSON => {
   return bbox
 }
 
-export const convertGeoJsonToBboxString = geoJSON => {
-  const bbox = convertGeoJsonToBbox(geoJSON)
-  return bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : ''
+export const displayBboxAsLeafletGeoJSON = bbox => {
+  let geojson
+  if (bbox) {
+    if (bbox.west > bbox.east) {
+      geojson = convertBboxToLeafletGeoJson(
+        bbox.west,
+        bbox.south,
+        bbox.east + 360,
+        bbox.north
+      )
+      if (geojson) {
+        return {
+          type: 'Feature',
+          properties: {},
+          geometry: recenterGeometry(geojson.geometry),
+        }
+      }
+    }
+    return convertBboxToLeafletGeoJson(
+      bbox.west,
+      bbox.south,
+      bbox.east,
+      bbox.north
+    )
+  }
+}
+
+export const isPolygonABoundingBox = coordinates => {
+  return (
+    coordinates[0].length === 5 && // if is bbox
+    // 2 distinct latitudes
+    new Set(
+      coordinates[0].map(it => {
+        return it[1]
+      })
+    ).size == 2 &&
+    // 2 distinct longitues
+    new Set(
+      coordinates[0].map(it => {
+        return it[0]
+      })
+    ).size == 2
+  )
 }

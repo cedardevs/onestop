@@ -5,7 +5,11 @@ import L from 'leaflet'
 import * as E from 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
-import {recenterGeometry} from '../../../utils/geoUtils'
+import {
+  recenterGeometry,
+  convertGeoJsonToBbox,
+  displayBboxAsLeafletGeoJSON,
+} from '../../../utils/geoUtils'
 import {consolidateStyles} from '../../../utils/styleUtils'
 import CloseButton from '../../common/ui/CloseButton'
 import {Key} from '../../../utils/keyboardUtils'
@@ -73,7 +77,7 @@ const drawStyle = {
 const Map = ({
   style,
   selection,
-  geoJsonSelection,
+  bbox,
   features,
   filterType,
   geoJSON,
@@ -100,12 +104,13 @@ const Map = ({
   }
 
   const updateSelectionLayer = () => {
-    let w = watch(store.getState, 'search.' + filterType + '.geoJSON')
+    let w = watch(store.getState, 'search.' + filterType + '.bbox')
     store.subscribe(
-      w(newGeoJson => {
+      w(newBbox => {
+        let newGeoJson = displayBboxAsLeafletGeoJSON(newBbox)
         editableLayers.clearLayers()
         if (!_.isEmpty(newGeoJson)) {
-          let layer = L.geoJson(newGeoJson, {style: null})
+          let layer = L.geoJson(newGeoJson, {style: geoJsonStyle})
           editableLayers.addLayer(layer)
           map.panTo(layer.getBounds().getCenter())
         }
@@ -163,16 +168,12 @@ const Map = ({
   }
 
   const updateGeometryAndSubmit = newGeoJSON => {
-    if (geoJSON || newGeoJSON) {
+    if (bbox || newGeoJSON) {
       if (newGeoJSON) {
         newGeoJSON.geometry.coordinates[0].reverse() // Change coords from CW to CCW
-        let adjustedGeoJSON = {
-          type: 'Feature',
-          properties: {},
-          geometry: recenterGeometry(newGeoJSON.geometry),
-        }
-
-        handleNewGeometry(adjustedGeoJSON)
+        handleNewGeometry(
+          convertGeoJsonToBbox(recenterGeometry(newGeoJSON.geometry))
+        )
       }
       else {
         removeGeometry()
@@ -217,6 +218,7 @@ const Map = ({
   // map initialization (on mount)
   useEffect(() => {
     // on mount
+    let geoJsonSelection = displayBboxAsLeafletGeoJSON(bbox)
     if (geoJsonSelection) {
       let geoJSONLayer = L.geoJson(geoJsonSelection, {style: geoJsonStyle})
       editableLayers.addLayer(geoJSONLayer)

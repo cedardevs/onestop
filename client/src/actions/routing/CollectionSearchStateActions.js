@@ -39,10 +39,10 @@ export const collectionSearchError = errors => ({
 })
 
 export const COLLECTION_UPDATE_GEOMETRY = 'COLLECTION_UPDATE_GEOMETRY'
-export const collectionUpdateGeometry = geoJSON => {
+export const collectionUpdateGeometry = bbox => {
   return {
     type: COLLECTION_UPDATE_GEOMETRY,
-    geoJSON: geoJSON,
+    bbox: bbox,
   }
 }
 export const COLLECTION_REMOVE_GEOMETRY = 'COLLECTION_REMOVE_GEOMETRY'
