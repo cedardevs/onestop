@@ -10,7 +10,7 @@ export const shiftCoordinate = (coordinate, rotations) => {
   return _.concat([ newX ], _.slice(coordinate, 1))
 }
 
-// note: only exported for tests
+// note: this is a helper function, only exported outside this file for tests
 export const shiftCoordinates = (coordinates, rotations) => {
   if (rotations === 0) {
     return coordinates
@@ -106,6 +106,9 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
 
 export const convertBboxToQueryGeoJson = (west, south, east, north) => {
   if (west > east) {
+    if (west - 360 < -360) {
+      return convertBboxToGeoJson(west, south, east + 360, north)
+    }
     return convertBboxToGeoJson(west - 360, south, east, north)
   }
   return convertBboxToGeoJson(west, south, east, north)

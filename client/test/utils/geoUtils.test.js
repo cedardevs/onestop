@@ -16,6 +16,16 @@ describe('The geoUtils', function(){
     ])
   })
 
+  it('Query shifts bbox coordinates within API longitude bounds', function(){
+    // shifts the east coordinate instead of the west
+    // this is important, because longitudes outside the bounds of |360| are invalid in the API
+    let queryCoordinates = geoUtils.convertBboxToQueryGeoJson(-73, -50, -83, 43)
+      .geometry.coordinates
+    expect(queryCoordinates).toEqual([
+      [ [ -73, -50 ], [ 277, -50 ], [ 277, 43 ], [ -73, 43 ], [ -73, -50 ] ],
+    ])
+  })
+
   describe('single coordinate', function(){
     const coord = [ 20, 45 ]
 
