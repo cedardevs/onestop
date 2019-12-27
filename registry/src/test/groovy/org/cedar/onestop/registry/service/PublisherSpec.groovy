@@ -109,8 +109,6 @@ class PublisherSpec extends Specification {
 
   def 'publishes nothing for invalid id'() {
     setup:
-    String id = '123'
-    RecordType type = null
     String requestUri = "/metadata/$type/$id"
     String method = 'POST'
     def request = new MockHttpServletRequest(method,requestUri)
