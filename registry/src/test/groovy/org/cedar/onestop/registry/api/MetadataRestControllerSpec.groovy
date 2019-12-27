@@ -39,7 +39,18 @@ class MetadataRestControllerSpec extends Specification {
 
     then:
     result.status == 500
-    result.content == ["errors":["title":"Invalid UUID String abc"]]
+    result.content == ["errors":["title":"Invalid UUID String (ensure lowercase): abc"]]
+  }
+
+  def 'validate an incoming UUID string with uppercase A-Z'() throws Exception {
+    def path = "/metadata/${testType}/${"8834CFD3-3B71-40B8-B037-315607A30C42"}"
+    def request = buildMockRequest(path)
+    when:
+    def result = controller.retrieveInput(testType.toString(), "8834CFD3-3B71-40B8-B037-315607A30C42", request, mockResponse)
+
+    then:
+    result.status == 500
+    result.content == ["errors":["title":"Invalid UUID String (ensure lowercase): 8834CFD3-3B71-40B8-B037-315607A30C42"]]
   }
 
   def 'returns input with default source'() {

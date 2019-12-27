@@ -111,17 +111,26 @@ class PublisherSpec extends Specification {
     setup:
     String id = '123'
     RecordType type = null
-    String data = '{"message":"I am incorrect"}'
     String requestUri = "/metadata/$type/$id"
     String method = 'POST'
     def request = new MockHttpServletRequest(method,requestUri)
-    request.contentType = 'application/json'
+    request.contentType = contentType
 
     when:
     publisher.publishMetadata(request, type, data, Topics.DEFAULT_SOURCE, id)
 
     then:
     0 * mockProducer.send(_)
+
+    where:
+    type       | id    | contentType        | data
+    granule    | 'abc' | 'application/xml'  | '<text>xml woooo....</text>'
+    granule    | '8834CFD3-3B71-40B8-B037-315607A30C42' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    collection | '8834cfd3-3b71-40b8-b037-315607A30c42' | 'application/xml'  | '<text>xml woooo....</text>'
+    collection | '8834zfd3-3b71-40b8-b037-315607a30c42' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    granule    | '12345678-1234-1234-1234-1234567891011' | 'application/xml'  | '<text>xml woooo....</text>'
+    granule    | '8834cfd3-3b71-40b8-b037315607a30c42' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    collection | '8834cfd33b7140b8b037315607a30c42' | 'application/xml'  | '<text>xml woooo....</text>'
   }
   
   def 'publishes nothing for malformed #contentType'() {

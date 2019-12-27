@@ -28,11 +28,10 @@ public class UUIDValidator {
   public static boolean isValid(String key) {
     var valid = true;
     try {
-      // Catch potential problems with the UUID.
-      // e.g. - improper length, sign (+/-), etc.
+      // catch Java problems with the UUID.
       UUID.fromString(key);
 
-      // matcher enforces strict lowercase requirement that Java above UUID does not
+      // matcher enforces strict lowercase requirement that Java does not
       valid = pattern.matcher(key).matches();
 
     } catch(IllegalArgumentException e) {
@@ -48,6 +47,6 @@ public class UUIDValidator {
   public static Map<String, Object> uuidErrorMsg(String id){
     return Map.of(
         "status", 500,
-        "content", Map.of("errors", Map.of("title", "Invalid UUID String (ensure lowercase)" + id )));
+        "content", Map.of("errors", Map.of("title", "Invalid UUID String (ensure lowercase): " + id )));
   }
 }
