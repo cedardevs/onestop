@@ -11,6 +11,7 @@ import org.apache.kafka.streams.state.Stores;
 import org.cedar.onestop.kafka.common.constants.Topics;
 import org.cedar.onestop.kafka.common.util.TimestampedValue;
 import org.cedar.onestop.kafka.common.util.Timestamper;
+import org.cedar.onestop.registry.util.UUIDValidator;
 import org.cedar.schemas.avro.psi.Input;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
@@ -41,7 +42,7 @@ public class TopologyBuilders {
         .collect(Collectors.toMap(
             source -> source,
             source -> builder.<String, Input>stream(Topics.inputTopic(type, source))
-                .filter((k, v) -> StreamFunctions.filterUuid(k))
+                .filter((k, v) -> UUIDValidator.isValid(k))
                 .transformValues((ValueTransformerSupplier<Input, TimestampedValue<Input>>) Timestamper::new)
                 .groupByKey()
                 .aggregate(
