@@ -4,8 +4,9 @@ import {
   granuleToggleExcludeGlobal,
   granuleUpdateGeometry,
   granuleRemoveGeometry,
+  granuleUpdateGeoRelation,
 } from '../../../actions/routing/GranuleSearchStateActions'
-import {toggleMap} from '../../../actions/LayoutActions'
+import {toggleMapOpen, toggleMapClose} from '../../../actions/LayoutActions'
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 import {withRouter} from 'react-router'
@@ -13,24 +14,31 @@ import {withRouter} from 'react-router'
 const mapStateToProps = state => {
   return {
     showMap: state.layout.showMap,
-    geoJSON: state.search.granuleFilter.geoJSON,
+    bbox: state.search.granuleFilter.bbox,
+    geoRelationship: state.search.granuleFilter.geoRelationship,
     excludeGlobal: state.search.granuleFilter.excludeGlobal,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    updateGeoRelationship: relation => {
+      dispatch(granuleUpdateGeoRelation(relation))
+    },
     toggleExcludeGlobal: () => {
       dispatch(granuleToggleExcludeGlobal())
     },
     submit: () => {
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
-    toggleMap: () => {
-      dispatch(toggleMap())
+    openMap: () => {
+      dispatch(toggleMapOpen())
+    },
+    closeMap: () => {
+      dispatch(toggleMapClose())
     },
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
-    handleNewGeometry: geoJSON => dispatch(granuleUpdateGeometry(geoJSON)),
+    handleNewGeometry: bbox => dispatch(granuleUpdateGeometry(bbox)),
   }
 }
 

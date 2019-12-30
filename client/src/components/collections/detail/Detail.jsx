@@ -9,8 +9,7 @@ import Tabs from './Tabs'
 import {boxShadow} from '../../../style/defaultStyles'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {identifyProtocol} from '../../../utils/resultUtils'
-
-//-- Styles
+import {asterisk, SvgIcon} from '../../common/SvgIcon'
 
 const styleCenterContent = {
   display: 'flex',
@@ -69,7 +68,7 @@ class Detail extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -110,7 +109,13 @@ class Detail extends React.Component {
       return (
         <div style={styleCenterContent}>
           <div style={styleDetailWrapper}>
-            <h1 style={styleLoadingMessage}>Loading...</h1>
+            <h1 style={styleLoadingMessage}>
+              <SvgIcon
+                style={{animation: 'rotation 2s infinite linear'}}
+                path={asterisk}
+                size=".9em"
+              />&nbsp; Loading...
+            </h1>
           </div>
         </div>
       )

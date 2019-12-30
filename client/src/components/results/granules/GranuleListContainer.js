@@ -3,11 +3,6 @@ import {
   insertSelectedGranule,
   removeSelectedGranule,
 } from '../../../actions/CartActions'
-import {
-  insertGranule,
-  removeGranuleFromLocalStorage,
-  getSelectedGranulesFromStorage,
-} from '../../../utils/localStorageUtil'
 
 import GranuleList from './GranuleList'
 
@@ -24,17 +19,21 @@ const mapStateToProps = state => {
     totalGranuleCount,
     loadedGranuleCount,
   } = state.search.granuleResult
-  const focusedItem = state.search.collectionDetailResult.collection
+  const collectionDetail = state.search.collectionDetailResult.collection
 
   return {
-    collectionTitle: focusedItem ? focusedItem.attributes.title : null,
+    collectionId: collectionDetail ? collectionDetail.id : null,
+    collectionTitle: collectionDetail
+      ? collectionDetail.attributes.title
+      : null,
     results: granules,
     totalHits: totalGranuleCount,
     returnedHits: loadedGranuleCount,
-    selectedGranules: getSelectedGranulesFromStorage(state),
+    selectedGranules: state.cart.selectedGranules,
     featuresEnabled: state.config.featuresEnabled,
     granuleFilter: state.search.granuleFilter,
     addFilteredGranulesToCartWarning: state.cart.error,
+    loading: state.search.granuleRequest.inFlight,
   }
 }
 
@@ -54,11 +53,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       )
     },
     selectGranule: (item, itemId) => {
-      insertGranule(itemId, item)
       dispatch(insertSelectedGranule(item, itemId))
     },
     deselectGranule: itemId => {
-      removeGranuleFromLocalStorage(itemId)
       dispatch(removeSelectedGranule(itemId))
     },
   }

@@ -2,11 +2,7 @@ import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {getIdFromPath} from './urlUtils'
 import {initialState} from '../reducers/search/collectionFilter'
-import {
-  recenterGeometry,
-  convertBboxStringToGeoJson,
-  convertGeoJsonToBboxString,
-} from './geoUtils'
+import {convertBboxToQueryGeoJson} from './geoUtils'
 import {textToNumber} from './inputUtils'
 
 export const PAGE_SIZE = 20
@@ -66,38 +62,60 @@ const assembleFacetFilters = ({selectedFacets}) => {
   return _.map(selectedFacets, (v, k) => ({type: 'facet', name: k, values: v}))
 }
 
-const assembleGeometryFilters = ({geoJSON}) => {
-  if (geoJSON && geoJSON.geometry) {
-    const recenteredGeometry = recenterGeometry(geoJSON.geometry)
-    return {type: 'geometry', geometry: recenteredGeometry}
+const assembleGeometryFilters = ({bbox, geoRelationship}) => {
+  if (bbox) {
+    let geometry = convertBboxToQueryGeoJson(
+      bbox.west,
+      bbox.south,
+      bbox.east,
+      bbox.north
+    )
+    if (geometry) {
+      return {
+        type: 'geometry',
+        geometry: geometry.geometry,
+        relation: geoRelationship,
+      }
+    }
   }
 }
 
 const assembleTemporalFilters = ({
+  timeRelationship,
   startDateTime,
   endDateTime,
   startYear,
   endYear,
 }) => {
   if (startDateTime && endDateTime) {
-    return {type: 'datetime', after: startDateTime, before: endDateTime}
+    return {
+      type: 'datetime',
+      after: startDateTime,
+      before: endDateTime,
+      relation: timeRelationship,
+    }
   }
   else if (startDateTime) {
-    return {type: 'datetime', after: startDateTime}
+    return {type: 'datetime', after: startDateTime, relation: timeRelationship}
   }
   else if (endDateTime) {
-    return {type: 'datetime', before: endDateTime}
+    return {type: 'datetime', before: endDateTime, relation: timeRelationship}
   }
 
   // note: while this method does not explicitly prevent both datetime and year being used together (which is not actually valid), it also won't return anything for year if either datetime filter is used...
   if (startYear && endYear) {
-    return {type: 'year', after: startYear, before: endYear}
+    return {
+      type: 'year',
+      after: startYear,
+      before: endYear,
+      relation: timeRelationship,
+    }
   }
   else if (startYear) {
-    return {type: 'year', after: startYear}
+    return {type: 'year', after: startYear, relation: timeRelationship}
   }
   else if (endYear) {
-    return {type: 'year', before: endYear}
+    return {type: 'year', before: endYear, relation: timeRelationship}
   }
 }
 
@@ -144,7 +162,7 @@ export const decodePathAndQueryString = (path, queryString) => {
 export const encodeQueryString = searchParamsState => {
   const queryParams = _.map(searchParamsState, (v, k) => {
     const codec = _.find(codecs, c => c.longKey === k)
-    const encode = codec && codec.encodable(v)
+    const encode = codec && codec.encodable(v, searchParamsState)
     return encode ? `${codec.shortKey}=${codec.encode(v)}` : null
   })
   return _.filter(queryParams).join('&')
@@ -166,6 +184,38 @@ export const decodeQueryString = queryString => {
   return searchParams
 }
 
+const encodeRelationship = text => {
+  if (text == 'intersects') return 'i' // TODO don't know if I can get it to skip it (and if I did, it'd also skip for no actual time filters)
+  if (text == 'within') return 'w'
+  if (text == 'disjoint') return 'd'
+  if (text == 'contains') return 'c'
+}
+const decodeRelationship = text => {
+  if (text == 'd') return 'disjoint'
+  if (text == 'c') return 'contains'
+  if (text == 'w') return 'within'
+  if (text == 'i') return 'intersects'
+  return null
+}
+
+const convertArgsToBbox = (west, south, east, north) => {
+  return {
+    north: north,
+    east: east,
+    south: south,
+    west: west,
+  }
+}
+
+const decodeBbox = coordString => {
+  const coordArray = coordString.split(',').map(x => parseFloat(x))
+  return convertArgsToBbox(...coordArray)
+}
+
+const encodeBbox = bbox => {
+  return bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : ''
+}
+
 const codecs = [
   {
     longKey: 'queryText',
@@ -182,11 +232,36 @@ const codecs = [
     encodable: text => !_.isEmpty(text),
   },
   {
-    longKey: 'geoJSON',
+    longKey: 'bbox',
     shortKey: 'g',
-    encode: geoJSON => convertGeoJsonToBboxString(geoJSON),
-    decode: text => convertBboxStringToGeoJson(text),
-    encodable: getJSON => !_.isEmpty(getJSON),
+    encode: bbox => encodeBbox(bbox),
+
+    decode: text => decodeBbox(text),
+    encodable: bbox => !_.isEmpty(bbox),
+  },
+  {
+    longKey: 'geoRelationship',
+    shortKey: 'gr',
+    encode: text => encodeRelationship(text),
+    decode: text => decodeRelationship(text),
+    encodable: (text, queryState) => {
+      return !_.isEmpty(text) && !_.isEmpty(queryState.bbox)
+    },
+  },
+  {
+    longKey: 'timeRelationship',
+    shortKey: 'tr',
+    encode: text => encodeRelationship(text),
+    decode: text => decodeRelationship(text),
+    encodable: (text, queryState) => {
+      return (
+        !_.isEmpty(text) &&
+        (!_.isEmpty(queryState.startDateTime) ||
+          !_.isEmpty(queryState.endDateTime) ||
+          queryState.startYear != null ||
+          queryState.endYear != null)
+      )
+    },
   },
   {
     longKey: 'startDateTime',

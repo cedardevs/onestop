@@ -78,16 +78,33 @@ export const clearGranuleQueryText = () => ({
 })
 
 export const GRANULE_UPDATE_GEOMETRY = 'GRANULE_UPDATE_GEOMETRY'
-export const granuleUpdateGeometry = geoJSON => {
+export const granuleUpdateGeometry = bbox => {
   return {
     type: GRANULE_UPDATE_GEOMETRY,
-    geoJSON: geoJSON,
+    bbox: bbox,
   }
 }
 export const GRANULE_REMOVE_GEOMETRY = 'GRANULE_REMOVE_GEOMETRY'
 export const granuleRemoveGeometry = () => {
   return {
     type: GRANULE_REMOVE_GEOMETRY,
+  }
+}
+
+export const GRANULE_UPDATE_GEO_RELATIONSHIP = 'GRANULE_UPDATE_GEO_RELATIONSHIP'
+export const granuleUpdateGeoRelation = relationship => {
+  return {
+    type: GRANULE_UPDATE_GEO_RELATIONSHIP,
+    relationship: relationship,
+  }
+}
+
+export const GRANULE_UPDATE_TIME_RELATIONSHIP =
+  'GRANULE_UPDATE_TIME_RELATIONSHIP'
+export const granuleUpdateTimeRelation = relationship => {
+  return {
+    type: GRANULE_UPDATE_TIME_RELATIONSHIP,
+    relationship: relationship,
   }
 }
 
@@ -117,6 +134,7 @@ export const granuleUpdateDateRange = (startDate, endDate) => {
     endDate: endDate,
   }
 }
+
 export const GRANULE_REMOVE_DATE_RANGE = 'GRANULE_REMOVE_DATE_RANGE'
 export const granuleRemoveDateRange = () => {
   return {

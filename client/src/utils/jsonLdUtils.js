@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import moment from 'moment/moment'
+import {isPolygonABoundingBox} from './geoUtils'
 
 export const toJsonLd = (uuid, item, pageUrl) => {
   const parts = [
@@ -150,6 +151,33 @@ export const placenameList = item => {
   return _.map(locationKeywordsSubset(item), placenameListItem)
 }
 
+const polygonLd = coordinates => {
+  if (isPolygonABoundingBox(coordinates)) {
+    return `{
+      "@type": "Place",
+      "name": "geographic bounding box",
+      "geo": {
+        "@type": "GeoShape",
+        "description": "minY,minX maxY,maxX",
+        "box": "${coordinates[0][0][1]},${coordinates[0][0][0]} ${coordinates[0][2][1]},${coordinates[0][2][0]}"
+      }
+    }`
+  }
+  return `{
+  "@type": "Place",
+  "name": "geographic polygon",
+  "geo": {
+    "@type": "GeoShape",
+    "description": "y,x y,x ...",
+    "polygon": "${coordinates[0]
+      .map(it => {
+        return `${it[1]},${it[0]}`
+      })
+      .join(' ')}"
+  }
+}`
+}
+
 export const geoListItem = item => {
   const geometry = item.spatialBounding
   // For point, want GeoCoordnates: longitude:[0], latitude:[1]
@@ -183,18 +211,15 @@ export const geoListItem = item => {
       }
     }`
     }
-    else {
-      return `{
-      "@type": "Place",
-      "name": "geographic bounding box",
-      "geo": {
-        "@type": "GeoShape",
-        "description": "minY,minX maxY,maxX",
-        "box": "${geometry.coordinates[0][0][1]},${geometry
-        .coordinates[0][0][0]} ${geometry.coordinates[0][2][1]},${geometry
-        .coordinates[0][2][0]}"
-      }
-    }`
+    else if (geometry.type.toLowerCase() === 'polygon') {
+      return polygonLd(geometry.coordinates)
+    }
+    else if (geometry.type.toLowerCase() === 'multipolygon') {
+      return `${geometry.coordinates
+        .map(it => {
+          return polygonLd(it)
+        })
+        .join(', ')}`
     }
   }
   else {

@@ -1,22 +1,6 @@
 import React from 'react'
 import Select from 'react-select'
-import {FilterColors} from '../../style/defaultStyles'
-
-const selectTheme = theme => {
-  return {
-    ...theme,
-    borderRadius: '0.309em',
-    colors: {
-      ...theme.colors,
-      primary: FilterColors.DARKEST,
-      primary75: FilterColors.DARK,
-      primary50: FilterColors.MEDIUM,
-      primary25: FilterColors.LIGHT,
-      danger: '#277CB2',
-      dangerLight: '#277CB2',
-    },
-  }
-}
+import {FilterColors, selectTheme} from '../../style/defaultStyles'
 
 const cursorStyle = (styles, {isDisabled}) => {
   return {
@@ -108,7 +92,8 @@ export default class CartSelect extends React.Component {
           aria-labelledby="cartDownloadOptionsLabel"
           placeholder="Select file link type"
           defaultValue={defaultValue}
-          options={options}
+          // options={options} // when a single item is in cart this options are not regular obj which cause an error on the page
+          options={JSON.parse(JSON.stringify(options))} // this solved the problem but it needs further investigation
           formatOptionLabel={formatOptionLabel}
           onChange={onChange}
           onMenuOpen={onMenuOpen}

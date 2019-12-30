@@ -1,9 +1,7 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 import _ from 'lodash'
-import moment from 'moment/moment'
 
 import {FilterColors, SiteColors} from '../../../../style/defaultStyles'
-import {ymdToDateMap, isValidDate} from '../../../../utils/inputUtils'
 
 import FilterFieldset from '../../FilterFieldset'
 import YearField from './YearField'
@@ -28,6 +26,14 @@ const styleLabel = {
   marginBottom: '0.25em',
 }
 
+const styleLabelInvalid = {
+  textDecoration: `underline wavy ${SiteColors.WARNING}`,
+}
+
+const styleRequiredIndicator = {
+  color: `${SiteColors.WARNING}`,
+}
+
 const styleField = {
   color: FilterColors.TEXT,
   height: '2em',
@@ -38,77 +44,68 @@ const styleField = {
 const styleInputValidity = isValid => {
   return {
     paddingLeft: '5px',
+    width: '1em',
     color: isValid ? SiteColors.VALID : SiteColors.WARNING,
   }
 }
 
-const DateFieldset = ({name, date, onDateChange}) => {
+const DateFieldset = ({
+  name,
+  date,
+  onDateChange,
+  yearErrorId,
+  monthErrorId,
+  dayErrorId,
+}) => {
   const legendText = `${_.capitalize(name)} Date:`
-
-  const [ year, setYear ] = useState('')
-  const [ month, setMonth ] = useState('')
-  const [ day, setDay ] = useState('')
-  const [ valid, setValid ] = useState(true)
-
-  useEffect(
-    () => {
-      if (date != null) {
-        let dateObj = moment(date).utc()
-        setYear(dateObj.year().toString())
-        setMonth(dateObj.month().toString())
-        setDay(dateObj.date().toString())
-      }
-      else {
-        setYear('')
-        setMonth('')
-        setDay('')
-      }
-    },
-    [ date ] // when props date / redux store changes, update fields
-  )
-
-  useEffect(
-    () => {
-      let validValue = isValidDate(year, month, day)
-      setValid(validValue) // update UI
-      // valid hasn't actually been updated when we send onDateChange! sent the local variable instead
-      onDateChange(ymdToDateMap(year, month, day), validValue)
-    },
-    [ year, month, day ]
-  )
 
   return (
     <FilterFieldset legendText={legendText}>
       <div style={styleDate}>
         <YearField
           name={name}
-          value={year}
-          onChange={e => setYear(e.target.value)}
+          value={date.year.value}
+          required={date.year.required}
+          errorId={yearErrorId}
+          valid={date.year.valid}
+          onChange={e => date.year.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
+          styleLabelInvalid={styleLabelInvalid}
+          styleRequiredIndicator={styleRequiredIndicator}
           styleField={styleField}
         />
         <MonthField
           name={name}
-          value={month}
-          onChange={e => setMonth(e.target.value)}
+          value={date.month.value}
+          required={date.month.required}
+          errorId={monthErrorId}
+          valid={date.month.valid}
+          onChange={e => date.month.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
+          styleLabelInvalid={styleLabelInvalid}
+          styleRequiredIndicator={styleRequiredIndicator}
           styleField={styleField}
         />
         <DayField
           name={name}
-          value={day}
-          onChange={e => setDay(e.target.value)}
+          value={date.day.value}
+          required={date.day.required}
+          errorId={dayErrorId}
+          valid={date.day.valid}
+          onChange={e => date.day.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
+          styleLabelInvalid={styleLabelInvalid}
+          styleRequiredIndicator={styleRequiredIndicator}
           styleField={styleField}
         />
 
         <div style={styleLayout}>
           <span />
-          <span aria-hidden="true" style={styleInputValidity(valid)}>
-            {valid ? '✓' : '✖'}
+          <span aria-hidden="true" style={styleInputValidity(date.valid)}>
+            {date.valid ? '✓' : '✖'}
           </span>
         </div>
       </div>

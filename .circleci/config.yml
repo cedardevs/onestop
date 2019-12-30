@@ -7,12 +7,12 @@ defaults: &defaults
   docker:
     - image: circleci/openjdk:11-jdk
   environment:
-    - GRADLE_USER_HOME: .gradle_home
+    - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
   working_directory: ~/repo
 
 defaultsWithElasticsearch: &defaultsWithElasticsearch
   environment:
-    - GRADLE_USER_HOME: .gradle_home
+    - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
   docker:
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
     - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
@@ -40,7 +40,7 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
+      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
       # fallback to using the latest cache if no exact match is found
       - onestop-cache-v15-
 
@@ -57,7 +57,9 @@ saveCache: &saveCache
       - registry/build
       - search/build
       - stream-manager/build
-    key: onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
+      - cli/.gogradle
+      - cli/vendor
+    key: onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -267,6 +269,53 @@ jobs:
         paths:
         - stream-manager/build
 
+  cli-generation:
+    docker:
+      - image: circleci/golang
+    environment:
+      - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
+      - GOOS: 'linux'
+      - GOARCH: 'amd64'
+      - GCO_ENABLED: 0
+    working_directory: ~/repo
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+      - run:
+          name: go build
+          command: |
+           if test -f "~/repo/search/schema/openapi.yml"; then
+             echo "Generating CLI"
+             cp search/schema/openapi.yml cli/openapi.yml ;
+             cd cli ;
+             go get -u github.com/danielgtaylor/openapi-cli-generator ;
+             openapi-cli-generator generate openapi.yml
+           fi
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - cli/openapi.go
+            - cli/.gogradle
+
+  cli-publish:
+    <<: *defaults
+    working_directory: ~/repo
+    steps:
+      - <<: *attachWorkspace
+      - run:
+          name: Build image, publish
+          command: |
+            echo "${CIRCLE_BRANCH}"
+            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+              ./gradlew cli:jib
+            else
+              ./gradlew cli:jib --image=cedardevs/onestop-cli:2.4.0-$CIRCLE_BRANCH
+            fi
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - cli/.gogradle
+            - cli/vendor
   finalize:
     <<: *defaults
     steps:
@@ -344,6 +393,13 @@ workflows:
       - stream-manager:
           requires:
             - checkout
+      - cli-generation:
+          requires:
+            - checkout
+      - cli-publish:
+          requires:
+            - checkout
+            - cli-generation
       - finalize:
           requires:
             - admin
@@ -351,6 +407,8 @@ workflows:
             - registry
             - search
             - stream-manager
+            - cli-generation
+            - cli-publish
 
   nightly:
     triggers:

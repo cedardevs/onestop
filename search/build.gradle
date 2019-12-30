@@ -5,7 +5,6 @@ plugins {
   id 'groovy'
   id 'org.springframework.boot' // version declared in top-level buildscript
   id 'io.spring.dependency-management'
-  id "com.moowork.node"
   id 'com.google.cloud.tools.jib' version '1.6.1'
 }
 
@@ -173,12 +172,10 @@ task integrationTest(type: Test) {
   reports.junitXml.destination = file("${buildDir}/integration-test-results")
   reports.html.destination = file("${buildDir}/reports/integrationTests")
   environment project.envVars as Map<String, ?>
-  dependsOn 'generateJsonSchema'
 }
 check.dependsOn integrationTest
 
 bootWar {
-  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
 
   from("${buildDir}/resources/main") {
     include "onestop-request-schema.json"
@@ -194,7 +191,6 @@ bootWar {
 // variables are not set and can require different values (e.g. - keystore path/file)
 //task environmentVariables(type: Exec) {
 bootRun {
-  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
   environment project.envVars as Map<String, ?>
 }
 
@@ -208,57 +204,10 @@ task setupOpenapiGenPart1(type: Copy) {
   into "${buildDir}/tmp/schema"
 }
 
-// override the actual geometry so that the openApi is valid
-task setupOpenapiGenPart2(type: Copy) {
-  dependsOn "setupOpenapiGenPart1"
-  from "schema/components"
-  include "override-geometry.json"
-  into "${buildDir}/tmp/schema/components"
-  rename { filename ->
-    filename.replace 'override-geometry', 'geometry'
-  }
-}
-
-node {
-  version = '10.15.3'
-  npmVersion = '6.1.0'
-  download = true
-}
-
-task ensureRequestSchemaPath(type: Task) {
-  File requestSchemaPath = new File("${buildDir}/resources/main")
-  requestSchemaPath.mkdirs()
-}
-
-// NOTE: The 'buildRequest' task defined in package.json generates json dereference
-task generateJsonSchema(type: NpmTask) {
-  outputs.upToDateWhen { false }
-  dependsOn { [ 'ensureRequestSchemaPath', 'npmInstall' ] }
-  args = ['run', 'buildRequest']
-}
-tasks.assemble.dependsOn generateJsonSchema
-
-// NOTE: The 'build' task defined in package.json pipes the output directly to the output file
-task generateOpenApi(type: NpmTask) {
-  outputs.upToDateWhen { false }
-  dependsOn { ['npmInstall', 'processResources', 'setupOpenapiGenPart2'] }
-  args = ['run', 'build']
-  outputs.file("${buildDir}/resources/main/static/docs/openapi.yaml")
-}
-
-// NOTE: The 'testSchemas' task defined in package.json generates json dereference for test
-task generateTestSchemas(type: NpmTask) {
-  dependsOn { ['copyPartialSchemas', 'npmInstall'] }
-  args = ['run', 'testSchemas']
-}
-
-// copy schemas for testing
-task copyPartialSchemas(type: Copy) {
-  from 'schema/'
-  into "${buildDir}/resources/test/schema/"
-}
-
-test.dependsOn 'generateTestSchemas', 'generateJsonSchema'
+// task ensureRequestSchemaPath(type: Task) {
+//   File requestSchemaPath = new File("${buildDir}/resources/main")
+//   requestSchemaPath.mkdirs()
+// }
 
 processResources {
   outputs.upToDateWhen { false }
@@ -281,7 +230,7 @@ jib {
 
   from {
     // base image
-    image = 'tomcat:8.5.45-jdk11-openjdk'
+    image = 'tomcat:9.0.27-jdk11-openjdk'
   }
   to {
     image = imageRepository

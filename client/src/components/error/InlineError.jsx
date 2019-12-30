@@ -11,7 +11,7 @@ const defaultError = {
 }
 
 const styleError = {
-  backgroundColor: '#E74C3C',
+  backgroundColor: '#B0392E',
   margin: '1.618em',
   padding: '2em',
   boxShadow: boxShadow,
@@ -34,7 +34,7 @@ class InlineError extends React.Component {
     this.errors = this.extractErrors(props)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.errors = this.extractErrors(nextProps)
   }
 

@@ -1,6 +1,8 @@
 import React from 'react'
 import _ from 'lodash'
 
+import {consolidateStyles} from '../../../../utils/styleUtils'
+
 const styleYear = {
   width: '2.618em',
   margin: 0,
@@ -10,15 +12,20 @@ const styleYear = {
 const YearField = props => {
   const {
     name,
+    required,
     value,
+    valid,
     onChange,
     label,
     styleLayout,
     styleLabel,
+    styleLabelInvalid,
+    styleRequiredIndicator,
     styleField,
     maxLength,
     placeholder,
     ariaPlaceholder,
+    errorId,
   } = props
   const styleFieldApplied = {
     ...styleYear,
@@ -31,8 +38,12 @@ const YearField = props => {
 
   return (
     <div style={styleLayout}>
-      <label style={styleLabel} htmlFor={id}>
+      <label
+        style={consolidateStyles(styleLabel, valid ? null : styleLabelInvalid)}
+        htmlFor={id}
+      >
         {labelText}
+        {required ? <span style={styleRequiredIndicator}>*</span> : null}
       </label>
       <input
         type="text"
@@ -43,6 +54,9 @@ const YearField = props => {
           _.isEmpty(ariaPlaceholder) ? 'Y Y Y Y' : ariaPlaceholder
         }
         value={value}
+        aria-invalid={!valid}
+        aria-required={required}
+        aria-errormessage={errorId}
         onChange={onChange}
         maxLength={maxLength | 4}
         style={styleFieldApplied}

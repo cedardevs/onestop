@@ -22,9 +22,6 @@ const basePlugins = [
 ]
 
 const devPlugins = [
-  // enable HMR globally
-  new webpack.HotModuleReplacementPlugin(),
-
   // prints more readable module names in the browser console on HMR updates
   new webpack.NamedModulesPlugin(),
 ]
@@ -84,7 +81,7 @@ module.exports = env => {
           // otherwise, you may see console warnings like: `sockjs-node ERR_CONNECTION_REFUSED`
           // see: https://github.com/webpack/webpack-dev-server/issues/416#issuecomment-287797086
           host: 'localhost',
-          port: 9090,
+          port: 8888,
           disableHostCheck: true,
           hot: true,
           proxy: {

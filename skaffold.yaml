@@ -18,11 +18,17 @@ kind: Config
     features.kafka-ingest: true
     features.sitemap: true
     # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
-    env.KAFKA_SCHEMA_REGISTRY_URL: http://onestop-dev-cp-schema-registry:8081
-    env.KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://onestop-dev-cp-kafka:9092
     config: |-
       ---
       logging.level.org.cedar.onestop.api.admin: DEBUG
+      spring:
+        profiles: kafka-ingest
+      kafka:
+        bootstrap:
+          servers: PLAINTEXT://onestop-dev-cp-kafka:9092
+        schema:
+          registry:
+            url: http://onestop-dev-cp-schema-registry:8081
       ---
       spring:
         profiles: sitemap

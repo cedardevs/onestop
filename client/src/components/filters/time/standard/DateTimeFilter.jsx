@@ -1,91 +1,74 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import _ from 'lodash'
 
-import moment from 'moment/moment'
 import FlexColumn from '../../../common/ui/FlexColumn'
 import FlexRow from '../../../common/ui/FlexRow'
 import Button from '../../../common/input/Button'
+import RadioButtonSet from '../../../common/input/RadioButtonSet'
 import {Key} from '../../../../utils/keyboardUtils'
-import {isValidDateRange} from '../../../../utils/inputUtils'
-import {
-  FilterStyles,
-  FilterColors,
-  SiteColors,
-} from '../../../../style/defaultStyles'
+import {SiteColors} from '../../../../style/defaultStyles'
 import DateFieldset from './DateFieldset'
 import {exclamation_triangle, SvgIcon} from '../../../common/SvgIcon'
-
 import {
   styleFilterPanel,
   styleFieldsetBorder,
   styleForm,
 } from '../../common/styleFilters'
 import ApplyClearRow from '../../common/ApplyClearRow'
+import Relation from '../../Relation'
+import TimeRelationIllustration from '../TimeRelationIllustration'
+import {useDateRange} from './DateTimeEffect'
+import {consolidateStyles} from '../../../../utils/styleUtils'
 
-const warningStyle = warning => {
-  if (_.isEmpty(warning)) {
-    return {
-      display: 'none',
-    }
-  }
-  else {
-    return {
+const warningStyle = (startValid, endValid, errorMessage) => {
+  return consolidateStyles(
+    {
       color: SiteColors.WARNING,
       textAlign: 'center',
-      margin: '0.75em 0 0.5em',
       fontWeight: 'bold',
       fontSize: '1.15em',
-    }
-  }
+    },
+    !startValid || !endValid || !_.isEmpty(errorMessage)
+      ? {margin: '0.75em 0 0.5em'}
+      : null
+  )
 }
 
-const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
-  const [ start, setStart ] = useState({date: {}, valid: true})
-  const [ end, setEnd ] = useState({date: {}, valid: true})
-  const [ dateRangeValid, setDateRangeValid ] = useState(true)
-  const [ warning, setWarning ] = useState('')
-
-  const updateStartDate = (date, valid) => {
-    setStart({date: date, valid: valid})
-    setWarning('')
-    setDateRangeValid(isValidDateRange(date, end.date))
-  }
-  const updateEndDate = (date, valid) => {
-    setEnd({date: date, valid: valid})
-    setWarning('')
-    setDateRangeValid(isValidDateRange(start.date, date))
-  }
-
-  const clearDates = () => {
-    clear()
-    setStart({date: {}, valid: true})
-    setEnd({date: {}, valid: true})
-    setDateRangeValid(true)
-    setWarning('')
-  }
+const DateTimeFilter = ({
+  startDateTime,
+  endDateTime,
+  timeRelationship,
+  updateTimeRelationship,
+  clear,
+  applyFilter,
+}) => {
+  const [
+    start,
+    end,
+    clearDateRange,
+    validate,
+    asDateStrings,
+    errorCumulative,
+  ] = useDateRange(startDateTime, endDateTime)
 
   const applyDates = () => {
-    if (!start.valid || !end.valid || !dateRangeValid) {
-      setWarning(createWarning(start.valid, end.valid, dateRangeValid))
-    }
-    else {
-      let startDateString = !_.every(start.date, _.isNull)
-        ? moment(start.date).utc().startOf('day').format()
-        : null
-      let endDateString = !_.every(end.date, _.isNull)
-        ? moment(end.date).utc().startOf('day').format()
-        : null
-
+    if (validate()) {
+      const [ startDateString, endDateString ] = asDateStrings()
       applyFilter(startDateString, endDateString)
     }
   }
 
-  const createWarning = (startValueValid, endValueValid, dateRangeValid) => {
-    if (!startValueValid && !endValueValid) return 'Invalid start and end date.'
-    if (!startValueValid) return 'Invalid start date.'
-    if (!endValueValid) return 'Invalid end date.'
-    if (!dateRangeValid) return 'Invalid date range.'
-    return 'Unknown error'
+  const clearDates = () => {
+    clear()
+    clearDateRange()
+  }
+
+  const renderErrors = ({field, fieldset}) => {
+    return (
+      <div>
+        {field} {fieldset}
+      </div>
+    )
   }
 
   const handleKeyDown = event => {
@@ -104,13 +87,53 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
       >
         <DateFieldset
           name="start"
-          date={startDateTime}
-          onDateChange={updateStartDate}
+          date={start}
+          yearErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterStartYearErrors'
+            )
+          }
+          monthErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterStartMonthErrors'
+            )
+          }
+          dayErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterStartDayErrors'
+            )
+          }
         />
         <DateFieldset
           name="end"
-          date={endDateTime}
-          onDateChange={updateEndDate}
+          date={end}
+          yearErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterEndYearErrors'
+            )
+          }
+          monthErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterEndMonthErrors'
+            )
+          }
+          dayErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterEndDayErrors'
+            )
+          }
         />
       </form>
     </div>
@@ -125,14 +148,24 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
     />
   )
 
-  const warningMessage = (
-    <div
-      key="DateFilter::InputColumn::Warning"
-      style={warningStyle(warning)}
-      role="alert"
-    >
-      {warning}
-    </div>
+  const illustration = relation => {
+    return (
+      <TimeRelationIllustration
+        relation={relation}
+        hasStart={!_.isEmpty(start.year.value)}
+        hasEnd={!_.isEmpty(end.year.value)}
+      />
+    )
+  }
+
+  const relation = (
+    <Relation
+      id="datetimeRelation"
+      key="DateFilter::InputColumn::Advanced"
+      relation={timeRelationship}
+      onUpdate={updateTimeRelationship}
+      illustration={illustration}
+    />
   )
 
   return (
@@ -142,8 +175,45 @@ const DateTimeFilter = ({startDateTime, endDateTime, clear, applyFilter}) => {
           Provide a start date, end date, or both. Day and month are optional.
           Future dates are not accepted.
         </legend>
-        <FlexColumn items={[ form, buttons, warningMessage ]} />
+        <FlexColumn
+          items={[
+            form,
+            buttons,
+            <div
+              key="DateFilter::InputColumn::Warning"
+              style={warningStyle(start.valid, end.valid, errorCumulative)}
+              role="alert"
+              aria-live="polite"
+            >
+              <div id="dateFilterStartYearErrors">
+                {renderErrors(start.year.errors)}
+              </div>
+              <div id="dateFilterStartMonthErrors">
+                {renderErrors(start.month.errors)}
+              </div>
+              <div id="dateFilterStartDayErrors">
+                {renderErrors(start.day.errors)}
+              </div>
+              <div id="dateFilterEndYearErrors">
+                {renderErrors(end.year.errors)}
+              </div>
+              <div id="dateFilterEndMonthErrors">
+                {renderErrors(end.month.errors)}
+              </div>
+              <div id="dateFilterEndDayErrors">
+                {renderErrors(end.day.errors)}
+              </div>
+              <div id="dateFilterRangeErrors">
+                {!_.isEmpty(errorCumulative) ? errorCumulative : null}
+              </div>
+            </div>,
+          ]}
+        />
       </fieldset>
+      <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
+        Additional Filtering Options:
+      </h4>
+      {relation}
     </div>
   )
 }

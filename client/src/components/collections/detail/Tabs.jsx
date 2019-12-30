@@ -170,7 +170,7 @@ export default class Tabs extends React.Component {
     super(props)
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -179,7 +179,7 @@ export default class Tabs extends React.Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.activeIndex !== this.props.activeIndex) {
       this.setState(prevState => {
         return {

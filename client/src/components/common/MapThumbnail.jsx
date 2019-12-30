@@ -5,9 +5,9 @@ import L from 'leaflet'
 import * as E from 'esri-leaflet'
 import _ from 'lodash'
 import {
-  ensureDatelineFriendlyGeometry,
+  displayLeafletGeometry,
   renderPointAsPolygon,
-} from '../../utils/geoUtils'
+} from '../../utils/resultUtils'
 
 class MapThumbnail extends React.Component {
   constructor(props) {
@@ -42,7 +42,7 @@ class MapThumbnail extends React.Component {
         geometry = renderPointAsPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
       }
       else {
-        geometry = ensureDatelineFriendlyGeometry(this.props.geometry)
+        geometry = this.props.geometry
       }
       geoJsonLayer = L.GeoJSON.geometryToLayer({
         type: 'Feature',

@@ -7,6 +7,7 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
+import org.cedar.onestop.registry.util.TimeFormatUtils
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
@@ -55,7 +56,7 @@ class FullTopologySpec extends Specification {
   }
 
   def 'ingests and aggregates raw granule info'() {
-    def key = 'A'
+    def key = '101cccf3-2f54-4dec-9804-192545496955'
     def value1 = buildTestGranule('{"size":42}',  Method.POST)
     def value2 = buildTestGranule('{"name":"test"}', Method.PATCH)
 
@@ -64,7 +65,7 @@ class FullTopologySpec extends Specification {
     driver.pipeInput(inputFactory.create(inputTopic, key, value2))
 
     and:
-    def aggregate = inputStore.get('A')
+    def aggregate = inputStore.get('101cccf3-2f54-4dec-9804-192545496955')
 
     then:
     aggregate instanceof AggregatedInput
@@ -73,7 +74,7 @@ class FullTopologySpec extends Specification {
   }
 
   def 'handles duplicated inputs'() {
-    def key = 'A'
+    def key = '101cccf3-2f54-4dec-9804-192545496955'
     def json1 = '{"relationships":[{"type":"COLLECTION","id":"11111111-1111-1111-1111-111111111111"}]}'
     def json2 = '{"relationships":[{"type":"COLLECTION","id":"11111111-1111-1111-1111-111111111111"}]}'
     def value1 = buildTestGranule(json1,  Method.PATCH)
@@ -84,7 +85,7 @@ class FullTopologySpec extends Specification {
     driver.pipeInput(inputFactory.create(inputTopic, key, value2))
 
     and:
-    def aggregate = inputStore.get('A')
+    def aggregate = inputStore.get('101cccf3-2f54-4dec-9804-192545496955')
 
     then:
     aggregate instanceof AggregatedInput
@@ -96,7 +97,7 @@ class FullTopologySpec extends Specification {
   }
 
   def 'handles real world inputs with duplicated values from common ingest'() {
-    def key = 'A'
+    def key = '101cccf3-2f54-4dec-9804-192545496955'
     def jsonInputs = new JsonSlurper().parse(ClassLoader.systemClassLoader.getResourceAsStream('real-world-inputs.json'))
     def avroInputs = jsonInputs.collect {
       AvroUtils.jsonToAvro(JsonOutput.toJson(it), Input.classSchema)
@@ -121,14 +122,14 @@ class FullTopologySpec extends Specification {
   }
 
   def 'handles a delete input for nonexistent record'() {
-    def key = 'A'
+    def key = '101cccf3-2f54-4dec-9804-192545496955'
     def value1 = Input.newBuilder().setMethod(Method.DELETE).setType(inputType).build()
 
     when:
     driver.pipeInput(inputFactory.create(inputTopic, key, value1))
 
     and:
-    def aggregate = inputStore.get('A')
+    def aggregate = inputStore.get('101cccf3-2f54-4dec-9804-192545496955')
 
     then:
     aggregate == null
@@ -140,7 +141,7 @@ class FullTopologySpec extends Specification {
   }
 
   def 'values for discovery and publishing are set to the default values'() {
-    def key = 'A'
+    def key = '101cccf3-2f54-4dec-9804-192545496955'
     def discovery1 = Discovery.newBuilder()
         .build()
 
@@ -186,7 +187,7 @@ class FullTopologySpec extends Specification {
   }
 
   def 'saves and updates parsed granule values with  '() {
-    def key = 'A'
+    def key = '101cccf3-2f54-4dec-9804-192545496955'
     def discovery1 = Discovery.newBuilder()
         .setFileIdentifier('gov.super.important:FILE-ID')
         .setTitle("Title")
@@ -228,7 +229,7 @@ class FullTopologySpec extends Specification {
   }
 
   def 'sends tombstones for private granules'() {
-    def key = 'A'
+    def key = '101cccf3-2f54-4dec-9804-192545496955'
     def discovery = Discovery.newBuilder()
         .setTitle("secret")
         .build()
@@ -254,10 +255,10 @@ class FullTopologySpec extends Specification {
   }
 
   def 're-publishes granules at an indicated time'() {
-    def key = 'A'
+    def key = '101cccf3-2f54-4dec-9804-192545496955'
     def plusFiveTime = ZonedDateTime.now(UTC_ID).plusSeconds(5)
     def plusFiveString = ISO_OFFSET_DATE_TIME.format(plusFiveTime)
-    Long plusFiveLong = org.cedar.onestop.registry.util.TimeFormatUtils.parseTimestamp(plusFiveString)
+    Long plusFiveLong = TimeFormatUtils.parseTimestamp(plusFiveString)
     def discovery = Discovery.newBuilder()
         .setTitle("secret")
         .build()

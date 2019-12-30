@@ -39,16 +39,34 @@ export const collectionSearchError = errors => ({
 })
 
 export const COLLECTION_UPDATE_GEOMETRY = 'COLLECTION_UPDATE_GEOMETRY'
-export const collectionUpdateGeometry = geoJSON => {
+export const collectionUpdateGeometry = bbox => {
   return {
     type: COLLECTION_UPDATE_GEOMETRY,
-    geoJSON: geoJSON,
+    bbox: bbox,
   }
 }
 export const COLLECTION_REMOVE_GEOMETRY = 'COLLECTION_REMOVE_GEOMETRY'
 export const collectionRemoveGeometry = () => {
   return {
     type: COLLECTION_REMOVE_GEOMETRY,
+  }
+}
+
+export const COLLECTION_UPDATE_GEO_RELATIONSHIP =
+  'COLLECTION_UPDATE_GEO_RELATIONSHIP'
+export const collectionUpdateGeoRelation = relationship => {
+  return {
+    type: COLLECTION_UPDATE_GEO_RELATIONSHIP,
+    relationship: relationship,
+  }
+}
+
+export const COLLECTION_UPDATE_TIME_RELATIONSHIP =
+  'COLLECTION_UPDATE_TIME_RELATIONSHIP'
+export const collectionUpdateTimeRelation = relationship => {
+  return {
+    type: COLLECTION_UPDATE_TIME_RELATIONSHIP,
+    relationship: relationship,
   }
 }
 

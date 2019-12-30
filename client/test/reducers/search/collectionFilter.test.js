@@ -4,12 +4,14 @@ import {
   initialState,
 } from '../../../src/reducers/search/collectionFilter'
 import {
+  collectionUpdateTimeRelation,
   collectionUpdateDateRange,
   collectionRemoveDateRange,
   collectionUpdateYearRange,
   collectionRemoveYearRange,
   collectionUpdateGeometry,
   collectionRemoveGeometry,
+  collectionUpdateGeoRelation,
   collectionToggleExcludeGlobal,
   collectionToggleFacet,
   collectionNewSearchRequested,
@@ -27,7 +29,9 @@ const assertParam = (param, result, expected, fallback) => {
 const assertAllFilterParams = (results, values, defaults) => {
   assertParam('pageOffset', results, values, defaults)
   assertParam('queryText', results, values, defaults)
-  assertParam('geoJSON', results, values, defaults)
+  assertParam('bbox', results, values, defaults)
+  assertParam('geoRelationship', results, values, defaults)
+  assertParam('timeRelationship', results, values, defaults)
   assertParam('startDateTime', results, values, defaults)
   assertParam('endDateTime', results, values, defaults)
   assertParam('startYear', results, values, defaults)
@@ -41,10 +45,14 @@ describe('The collection filter reducer', function(){
     // not a single default value
     pageOffset: 40,
     queryText: 'demo',
-    geoJSON: {
-      type: 'Point',
-      geometry: {type: 'Point', coordinates: [ 0, 0 ]},
+    bbox: {
+      west: 123,
+      north: 80,
+      east: 23,
+      south: -20,
     },
+    geoRelationship: 'within',
+    timeRelationship: 'disjoint',
     startDateTime: '2000-01-01T00:00:00Z',
     endDateTime: '3000-01-01T00:00:00Z',
     startYear: -30000,
@@ -59,7 +67,9 @@ describe('The collection filter reducer', function(){
     expect(result).toEqual({
       pageOffset: 0,
       queryText: '',
-      geoJSON: null,
+      bbox: null,
+      geoRelationship: 'intersects',
+      timeRelationship: 'intersects',
       startDateTime: null,
       endDateTime: null,
       startYear: null,
@@ -131,14 +141,16 @@ describe('The collection filter reducer', function(){
         },
         {
           name:
-            'resets to initial values on except where explicitly set (queryText)',
+            'resets to initial values except where explicitly set (queryText)',
           initialState: nonInitialState,
           function: collectionNewSearchResetFiltersRequested,
           params: [ {queryText: 'new'} ],
           expectedChanges: {
             pageOffset: 0,
             queryText: 'new',
-            geoJSON: null,
+            bbox: null,
+            geoRelationship: 'intersects',
+            timeRelationship: 'intersects',
             startDateTime: null,
             endDateTime: null,
             startYear: null,
@@ -149,7 +161,7 @@ describe('The collection filter reducer', function(){
         },
         {
           name:
-            'resets to initial values on except where explicitly set (selectedFacets)',
+            'resets to initial values except where explicitly set (selectedFacets)',
           initialState: nonInitialState,
           function: collectionNewSearchResetFiltersRequested,
           params: [
@@ -162,7 +174,9 @@ describe('The collection filter reducer', function(){
           expectedChanges: {
             pageOffset: 0,
             queryText: '',
-            geoJSON: null,
+            bbox: null,
+            geoRelationship: 'intersects',
+            timeRelationship: 'intersects',
             startDateTime: null,
             endDateTime: null,
             startYear: null,
@@ -199,18 +213,14 @@ describe('The collection filter reducer', function(){
           params: [
             {
               queryText: 'new',
-              geoJSON: {
-                type: 'Polygon',
-                coordinates: [
-                  [
-                    [ 100.0, 0.0 ],
-                    [ 101.0, 0.0 ],
-                    [ 101.0, 1.0 ],
-                    [ 100.0, 1.0 ],
-                    [ 100.0, 0.0 ],
-                  ],
-                ],
+              bbox: {
+                west: 100.0,
+                north: 1.0,
+                south: 0.0,
+                east: 101.0,
               },
+              geoRelationship: 'contains',
+              timeRelationship: 'contains',
               startDateTime: '1998-01-01T00:00:00Z',
               endDateTime: '2020-01-01T00:00:00Z',
               startYear: -100000000,
@@ -224,18 +234,14 @@ describe('The collection filter reducer', function(){
           expectedChanges: {
             pageOffset: 0,
             queryText: 'new',
-            geoJSON: {
-              type: 'Polygon',
-              coordinates: [
-                [
-                  [ 100.0, 0.0 ],
-                  [ 101.0, 0.0 ],
-                  [ 101.0, 1.0 ],
-                  [ 100.0, 1.0 ],
-                  [ 100.0, 0.0 ],
-                ],
-              ],
+            bbox: {
+              west: 100.0,
+              north: 1.0,
+              south: 0.0,
+              east: 101.0,
             },
+            geoRelationship: 'contains',
+            timeRelationship: 'contains',
             startDateTime: '1998-01-01T00:00:00Z',
             endDateTime: '2020-01-01T00:00:00Z',
             startYear: -100000000,
@@ -270,23 +276,11 @@ describe('The collection filter reducer', function(){
   })
 
   describe('individual filter value action', function(){
-    const validGeoJSON = {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [ 100.0, 0.0 ],
-            [ 101.0, 0.0 ],
-            [ 101.0, 1.0 ],
-            [ 100.0, 1.0 ],
-            [ 100.0, 0.0 ],
-          ],
-        ],
-      },
-      properties: {
-        description: 'Valid test GeoJSON',
-      },
+    const validBbox = {
+      west: 100.0,
+      north: 1.0,
+      south: 0.0,
+      east: 101.0,
     }
     const paramActionTestCases = [
       {
@@ -295,6 +289,15 @@ describe('The collection filter reducer', function(){
         function: collectionUpdateDateRange,
         params: [ '2017-01-01T00:00:00Z', null ],
         expectedChanges: {startDateTime: '2017-01-01T00:00:00Z'},
+      },
+      {
+        name: 'sets time relation',
+        initialState: initialState,
+        function: collectionUpdateTimeRelation,
+        params: [ 'within' ],
+        expectedChanges: {
+          timeRelationship: 'within',
+        },
       },
       {
         name: 'sets end date',
@@ -353,14 +356,23 @@ describe('The collection filter reducer', function(){
         name: 'sets geometry',
         initialState: initialState,
         function: collectionUpdateGeometry,
-        params: [ validGeoJSON ],
-        expectedChanges: {geoJSON: validGeoJSON},
+        params: [ validBbox ],
+        expectedChanges: {bbox: validBbox},
       },
       {
         name: 'unsets geometry',
         initialState: nonInitialState,
         function: collectionRemoveGeometry,
-        expectedChanges: {geoJSON: null},
+        expectedChanges: {bbox: null},
+      },
+      {
+        name: 'sets geo relation',
+        initialState: initialState,
+        function: collectionUpdateGeoRelation,
+        params: [ 'disjoint' ],
+        expectedChanges: {
+          geoRelationship: 'disjoint',
+        },
       },
       {
         name: 'sets facet',
@@ -412,7 +424,7 @@ describe('The collection filter reducer', function(){
         initialState: {
           pageOffset: 0,
           queryText: '',
-          geoJSON: null,
+          bbox: null,
           startDateTime: null,
           endDateTime: null,
           startYear: null,

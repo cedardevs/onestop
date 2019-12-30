@@ -6,9 +6,12 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.TransformerSupplier;
+import org.apache.kafka.streams.kstream.ValueTransformerSupplier;
 import org.apache.kafka.streams.state.Stores;
 import org.cedar.onestop.kafka.common.constants.Topics;
+import org.cedar.onestop.kafka.common.util.TimestampedValue;
 import org.cedar.onestop.kafka.common.util.Timestamper;
+import org.cedar.onestop.registry.util.UUIDValidator;
 import org.cedar.schemas.avro.psi.Input;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
@@ -28,26 +31,25 @@ public class TopologyBuilders {
   }
 
   public static StreamsBuilder addTopologyForType(StreamsBuilder builder, RecordType type, Long publishInterval) {
-    var inputTopics = Topics.inputSources(type).stream()
+    Topics.inputSources(type).stream()
         .map((s) -> Topics.inputTopic(type, s))
         .collect(Collectors.toList());
 
     // TODO - aggregate items from all input topics into a single KTable
 
     // build input table for each source
-    var inputTables = Topics.inputSources(type).stream()
+    Topics.inputSources(type).stream()
         .collect(Collectors.toMap(
             source -> source,
-            source -> {
-              return builder.<String, Input>stream(Topics.inputTopic(type, source))
-                  .transformValues(() -> new Timestamper<Input>())
-                  .groupByKey()
-                  .aggregate(
-                      StreamFunctions.aggregatedInputInitializer,
-                      StreamFunctions.inputAggregator,
-                      Materialized.as(Topics.inputStore(type, source)));
-            }
-    ));
+            source -> builder.<String, Input>stream(Topics.inputTopic(type, source))
+                .filter((k, v) -> UUIDValidator.isValid(k))
+                .transformValues((ValueTransformerSupplier<Input, TimestampedValue<Input>>) Timestamper::new)
+                .groupByKey()
+                .aggregate(
+                    StreamFunctions.aggregatedInputInitializer,
+                    StreamFunctions.inputAggregator,
+                    Materialized.as(Topics.inputStore(type, source)))
+        ));
 
     // build parsed table
     KTable<String, ParsedRecord> parsedTable = builder
@@ -79,7 +81,7 @@ public class TopologyBuilders {
     // build published topic
     parsedTable
         .toStream()
-        .transformValues(() -> new PublishingAwareTransformer())
+        .transformValues(PublishingAwareTransformer::new)
         .to(Topics.publishedTopic(type));
 
     return builder;

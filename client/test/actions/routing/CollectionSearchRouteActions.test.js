@@ -96,7 +96,7 @@ describe('collection search actions', function(){
     params: [ mockHistory, {startDateTime: '1998'} ],
     expectedURL: {
       pathname: '/collections',
-      search: '?s=1998',
+      search: '?tr=i&s=1998', // default intersects relation
     },
   }
   const submitNextPageCase = {

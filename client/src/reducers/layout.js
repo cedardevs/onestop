@@ -5,6 +5,8 @@ import {
   TOGGLE_LEFT_OPEN,
   TOGGLE_RIGHT_OPEN,
   TOGGLE_MAP,
+  TOGGLE_MAP_OPEN,
+  TOGGLE_MAP_CLOSE,
   SET_HEADER_MENU_OPEN,
   SHOW_GRANULE_VIDEO,
 } from '../actions/LayoutActions'
@@ -44,6 +46,10 @@ export const layout = (state = initialState, action) => {
     case TOGGLE_MAP:
       const previousShowMap = state.showMap
       return Immutable.set(state, 'showMap', !previousShowMap)
+    case TOGGLE_MAP_OPEN:
+      return Immutable.set(state, 'showMap', true)
+    case TOGGLE_MAP_CLOSE:
+      return Immutable.set(state, 'showMap', false)
     case SHOW_GRANULE_VIDEO:
       return Immutable.set(state, 'granuleVideo', action.granuleVideo)
     case SET_HEADER_MENU_OPEN:

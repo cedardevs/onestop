@@ -97,6 +97,7 @@ export const SiteColors = {
   HEADER: '#242C36',
   HEADER_TEXT: '#FFF',
   LINK: '#2f668a',
+  LINK_LIGHT: '#9fd7fc',
 }
 export const SiteStyles = {
   HEADER: {
@@ -136,4 +137,21 @@ export const FilterStyles = {
     backgroundColor: FilterColors.DARKEST,
     color: FilterColors.INVERSE_TEXT,
   },
+}
+
+export const selectTheme = theme => {
+  // used for consistent react-select styling
+  return {
+    ...theme,
+    borderRadius: '0.309em',
+    colors: {
+      ...theme.colors,
+      primary: FilterColors.DARKEST,
+      primary75: FilterColors.DARK,
+      primary50: FilterColors.MEDIUM,
+      primary25: FilterColors.LIGHT,
+      danger: '#277CB2',
+      dangerLight: '#277CB2',
+    },
+  }
 }
