@@ -4,11 +4,10 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.PunctuationType;
+import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,14 +17,14 @@ import java.time.Duration;
 public class BulkIndexingTransformer implements Transformer<String, DocWriteRequest, KeyValue<String, BulkItemResponse>> {
   private static final Logger log = LoggerFactory.getLogger(BulkIndexingTransformer.class);
 
-  private final RestHighLevelClient client;
+  private final ElasticsearchService client;
   private final Duration maxPublishInterval;
   private final long maxPublishBytes;
 
   private ProcessorContext context;
   private BulkRequest request;
 
-  public BulkIndexingTransformer(RestHighLevelClient client, Duration maxPublishInterval, long maxPublishBytes) {
+  public BulkIndexingTransformer(ElasticsearchService client, Duration maxPublishInterval, long maxPublishBytes) {
     this.client = client;
     this.maxPublishInterval = maxPublishInterval;
     this.maxPublishBytes = maxPublishBytes;
@@ -54,7 +53,7 @@ public class BulkIndexingTransformer implements Transformer<String, DocWriteRequ
     }
     try {
       log.info("Submitting bulk request wth [" + numActions + "] actions and approximately [" + request.estimatedSizeInBytes() + "] bytes");
-      var response = client.bulk(request, RequestOptions.DEFAULT);
+      var response = client.bulk(request);
       log.info("Completed bulk request wth [" + numActions + "] actions in [" + response.getTook() + "]");
       response.iterator().forEachRemaining(item -> {
         var id = item.getId();

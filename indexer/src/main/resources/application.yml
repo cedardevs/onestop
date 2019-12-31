@@ -1,0 +1,38 @@
+# Defaults for configurable values
+---
+kafka:
+  bootstrap:
+    servers:
+elasticsearch:
+  host:
+  port:
+  ssl:
+    enabled:
+  rw:
+    user:
+    pass:
+  index:
+    prefix:
+  max-tasks: 10
+  requests-per-second:
+  bulk:
+    interval:
+      ms: 10000 # 10s
+    max:
+      bytes: 10000000 # 10MB
+flattening:
+  topic:
+    name: "collection-flattening-triggers"
+    partitions: 5
+    replication: 2
+  interval:
+    ms: 30000 # 30s
+sitemap:
+  scroll-size:
+  collections-per-submap:
+  topic:
+    name: "sitemap-triggers"
+    partitions: 1
+    replication: 1
+  interval:
+    ms: 86400000 # 24hr

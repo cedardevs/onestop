@@ -25,7 +25,7 @@ public class ElasticsearchFactory {
     var elasticPort = Integer.valueOf(config.getOrDefault("elasticsearch.port", "-1").toString());
 
     if (elasticHost.isBlank() || elasticPort < 0) {
-      throw new IllegalStateException("`elastic.host` and `elastic.port` configuration values are required");
+      throw new IllegalStateException("`elasticsearch.host` and `elasticsearch.port` configuration values are required");
     }
 
     var sslEnabled = Boolean.valueOf(config.getOrDefault("elasticsearch.ssl.enabled", "").toString());

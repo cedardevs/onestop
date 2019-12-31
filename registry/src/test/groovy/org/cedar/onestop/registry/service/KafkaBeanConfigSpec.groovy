@@ -1,7 +1,7 @@
 package org.cedar.onestop.registry.service
 
 import org.apache.kafka.streams.KafkaStreams
-import org.cedar.onestop.registry.stream.TopicInitializer
+import org.cedar.onestop.kafka.common.util.TopicInitializer
 import spock.lang.Specification
 import spock.lang.Unroll
 

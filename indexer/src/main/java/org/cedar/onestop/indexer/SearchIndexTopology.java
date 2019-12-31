@@ -1,5 +1,6 @@
 package org.cedar.onestop.indexer;
 
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
@@ -35,28 +36,31 @@ public class SearchIndexTopology {
 
   public static Topology buildSearchIndexTopology(ElasticsearchService esService, AppConfig appConfig) throws IOException {
     var streamsBuilder = new StreamsBuilder();
-    long bulkIntervalMillis = Long.parseLong(appConfig.getOrDefault("elasticsearch.bulk.interval.ms", "10000").toString());
-    long bulkMaxBytes = Long.parseLong(appConfig.getOrDefault("elasticsearch.bulk.max.bytes", "10000000").toString());
+    long bulkIntervalMillis = Long.parseLong(appConfig.get("elasticsearch.bulk.interval.ms").toString());
+    long bulkMaxBytes = Long.parseLong(appConfig.get("elasticsearch.bulk.max.bytes").toString());
     var flatteningScript = FileUtil.textFromClasspathFile(FLATTEN_SCRIPT_PATH);
     if (flatteningScript == null || flatteningScript.isEmpty()) {
       throw new IllegalStateException("Unable to load required flattening script from [" + FLATTEN_SCRIPT_PATH + "]");
     }
 
-    var collectionIndex = esService.config().COLLECTION_SEARCH_INDEX_ALIAS;
+    // transform collection messages into elasticsearch delete/index requests
+    var collectionIndex = esService.getConfig().COLLECTION_SEARCH_INDEX_ALIAS;
     var collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection);
     var inputCollections = streamsBuilder.<String, ParsedRecord>stream(collectionTopic);
     var timestampedInputCollections = inputCollections.transformValues((ValueTransformerSupplier<ParsedRecord, TimestampedValue<ParsedRecord>>) Timestamper::new);
-    var collectionRequests = timestampedInputCollections.mapValues(new ElasticsearchRequestMapper(esService.config(), collectionIndex));
+    var collectionRequests = timestampedInputCollections.mapValues(new ElasticsearchRequestMapper(esService.getConfig(), collectionIndex));
 
-    var granuleIndex = esService.config().GRANULE_SEARCH_INDEX_ALIAS;
+    // transform granule messages into elasticsearch delete/index requests
+    var granuleIndex = esService.getConfig().GRANULE_SEARCH_INDEX_ALIAS;
     var granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule);
     var inputGranules = streamsBuilder.<String, ParsedRecord>stream(granuleTopic);
     var timestampedInputGranules = inputGranules.transformValues((ValueTransformerSupplier<ParsedRecord, TimestampedValue<ParsedRecord>>) Timestamper::new);
-    var granuleRequests = timestampedInputGranules.mapValues(new ElasticsearchRequestMapper(esService.config(), granuleIndex));
+    var granuleRequests = timestampedInputGranules.mapValues(new ElasticsearchRequestMapper(esService.getConfig(), granuleIndex));
 
+    // merge delete/index requests and send them to ES in bulk
     var indexResults = collectionRequests.merge(granuleRequests)
         .filter((key, value) -> value != null)
-        .transform(() -> new BulkIndexingTransformer(esService.client(), Duration.ofMillis(bulkIntervalMillis), bulkMaxBytes));
+        .transform(() -> new BulkIndexingTransformer(esService, Duration.ofMillis(bulkIntervalMillis), bulkMaxBytes));
 
     var successfullyIndexed = indexResults.filter((key, value) -> value != null && !value.isFailed());
     var successfulCollections = successfullyIndexed.filter((key, value) -> value.getIndex().equals(collectionIndex));
@@ -65,11 +69,11 @@ public class SearchIndexTopology {
     // join the successfully-uploaded granules back to their inputs in order to retrieve their timestamps,
     // then re-key the stream based on those granules' parentIds to get a stream of collections that need
     // to be re-flattened and the timestamps from which flattening should start
-    var flatteningUpdatesFromGranules = successfulGranules
+    var flatteningTriggersFromGranules = successfulGranules
         .join(
             timestampedInputGranules,
             (bulkItemResponse, inputGranule) -> inputGranule,
-            JoinWindows.of(Duration.ofMillis(bulkIntervalMillis * 5)) // TODO - is this long enough?
+            JoinWindows.of(Duration.ofMillis(bulkIntervalMillis * 10)) // TODO - is this long enough?
         ) // stream of granuleId => timestampedInputGranule with same id
         .flatMap((granuleId, inputGranule) ->
           getParentIds(inputGranule.data).stream()
@@ -77,26 +81,33 @@ public class SearchIndexTopology {
               .collect(Collectors.toList())
         ); // stream of collectionId => timestamp of updated granule belonging to collection
 
-    var flatteningUpdatesFromCollections = successfulCollections
+    var flatteningTriggersFromCollections = successfulCollections
         .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
 
-    flatteningUpdatesFromCollections.merge(flatteningUpdatesFromGranules)
-        .through("NEW_TOPIC_NAME") // re-partition so all triggers for a given collection go to the same consumer
+    var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
+    long flatteningIntervalMillis = Long.parseLong(appConfig.get("flattening.interval.ms").toString());
+    flatteningTriggersFromCollections.merge(flatteningTriggersFromGranules)
+        .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long())) // re-partition so all triggers for a given collection go to the same consumer
         .groupByKey()
-        .windowedBy(TimeWindows.of(Duration.ofMillis(bulkIntervalMillis))) // TODO - separate config value?
+        .windowedBy(TimeWindows.of(Duration.ofMillis(flatteningIntervalMillis)))
+        // TODO - disable ktable logging on these triggers?
         .reduce(Math::min) // each trigger uses the *earliest* time value in the window so all related granules are flattened
         .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
         .toStream()
         .transform(() -> new FlatteningTriggerTransformer(esService, flatteningScript))
         .filter((k, v) -> !v.successful)
         .mapValues(v -> v.timestamp)
-        .to("NEW_TOPIC_NAME");
+        .to(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()));
 
+    var sitemapTopicName = appConfig.get("sitemap.topic.name").toString();
+    long sitemapIntervalMillis = Long.parseLong(appConfig.get("sitemap.interval.ms").toString());
     timestampedInputCollections
-        .mapValues(v -> v.timestampMs)
+        .map((k, v) -> new KeyValue<>("ALL", v.timestampMs)) // group all collection changes under one key so ETL is run once per window at most
+        .through(sitemapTopicName, Produced.with(Serdes.String(), Serdes.Long())) // re-partition so all triggers for a given collection go to the same consumer
         .groupByKey()
-        .windowedBy(TimeWindows.of(Duration.ofSeconds(1))) // TODO - make configurable
-        .reduce(Math::max)
+        .windowedBy(TimeWindows.of(Duration.ofMillis(sitemapIntervalMillis)))
+        // TODO - disable ktable logging on these triggers?
+        .reduce(Math::max) // uses the *latest* time value in the window so sitemap reflects most recent update
         .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
         .toStream()
         .foreach((k, v) -> SitemapIndexer.buildSitemap(esService, v));

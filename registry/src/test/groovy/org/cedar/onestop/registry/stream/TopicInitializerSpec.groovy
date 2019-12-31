@@ -2,6 +2,7 @@ package org.cedar.onestop.registry.stream
 
 import org.apache.kafka.clients.admin.MockAdminClient
 import org.apache.kafka.common.Node
+import org.cedar.onestop.kafka.common.util.TopicInitializer
 import spock.lang.Specification
 import spock.lang.Unroll
 

@@ -8,6 +8,8 @@ import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.AliasActions;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -41,11 +43,11 @@ public class ElasticsearchService {
     }
   }
 
-  public RestHighLevelClient client() {
+  public RestHighLevelClient getClient() {
     return client;
   }
 
-  public ElasticsearchConfig config() {
+  public ElasticsearchConfig getConfig() {
     return config;
   }
 
@@ -156,6 +158,10 @@ public class ElasticsearchService {
     var response = client.search(searchRequest, RequestOptions.DEFAULT);
     Max max = response.getAggregations().get(aggName);
     return max.getValue();
+  }
+
+  public BulkResponse bulk(BulkRequest request) throws IOException {
+    return client.bulk(request, RequestOptions.DEFAULT);
   }
 
 }

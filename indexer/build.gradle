@@ -28,7 +28,12 @@ dependencies {
   implementation("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
   implementation("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
   implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
-  implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
+  implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}") {
+    // needed force gradle to use this version of the clients (2.4.0) to prevent the
+    // confluent dependencies (5.3.2) from causing older clients to be used
+    // can probably remove this when confluent 5.4 comes out
+    force = true
+  }
   implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${project.esVersion}")
   implementation('org.yaml:snakeyaml:1.24')
@@ -37,6 +42,8 @@ dependencies {
   implementation("org.apache.commons:commons-text:1.2")
 
 
+  testImplementation("org.objenesis:objenesis:3.1")
+  testImplementation("net.bytebuddy:byte-buddy:1.7.11")
   testImplementation("org.spockframework:spock-core:${project.spockVersion}")
   testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
   testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")

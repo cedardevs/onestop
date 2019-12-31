@@ -31,8 +31,8 @@ public class FlatteningTriggerTransformer implements Transformer<Windowed<String
   private ProcessorContext context;
 
   public FlatteningTriggerTransformer(ElasticsearchService esService, String flatteningScript) {
-    this.config = esService.config();
-    this.client = esService.client();
+    this.config = esService.getConfig();
+    this.client = esService.getClient();
     this.flatteningScript = flatteningScript;
   }
 
