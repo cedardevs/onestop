@@ -13,12 +13,12 @@ dependencies:
   version: 0.1.0
 - name: onestop-manager
   repository: file://../onestop-manager
-  version: 0.3.0
+  version: 0.4.0
 - name: onestop-registry
   repository: file://../onestop-registry
-  version: 0.3.0
+  version: 0.4.0
 - name: onestop-search
   repository: file://../onestop-search
   version: 0.1.0
-digest: sha256:ba481d838a5b15ef979306cef14b7f3fa33cee64eb169f5d6d4d10102bb31fdd
-generated: 2019-10-23T15:05:51.957804-06:00
+digest: sha256:a15eda554f9d2dddff9d675cd8403f2c66b8d0f1ceeec4c9dbddc7a9157e902c
+generated: "2019-12-31T11:00:05.016614-07:00"
