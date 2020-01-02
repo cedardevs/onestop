@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import _ from 'lodash'
 
 import {useBoundingBox} from './BoundingBoxEffect'
@@ -12,8 +12,11 @@ import Button from '../../common/input/Button'
 import {Key} from '../../../utils/keyboardUtils'
 import {SiteColors} from '../../../style/defaultStyles'
 import mapIcon from '../../../../img/font-awesome/white/svg/globe.svg'
-import {styleFilterPanel, styleFieldsetBorder} from '../common/styleFilters'
+import {styleFieldsetBorder, styleFilterPanel} from '../common/styleFilters'
 import ApplyClearRow from '../common/ApplyClearRow'
+import InteractiveMap from './InteractiveMap'
+import {ProxyContent} from '../../common/ui/Proxy'
+import {MapProxyContext} from '../../root/Root'
 import {consolidateStyles} from '../../../utils/styleUtils'
 
 const styleMapFilter = {
@@ -172,33 +175,46 @@ const MapFilter = ({
     )
   }
 
+  const mapProxyContent = (
+    <ProxyContent context={MapProxyContext} zIndex={3}>
+      <InteractiveMap />
+    </ProxyContent>
+  )
+
   return (
-    <div style={styleMapFilter}>
-      <fieldset style={styleFieldsetBorder}>
-        <legend id="mapFilterInstructions" style={styleDescription}>
-          Type coordinates or draw on the map. Use the Clear button to reset the
-          location filter.
-        </legend>
-        {inputColumn}
-      </fieldset>
-      <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
-        Additional Filtering Options:
-      </h4>
-      {excludeGlobalCheckbox}
-      <Relation
-        id="geoRelation"
-        relation={geoRelationship}
-        onUpdate={relation => {
-          if (relation != geoRelationship) {
-            updateGeoRelationship(relation)
-          }
-          if (!_.isEmpty(bbox)) {
-            // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
-            submit()
-          }
-        }}
-        illustration={illustration}
-      />
+    <div>
+      <div style={styleMapFilter}>
+        <fieldset style={styleFieldsetBorder}>
+          <legend id="mapFilterInstructions" style={styleDescription}>
+            Type coordinates or draw on the map. Use the Clear button to reset
+            the location filter.
+          </legend>
+          {inputColumn}
+        </fieldset>
+      </div>
+
+      {mapProxyContent}
+
+      <div style={styleMapFilter}>
+        <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
+          Additional Filtering Options:
+        </h4>
+        {excludeGlobalCheckbox}
+        <Relation
+          id="geoRelation"
+          relation={geoRelationship}
+          onUpdate={relation => {
+            if (relation != geoRelationship) {
+              updateGeoRelationship(relation)
+            }
+            if (!_.isEmpty(bbox)) {
+              // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
+              submit()
+            }
+          }}
+          illustration={illustration}
+        />
+      </div>
     </div>
   )
 }

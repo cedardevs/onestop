@@ -17,6 +17,8 @@ export default styles
 export const boxShadow = '1px 1px 3px rgba(50, 50, 50, 0.75)'
 export const boxShadow2 = '2px 2px 4px rgba(50, 50, 50, 0.75)'
 
+export const clipPath = 'inset(-1px -1px -3px 0px)'
+
 // commenting items that used to be taken from styles.css (used sparsely, in case there are any lingering references)
 export const COLOR_PRIMARY = '#277CB2'
 // $color-primary:              #277CB2;

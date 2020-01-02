@@ -6,7 +6,7 @@ import DateTimeFilter from './standard/DateTimeFilter'
 import GeologicTimeFilter from './geologic/GeologicTimeFilter'
 import TabPanels from '../../common/ui/TabPanels'
 import FlexRow from '../../common/ui/FlexRow'
-import Drawer from '../../layout/Drawer'
+import Drawer from '../../common/ui/Drawer'
 import {exclamation_triangle, SvgIcon} from '../../common/SvgIcon'
 import {FilterColors} from '../../../style/defaultStyles'
 
@@ -172,14 +172,24 @@ const TimeFilter = ({
     />
   )
 
-  const onAlertClose = () => {
+  const clearAlert = () => {
     // set these back when closed so that announcements reannounce when they reappear (screen reader only announces it the first time it changes otherwise)
     setAlert('')
   }
 
+  const handleDrawerAnimationEnd = open => {
+    if (!open) {
+      clearAlert()
+    }
+  }
+
   return (
     <div>
-      <Drawer content={alertMessage} open={showAlert} onClose={onAlertClose} />
+      <Drawer
+        content={alertMessage}
+        open={showAlert}
+        onAnimationEnd={handleDrawerAnimationEnd}
+      />
       <TabPanels
         name="timeFilter"
         options={VIEW_OPTIONS}
