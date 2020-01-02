@@ -15,7 +15,7 @@ const styleFixed = (left, top, width) => {
     top: `${top}px`,
     width: `${width}px`,
     height: `auto`,
-    transition: `opacity ${ANIMATION_DURATION}ms, width ${ANIMATION_DURATION}ms`,
+    transition: `opacity ${ANIMATION_DURATION}ms, width ${ANIMATION_DURATION}ms, top ${ANIMATION_DURATION}ms`,
   }
 }
 
