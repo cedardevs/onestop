@@ -67,31 +67,30 @@ describe('The BoundingBoxEffect hook', () => {
     //   hook = init(null)
     // })
 
-    const NAN_testCases = [
-      {
-        field: 'west',
-        value: 'foo',
-        error: 'West: Invalid coordinates entered.',
-      },
-      {
-        field: 'east',
-        value: '1-2',
-        error: 'East: Invalid coordinates entered.',
-      },
-      {
-        field: 'south',
-        value: 'hi',
-        error: 'South: Invalid coordinates entered.',
-      },
-      {
-        field: 'north',
-        value: '...',
-        error: 'North: Invalid coordinates entered.',
-      },
-    ]
-
-    const coordLimitTestCases = {
-      valid: [
+    const testCases = {
+      NaN: [
+        {
+          field: 'west',
+          value: 'foo',
+          error: 'West: Invalid coordinates entered.',
+        },
+        {
+          field: 'east',
+          value: '1-2',
+          error: 'East: Invalid coordinates entered.',
+        },
+        {
+          field: 'south',
+          value: 'hi',
+          error: 'South: Invalid coordinates entered.',
+        },
+        {
+          field: 'north',
+          value: '...',
+          error: 'North: Invalid coordinates entered.',
+        },
+      ],
+      validCoordLimit: [
         {field: 'west', value: '-180'},
         {field: 'west', value: '180'},
         {field: 'west', value: '0'},
@@ -105,7 +104,7 @@ describe('The BoundingBoxEffect hook', () => {
         {field: 'south', value: '90'},
         {field: 'south', value: '0'},
       ],
-      invalid: [
+      invalidCoordLimit: [
         {
           field: 'west',
           value: '-181',
@@ -133,7 +132,7 @@ describe('The BoundingBoxEffect hook', () => {
       ],
     }
 
-    _.each(NAN_testCases, c => {
+    _.each(testCases.NaN, c => {
       it(`not a number - for ${c.field}='${c.value}'`, function(){
         const hook = init(null)
         act(() => {
@@ -156,7 +155,7 @@ describe('The BoundingBoxEffect hook', () => {
       })
     })
 
-    _.each(coordLimitTestCases.invalid, c => {
+    _.each(testCases.invalidCoordLimit, c => {
       it(`invalid limits - for ${c.field}='${c.value}'`, function(){
         const hook = init(null)
 
@@ -180,7 +179,7 @@ describe('The BoundingBoxEffect hook', () => {
       })
     })
 
-    _.each(coordLimitTestCases.valid, c => {
+    _.each(testCases.validCoordLimit, c => {
       it(`valid limits - for ${c.field}='${c.value}'`, function(){
         const hook = init(null)
 
