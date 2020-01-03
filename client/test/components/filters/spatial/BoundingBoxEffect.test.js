@@ -18,11 +18,16 @@ const init = bbox => {
   return initHook(useBoundingBox, bbox)
 }
 
+const getBounds = hook => {
+  let [ bounds ] = hook.current
+  return bounds
+}
+
 describe('The BoundingBoxEffect hook', () => {
   describe('initial conditions', () => {
     it('default - no bbox provided', () => {
       const hook = init(null)
-      let [ bounds ] = hook.current
+      const bounds = getBounds(hook)
       expect(bounds.east.value).toEqual('')
       expect(bounds.north.value).toEqual('')
       expect(bounds.south.value).toEqual('')
@@ -31,8 +36,7 @@ describe('The BoundingBoxEffect hook', () => {
 
     it('with a bbox', () => {
       const hook = init({north: 34, south: -20, west: 17, east: -123})
-
-      let [ bounds ] = hook.current
+      const bounds = getBounds(hook)
       expect(bounds.east.value).toEqual('-123')
       expect(bounds.north.value).toEqual('34')
       expect(bounds.south.value).toEqual('-20')
@@ -40,28 +44,49 @@ describe('The BoundingBoxEffect hook', () => {
     })
   })
 
-  it('simple interaction - should update value and basic side effects', () => {
-    const hook = init(null)
-    // before interacting TODO why isn't this working?
-    // let [ bounds ] = hook.current
-    // expect(bounds.west.isSet()).toBeFalsy()
+  describe('flow between states', () => {
+    it('simple interaction - update value with basic side effects', () => {
+      const hook = init(null)
+      // before interacting
+      let bounds = getBounds(hook)
+      expect(bounds.west.isSet()).toBeFalsy()
 
-    act(() => {
-      let [ bounds ] = hook.current
-      // this is currently how a component is expected to update values based on user interaction events:
-      bounds.west.set('111')
+      act(() => {
+        // this is currently how a component is expected to update values based on user interaction events:
+        bounds.west.set('111')
+      })
+
+      bounds = getBounds(hook) // get updated bounds
+      // primary effect: value is set
+      expect(bounds.west.value).toEqual('111')
+      // secondary effects:
+      expect(bounds.west.number).toEqual(111)
+      expect(bounds.west.isSet()).toBeTruthy()
     })
 
-    let [ bounds ] = hook.current
-    // primary effect: value is set
-    expect(bounds.west.value).toEqual('111')
-    // secondary effects:
-    expect(bounds.west.number).toEqual(111)
-    expect(bounds.west.isSet()).toBeTruthy()
+    it('clear validation errors with change in values', () => {
+      const hook = init(null)
+
+      act(() => {
+        const bounds = getBounds(hook)
+        bounds.west.set('-')
+      })
+
+      let bounds = getBounds(hook)
+
+      expect(bounds.west.valid).toBeFalsy()
+
+      act(() => {
+        bounds.west.set('-1')
+      })
+
+      bounds = getBounds(hook)
+      expect(bounds.west.valid).toBeTruthy()
+    })
   })
 
   describe('validation - field level', () => {
-    // let hook = null
+    // let hook = null // TODO this didn't work correctly...
     // beforeAll(async () => {
     //   // init hook with defaults
     //   hook = init(null)
@@ -136,11 +161,11 @@ describe('The BoundingBoxEffect hook', () => {
       it(`not a number - for ${c.field}='${c.value}'`, function(){
         const hook = init(null)
         act(() => {
-          let [ bounds ] = hook.current
+          const bounds = getBounds(hook)
           bounds[c.field].set(c.value)
         })
 
-        let [ bounds ] = hook.current
+        const bounds = getBounds(hook)
 
         // generic invalid expectations
         expect(bounds[c.field].valid).toBeFalsy()
@@ -160,11 +185,11 @@ describe('The BoundingBoxEffect hook', () => {
         const hook = init(null)
 
         act(() => {
-          let [ bounds ] = hook.current
+          const bounds = getBounds(hook)
           bounds[c.field].set(c.value)
         })
 
-        let [ bounds ] = hook.current
+        const bounds = getBounds(hook)
 
         // generic invalid expectations
         expect(bounds[c.field].valid).toBeFalsy()
@@ -184,13 +209,12 @@ describe('The BoundingBoxEffect hook', () => {
         const hook = init(null)
 
         act(() => {
-          let [ bounds ] = hook.current
+          const bounds = getBounds(hook)
           bounds[c.field].set(c.value)
         })
 
-        let [ bounds ] = hook.current
+        const bounds = getBounds(hook)
 
-        console.log(`for ${c.field}='${c.value}'`, bounds[c.field])
         // generic invalid expectations
         expect(bounds[c.field].valid).toBeTruthy()
 
