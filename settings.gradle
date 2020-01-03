@@ -1,6 +1,5 @@
 rootProject.name = 'onestop'
 
-include 'admin'
 include 'client'
 include 'cli'
 include 'e2e-tests'
