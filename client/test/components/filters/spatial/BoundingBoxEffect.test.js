@@ -228,4 +228,223 @@ describe('The BoundingBoxEffect hook', () => {
       })
     })
   })
+
+  describe('validation - group level', () => {
+    const testCases = {
+      notAllSet: [
+        {
+          fields: [ 'north' ],
+        },
+        {
+          fields: [ 'south' ],
+        },
+        {
+          fields: [ 'east' ],
+        },
+        {
+          fields: [ 'west' ],
+        },
+        {
+          fields: [ 'north', 'west' ],
+        },
+        {
+          fields: [ 'south', 'east', 'west' ],
+        },
+      ],
+    }
+
+    _.each(testCases.notAllSet, c => {
+      it(`incomplete - unset ${c.fields}`, function(){
+        const hook = init({west: 1, east: 2, south: 3, north: 4})
+
+        let bounds = getBounds(hook)
+        act(() => {
+          // set field(s) to blank string
+          c.fields.forEach(field => {
+            bounds[field].set('')
+          })
+        })
+
+        bounds = getBounds(hook)
+
+        // no field level errors
+        expect(bounds.reason.individual).toEqual('')
+        // no current cumulative error
+        expect(bounds.reason.cumulative).toEqual('')
+        // all fields are valid
+        expect(bounds.west.valid).toBeTruthy()
+        expect(bounds.east.valid).toBeTruthy()
+        expect(bounds.south.valid).toBeTruthy()
+        expect(bounds.north.valid).toBeTruthy()
+
+        act(() => {
+          // group level validation only done on request (specifically prior to submitting)
+          bounds.validate()
+        })
+
+        bounds = getBounds(hook)
+        expect(bounds.reason.cumulative).toEqual(
+          'Incomplete coordinates entered. Ensure all four fields are populated.'
+        )
+
+        c.fields.forEach(field => {
+          expect(bounds[field].valid).toBeFalsy()
+          // expect(bounds.north.required).toBeTruthy() // TODO add this
+        })
+      })
+    })
+
+    it(`north smaller than south`, function(){
+      const hook = init({west: 1, east: 2, south: 3, north: 4})
+
+      let bounds = getBounds(hook)
+      act(() => {
+        bounds.north.set('-30')
+        bounds.south.set('30')
+      })
+
+      bounds = getBounds(hook)
+
+      // no current cumulative error
+      expect(bounds.reason.cumulative).toEqual('')
+      // all fields are valid
+      expect(bounds.south.valid).toBeTruthy()
+      expect(bounds.north.valid).toBeTruthy()
+
+      act(() => {
+        // group level validation only done on request (specifically prior to submitting)
+        bounds.validate()
+      })
+
+      bounds = getBounds(hook)
+      expect(bounds.reason.cumulative).toEqual(
+        'North is always greater than South.'
+      )
+
+      expect(bounds.north.valid).toBeFalsy()
+      expect(bounds.south.valid).toBeFalsy()
+    })
+
+    it(`not a line - north != south`, function(){
+      const hook = init({west: 1, east: 2, south: 3, north: 4})
+
+      let bounds = getBounds(hook)
+      act(() => {
+        bounds.north.set('15')
+        bounds.south.set('15')
+      })
+
+      bounds = getBounds(hook)
+
+      // no current cumulative error
+      expect(bounds.reason.cumulative).toEqual('')
+      // all fields are valid
+      expect(bounds.south.valid).toBeTruthy()
+      expect(bounds.north.valid).toBeTruthy()
+
+      act(() => {
+        // group level validation only done on request (specifically prior to submitting)
+        bounds.validate()
+      })
+
+      bounds = getBounds(hook)
+      expect(bounds.reason.cumulative).toEqual(
+        'North cannot be the same as South.'
+      )
+
+      expect(bounds.north.valid).toBeFalsy()
+      expect(bounds.south.valid).toBeFalsy()
+    })
+
+    it(`not a line - east != west`, function(){
+      const hook = init({west: 1, east: 2, south: 3, north: 4})
+
+      let bounds = getBounds(hook)
+      act(() => {
+        bounds.east.set('20')
+        bounds.west.set('20')
+      })
+
+      bounds = getBounds(hook)
+
+      // no current cumulative error
+      expect(bounds.reason.cumulative).toEqual('')
+      // all fields are valid
+      expect(bounds.east.valid).toBeTruthy()
+      expect(bounds.west.valid).toBeTruthy()
+
+      act(() => {
+        // group level validation only done on request (specifically prior to submitting)
+        bounds.validate()
+      })
+
+      bounds = getBounds(hook)
+      expect(bounds.reason.cumulative).toEqual(
+        'East cannot be the same as West.'
+      )
+
+      expect(bounds.east.valid).toBeFalsy()
+      expect(bounds.west.valid).toBeFalsy()
+    })
+
+    it(`not a line - antimeridian confusion`, function(){
+      const hook = init({west: 1, east: 2, south: 3, north: 4})
+
+      let bounds = getBounds(hook)
+      act(() => {
+        bounds.east.set('-180')
+        bounds.west.set('180')
+      })
+
+      bounds = getBounds(hook)
+
+      // no current cumulative error
+      expect(bounds.reason.cumulative).toEqual('')
+      // all fields are valid
+      expect(bounds.east.valid).toBeTruthy()
+      expect(bounds.west.valid).toBeTruthy()
+
+      act(() => {
+        // group level validation only done on request (specifically prior to submitting)
+        bounds.validate()
+      })
+
+      bounds = getBounds(hook)
+      expect(bounds.reason.cumulative).toEqual(
+        'East cannot be the same as West.'
+      )
+
+      expect(bounds.east.valid).toBeFalsy()
+      expect(bounds.west.valid).toBeFalsy()
+    })
+
+    it(`not a line - antimeridian (valid 360 bbox)`, function(){
+      const hook = init({west: 1, east: 2, south: 3, north: 4})
+
+      let bounds = getBounds(hook)
+      act(() => {
+        bounds.east.set('180')
+        bounds.west.set('-180')
+      })
+
+      bounds = getBounds(hook)
+
+      // no current cumulative error
+      expect(bounds.reason.cumulative).toEqual('')
+      // all fields are valid
+      expect(bounds.east.valid).toBeTruthy()
+      expect(bounds.west.valid).toBeTruthy()
+
+      act(() => {
+        // group level validation only done on request (specifically prior to submitting)
+        bounds.validate()
+      })
+
+      bounds = getBounds(hook)
+      expect(bounds.reason.cumulative).toEqual('')
+
+      expect(bounds.east.valid).toBeTruthy()
+      expect(bounds.west.valid).toBeTruthy()
+    })
+  })
 })
