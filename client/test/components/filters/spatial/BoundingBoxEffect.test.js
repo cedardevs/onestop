@@ -133,8 +133,6 @@ describe('The BoundingBoxEffect hook', () => {
     it('does not bother with group validation if there are individual errors', () => {
       const hook = init(null)
 
-      let bounds = getBounds(hook)
-
       // field level error:
       simulateUserInteraction(hook, 'west', 'foo')
       // group level error (north and south cannot be the same):
@@ -143,8 +141,8 @@ describe('The BoundingBoxEffect hook', () => {
 
       let validationResult = simulateValidationRequest(hook)
 
-      bounds = getBounds(hook)
       expect(validationResult).toBeFalsy()
+      let bounds = getBounds(hook)
 
       // note: extra spaces are from lazy way of creating message for 4 component directions - since html renders them away
       expect(bounds.reason.individual).toEqual(
@@ -152,6 +150,52 @@ describe('The BoundingBoxEffect hook', () => {
       )
       // additional group errors are not reported:
       expect(bounds.reason.cumulative).toEqual('')
+    })
+
+    it('resets everything with clear()', () => {
+      const hook = init({west: -40, east: 50, south: -20, north: 30})
+      simulateUserInteraction(hook, 'south', '30')
+      simulateValidationRequest(hook)
+      simulateUserInteraction(hook, 'west', 'foo')
+      act(() => {
+        const bounds = getBounds(hook)
+        bounds.clear()
+      })
+      simulateValidationRequest(hook)
+      let bounds = getBounds(hook)
+      expect(bounds.west.value).toEqual('')
+      expect(bounds.east.value).toEqual('')
+      expect(bounds.north.value).toEqual('')
+      expect(bounds.south.value).toEqual('')
+      expect(bounds.west.valid).toBeTruthy()
+      expect(bounds.east.valid).toBeTruthy()
+      expect(bounds.north.valid).toBeTruthy()
+      expect(bounds.south.valid).toBeTruthy()
+      expect(bounds.reason.individual).toEqual('')
+      expect(bounds.reason.cumulative).toEqual('')
+    })
+  })
+
+  describe('asBbox', () => {
+    it('contains a map of numeric values', () => {
+      const hook = init(null)
+      simulateUserInteraction(hook, 'north', '38')
+      simulateUserInteraction(hook, 'west', '123')
+      simulateUserInteraction(hook, 'east', '-0.0034')
+      simulateUserInteraction(hook, 'south', '0')
+
+      let bounds = getBounds(hook)
+      expect(bounds.asBbox).toEqual({
+        west: 123,
+        south: 0,
+        east: -0.0034,
+        north: 38,
+      })
+      // it is very important that at this point they are numbers and not strings:
+      expect(typeof bounds.asBbox.west).toEqual('number')
+      expect(typeof bounds.asBbox.north).toEqual('number')
+      expect(typeof bounds.asBbox.east).toEqual('number')
+      expect(typeof bounds.asBbox.south).toEqual('number')
     })
   })
 
@@ -238,6 +282,10 @@ describe('The BoundingBoxEffect hook', () => {
         // generic invalid expectations
         expect(bounds[c.field].valid).toBeFalsy()
 
+        // internal tracking side effects
+        expect(bounds[c.field].validInternal).toBeFalsy()
+        expect(bounds.reason.individual).not.toEqual('')
+
         // NaN expectations
         expect(bounds[c.field].number).toBeNull()
         expect(bounds[c.field].isSet()).toBeFalsy()
@@ -259,7 +307,12 @@ describe('The BoundingBoxEffect hook', () => {
         // generic invalid expectations
         expect(bounds[c.field].valid).toBeFalsy()
 
+        // internal tracking side effects
+        expect(bounds[c.field].validInternal).toBeFalsy()
+        expect(bounds.reason.individual).not.toEqual('')
+
         // coord limitations expectations
+        expect(typeof bounds[c.field].number).toEqual('number')
         expect(Number.isFinite(bounds[c.field].number)).toBeTruthy()
         expect(bounds[c.field].isSet()).toBeTruthy()
 
@@ -281,6 +334,7 @@ describe('The BoundingBoxEffect hook', () => {
         expect(bounds[c.field].valid).toBeTruthy()
 
         // coord limitations expectations
+        expect(typeof bounds[c.field].number).toEqual('number')
         expect(Number.isFinite(bounds[c.field].number)).toBeTruthy()
         expect(bounds[c.field].isSet()).toBeTruthy()
 
@@ -389,6 +443,7 @@ describe('The BoundingBoxEffect hook', () => {
 
         c.fields.forEach(field => {
           expect(bounds[field].valid).toBeFalsy()
+          expect(bounds[field].validInternal).toBeTruthy()
           // expect(bounds.north.required).toBeTruthy() // TODO add this
         })
       })
@@ -398,12 +453,11 @@ describe('The BoundingBoxEffect hook', () => {
       it(`${c.name}`, function(){
         const hook = init(initialCondition)
 
-        let bounds = getBounds(hook)
         c.fields.forEach(f => {
           simulateUserInteraction(hook, f.field, f.value)
         })
 
-        bounds = getBounds(hook)
+        let bounds = getBounds(hook)
 
         // no current cumulative error
         expect(bounds.reason.cumulative).toEqual('')
@@ -419,6 +473,7 @@ describe('The BoundingBoxEffect hook', () => {
 
         c.fields.forEach(f => {
           expect(bounds[f.field].valid).toEqual(f.afterValidation)
+          expect(bounds[f.field].validInternal).toBeTruthy()
         })
       })
     })
