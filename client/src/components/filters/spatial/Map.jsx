@@ -1,5 +1,4 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import watch from 'redux-watch'
 import store from '../../../store'
 import L from 'leaflet'
@@ -11,62 +10,54 @@ import {
   convertGeoJsonToBbox,
   displayBboxAsLeafletGeoJSON,
 } from '../../../utils/geoUtils'
+import {consolidateStyles} from '../../../utils/styleUtils'
+import CloseButton from '../../common/ui/CloseButton'
+import {Key} from '../../../utils/keyboardUtils'
 
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
 
 const MAP_HEIGHT = '400px'
 
-const styleMapContainer = (open, display, maxHeight, width) => {
-  return {
-    boxSizing: 'border-box',
-    backgroundColor: '#3D97D2',
-    transition: open // immediate transition
-      ? 'max-height .5s 0.0s, width 0.2s 0.2s' // width needs to start opening before max-height completes, or the transitionEnd check will not be able to compute height
-      : 'width 0.2s 0.2s, max-height 0.2s 0.4s',
-    overflow: 'hidden',
-    padding: '0em',
-    // properties set on a separate timer using state:
-    maxHeight: maxHeight,
-    width: width,
-    display: display,
-  }
+const MARGIN_EMS = 1.618
+const WIDTH_CLOSE_BUTTON = 3
+
+const styleMapContainer = {
+  boxSizing: 'border-box',
+  backgroundColor: '#3D97D2',
+  overflow: 'hidden',
+  padding: '0em',
+  maxHeight: '35em',
+  width: '100%',
 }
 
-const styleMapText = (open, opacity, flex) => {
-  return {
-    zIndex: 1,
-    padding: '0.309em 0.618em',
-    margin: '0 auto',
-    backgroundColor: '#18478F',
-    textAlign: 'center',
-    transition: open //immediate transition
-      ? 'flex 0.2s 0.0s ease-out, opacity 0.2s 0.4s'
-      : 'opacity 0.2s 0.0s, flex 0.2s 0.0s ease-out',
-    flex: flex,
-    // properties set on a separate timer using state:
-    opacity: opacity,
-  }
+const styleMapContainerHeading = {
+  display: 'flex',
+  backgroundColor: '#18478F',
+  paddingLeft: `${MARGIN_EMS}em`,
 }
 
-const styleMap = (open, opacity, flex) => {
-  return {
-    zIndex: 1,
-    padding: 0,
-    transition: open //immediate transition
-      ? 'flex 0.2s 0.0s ease-out, opacity 0.2s 0.4s'
-      : 'opacity 0.2s 0.0s, flex 0.2s 0.0s ease-out',
-    flex: flex,
-    margin: '0 auto',
-    display: 'flex',
-    position: 'relative',
-    height: MAP_HEIGHT,
-    alignItems: 'flex-start',
-    maxWidth: '1200px',
-    // properties set on a separate timer using state:
-    opacity: opacity,
-  }
+const styleMapText = {
+  color: '#FFF',
+  zIndex: 1,
+  padding: '0.309em 0.618em',
+  margin: '0 auto',
+  textAlign: 'center',
+  flexGrow: 1,
+  paddingRight: `${MARGIN_EMS + WIDTH_CLOSE_BUTTON}em`,
 }
+
+const styleMap = {
+  zIndex: 1,
+  padding: 0,
+  margin: '0 auto',
+  display: 'flex',
+  position: 'relative',
+  height: MAP_HEIGHT,
+  alignItems: 'flex-start',
+  maxWidth: '1200px',
+}
+
 const SOUTH_WEST = L.latLng(-90, 5 * -360)
 const NORTH_EAST = L.latLng(90, 5 * 360)
 const BOUNDS = L.latLngBounds(SOUTH_WEST, NORTH_EAST)
@@ -83,176 +74,35 @@ const drawStyle = {
   opacity: 0.65,
 }
 
-class Map extends React.Component {
-  constructor(props) {
-    super(props)
-    const {showMap} = this.props
-    this.state = {
-      initialized: false,
-      open: showMap,
-      display: showMap ? 'block' : 'none',
-      maxHeight: showMap ? 'initial' : '0em',
-      flex: showMap ? '1' : '0',
-      width: showMap ? '100%' : '0%',
-      opacity: showMap ? '1' : '0',
+const Map = ({
+  style,
+  selection,
+  bbox,
+  features,
+  filterType,
+  handleNewGeometry,
+  removeGeometry,
+  submit,
+  closeMap,
+}) => {
+  const containerRef = useRef(null)
+  const mapRef = useRef(null)
+  const [ initialized, setInitialized ] = useState(false)
+  const [ resultsLayers, setResultsLayers ] = useState(new L.FeatureGroup())
+  const [ editableLayers, setEditableLayers ] = useState(new L.FeatureGroup())
+  const [ map, setMap ] = useState(null)
+
+  const fitMapToResults = () => {
+    const hasResults = resultsLayers && !_.isEmpty(resultsLayers.getLayers())
+    if (!selection && features && hasResults) {
+      map.fitBounds(resultsLayers.getBounds())
+    }
+    else {
+      map.fitWorld()
     }
   }
 
-  handleTransitionEnd = event => {
-    // this ensures the map tiles get loaded properly around the animation
-    const {map} = this.state
-    const property = event.propertyName
-    if (property === 'max-height' || property === 'width') {
-      map.invalidateSize()
-    }
-    if (property === 'max-height') {
-      this.resize()
-    }
-  }
-
-  initialState = () => {
-    const {bbox, features} = this.props
-
-    let resultsLayers = new L.FeatureGroup()
-    let editableLayers = new L.FeatureGroup()
-
-    let geoJsonSelection = displayBboxAsLeafletGeoJSON(bbox)
-    if (geoJsonSelection) {
-      let geoJSONLayer = L.geoJson(geoJsonSelection, {style: geoJsonStyle})
-      editableLayers.addLayer(geoJSONLayer)
-    }
-
-    if (features) {
-      this.updateResultsLayers(this.props)
-    }
-
-    let initialMapProperties = {
-      preferCanvas: true,
-      maxBounds: BOUNDS,
-      maxBoundsViscosity: 1.0,
-      layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],
-      attributionControl: false,
-    }
-
-    let state = {
-      initialized: true,
-      resultsLayers,
-      editableLayers,
-      // Define map with defaults
-      map: L.map(ReactDOM.findDOMNode(this.mapNode), initialMapProperties),
-      previousLayer: {},
-    }
-    return state
-  }
-
-  componentDidMount() {
-    this.container.addEventListener('transitionend', this.handleTransitionEnd)
-    this.setState(this.initialState(), this.mapSetup)
-  }
-
-  drawDefaults(layerGroup) {
-    return new L.Control.Draw({
-      edit: {
-        featureGroup: layerGroup,
-        edit: false, // edit button
-        remove: false, // trash can button
-      },
-      position: 'topright',
-      draw: {
-        polyline: false,
-        marker: false,
-        polygon: false,
-        circle: false,
-        circlemarker: false,
-        rectangle: {
-          shapeOptions: drawStyle,
-        },
-      },
-    })
-  }
-
-  mapSetup() {
-    const {selection, features} = this.props
-    let {map, editableLayers, resultsLayers} = this.state
-    this.loadDrawEventHandlers()
-    if (selection) {
-      map.addControl(this.drawDefaults(editableLayers))
-      map.addLayer(editableLayers)
-    }
-    if (features) {
-      map.addLayer(resultsLayers)
-    }
-    this.fitMapToResults()
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    let {map} = this.state
-    if (map) {
-      map.invalidateSize()
-    } // Necessary to redraw map which isn't initially visible
-
-    if (this.props.showMap != nextProps.showMap) {
-      this.setState(prevState => {
-        const isOpen = prevState.open
-        const isDisplayed = prevState.display === 'block'
-        const shouldClose = isOpen && isDisplayed
-        const shouldOpen = !isOpen && !isDisplayed
-
-        // these transitions do occasionally have timing issues, but I've only seen them when rapidly toggling a single element on and off..
-        if (shouldOpen) {
-          setTimeout(
-            () =>
-              this.setState({
-                maxHeight: '35em', // default maxHeight to something 'big enough' to allow the transition to complete and compute the real maxHeight
-                flex: '1',
-                width: '100%',
-                opacity: '1',
-              }),
-            15
-          )
-        }
-        if (shouldClose) {
-          setTimeout(() => this.setState({display: 'none', opacity: '0'}), 500)
-        }
-
-        const immediateTransition = shouldOpen
-          ? {display: 'block', opacity: '0'}
-          : shouldClose
-            ? {
-                maxHeight: '0em',
-                flex: '0',
-                width: '0%',
-                opacity: '0',
-              }
-            : {}
-        return {open: !isOpen, ...immediateTransition}
-      })
-    }
-  }
-
-  UNSAFE_componentWillUpdate(nextProps) {
-    // Add/remove layers on map to reflect store
-    const {selection, features} = this.props
-    const {initialized} = this.state
-    if (initialized) {
-      if (selection) {
-        this.updateSelectionLayer()
-      }
-      if (features) {
-        this.updateResultsLayers(nextProps)
-        this.fitMapToResults()
-      }
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const {map} = this.state
-    map.invalidateSize()
-  }
-
-  updateSelectionLayer() {
-    let {filterType} = this.props
-    let {editableLayers} = this.state
+  const updateSelectionLayer = () => {
     let w = watch(store.getState, 'search.' + filterType + '.bbox')
     store.subscribe(
       w(newBbox => {
@@ -261,18 +111,17 @@ class Map extends React.Component {
         if (!_.isEmpty(newGeoJson)) {
           let layer = L.geoJson(newGeoJson, {style: geoJsonStyle})
           editableLayers.addLayer(layer)
-          this.state.map.panTo(layer.getBounds().getCenter())
+          map.panTo(layer.getBounds().getCenter())
         }
       })
     )
   }
 
-  updateResultsLayers({geoJsonFeatures, focusedFeatures}) {
+  const updateResultsLayers = ({geoJsonFeatures, focusedFeatures}) => {
     if (!geoJsonFeatures) {
       return
     }
     // Apply colors to focused feature
-    let {resultsLayers} = this.state
     const selectedStyle = {color: COLOR_ORANGE}
     const defaultStyle = {
       color: COLOR_GREEN,
@@ -296,48 +145,33 @@ class Map extends React.Component {
     })
   }
 
-  fitMapToResults() {
-    const {selection, features} = this.props
-    const {map, resultsLayers} = this.state
-    const hasResults = resultsLayers && !_.isEmpty(resultsLayers.getLayers())
-    if (!selection && features && hasResults) {
-      map.fitBounds(resultsLayers.getBounds())
-    }
-    else {
-      map.fitWorld()
-    }
+  const drawDefaults = layerGroup => {
+    return new L.Control.Draw({
+      edit: {
+        featureGroup: layerGroup,
+        edit: false, // edit button
+        remove: false, // trash can button
+      },
+      position: 'topright',
+      draw: {
+        polyline: false,
+        marker: false,
+        polygon: false,
+        circle: false,
+        circlemarker: false,
+        rectangle: {
+          shapeOptions: drawStyle,
+        },
+      },
+    })
   }
 
-  componentWillUnmount() {
-    let {map} = this.state
-    map.off('click', this.onMapClick)
-    map = null
-
-    this.container.removeEventListener(
-      'transitionend',
-      this.handleTransitionEnd
-    )
-  }
-
-  resize = () => {
-    // do work only if container exists
-    if (this.container) {
-      // get actual height dynamically, so that when closing, the max height is set correctly to prevent the text from getting taller as it collapses
-      const containerRect = this.container.getBoundingClientRect()
-      const height = containerRect.height
-      this.setState({
-        maxHeight: height,
-      })
-    }
-  }
-
-  updateGeometryAndSubmit = newGeoJSON => {
-    const {bbox, handleNewGeometry, removeGeometry, submit} = this.props
+  const updateGeometryAndSubmit = newGeoJSON => {
     if (bbox || newGeoJSON) {
       if (newGeoJSON) {
         newGeoJSON.geometry.coordinates[0].reverse() // Change coords from CW to CCW
         handleNewGeometry(
-          convertGeoJsonToBbox(recenterGeometry(newGeoJSON.geometry)) // TODO does this actually need to recenter?
+          convertGeoJsonToBbox(recenterGeometry(newGeoJSON.geometry))
         )
       }
       else {
@@ -347,34 +181,126 @@ class Map extends React.Component {
     }
   }
 
-  loadDrawEventHandlers() {
-    let {map} = this.state
+  const loadDrawEventHandlers = () => {
     map.on('draw:drawstart', e => {
-      this.updateGeometryAndSubmit()
+      updateGeometryAndSubmit()
     })
     map.on('draw:created', e => {
       let newLayer = e.layer.toGeoJSON()
-      this.updateGeometryAndSubmit(newLayer)
+      updateGeometryAndSubmit(newLayer)
     })
     map.on('draw:edited', e => {
       let layerModified = e.getLayers()[0].toGeoJSON()
-      this.updateGeometryAndSubmit(layerModified)
+      updateGeometryAndSubmit(layerModified)
     })
     map.on('draw:deleted', e => {
-      this.updateGeometryAndSubmit()
+      updateGeometryAndSubmit()
     })
   }
 
-  render() {
-    const {open, display, flex, maxHeight, width, opacity} = this.state
-    return (
-      <div
-        style={styleMapContainer(open, display, maxHeight, width)}
-        ref={container => {
-          this.container = container
-        }}
-      >
-        <div style={styleMapText(open, opacity, flex)}>
+  // this effect replaces UNSAFE_componentWillUpdate / getSnapshotBeforeUpdate
+  // because the work done here relies on reading the DOM before the component is re-rendered
+  // it is not an exact equivalent, but for what we need, this should be sufficient
+  useLayoutEffect(() => {
+    // Add/remove layers on map to reflect store
+    if (initialized) {
+      if (selection) {
+        updateSelectionLayer()
+      }
+      if (features) {
+        updateResultsLayers(props)
+        fitMapToResults()
+      }
+    }
+  })
+
+  // map initialization (on mount)
+  useEffect(() => {
+    // on mount
+    let geoJsonSelection = displayBboxAsLeafletGeoJSON(bbox)
+    if (geoJsonSelection) {
+      geoJsonSelection.geometry = recenterGeometry(geoJsonSelection.geometry)
+      let geoJSONLayer = L.geoJson(geoJsonSelection, {style: geoJsonStyle})
+      editableLayers.addLayer(geoJSONLayer)
+    }
+
+    if (features) {
+      updateResultsLayers(props)
+    }
+
+    let initialMapProperties = {
+      preferCanvas: true,
+      maxBounds: BOUNDS,
+      maxBoundsViscosity: 1.0,
+      layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],
+      attributionControl: false,
+    }
+
+    // define map with defaults
+    setMap(L.map(mapRef.current, initialMapProperties))
+
+    setInitialized(true)
+
+    return () => {
+      // unmount
+      if (map) {
+        map.off('click', onMapClick)
+        setMap(null)
+      }
+    }
+  }, [])
+
+  // map setup (on mount and *after* initialization)
+  useEffect(
+    () => {
+      if (initialized) {
+        loadDrawEventHandlers()
+        if (selection) {
+          map.addControl(drawDefaults(editableLayers))
+          map.addLayer(editableLayers)
+        }
+        if (features) {
+          map.addLayer(resultsLayers)
+        }
+        fitMapToResults()
+      }
+    },
+    [ initialized ]
+  )
+
+  // effect for every update, regardless of what changed
+  useEffect(() => {
+    if (map) {
+      map.invalidateSize()
+    }
+  })
+
+  const handleKeyPressed = event => {
+    // do nothing if modifiers are pressed
+    if (event.metaKey || event.shiftKey || event.ctrlKey || event.altKey) {
+      return
+    }
+    event.stopPropagation()
+    if (event.keyCode === Key.ESCAPE) {
+      closeMap()
+    }
+  }
+
+  const styleMapContainerMerged = consolidateStyles(styleMapContainer, style)
+
+  return (
+    <div
+      style={styleMapContainerMerged}
+      ref={containerRef}
+      onKeyUp={handleKeyPressed}
+    >
+      <div style={styleMapContainerHeading}>
+        <CloseButton
+          title={'Close Map'}
+          onClose={closeMap}
+          size={`${WIDTH_CLOSE_BUTTON}em`}
+        />
+        <div style={styleMapText}>
           <p>
             Use the square button on the top right of the map to draw a bounding
             box.
@@ -384,15 +310,10 @@ class Map extends React.Component {
             drawing.
           </p>
         </div>
-        <div
-          style={styleMap(open, opacity, flex)}
-          ref={mapNode => {
-            this.mapNode = mapNode
-          }}
-        />
       </div>
-    )
-  }
+      <div style={styleMap} ref={mapRef} />
+    </div>
+  )
 }
 
 Map.defaultProps = {

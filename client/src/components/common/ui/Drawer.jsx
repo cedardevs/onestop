@@ -1,6 +1,9 @@
-import React, {useState, useReducer, useContext, useRef, useEffect} from 'react'
-import {useSpring, useChain, animated} from 'react-spring'
-import {useMeasure, usePrevious} from '../../effects/CommonEffects'
+import React, {useRef, useState} from 'react'
+import {animated, useChain, useSpring, config} from 'react-spring'
+import {useMeasure, usePrevious} from '../../../effects/CommonEffects'
+
+export const DIRECTION_DOWN = 'down'
+export const DIRECTION_ACROSS = 'across'
 
 const Drawer = ({
   content,
@@ -10,13 +13,15 @@ const Drawer = ({
   heightUnit,
   noWrap,
   open,
-  onOpen,
-  onClose,
+  onAnimationStart,
+  onAnimationEnd,
+  downImmediate,
+  overImmediate,
 }) => {
   const defaultSpringConfig = {
     mass: 1,
     tension: 300,
-    friction: 1,
+    friction: 10,
     clamp: true,
     velocity: 10,
   }
@@ -28,7 +33,9 @@ const Drawer = ({
     open: open,
   }
 
+  const [ animating, setAnimating ] = useState(false)
   const [ down, setDown ] = useState(drawer.open)
+  const [ across, setAcross ] = useState(drawer.open)
   const [ bind, measure ] = useMeasure()
   const viewHeight = measure.height
   const previousOpen = usePrevious(drawer.open)
@@ -65,14 +72,24 @@ const Drawer = ({
   const {springHeight} = useSpring({
     from: {springHeight: fromHeight},
     to: {springHeight: toHeight},
-    onRest: () => {
-      setDown(drawer.open)
-      if (!drawer.open && !down) {
-        if (onClose) {
-          onClose()
+    onStart: () => {
+      if (drawer.open && !down && !animating) {
+        setAnimating(true)
+        if (onAnimationStart) {
+          onAnimationStart(drawer.open, DIRECTION_DOWN)
         }
       }
     },
+    onRest: () => {
+      setDown(drawer.open)
+      if (!drawer.open && down && animating) {
+        setAnimating(false)
+        if (onAnimationEnd) {
+          onAnimationEnd(drawer.open, DIRECTION_DOWN)
+        }
+      }
+    },
+    immediate: !!downImmediate,
     config: downConfig,
     ref: downRef,
   })
@@ -82,14 +99,24 @@ const Drawer = ({
     from: {springFractionalUnit: 0},
     // don't trigger until all the way down
     to: {springFractionalUnit: down ? 1 : 0},
-    onRest: () => {
-      if (drawer.open && down) {
-        if (onOpen) {
-          const rect = bind.ref.current.getBoundingClientRect()
-          onOpen(rect)
+    onStart: () => {
+      if (!drawer.open && down && !animating) {
+        setAnimating(true)
+        if (onAnimationStart) {
+          onAnimationStart(drawer.open, DIRECTION_ACROSS)
         }
       }
     },
+    onRest: () => {
+      setAcross(drawer.open)
+      if (drawer.open && down && animating) {
+        setAnimating(false)
+        if (onAnimationEnd) {
+          onAnimationEnd(drawer.open, DIRECTION_ACROSS)
+        }
+      }
+    },
+    immediate: !!overImmediate,
     config: overConfig,
     ref: overRef,
   })

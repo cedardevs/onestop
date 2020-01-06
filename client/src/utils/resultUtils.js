@@ -1,7 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
-import {SvgIcon, cloud, video_camera} from '../components/common/SvgIcon'
+import {cloud, video_camera} from '../components/common/SvgIcon'
 import {fontFamilySansSerif} from './styleUtils'
 import {isPolygonABoundingBox} from './geoUtils'
 
@@ -132,18 +132,6 @@ export const identifyProtocol = link => {
     return protocol
   }
   return {id: '?', names: [], color: 'black', label: 'Unknown'}
-}
-
-export const renderBadgeIcon = protocol => {
-  if (protocol.svgPath) {
-    return (
-      <SvgIcon
-        wrapperStyle={{paddingBottom: '.23em'}}
-        path={protocol.svgPath}
-      />
-    )
-  }
-  return <span>{protocol.id}</span>
 }
 
 const deg = '\u00B0'

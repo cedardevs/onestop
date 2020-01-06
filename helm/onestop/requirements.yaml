@@ -17,11 +17,11 @@ dependencies:
     repository: file://../onestop-client
     conditions: onestop-client.enabled,global.onestop-client.enabled
   - name: onestop-manager
-    version: ~0.3.0
+    version: ~0.4.0
     repository: file://../onestop-manager
     conditions: manager.enabled,global.manager.enabled
   - name: onestop-registry
-    version: ~0.3.0
+    version: ~0.4.0
     repository: file://../onestop-registry
     conditions: registry.enabled,global.registry.enabled
   - name: onestop-search
