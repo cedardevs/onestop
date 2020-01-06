@@ -83,6 +83,85 @@ describe('The BoundingBoxEffect hook', () => {
       bounds = getBounds(hook)
       expect(bounds.west.valid).toBeTruthy()
     })
+
+    it('clears group validation errors with change in value', () => {
+      const hook = init(null)
+
+      let bounds = getBounds(hook)
+
+      act(() => {
+        bounds.west.set('32.12')
+        bounds.east.set('50.2123')
+      })
+      act(() => {
+        // must be a separate act, because the other useEffects need to propagate side effects first
+        // group level validation only done on request (specifically prior to submitting)
+        bounds = getBounds(hook)
+        expect(bounds.east.isSet()).toBeTruthy()
+        expect(bounds.west.isSet()).toBeTruthy()
+        expect(bounds.north.isSet()).toBeFalsy()
+        expect(bounds.south.isSet()).toBeFalsy()
+        bounds.validate()
+      })
+
+      bounds = getBounds(hook)
+      expect(bounds.reason.cumulative).toEqual(
+        'Incomplete coordinates entered. Ensure all four fields are populated.'
+      )
+      expect(bounds.north.valid).toBeFalsy()
+      expect(bounds.north.validInternal).toBeTruthy() // the field level validation is separate
+      expect(bounds.south.valid).toBeFalsy()
+
+      act(() => {
+        // TODO make this kind of act wrapped in a 'simulateUserInteraction' method? (and validate wrapped in a simulatePreSubmit ?)
+        // group level validation only done on request (specifically prior to submitting)
+        bounds.north.set('foo')
+      })
+      //
+      bounds = getBounds(hook)
+      expect(bounds.reason.cumulative).toEqual('')
+
+      expect(bounds.north.valid).toBeFalsy()
+      expect(bounds.north.validInternal).toBeFalsy() // the field level validation is separate
+      expect(bounds.south.valid).toBeTruthy()
+
+      // note: extra spaces are from lazy way of creating message for 4 component directions - since html renders them away
+      expect(bounds.reason.individual).toEqual(
+        '   North: Invalid coordinates entered.'
+      )
+
+      // note: group level validation would only occur with another validate action
+    })
+
+    it('does not bother with group validation if there are individual errors', () => {
+      const hook = init(null)
+
+      let bounds = getBounds(hook)
+      let validationResult = null
+      act(() => {
+        // field level error:
+        bounds.west.set('foo')
+        // group level error:
+        bounds.north.set('10')
+        bounds.south.set('10')
+      })
+      act(() => {
+        // must be a separate act, because the other useEffects need to propagate side effects first
+        // group level validation only done on request (specifically prior to submitting)
+        bounds = getBounds(hook)
+        validationResult = bounds.validate()
+      })
+
+      bounds = getBounds(hook)
+      expect(validationResult).toBeFalsy()
+
+      // note: extra spaces are from lazy way of creating message for 4 component directions - since html renders them away
+      expect(bounds.reason.individual).toEqual(
+        'West: Invalid coordinates entered.   '
+      )
+      // additional group errors are not reported:
+      expect(bounds.reason.cumulative).toEqual('')
+    })
   })
 
   describe('validation - field level', () => {
