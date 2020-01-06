@@ -19,8 +19,29 @@ const init = bbox => {
 }
 
 const getBounds = hook => {
+  // get updated bounds from the hook
+  // made this a separate method because the notation is a little weird
   let [ bounds ] = hook.current
   return bounds
+}
+
+const simulateUserInteraction = (hook, field, value) => {
+  act(() => {
+    const bounds = getBounds(hook)
+    // this is currently how a component is expected to update values based on user interaction events:
+    bounds[field].set(value)
+  })
+}
+
+const simulateValidationRequest = hook => {
+  // must be a separate act, because the other useEffects need to propagate side effects first (also must get the current updated bounds value)
+  // group level validation only done on request (specifically prior to submitting)
+  let result = null
+  act(() => {
+    const bounds = getBounds(hook)
+    result = bounds.validate()
+  })
+  return result
 }
 
 describe('The BoundingBoxEffect hook', () => {
@@ -51,12 +72,10 @@ describe('The BoundingBoxEffect hook', () => {
       let bounds = getBounds(hook)
       expect(bounds.west.isSet()).toBeFalsy()
 
-      act(() => {
-        // this is currently how a component is expected to update values based on user interaction events:
-        bounds.west.set('111')
-      })
+      simulateUserInteraction(hook, 'west', '111')
 
-      bounds = getBounds(hook) // get updated bounds
+      bounds = getBounds(hook)
+
       // primary effect: value is set
       expect(bounds.west.value).toEqual('111')
       // secondary effects:
@@ -67,18 +86,12 @@ describe('The BoundingBoxEffect hook', () => {
     it('clear validation errors with change in values', () => {
       const hook = init(null)
 
-      act(() => {
-        const bounds = getBounds(hook)
-        bounds.west.set('-')
-      })
+      simulateUserInteraction(hook, 'west', '-')
 
       let bounds = getBounds(hook)
-
       expect(bounds.west.valid).toBeFalsy()
 
-      act(() => {
-        bounds.west.set('-1')
-      })
+      simulateUserInteraction(hook, 'west', '-1')
 
       bounds = getBounds(hook)
       expect(bounds.west.valid).toBeTruthy()
@@ -87,24 +100,11 @@ describe('The BoundingBoxEffect hook', () => {
     it('clears group validation errors with change in value', () => {
       const hook = init(null)
 
+      simulateUserInteraction(hook, 'west', '32.12') // side note: decimals are completely valid
+      simulateUserInteraction(hook, 'east', '50.2123')
+      simulateValidationRequest(hook)
+
       let bounds = getBounds(hook)
-
-      act(() => {
-        bounds.west.set('32.12')
-        bounds.east.set('50.2123')
-      })
-      act(() => {
-        // must be a separate act, because the other useEffects need to propagate side effects first
-        // group level validation only done on request (specifically prior to submitting)
-        bounds = getBounds(hook)
-        expect(bounds.east.isSet()).toBeTruthy()
-        expect(bounds.west.isSet()).toBeTruthy()
-        expect(bounds.north.isSet()).toBeFalsy()
-        expect(bounds.south.isSet()).toBeFalsy()
-        bounds.validate()
-      })
-
-      bounds = getBounds(hook)
       expect(bounds.reason.cumulative).toEqual(
         'Incomplete coordinates entered. Ensure all four fields are populated.'
       )
@@ -112,12 +112,9 @@ describe('The BoundingBoxEffect hook', () => {
       expect(bounds.north.validInternal).toBeTruthy() // the field level validation is separate
       expect(bounds.south.valid).toBeFalsy()
 
-      act(() => {
-        // TODO make this kind of act wrapped in a 'simulateUserInteraction' method? (and validate wrapped in a simulatePreSubmit ?)
-        // group level validation only done on request (specifically prior to submitting)
-        bounds.north.set('foo')
-      })
-      //
+      // after updating a value, group validation is cleared
+      simulateUserInteraction(hook, 'north', 'foo')
+
       bounds = getBounds(hook)
       expect(bounds.reason.cumulative).toEqual('')
 
@@ -137,20 +134,14 @@ describe('The BoundingBoxEffect hook', () => {
       const hook = init(null)
 
       let bounds = getBounds(hook)
-      let validationResult = null
-      act(() => {
-        // field level error:
-        bounds.west.set('foo')
-        // group level error:
-        bounds.north.set('10')
-        bounds.south.set('10')
-      })
-      act(() => {
-        // must be a separate act, because the other useEffects need to propagate side effects first
-        // group level validation only done on request (specifically prior to submitting)
-        bounds = getBounds(hook)
-        validationResult = bounds.validate()
-      })
+
+      // field level error:
+      simulateUserInteraction(hook, 'west', 'foo')
+      // group level error (north and south cannot be the same):
+      simulateUserInteraction(hook, 'north', '10')
+      simulateUserInteraction(hook, 'south', '10')
+
+      let validationResult = simulateValidationRequest(hook)
 
       bounds = getBounds(hook)
       expect(validationResult).toBeFalsy()
@@ -239,10 +230,8 @@ describe('The BoundingBoxEffect hook', () => {
     _.each(testCases.NaN, c => {
       it(`not a number - for ${c.field}='${c.value}'`, function(){
         const hook = init(null)
-        act(() => {
-          const bounds = getBounds(hook)
-          bounds[c.field].set(c.value)
-        })
+
+        simulateUserInteraction(hook, c.field, c.value)
 
         const bounds = getBounds(hook)
 
@@ -263,10 +252,7 @@ describe('The BoundingBoxEffect hook', () => {
       it(`invalid limits - for ${c.field}='${c.value}'`, function(){
         const hook = init(null)
 
-        act(() => {
-          const bounds = getBounds(hook)
-          bounds[c.field].set(c.value)
-        })
+        simulateUserInteraction(hook, c.field, c.value)
 
         const bounds = getBounds(hook)
 
@@ -287,10 +273,7 @@ describe('The BoundingBoxEffect hook', () => {
       it(`valid limits - for ${c.field}='${c.value}'`, function(){
         const hook = init(null)
 
-        act(() => {
-          const bounds = getBounds(hook)
-          bounds[c.field].set(c.value)
-        })
+        simulateUserInteraction(hook, c.field, c.value)
 
         const bounds = getBounds(hook)
 
@@ -381,15 +364,11 @@ describe('The BoundingBoxEffect hook', () => {
       it(`incomplete - unset ${c.fields}`, function(){
         const hook = init(initialCondition)
 
-        let bounds = getBounds(hook)
-        act(() => {
-          // set field(s) to blank string
-          c.fields.forEach(field => {
-            bounds[field].set('')
-          })
+        c.fields.forEach(field => {
+          simulateUserInteraction(hook, field, '')
         })
 
-        bounds = getBounds(hook)
+        let bounds = getBounds(hook)
 
         // no field level errors
         expect(bounds.reason.individual).toEqual('')
@@ -401,10 +380,7 @@ describe('The BoundingBoxEffect hook', () => {
         expect(bounds.south.valid).toBeTruthy()
         expect(bounds.north.valid).toBeTruthy()
 
-        act(() => {
-          // group level validation only done on request (specifically prior to submitting)
-          bounds.validate()
-        })
+        simulateValidationRequest(hook)
 
         bounds = getBounds(hook)
         expect(bounds.reason.cumulative).toEqual(
@@ -423,11 +399,8 @@ describe('The BoundingBoxEffect hook', () => {
         const hook = init(initialCondition)
 
         let bounds = getBounds(hook)
-        act(() => {
-          // set field(s) to blank string
-          c.fields.forEach(f => {
-            bounds[f.field].set(f.value)
-          })
+        c.fields.forEach(f => {
+          simulateUserInteraction(hook, f.field, f.value)
         })
 
         bounds = getBounds(hook)
@@ -439,10 +412,7 @@ describe('The BoundingBoxEffect hook', () => {
           expect(bounds[f.field].valid).toBeTruthy()
         })
 
-        act(() => {
-          // group level validation only done on request (specifically prior to submitting)
-          bounds.validate()
-        })
+        simulateValidationRequest(hook)
 
         bounds = getBounds(hook)
         expect(bounds.reason.cumulative).toEqual(c.errorMessage)
