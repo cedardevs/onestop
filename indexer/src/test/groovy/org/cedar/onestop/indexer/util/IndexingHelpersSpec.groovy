@@ -139,8 +139,8 @@ class IndexingHelpersSpec extends Specification {
 
     where:
     type          | mappingSource                               | dataSource
-    'collection'  | 'mappings/ES6/search_collectionIndex.json'  | 'test-iso-collection.xml'
-    'granule'     | 'mappings/ES6/search_granuleIndex.json'     | 'test-iso-granule.xml'
+    'collection'  | 'mappings/search_collectionIndex.json'  | 'test-iso-collection.xml'
+    'granule'     | 'mappings/search_granuleIndex.json'     | 'test-iso-granule.xml'
   }
 
   ////////////////////////////////

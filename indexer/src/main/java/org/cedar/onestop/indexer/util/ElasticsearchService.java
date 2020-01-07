@@ -2,7 +2,6 @@ package org.cedar.onestop.indexer.util;
 
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.elasticsearch.Version;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.AliasActions;
@@ -14,11 +13,10 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.metrics.max.Max;
+import org.elasticsearch.search.aggregations.metrics.Max;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +36,11 @@ public class ElasticsearchService {
   public ElasticsearchService(RestHighLevelClient client, ElasticsearchConfig config) {
     this.client = client;
     this.config = config;
-    if (config.version.before(Version.V_6_0_0)) {
-      throw new IllegalStateException("The indexer service does not work against Elasticsearch prior to version 6");
-    }
+//    int majorVersion = Integer.parseInt(config.version.getNumber().split("\\.")[0]);
+//    int minimumCompatibleMajorVersion = 6;
+//    if (majorVersion < minimumCompatibleMajorVersion) {
+//      throw new IllegalStateException("The indexer service does not work against Elasticsearch < version " + minimumCompatibleMajorVersion);
+//    }
   }
 
   public RestHighLevelClient getClient() {

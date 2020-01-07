@@ -30,7 +30,7 @@ dependencies {
   implementation "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
 
   implementation "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
-  implementation "org.elasticsearch.client:transport:${project.esVersion}"
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${project.esVersion}")
   implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
   implementation 'org.springframework.boot:spring-boot-devtools'

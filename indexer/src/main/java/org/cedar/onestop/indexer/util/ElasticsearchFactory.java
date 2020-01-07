@@ -6,7 +6,6 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
@@ -40,7 +39,6 @@ public class ElasticsearchFactory {
           // Set connect timeout to 1 minute and socket timeout to 5 minutes
           return requestConfigBuilder.setConnectTimeout(60000).setSocketTimeout(300000);
         })
-        .setMaxRetryTimeoutMillis(300000)
         .setHttpClientConfigCallback(httpClientBuilder -> {
           if (!rwUser.isBlank() && !rwPassword.isBlank()) {
             var credentials = new BasicCredentialsProvider();
@@ -75,9 +73,11 @@ public class ElasticsearchFactory {
         .orElse(null);
     var elasticSitemapEnabled = true; // TODO - any reason to configure this?
 
-    var elasticVersion = elasticClient.info(RequestOptions.DEFAULT).getVersion();
+    //TODO: guess we dont need this bro?
+    // var elasticVersion = elasticClient.info(RequestOptions.DEFAULT).getVersion();
+
     return new ElasticsearchConfig(
         elasticPrefix, elasticMaxTasks, elasticRequestsPerSecond, elasticSitemapScrollSize,
-        elasticSitemapCollectionsPerSubmap, elasticSitemapEnabled, elasticVersion);
+        elasticSitemapCollectionsPerSubmap, elasticSitemapEnabled);
   }
 }

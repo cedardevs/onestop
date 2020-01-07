@@ -21,7 +21,6 @@ Table of Contents
  * [Feature Toggles](#feature-toggles)
    * [Keystores and Credentials](#keystores-and-credentials)
    * [Spring Profiles](#spring-profiles)
-     * [admin](#admin)
      * [search](#search)
    * [Changing &amp; Overriding Profiles](#changing--overriding-profiles)
 
@@ -48,14 +47,18 @@ Table of Contents
   </summary>
   <br/>
   <p>For individual components:</p>
-<pre>./gradlew admin:build
+<pre>
 ./gradlew search:build
-./gradlew client:build</pre>
+./gradlew client:build
+./gradlew registry:build
+./gradlew stream-manager:build
+</pre>
 </details>
 
 ### Run
 ```
-./gradlew admin:bootrun
+./gradlew registry:bootrun
+./gradlew stream-manager:run
 ./gradlew search:bootrun
 cd client && npm run dev
 ```
@@ -65,7 +68,6 @@ cd client && npm run dev
 # Elasticsearch
 http://localhost:9200/
 # APIs
-http://localhost:8098/onestop-admin/actuator/info
 http://localhost:8097/onestop-search/actuator/info
 
 # Client
@@ -126,7 +128,6 @@ skaffold dev --port-forward=false -f skaffold.yaml
 http://localhost:30092/
 
 # APIs
-http://localhost:30098/onestop-admin/actuator/info
 http://localhost:30097/onestop-search/actuator/info
 
 # Client
@@ -180,7 +181,6 @@ helm dependency list
 helm dependency update
 
 helm delete elasticsearch --purge
-helm delete onestop-admin --purge
 helm delete onestop-search --purge
 helm delete onestop-client --purge
 
@@ -211,15 +211,6 @@ Due to the sensitive nature of keystores, this is a one-time setup which is done
 OneStop APIs are written in Spring. Currently, the APIs utilize different authentication and authorization mechanisms; nevertheless, they each utilize "Spring Profiles" to switch security-related code on and off during deployment.
 
 OneStop leverages these profiles to enact certain feature toggles. The features available to the different APIs are documented below.
-
-##### admin
-
-| Spring Profile | Feature Description | Default Value |
-| --- | --- | --- |
-| <pre><code>icam</code></pre> | Enables a Spring security filter to require ICAM CAC authentication and authorization to hit particular endpoints. | *false* |
-| <pre><code>manual-upload</code></pre> | Enables the `UploadController` which opens browser endpoints for manual metadata upload. This feature should always be set with the `icam` profile in production to ensure manual upload is CAC secured. | *false* |
-| <pre><code>kafka-ingest</code></pre> | Enables the `KafkaConsumerService` to upload metadata via PSI. This feature should never be enabled at the same time as the `manual-upload` feature as they are mutually exclusive approaches to metadata upload.  | *false* |
-| <pre><code>sitemap</code></pre> | Enables the `SitemapETLService` to create the sitemap index and periodically refresh it. | *false* |
 
 ##### search
 

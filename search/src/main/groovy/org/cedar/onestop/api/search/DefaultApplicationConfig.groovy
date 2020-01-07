@@ -41,22 +41,24 @@ class DefaultApplicationConfig {
   @Value('${elasticsearch.ro.pass:}')
   String roPassword
 
-  @Bean(name = 'elasticsearchVersion')
-  @DependsOn('restClient')
-  Version elasticsearchVersion(RestClient restClient) throws IOException {
-    Request versionRequest = new Request('GET', '/')
-    Response versionResponse = restClient.performRequest(versionRequest)
-    HttpEntity responseEntity = versionResponse.entity
-    InputStream responseContent = responseEntity.content
-    Map content = new JsonSlurper().parse(responseContent) as Map
-    Map versionInfo = content.version as Map
-    String versionNumber = versionInfo.number as String
-    final Version version = Version.fromString(versionNumber)
-    if(version == null) {
-      throw new RuntimeException("Elasticsearch version not found in the response")
-    }
-    return version
-  }
+
+  //TODO: how the heck are we gonna do version checks now? version
+//  @Bean(name = 'elasticsearchVersion')
+//  @DependsOn('restClient')
+//  Version elasticsearchVersion(RestClient restClient) throws IOException {
+//    Request versionRequest = new Request('GET', '/')
+//    Response versionResponse = restClient.performRequest(versionRequest)
+//    HttpEntity responseEntity = versionResponse.entity
+//    InputStream responseContent = responseEntity.content
+//    Map content = new JsonSlurper().parse(responseContent) as Map
+//    Map versionInfo = content.version as Map
+//    String versionNumber = versionInfo.number as String
+//    final Version version = Version.fromString(versionNumber)
+//    if(version == null) {
+//      throw new RuntimeException("Elasticsearch version not found in the response")
+//    }
+//    return version
+//  }
 
   // we dont' want this bean to be created when the tests use test containers,
   // but in our CI environment, we have a separate Elasticsearch and so we can leverage this normal RestClient again
@@ -108,8 +110,8 @@ class DefaultApplicationConfig {
   Environment environment
 
   @Bean
-  ElasticsearchConfig elasticsearchConfig(Version elasticsearchVersion) {
+  ElasticsearchConfig elasticsearchConfig() {
     def sitemapEnabled = environment.activeProfiles.contains('sitemap')
-    return new ElasticsearchConfig(PREFIX, MAX_TASKS, REQUESTS_PER_SECOND, SITEMAP_SCROLL_SIZE, SITEMAP_COLLECTIONS_PER_SUBMAP, sitemapEnabled, elasticsearchVersion)
+    return new ElasticsearchConfig(PREFIX, MAX_TASKS, REQUESTS_PER_SECOND, SITEMAP_SCROLL_SIZE, SITEMAP_COLLECTIONS_PER_SUBMAP, sitemapEnabled)
   }
 }

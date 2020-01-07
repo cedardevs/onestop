@@ -1,42 +1,6 @@
 apiVersion: skaffold/v1beta7
 kind: Config
 
-.onestop-admin: &onestop-admin
-  name: onestop-admin
-  chartPath: helm/onestop-admin
-  values:
-    # skaffold may not build/deploy w/the latest if this is not set here
-    image: cedardevs/onestop-admin
-  imageStrategy:
-    helm: {}
-  setValues:
-    # allows onestop-admin to be exposed outside the cluster in dev
-    # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
-    # all features default to "false" in base chart, unless otherwise overridden
-    features.icam: false
-    features.manual-upload: false
-    features.kafka-ingest: true
-    features.sitemap: true
-    # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
-    config: |-
-      ---
-      logging.level.org.cedar.onestop.api.admin: DEBUG
-      spring:
-        profiles: kafka-ingest
-      kafka:
-        bootstrap:
-          servers: PLAINTEXT://onestop-dev-cp-kafka:9092
-        schema:
-          registry:
-            url: http://onestop-dev-cp-schema-registry:8081
-      ---
-      spring:
-        profiles: sitemap
-      etl:
-        sitemap:
-          delay:
-            initial: 60000
-
 .onestop-indexer: &onestop-indexer
   name: onestop-indexer
   chartPath: helm/onestop-indexer

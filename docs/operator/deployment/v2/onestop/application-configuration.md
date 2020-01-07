@@ -4,7 +4,7 @@
 
 OneStop contains two separate APIs.
 
-- `admin` is the write-enabled endpoints, used for administrative tasks.
+- `registry` is the write-enabled endpoints, used for administrative tasks.
 - `search` is the read-only search and client-specific endpoints, and is intended to be public facing.
 
 ### Dependencies
@@ -73,7 +73,7 @@ See [Quickstart](/docs/developer/quickstart.md).
 Wherever you choose to put your configuration values, it is important that some of the default values be replaced and otherwise optional parameters be provided before deploying OneStop to a production environment. Let's go through the categories:
 
 ### Server Values
-Use to modify the port and context path that the app uses when executed directly. These are used when running `./gradlew springboot` locally, or as a self-executing jar with embedded Tomcat. They are ignored by deployment in an external Tomcat, which uses the WAR name to determine the context-path instead. Defaults result in http://localhost:8097/onestop-search for the search API and http://localhost:8098/onestop-admin for the metadata management API.
+Use to modify the port and context path that the app uses when executed directly. These are used when running `./gradlew springboot` locally, or as a self-executing jar with embedded Tomcat. They are ignored by deployment in an external Tomcat, which uses the WAR name to determine the context-path instead. Defaults result in http://localhost:8097/onestop-search for the search API.
 
 ### Elasticsearch Values
 

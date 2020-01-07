@@ -15,7 +15,7 @@ dependencies {
   compileOnly("org.slf4j:slf4j-api:1.7.25")
 
   implementation("org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}")
-  implementation("org.elasticsearch.client:transport:${project.esVersion}")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${project.esVersion}")
   implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
 
   testImplementation("org.codehaus.groovy:groovy:${project.groovyVersion}")

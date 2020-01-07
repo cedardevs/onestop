@@ -26,16 +26,15 @@ class ElasticsearchService {
 
   private RestClient restClient
   ElasticsearchConfig esConfig
-  Version version
 
   @Autowired
   ElasticsearchService(SearchRequestParserService searchRequestParserService, RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
-
-    this.version = elasticsearchConfig.version
-    log.info("Elasticsearch found with version: ${this.version.toString()}" )
-    boolean supported = version.onOrAfter(Version.V_5_6_0)
-    if(!supported) {
-      throw new RuntimeException("Search API does not support version ${version.toString()} of Elasticsearch")
+    String version = elasticsearchConfig.version.getNumber()
+    log.info("Elasticsearch found with version: ${version}" )
+    int majorVersion = Integer.parseInt(version.split("\\.")[0]);
+    int minimumCompatibleMajorVersion = 6
+    if (majorVersion < minimumCompatibleMajorVersion) {
+      throw new IllegalStateException("The search service does not work against Elasticsearch prior to version " + minimumCompatibleMajorVersion.toString());
     }
 
     this.searchRequestParserService = searchRequestParserService

@@ -1,8 +1,7 @@
 rootProject.name = 'onestop'
 
-include 'admin'
 include 'client'
-include 'cli'
+//include 'cli'
 include 'e2e-tests'
 include 'elastic-common'
 include 'geoportal-search'

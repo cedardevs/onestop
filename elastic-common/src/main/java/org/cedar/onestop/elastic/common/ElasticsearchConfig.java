@@ -1,6 +1,5 @@
 package org.cedar.onestop.elastic.common;
 
-import org.elasticsearch.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +18,6 @@ public class ElasticsearchConfig {
   public String FLAT_GRANULE_SEARCH_INDEX_ALIAS = "search_flattened_granule";
   public String SITEMAP_INDEX_ALIAS = "sitemap";
 
-  // pipeline names
-  static final String COLLECTION_PIPELINE = "collection_pipeline";
-  static final String GRANULE_PIPELINE = "granule_pipeline";
-
   // type (e.g. 'doc')
   public final String TYPE;
 
@@ -35,15 +30,11 @@ public class ElasticsearchConfig {
   public final Integer SITEMAP_COLLECTIONS_PER_SUBMAP;
   public final Boolean SITEMAP_ENABLED;
 
-  // Elasticsearch Version
-  public final Version version;
-
   public static final String TYPE_COLLECTION = "collection";
   public static final String TYPE_GRANULE = "granule";
   public static final String TYPE_FLATTENED_GRANULE = "flattened-granule";
   public static final String TYPE_SITEMAP = "sitemap";
 
-  private Map<String, String> jsonPipelines = new HashMap<>();
   private Map<String, String> jsonMappings = new HashMap<>();
   private Map<String, String> typesByAlias = new HashMap<>();
 
@@ -59,9 +50,7 @@ public class ElasticsearchConfig {
       // optional: feature toggled by 'sitemap' profile, default: empty
       Integer SITEMAP_COLLECTIONS_PER_SUBMAP,
       // optional: enable sitemap feature, default: false
-      Boolean SITEMAP_ENABLED,
-      // Elasticsearch Version
-      Version version
+      Boolean SITEMAP_ENABLED
   ) throws IOException {
     // log prefix if it's not null
     if (PREFIX != null && !PREFIX.isBlank()) {
@@ -77,52 +66,22 @@ public class ElasticsearchConfig {
     this.SITEMAP_INDEX_ALIAS = PREFIX + this.SITEMAP_INDEX_ALIAS;
 
     // use _doc if it's supported to avoid using an explicit type, which is deprecated
-    this.TYPE = version.onOrAfter(Version.V_6_2_0) ? "_doc" : "doc";
+    this.TYPE = "_doc";
     this.MAX_TASKS = MAX_TASKS;
     this.REQUESTS_PER_SECOND = REQUESTS_PER_SECOND;
     this.SITEMAP_SCROLL_SIZE = SITEMAP_SCROLL_SIZE;
     this.SITEMAP_COLLECTIONS_PER_SUBMAP = SITEMAP_COLLECTIONS_PER_SUBMAP;
     this.SITEMAP_ENABLED = SITEMAP_ENABLED;
 
-    this.version = version;
-
-    // Associate pipeline names directly to their JSON definitions as strings as a memoization
-    if (version.onOrAfter(Version.V_6_4_0)) {
-      // ES6.4+ can make use of more efficient pipeline definitions (e.g. - removing array of fields, etc.)
-      this.jsonPipelines.put(COLLECTION_PIPELINE, FileUtil.textFromClasspathFile("pipelines/${COLLECTION_PIPELINE}_ES5-6_Definition.json"));
-      this.jsonPipelines.put(GRANULE_PIPELINE, FileUtil.textFromClasspathFile("pipelines/${GRANULE_PIPELINE}_ES5-6_Definition.json"));
-    }
-    else {
-      this.jsonPipelines.put(COLLECTION_PIPELINE, FileUtil.textFromClasspathFile("pipelines/${COLLECTION_PIPELINE}Definition.json"));
-      this.jsonPipelines.put(GRANULE_PIPELINE, FileUtil.textFromClasspathFile("pipelines/${GRANULE_PIPELINE}Definition.json"));
-    }
-
     // Elasticsearch alias names are configurable, and this allows a central mapping between
     // the alias names configured (including the prefix) and the JSON mappings
     // https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
-    if (version.onOrAfter(Version.V_6_0_0)) {
-      log.debug("Elasticsearch version " + version + " found. Using mappings without `_all`.");
-      // [_all] is deprecated in 6.0+ and will be removed in 7.0.
-      // -> It is now disabled by default because it requires extra CPU cycles and disk space
-      // https://www.elastic.co/guide/en/elasticsearch/reference/6.4/mapping-all-field.html
-      this.jsonMappings.put(COLLECTION_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES6/search_collectionIndex.json"));
-      this.jsonMappings.put(COLLECTION_STAGING_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES6/staging_collectionIndex.json"));
-      this.jsonMappings.put(GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES6/search_granuleIndex.json"));
-      this.jsonMappings.put(GRANULE_STAGING_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES6/staging_granuleIndex.json"));
-      this.jsonMappings.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES6/search_flattened_granuleIndex.json"));
-      this.jsonMappings.put(SITEMAP_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES6/sitemapIndex.json"));
-    }
-    else {
-      log.debug("Elasticsearch version " + version + " found. Using mappings with `_all` disabled.");
-      // ES 5 did not disable [_all] by default and so the mappings to support < 6.0 explicitly disable it
-      // https://www.elastic.co/guide/en/elasticsearch/reference/5.6/mapping-all-field.html
-      this.jsonMappings.put(COLLECTION_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES5/search_collectionIndex.json"));
-      this.jsonMappings.put(COLLECTION_STAGING_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES5/staging_collectionIndex.json"));
-      this.jsonMappings.put(GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES5/search_granuleIndex.json"));
-      this.jsonMappings.put(GRANULE_STAGING_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES5/staging_granuleIndex.json"));
-      this.jsonMappings.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES5/search_flattened_granuleIndex.json"));
-      this.jsonMappings.put(SITEMAP_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/ES5/sitemapIndex.json"));
-    }
+    this.jsonMappings.put(COLLECTION_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_collectionIndex.json"));
+    this.jsonMappings.put(COLLECTION_STAGING_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/staging_collectionIndex.json"));
+    this.jsonMappings.put(GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_granuleIndex.json"));
+    this.jsonMappings.put(GRANULE_STAGING_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/staging_granuleIndex.json"));
+    this.jsonMappings.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_flattened_granuleIndex.json"));
+    this.jsonMappings.put(SITEMAP_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/sitemapIndex.json"));
 
     // Associate index aliases directly to their type identifiers for consistency
     this.typesByAlias.put(COLLECTION_SEARCH_INDEX_ALIAS, TYPE_COLLECTION);
@@ -131,11 +90,6 @@ public class ElasticsearchConfig {
     this.typesByAlias.put(GRANULE_STAGING_INDEX_ALIAS, TYPE_GRANULE);
     this.typesByAlias.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, TYPE_FLATTENED_GRANULE);
     this.typesByAlias.put(SITEMAP_INDEX_ALIAS, TYPE_SITEMAP);
-  }
-
-  public String jsonPipeline(String pipeline) {
-    // retrieve JSON pipeline for pipeline name
-    return this.jsonPipelines.get(pipeline);
   }
 
   public String jsonMapping(String alias) {

@@ -15,7 +15,7 @@ defaultsWithElasticsearch: &defaultsWithElasticsearch
     - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
   docker:
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
-    - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
+    - image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
       environment:
         - cluster.name: elasticsearch-test
         - xpack.security.enabled: false
@@ -40,7 +40,7 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
       # fallback to using the latest cache if no exact match is found
       - onestop-cache-v15-
 
@@ -50,7 +50,6 @@ saveCache: &saveCache
       - .gradle_home
       - .gradle
       - build
-      - admin/build
       - client/build
       - client/.gradle
       - client/node_modules
@@ -59,7 +58,7 @@ saveCache: &saveCache
       - stream-manager/build
       - cli/.gogradle
       - cli/vendor
-    key: onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+    key: onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -88,48 +87,6 @@ jobs:
           root: ~/repo
           paths:
             - .
-
-  admin:
-    <<: *defaultsWithElasticsearch
-    <<: *env
-    steps:
-      - <<: *attachWorkspace
-      - run:
-          name: Assemble, Check (sans integration tests)
-          command: ./gradlew --parallel admin:assemble admin:check -x integrationTest
-      - run:
-          name: Wait for Elasticsearch
-          command: dockerize -wait tcp://localhost:9200 -timeout 1m
-      - run:
-          name: Integration Tests
-          command: ./gradlew admin:integrationTest
-      - run:
-          name: Generate Coverage Reports
-          command: ./gradlew admin:jacocoTestReport -x test
-      - run:
-          name: Collect Test Results
-          command: |
-            mkdir -p ~/tests/junit/
-            find admin/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find admin/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-          when: always
-      - store_test_results:
-          path: ~/tests
-      - store_artifacts:
-          path: admin/build/reports
-      - deploy:
-          name: Publish Image(s)
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew admin:jib
-            else
-              echo "Skipping publishing"
-            fi
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - admin/build
 
   search:
     <<: *defaultsWithElasticsearch
@@ -378,9 +335,6 @@ workflows:
   build:
     jobs:
       - checkout
-      - admin:
-          requires:
-            - checkout
       - client:
           requires:
             - checkout
@@ -402,7 +356,6 @@ workflows:
             - cli-generation
       - finalize:
           requires:
-            - admin
             - client
             - registry
             - search

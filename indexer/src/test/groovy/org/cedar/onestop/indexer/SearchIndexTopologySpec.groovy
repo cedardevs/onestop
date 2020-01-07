@@ -56,7 +56,7 @@ class SearchIndexTopologySpec extends Specification {
 
   def setup() {
     def testAppConfig = new AppConfig()
-    def testEsConfig = new ElasticsearchConfig("SearchIndexTopologySpec", 1, 1, 1, 1, false, Version.V_6_8_2)
+    def testEsConfig = new ElasticsearchConfig("SearchIndexTopologySpec", 1, 1, 1, 1, false)
     mockEsService = Mock(ElasticsearchService)
     mockEsService.getConfig() >> testEsConfig
     topology = SearchIndexTopology.buildSearchIndexTopology(mockEsService, testAppConfig)

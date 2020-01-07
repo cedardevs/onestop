@@ -74,24 +74,12 @@ class TestUtil {
     // the alias names configured (including the prefix) and the JSON mappings
     // https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
     String jsonMappingGeneric
-    if (version.onOrAfter(Version.V_6_0_0)) {
-      log.debug("Elasticsearch version ${version.toString()} found. Using mappings without `_all`.")
-      // [_all] is deprecated in 6.0+ and will be removed in 7.0.
-      // -> It is now disabled by default because it requires extra CPU cycles and disk space
-      // https://www.elastic.co/guide/en/elasticsearch/reference/6.4/mapping-all-field.html
-      jsonMappingGeneric = FileUtil.textFromFile("test/data/generic/${alias}/index_ES6.json")
-
-    } else {
-      log.debug("Elasticsearch version ${version.toString()} found. Using mappings with `_all` disabled.")
-      // ES 5 did not disable [_all] by default and so the mappings to support < 6.0 explicitly disable it
-      // https://www.elastic.co/guide/en/elasticsearch/reference/5.6/mapping-all-field.html
-      jsonMappingGeneric = FileUtil.textFromFile("test/data/generic/${alias}/index.json")
-    }
+    jsonMappingGeneric = FileUtil.textFromClasspathFile("test/data/generic/${alias}/index_ES6.json")
 
     RequestUtil.resetIndices(alias, jsonMappingGeneric, restClient)
 
     // load bulk data into generic index alias
-    String bulkData = FileUtil.textFromFile("test/data/generic/${alias}/bulkData.txt")
+    String bulkData = FileUtil.textFromClasspathFile("test/data/generic/${alias}/bulkData.txt")
     RequestUtil.bulk(alias, bulkData, restClient)
 
     // refresh all indices
@@ -114,9 +102,9 @@ class TestUtil {
       dataset.each { collection, collectionData ->
         // each test collection has an id and a corresponding JSON found in the shared `elastic-common` resources
         String collectionId = collectionData.id
-        String collectionMetadata = FileUtil.textFromFile("test/data/json/${name}/${collection}.json")
+        String collectionMetadata = FileUtil.textFromClasspathFile("test/data/json/${name}/${collection}.json")
         // load the collection record into the collection index
-        log.info("LOADING COLLETION - test/data/json/${name}/${collection}.json")
+        log.info("LOADING COLLECTION - test/data/json/${name}/${collection}.json")
         RequestUtil.putSearchCollectionMetadataRecord(collectionId, collectionMetadata, esConfig, restClient)
 
         // each test collection has an array of test granules
@@ -124,7 +112,7 @@ class TestUtil {
           // if there are any granules, each has an id and corresponding JSON found in the shared `elastic-common` resources
           String granuleId = granuleData.id
           log.info("LOADING GRANULE - test/data/json/${name}/${collection}.json")
-          String granuleMetadata = FileUtil.textFromFile("test/data/json/${name}/${granule}.json")
+          String granuleMetadata = FileUtil.textFromClasspathFile("test/data/json/${name}/${granule}.json")
           // load the new granule record into the granule index
           RequestUtil.putSearchGranuleMetadataRecord(granuleId, granuleMetadata, esConfig, restClient)
         }
@@ -133,7 +121,7 @@ class TestUtil {
         collectionData.flattenedGranules.each { flattenedGranule, flattenedGranuleData ->
           // if there are any flattened granules, each has an id and corresponding JSON found in the shared `elastic-common` resources
           String flattenedGranuleId = flattenedGranuleData.id
-          String flattenedGranuleMetadata = FileUtil.textFromFile("test/data/json/${name}/${flattenedGranule}.json")
+          String flattenedGranuleMetadata = FileUtil.textFromClasspathFile("test/data/json/${name}/${flattenedGranule}.json")
           // load the new flattened granule record into the flattened granule index
           RequestUtil.putSearchFlattenedGranuleMetadataRecord(flattenedGranuleId, flattenedGranuleMetadata, esConfig, restClient)
         }

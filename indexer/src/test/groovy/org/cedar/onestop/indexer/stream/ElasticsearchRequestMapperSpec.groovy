@@ -26,7 +26,7 @@ class ElasticsearchRequestMapperSpec extends Specification {
   def testIndexName = "TEST"
   def testEsConfig = new ElasticsearchConfig(
       "bulkRequestMapperSpec", 10, 10, 10,
-      10, true, Version.V_6_7_2
+      10, true
   )
   def testMapper = new ElasticsearchRequestMapper(testEsConfig, testIndexName)
 
