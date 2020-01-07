@@ -22,7 +22,12 @@ dependencies {
   testImplementation("org.spockframework:spock-core:${project.spockVersion}")
   testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
   testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
-  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}") {
+    // needed force gradle to use this version of the clients (2.4.0) to prevent the
+    // confluent dependencies (5.3.2) from causing older clients to be used
+    // can probably remove this when confluent 5.4 comes out
+    force = true
+  }
   testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
   testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
   testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
