@@ -1,9 +1,9 @@
 package org.cedar.onestop.kafka.common.serde;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serializer;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Map;
@@ -15,6 +15,7 @@ final class JsonMapSerde extends Serdes.WrapperSerde<Map<String, Object>> {
   }
 
   static final class JsonMapSerializer implements Serializer<Map<String, Object>> {
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
