@@ -52,6 +52,7 @@ subprojects {
     kafkaVersion = '2.4.0'
     springKafkaVersion = '2.3.1.RELEASE'
     avroVersion = '1.9.1'
+    snakeYamlVersion = '1.24'
   }
 
   // URL for the source code under version control from which this container image was built.
