@@ -146,6 +146,7 @@ describe('The DateTimeEffect hook', () => {
 
   describe('flow', () => {
     test('init variable updated externally', () => {
+      // move to init describe block?
       //
       let initialValue = null
 
@@ -298,22 +299,20 @@ describe('The DateTimeEffect hook', () => {
       {
         // scope variables from hook
         const [ start, end ] = hook.current
-
         expect(start.asMap).toEqual({year: null, month: null, day: null})
       }
-      simulateStartUserInteraction(hook, 'year', '2020')
 
+      simulateStartUserInteraction(hook, 'year', '2020')
       {
         // scope variables from hook
         const [ start, end ] = hook.current
-
         expect(start.asMap).toEqual({year: 2020, month: null, day: null})
       }
+
       simulateStartUserInteraction(hook, 'month', '0')
       {
         // scope variables from hook
         const [ start, end ] = hook.current
-
         expect(start.asMap).toEqual({year: 2020, month: 0, day: null})
       }
     })
