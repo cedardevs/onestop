@@ -49,17 +49,7 @@ const getDate = hook => {
 const initDateRange = (start, end) => {
   return initHook(useDateRange, start, end)
 }
-// const init = bbox => {
-//   return initHook(useBoundingBox, bbox)
-// }
-//
-// const getBounds = hook => {
-//   // get updated bounds from the hook
-//   // made this a separate method because the notation is a little weird
-//   let [ bounds ] = hook.current
-//   return bounds
-// }
-//
+
 const simulateStartUserInteraction = (hook, field, value) => {
   act(() => {
     // this is currently how a component is expected to update values based on user interaction events:
@@ -68,6 +58,7 @@ const simulateStartUserInteraction = (hook, field, value) => {
     start[field].set(value)
   })
 }
+
 const simulateEndUserInteraction = (hook, field, value) => {
   act(() => {
     // this is currently how a component is expected to update values based on user interaction events:
@@ -76,17 +67,24 @@ const simulateEndUserInteraction = (hook, field, value) => {
     end[field].set(value)
   })
 }
-//
-// const simulateValidationRequest = hook => {
-//   // must be a separate act, because the other useEffects need to propagate side effects first (also must get the current updated bounds value)
-//   // group level validation only done on request (specifically prior to submitting)
-//   let result = null
-//   act(() => {
-//     const bounds = getBounds(hook)
-//     result = bounds.validate()
-//   })
-//   return result
-// }
+
+const simulateValidationRequest = hook => {
+  // must be a separate act, because the other useEffects need to propagate side effects first (also must get the current updated bounds value)
+  // group level validation only done on request (specifically prior to submitting)
+  let result = null
+  act(() => {
+    const [
+      start,
+      end,
+      clear,
+      validate,
+      asDateStrings,
+      errorCumulative,
+    ] = hook.current
+    result = validate()
+  })
+  return result
+}
 
 describe('The DateTimeEffect hook', () => {
   describe('useDatetime', () => {
@@ -233,7 +231,22 @@ describe('The DateTimeEffect hook', () => {
       ],
     }
 
+    test('invalid day value', () => {
+      const hook = initDateRange(null, null)
+
+      simulateStartUserInteraction(hook, 'year', '2000')
+      simulateStartUserInteraction(hook, 'month', '1') // Febuary
+      simulateStartUserInteraction(hook, 'day', '31')
+
+      const [ start, end ] = hook.current
+
+      expect(start.day.valid).toBeFalsy()
+      expect(start.valid).toBeFalsy()
+      expect(start.day.errors.field).toEqual('Start day invalid.')
+    })
+
     _.each(testCases.NaN, c => {
+      // note: more specific errors are covered by the test for the util funtion
       test(`start date: not a number - for ${c.field}='${c.value}'`, function(){
         const hook = initDateRange(null, null)
 
@@ -243,6 +256,7 @@ describe('The DateTimeEffect hook', () => {
 
         // generic invalid expectations
         expect(start[c.field].valid).toBeFalsy()
+        expect(start.valid).toBeFalsy()
 
         // internal tracking side effects
         expect(start[c.field].validInternal).toBeFalsy()
@@ -262,6 +276,7 @@ describe('The DateTimeEffect hook', () => {
 
         // generic invalid expectations
         expect(end[c.field].valid).toBeFalsy()
+        expect(end.valid).toBeFalsy()
 
         // internal tracking side effects
         expect(end[c.field].validInternal).toBeFalsy()
@@ -270,6 +285,76 @@ describe('The DateTimeEffect hook', () => {
         // specific invalid expectations
         expect(end[c.field].value).toEqual(c.value)
         expect(end[c.field].errors.field).toEqual(c.endError)
+      })
+    })
+  })
+
+  describe('required', () => {
+    const testCases = {
+      required: [
+        {
+          field: 'month',
+          value: '3',
+          yearRequired: true,
+          monthRequired: false,
+          yearError: 'End year required.',
+          monthError: '',
+        },
+        {
+          field: 'day',
+          value: '20',
+          yearRequired: true,
+          monthRequired: true,
+          yearError: 'End year required.',
+          monthError: 'End month required.',
+        },
+      ],
+    }
+
+    describe('group validation', () => {
+      _.each(testCases.required, c => {
+        test(`start date: ${c.field} marks other fields as required`, () => {
+          const hook = initDateRange(null, null)
+
+          simulateEndUserInteraction(hook, c.field, c.value)
+
+          simulateValidationRequest(hook)
+
+          const [ start, end ] = hook.current
+
+          // unlike before validation, after validation, there are errors on the fields due to missing required fields
+          expect(end.valid).toBeFalsy()
+          expect(end[c.field].errors.field).toEqual('') // no field level errors
+          expect(end.year.valid).toEqual(!c.yearRequired)
+          expect(end.month.valid).toEqual(!c.monthRequired)
+          expect(end.year.errors.fieldset).toEqual(c.yearError)
+          expect(end.month.errors.fieldset).toEqual(c.monthError)
+
+          // required field expectations
+          expect(end.year.required).toEqual(c.yearRequired)
+          expect(end.month.required).toEqual(c.monthRequired)
+        })
+      })
+    })
+
+    describe('immediate effects', () => {
+      _.each(testCases.required, c => {
+        test(`start date: ${c.field} marks other fields as required`, () => {
+          const hook = initDateRange(null, null)
+
+          simulateStartUserInteraction(hook, c.field, c.value)
+
+          const [ start, end ] = hook.current
+
+          // generic invalid expectations
+          // marking year and month fields as optional doesn't immediately affect validation (not considered "field level" error - this is a standard 508 expectation)
+          expect(start[c.field].valid).toBeTruthy()
+          expect(start.valid).toBeTruthy()
+
+          // required field expectations
+          expect(start.year.required).toEqual(c.yearRequired)
+          expect(start.month.required).toEqual(c.monthRequired)
+        })
       })
     })
   })
