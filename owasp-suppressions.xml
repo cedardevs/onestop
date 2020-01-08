@@ -22,6 +22,23 @@
 
   <suppress>
     <notes><![CDATA[
+      Applies to FasterXML jackson-databind versions 2.9.x or earlier, while this application uses 2.10.1 via gradle
+      dependency resolution strategy
+      ]]></notes>
+    <cve>CVE-2017-17485</cve>
+    <cve>CVE-2018-5968</cve>
+    <cve>CVE-2017-7525</cve>
+    <cve>CVE-2017-15095</cve>
+    <cve>CVE-2018-14718</cve>
+    <cve>CVE-2018-1000873</cve>
+    <cve>CVE-2018-7489</cve>
+    <cve>CVE-2019-17267</cve>
+    <cve>CVE-2019-16335</cve>
+    <cve>CVE-2019-14540</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
       Applies to spring framework versions prior to 5.0.x, which are not in use in this application
       ]]></notes>
     <cve>CVE-2016-9878</cve>
