@@ -104,6 +104,17 @@ describe('The DateTimeEffect hook', () => {
         expect(date.month.value).toEqual('1') // 0 - 11 internally
         expect(date.day.value).toEqual('13')
       })
+
+      describe('DO NOT DO THIS', () => {
+        test('bad initial value', () => {
+          // empty string isn't a valid - the way the redux store is populated should prevent this, but if you see NaN rendered into the form, that's where to start debugging
+          const hook = initDate('default', '')
+          let date = getDate(hook)
+          expect(date.year.value).toEqual('NaN')
+          expect(date.month.value).toEqual('NaN')
+          expect(date.day.value).toEqual('NaN')
+        })
+      })
     })
   })
 
@@ -130,17 +141,6 @@ describe('The DateTimeEffect hook', () => {
         expect(end.month.value).toEqual('4') // 0 - 11 internally
         expect(end.day.value).toEqual('6')
       })
-    })
-  })
-
-  describe('DO NOT DO THIS', () => {
-    test('bad initial value', () => {
-      // empty string isn't a valid - the way the redux store is populated should prevent this, but if you see NaN rendered into the form, that's where to start debugging
-      const hook = initDate('default', '')
-      let date = getDate(hook)
-      expect(date.year.value).toEqual('NaN')
-      expect(date.month.value).toEqual('NaN')
-      expect(date.day.value).toEqual('NaN')
     })
   })
 
@@ -204,6 +204,118 @@ describe('The DateTimeEffect hook', () => {
       expect(date.year.value).toEqual('')
       expect(date.month.value).toEqual('')
       expect(date.day.value).toEqual('')
+    })
+
+    test('does not bother with group validation if there are individual errors', () => {
+      // TODO maybe this test goes under group errors, not flow?
+      const hook = initDateRange(null, null)
+
+      simulateStartUserInteraction(hook, 'year', '2020')
+      // simulateStartUserInteraction(hook, 'month', '0') // missing month
+      simulateStartUserInteraction(hook, 'day', 'foo') // day error
+      simulateEndUserInteraction(hook, 'year', '2010')
+      simulateEndUserInteraction(hook, 'month', '0')
+      simulateEndUserInteraction(hook, 'day', '1')
+
+      let validateResult = simulateValidationRequest(hook)
+      expect(validateResult).toBeFalsy()
+
+      {
+        // scope variables from hook
+        const [
+          start,
+          end,
+          clear,
+          validate,
+          asDateStrings,
+          errorCumulative,
+        ] = hook.current
+
+        // individual field expectations
+        expect(start.valid).toBeFalsy()
+        expect(end.valid).toBeTruthy()
+        // field error
+        expect(start.day.errors.field).toEqual('Start day invalid.')
+        // no range error (yet)
+        expect(errorCumulative).toEqual('')
+      }
+
+      // fix day error
+      simulateStartUserInteraction(hook, 'day', '1')
+      validateResult = simulateValidationRequest(hook)
+      expect(validateResult).toBeFalsy()
+
+      {
+        // scope variables from hook
+        const [
+          start,
+          end,
+          clear,
+          validate,
+          asDateStrings,
+          errorCumulative,
+        ] = hook.current
+
+        // individual field expectations
+        expect(start.valid).toBeFalsy()
+        expect(end.valid).toBeTruthy()
+        // field error
+        expect(start.day.errors.field).toEqual('')
+        expect(start.month.errors.fieldset).toEqual('Start month required.')
+        // no range error (yet)
+        expect(errorCumulative).toEqual('')
+      }
+      // fix month error
+      simulateStartUserInteraction(hook, 'month', '0')
+      validateResult = simulateValidationRequest(hook)
+      expect(validateResult).toBeFalsy()
+
+      {
+        // scope variables from hook
+        const [
+          start,
+          end,
+          clear,
+          validate,
+          asDateStrings,
+          errorCumulative,
+        ] = hook.current
+
+        // individual field expectations
+        expect(start.valid).toBeFalsy()
+        expect(end.valid).toBeFalsy()
+        // field error
+        expect(start.day.errors.field).toEqual('')
+        expect(start.month.errors.fieldset).toEqual('')
+        // no range error (yet)
+        expect(errorCumulative).toEqual('Start date must be before end date.')
+      }
+    })
+
+    test('changing values updates asMap', () => {
+      const hook = initDateRange(null, null)
+
+      {
+        // scope variables from hook
+        const [ start, end ] = hook.current
+
+        expect(start.asMap).toEqual({year: null, month: null, day: null})
+      }
+      simulateStartUserInteraction(hook, 'year', '2020')
+
+      {
+        // scope variables from hook
+        const [ start, end ] = hook.current
+
+        expect(start.asMap).toEqual({year: 2020, month: null, day: null})
+      }
+      simulateStartUserInteraction(hook, 'month', '0')
+      {
+        // scope variables from hook
+        const [ start, end ] = hook.current
+
+        expect(start.asMap).toEqual({year: 2020, month: 0, day: null})
+      }
     })
   })
 
@@ -289,7 +401,111 @@ describe('The DateTimeEffect hook', () => {
     })
   })
 
-  describe('required', () => {
+  describe('validation - group level (range)', () => {
+    // note: group level effects for a single date are essentially confirmed via anytime start.valid or end.valid is tested within another test
+    test('start before end', () => {
+      const hook = initDateRange(null, null)
+
+      simulateStartUserInteraction(hook, 'year', '2020')
+      simulateStartUserInteraction(hook, 'month', '0')
+      simulateStartUserInteraction(hook, 'day', '1')
+      simulateEndUserInteraction(hook, 'year', '2010')
+      simulateEndUserInteraction(hook, 'month', '0')
+      simulateEndUserInteraction(hook, 'day', '1')
+      {
+        // scope variables from hook
+        const [
+          start,
+          end,
+          clear,
+          validate,
+          asDateStrings,
+          errorCumulative,
+        ] = hook.current
+
+        // individual field expectations
+        expect(start.valid).toBeTruthy()
+        expect(end.valid).toBeTruthy()
+        expect(errorCumulative).toEqual('')
+      }
+
+      const validateResult = simulateValidationRequest(hook)
+      expect(validateResult).toBeFalsy()
+
+      {
+        // scope variables from hook
+        const [
+          start,
+          end,
+          clear,
+          validate,
+          asDateStrings,
+          errorCumulative,
+        ] = hook.current
+
+        // individual field expectations
+        expect(start.valid).toBeFalsy()
+        expect(end.valid).toBeFalsy()
+        // no errors on any specific part of start
+        expect(start.year.errors.fieldset).toEqual('')
+        expect(start.year.errors.field).toEqual('')
+        expect(start.month.errors.fieldset).toEqual('')
+        expect(start.month.errors.field).toEqual('')
+        expect(start.day.errors.fieldset).toEqual('')
+        expect(start.day.errors.field).toEqual('')
+        // just on the cumulative (range)
+        expect(errorCumulative).toEqual('Start date must be before end date.')
+      }
+    })
+
+    test('(flow) change clears cumulative error', () => {
+      const hook = initDateRange(null, null)
+
+      simulateStartUserInteraction(hook, 'year', '2020')
+      simulateStartUserInteraction(hook, 'month', '0')
+      simulateStartUserInteraction(hook, 'day', '1')
+      simulateEndUserInteraction(hook, 'year', '2010')
+      simulateEndUserInteraction(hook, 'month', '0')
+      simulateEndUserInteraction(hook, 'day', '1')
+
+      const validateResult = simulateValidationRequest(hook)
+      expect(validateResult).toBeFalsy()
+
+      {
+        // scope variables from hook
+        const [
+          start,
+          end,
+          clear,
+          validate,
+          asDateStrings,
+          errorCumulative,
+        ] = hook.current
+
+        // just on the cumulative (range)
+        expect(errorCumulative).toEqual('Start date must be before end date.')
+      }
+
+      simulateStartUserInteraction(hook, 'year', '2000')
+      // range revalidation has not occured, just immediate validation
+      {
+        // scope variables from hook
+        const [
+          start,
+          end,
+          clear,
+          validate,
+          asDateStrings,
+          errorCumulative,
+        ] = hook.current
+
+        // just on the cumulative (range)
+        expect(errorCumulative).toEqual('')
+      }
+    })
+  })
+
+  describe('marks subfields as required', () => {
     const testCases = {
       required: [
         {
