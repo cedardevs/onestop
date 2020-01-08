@@ -15,7 +15,7 @@ dependencies {
 
   implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
   implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
-  implementation("org.apache.avro:avro:1.8.2")
+  implementation("org.apache.avro:avro:${project.avroVersion}")
   implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
   implementation('org.yaml:snakeyaml:1.24')
 
