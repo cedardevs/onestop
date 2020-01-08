@@ -98,8 +98,8 @@ subprojects {
         }
 
         if (details.requested.group == 'org.apache.avro' && details.requested.name == 'avro') {
-          if(details.requested.version.startsWith('1.8')) {
-            details.useVersion '1.9.1'
+          if(details.requested.version < avroVersion) {
+            details.useVersion avroVersion
             details.because 'latest avro does not depend on vulnerable jackson-mapper-asl which has not been updated since 2013'
           }
         }
