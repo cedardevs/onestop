@@ -35,7 +35,7 @@ dependencies {
   
   // -- CAS Authentication --
   implementation "org.pac4j:spring-webmvc-pac4j:3.2.0"
-  implementation "org.pac4j:pac4j-cas:3.8.2"
+  implementation "org.pac4j:pac4j-cas:3.8.3"
 
   //used to copy schema definitions to generate openAPI 
   schemaDefinitions ("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
