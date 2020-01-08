@@ -358,7 +358,7 @@ describe('The DateTimeEffect hook', () => {
 
     _.each(testCases.NaN, c => {
       // note: more specific errors are covered by the test for the util funtion
-      test(`start date: not a number - for ${c.field}='${c.value}'`, function(){
+      test(`start date: not a number - for ${c.field}='${c.value}'`, () => {
         const hook = initDateRange(null, null)
 
         simulateStartUserInteraction(hook, c.field, c.value)
@@ -378,7 +378,7 @@ describe('The DateTimeEffect hook', () => {
         expect(start[c.field].errors.field).toEqual(c.startError)
       })
 
-      test(`end date: not a number - for ${c.field}='${c.value}'`, function(){
+      test(`end date: not a number - for ${c.field}='${c.value}'`, () => {
         const hook = initDateRange(null, null)
 
         simulateEndUserInteraction(hook, c.field, c.value)

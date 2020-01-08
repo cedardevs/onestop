@@ -46,7 +46,7 @@ const simulateValidationRequest = hook => {
 
 describe('The BoundingBoxEffect hook', () => {
   describe('initial conditions', () => {
-    it('default - no bbox provided', () => {
+    test('default - no bbox provided', () => {
       const hook = init(null)
       const bounds = getBounds(hook)
       expect(bounds.east.value).toEqual('')
@@ -55,7 +55,7 @@ describe('The BoundingBoxEffect hook', () => {
       expect(bounds.west.value).toEqual('')
     })
 
-    it('with a bbox', () => {
+    test('with a bbox', () => {
       const hook = init({north: 34, south: -20, west: 17, east: -123})
       const bounds = getBounds(hook)
       expect(bounds.east.value).toEqual('-123')
@@ -66,7 +66,7 @@ describe('The BoundingBoxEffect hook', () => {
   })
 
   describe('flow between states', () => {
-    it('simple interaction - update value with basic side effects', () => {
+    test('simple interaction - update value with basic side effects', () => {
       const hook = init(null)
       // before interacting
       let bounds = getBounds(hook)
@@ -83,7 +83,7 @@ describe('The BoundingBoxEffect hook', () => {
       expect(bounds.west.isSet()).toBeTruthy()
     })
 
-    it('clear validation errors with change in values', () => {
+    test('clear validation errors with change in values', () => {
       const hook = init(null)
 
       simulateUserInteraction(hook, 'west', '-')
@@ -97,7 +97,7 @@ describe('The BoundingBoxEffect hook', () => {
       expect(bounds.west.valid).toBeTruthy()
     })
 
-    it('clears group validation errors with change in value', () => {
+    test('clears group validation errors with change in value', () => {
       const hook = init(null)
 
       simulateUserInteraction(hook, 'west', '32.12') // side note: decimals are completely valid
@@ -130,7 +130,7 @@ describe('The BoundingBoxEffect hook', () => {
       // note: group level validation would only occur with another validate action
     })
 
-    it('does not bother with group validation if there are individual errors', () => {
+    test('does not bother with group validation if there are individual errors', () => {
       const hook = init(null)
 
       // field level error:
@@ -152,7 +152,7 @@ describe('The BoundingBoxEffect hook', () => {
       expect(bounds.reason.cumulative).toEqual('')
     })
 
-    it('resets everything with clear()', () => {
+    test('resets everything with clear()', () => {
       const hook = init({west: -40, east: 50, south: -20, north: 30})
       simulateUserInteraction(hook, 'south', '30')
       simulateValidationRequest(hook)
@@ -177,7 +177,7 @@ describe('The BoundingBoxEffect hook', () => {
   })
 
   describe('asBbox', () => {
-    it('contains a map of numeric values', () => {
+    test('contains a map of numeric values', () => {
       const hook = init(null)
       simulateUserInteraction(hook, 'north', '38')
       simulateUserInteraction(hook, 'west', '123')
@@ -272,7 +272,7 @@ describe('The BoundingBoxEffect hook', () => {
     }
 
     _.each(testCases.NaN, c => {
-      it(`not a number - for ${c.field}='${c.value}'`, function(){
+      test(`not a number - for ${c.field}='${c.value}'`, () => {
         const hook = init(null)
 
         simulateUserInteraction(hook, c.field, c.value)
@@ -297,7 +297,7 @@ describe('The BoundingBoxEffect hook', () => {
     })
 
     _.each(testCases.invalidCoordLimit, c => {
-      it(`invalid limits - for ${c.field}='${c.value}'`, function(){
+      test(`invalid limits - for ${c.field}='${c.value}'`, () => {
         const hook = init(null)
 
         simulateUserInteraction(hook, c.field, c.value)
@@ -323,7 +323,7 @@ describe('The BoundingBoxEffect hook', () => {
     })
 
     _.each(testCases.validCoordLimit, c => {
-      it(`valid limits - for ${c.field}='${c.value}'`, function(){
+      test(`valid limits - for ${c.field}='${c.value}'`, () => {
         const hook = init(null)
 
         simulateUserInteraction(hook, c.field, c.value)
@@ -415,7 +415,7 @@ describe('The BoundingBoxEffect hook', () => {
     }
 
     _.each(testCases.notAllSet, c => {
-      it(`incomplete - unset ${c.fields}`, function(){
+      test(`incomplete - unset ${c.fields}`, () => {
         const hook = init(initialCondition)
 
         c.fields.forEach(field => {
@@ -450,7 +450,7 @@ describe('The BoundingBoxEffect hook', () => {
     })
 
     _.each(testCases.valueCombinationsInvalid, c => {
-      it(`${c.name}`, function(){
+      test(`${c.name}`, () => {
         const hook = init(initialCondition)
 
         c.fields.forEach(f => {
