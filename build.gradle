@@ -47,7 +47,7 @@ subprojects {
     junitVersion = '4.12'
     auth0JavaJWT = '3.4.1'
     confluentVersion = '5.3.2'
-    kafkaVersion = '2.4.0'
+    kafkaVersion = '2.3.1'
     springKafkaVersion = '2.3.1.RELEASE'
   }
 
@@ -89,15 +89,6 @@ subprojects {
     // override versions of dependencies with vulnerabilities
     configurations.all {
       resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-
-        // needed force gradle to use this version of the clients (2.4.0) to prevent the
-        // confluent dependencies (5.3.2) from causing older clients to be used
-        // can probably remove this when confluent 5.4 comes out
-        if(details.requested.group == 'org.apache.kafka' && details.requested.name == 'kafka-clients') {
-          details.useVersion kafkaVersion
-          details.because 'avoid conflicts with confluent dependencies'
-        }
-
         if (details.requested.group == 'org.apache.santuario' && details.requested.name == 'xmlsec') {
           if (details.requested.version.startsWith('2.0') && details.requested.version <= '2.1.4') {
             details.useVersion '2.1.4'
