@@ -6,10 +6,10 @@ import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.elasticsearch.Version
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -28,17 +28,9 @@ class ElasticsearchService {
   ElasticsearchConfig esConfig
 
   @Autowired
-  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
-    String version = elasticsearchConfig.version.getNumber()
-    log.info("Elasticsearch found with version: ${version}" )
-    int majorVersion = Integer.parseInt(version.split("\\.")[0]);
-    int minimumCompatibleMajorVersion = 6
-    if (majorVersion < minimumCompatibleMajorVersion) {
-      throw new IllegalStateException("The search service does not work against Elasticsearch prior to version " + minimumCompatibleMajorVersion.toString());
-    }
-
+  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestHighLevelClient restHighLevelClient, ElasticsearchConfig elasticsearchConfig) {
     this.searchRequestParserService = searchRequestParserService
-    this.restClient = restClient
+    this.restClient = restHighLevelClient.lowLevelClient
     this.esConfig = elasticsearchConfig
   }
 

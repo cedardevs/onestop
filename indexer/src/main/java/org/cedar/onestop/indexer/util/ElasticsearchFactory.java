@@ -4,6 +4,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.cedar.onestop.elastic.common.ElasticsearchCompatibility;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.elasticsearch.client.RestClient;
@@ -50,7 +51,13 @@ public class ElasticsearchFactory {
           httpClientBuilder.useSystemProperties();
           return httpClientBuilder;
         });
-    return new RestHighLevelClient(elasticBuilder);
+
+    RestHighLevelClient restHighLevelClient = new RestHighLevelClient(elasticBuilder);
+
+    // check for compatible elastic version (will throw exception if not compatible)
+    ElasticsearchCompatibility.checkVersion(restHighLevelClient);
+
+    return restHighLevelClient;
   }
 
   public static ElasticsearchConfig buildElasticConfig(AppConfig config, RestHighLevelClient elasticClient) throws IOException {
@@ -72,9 +79,6 @@ public class ElasticsearchFactory {
         .map(Integer::valueOf)
         .orElse(null);
     var elasticSitemapEnabled = true; // TODO - any reason to configure this?
-
-    //TODO: guess we dont need this bro?
-    // var elasticVersion = elasticClient.info(RequestOptions.DEFAULT).getVersion();
 
     return new ElasticsearchConfig(
         elasticPrefix, elasticMaxTasks, elasticRequestsPerSecond, elasticSitemapScrollSize,

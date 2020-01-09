@@ -4,6 +4,7 @@ import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
@@ -33,6 +34,8 @@ class SpatialFilterIntegrationTests extends Specification {
   static private final String SPATIAL_INDEX_ALIAS = 'spatial_filter'
 
   @Autowired
+  RestHighLevelClient restHighLevelClient
+
   RestClient restClient
 
   @Autowired
@@ -42,6 +45,7 @@ class SpatialFilterIntegrationTests extends Specification {
   ElasticsearchService esService
 
   void setup() {
+    restClient = restHighLevelClient.lowLevelClient
     TestUtil.resetLoadAndRefreshGenericTestIndex(SPATIAL_INDEX_ALIAS, restClient, esConfig)
   }
 

@@ -3,6 +3,7 @@ package org.cedar.onestop.api.search
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
@@ -37,6 +38,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class SearchControllerIntegrationTests extends Specification {
 
   @Autowired
+  RestHighLevelClient restHighLevelClient
+
   RestClient restClient
 
   @Autowired
@@ -53,6 +56,7 @@ class SearchControllerIntegrationTests extends Specification {
   private String baseUri
 
   void setup() {
+    restClient = restHighLevelClient.lowLevelClient
     TestUtil.resetLoadAndRefreshSearchIndices(restClient, esConfig)
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
