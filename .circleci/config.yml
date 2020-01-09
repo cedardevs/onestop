@@ -241,12 +241,11 @@ jobs:
       - run:
           name: go build
           command: |
-           if test -f "~/repo/search/schema/openapi.yml"; then
+           if test -f "~/repo/search/src/main/resources/openapi.yaml"; then
              echo "Generating CLI"
-             cp search/schema/openapi.yml cli/openapi.yml ;
              cd cli ;
              go get -u github.com/danielgtaylor/openapi-cli-generator ;
-             openapi-cli-generator generate openapi.yml
+             openapi-cli-generator generate ../search/src/main/resources/openapi.yaml
            fi
       - persist_to_workspace:
           root: ~/repo
