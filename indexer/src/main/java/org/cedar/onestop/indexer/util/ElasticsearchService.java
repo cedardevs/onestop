@@ -1,7 +1,7 @@
 package org.cedar.onestop.indexer.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.AliasActions;
