@@ -37,9 +37,9 @@ public class IndexerMain {
       int flatteningPartitions = Integer.parseInt(config.get("flattening.topic.partitions").toString());
       short flatteningReplication = Short.parseShort(config.get("flattening.topic.replication").toString());
       var flatteningDefinition = new KafkaHelpers.TopicDefinition(flatteningName, flatteningPartitions, flatteningReplication);
-      var sitemapName = config.get("flattening.topic.name").toString();
-      int sitemapPartitions = Integer.parseInt(config.get("flattening.topic.partitions").toString());
-      short sitemapReplication = Short.parseShort(config.get("flattening.topic.replication").toString());
+      var sitemapName = config.get("sitemap.topic.name").toString();
+      int sitemapPartitions = Integer.parseInt(config.get("sitemap.topic.partitions").toString());
+      short sitemapReplication = Short.parseShort(config.get("sitemap.topic.replication").toString());
       var sitemapDefinition = new KafkaHelpers.TopicDefinition(sitemapName, sitemapPartitions, sitemapReplication);
       KafkaHelpers.ensureTopics(adminClient, List.of(flatteningDefinition, sitemapDefinition)).all().get();
 
