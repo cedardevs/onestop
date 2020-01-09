@@ -1,44 +1,13 @@
 import React from 'react'
 import {renderHook, act} from '@testing-library/react-hooks'
-
+import {initHook} from '../../../EffectTestHelper'
 import {
   useDatetime,
   useDateRange,
 } from '../../../../../src/components/filters/time/standard/DateTimeEffect'
 
-const initHook = (hookFunction, ...hookArgs) => {
-  // generic init hook function
-  let hook = null
-  // act(() => {
-  const {result} = renderHook(() => hookFunction(...hookArgs)) // TODO test ...hookArgs with hook that has more than one param (DONE) TODO now pull this out into a generic import for both test files!
-  hook = result
-  return hook
-  // })
-
-  // return [hook, rerender]
-}
-
-// const initHookWithRerender = (hookFunction, ...hookArgs) => {
-//   // generic init hook function
-//   let hook = null
-//   // act(() => {
-//     const {result, rerender} = renderHook(() => hookFunction(...hookArgs)) // TODO test ...hookArgs with hook that has more than one param (DONE) TODO now pull this out into a generic import for both test files!
-//     hook = result
-//     return [hook, rerender]
-//   // })
-//
-//   // return [hook, rerender]
-// }
-//
-// const initHookTake2 = (hookFunction, ...hookArgs) => {
-//   let hook = null
-//   const { result, rerender } = renderHook(() => hookFunction(...hookArgs))
-//   hook = result
-//   return [hook, rerender]
-// }
-
 const initDate = (name, date) => {
-  return initHook(useDatetime, name, date) // note: DO NOT PASS IN '' for date
+  return initHook(useDatetime, name, date)
 }
 
 const getDate = hook => {
@@ -53,7 +22,6 @@ const initDateRange = (start, end) => {
 const simulateStartUserInteraction = (hook, field, value) => {
   act(() => {
     // this is currently how a component is expected to update values based on user interaction events:
-
     const [ start, end ] = hook.current
     start[field].set(value)
   })
@@ -62,7 +30,6 @@ const simulateStartUserInteraction = (hook, field, value) => {
 const simulateEndUserInteraction = (hook, field, value) => {
   act(() => {
     // this is currently how a component is expected to update values based on user interaction events:
-
     const [ start, end ] = hook.current
     end[field].set(value)
   })
@@ -108,6 +75,7 @@ describe('The DateTimeEffect hook', () => {
       describe('DO NOT DO THIS', () => {
         test('bad initial value', () => {
           // empty string isn't a valid - the way the redux store is populated should prevent this, but if you see NaN rendered into the form, that's where to start debugging
+          // TODO this is the only filter effect that pukes on empty strings - fix this so that empty string is a valid init value
           const hook = initDate('default', '')
           let date = getDate(hook)
           expect(date.year.value).toEqual('NaN')
@@ -147,7 +115,6 @@ describe('The DateTimeEffect hook', () => {
   describe('flow', () => {
     test('init variable updated externally', () => {
       // move to init describe block?
-      //
       let initialValue = null
 
       // including rerender in the result seems to make things more fragile but is needed to test external changes to variable used to init the hook

@@ -1,18 +1,7 @@
 import React from 'react'
 import {renderHook, act} from '@testing-library/react-hooks'
-
+import {initHook} from '../../EffectTestHelper'
 import {useBoundingBox} from '../../../../src/components/filters/spatial/BoundingBoxEffect'
-
-const initHook = (hookFunction, ...hookArgs) => {
-  // generic init hook function
-  let hook = null
-  act(() => {
-    const {result} = renderHook(() => hookFunction(...hookArgs)) // TODO test ...hookArgs with hook that has more than one param
-    hook = result
-  })
-
-  return hook
-}
 
 const init = bbox => {
   return initHook(useBoundingBox, bbox)
@@ -62,6 +51,27 @@ describe('The BoundingBoxEffect hook', () => {
       expect(bounds.north.value).toEqual('34')
       expect(bounds.south.value).toEqual('-20')
       expect(bounds.west.value).toEqual('17')
+    })
+
+    test('changing bbox param', () => {
+      let initialBbox = null
+
+      // including rerender in the result seems to make things more fragile but is needed to test external changes to variable used to init the hook
+      // note naming the variable 'result' as 'hook' makes everything break for no reason
+      const {result, rerender} = renderHook(() => useBoundingBox(initialBbox))
+      let bounds = getBounds(result)
+      expect(bounds.east.value).toEqual('')
+      expect(bounds.north.value).toEqual('')
+      expect(bounds.south.value).toEqual('')
+      expect(bounds.west.value).toEqual('')
+
+      initialBbox = {north: 50, south: -25, west: -100, east: 15}
+      rerender()
+      bounds = getBounds(result)
+      expect(bounds.east.value).toEqual('15')
+      expect(bounds.north.value).toEqual('50')
+      expect(bounds.south.value).toEqual('-25')
+      expect(bounds.west.value).toEqual('-100')
     })
   })
 

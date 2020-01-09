@@ -1,19 +1,7 @@
 import React from 'react'
 import {renderHook, act} from '@testing-library/react-hooks'
-
+import {initHook} from '../../../EffectTestHelper'
 import {useYear} from '../../../../../src/components/filters/time/geologic/GeologicYearEffect'
-
-const initHook = (hookFunction, ...hookArgs) => {
-  // generic init hook function
-  let hook = null
-  // act(() => {
-  const {result} = renderHook(() => hookFunction(...hookArgs)) // TODO test ...hookArgs with hook that has more than one param (DONE) TODO now pull this out into a generic import for both test files!
-  hook = result
-  return hook
-  // })
-
-  // return [hook, rerender]
-}
 
 const init = (year, format) => {
   return initHook(useYear, year, format)
@@ -27,7 +15,6 @@ const getYear = hook => {
 const simulateUserInteraction = (hook, value) => {
   act(() => {
     // this is currently how a component is expected to update values based on user interaction events:
-
     const [ year ] = hook.current
     year.setYear(value)
   })
@@ -52,17 +39,6 @@ describe('The GeologicYearEffect hook', () => {
       let year = getYear(hook)
       expect(year.year).toEqual('12343184')
     })
-
-    // describe('DO NOT DO THIS', () => {
-    //   test('bad initial value', () => {
-    //     // empty string isn't a valid - the way the redux store is populated should prevent this, but if you see NaN rendered into the form, that's where to start debugging
-    //     const hook = initDate('default', '')
-    //     let date = getDate(hook)
-    //     expect(date.year.value).toEqual('NaN')
-    //     expect(date.month.value).toEqual('NaN')
-    //     expect(date.day.value).toEqual('NaN')
-    //   })
-    // })
 
     test('change input values...', () => {
       let initialValue = null
