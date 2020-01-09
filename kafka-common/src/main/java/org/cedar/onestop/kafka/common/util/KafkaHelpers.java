@@ -27,7 +27,7 @@ public class KafkaHelpers {
     var killSwitch = new CompletableFuture<KafkaStreams.State>();
     killSwitch.thenAcceptAsync((state) -> {
       log.error("kill switch triggered with state [" + state + "] exiting...");
-      System.exit(1);
+      throw new Error("kafka streams entered dead state [" + state + "]");
     });
     KafkaStreams.StateListener killSwitchListener = (newState, oldState) -> {
       if (!killSwitch.isDone() && (newState == ERROR || newState == NOT_RUNNING)) {
