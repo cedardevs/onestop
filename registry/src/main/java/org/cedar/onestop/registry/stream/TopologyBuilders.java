@@ -6,10 +6,8 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.TransformerSupplier;
-import org.apache.kafka.streams.kstream.ValueTransformerSupplier;
 import org.apache.kafka.streams.state.Stores;
 import org.cedar.onestop.kafka.common.constants.Topics;
-import org.cedar.onestop.kafka.common.util.TimestampedValue;
 import org.cedar.onestop.kafka.common.util.Timestamper;
 import org.cedar.onestop.registry.util.UUIDValidator;
 import org.cedar.schemas.avro.psi.Input;
@@ -43,7 +41,7 @@ public class TopologyBuilders {
             source -> source,
             source -> builder.<String, Input>stream(Topics.inputTopic(type, source))
                 .filter((k, v) -> UUIDValidator.isValid(k))
-                .transformValues((ValueTransformerSupplier<Input, TimestampedValue<Input>>) Timestamper::new)
+                .transformValues(Timestamper<Input>::new)
                 .groupByKey()
                 .aggregate(
                     StreamFunctions.aggregatedInputInitializer,

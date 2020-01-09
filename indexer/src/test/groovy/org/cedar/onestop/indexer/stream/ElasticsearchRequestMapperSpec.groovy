@@ -1,20 +1,16 @@
 package org.cedar.onestop.indexer.stream
 
+import org.apache.kafka.streams.state.ValueAndTimestamp
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.cedar.onestop.indexer.util.IndexingHelpers
-import org.cedar.onestop.kafka.common.util.TimestampedValue
 import org.cedar.schemas.analyze.Analyzers
-import org.cedar.schemas.avro.psi.Analysis
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.Publishing
 import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.parse.ISOParser
-import org.elasticsearch.Version
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.index.IndexRequest
 import spock.lang.Specification
 import spock.lang.Unroll
-
 
 @Unroll
 class ElasticsearchRequestMapperSpec extends Specification {
@@ -43,7 +39,7 @@ class ElasticsearchRequestMapperSpec extends Specification {
     def testValue = ParsedRecord.newBuilder().setPublishing(publishingObject).build()
 
     when:
-    def result = testMapper.apply(testKey, new TimestampedValue<>(System.currentTimeMillis(), testValue))
+    def result = testMapper.apply(testKey, ValueAndTimestamp.make(testValue, System.currentTimeMillis()))
 
     then:
     result.id() == testKey
@@ -66,7 +62,7 @@ class ElasticsearchRequestMapperSpec extends Specification {
         .setPublishing(publishingObject).build()
 
     when:
-    def result = testMapper.apply(testKey, new TimestampedValue<>(System.currentTimeMillis(), testValue))
+    def result = testMapper.apply(testKey, ValueAndTimestamp.make(testValue, System.currentTimeMillis()))
 
     then:
     result.id() == testKey
