@@ -1,12 +1,15 @@
 package org.cedar.onestop.indexer;
 
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.state.ValueAndTimestamp;
-import org.apache.kafka.streams.state.internals.ValueAndTimestampSerde;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.Suppressed;
+import org.apache.kafka.streams.kstream.TimeWindows;
+import org.apache.kafka.streams.state.WindowStore;
 import org.cedar.onestop.elastic.common.FileUtil;
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
 import org.cedar.onestop.indexer.stream.ElasticsearchRequestMapper;
@@ -61,6 +64,7 @@ public class SearchIndexTopology {
     // merge delete/index requests and send them to ES in bulk
     var indexResults = collectionRequests.merge(granuleRequests)
         .filter((key, value) -> value != null)
+        .peek((k, v) -> log.debug("submitting [{} => {}] to bulk indexer", k, v))
         .transform(() -> new BulkIndexingTransformer(esService, Duration.ofMillis(bulkIntervalMillis), bulkMaxBytes));
 
     var flatteningTriggersFromGranules = timestampedInputGranules
@@ -74,27 +78,34 @@ public class SearchIndexTopology {
     var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
     long flatteningIntervalMillis = Long.parseLong(appConfig.get("flattening.interval.ms").toString());
     flatteningTriggersFromCollections.merge(flatteningTriggersFromGranules)
-        .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long())) // re-partition so all triggers for a given collection go to the same consumer
+        .peek((k, v) -> log.debug("producing flattening trigger [{} => {}]", k, v))
+        // re-partition so all triggers for a given collection go to the same consumer
+        .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()))
+        .peek((k, v) -> log.debug("consuming flattening trigger [{} => {}]", k, v))
         .groupByKey()
         .windowedBy(TimeWindows.of(Duration.ofMillis(flatteningIntervalMillis)))
-        // TODO - disable ktable logging on these triggers?
-        .reduce(Math::min) // each trigger uses the *earliest* time value in the window so all related granules are flattened
+        // each trigger uses the *earliest* time value in the window so all related granules are flattened
+        .reduce(Math::min, Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("flattening-triggers").withLoggingDisabled())
         .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
         .toStream()
+        .peek((k, v) -> log.debug("releasing flattening trigger [{} => {}]", k, v))
         .transform(() -> new FlatteningTriggerTransformer(esService, flatteningScript))
         .filter((k, v) -> !v.successful)
         .mapValues(v -> v.timestamp)
+        // cycle failed flattening requests back into the queue so nothing is lost
         .to(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()));
 
     var sitemapTopicName = appConfig.get("sitemap.topic.name").toString();
     long sitemapIntervalMillis = Long.parseLong(appConfig.get("sitemap.interval.ms").toString());
     timestampedInputCollections
-        .map((k, v) -> new KeyValue<>("ALL", v.timestamp())) // group all collection changes under one key so ETL is run once per window at most
-        .through(sitemapTopicName, Produced.with(Serdes.String(), Serdes.Long())) // re-partition so all triggers for a given collection go to the same consumer
+        // group all collection changes under one key/partition so sitemap is generated once per window at most
+        .map((k, v) -> new KeyValue<>("ALL", v.timestamp()))
+        // re-partition so all sitemap triggers go to the same consumer
+        .through(sitemapTopicName, Produced.with(Serdes.String(), Serdes.Long()))
         .groupByKey()
         .windowedBy(TimeWindows.of(Duration.ofMillis(sitemapIntervalMillis)))
-        // TODO - disable ktable logging on these triggers?
-        .reduce(Math::max) // uses the *latest* time value in the window so sitemap reflects most recent update
+        // uses the *latest* time value in the window so sitemap reflects most recent update
+        .reduce(Math::max, Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("sitemap-triggers").withLoggingDisabled())
         .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
         .toStream()
         .foreach((k, v) -> SitemapIndexer.buildSitemap(esService, v));
