@@ -54,7 +54,7 @@ public class FlatteningTriggerTransformer implements Transformer<Windowed<String
   }
 
   private void triggerFlattening(String collectionId, Long timeToFlattenFrom) throws IOException {
-    var collectionRequest = new GetRequest(config.COLLECTION_SEARCH_INDEX_ALIAS, config.TYPE, collectionId);
+    var collectionRequest = new GetRequest(config.COLLECTION_SEARCH_INDEX_ALIAS, collectionId);
     var collectionResponse = client.get(collectionRequest, RequestOptions.DEFAULT); // TODO -- uuuggghh this sucks!
     var collectionBody = collectionResponse.getSourceAsMap();
 

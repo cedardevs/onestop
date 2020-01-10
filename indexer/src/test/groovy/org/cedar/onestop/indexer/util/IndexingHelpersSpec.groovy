@@ -127,7 +127,7 @@ class IndexingHelpersSpec extends Specification {
   ///////////////////////////////
   def "only mapped #type fields are indexed"() {
     def indexDef = FileUtil.textFromClasspathFile(mappingSource)
-    def fields = new JsonSlurper().parseText(indexDef).mappings.doc.properties.keySet()
+    def fields = new JsonSlurper().parseText(indexDef).mappings.properties.keySet()
 
     when:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream(dataSource).text

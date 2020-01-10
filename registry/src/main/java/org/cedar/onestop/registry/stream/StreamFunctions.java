@@ -4,8 +4,8 @@ import groovy.json.JsonOutput;
 import org.apache.kafka.streams.kstream.Aggregator;
 import org.apache.kafka.streams.kstream.Initializer;
 import org.apache.kafka.streams.kstream.Reducer;
+import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.onestop.kafka.common.util.DataUtils;
-import org.cedar.onestop.kafka.common.util.TimestampedValue;
 import org.cedar.schemas.avro.psi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +34,8 @@ public class StreamFunctions {
 
   public static Initializer<AggregatedInput> aggregatedInputInitializer = () -> null;
 
-  public static Aggregator<String, TimestampedValue<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, currentState) -> {
-    var input = timestampedInput.data;
+  public static Aggregator<String, ValueAndTimestamp<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, currentState) -> {
+    var input = ValueAndTimestamp.getValueOrNull(timestampedInput);
 
     if (input == null) {
       return null; // Tombstone
@@ -96,13 +96,13 @@ public class StreamFunctions {
     return builder.build();
   };
 
-  public static AggregatedInput updateDeleted(TimestampedValue<Input> input, AggregatedInput currentState) {
+  public static AggregatedInput updateDeleted(ValueAndTimestamp<Input> input, AggregatedInput currentState) {
     if (currentState == null) {
       // Don't "update" a record that doesn't exist
       return null;
     }
-    var data = input != null ? input.data : null;
-    var method = data != null ? input.data.getMethod() : null;
+    var data = input != null ? input.value() : null;
+    var method = data != null ? input.value().getMethod() : null;
     var deleted = method != null && method.equals(DELETE);
 
     if (currentState.getDeleted() == deleted) {
@@ -143,12 +143,12 @@ public class StreamFunctions {
     }
   }
 
-  public static InputEvent buildEventRecord(TimestampedValue<Input> input, boolean failedState) {
+  public static InputEvent buildEventRecord(ValueAndTimestamp<Input> input, boolean failedState) {
     return InputEvent.newBuilder()
-        .setMethod(input.data.getMethod())
-        .setOperation(input.data.getOperation())
-        .setSource(input.data.getSource())
-        .setTimestamp(input.timestampMs)
+        .setMethod(input.value().getMethod())
+        .setOperation(input.value().getOperation())
+        .setSource(input.value().getSource())
+        .setTimestamp(input.timestamp())
         .setFailedState(failedState)
         .build();
   }
