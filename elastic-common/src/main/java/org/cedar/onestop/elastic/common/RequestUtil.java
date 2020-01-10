@@ -47,7 +47,9 @@ public class RequestUtil {
   public static Response resetIndices(String alias, String jsonMapping, RestClient restClient) throws IOException {
     log.debug("Resetting alias `" + alias + "` and corresponding indices with JSON mapping.");
     HttpEntity httpEntity = new NStringEntity(jsonMapping, ContentType.APPLICATION_JSON);
-    Request refreshRequest = new Request("PUT", alias);
+    // the `include_type_name=false` param is allowing ES6/ES7 cross compatibility:
+    // ES7 defaults to false, but ES6 defaults to true, so we have to explicitly set it
+    Request refreshRequest = new Request("PUT", alias + "?include_type_name=false");
     refreshRequest.setEntity(httpEntity);
     log.debug("Reset request: " + refreshRequest);
     Response refreshResponse = restClient.performRequest(refreshRequest);
