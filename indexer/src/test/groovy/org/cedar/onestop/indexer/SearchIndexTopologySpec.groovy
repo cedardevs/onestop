@@ -18,6 +18,8 @@ import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.Publishing
 import org.cedar.schemas.avro.psi.RecordType
+import org.cedar.schemas.avro.psi.Relationship
+import org.cedar.schemas.avro.psi.RelationshipType
 import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
 import org.elasticsearch.action.DocWriteRequest
 import org.elasticsearch.action.bulk.BulkItemResponse
@@ -138,7 +140,7 @@ class SearchIndexTopologySpec extends Specification {
 
     when:
     collectionInput.pipeInput(testKey1, testValue1)
-    collectionInput.pipeInput(testKey2, testValue2)
+    granuleInput.pipeInput(testKey2, testValue2)
     driver.advanceWallClockTime(Duration.ofMinutes(1))
 
     then:
@@ -163,20 +165,23 @@ class SearchIndexTopologySpec extends Specification {
   }
 
   def "granule triggers flattening from granule update time"() {
-    def testKey1 = 'a'
-    def testValue1 = buildTestRecord(RecordType.granule)
+    def testGranId = 'a'
+    def testCollId = 'c'
+    def baseValue = buildTestRecord(RecordType.granule)
+    def parentRelationship = Relationship.newBuilder().setId(testCollId).setType(RelationshipType.COLLECTION).build()
+    def testGranValue = ParsedRecord.newBuilder(baseValue).setRelationships([parentRelationship]).build()
 
     when:
-    granuleInput.pipeInput(testKey1, testValue1)
-    driver.advanceWallClockTime(Duration.ofMinutes(1))
+    granuleInput.pipeInput(testGranId, testGranValue)
+    driver.advanceWallClockTime(Duration.ofDays(1))
     def result = flatteningTriggers.readKeyValuesToMap()
 
     then:
-    1 * mockEsService.bulk(_) >> buildBulkResponse(RecordType.granule, testKey1)
+    1 * mockEsService.bulk(_) >> buildBulkResponse(RecordType.granule, testGranId)
 
     and:
     result.size() == 1
-    result[testKey1] == publishingStartTime
+    result[testCollId] == publishingStartTime.toEpochMilli()
   }
 
 
@@ -211,24 +216,25 @@ class SearchIndexTopologySpec extends Specification {
     String topic
     Serializer keySerializer
     Serializer valueSerializer
-    Instant startTime
-    Duration messageDelay
+    Instant publishTime
+    Duration publishInterval
 
     ConsumerRecordFactory inputFactory
 
-    TestInputTopic(TopologyTestDriver driver, String topic, Serializer<K> keySerializer, Serializer<V> valueSerializer, Instant startTime, Duration messageDelay) {
+    TestInputTopic(TopologyTestDriver driver, String topic, Serializer<K> keySerializer, Serializer<V> valueSerializer, Instant startTime, Duration publishInterval) {
       this.driver = driver
       this.topic = topic
       this.keySerializer = keySerializer
       this.valueSerializer = valueSerializer
-      this.startTime = startTime
-      this.messageDelay = messageDelay
+      this.publishTime = startTime
+      this.publishInterval = publishInterval
 
       this.inputFactory = new ConsumerRecordFactory(keySerializer, valueSerializer)
     }
 
     void pipeInput(K key, V value) {
-      driver.pipeInput(inputFactory.create(topic, key, value))
+      driver.pipeInput(inputFactory.create(topic, key, value, publishTime.toEpochMilli()))
+      publishTime == publishTime.plus(publishInterval)
     }
   }
 

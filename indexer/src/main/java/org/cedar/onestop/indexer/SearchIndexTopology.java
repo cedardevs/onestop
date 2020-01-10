@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,29 +63,12 @@ public class SearchIndexTopology {
         .filter((key, value) -> value != null)
         .transform(() -> new BulkIndexingTransformer(esService, Duration.ofMillis(bulkIntervalMillis), bulkMaxBytes));
 
-    var successfullyIndexed = indexResults.filter((key, value) -> value != null && !value.isFailed());
-    var successfulCollections = successfullyIndexed.filter((key, value) -> value.getIndex().equals(collectionIndex));
-    var successfulGranules = successfullyIndexed.filter((key, value) -> value.getIndex().equals(granuleIndex));
+    var flatteningTriggersFromGranules = timestampedInputGranules
+        .flatMap((granuleId, granuleAndTimestamp) -> getParentIds(granuleAndTimestamp.value())
+            .map(parentId -> new KeyValue<>(parentId, granuleAndTimestamp.timestamp()))
+            .collect(Collectors.toList())); // stream of collectionId => timestamp of granule to flatten from
 
-    // join the successfully-uploaded granules back to their inputs in order to retrieve their timestamps,
-    // then re-key the stream based on those granules' parentIds to get a stream of collections that need
-    // to be re-flattened and the timestamps from which flattening should start
-    var left = successfulGranules.mapValues(v -> (String) null); // just need the key (successful granule id)
-    var right = timestampedInputGranules
-        .flatMapValues(inputGranule -> getParentIds(inputGranule.value())
-                .map(parentId -> ValueAndTimestamp.make(parentId, inputGranule.timestamp()))
-                .collect(Collectors.toList())); // stream of granuleId => parentId w/ granule's timestamp
-    var flatteningTriggersFromGranules = left
-        .join(
-            right,
-            (l, r) -> r,
-            JoinWindows.of(Duration.ofMillis(bulkIntervalMillis * 10)) // TODO - is this long enough?
-        ) // stream of granuleId => timestampedInputGranule with same id
-        .map(
-            (granuleId, parentIdAndTimestamp) -> new KeyValue<>(parentIdAndTimestamp.value(), parentIdAndTimestamp.timestamp())
-        ); // stream of collectionId => timestamp of updated granule belonging to collection
-
-    var flatteningTriggersFromCollections = successfulCollections
+    var flatteningTriggersFromCollections = timestampedInputCollections
         .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
 
     var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
