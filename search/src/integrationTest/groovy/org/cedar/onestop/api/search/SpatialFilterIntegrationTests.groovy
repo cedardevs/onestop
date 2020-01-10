@@ -1,7 +1,6 @@
 package org.cedar.onestop.api.search
 
 import org.cedar.onestop.api.search.service.ElasticsearchService
-import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
@@ -39,14 +38,11 @@ class SpatialFilterIntegrationTests extends Specification {
   RestClient restClient
 
   @Autowired
-  ElasticsearchConfig esConfig
-
-  @Autowired
   ElasticsearchService esService
 
   void setup() {
     restClient = restHighLevelClient.lowLevelClient
-    TestUtil.resetLoadAndRefreshGenericTestIndex(SPATIAL_INDEX_ALIAS, restClient, esConfig)
+    TestUtil.resetLoadAndRefreshGenericTestIndex(SPATIAL_INDEX_ALIAS, restClient)
   }
 
   def 'Spatial filter with #relation relation returns correct results'() {

@@ -67,7 +67,7 @@ class ElasticsearchService {
             [
                 type : "count",
                 id   : esConfig.typeFromAlias(alias),
-                count: getHitsTotal(parsedResponse)
+                count: getHitsTotalValue(parsedResponse)
             ]
         ]
     ]
@@ -95,7 +95,7 @@ class ElasticsearchService {
       granuleRequest.entity = granuleRequestQuery
       Response granuleResponse = restClient.performRequest(granuleRequest)
       Map parsedGranuleResponse = parseSearchResponse(granuleResponse)
-      int totalGranulesForCollection = getHitsTotal(parsedGranuleResponse)
+      int totalGranulesForCollection = getHitsTotalValue(parsedGranuleResponse)
       getCollection.meta = [
           totalGranules: totalGranulesForCollection
       ]
@@ -117,7 +117,7 @@ class ElasticsearchService {
   }
 
   private Map getById(String alias, String id) {
-    String endpoint = "/${alias}/${esConfig.TYPE}/${id}"
+    String endpoint = "/${alias}/_doc/${id}"
     log.debug("Get by ID against endpoint: ${endpoint}")
     Request idRequest = new Request('GET', endpoint)
     Response idResponse = restClient.performRequest(idRequest)
@@ -220,7 +220,7 @@ class ElasticsearchService {
       },
       meta: [
           took : getTook(parsedSearchResponse),
-          total: getHitsTotal(parsedSearchResponse)
+          total: getHitsTotalValue(parsedSearchResponse)
       ]
     ]
     return result
@@ -236,7 +236,7 @@ class ElasticsearchService {
         },
         meta: [
             took : getTook(searchResponse),
-            total: getHitsTotal(searchResponse)
+            total: getHitsTotalValue(searchResponse)
         ]
     ]
 
@@ -250,7 +250,8 @@ class ElasticsearchService {
   Map queryElasticsearch(Map query, String index) {
     log.debug("Querying Elasticsearch index: ${index}")
     String jsonQuery = JsonOutput.toJson(query)
-    log.trace("jsonQuery: ${jsonQuery}")
+    // TODO: make this a trace log again once the time filter and spatial filter int tests are passing again
+    log.debug("jsonQuery: ${jsonQuery}")
     HttpEntity searchQuery = new NStringEntity(jsonQuery, ContentType.APPLICATION_JSON)
     String endpoint = "${index}/_search"
     Request searchRequest = new Request('GET', endpoint)

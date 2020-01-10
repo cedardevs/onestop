@@ -18,10 +18,6 @@ public class ElasticsearchConfig {
   public String FLAT_GRANULE_SEARCH_INDEX_ALIAS = "search_flattened_granule";
   public String SITEMAP_INDEX_ALIAS = "sitemap";
 
-  // type (e.g. 'doc')
-  public final String TYPE;
-
-  //
   public final Integer MAX_TASKS;
   public final Integer REQUESTS_PER_SECOND;
 
@@ -66,7 +62,6 @@ public class ElasticsearchConfig {
     this.SITEMAP_INDEX_ALIAS = PREFIX + this.SITEMAP_INDEX_ALIAS;
 
     // use _doc if it's supported to avoid using an explicit type, which is deprecated
-    this.TYPE = "_doc";
     this.MAX_TASKS = MAX_TASKS;
     this.REQUESTS_PER_SECOND = REQUESTS_PER_SECOND;
     this.SITEMAP_SCROLL_SIZE = SITEMAP_SCROLL_SIZE;

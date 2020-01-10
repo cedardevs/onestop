@@ -1,7 +1,6 @@
 package org.cedar.onestop.api.search
 
 import org.cedar.onestop.api.search.service.ElasticsearchService
-import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
@@ -38,15 +37,12 @@ class TimeFilterIntegrationTests extends Specification {
   RestClient restClient
 
   @Autowired
-  ElasticsearchConfig esConfig
-
-  @Autowired
   ElasticsearchService esService
 
   void setup() {
     restClient = restHighLevelClient.lowLevelClient
     // See /docs/development/integration-tests/time-filter.md for more information about the test data used in these tests. It explains the logic behind the test cases chosen, and how they are organized to minimize unrelated test data interactions.
-    TestUtil.resetLoadAndRefreshGenericTestIndex(DATES_INDEX_ALIAS, restClient, esConfig)
+    TestUtil.resetLoadAndRefreshGenericTestIndex(DATES_INDEX_ALIAS, restClient)
   }
 
   def 'Datetime filter q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {

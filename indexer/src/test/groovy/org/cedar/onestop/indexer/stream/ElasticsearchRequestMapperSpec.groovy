@@ -24,11 +24,7 @@ class ElasticsearchRequestMapperSpec extends Specification {
   static inputAnalysis = Analyzers.analyze(inputDiscovery)
 
   def testIndexName = "TEST"
-  def testEsConfig = new ElasticsearchConfig(
-      "bulkRequestMapperSpec", 10, 10, 10,
-      10, true
-  )
-  def testMapper = new ElasticsearchRequestMapper(testEsConfig, testIndexName)
+  def testMapper = new ElasticsearchRequestMapper(testIndexName)
 
   def "tombstones create delete requests"() {
     def testKey = "ABC"

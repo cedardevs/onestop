@@ -140,7 +140,7 @@ public class ElasticsearchService {
   private String getMappingByAlias(String alias) throws IOException {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
-    return mapper.writeValueAsString(((Map) parsedDefinition.get("mappings")).get("doc"));
+    return mapper.writeValueAsString((Map) parsedDefinition.get("mappings"));
   }
 
   private String newIndexName(String alias) {

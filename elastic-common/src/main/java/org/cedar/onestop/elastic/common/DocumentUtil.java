@@ -34,18 +34,6 @@ public class DocumentUtil {
     return result;
   }
 
-  static Map parseAdminResponse(Response response) throws IOException {
-    RequestLine requestLine = response.getRequestLine();
-    int statusCode = response.getStatusLine().getStatusCode();
-    Map result = new HashMap();
-    result.put("request", requestLine);
-    result.put("statusCode", statusCode);
-    if (response.getEntity() != null) {
-      result.putAll(mapper.readValue(response.getEntity().getContent(), Map.class));
-    }
-    return result;
-  }
-
   static int getTook(Map parsedResponse) {
     return Integer.parseInt(parsedResponse.get("took").toString());
   }
@@ -54,9 +42,14 @@ public class DocumentUtil {
     return (Map) parsedResponse.get("hits");
   }
 
-  static int getHitsTotal(Map parsedResponse) {
-    Map hits = getHits(parsedResponse);
-    return Integer.parseInt(hits.get("total").toString());
+  static Map getHitsTotal(Map parsedResponse) { return (Map) getHits(parsedResponse).get("total"); }
+
+  static int getHitsTotalValue(Map parsedResponse) {
+    return (Integer) getHitsTotal(parsedResponse).get("value");
+  }
+
+  static String getHitsTotalRelation(Map parsedResponse) {
+    return (String) getHitsTotal(parsedResponse).get("relation");
   }
 
   static List<Map> getDocuments(Map parsedResponse) {

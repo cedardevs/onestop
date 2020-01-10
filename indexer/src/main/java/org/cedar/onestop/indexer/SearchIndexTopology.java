@@ -48,14 +48,14 @@ public class SearchIndexTopology {
     var collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection);
     var inputCollections = streamsBuilder.<String, ParsedRecord>stream(collectionTopic);
     var timestampedInputCollections = inputCollections.transformValues((ValueTransformerSupplier<ParsedRecord, TimestampedValue<ParsedRecord>>) Timestamper::new);
-    var collectionRequests = timestampedInputCollections.mapValues(new ElasticsearchRequestMapper(esService.getConfig(), collectionIndex));
+    var collectionRequests = timestampedInputCollections.mapValues(new ElasticsearchRequestMapper(collectionIndex));
 
     // transform granule messages into elasticsearch delete/index requests
     var granuleIndex = esService.getConfig().GRANULE_SEARCH_INDEX_ALIAS;
     var granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule);
     var inputGranules = streamsBuilder.<String, ParsedRecord>stream(granuleTopic);
     var timestampedInputGranules = inputGranules.transformValues((ValueTransformerSupplier<ParsedRecord, TimestampedValue<ParsedRecord>>) Timestamper::new);
-    var granuleRequests = timestampedInputGranules.mapValues(new ElasticsearchRequestMapper(esService.getConfig(), granuleIndex));
+    var granuleRequests = timestampedInputGranules.mapValues(new ElasticsearchRequestMapper(granuleIndex));
 
     // merge delete/index requests and send them to ES in bulk
     var indexResults = collectionRequests.merge(granuleRequests)

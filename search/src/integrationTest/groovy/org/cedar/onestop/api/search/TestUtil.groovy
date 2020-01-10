@@ -4,7 +4,6 @@ import groovy.util.logging.Slf4j
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.FileUtil
 import org.cedar.onestop.elastic.common.RequestUtil
-import org.elasticsearch.Version
 import org.elasticsearch.client.RestClient
 
 @Slf4j
@@ -60,10 +59,7 @@ class TestUtil {
       ]
   ]
 
-  static void resetLoadAndRefreshGenericTestIndex(String alias, RestClient restClient, ElasticsearchConfig esConfig) {
-
-    // get the Elasticsearch version
-    Version version = esConfig.version
+  static void resetLoadAndRefreshGenericTestIndex(String alias, RestClient restClient) {
 
     // wipe out all the indices
     RequestUtil.deleteAllIndices(restClient)

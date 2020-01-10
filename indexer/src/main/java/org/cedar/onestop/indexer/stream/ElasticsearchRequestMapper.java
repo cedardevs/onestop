@@ -18,11 +18,9 @@ import java.util.Optional;
 public class ElasticsearchRequestMapper implements ValueMapperWithKey<String, TimestampedValue<ParsedRecord>, DocWriteRequest> {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchRequestMapper.class);
 
-  private final ElasticsearchConfig esConfig;
   private final String indexName;
 
-  public ElasticsearchRequestMapper(ElasticsearchConfig esConfig, String indexName) {
-    this.esConfig = esConfig;
+  public ElasticsearchRequestMapper(String indexName) {
     this.indexName = indexName;
   }
 
@@ -33,7 +31,7 @@ public class ElasticsearchRequestMapper implements ValueMapperWithKey<String, Ti
     }
     try {
       var formattedRecord = IndexingHelpers.reformatMessageForSearch(value.data);
-      return new IndexRequest(indexName).id(readOnlyKey).source(formattedRecord).type(esConfig.TYPE);
+      return new IndexRequest(indexName).id(readOnlyKey).source(formattedRecord);
     } catch (ElasticsearchGenerationException e) {
       log.error("Failed to serialize record with key [" + readOnlyKey + "] to json", e);
       return null;

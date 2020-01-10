@@ -85,10 +85,10 @@ public class RequestUtil {
     return resetIndices(alias, jsonMapping, restClient);
   }
 
-  private static Response putMetadataRecord(String alias, String type, String id, String metadata, RestClient restClient) throws IOException {
+  private static Response putMetadataRecord(String alias, String id, String metadata, RestClient restClient) throws IOException {
     log.debug("Putting new '" + alias + "' metadata record w/id = '" + id + "'");
     log.trace("metadata = " + metadata);
-    String endpoint = "/" + alias + "/" + type + "/" + id;
+    String endpoint = "/" + alias + "/_doc/" + id;
     log.debug("endpoint = " + endpoint);
     HttpEntity httpEntity = new NStringEntity(metadata, ContentType.APPLICATION_JSON);
     Request request = new Request("PUT", endpoint);
@@ -101,31 +101,26 @@ public class RequestUtil {
 
   public static Response putSearchCollectionMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
     String alias = esConfig.COLLECTION_SEARCH_INDEX_ALIAS;
-    String type = esConfig.TYPE;
-    return putMetadataRecord(alias, type, id, metadata, restClient);
+    return putMetadataRecord(alias, id, metadata, restClient);
   }
 
   public static Response putStagedCollectionMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
     String alias = esConfig.COLLECTION_STAGING_INDEX_ALIAS;
-    String type = esConfig.TYPE;
-    return putMetadataRecord(alias, type, id, metadata, restClient);
+    return putMetadataRecord(alias, id, metadata, restClient);
   }
 
   public static Response putSearchGranuleMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
     String alias = esConfig.GRANULE_SEARCH_INDEX_ALIAS;
-    String type = esConfig.TYPE;
-    return putMetadataRecord(alias, type, id, metadata, restClient);
+    return putMetadataRecord(alias, id, metadata, restClient);
   }
 
   public static Response putStagedGranulenMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
     String alias = esConfig.GRANULE_STAGING_INDEX_ALIAS;
-    String type = esConfig.TYPE;
-    return putMetadataRecord(alias, type, id, metadata, restClient);
+    return putMetadataRecord(alias, id, metadata, restClient);
   }
 
   public static Response putSearchFlattenedGranuleMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
     String alias = esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS;
-    String type = esConfig.TYPE;
-    return putMetadataRecord(alias, type, id, metadata, restClient);
+    return putMetadataRecord(alias, id, metadata, restClient);
   }
 }
