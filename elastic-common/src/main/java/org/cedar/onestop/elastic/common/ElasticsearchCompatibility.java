@@ -11,7 +11,7 @@ import java.io.IOException;
 public class ElasticsearchCompatibility {
 
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchCompatibility.class);
-  private static final Integer MINIMUM_COMPATIBLE_MAJOR_VERSION = 7;
+  private static final Integer MINIMUM_COMPATIBLE_MAJOR_VERSION = 6;
 
   public static void checkVersion(RestHighLevelClient restHighLevelClient) {
     MainResponse.Version version = null;
