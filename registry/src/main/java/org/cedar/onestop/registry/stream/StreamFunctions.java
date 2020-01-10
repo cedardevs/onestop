@@ -35,7 +35,7 @@ public class StreamFunctions {
   public static Initializer<AggregatedInput> aggregatedInputInitializer = () -> null;
 
   public static Aggregator<String, ValueAndTimestamp<Input>, AggregatedInput> inputAggregator = (key, timestampedInput, currentState) -> {
-    var input = timestampedInput.value();
+    var input = ValueAndTimestamp.getValueOrNull(timestampedInput);
 
     if (input == null) {
       return null; // Tombstone
