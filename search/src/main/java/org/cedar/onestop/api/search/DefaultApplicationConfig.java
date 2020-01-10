@@ -29,7 +29,7 @@ public class DefaultApplicationConfig {
   @Value("${elasticsearch.port}")
   Integer elasticPort;
 
-  @Value("#{\'${elasticsearch.host}\'.split(\',\')}")
+  @Value("#{'${elasticsearch.host:}'.split(',')}")
   List<String> elasticHost;
 
   @Value("${elasticsearch.ssl.enabled:}")
