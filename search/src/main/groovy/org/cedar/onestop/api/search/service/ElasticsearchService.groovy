@@ -250,8 +250,7 @@ class ElasticsearchService {
   Map queryElasticsearch(Map query, String index) {
     log.debug("Querying Elasticsearch index: ${index}")
     String jsonQuery = JsonOutput.toJson(query)
-    // TODO: make this a trace log again once the time filter and spatial filter int tests are passing again
-    log.debug("jsonQuery: ${jsonQuery}")
+    log.trace("jsonQuery: ${jsonQuery}")
     HttpEntity searchQuery = new NStringEntity(jsonQuery, ContentType.APPLICATION_JSON)
     String endpoint = "${index}/_search"
     Request searchRequest = new Request('GET', endpoint)
