@@ -99,27 +99,6 @@ public class SearchIndexTopology {
         .toStream()
         .foreach((k, v) -> SitemapIndexer.buildSitemap(esService, v));
 
-
-    // potential example of streaming flattening:
-    // creates a global ktable of collections and joins granules with it based on the relationship id
-//    var collectionTable = streamsBuilder.<String, ParsedRecord>globalTable(Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection));
-//    var granuleStream = streamsBuilder.<String, ParsedRecord>stream(Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule));
-//    granuleStream
-//        .mapValues((readOnlyKey, value) -> buildRequest(config.GRANULE_SEARCH_INDEX_ALIAS, readOnlyKey, value))
-//        .filter((key, value) -> value != null)
-//        .foreach((key, value) -> bulkProcessor.add(value));
-//    granuleStream
-//        .join(collectionTable,
-//            (key, value) -> value.getRelationships().stream()
-//                .filter(rel -> rel.getType() == RelationshipType.COLLECTION)
-//                .findFirst()
-//                .map(Relationship::getId)
-//                .orElse(null),
-//            IndexingHelpers::flattenRecords)
-//        .mapValues((readOnlyKey, value) -> buildRequest(config.FLAT_GRANULE_SEARCH_INDEX_ALIAS, readOnlyKey, value))
-//        .filter((key, value) -> value != null)
-//        .foreach((key, value) -> bulkProcessor.add(value));
-
     return streamsBuilder.build();
   }
 
