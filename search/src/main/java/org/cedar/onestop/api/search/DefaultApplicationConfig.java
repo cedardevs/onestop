@@ -32,7 +32,7 @@ public class DefaultApplicationConfig {
   @Value("#{'${elasticsearch.host:}'.split(',')}")
   List<String> elasticHost;
 
-  @Value("${elasticsearch.ssl.enabled:}")
+  @Value("${elasticsearch.ssl.enabled:false}")
   Boolean sslEnabled;
 
   @Value("${elasticsearch.ro.user:}")
