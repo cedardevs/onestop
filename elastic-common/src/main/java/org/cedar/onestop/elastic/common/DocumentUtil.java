@@ -44,8 +44,14 @@ public class DocumentUtil {
 
   static Map getHitsTotal(Map parsedResponse) { return (Map) getHits(parsedResponse).get("total"); }
 
-  static int getHitsTotalValue(Map parsedResponse) {
-    return (Integer) getHitsTotal(parsedResponse).get("value");
+  static int getHitsTotalValue(Map parsedResponse, boolean isES6) {
+    // the structure of the hits in response is different between ES6/ES7
+    // https://www.elastic.co/guide/en/elasticsearch/reference/current/breaking-changes-7.0.html#hits-total-now-object-search-response
+    if(isES6) {
+      return (Integer) getHits(parsedResponse).get("total");
+    } else {
+      return (Integer) getHitsTotal(parsedResponse).get("value");
+    }
   }
 
   static String getHitsTotalRelation(Map parsedResponse) {

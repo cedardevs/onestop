@@ -5,6 +5,7 @@ import groovy.util.logging.Slf4j
 import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
+import org.cedar.onestop.elastic.common.ElasticsearchCompatibility
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
@@ -27,11 +28,14 @@ class ElasticsearchService {
   private RestClient restClient
   ElasticsearchConfig esConfig
 
+  boolean isES6
+
   @Autowired
   ElasticsearchService(SearchRequestParserService searchRequestParserService, RestHighLevelClient restHighLevelClient, ElasticsearchConfig elasticsearchConfig) {
     this.searchRequestParserService = searchRequestParserService
     this.restClient = restHighLevelClient.lowLevelClient
     this.esConfig = elasticsearchConfig
+    this.isES6 = ElasticsearchCompatibility.isMajorVersion6(esConfig.VERSION)
   }
 
   ////////////
@@ -67,7 +71,7 @@ class ElasticsearchService {
             [
                 type : "count",
                 id   : esConfig.typeFromAlias(alias),
-                count: getHitsTotalValue(parsedResponse)
+                count: getHitsTotalValue(parsedResponse, isES6)
             ]
         ]
     ]
@@ -95,7 +99,7 @@ class ElasticsearchService {
       granuleRequest.entity = granuleRequestQuery
       Response granuleResponse = restClient.performRequest(granuleRequest)
       Map parsedGranuleResponse = parseSearchResponse(granuleResponse)
-      int totalGranulesForCollection = getHitsTotalValue(parsedGranuleResponse)
+      int totalGranulesForCollection = getHitsTotalValue(parsedGranuleResponse, isES6)
       getCollection.meta = [
           totalGranules: totalGranulesForCollection
       ]
@@ -220,7 +224,7 @@ class ElasticsearchService {
       },
       meta: [
           took : getTook(parsedSearchResponse),
-          total: getHitsTotalValue(parsedSearchResponse)
+          total: getHitsTotalValue(parsedSearchResponse, isES6)
       ]
     ]
     return result
@@ -236,7 +240,7 @@ class ElasticsearchService {
         },
         meta: [
             took : getTook(searchResponse),
-            total: getHitsTotalValue(searchResponse)
+            total: getHitsTotalValue(searchResponse, isES6)
         ]
     ]
 
