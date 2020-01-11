@@ -1,10 +1,13 @@
 package org.cedar.onestop.api.search
 
 import groovy.util.logging.Slf4j
+import org.cedar.onestop.api.search.service.ElasticsearchService
+import org.cedar.onestop.elastic.common.ElasticsearchCompatibility
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.FileUtil
 import org.cedar.onestop.elastic.common.RequestUtil
 import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 
 @Slf4j
 class TestUtil {
@@ -59,7 +62,10 @@ class TestUtil {
       ]
   ]
 
-  static void resetLoadAndRefreshGenericTestIndex(String alias, RestClient restClient) {
+  static void resetLoadAndRefreshGenericTestIndex(String alias, RestHighLevelClient restHighLevelClient, ElasticsearchService esService) {
+
+    String elasticVersion = esService.esConfig.VERSION
+    RestClient restClient = restHighLevelClient.lowLevelClient
 
     // wipe out all the indices
     RequestUtil.deleteAllIndices(restClient)
@@ -70,12 +76,17 @@ class TestUtil {
     // the alias names configured (including the prefix) and the JSON mappings
     // https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
     String jsonMappingGeneric
-    jsonMappingGeneric = FileUtil.textFromClasspathFile("test/data/generic/${alias}/index_ES6.json")
+    jsonMappingGeneric = FileUtil.textFromClasspathFile("test/data/generic/${alias}/index.json")
 
     RequestUtil.resetIndices(alias, jsonMappingGeneric, restClient)
 
     // load bulk data into generic index alias
-    String bulkData = FileUtil.textFromClasspathFile("test/data/generic/${alias}/bulkData.txt")
+    String bulkDataFile = "test/data/generic/${alias}/bulkData.txt"
+    if(ElasticsearchCompatibility.isMajorVersion6(elasticVersion)) {
+      bulkDataFile = "test/data/generic/${alias}/bulkDataES6.txt"
+    }
+
+    String bulkData = FileUtil.textFromClasspathFile(bulkDataFile.toString())
     RequestUtil.bulk(alias, bulkData, restClient)
 
     // refresh all indices

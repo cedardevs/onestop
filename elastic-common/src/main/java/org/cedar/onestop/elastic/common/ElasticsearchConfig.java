@@ -10,6 +10,8 @@ import java.util.Map;
 public class ElasticsearchConfig {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfig.class);
 
+  public String VERSION;
+
   // index aliases
   public String COLLECTION_SEARCH_INDEX_ALIAS = "search_collection";
   public String COLLECTION_STAGING_INDEX_ALIAS = "staging_collection";
@@ -35,6 +37,7 @@ public class ElasticsearchConfig {
   private Map<String, String> typesByAlias = new HashMap<>();
 
   public ElasticsearchConfig(
+      String VERSION,
       // default: null
       String PREFIX,
       // default: 10
@@ -48,6 +51,9 @@ public class ElasticsearchConfig {
       // optional: enable sitemap feature, default: false
       Boolean SITEMAP_ENABLED
   ) throws IOException {
+
+    this.VERSION = VERSION;
+
     // log prefix if it's not null
     if (PREFIX != null && !PREFIX.isBlank()) {
       log.info("Prefix for Elasticsearch aliases provided by config as " + PREFIX);

@@ -19,7 +19,6 @@ import java.util.Optional;
 public class ElasticsearchFactory {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchFactory.class);
 
-
   public static RestHighLevelClient buildElasticClient(AppConfig config) {
     var elasticHost = config.getOrDefault("elasticsearch.host", "").toString();
     var elasticPort = Integer.valueOf(config.getOrDefault("elasticsearch.port", "-1").toString());
@@ -52,12 +51,7 @@ public class ElasticsearchFactory {
           return httpClientBuilder;
         });
 
-    RestHighLevelClient restHighLevelClient = new RestHighLevelClient(elasticBuilder);
-
-    // check for compatible elastic version (will throw exception if not compatible)
-    ElasticsearchCompatibility.checkVersion(restHighLevelClient);
-
-    return restHighLevelClient;
+    return new RestHighLevelClient(elasticBuilder);
   }
 
   public static ElasticsearchConfig buildElasticConfig(AppConfig config, RestHighLevelClient elasticClient) throws IOException {
@@ -80,8 +74,11 @@ public class ElasticsearchFactory {
         .orElse(null);
     var elasticSitemapEnabled = true; // TODO - any reason to configure this?
 
+    // check for compatible elastic version (will throw exception if not compatible)
+    String elasticVersion = ElasticsearchCompatibility.checkVersion(elasticClient);
+
     return new ElasticsearchConfig(
-        elasticPrefix, elasticMaxTasks, elasticRequestsPerSecond, elasticSitemapScrollSize,
+        elasticVersion, elasticPrefix, elasticMaxTasks, elasticRequestsPerSecond, elasticSitemapScrollSize,
         elasticSitemapCollectionsPerSubmap, elasticSitemapEnabled);
   }
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
@@ -57,6 +58,13 @@ public class DefaultApplicationConfig {
   @Value("${etl.sitemap.collections-per-submap:}")
   Integer SITEMAP_COLLECTIONS_PER_SUBMAP;
 
+  @Bean(name = "elasticsearchVersion")
+  @DependsOn("restHighLevelClient")
+  String elasticsearchVersion(RestHighLevelClient restHighLevelClient) {
+    // check for compatible elastic version (will throw exception if not compatible)
+    return ElasticsearchCompatibility.checkVersion(restHighLevelClient);
+  }
+
   // we dont' want this bean to be created when the tests use test containers,
   // but in our CI environment, we have a separate Elasticsearch and so we can leverage this normal RestHighLevelClient again
   @Profile({"!integration", "ci"})
@@ -80,17 +88,13 @@ public class DefaultApplicationConfig {
       httpClientBuilder.useSystemProperties();
       return httpClientBuilder;
     });
-    RestHighLevelClient restHighLevelClient = new RestHighLevelClient(restClientBuilder);
-
-    // check for compatible elastic version (will throw exception if not compatible)
-    ElasticsearchCompatibility.checkVersion(restHighLevelClient);
-
-    return restHighLevelClient;
+    return new RestHighLevelClient(restClientBuilder);
   }
 
   @Bean
-  ElasticsearchConfig elasticsearchConfig() throws IOException {
+  @DependsOn("elasticsearchVersion")
+  ElasticsearchConfig elasticsearchConfig(String elasticsearchVersion) throws IOException {
     Boolean sitemapEnabled = Arrays.stream(environment.getActiveProfiles()).anyMatch(profile -> profile.compareTo("sitemap") == 0);
-    return new ElasticsearchConfig(PREFIX, MAX_TASKS, REQUESTS_PER_SECOND, SITEMAP_SCROLL_SIZE, SITEMAP_COLLECTIONS_PER_SUBMAP, sitemapEnabled);
+    return new ElasticsearchConfig(elasticsearchVersion, PREFIX, MAX_TASKS, REQUESTS_PER_SECOND, SITEMAP_SCROLL_SIZE, SITEMAP_COLLECTIONS_PER_SUBMAP, sitemapEnabled);
   }
 }

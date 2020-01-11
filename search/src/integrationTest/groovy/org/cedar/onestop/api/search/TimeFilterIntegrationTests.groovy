@@ -20,7 +20,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         Application,
 
         // provides:
-        // - `RestClient` 'restClient' bean via test containers
+        // - `RestHighLevelClient` 'restHighLevelClient' bean via test containers
         ElasticsearchTestConfig,
     ],
     webEnvironment = RANDOM_PORT,
@@ -34,15 +34,12 @@ class TimeFilterIntegrationTests extends Specification {
   @Autowired
   RestHighLevelClient restHighLevelClient
 
-  RestClient restClient
-
   @Autowired
   ElasticsearchService esService
 
   void setup() {
-    restClient = restHighLevelClient.lowLevelClient
     // See /docs/development/integration-tests/time-filter.md for more information about the test data used in these tests. It explains the logic behind the test cases chosen, and how they are organized to minimize unrelated test data interactions.
-    TestUtil.resetLoadAndRefreshGenericTestIndex(DATES_INDEX_ALIAS, restClient)
+    TestUtil.resetLoadAndRefreshGenericTestIndex(DATES_INDEX_ALIAS, restHighLevelClient, esService)
   }
 
   def 'Datetime filter q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {

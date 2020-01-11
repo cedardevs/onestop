@@ -21,7 +21,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         DefaultApplicationConfig,
 
         // provides:
-        // - `RestClient` 'restClient' bean via test containers
+        // - `RestHighLevelClient` 'restHighLevelClient' bean via test containers
         ElasticsearchTestConfig,
     ],
     webEnvironment = RANDOM_PORT,
@@ -35,14 +35,11 @@ class SpatialFilterIntegrationTests extends Specification {
   @Autowired
   RestHighLevelClient restHighLevelClient
 
-  RestClient restClient
-
   @Autowired
   ElasticsearchService esService
 
   void setup() {
-    restClient = restHighLevelClient.lowLevelClient
-    TestUtil.resetLoadAndRefreshGenericTestIndex(SPATIAL_INDEX_ALIAS, restClient)
+    TestUtil.resetLoadAndRefreshGenericTestIndex(SPATIAL_INDEX_ALIAS, restHighLevelClient, esService)
   }
 
   def 'Spatial filter with #relation relation returns correct results'() {

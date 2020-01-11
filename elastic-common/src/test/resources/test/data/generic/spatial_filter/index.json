@@ -1,9 +1,6 @@
 {
   "mappings": {
     "dynamic": "strict",
-    "_all": {
-      "enabled": false
-    },
     "properties": {
       "spatialBounding": {
         "type": "geo_shape",
