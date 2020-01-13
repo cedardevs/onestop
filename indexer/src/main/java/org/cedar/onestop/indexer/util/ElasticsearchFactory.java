@@ -4,7 +4,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.cedar.onestop.elastic.common.ElasticsearchCompatibility;
+import org.cedar.onestop.elastic.common.ElasticsearchVersion;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.elasticsearch.client.RestClient;
@@ -75,7 +75,7 @@ public class ElasticsearchFactory {
     var elasticSitemapEnabled = true; // TODO - any reason to configure this?
 
     // check for compatible elastic version (will throw exception if not compatible)
-    String elasticVersion = ElasticsearchCompatibility.checkVersion(elasticClient);
+    ElasticsearchVersion elasticVersion = new ElasticsearchVersion(elasticClient);
 
     return new ElasticsearchConfig(
         elasticVersion, elasticPrefix, elasticMaxTasks, elasticRequestsPerSecond, elasticSitemapScrollSize,

@@ -2,7 +2,7 @@ package org.cedar.onestop.api.search
 
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.search.service.ElasticsearchService
-import org.cedar.onestop.elastic.common.ElasticsearchCompatibility
+import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.FileUtil
 import org.cedar.onestop.elastic.common.RequestUtil
@@ -64,7 +64,7 @@ class TestUtil {
 
   static void resetLoadAndRefreshGenericTestIndex(String alias, RestHighLevelClient restHighLevelClient, ElasticsearchService esService) {
 
-    String elasticVersion = esService.esConfig.VERSION
+    ElasticsearchVersion elasticVersion = esService.esConfig.version
     RestClient restClient = restHighLevelClient.lowLevelClient
 
     // wipe out all the indices
@@ -82,7 +82,7 @@ class TestUtil {
 
     // load bulk data into generic index alias
     String bulkDataFile = "test/data/generic/${alias}/bulkData.txt"
-    if(ElasticsearchCompatibility.isMajorVersion6(elasticVersion)) {
+    if(elasticVersion.isMajorVersion(6)) {
       bulkDataFile = "test/data/generic/${alias}/bulkDataES6.txt"
     }
 

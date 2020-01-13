@@ -4,7 +4,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.cedar.onestop.elastic.common.ElasticsearchCompatibility;
+import org.cedar.onestop.elastic.common.ElasticsearchVersion;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -60,9 +60,9 @@ public class DefaultApplicationConfig {
 
   @Bean(name = "elasticsearchVersion")
   @DependsOn("restHighLevelClient")
-  String elasticsearchVersion(RestHighLevelClient restHighLevelClient) {
+  ElasticsearchVersion elasticsearchVersion(RestHighLevelClient restHighLevelClient) {
     // check for compatible elastic version (will throw exception if not compatible)
-    return ElasticsearchCompatibility.checkVersion(restHighLevelClient);
+    return new ElasticsearchVersion(restHighLevelClient);
   }
 
   // we dont' want this bean to be created when the tests use test containers,
@@ -93,7 +93,7 @@ public class DefaultApplicationConfig {
 
   @Bean
   @DependsOn("elasticsearchVersion")
-  ElasticsearchConfig elasticsearchConfig(String elasticsearchVersion) throws IOException {
+  ElasticsearchConfig elasticsearchConfig(ElasticsearchVersion elasticsearchVersion) throws IOException {
     Boolean sitemapEnabled = Arrays.stream(environment.getActiveProfiles()).anyMatch(profile -> profile.compareTo("sitemap") == 0);
     return new ElasticsearchConfig(elasticsearchVersion, PREFIX, MAX_TASKS, REQUESTS_PER_SECOND, SITEMAP_SCROLL_SIZE, SITEMAP_COLLECTIONS_PER_SUBMAP, sitemapEnabled);
   }

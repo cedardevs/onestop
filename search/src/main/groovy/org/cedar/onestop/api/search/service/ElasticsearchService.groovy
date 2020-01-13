@@ -5,7 +5,6 @@ import groovy.util.logging.Slf4j
 import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
-import org.cedar.onestop.elastic.common.ElasticsearchCompatibility
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
@@ -35,7 +34,7 @@ class ElasticsearchService {
     this.searchRequestParserService = searchRequestParserService
     this.restClient = restHighLevelClient.lowLevelClient
     this.esConfig = elasticsearchConfig
-    this.isES6 = ElasticsearchCompatibility.isMajorVersion6(esConfig.VERSION)
+    this.isES6 = esConfig.version.isMajorVersion(6)
   }
 
   ////////////
