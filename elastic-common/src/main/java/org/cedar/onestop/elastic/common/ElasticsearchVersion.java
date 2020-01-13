@@ -47,16 +47,16 @@ public class ElasticsearchVersion {
     return new byte[] { Byte.parseByte(parts[0]), Byte.parseByte(parts[1]), Byte.parseByte(parts[2]) };
   }
 
-  public boolean isMajorVersion(byte majorVersion) {
-    return majorVersion == this.majorVersion;
+  public boolean isMajorVersion(int majorVersion) {
+    return (byte)majorVersion == this.majorVersion;
   }
 
-  public boolean isMinorVersion(byte minorVersion) {
-    return minorVersion == this.minorVersion;
+  public boolean isMinorVersion(int minorVersion) {
+    return (byte)minorVersion == this.minorVersion;
   }
 
-  public boolean isPatchVersion(byte patchVersion) {
-    return patchVersion == this.patchVersion;
+  public boolean isPatchVersion(int patchVersion) {
+    return (byte)patchVersion == this.patchVersion;
   }
 
   public boolean onOrAfter(String versionNumber) {
