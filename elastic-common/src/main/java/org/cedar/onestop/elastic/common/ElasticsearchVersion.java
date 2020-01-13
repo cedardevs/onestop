@@ -27,6 +27,15 @@ public class ElasticsearchVersion {
     }
     String versionNumber = version.getNumber();
 
+    initAndCheck(versionNumber);
+  }
+
+  // this constructor is used for units tests where a real elasticsearch cannot be used to retrieve the running version
+  public ElasticsearchVersion(String versionNumber) {
+    initAndCheck(versionNumber);
+  }
+
+  private void initAndCheck(String versionNumber) {
     byte[] semVer = from(versionNumber);
     this.majorVersion = semVer[0];
     this.minorVersion = semVer[1];

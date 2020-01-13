@@ -9,6 +9,7 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.indexer.util.ElasticsearchService
 import org.cedar.onestop.kafka.common.conf.AppConfig
 import org.cedar.onestop.kafka.common.constants.StreamsApps
@@ -48,6 +49,7 @@ class SearchIndexTopologySpec extends Specification {
       (AUTO_OFFSET_RESET_CONFIG)        : 'earliest'
   ]
   static testEsConfig = new ElasticsearchConfig(
+      new ElasticsearchVersion("7.5.1"),
       "SearchIndexTopologySpec",
       1,
       1,
