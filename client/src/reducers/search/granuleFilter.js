@@ -14,6 +14,7 @@ import {
   GRANULE_NEW_SEARCH_REQUESTED,
   GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED,
   GRANULE_MORE_RESULTS_REQUESTED,
+  GRANULE_RESULTS_PAGE_REQUESTED,
 } from '../../actions/routing/GranuleSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
@@ -61,6 +62,9 @@ export const granuleFilter = (state = initialState, action) => {
 
     case GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED:
       return newSearchRequest(action.id, action.filters)
+
+    case GRANULE_RESULTS_PAGE_REQUESTED:
+      return Immutable.set(state, 'pageOffset', action.offset + action.max)
 
     case GRANULE_MORE_RESULTS_REQUESTED:
       return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)

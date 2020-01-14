@@ -101,7 +101,7 @@ export default function GranuleList(props){
     let index = 0
 
     if (returnedHits < totalHits && offset + PAGE_SIZE >= returnedHits) {
-      fetchMoreResults()
+        fetchMoreResults(offset, PAGE_SIZE)
     }
     for (const id in results) {
       if (index >= offset && index < offset + PAGE_SIZE) {

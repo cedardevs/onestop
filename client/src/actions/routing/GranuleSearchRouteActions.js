@@ -16,6 +16,7 @@ import {
   granulesForCartError,
   granulesForCartRequested,
   granulesForCartResultsReceived,
+  granuleResultsPageRequested
 } from './GranuleSearchStateActions'
 import {
   warningExceedsMaxAddition,
@@ -297,6 +298,26 @@ export const submitGranuleSearch = (history, collectionId) => {
       newSearchSuccessHandler
     )
   }
+}
+
+export const submitGranuleSearchWithPage = (offset, max) => {
+
+    return async (dispatch, getState) => {
+        if (isAlreadyInFlight(getState())) {
+            // short circuit silently if minimum request requirements are not met
+            return
+        }
+        // send notifications that request has begun
+        dispatch(granuleResultsPageRequested(offset, max))
+        const updatedFilterState = getFilterFromState(getState())
+        // start async request
+        return granulePromise(
+            dispatch,
+            updatedFilterState,
+            false,
+            pageSuccessHandler
+        )
+    }
 }
 
 export const submitGranuleSearchNextPage = () => {
