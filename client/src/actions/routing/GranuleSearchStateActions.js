@@ -33,9 +33,9 @@ export const granuleNewSearchResultsReceived = (granules, facets, total) => ({
 
 export const GRANULE_RESULTS_PAGE_REQUESTED = 'GRANULE_RESULTS_PAGE_REQUESTED'
 export const granuleResultsPageRequested = (offset, max) => ({
-    offset: offset,
-    max: max,
-    type: GRANULE_RESULTS_PAGE_REQUESTED,
+  offset: offset,
+  max: max,
+  type: GRANULE_RESULTS_PAGE_REQUESTED,
 })
 
 export const GRANULE_MORE_RESULTS_RECEIVED = 'GRANULE_MORE_RESULTS_RECEIVED'
