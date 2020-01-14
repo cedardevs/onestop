@@ -9,7 +9,7 @@ import {fontFamilySerif} from '../../utils/styleUtils'
 import ScriptDownloader from './ScriptDownloader'
 import {FEATURE_CART} from '../../utils/featureUtils'
 import CartListItem from './CartListItem'
-import PageView from '../common/ui/PageView'
+import Paginator from '../common/ui/Paginator'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -148,7 +148,7 @@ export default function Cart(props){
           heading={listHeading}
           customActions={cartListCustomActions}
         />
-        <PageView
+        <Paginator
           totalRecords={numberOfGranulesSelected}
           pageLimit={SHOW_MORE_INCREMENT}
           pageNeighbours={2}

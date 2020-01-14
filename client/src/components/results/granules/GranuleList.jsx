@@ -10,7 +10,7 @@ import GranuleListItem from './GranuleListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {Link} from 'react-router-dom'
 import {asterisk, SvgIcon} from '../../common/SvgIcon'
-import PageView from '../../common/ui/PageView'
+import Paginator from '../../common/ui/Paginator'
 import {PAGE_SIZE} from '../../../utils/queryUtils'
 
 const styleCenterContent = {
@@ -196,7 +196,7 @@ export default function GranuleList(props){
           customActions={granuleListCustomActions}
           customMessage={customMessage}
         />
-        <PageView
+        <Paginator
           totalRecords={totalHits}
           pageLimit={PAGE_SIZE}
           pageNeighbours={3}

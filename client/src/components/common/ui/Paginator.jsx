@@ -29,7 +29,7 @@ const pageActiveStyle = {
   color: '#fff',
 }
 
-function PageView(props){
+function Paginator(props){
   const init = () => {
     let {totalRecords = null, pageLimit = 20, pageNeighbours = 0} = props
     pageLimit = typeof pageLimit === 'number' ? pageLimit : 20
@@ -198,7 +198,7 @@ function PageView(props){
   )
 }
 
-PageView.defaultProps = {
+Paginator.defaultProps = {
   pageContainerClass: 'react-hooks-paginator',
   pageActiveClass: 'active',
   pageItemClass: 'page-item',
@@ -209,7 +209,7 @@ PageView.defaultProps = {
   pageNextClass: 'page-link',
 }
 
-PageView.propTypes = {
+Paginator.propTypes = {
   currentPage: PropTypes.number,
   pageActiveClass: PropTypes.string,
   pageNextText: PropTypes.oneOfType([ PropTypes.string, PropTypes.node ]),
@@ -226,4 +226,4 @@ PageView.propTypes = {
   totalRecords: PropTypes.number.isRequired,
 }
 
-export default PageView
+export default Paginator
