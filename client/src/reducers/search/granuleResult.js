@@ -34,8 +34,8 @@ const newSearchResultsReceived = (state, action) => {
 const newResultsReceived = (state, action) => {
   //clean out old granules from last page with initialState granules
   let newGranules = mergeGranulesArrayIntoGranulesMap(
-      action.granules,
-      initialState.granules
+    action.granules,
+    initialState.granules
   )
   return Immutable.merge(state, {
     granules: newGranules,
