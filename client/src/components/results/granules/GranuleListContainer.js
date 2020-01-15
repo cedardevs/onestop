@@ -39,7 +39,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    fetchMoreResults: (offset, max) => {
+    fetchResultPage: (offset, max) => {
       dispatch(submitGranuleSearchWithPage(offset, max))
     },
     addFilteredGranulesToCart: granuleFilter => {

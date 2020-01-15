@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
 import PropTypes from 'prop-types'
-import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
 import {SiteColors} from '../../../style/defaultStyles'
 import Meta from '../../helmet/Meta'
@@ -64,7 +63,7 @@ export default function GranuleList(props){
     results,
     returnedHits,
     totalHits,
-    fetchMoreResults,
+    fetchResultPage,
     addFilteredGranulesToCart,
     addFilteredGranulesToCartWarning,
     collectionId,
@@ -96,22 +95,6 @@ export default function GranuleList(props){
     }
   }
 
-  const currentResults = () => {
-    let pageResult = {}
-    let index = 0
-
-    if (returnedHits < totalHits && offset + PAGE_SIZE >= returnedHits) {
-      fetchMoreResults(offset, PAGE_SIZE)
-    }
-    for (const id in results) {
-      if (index >= offset && index < offset + PAGE_SIZE) {
-        pageResult[id] = results[id]
-      }
-      index++
-    }
-    return pageResult
-  }
-
   const propsForItem = (item, itemId, setFocusedKey) => {
     return {
       onSelect: () => {},
@@ -136,7 +119,7 @@ export default function GranuleList(props){
   }
   else if (totalHits > 0) {
     var size = 0
-    for (const key in currentResults()) {
+    for (const key in results) {
       size++
     }
     message = `Showing ${offset + 1} - ${offset +
@@ -188,7 +171,7 @@ export default function GranuleList(props){
 
       <div style={styleGranuleListWrapper}>
         <ListView
-          items={currentResults()}
+          items={results}
           ListItemComponent={GranuleListItem}
           GridItemComponent={null}
           propsForItem={propsForItem}
@@ -202,6 +185,7 @@ export default function GranuleList(props){
           pageNeighbours={3}
           setOffset={offset => {
             setOffset(offset)
+            fetchResultPage(offset, PAGE_SIZE)
           }}
           currentPage={currentPage}
           setCurrentPage={page => setCurrentPage(page)}
