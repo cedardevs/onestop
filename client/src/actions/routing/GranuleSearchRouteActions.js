@@ -6,6 +6,7 @@ import {
 } from '../../utils/queryUtils'
 import {isPathNew, ROUTE} from '../../utils/urlUtils'
 import {
+  granuleResultsPageReceived,
   granuleMoreResultsReceived,
   granuleMoreResultsRequested,
   granuleNewSearchRequested,
@@ -142,6 +143,13 @@ const pageSuccessHandler = dispatch => {
   return payload => {
     const granules = payload.data
     dispatch(granuleMoreResultsReceived(granules))
+  }
+}
+
+const pageResultSuccessHandler = dispatch => {
+  return payload => {
+    const granules = payload.data
+    dispatch(granuleResultsPageReceived(granules))
   }
 }
 
@@ -314,7 +322,7 @@ export const submitGranuleSearchWithPage = (offset, max) => {
       dispatch,
       updatedFilterState,
       false,
-      pageSuccessHandler
+      pageResultSuccessHandler
     )
   }
 }
