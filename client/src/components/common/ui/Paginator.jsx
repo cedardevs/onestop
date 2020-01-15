@@ -1,5 +1,6 @@
 import React, {useState, useCallback, useEffect, useRef} from 'react'
 import PropTypes from 'prop-types'
+import Button from '../../common/input/Button'
 
 const LEFT_PAGE = 'LEFT'
 const RIGHT_PAGE = 'RIGHT'
@@ -16,17 +17,15 @@ const range = (from, to, step = 1) => {
   return pool
 }
 
-const paginatorStyle = {
+const paginatorListStyle = {
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
   listStyle: 'none',
 }
 
-const pageActiveStyle = {
-  backgroundColor: '#3895d3',
-  borderColor: '#3895d3',
-  color: '#fff',
+const paginatorItemStyle = {
+  margin: '0 0 0 0.618em',
 }
 
 function Paginator(props){
@@ -167,30 +166,25 @@ function Paginator(props){
   const pages = fetchPageNumbers()
 
   return (
-    <ul style={paginatorStyle}>
+    <ul style={paginatorListStyle}>
       {pages.map((page, index) => {
         if (page === LEFT_PAGE)
           return (
-            <li key={index}>
-              <button onClick={handleMoveLeft}>{props.pagePrevText}</button>
+            <li style={paginatorItemStyle} key={index}>
+              <Button onClick={handleMoveLeft}>{props.pagePrevText}</Button>
             </li>
           )
 
         if (page === RIGHT_PAGE)
           return (
-            <li key={index}>
-              <button onClick={handleMoveRight}>{props.pageNextText}</button>
+            <li style={paginatorItemStyle} key={index}>
+              <Button onClick={handleMoveRight}>{props.pageNextText}</Button>
             </li>
           )
 
         return (
-          <li key={index}>
-            <button
-              style={currentPage === page ? pageActiveStyle : null}
-              onClick={e => handleClick(page, e)}
-            >
-              {page}
-            </button>
+          <li style={paginatorItemStyle} key={index}>
+            <Button onClick={e => handleClick(page, e)}>{page}</Button>
           </li>
         )
       })}
