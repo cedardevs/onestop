@@ -9,7 +9,6 @@ import GranuleListItem from './GranuleListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {Link} from 'react-router-dom'
 import {asterisk, SvgIcon} from '../../common/SvgIcon'
-import Paginator from '../../common/ui/Paginator'
 import {PAGE_SIZE} from '../../../utils/queryUtils'
 
 const styleCenterContent = {
@@ -171,6 +170,7 @@ export default function GranuleList(props){
 
       <div style={styleGranuleListWrapper}>
         <ListView
+          totalRecords={totalHits}
           items={results}
           ListItemComponent={GranuleListItem}
           GridItemComponent={null}
@@ -178,11 +178,6 @@ export default function GranuleList(props){
           heading={listHeading}
           customActions={granuleListCustomActions}
           customMessage={customMessage}
-        />
-        <Paginator
-          totalRecords={totalHits}
-          pageLimit={PAGE_SIZE}
-          pageNeighbours={3}
           setOffset={offset => {
             setOffset(offset)
             fetchResultPage(offset, PAGE_SIZE)

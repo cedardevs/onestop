@@ -9,6 +9,8 @@ import gridIcon from 'fa/th.svg'
 import listIcon from 'fa/th-list.svg'
 import expandIcon from 'fa/expand.svg'
 import collapseIcon from 'fa/compress.svg'
+import Paginator from '../../common/ui/Paginator'
+import {PAGE_SIZE} from '../../../utils/queryUtils'
 
 const styleListView = {
   marginLeft: '1.618em',
@@ -141,6 +143,10 @@ export default function ListView(props){
     // ]
     customActions,
     customMessage,
+    totalRecords,
+    setOffset,
+    currentPage,
+    setCurrentPage,
   } = props
 
   const [ notification, setNotification ] = useState('')
@@ -214,6 +220,20 @@ export default function ListView(props){
     />
   )
 
+  const paginator =
+    totalRecords > 0 ? (
+      <Paginator
+        totalRecords={totalRecords}
+        pageLimit={PAGE_SIZE}
+        pageNeighbours={3}
+        setOffset={offset => {
+          setOffset(offset)
+        }}
+        currentPage={currentPage}
+        setCurrentPage={page => setCurrentPage(page)}
+      />
+    ) : null
+
   let itemElements = []
   itemsMap.forEach((item, key) => {
     let itemElement = null
@@ -267,11 +287,13 @@ export default function ListView(props){
   return (
     <div style={styleListView}>
       <FlexRow style={styleHeading} items={[ heading, controlElement ]} />
+
       <LiveAnnouncer>
         <LiveMessage message={notification} aria-live="polite" />
       </LiveAnnouncer>
       {customMessage}
       <div style={showAsGrid ? styleGrid : styleList}>{itemElements}</div>
+      {paginator}
     </div>
   )
 }
@@ -283,4 +305,8 @@ ListView.propTypes = {
   GridItemComponent: PropTypes.func,
   propsForItem: PropTypes.func,
   customActions: PropTypes.array,
+  totalHits: PropTypes.number,
+  setOffset: PropTypes.func,
+  currentPage: PropTypes.number,
+  setCurrentPage: PropTypes.func,
 }
