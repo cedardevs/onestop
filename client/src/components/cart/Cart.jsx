@@ -141,17 +141,13 @@ export default function Cart(props){
       <div style={styleCartListWrapper}>
         {cartActionsWrapper}
         <ListView
+          totalRecords={numberOfGranulesSelected}
           items={subset}
           ListItemComponent={CartListItem}
           GridItemComponent={null}
           propsForItem={propsForItem}
           heading={listHeading}
           customActions={cartListCustomActions}
-        />
-        <Paginator
-          totalRecords={numberOfGranulesSelected}
-          pageLimit={SHOW_MORE_INCREMENT}
-          pageNeighbours={2}
           setOffset={offset => {
             setOffset(offset)
           }}
