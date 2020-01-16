@@ -1,7 +1,7 @@
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 
-import {submitCollectionSearchNextPage} from '../../../actions/routing/CollectionSearchRouteActions'
+import {submitCollectionSearchWithPage} from '../../../actions/routing/CollectionSearchRouteActions'
 import {submitCollectionDetail} from '../../../actions/routing/CollectionDetailRouteActions'
 import Collections from './Collections'
 
@@ -28,8 +28,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     selectCollection: (id, filterState) => {
       dispatch(submitCollectionDetail(ownProps.history, id, filterState))
     },
-    fetchMoreResults: () => {
-      dispatch(submitCollectionSearchNextPage())
+    fetchMoreResults: (offset, max) => {
+      dispatch(submitCollectionSearchWithPage(offset, max))
     },
   }
 }

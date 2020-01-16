@@ -9,8 +9,10 @@ import {ROUTE, isPathNew} from '../../utils/urlUtils'
 import {
   collectionNewSearchRequested,
   collectionNewSearchResetFiltersRequested,
+  collectionResultsPageRequested,
   collectionMoreResultsRequested,
   collectionNewSearchResultsReceived,
+  collectionResultsPageReceived,
   collectionMoreResultsReceived,
   collectionSearchError,
 } from './CollectionSearchStateActions'
@@ -49,6 +51,12 @@ const newSearchSuccessHandler = dispatch => {
 const pageSuccessHandler = dispatch => {
   return payload => {
     dispatch(collectionMoreResultsReceived(payload.data))
+  }
+}
+
+const pageResultSuccessHandler = dispatch => {
+  return payload => {
+    dispatch(collectionResultsPageReceived(payload.data))
   }
 }
 
@@ -116,6 +124,25 @@ export const submitCollectionSearch = history => {
       updatedFilterState,
       true,
       newSearchSuccessHandler
+    )
+  }
+}
+
+export const submitCollectionSearchWithPage = (offset, max) => {
+  return async (dispatch, getState) => {
+    if (isRequestInvalid(getState())) {
+      // short circuit silently if minimum request requirements are not met
+      return
+    }
+    // send notifications that request has begun
+    dispatch(collectionResultsPageRequested(offset, max))
+    const updatedFilterState = getFilterFromState(getState())
+    // start async request
+    return collectionPromise(
+      dispatch,
+      updatedFilterState,
+      false,
+      pageResultSuccessHandler
     )
   }
 }

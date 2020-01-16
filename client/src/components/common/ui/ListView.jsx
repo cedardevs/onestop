@@ -225,7 +225,7 @@ export default function ListView(props){
       <Paginator
         totalRecords={totalRecords}
         pageLimit={PAGE_SIZE}
-        pageNeighbours={3}
+        pageNeighbours={2}
         setOffset={offset => {
           setOffset(offset)
         }}

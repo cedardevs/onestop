@@ -10,6 +10,14 @@ export const collectionNewSearchResetFiltersRequested = filters => ({
   filters: filters,
 })
 
+export const COLLECTION_RESULTS_PAGE_REQUESTED =
+  'COLLECTION_RESULTS_PAGE_REQUESTED'
+export const collectionResultsPageRequested = (offset, max) => ({
+  offset: offset,
+  max: max,
+  type: COLLECTION_RESULTS_PAGE_REQUESTED,
+})
+
 export const COLLECTION_MORE_RESULTS_REQUESTED =
   'COLLECTION_MORE_RESULTS_REQUESTED'
 export const collectionMoreResultsRequested = () => ({
@@ -22,6 +30,13 @@ export const collectionNewSearchResultsReceived = (total, items, facets) => ({
   type: COLLECTION_NEW_SEARCH_RESULTS_RECEIVED,
   total: total,
   facets: facets,
+  items: items,
+})
+
+export const COLLECTION_RESULTS_PAGE_RECEIVED =
+  'COLLECTION_RESULTS_PAGE_RECEIVED'
+export const collectionResultsPageReceived = items => ({
+  type: COLLECTION_RESULTS_PAGE_RECEIVED,
   items: items,
 })
 

@@ -1,12 +1,12 @@
-import React from 'react'
+import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import CollectionGridItem from './CollectionGridItem'
-import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
 import Meta from '../../helmet/Meta'
 import CollectionListItem from './CollectionListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {asterisk, SvgIcon} from '../../common/SvgIcon'
+import {PAGE_SIZE} from '../../../utils/queryUtils'
 
 const styleCollections = {
   color: '#222',
@@ -37,6 +37,8 @@ export default function Collections(props){
     loading,
   } = props
   const queryText = props.collectionDetailFilter.queryText
+  const [ offset, setOffset ] = useState(0)
+  const [ currentPage, setCurrentPage ] = useState(1)
 
   let message = `No collection results matched '${searchTerms}'`
   if (loading) {
@@ -52,23 +54,18 @@ export default function Collections(props){
     )
   }
   else if (totalHits > 0) {
-    message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} collection results matching '${searchTerms}'`
+    var size = 0
+    for (const key in results) {
+      size++
+    }
+    message = `Showing ${offset + 1} - ${offset +
+      size} of ${totalHits.toLocaleString()} collection results matching '${searchTerms}'`
   }
   const listHeading = (
     <h2 key="Collections::listHeading" style={styleListHeading}>
       {message}
     </h2>
   )
-
-  const showMoreButton =
-    returnedHits < totalHits ? (
-      <Button
-        text="Show More Results"
-        onClick={() => fetchMoreResults()}
-        style={styleShowMore}
-        styleFocus={styleShowMoreFocus}
-      />
-    ) : null
 
   const propsForItem = (item, itemId, setFocusedKey) => {
     return {
@@ -87,14 +84,21 @@ export default function Collections(props){
         robots="noindex"
       />
       <ListView
+        totalRecords={totalHits}
         items={results}
         ListItemComponent={CollectionListItem}
         GridItemComponent={CollectionGridItem}
         propsForItem={propsForItem}
         heading={listHeading}
         showAsGrid={true}
+        setOffset={offset => {
+          setOffset(offset)
+          fetchMoreResults(offset, PAGE_SIZE)
+        }}
+        currentPage={currentPage}
+        setCurrentPage={page => setCurrentPage(page)}
       />
-      {showMoreButton}
+      {/*{showMoreButton}*/}
     </div>
   )
 }

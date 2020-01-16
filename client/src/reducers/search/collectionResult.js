@@ -1,6 +1,7 @@
 import Immutable from 'seamless-immutable'
 import {
   COLLECTION_NEW_SEARCH_RESULTS_RECEIVED,
+  COLLECTION_RESULTS_PAGE_RECEIVED,
   COLLECTION_MORE_RESULTS_RECEIVED,
   COLLECTION_SEARCH_ERROR,
 } from '../../actions/routing/CollectionSearchStateActions'
@@ -29,6 +30,15 @@ const newSearchResultsReceived = (state, total, collections, facets) => {
   })
 }
 
+const pageResultsReceived = (state, newCollections) => {
+  let collections = newCollections
+  return Immutable.merge(state, {
+    loadedCollectionCount:
+      (collections && Object.keys(collections).length) || 0,
+    collections: collections,
+  })
+}
+
 const moreResultsReceived = (state, newCollections) => {
   let collections = state.collections.merge(newCollections)
 
@@ -48,6 +58,9 @@ export const collectionResult = (state = initialState, action) => {
         getCollectionsFromAction(action),
         action.facets
       )
+
+    case COLLECTION_RESULTS_PAGE_RECEIVED:
+      return pageResultsReceived(state, getCollectionsFromAction(action))
 
     case COLLECTION_MORE_RESULTS_RECEIVED:
       return moreResultsReceived(state, getCollectionsFromAction(action))
