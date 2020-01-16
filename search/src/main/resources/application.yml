@@ -28,7 +28,7 @@ logging:
 
 elasticsearch:
   version: ${esVersion}
-  host: localhost
+  host: onestop-es-http
   port: 9200
 
 search:

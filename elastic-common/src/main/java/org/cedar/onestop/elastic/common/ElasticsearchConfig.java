@@ -128,4 +128,5 @@ public class ElasticsearchConfig {
   public Boolean sitemapEnabled() {
     return SITEMAP_ENABLED;
   }
+
 }

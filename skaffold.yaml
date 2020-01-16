@@ -10,7 +10,6 @@ kind: Config
   imageStrategy:
     helm: {}
   setValues:
-    # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
     config: |-
       ---
       kafka:
@@ -22,8 +21,6 @@ kind: Config
         commit:
           interval:
             ms: 1000
-      elasticsearch:
-        host: "elasticsearch"
 
 .onestop-registry: &onestop-registry
   name: onestop-registry
@@ -99,7 +96,6 @@ kind: Config
     # all features default to "false" in base chart, unless otherwise overridden
     features.login-gov: false
     features.sitemap: true
-    # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
     env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
     env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
 #        config: |-
@@ -118,13 +114,6 @@ kind: Config
     # allows onestop-search to be exposed outside the cluster in dev
     prefixPath: onestop
     apiSearch.endpoint: onestop-search:8080/onestop-search
-
-.elasticsearch: &elasticsearch
-  name: elasticsearch
-  chartPath: helm/elasticsearch
-  setValues:
-    service.type: NodePort
-    service.nodePort: 30092
 
 build:
   artifacts:
@@ -152,7 +141,6 @@ deploy:
     - *onestop-manager
     - *onestop-search
     - *onestop-client
-    - *elasticsearch
     # DEV DEPENDENCIES
     - name: onestop-dev
       chartPath: helm/onestop-dev
@@ -176,7 +164,6 @@ profiles:
         releases:
           - *onestop-search
           - *onestop-client
-          - *elasticsearch
           # DEV DEPENDENCIES
           - name: onestop-dev
             chartPath: helm/onestop-dev

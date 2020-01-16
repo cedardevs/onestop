@@ -3,10 +3,6 @@ dependencies:
 - name: nginx-ingress
   version: ~1.1.4
   repository: "@stable"
-- name: kibana
-  version: ~0.1.0
-  repository: file://../kibana
-  condition: kibana.enabled,global.kibana.enabled
 - name: cp-helm-charts
   version: ~0.1.0
   repository: https://confluentinc.github.io/cp-helm-charts/

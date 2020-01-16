@@ -1,57 +1,38 @@
 package org.cedar.onestop.indexer.util;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.cedar.onestop.elastic.common.ElasticsearchVersion;
+import org.cedar.onestop.elastic.common.ElasticsearchClient;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
+import org.cedar.onestop.elastic.common.ElasticsearchVersion;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
-import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class ElasticsearchFactory {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchFactory.class);
 
   public static RestHighLevelClient buildElasticClient(AppConfig config) {
-    var elasticHost = config.getOrDefault("elasticsearch.host", "").toString();
-    var elasticPort = Integer.valueOf(config.getOrDefault("elasticsearch.port", "-1").toString());
+    String elasticHost = config.getOrDefault("elasticsearch.host", "").toString();
+    log.info("ElasticsearchFactory::elasticHost = " + elasticHost);
+    List<String> elasticHosts = Arrays.asList(elasticHost.split(","));
+
+    int elasticPort = Integer.parseInt(config.getOrDefault("elasticsearch.port", "-1").toString());
+    log.info("ElasticsearchFactory::elasticPort = " + elasticPort);
 
     if (elasticHost.isBlank() || elasticPort < 0) {
       throw new IllegalStateException("`elasticsearch.host` and `elasticsearch.port` configuration values are required");
     }
 
-    var sslEnabled = Boolean.valueOf(config.getOrDefault("elasticsearch.ssl.enabled", "").toString());
-    var rwUser = config.getOrDefault("elasticsearch.rw.user", "").toString();
-    var rwPassword = config.getOrDefault("elasticsearch.rw.pass", "").toString();
+    boolean sslEnabled = Boolean.parseBoolean(config.getOrDefault("elasticsearch.ssl.enabled", "").toString());
+    String rwUser = config.getOrDefault("elasticsearch.rw.user", "").toString();
+    String rwPassword = config.getOrDefault("elasticsearch.rw.pass", "").toString();
 
-    var hosts = Arrays.stream(elasticHost.split(","))
-        .map(host -> new HttpHost(host, elasticPort, sslEnabled ? "https" : "http"))
-        .toArray(HttpHost[]::new);
-    var elasticBuilder = RestClient.builder(hosts)
-        .setRequestConfigCallback(requestConfigBuilder -> {
-          // Set connect timeout to 1 minute and socket timeout to 5 minutes
-          return requestConfigBuilder.setConnectTimeout(60000).setSocketTimeout(300000);
-        })
-        .setHttpClientConfigCallback(httpClientBuilder -> {
-          if (!rwUser.isBlank() && !rwPassword.isBlank()) {
-            var credentials = new BasicCredentialsProvider();
-            credentials.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(rwUser, rwPassword));
-            httpClientBuilder.setDefaultCredentialsProvider(credentials);
-          }
-          // causes the builder to take system properties into account when building the
-          // default ssl context, e.g. javax.net.ssl.trustStore, etc.
-          httpClientBuilder.useSystemProperties();
-          return httpClientBuilder;
-        });
-
-    return new RestHighLevelClient(elasticBuilder);
+    return ElasticsearchClient.create(elasticHosts, elasticPort, sslEnabled, rwUser, rwPassword);
   }
 
   public static ElasticsearchConfig buildElasticConfig(AppConfig config, RestHighLevelClient elasticClient) throws IOException {

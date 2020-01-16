@@ -1,13 +1,8 @@
 package org.cedar.onestop.api.search;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.cedar.onestop.elastic.common.ElasticsearchVersion;
+import org.cedar.onestop.elastic.common.ElasticsearchClient;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
+import org.cedar.onestop.elastic.common.ElasticsearchVersion;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +26,7 @@ public class DefaultApplicationConfig {
   Integer elasticPort;
 
   @Value("#{'${elasticsearch.host:}'.split(',')}")
-  List<String> elasticHost;
+  List<String> elasticHosts;
 
   @Value("${elasticsearch.ssl.enabled:false}")
   Boolean sslEnabled;
@@ -40,7 +35,7 @@ public class DefaultApplicationConfig {
   String roUser;
 
   @Value("${elasticsearch.ro.pass:}")
-  String roPassword;
+  String roPass;
 
   // default: null
   @Value("${elasticsearch.index.prefix:}")
@@ -70,25 +65,7 @@ public class DefaultApplicationConfig {
   @Profile({"!integration", "ci"})
   @Bean(name = "restHighLevelClient", destroyMethod = "close")
   RestHighLevelClient restHighLevelClient() {
-    HttpHost[] hosts = elasticHost
-        .stream()
-        .map(host -> new HttpHost(host, elasticPort, sslEnabled ? "https" : "http"))
-        .toArray(HttpHost[]::new);
-    RestClientBuilder restClientBuilder = RestClient.builder(hosts);
-
-    restClientBuilder.setHttpClientConfigCallback(httpClientBuilder -> {
-      if (roUser != null && roPassword != null) {
-        BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(roUser, roPassword);
-        credentialsProvider.setCredentials(AuthScope.ANY, usernamePasswordCredentials);
-        httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-      }
-      // causes the builder to take system properties into account when building the
-      // default ssl context, e.g. javax.net.ssl.trustStore, etc.
-      httpClientBuilder.useSystemProperties();
-      return httpClientBuilder;
-    });
-    return new RestHighLevelClient(restClientBuilder);
+    return ElasticsearchClient.create(elasticHosts, elasticPort, sslEnabled, roUser, roPass);
   }
 
   @Bean

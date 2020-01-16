@@ -10,13 +10,13 @@ kafka:
     interval:
       ms: 1000
 elasticsearch:
-  host: localhost
+  host: onestop-es-http
   port: 9200
   ssl:
-    enabled: ""
+    enabled: true
   rw:
-    user: ""
-    pass: ""
+    user: "elastic"
+    pass: "dvmxd6cbh8ssk6hrcl5jqm6j"
   index:
     prefix: ""
   max-tasks: 10
