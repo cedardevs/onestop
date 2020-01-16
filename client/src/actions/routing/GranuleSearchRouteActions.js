@@ -160,7 +160,11 @@ const granulePromise = (
   successHandler
 ) => {
   // generate the request body based on filters, and if we need facets or not
-  const body = granuleBodyBuilder(filterState, requestFacets)
+  const body = granuleBodyBuilder(
+    filterState,
+    requestFacets,
+    filterState.pageSize
+  )
   if (!body) {
     // not covered by tests, since this should never actually occur due to the collectionId being provided, but included to prevent accidentally sending off really unreasonable requests
     dispatch(granuleSearchError('Invalid Request'))

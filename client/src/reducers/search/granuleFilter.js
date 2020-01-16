@@ -64,7 +64,8 @@ export const granuleFilter = (state = initialState, action) => {
       return newSearchRequest(action.id, action.filters)
 
     case GRANULE_RESULTS_PAGE_REQUESTED:
-      return Immutable.set(state, 'pageOffset', action.offset)
+      let updateSize = Immutable.set(state, 'pageSize', action.max)
+      return Immutable.set(updateSize, 'pageOffset', action.offset)
 
     case GRANULE_MORE_RESULTS_REQUESTED:
       return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)
