@@ -2,6 +2,10 @@ package org.cedar.onestop.indexer.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
+import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
+import org.cedar.onestop.indexer.stream.FlatteningTriggerTransformer;
+import org.cedar.onestop.indexer.stream.SitemapIndexer;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.AliasActions;
@@ -9,12 +13,17 @@ import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.client.Cancellable;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
+import org.elasticsearch.index.reindex.ReindexRequest;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.metrics.Max;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -22,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -162,6 +172,27 @@ public class ElasticsearchService {
 
   public BulkResponse bulk(BulkRequest request) throws IOException {
     return client.bulk(request, RequestOptions.DEFAULT);
+  }
+
+  public GetResponse get(String index, String id) throws IOException {
+    var request = new GetRequest(index, id);
+    return client.get(request, RequestOptions.DEFAULT);
+  }
+
+  public Cancellable reindexAsync(ReindexRequest request, ActionListener<BulkByScrollResponse> listener) {
+    return client.reindexAsync(request, RequestOptions.DEFAULT, listener);
+  }
+
+  public BulkIndexingTransformer buildBulkIndexingTransformer(Duration publishInterval, Long bulkMaxBytes) {
+    return new BulkIndexingTransformer(this, publishInterval, bulkMaxBytes);
+  }
+
+  public FlatteningTriggerTransformer buildFlatteningTriggerTransformer(String flatteningScript) {
+    return new FlatteningTriggerTransformer(this, flatteningScript);
+  }
+
+  public void buildSitemap(Long timestamp) {
+    SitemapIndexer.buildSitemap(this, timestamp);
   }
 
 }

@@ -7,9 +7,6 @@ import org.apache.kafka.streams.processor.ProcessorContext;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.ReindexRequest;
@@ -24,15 +21,15 @@ import java.util.HashMap;
 public class FlatteningTriggerTransformer implements Transformer<Windowed<String>, Long, KeyValue<String, FlatteningTriggerTransformer.FlatteningTriggerResult>> {
   private static final Logger log = LoggerFactory.getLogger(FlatteningTriggerTransformer.class);
 
+  private final ElasticsearchService service;
   private final ElasticsearchConfig config;
-  private final RestHighLevelClient client;
   private final String flatteningScript;
 
   private ProcessorContext context;
 
   public FlatteningTriggerTransformer(ElasticsearchService esService, String flatteningScript) {
+    this.service = esService;
     this.config = esService.getConfig();
-    this.client = esService.getClient();
     this.flatteningScript = flatteningScript;
   }
 
@@ -54,8 +51,7 @@ public class FlatteningTriggerTransformer implements Transformer<Windowed<String
   }
 
   private void triggerFlattening(String collectionId, Long timeToFlattenFrom) throws IOException {
-    var collectionRequest = new GetRequest(config.COLLECTION_SEARCH_INDEX_ALIAS, collectionId);
-    var collectionResponse = client.get(collectionRequest, RequestOptions.DEFAULT); // TODO -- uuuggghh this sucks!
+    var collectionResponse = service.get(config.COLLECTION_SEARCH_INDEX_ALIAS, collectionId); // TODO -- uuuggghh this sucks!
     var collectionBody = collectionResponse.getSourceAsMap();
 
     var params = new HashMap<String, Object>();
@@ -78,7 +74,7 @@ public class FlatteningTriggerTransformer implements Transformer<Windowed<String
     }
 
     log.debug("starting flattening for granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
-    client.reindexAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
+    service.reindexAsync(request, new ActionListener<>() {
       @Override
       public void onResponse(BulkByScrollResponse bulkByScrollResponse) {
         log.debug("successfully flattened granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");

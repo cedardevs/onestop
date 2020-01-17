@@ -11,10 +11,7 @@ import org.apache.kafka.streams.kstream.Suppressed;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import org.apache.kafka.streams.state.WindowStore;
 import org.cedar.onestop.elastic.common.FileUtil;
-import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
 import org.cedar.onestop.indexer.stream.ElasticsearchRequestMapper;
-import org.cedar.onestop.indexer.stream.FlatteningTriggerTransformer;
-import org.cedar.onestop.indexer.stream.SitemapIndexer;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
@@ -65,7 +62,7 @@ public class SearchIndexTopology {
     var indexResults = collectionRequests.merge(granuleRequests)
         .filter((key, value) -> value != null)
         .peek((k, v) -> log.debug("submitting [{} => {}] to bulk indexer", k, v))
-        .transform(() -> new BulkIndexingTransformer(esService, Duration.ofMillis(bulkIntervalMillis), bulkMaxBytes));
+        .transform(() -> esService.buildBulkIndexingTransformer(Duration.ofMillis(bulkIntervalMillis), bulkMaxBytes));
 
     var flatteningTriggersFromGranules = timestampedInputGranules
         .flatMap((granuleId, granuleAndTimestamp) -> getParentIds(granuleAndTimestamp.value())
@@ -89,10 +86,10 @@ public class SearchIndexTopology {
         .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
         .toStream()
         .peek((k, v) -> log.debug("releasing flattening trigger [{} => {}]", k, v))
-        .transform(() -> new FlatteningTriggerTransformer(esService, flatteningScript))
+        .transform(() -> esService.buildFlatteningTriggerTransformer(flatteningScript))
+        // cycle failed flattening requests back into the queue so nothing is lost
         .filter((k, v) -> !v.successful)
         .mapValues(v -> v.timestamp)
-        // cycle failed flattening requests back into the queue so nothing is lost
         .to(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()));
 
     var sitemapTopicName = appConfig.get("sitemap.topic.name").toString();
@@ -108,7 +105,7 @@ public class SearchIndexTopology {
         .reduce(Math::max, Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("sitemap-triggers").withLoggingDisabled())
         .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
         .toStream()
-        .foreach((k, v) -> SitemapIndexer.buildSitemap(esService, v));
+        .foreach((k, v) -> esService.buildSitemap(v));
 
     return streamsBuilder.build();
   }
