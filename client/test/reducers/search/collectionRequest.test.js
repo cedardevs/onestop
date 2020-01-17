@@ -6,9 +6,9 @@ import {
 import {
   collectionNewSearchRequested,
   collectionNewSearchResetFiltersRequested,
-  collectionMoreResultsRequested,
+  collectionResultsPageRequested,
   collectionNewSearchResultsReceived,
-  collectionMoreResultsReceived,
+  collectionResultsPageReceived,
   collectionSearchError,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
@@ -41,7 +41,7 @@ describe('The collection request reducer', function(){
 
   it('next page marks inFlight', function(){
     const initial = Immutable({inFlight: false})
-    const result = collectionRequest(initial, collectionMoreResultsRequested())
+    const result = collectionRequest(initial, collectionResultsPageRequested())
     expect(result.inFlight).toBeTruthy()
   })
 
@@ -57,7 +57,7 @@ describe('The collection request reducer', function(){
     const initial = Immutable({
       errorMessage: 'error from previous search request',
     })
-    const result = collectionRequest(initial, collectionMoreResultsRequested())
+    const result = collectionRequest(initial, collectionResultsPageRequested())
     expect(result.errorMessage).toBe('')
   })
 
@@ -72,7 +72,7 @@ describe('The collection request reducer', function(){
 
   it('result from next page resets inFlight', function(){
     const initial = Immutable({inFlight: true})
-    const result = collectionRequest(initial, collectionMoreResultsReceived())
+    const result = collectionRequest(initial, collectionResultsPageReceived())
     expect(result.inFlight).toBeFalsy()
   })
 

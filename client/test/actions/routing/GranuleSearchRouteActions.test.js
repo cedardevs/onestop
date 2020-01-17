@@ -6,14 +6,14 @@ import Immutable from 'seamless-immutable'
 import {
   submitGranuleSearch,
   submitGranuleSearchWithFilter,
-  submitGranuleSearchNextPage,
+  submitGranuleSearchWithPage,
   submitGranuleSearchForCart,
 } from '../../../src/actions/routing/GranuleSearchRouteActions'
 import {
   // used to set up pre-test conditions
   granuleNewSearchRequested,
   granuleNewSearchResultsReceived,
-  granuleMoreResultsRequested,
+  granuleResultsPageRequested,
   granuleUpdateDateRange,
   granulesForCartRequested,
   granulesForCartResultsReceived,
@@ -157,8 +157,8 @@ describe('granule search actions', function(){
   }
   const submitNextPageCase = {
     name: 'submit next page',
-    function: submitGranuleSearchNextPage,
-    params: [],
+    function: submitGranuleSearchWithPage,
+    params: [2, 2],
   }
 
   const submitGranuleSearchForCartCase = {
@@ -268,11 +268,12 @@ describe('granule search actions', function(){
   describe('all submit options behave the same when a detail request is already in flight', function(){
     beforeEach(async () => {
       //setup send something into flight first
-      store.dispatch(granuleMoreResultsRequested())
+      store.dispatch(granuleResultsPageRequested(20, 20))
       const {granuleRequest, granuleFilter} = store.getState().search
       expect(granuleRequest.inFlight).toBeTruthy()
       expect(granuleFilter.pageOffset).toBe(20)
-    })
+      expect(granuleFilter.pageSize).toEqual(20)
+  })
 
     allTestCases.forEach(function(testCase){
       it(`${testCase.name} does not continue with a submit request`, function(){
@@ -287,12 +288,13 @@ describe('granule search actions', function(){
   describe('prefetch actions', function(){
     beforeEach(async () => {
       // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
-      store.dispatch(granuleMoreResultsRequested())
+      store.dispatch(granuleResultsPageRequested(20, 20))
       store.dispatch(granuleNewSearchResultsReceived([], {}, 0))
       const {granuleRequest, granuleFilter} = store.getState().search
       expect(granuleRequest.inFlight).toBeFalsy()
       expect(granuleFilter.pageOffset).toEqual(20)
-    })
+      expect(granuleFilter.pageSize).toEqual(20)
+  })
 
     describe('all submit options update the state correctly', function(){
       standardNewSearchTestCases.forEach(function(testCase){
@@ -316,7 +318,7 @@ describe('granule search actions', function(){
 
         expect(granuleFilter.selectedCollectionIds).toEqual([ 'original-uuid' ])
         expect(granuleRequest.inFlight).toBeTruthy()
-        expect(granuleFilter.pageOffset).toEqual(40)
+        expect(granuleFilter.pageOffset).toEqual(2)
       })
     })
 
@@ -432,8 +434,8 @@ describe('granule search actions', function(){
         } = store.getState().search
 
         expect(granuleResult.granules).toEqual({
-          'uuid-ABC': {title: 'ABC'},
-          'uuid-123': {title: '123'},
+          // 'uuid-ABC': {title: 'ABC'},
+          // 'uuid-123': {title: '123'},
           'uuid-XYZ': {title: 'XYZ'},
           'uuid-987': {title: '987'},
         })

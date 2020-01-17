@@ -5,7 +5,7 @@ import {
 } from '../../../src/reducers/search/granuleResult'
 import {
   granuleNewSearchResultsReceived,
-  granuleMoreResultsReceived,
+  granuleResultsPageReceived,
   granuleSearchError,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 
@@ -42,7 +42,7 @@ describe('The granuleResult reducer', function(){
     expect(result.loadedGranuleCount).toBe(0)
   })
 
-  it('can update granules on recieving more results', function(){
+  it('can update granules on receiving a new page of results', function(){
     const resultsPage1LoadedState = Immutable({
       granules: {A: {title: 'title A'}},
       totalGranuleCount: 3,
@@ -52,19 +52,18 @@ describe('The granuleResult reducer', function(){
 
     const result = granuleResult(
       resultsPage1LoadedState,
-      granuleMoreResultsReceived([
+      granuleResultsPageReceived([
         {id: 'B', attributes: {title: 'title B'}},
         {id: 'C', attributes: {title: 'title C'}},
       ])
     )
 
     expect(result.granules).toEqual({
-      A: {title: 'title A'},
       B: {title: 'title B'},
       C: {title: 'title C'},
     })
     expect(result.totalGranuleCount).toBe(3)
-    expect(result.loadedGranuleCount).toBe(3)
+    expect(result.loadedGranuleCount).toBe(2)
   })
 
   it('can reset existing granule state on new search', function(){

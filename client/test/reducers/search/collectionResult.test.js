@@ -5,7 +5,7 @@ import {
 } from '../../../src/reducers/search/collectionResult'
 import {
   collectionNewSearchResultsReceived,
-  collectionMoreResultsReceived,
+  collectionResultsPageReceived,
   collectionSearchError,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
@@ -45,7 +45,7 @@ describe('The collectionResult reducer', function(){
     expect(result.loadedCollectionCount).toBe(0)
   })
 
-  it('can update collections on recieving more results', function(){
+  it('can update collections on recieving a new page of results', function(){
     const resultsPage1LoadedState = Immutable({
       collections: {A: {title: 'title A'}},
       totalCollectionCount: 3,
@@ -55,19 +55,18 @@ describe('The collectionResult reducer', function(){
 
     const result = collectionResult(
       resultsPage1LoadedState,
-      collectionMoreResultsReceived([
+      collectionResultsPageReceived([
         {id: 'B', attributes: {title: 'title B'}},
         {id: 'C', attributes: {title: 'title C'}},
       ])
     )
 
     expect(result.collections).toEqual({
-      A: {title: 'title A'},
       B: {title: 'title B'},
       C: {title: 'title C'},
     })
     expect(result.totalCollectionCount).toBe(3)
-    expect(result.loadedCollectionCount).toBe(3)
+    expect(result.loadedCollectionCount).toBe(2)
   })
 
   it('can reset existing collection state on new search', function(){

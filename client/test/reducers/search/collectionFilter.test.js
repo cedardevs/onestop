@@ -16,7 +16,7 @@ import {
   collectionToggleFacet,
   collectionNewSearchRequested,
   collectionNewSearchResetFiltersRequested,
-  collectionMoreResultsRequested,
+  collectionResultsPageRequested,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
 const assertParam = (param, result, expected, fallback) => {
@@ -102,14 +102,16 @@ describe('The collection filter reducer', function(){
           name:
             'makes no changes to initial state except pagination (increments by 20)',
           initialState: initialState,
-          function: collectionMoreResultsRequested,
-          expectedChanges: {pageOffset: 20},
+          function: collectionResultsPageRequested,
+          params: [ 20, 20 ],
+          expectedChanges: {pageOffset: 20, pageSize: 20},
         },
         {
           name: 'changes only pageOffset (increments by 20)',
           initialState: nonInitialState,
-          function: collectionMoreResultsRequested,
-          expectedChanges: {pageOffset: 60},
+          function: collectionResultsPageRequested,
+          params: [ 60, 20 ],
+          expectedChanges: {pageOffset: 60, pageSize: 20},
         },
       ],
     },
