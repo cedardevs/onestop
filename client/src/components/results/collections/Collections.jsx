@@ -31,7 +31,7 @@ export default function Collections(props){
     results,
     returnedHits,
     totalHits,
-    fetchMoreResults,
+    fetchResultPage,
     selectCollection,
     collectionDetailFilter,
     loading,
@@ -93,7 +93,7 @@ export default function Collections(props){
         showAsGrid={true}
         setOffset={offset => {
           setOffset(offset)
-          fetchMoreResults(offset, PAGE_SIZE)
+          fetchResultPage(offset, PAGE_SIZE)
         }}
         currentPage={currentPage}
         setCurrentPage={page => setCurrentPage(page)}
