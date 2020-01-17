@@ -28,7 +28,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     selectCollection: (id, filterState) => {
       dispatch(submitCollectionDetail(ownProps.history, id, filterState))
     },
-  fetchResultPage: (offset, max) => {
+    fetchResultPage: (offset, max) => {
       dispatch(submitCollectionSearchWithPage(offset, max))
     },
   }
