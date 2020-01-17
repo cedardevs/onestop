@@ -17,11 +17,6 @@ export const granuleNewSearchResetFiltersRequested = (
   filters: filters,
 })
 
-export const GRANULE_MORE_RESULTS_REQUESTED = 'GRANULE_MORE_RESULTS_REQUESTED'
-export const granuleMoreResultsRequested = () => ({
-  type: GRANULE_MORE_RESULTS_REQUESTED,
-})
-
 export const GRANULE_NEW_SEARCH_RESULTS_RECEIVED =
   'GRANULE_NEW_SEARCH_RESULTS_RECEIVED'
 export const granuleNewSearchResultsReceived = (granules, facets, total) => ({
@@ -41,12 +36,6 @@ export const granuleResultsPageRequested = (offset, max) => ({
 export const GRANULE_RESULTS_PAGE_RECEIVED = 'GRANULE_RESULTS_PAGE_RECEIVED'
 export const granuleResultsPageReceived = granules => ({
   type: GRANULE_RESULTS_PAGE_RECEIVED,
-  granules: granules,
-})
-
-export const GRANULE_MORE_RESULTS_RECEIVED = 'GRANULE_MORE_RESULTS_RECEIVED'
-export const granuleMoreResultsReceived = granules => ({
-  type: GRANULE_MORE_RESULTS_RECEIVED,
   granules: granules,
 })
 

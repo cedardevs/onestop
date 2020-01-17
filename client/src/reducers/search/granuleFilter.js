@@ -13,7 +13,6 @@ import {
   GRANULE_TOGGLE_EXCLUDE_GLOBAL,
   GRANULE_NEW_SEARCH_REQUESTED,
   GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED,
-  GRANULE_MORE_RESULTS_REQUESTED,
   GRANULE_RESULTS_PAGE_REQUESTED,
 } from '../../actions/routing/GranuleSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
@@ -66,9 +65,6 @@ export const granuleFilter = (state = initialState, action) => {
     case GRANULE_RESULTS_PAGE_REQUESTED:
       let updateSize = Immutable.set(state, 'pageSize', action.max)
       return Immutable.set(updateSize, 'pageOffset', action.offset)
-
-    case GRANULE_MORE_RESULTS_REQUESTED:
-      return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)
 
     case GRANULE_SET_QUERY_TEXT:
       return Immutable.set(state, 'title', action.text)

@@ -3,7 +3,6 @@ import Immutable from 'seamless-immutable'
 import {
   GRANULE_NEW_SEARCH_RESULTS_RECEIVED,
   GRANULE_RESULTS_PAGE_RECEIVED,
-  GRANULE_MORE_RESULTS_RECEIVED,
   GRANULE_SEARCH_ERROR,
 } from '../../actions/routing/GranuleSearchStateActions'
 import {
@@ -31,22 +30,11 @@ const newSearchResultsReceived = (state, action) => {
   })
 }
 
-const newResultsReceived = (state, action) => {
+const nextPageResultsReceived = (state, action) => {
   //clean out old granules from last page with initialState granules
   let newGranules = mergeGranulesArrayIntoGranulesMap(
     action.granules,
     initialState.granules
-  )
-  return Immutable.merge(state, {
-    granules: newGranules,
-    loadedGranuleCount: countKeys(newGranules),
-  })
-}
-
-const moreResultsReceived = (state, action) => {
-  let newGranules = mergeGranulesArrayIntoGranulesMap(
-    action.granules,
-    state.granules
   )
   return Immutable.merge(state, {
     granules: newGranules,
@@ -60,10 +48,7 @@ export const granuleResult = (state = initialState, action) => {
       return newSearchResultsReceived(state, action)
 
     case GRANULE_RESULTS_PAGE_RECEIVED:
-      return newResultsReceived(state, action)
-
-    case GRANULE_MORE_RESULTS_RECEIVED:
-      return moreResultsReceived(state, action)
+      return nextPageResultsReceived(state, action)
 
     case GRANULE_SEARCH_ERROR:
       return Immutable.merge(state, {

@@ -2,10 +2,8 @@ import Immutable from 'seamless-immutable'
 import {
   GRANULE_NEW_SEARCH_REQUESTED,
   GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED,
-  GRANULE_RESULTS_PAGE_REQUESTED,
-  GRANULE_MORE_RESULTS_REQUESTED,
   GRANULE_NEW_SEARCH_RESULTS_RECEIVED,
-  GRANULE_MORE_RESULTS_RECEIVED,
+  GRANULE_RESULTS_PAGE_REQUESTED,
   GRANULE_RESULTS_PAGE_RECEIVED,
   GRANULE_SEARCH_ERROR,
   GRANULES_FOR_CART_REQUESTED,
@@ -29,15 +27,8 @@ export const granuleRequest = (state = initialState, action) => {
         inFlight: true,
         errorMessage: '',
       })
-    case GRANULE_MORE_RESULTS_REQUESTED:
-      return Immutable.merge(state, {
-        inFlight: true,
-        errorMessage: '',
-      })
 
     case GRANULE_NEW_SEARCH_RESULTS_RECEIVED:
-    case GRANULE_MORE_RESULTS_RECEIVED:
-      return Immutable.set(state, 'inFlight', false)
     case GRANULE_RESULTS_PAGE_RECEIVED:
       return Immutable.set(state, 'inFlight', false)
     case GRANULE_SEARCH_ERROR:

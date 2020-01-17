@@ -142,13 +142,6 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
 const pageSuccessHandler = dispatch => {
   return payload => {
     const granules = payload.data
-    dispatch(granuleMoreResultsReceived(granules))
-  }
-}
-
-const pageResultSuccessHandler = dispatch => {
-  return payload => {
-    const granules = payload.data
     dispatch(granuleResultsPageReceived(granules))
   }
 }
@@ -320,29 +313,6 @@ export const submitGranuleSearchWithPage = (offset, max) => {
     }
     // send notifications that request has begun
     dispatch(granuleResultsPageRequested(offset, max))
-    const updatedFilterState = getFilterFromState(getState())
-    // start async request
-    return granulePromise(
-      dispatch,
-      updatedFilterState,
-      false,
-      pageResultSuccessHandler
-    )
-  }
-}
-
-export const submitGranuleSearchNextPage = () => {
-  // note that this function does *not* make any changes to the URL - including push the user to the granule view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
-  // fetch the next page of granules granule search *for granules within a single collection*
-
-  // use middleware to dispatch an async function
-  return async (dispatch, getState) => {
-    if (isAlreadyInFlight(getState())) {
-      // short circuit silently if minimum request requirements are not met
-      return
-    }
-    // send notifications that request has begun
-    dispatch(granuleMoreResultsRequested())
     const updatedFilterState = getFilterFromState(getState())
     // start async request
     return granulePromise(
