@@ -158,7 +158,7 @@ describe('granule search actions', function(){
   const submitNextPageCase = {
     name: 'submit next page',
     function: submitGranuleSearchWithPage,
-    params: [2, 2],
+    params: [ 2, 2 ],
   }
 
   const submitGranuleSearchForCartCase = {
@@ -273,7 +273,7 @@ describe('granule search actions', function(){
       expect(granuleRequest.inFlight).toBeTruthy()
       expect(granuleFilter.pageOffset).toBe(20)
       expect(granuleFilter.pageSize).toEqual(20)
-  })
+    })
 
     allTestCases.forEach(function(testCase){
       it(`${testCase.name} does not continue with a submit request`, function(){
@@ -294,7 +294,7 @@ describe('granule search actions', function(){
       expect(granuleRequest.inFlight).toBeFalsy()
       expect(granuleFilter.pageOffset).toEqual(20)
       expect(granuleFilter.pageSize).toEqual(20)
-  })
+    })
 
     describe('all submit options update the state correctly', function(){
       standardNewSearchTestCases.forEach(function(testCase){

@@ -103,7 +103,7 @@ describe('collection search actions', function(){
   const submitNextPageCase = {
     name: 'submit next page',
     function: submitCollectionSearchWithPage,
-    params: [2, 2],
+    params: [ 2, 2 ],
   }
 
   const standardNewSearchTestCases = [
@@ -208,7 +208,7 @@ describe('collection search actions', function(){
         expect(collectionRequest.inFlight).toBeFalsy()
         expect(collectionFilter.pageOffset).toEqual(20)
         expect(collectionFilter.pageSize).toEqual(20)
-    })
+      })
 
       describe('all submit options update the state correctly', function(){
         standardNewSearchTestCases.forEach(function(testCase){
@@ -347,7 +347,6 @@ describe('collection search actions', function(){
           })
         })
       })
-
     })
 
     describe('next page updates the result state correctly', function(){
@@ -355,52 +354,49 @@ describe('collection search actions', function(){
         fetchMock.post(
           (url, opts) => url == `${BASE_URL}/search/collection`,
           mockPayload
-      )
-      store.dispatch(
-          collectionResultsPageReceived(
-              [
-                {
-                  id: 'uuid-XYZ',
-                  attributes: {
-                    title: 'XYZ',
-                  },
-                },
-                {
-                  id: 'uuid-987',
-                  attributes: {
-                    title: '987',
-                  },
-                },
-              ]
-          )
-      )
-      const {collectionResult} = store.getState().search
+        )
+        store.dispatch(
+          collectionResultsPageReceived([
+            {
+              id: 'uuid-XYZ',
+              attributes: {
+                title: 'XYZ',
+              },
+            },
+            {
+              id: 'uuid-987',
+              attributes: {
+                title: '987',
+              },
+            },
+          ])
+        )
+        const {collectionResult} = store.getState().search
 
-      // results from a previous search
-      expect(collectionResult.collections).toEqual({
-        'uuid-XYZ': {title: 'XYZ'},
-        'uuid-987': {title: '987'},
-      })
+        // results from a previous search
+        expect(collectionResult.collections).toEqual({
+          'uuid-XYZ': {title: 'XYZ'},
+          'uuid-987': {title: '987'},
+        })
       })
 
       it(`${submitNextPageCase.name}`, async () => {
         await store.dispatch(
-            submitNextPageCase.function(...submitNextPageCase.params)
-      )
+          submitNextPageCase.function(...submitNextPageCase.params)
+        )
 
-      const {
-        collectionRequest,
-        collectionResult,
-        collectionFilter,
-      } = store.getState().search
+        const {
+          collectionRequest,
+          collectionResult,
+          collectionFilter,
+        } = store.getState().search
 
-      expect(collectionResult.collections).toEqual({
-        'uuid-123': {title: '123'},
-        'uuid-ABC': {title: 'ABC'},
+        expect(collectionResult.collections).toEqual({
+          'uuid-123': {title: '123'},
+          'uuid-ABC': {title: 'ABC'},
+        })
+        expect(collectionResult.loadedCollectionCount).toEqual(2)
       })
-      expect(collectionResult.loadedCollectionCount).toEqual(2)
-
-    })
     })
 
     describe('failure path', function(){
