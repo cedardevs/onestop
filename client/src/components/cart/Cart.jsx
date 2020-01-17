@@ -9,7 +9,6 @@ import {fontFamilySerif} from '../../utils/styleUtils'
 import ScriptDownloader from './ScriptDownloader'
 import {FEATURE_CART} from '../../utils/featureUtils'
 import CartListItem from './CartListItem'
-import Paginator from '../common/ui/Paginator'
 
 const SHOW_MORE_INCREMENT = 10
 
