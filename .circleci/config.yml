@@ -160,6 +160,39 @@ jobs:
             - client/build
             - client/node_modules
 
+  indexer:
+    <<: *defaults
+    <<: *env
+    steps:
+    - <<: *attachWorkspace
+    - run:
+        name: Assemble, Check, Report
+        command: ./gradlew --parallel indexer:assemble indexer:check indexer:jacocoTestReport
+    - run:
+        name: Collect Test Results
+        command: |
+          mkdir -p ~/tests/junit/
+          find indexer/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+          find indexer/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+        when: always
+    - store_test_results:
+        path: ~/tests
+    - store_artifacts:
+        path: indexer/build/reports
+    - deploy:
+        name: Publish Image(s)
+        command: |
+          echo "${CIRCLE_BRANCH}"
+          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+            ./gradlew indexer:jib
+          else
+            echo "Skipping publishing"
+          fi
+    - persist_to_workspace:
+        root: ~/repo
+        paths:
+        - indexer/build
+
   registry:
     <<: *defaults
     <<: *env
@@ -334,33 +367,36 @@ workflows:
   build:
     jobs:
       - checkout
+      - cli-generation:
+          requires:
+          - checkout
+      - cli-publish:
+          requires:
+          - checkout
+          - cli-generation
       - client:
+          requires:
+            - checkout
+      - indexer:
           requires:
             - checkout
       - registry:
           requires:
-            - checkout
+          - checkout
       - search:
           requires:
             - checkout
       - stream-manager:
           requires:
             - checkout
-      - cli-generation:
-          requires:
-            - checkout
-      - cli-publish:
-          requires:
-            - checkout
-            - cli-generation
       - finalize:
           requires:
             - client
+            - cli-generation
+            - cli-publish
             - registry
             - search
             - stream-manager
-            - cli-generation
-            - cli-publish
 
   nightly:
     triggers:
