@@ -10,10 +10,8 @@ import {
   collectionNewSearchRequested,
   collectionNewSearchResetFiltersRequested,
   collectionResultsPageRequested,
-  collectionMoreResultsRequested,
   collectionNewSearchResultsReceived,
   collectionResultsPageReceived,
-  collectionMoreResultsReceived,
   collectionSearchError,
 } from './CollectionSearchStateActions'
 
@@ -49,12 +47,6 @@ const newSearchSuccessHandler = dispatch => {
 }
 
 const pageSuccessHandler = dispatch => {
-  return payload => {
-    dispatch(collectionMoreResultsReceived(payload.data))
-  }
-}
-
-const pageResultSuccessHandler = dispatch => {
   return payload => {
     dispatch(collectionResultsPageReceived(payload.data))
   }
@@ -136,27 +128,6 @@ export const submitCollectionSearchWithPage = (offset, max) => {
     }
     // send notifications that request has begun
     dispatch(collectionResultsPageRequested(offset, max))
-    const updatedFilterState = getFilterFromState(getState())
-    // start async request
-    return collectionPromise(
-      dispatch,
-      updatedFilterState,
-      false,
-      pageResultSuccessHandler
-    )
-  }
-}
-
-export const submitCollectionSearchNextPage = () => {
-  // note that this function does *not* make any changes to the URL - including push the user to the collection view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
-  // use middleware to dispatch an async function
-  return async (dispatch, getState) => {
-    if (isRequestInvalid(getState())) {
-      // short circuit silently if minimum request requirements are not met
-      return
-    }
-    // send notifications that request has begun
-    dispatch(collectionMoreResultsRequested())
     const updatedFilterState = getFilterFromState(getState())
     // start async request
     return collectionPromise(

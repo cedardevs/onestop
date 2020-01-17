@@ -29,7 +29,6 @@ export default function Collections(props){
   const {
     searchTerms,
     results,
-    returnedHits,
     totalHits,
     fetchResultPage,
     selectCollection,

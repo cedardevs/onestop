@@ -7,8 +7,6 @@ import {
 import {isPathNew, ROUTE} from '../../utils/urlUtils'
 import {
   granuleResultsPageReceived,
-  granuleMoreResultsReceived,
-  granuleMoreResultsRequested,
   granuleNewSearchRequested,
   granuleNewSearchResetFiltersRequested,
   granuleNewSearchResultsReceived,

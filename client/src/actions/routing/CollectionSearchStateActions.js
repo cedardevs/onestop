@@ -18,12 +18,6 @@ export const collectionResultsPageRequested = (offset, max) => ({
   type: COLLECTION_RESULTS_PAGE_REQUESTED,
 })
 
-export const COLLECTION_MORE_RESULTS_REQUESTED =
-  'COLLECTION_MORE_RESULTS_REQUESTED'
-export const collectionMoreResultsRequested = () => ({
-  type: COLLECTION_MORE_RESULTS_REQUESTED,
-})
-
 export const COLLECTION_NEW_SEARCH_RESULTS_RECEIVED =
   'COLLECTION_NEW_SEARCH_RESULTS_RECEIVED'
 export const collectionNewSearchResultsReceived = (total, items, facets) => ({
@@ -37,13 +31,6 @@ export const COLLECTION_RESULTS_PAGE_RECEIVED =
   'COLLECTION_RESULTS_PAGE_RECEIVED'
 export const collectionResultsPageReceived = items => ({
   type: COLLECTION_RESULTS_PAGE_RECEIVED,
-  items: items,
-})
-
-export const COLLECTION_MORE_RESULTS_RECEIVED =
-  'COLLECTION_MORE_RESULTS_RECEIVED'
-export const collectionMoreResultsReceived = items => ({
-  type: COLLECTION_MORE_RESULTS_RECEIVED,
   items: items,
 })
 
