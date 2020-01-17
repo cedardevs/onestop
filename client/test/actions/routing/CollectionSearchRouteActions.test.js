@@ -13,6 +13,7 @@ import {
   collectionNewSearchResetFiltersRequested,
   collectionResultsPageRequested,
   collectionNewSearchResultsReceived,
+  collectionResultsPageReceived,
   collectionUpdateDateRange,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
@@ -347,29 +348,59 @@ describe('collection search actions', function(){
         })
       })
 
-      describe('next page updates the result state correctly', function(){
-        it(`${submitNextPageCase.name}`, async () => {
-          await store.dispatch(
-            submitNextPageCase.function(...submitNextPageCase.params)
+    })
+
+    describe('next page updates the result state correctly', function(){
+      beforeEach(async () => {
+        fetchMock.post(
+          (url, opts) => url == `${BASE_URL}/search/collection`,
+          mockPayload
+      )
+      store.dispatch(
+          collectionResultsPageReceived(
+              [
+                {
+                  id: 'uuid-XYZ',
+                  attributes: {
+                    title: 'XYZ',
+                  },
+                },
+                {
+                  id: 'uuid-987',
+                  attributes: {
+                    title: '987',
+                  },
+                },
+              ]
           )
+      )
+      const {collectionResult} = store.getState().search
 
-          const {
-            collectionRequest,
-            collectionResult,
-            collectionFilter,
-          } = store.getState().search
-
-          expect(collectionResult.collections).toEqual({
-            // 'uuid-ABC': {title: 'ABC'},
-            // 'uuid-123': {title: '123'},
-            'uuid-XYZ': {title: 'XYZ'},
-            'uuid-987': {title: '987'},
-          })
-          expect(collectionResult.facets).toEqual(mockFacets)
-          expect(collectionResult.totalCollectionCount).toEqual(10)
-          expect(collectionResult.loadedCollectionCount).toEqual(4)
-        })
+      // results from a previous search
+      expect(collectionResult.collections).toEqual({
+        'uuid-XYZ': {title: 'XYZ'},
+        'uuid-987': {title: '987'},
       })
+      })
+
+      it(`${submitNextPageCase.name}`, async () => {
+        await store.dispatch(
+            submitNextPageCase.function(...submitNextPageCase.params)
+      )
+
+      const {
+        collectionRequest,
+        collectionResult,
+        collectionFilter,
+      } = store.getState().search
+
+      expect(collectionResult.collections).toEqual({
+        'uuid-123': {title: '123'},
+        'uuid-ABC': {title: 'ABC'},
+      })
+      expect(collectionResult.loadedCollectionCount).toEqual(2)
+
+    })
     })
 
     describe('failure path', function(){

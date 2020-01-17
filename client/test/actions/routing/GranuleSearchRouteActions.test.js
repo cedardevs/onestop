@@ -434,14 +434,12 @@ describe('granule search actions', function(){
         } = store.getState().search
 
         expect(granuleResult.granules).toEqual({
-          // 'uuid-ABC': {title: 'ABC'},
-          // 'uuid-123': {title: '123'},
-          'uuid-XYZ': {title: 'XYZ'},
-          'uuid-987': {title: '987'},
+          'uuid-ABC': {title: 'ABC'},
+          'uuid-123': {title: '123'},
         })
         expect(granuleResult.facets).toEqual(mockFacets)
         expect(granuleResult.totalGranuleCount).toEqual(10)
-        expect(granuleResult.loadedGranuleCount).toEqual(4)
+        expect(granuleResult.loadedGranuleCount).toEqual(2)
       })
     })
   })
