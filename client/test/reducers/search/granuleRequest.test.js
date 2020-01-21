@@ -71,7 +71,7 @@ describe('The request reducer', function(){
 
   it('result from next page resets inFlight', function(){
     const initial = Immutable({inFlight: true})
-    const result = granuleRequest(initial, granuleResultsPageReceived())
+    const result = granuleRequest(initial, granuleResultsPageReceived(0, []))
     expect(result.inFlight).toBeFalsy()
   })
 

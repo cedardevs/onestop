@@ -140,7 +140,7 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
 const pageSuccessHandler = dispatch => {
   return payload => {
     const granules = payload.data
-    dispatch(granuleResultsPageReceived(granules))
+    dispatch(granuleResultsPageReceived(granules, payload.meta.total))
   }
 }
 

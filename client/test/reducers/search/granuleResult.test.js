@@ -52,10 +52,13 @@ describe('The granuleResult reducer', function(){
 
     const result = granuleResult(
       resultsPage1LoadedState,
-      granuleResultsPageReceived([
-        {id: 'B', attributes: {title: 'title B'}},
-        {id: 'C', attributes: {title: 'title C'}},
-      ])
+      granuleResultsPageReceived(
+        [
+          {id: 'B', attributes: {title: 'title B'}},
+          {id: 'C', attributes: {title: 'title C'}},
+        ],
+        3
+      )
     )
 
     expect(result.granules).toEqual({

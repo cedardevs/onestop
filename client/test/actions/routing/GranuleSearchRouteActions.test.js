@@ -357,6 +357,7 @@ describe('granule search actions', function(){
 
   describe('success path', function(){
     beforeEach(async () => {
+      fetchMock.reset()
       fetchMock.post(
         (url, opts) => url == `${BASE_URL}/search/granule`,
         mockPayload
@@ -420,30 +421,35 @@ describe('granule search actions', function(){
         })
       })
     })
-
-    describe('next page updates the result state correctly', function(){
-      it(`${submitNextPageCase.name}`, async () => {
-        await store.dispatch(
-          submitNextPageCase.function(...submitNextPageCase.params)
-        )
-
-        const {
-          granuleRequest,
-          granuleResult,
-          collectionFilter,
-        } = store.getState().search
-
-        expect(granuleResult.granules).toEqual({
-          'uuid-ABC': {title: 'ABC'},
-          'uuid-123': {title: '123'},
-        })
-        expect(granuleResult.facets).toEqual(mockFacets)
-        expect(granuleResult.totalGranuleCount).toEqual(10)
-        expect(granuleResult.loadedGranuleCount).toEqual(2)
-      })
-    })
   })
 
+  describe('next page updates the result state correctly', function(){
+    beforeEach(async () => {
+      fetchMock.reset()
+      fetchMock.post(
+        (url, opts) => url == `${BASE_URL}/search/granule`,
+        mockPayload
+      )
+    })
+    it(`${submitNextPageCase.name}`, async () => {
+      await store.dispatch(
+        submitNextPageCase.function(...submitNextPageCase.params)
+      )
+
+      const {
+        granuleRequest,
+        granuleResult,
+        collectionFilter,
+      } = store.getState().search
+
+      expect(granuleResult.granules).toEqual({
+        'uuid-ABC': {title: 'ABC'},
+        'uuid-123': {title: '123'},
+      })
+      expect(granuleResult.totalGranuleCount).toEqual(10)
+      expect(granuleResult.loadedGranuleCount).toEqual(2)
+    })
+  })
   describe('Add Filtered Granules to Cart Actions', function(){
     let mockMaxCartAdditions = 3
     let mockCartCapacity = 5

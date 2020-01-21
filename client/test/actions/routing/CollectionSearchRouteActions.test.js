@@ -350,34 +350,16 @@ describe('collection search actions', function(){
     })
 
     describe('next page updates the result state correctly', function(){
+      afterEach(() => {
+        fetchMock.reset()
+      })
+
       beforeEach(async () => {
+        fetchMock.reset()
         fetchMock.post(
           (url, opts) => url == `${BASE_URL}/search/collection`,
           mockPayload
         )
-        store.dispatch(
-          collectionResultsPageReceived([
-            {
-              id: 'uuid-XYZ',
-              attributes: {
-                title: 'XYZ',
-              },
-            },
-            {
-              id: 'uuid-987',
-              attributes: {
-                title: '987',
-              },
-            },
-          ])
-        )
-        const {collectionResult} = store.getState().search
-
-        // results from a previous search
-        expect(collectionResult.collections).toEqual({
-          'uuid-XYZ': {title: 'XYZ'},
-          'uuid-987': {title: '987'},
-        })
       })
 
       it(`${submitNextPageCase.name}`, async () => {
@@ -395,6 +377,8 @@ describe('collection search actions', function(){
           'uuid-123': {title: '123'},
           'uuid-ABC': {title: 'ABC'},
         })
+        expect(collectionResult.totalCollectionCount).toEqual(10)
+
         expect(collectionResult.loadedCollectionCount).toEqual(2)
       })
     })

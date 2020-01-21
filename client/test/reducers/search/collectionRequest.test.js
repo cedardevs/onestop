@@ -72,7 +72,10 @@ describe('The collection request reducer', function(){
 
   it('result from next page resets inFlight', function(){
     const initial = Immutable({inFlight: true})
-    const result = collectionRequest(initial, collectionResultsPageReceived())
+    const result = collectionRequest(
+      initial,
+      collectionResultsPageReceived(0, [])
+    )
     expect(result.inFlight).toBeFalsy()
   })
 

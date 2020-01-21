@@ -29,9 +29,10 @@ export const collectionNewSearchResultsReceived = (total, items, facets) => ({
 
 export const COLLECTION_RESULTS_PAGE_RECEIVED =
   'COLLECTION_RESULTS_PAGE_RECEIVED'
-export const collectionResultsPageReceived = items => ({
+export const collectionResultsPageReceived = (total, items) => ({
   type: COLLECTION_RESULTS_PAGE_RECEIVED,
   items: items,
+  total: total,
 })
 
 export const COLLECTION_SEARCH_ERROR = 'COLLECTION_SEARCH_ERROR'

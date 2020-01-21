@@ -48,7 +48,7 @@ const newSearchSuccessHandler = dispatch => {
 
 const pageSuccessHandler = dispatch => {
   return payload => {
-    dispatch(collectionResultsPageReceived(payload.data))
+    dispatch(collectionResultsPageReceived(payload.meta.total, payload.data))
   }
 }
 

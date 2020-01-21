@@ -55,7 +55,7 @@ describe('The collectionResult reducer', function(){
 
     const result = collectionResult(
       resultsPage1LoadedState,
-      collectionResultsPageReceived([
+      collectionResultsPageReceived(3, [
         {id: 'B', attributes: {title: 'title B'}},
         {id: 'C', attributes: {title: 'title C'}},
       ])

@@ -30,7 +30,7 @@ const newSearchResultsReceived = (state, action) => {
   })
 }
 
-const nextPageResultsReceived = (state, action) => {
+const pageResultsReceived = (state, total, action) => {
   //clean out old granules from last page with initialState granules
   let newGranules = mergeGranulesArrayIntoGranulesMap(
     action.granules,
@@ -39,6 +39,7 @@ const nextPageResultsReceived = (state, action) => {
   return Immutable.merge(state, {
     granules: newGranules,
     loadedGranuleCount: countKeys(newGranules),
+    totalGranuleCount: total,
   })
 }
 
@@ -48,7 +49,7 @@ export const granuleResult = (state = initialState, action) => {
       return newSearchResultsReceived(state, action)
 
     case GRANULE_RESULTS_PAGE_RECEIVED:
-      return nextPageResultsReceived(state, action)
+      return pageResultsReceived(state, action.total, action)
 
     case GRANULE_SEARCH_ERROR:
       return Immutable.merge(state, {
