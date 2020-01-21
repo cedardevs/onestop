@@ -12,8 +12,8 @@ import {
 import {
   // used to set up pre-test conditions
   granuleNewSearchRequested,
-  granuleNewSearchResultsReceived,
   granuleResultsPageRequested,
+  granuleNewSearchResultsReceived,
   granuleUpdateDateRange,
   granulesForCartRequested,
   granulesForCartResultsReceived,
