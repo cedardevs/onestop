@@ -19,7 +19,7 @@ const mapStateToProps = state => {
     endDateTime,
     startYear,
     endYear,
-    geoJSON,
+    bbox,
     excludeGlobal,
     title,
   } = state.search.granuleFilter
@@ -29,7 +29,7 @@ const mapStateToProps = state => {
     endDateTime,
     startYear,
     endYear,
-    geoJSON,
+    bbox,
     excludeGlobal,
     showAppliedFilters: state.layout.showAppliedFilterBubbles,
     textFilter: title,

@@ -2,11 +2,7 @@ import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {getIdFromPath} from './urlUtils'
 import {initialState} from '../reducers/search/collectionFilter'
-import {
-  recenterGeometry,
-  convertBboxStringToGeoJson,
-  convertGeoJsonToBboxString,
-} from './geoUtils'
+import {convertBboxToQueryGeoJson} from './geoUtils'
 import {textToNumber} from './inputUtils'
 
 export const PAGE_SIZE = 20
@@ -66,13 +62,20 @@ const assembleFacetFilters = ({selectedFacets}) => {
   return _.map(selectedFacets, (v, k) => ({type: 'facet', name: k, values: v}))
 }
 
-const assembleGeometryFilters = ({geoJSON, geoRelationship}) => {
-  if (geoJSON && geoJSON.geometry) {
-    const recenteredGeometry = recenterGeometry(geoJSON.geometry)
-    return {
-      type: 'geometry',
-      geometry: recenteredGeometry,
-      relation: geoRelationship,
+const assembleGeometryFilters = ({bbox, geoRelationship}) => {
+  if (bbox) {
+    let geometry = convertBboxToQueryGeoJson(
+      bbox.west,
+      bbox.south,
+      bbox.east,
+      bbox.north
+    )
+    if (geometry) {
+      return {
+        type: 'geometry',
+        geometry: geometry.geometry,
+        relation: geoRelationship,
+      }
     }
   }
 }
@@ -195,6 +198,24 @@ const decodeRelationship = text => {
   return null
 }
 
+const convertArgsToBbox = (west, south, east, north) => {
+  return {
+    north: north,
+    east: east,
+    south: south,
+    west: west,
+  }
+}
+
+const decodeBbox = coordString => {
+  const coordArray = coordString.split(',').map(x => parseFloat(x))
+  return convertArgsToBbox(...coordArray)
+}
+
+const encodeBbox = bbox => {
+  return bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : ''
+}
+
 const codecs = [
   {
     longKey: 'queryText',
@@ -211,11 +232,12 @@ const codecs = [
     encodable: text => !_.isEmpty(text),
   },
   {
-    longKey: 'geoJSON',
+    longKey: 'bbox',
     shortKey: 'g',
-    encode: geoJSON => convertGeoJsonToBboxString(geoJSON),
-    decode: text => convertBboxStringToGeoJson(text),
-    encodable: getJSON => !_.isEmpty(getJSON),
+    encode: bbox => encodeBbox(bbox),
+
+    decode: text => decodeBbox(text),
+    encodable: bbox => !_.isEmpty(bbox),
   },
   {
     longKey: 'geoRelationship',
@@ -223,7 +245,7 @@ const codecs = [
     encode: text => encodeRelationship(text),
     decode: text => decodeRelationship(text),
     encodable: (text, queryState) => {
-      return !_.isEmpty(text) && !_.isEmpty(queryState.geoJSON)
+      return !_.isEmpty(text) && !_.isEmpty(queryState.bbox)
     },
   },
   {

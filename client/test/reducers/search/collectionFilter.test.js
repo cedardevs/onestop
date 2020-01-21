@@ -29,7 +29,7 @@ const assertParam = (param, result, expected, fallback) => {
 const assertAllFilterParams = (results, values, defaults) => {
   assertParam('pageOffset', results, values, defaults)
   assertParam('queryText', results, values, defaults)
-  assertParam('geoJSON', results, values, defaults)
+  assertParam('bbox', results, values, defaults)
   assertParam('geoRelationship', results, values, defaults)
   assertParam('timeRelationship', results, values, defaults)
   assertParam('startDateTime', results, values, defaults)
@@ -45,9 +45,11 @@ describe('The collection filter reducer', function(){
     // not a single default value
     pageOffset: 40,
     queryText: 'demo',
-    geoJSON: {
-      type: 'Point',
-      geometry: {type: 'Point', coordinates: [ 0, 0 ]},
+    bbox: {
+      west: 123,
+      north: 80,
+      east: 23,
+      south: -20,
     },
     geoRelationship: 'within',
     timeRelationship: 'disjoint',
@@ -65,7 +67,7 @@ describe('The collection filter reducer', function(){
     expect(result).toEqual({
       pageOffset: 0,
       queryText: '',
-      geoJSON: null,
+      bbox: null,
       geoRelationship: 'intersects',
       timeRelationship: 'intersects',
       startDateTime: null,
@@ -148,7 +150,7 @@ describe('The collection filter reducer', function(){
           expectedChanges: {
             pageOffset: 0,
             queryText: 'new',
-            geoJSON: null,
+            bbox: null,
             geoRelationship: 'intersects',
             timeRelationship: 'intersects',
             startDateTime: null,
@@ -174,7 +176,7 @@ describe('The collection filter reducer', function(){
           expectedChanges: {
             pageOffset: 0,
             queryText: '',
-            geoJSON: null,
+            bbox: null,
             geoRelationship: 'intersects',
             timeRelationship: 'intersects',
             startDateTime: null,
@@ -213,17 +215,11 @@ describe('The collection filter reducer', function(){
           params: [
             {
               queryText: 'new',
-              geoJSON: {
-                type: 'Polygon',
-                coordinates: [
-                  [
-                    [ 100.0, 0.0 ],
-                    [ 101.0, 0.0 ],
-                    [ 101.0, 1.0 ],
-                    [ 100.0, 1.0 ],
-                    [ 100.0, 0.0 ],
-                  ],
-                ],
+              bbox: {
+                west: 100.0,
+                north: 1.0,
+                south: 0.0,
+                east: 101.0,
               },
               geoRelationship: 'contains',
               timeRelationship: 'contains',
@@ -240,17 +236,11 @@ describe('The collection filter reducer', function(){
           expectedChanges: {
             pageOffset: 0,
             queryText: 'new',
-            geoJSON: {
-              type: 'Polygon',
-              coordinates: [
-                [
-                  [ 100.0, 0.0 ],
-                  [ 101.0, 0.0 ],
-                  [ 101.0, 1.0 ],
-                  [ 100.0, 1.0 ],
-                  [ 100.0, 0.0 ],
-                ],
-              ],
+            bbox: {
+              west: 100.0,
+              north: 1.0,
+              south: 0.0,
+              east: 101.0,
             },
             geoRelationship: 'contains',
             timeRelationship: 'contains',
@@ -288,23 +278,11 @@ describe('The collection filter reducer', function(){
   })
 
   describe('individual filter value action', function(){
-    const validGeoJSON = {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [ 100.0, 0.0 ],
-            [ 101.0, 0.0 ],
-            [ 101.0, 1.0 ],
-            [ 100.0, 1.0 ],
-            [ 100.0, 0.0 ],
-          ],
-        ],
-      },
-      properties: {
-        description: 'Valid test GeoJSON',
-      },
+    const validBbox = {
+      west: 100.0,
+      north: 1.0,
+      south: 0.0,
+      east: 101.0,
     }
     const paramActionTestCases = [
       {
@@ -380,14 +358,14 @@ describe('The collection filter reducer', function(){
         name: 'sets geometry',
         initialState: initialState,
         function: collectionUpdateGeometry,
-        params: [ validGeoJSON ],
-        expectedChanges: {geoJSON: validGeoJSON},
+        params: [ validBbox ],
+        expectedChanges: {bbox: validBbox},
       },
       {
         name: 'unsets geometry',
         initialState: nonInitialState,
         function: collectionRemoveGeometry,
-        expectedChanges: {geoJSON: null},
+        expectedChanges: {bbox: null},
       },
       {
         name: 'sets geo relation',
@@ -448,7 +426,7 @@ describe('The collection filter reducer', function(){
         initialState: {
           pageOffset: 0,
           queryText: '',
-          geoJSON: null,
+          bbox: null,
           startDateTime: null,
           endDateTime: null,
           startYear: null,

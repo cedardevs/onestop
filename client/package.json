@@ -20,6 +20,7 @@
     "esri-leaflet": "^2.2.3",
     "esri-loader": "^2.6.0",
     "file-saver": "^2.0.0",
+    "geometry-polyfill": "^1.0.6",
     "history": "^4.7.2",
     "isomorphic-fetch": "^2.2.1",
     "leaflet": "^1.4.0",

@@ -19,7 +19,7 @@ import {updateSelectedFacets} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
   queryText: '',
-  geoJSON: null,
+  bbox: null,
   geoRelationship: 'intersects',
   timeRelationship: 'intersects',
   startDateTime: null,
@@ -34,10 +34,10 @@ export const initialState = Immutable({
 export const collectionFilter = (state = initialState, action) => {
   switch (action.type) {
     case COLLECTION_UPDATE_GEOMETRY:
-      return Immutable.set(state, 'geoJSON', action.geoJSON)
+      return Immutable.set(state, 'bbox', action.bbox)
 
     case COLLECTION_REMOVE_GEOMETRY:
-      return Immutable.set(state, 'geoJSON', initialState.geoJSON)
+      return Immutable.set(state, 'bbox', initialState.bbox)
 
     case COLLECTION_UPDATE_GEO_RELATIONSHIP:
       return Immutable.set(state, 'geoRelationship', action.relationship)

@@ -6,15 +6,17 @@ import org.cedar.schemas.avro.psi.AggregatedInput
 import org.cedar.schemas.avro.psi.ErrorEvent
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletResponse
 
+@ExtendWith(SpringExtension.class)
 class MetadataRestControllerSpec extends Specification {
-
-  static final testId = 'abc'
+  static final testId = '8834cfd3-3b71-40b8-b037-315607a30c42'
   static final testType = RecordType.collection
   static final testSource = Topics.DEFAULT_SOURCE
   static final testAggInput = AggregatedInput.newBuilder()
@@ -29,6 +31,27 @@ class MetadataRestControllerSpec extends Specification {
   MetadataRestController controller = new MetadataRestController(mockMetadataStore, mockApiRootGenerator)
   HttpServletResponse mockResponse = new MockHttpServletResponse()
 
+  def 'validate an incoming UUID string'() throws Exception {
+    def path = "/metadata/${testType}/${"abc"}"
+    def request = buildMockRequest(path)
+    when:
+    def result = controller.retrieveInput(testType.toString(), "abc", request, mockResponse)
+
+    then:
+    result.status == 500
+    result.content == ["errors":["title":"Invalid UUID String (ensure lowercase): abc"]]
+  }
+
+  def 'validate an incoming UUID string with uppercase A-Z'() throws Exception {
+    def path = "/metadata/${testType}/${"8834CFD3-3B71-40B8-B037-315607A30C42"}"
+    def request = buildMockRequest(path)
+    when:
+    def result = controller.retrieveInput(testType.toString(), "8834CFD3-3B71-40B8-B037-315607A30C42", request, mockResponse)
+
+    then:
+    result.status == 500
+    result.content == ["errors":["title":"Invalid UUID String (ensure lowercase): 8834CFD3-3B71-40B8-B037-315607A30C42"]]
+  }
 
   def 'returns input with default source'() {
     def path = "/metadata/${testType}/${testId}"

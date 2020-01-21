@@ -1,4 +1,5 @@
 import * as protocolUtils from '../../src/utils/resultUtils'
+import {buildCoordinatesString} from '../../src/utils/resultUtils'
 import _ from 'lodash'
 
 describe('The resultUtils', function(){
@@ -164,6 +165,150 @@ describe('The resultUtils', function(){
         expect(protocol.id).toBe('?')
         expect(protocol.label).toBe('Unknown')
         expect(protocol.color).toBe('black')
+      })
+    })
+  })
+
+  describe('can summarize geometries', function(){
+    const testCases = [
+      // points
+      {
+        geometry: {type: 'Point', coordinates: [ 3.54301212, 50 ]},
+        expectedToString: 'Point at 3.54301212°, 50° (longitude, latitude).',
+      },
+      {
+        geometry: {type: 'Point', coordinates: [ -100.2, 20.1 ]},
+        expectedToString: 'Point at -100.2°, 20.1° (longitude, latitude).',
+      },
+      // lines
+      {
+        geometry: {type: 'LineString', coordinates: [ [ 1, 2 ], [ 3, 4 ] ]},
+        expectedToString: 'Line from 1°, 2° (WS) to 3°, 4° (EN).',
+      },
+      // bbox
+      {
+        geometry: {
+          type: 'Polygon',
+          coordinates: [ [ [ 1, 2 ], [ 3, 2 ], [ 3, 4 ], [ 1, 4 ], [ 1, 2 ] ] ],
+        },
+        expectedToString: 'Bounding Box covering 1°, 4°, 3°, 2° (W, N, E, S).',
+      },
+      // polygon
+      {
+        geometry: {
+          type: 'Polygon',
+          coordinates: [ [ [ 1, 2 ], [ 2, 1 ], [ 4, 3 ], [ 3, 4 ], [ 1, 2 ] ] ],
+        },
+        expectedToString:
+          'Polygon bounded by (1°, 2°), (2°, 1°), (4°, 3°), (3°, 4°).',
+      }, // box, but rotated
+      {
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [ [ 1, 2 ], [ 3, 4 ], [ 5, 6 ], [ 7, 8 ], [ 9, 10 ], [ 1, 2 ] ],
+          ],
+        },
+        expectedToString:
+          'Polygon bounded by (1°, 2°), (3°, 4°), (5°, 6°), (7°, 8°), (9°, 10°).',
+      },
+      // multipolygon
+      // ... of bboxes
+      {
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: [
+            [
+              [
+                [ -180, -81.3282 ],
+                [ 6.2995, -81.3282 ],
+                [ 6.2995, 81.3282 ],
+                [ -180, 81.3282 ],
+                [ -180, -81.3282 ],
+              ],
+            ],
+            [
+              [
+                [ 141.7005, -81.3282 ],
+                [ 180, -81.3282 ],
+                [ 180, 81.3282 ],
+                [ 141.7005, 81.3282 ],
+                [ 141.7005, -81.3282 ],
+              ],
+            ],
+          ],
+        },
+        expectedToString:
+          'MultiPolygon made up of Bounding Box covering -180°, 81.3282°, 6.2995°, -81.3282° (W, N, E, S) and Bounding Box covering 141.7005°, 81.3282°, 180°, -81.3282° (W, N, E, S).',
+      },
+      // ... of polygons
+      {
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: [
+            [ [ [ 1, 2 ], [ 2, 1 ], [ 4, 3 ], [ 3, 4 ], [ 1, 2 ] ] ],
+            [ [ [ 1, 2 ], [ 3, 4 ], [ 5, 6 ], [ 7, 8 ], [ 9, 10 ], [ 1, 2 ] ] ],
+          ],
+        },
+        expectedToString:
+          'MultiPolygon made up of Polygon bounded by (1°, 2°), (2°, 1°), (4°, 3°), (3°, 4°) and Polygon bounded by (1°, 2°), (3°, 4°), (5°, 6°), (7°, 8°), (9°, 10°).',
+      },
+      // ... of mixed
+      {
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: [
+            [
+              [
+                [ -180, -81.3282 ],
+                [ 6.2995, -81.3282 ],
+                [ 6.2995, 81.3282 ],
+                [ -180, 81.3282 ],
+                [ -180, -81.3282 ],
+              ],
+            ],
+            [ [ [ 1, 2 ], [ 3, 4 ], [ 5, 6 ], [ 7, 8 ], [ 9, 10 ], [ 1, 2 ] ] ],
+          ],
+        },
+        expectedToString:
+          'MultiPolygon made up of Bounding Box covering -180°, 81.3282°, 6.2995°, -81.3282° (W, N, E, S) and Polygon bounded by (1°, 2°), (3°, 4°), (5°, 6°), (7°, 8°), (9°, 10°).',
+      },
+      // ... of more than 2
+      {
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: [
+            [
+              [
+                [ -180, -81.3282 ],
+                [ 6.2995, -81.3282 ],
+                [ 6.2995, 81.3282 ],
+                [ -180, 81.3282 ],
+                [ -180, -81.3282 ],
+              ],
+            ],
+            [
+              [
+                [ 141.7005, -81.3282 ],
+                [ 180, -81.3282 ],
+                [ 180, 81.3282 ],
+                [ 141.7005, 81.3282 ],
+                [ 141.7005, -81.3282 ],
+              ],
+            ],
+            [ [ [ 1, 2 ], [ 2, 1 ], [ 4, 3 ], [ 3, 4 ], [ 1, 2 ] ] ],
+            [ [ [ 1, 2 ], [ 3, 4 ], [ 5, 6 ], [ 7, 8 ], [ 9, 10 ], [ 1, 2 ] ] ],
+          ],
+        },
+        expectedToString:
+          'MultiPolygon made up of Bounding Box covering -180°, 81.3282°, 6.2995°, -81.3282° (W, N, E, S) and Bounding Box covering 141.7005°, 81.3282°, 180°, -81.3282° (W, N, E, S) and Polygon bounded by (1°, 2°), (2°, 1°), (4°, 3°), (3°, 4°) and Polygon bounded by (1°, 2°), (3°, 4°), (5°, 6°), (7°, 8°), (9°, 10°).',
+      },
+    ]
+
+    _.each(testCases, c => {
+      it(`string from geometry ${c.geometry.coordinates}`, function(){
+        const result = buildCoordinatesString(c.geometry)
+        expect(result).toBe(c.expectedToString)
       })
     })
   })

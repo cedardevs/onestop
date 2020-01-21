@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 
 import {isGovExternal} from '../../../utils/urlUtils'
 import * as util from '../../../utils/resultUtils'
+import {renderBadgeIcon} from '../../../utils/resultComponentUtils'
 import defaultStyles from '../../../style/defaultStyles'
 import A from '../../common/link/Link'
 import Button from '../../common/input/Button'
@@ -79,7 +80,7 @@ const GranuleAccessLink = props => {
         style={util.styleBadge(protocol)}
         aria-hidden="true"
       >
-        {util.renderBadgeIcon(protocol)}
+        {renderBadgeIcon(protocol)}
       </div>
       <A
         href={url}

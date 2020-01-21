@@ -34,7 +34,7 @@ class JsonValidator {
 
   static Map validateRequestAgainstSpec(def params, SchemaParser schema){
     ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory())
-    
+
     final requestJson = yamlMapper.valueToTree(params)
     final report = schema.validate(requestJson)
 
@@ -52,8 +52,8 @@ class JsonValidator {
           }
         } else {
           coords.get(0).elements().each{
-            def longitude = Math.abs(it.get(0).intValue()) < 360
-            def latitude = Math.abs(it.get(1).intValue()) < 90
+            def longitude = Math.abs(it.get(0).intValue()) <= 360
+            def latitude = Math.abs(it.get(1).intValue()) <= 90
             if(!longitude || !latitude) {
               log.debug("invalid polygon geometry ${schema.name}: ${coords}")
               throw new Exception("Invalid geometry, not a valid request")

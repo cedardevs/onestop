@@ -1,28 +1,29 @@
-import {connect} from 'react-redux'
 import Map from '../spatial/Map'
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
+import {toggleMapClose} from '../../../actions/LayoutActions'
+import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
 import {
   collectionUpdateGeometry,
   collectionRemoveGeometry,
 } from '../../../actions/routing/CollectionSearchStateActions'
-import {submitCollectionSearch} from '../../../actions/routing/CollectionSearchRouteActions'
-
-import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  const {geoJSON} = state.search.collectionFilter
   return {
     filterType: 'collectionFilter',
-    geoJsonSelection: geoJSON,
-    showMap: state.layout.showMap,
+    bbox: state.search.collectionFilter.bbox,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    handleNewGeometry: geoJSON => dispatch(collectionUpdateGeometry(geoJSON)),
+    handleNewGeometry: bbox => dispatch(collectionUpdateGeometry(bbox)),
     removeGeometry: () => dispatch(collectionRemoveGeometry()),
     submit: () => {
       dispatch(submitCollectionSearch(ownProps.history))
+    },
+    closeMap: () => {
+      dispatch(toggleMapClose())
     },
   }
 }

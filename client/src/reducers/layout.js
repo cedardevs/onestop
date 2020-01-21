@@ -4,7 +4,6 @@ import {isDetailPage, isGranuleListPage} from '../utils/urlUtils'
 import {
   TOGGLE_LEFT_OPEN,
   TOGGLE_RIGHT_OPEN,
-  TOGGLE_MAP,
   TOGGLE_MAP_OPEN,
   TOGGLE_MAP_CLOSE,
   SET_HEADER_MENU_OPEN,
@@ -43,9 +42,6 @@ export const layout = (state = initialState, action) => {
       return Immutable.set(state, 'leftOpen', action.open)
     case TOGGLE_RIGHT_OPEN:
       return Immutable.set(state, 'rightOpen', action.open)
-    case TOGGLE_MAP:
-      const previousShowMap = state.showMap
-      return Immutable.set(state, 'showMap', !previousShowMap)
     case TOGGLE_MAP_OPEN:
       return Immutable.set(state, 'showMap', true)
     case TOGGLE_MAP_CLOSE:

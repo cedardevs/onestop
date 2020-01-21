@@ -6,7 +6,7 @@ import DateTimeFilter from './standard/DateTimeFilter'
 import GeologicTimeFilter from './geologic/GeologicTimeFilter'
 import TabPanels from '../../common/ui/TabPanels'
 import FlexRow from '../../common/ui/FlexRow'
-import Drawer from '../../layout/Drawer'
+import Drawer from '../../common/ui/Drawer'
 import {exclamation_triangle, SvgIcon} from '../../common/SvgIcon'
 import {FilterColors} from '../../../style/defaultStyles'
 
@@ -45,12 +45,7 @@ const TimeFilter = ({
       timeRelationship={timeRelationship}
       updateTimeRelationship={relation => {
         if (relation != timeRelationship) updateTimeRelation(relation)
-        if (
-          startYear != null ||
-          endYear != null ||
-          !_.isEmpty(startDateTime) ||
-          !_.isEmpty(endDateTime)
-        ) {
+        if (!_.isEmpty(startDateTime) || !_.isEmpty(endDateTime)) {
           // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
           submit()
         }
@@ -72,7 +67,11 @@ const TimeFilter = ({
       endYear={endYear}
       timeRelationship={timeRelationship}
       updateTimeRelationship={relation => {
-        updateTimeRelation(relation)
+        if (relation != timeRelationship) updateTimeRelation(relation)
+        if (startYear != null || endYear != null) {
+          // TODO I think this doesn't require validation because those values are only set at this level if they've passed validation and been submitted...?
+          submit()
+        }
       }}
       applyFilter={(startYear, endYear) => {
         removeDateRange()
@@ -173,14 +172,24 @@ const TimeFilter = ({
     />
   )
 
-  const onAlertClose = () => {
+  const clearAlert = () => {
     // set these back when closed so that announcements reannounce when they reappear (screen reader only announces it the first time it changes otherwise)
     setAlert('')
   }
 
+  const handleDrawerAnimationEnd = open => {
+    if (!open) {
+      clearAlert()
+    }
+  }
+
   return (
     <div>
-      <Drawer content={alertMessage} open={showAlert} onClose={onAlertClose} />
+      <Drawer
+        content={alertMessage}
+        open={showAlert}
+        onAnimationEnd={handleDrawerAnimationEnd}
+      />
       <TabPanels
         name="timeFilter"
         options={VIEW_OPTIONS}

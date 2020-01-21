@@ -80,10 +80,10 @@ export const clearGranuleQueryText = () => ({
 })
 
 export const GRANULE_UPDATE_GEOMETRY = 'GRANULE_UPDATE_GEOMETRY'
-export const granuleUpdateGeometry = geoJSON => {
+export const granuleUpdateGeometry = bbox => {
   return {
     type: GRANULE_UPDATE_GEOMETRY,
-    geoJSON: geoJSON,
+    bbox: bbox,
   }
 }
 export const GRANULE_REMOVE_GEOMETRY = 'GRANULE_REMOVE_GEOMETRY'

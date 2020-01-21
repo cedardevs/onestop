@@ -20,7 +20,7 @@ import {updateSelectedFacets} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
   title: '',
-  geoJSON: null,
+  bbox: null,
   geoRelationship: 'intersects',
   timeRelationship: 'intersects',
   startDateTime: null,
@@ -70,10 +70,10 @@ export const granuleFilter = (state = initialState, action) => {
       return Immutable.set(state, 'title', action.text)
 
     case GRANULE_UPDATE_GEOMETRY:
-      return Immutable.set(state, 'geoJSON', action.geoJSON)
+      return Immutable.set(state, 'bbox', action.bbox)
 
     case GRANULE_REMOVE_GEOMETRY:
-      return Immutable.set(state, 'geoJSON', initialState.geoJSON)
+      return Immutable.set(state, 'bbox', initialState.bbox)
 
     case GRANULE_UPDATE_GEO_RELATIONSHIP:
       return Immutable.set(state, 'geoRelationship', action.relationship)

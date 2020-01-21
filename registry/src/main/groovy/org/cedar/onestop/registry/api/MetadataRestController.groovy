@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.kafka.common.constants.Topics
 import org.cedar.onestop.registry.service.MetadataStore
+import org.cedar.onestop.registry.util.UUIDValidator
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -37,7 +38,7 @@ class MetadataRestController {
       @PathVariable String type,
       @PathVariable String id,
       HttpServletRequest request,
-      HttpServletResponse response) {
+      HttpServletResponse response) throws Exception {
     retrieveInput(type, Topics.DEFAULT_SOURCE, id, request, response)
   }
 
@@ -47,8 +48,10 @@ class MetadataRestController {
       @PathVariable String source,
       @PathVariable String id,
       HttpServletRequest request,
-      HttpServletResponse response) {
-
+      HttpServletResponse response) throws Exception {
+    if(!UUIDValidator.isValid(id)){
+      return UUIDValidator.uuidErrorMsg(id)
+    }
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def result = metadataStore.retrieveInput(recordType, source, id)
     def links = buildLinks(request, type, source, id)
@@ -103,7 +106,7 @@ class MetadataRestController {
       @PathVariable String type,
       @PathVariable String id,
       HttpServletRequest request,
-      HttpServletResponse response) {
+      HttpServletResponse response) throws Exception {
     retrieveParsed(type, Topics.DEFAULT_SOURCE, id, request, response)
   }
 
@@ -114,10 +117,12 @@ class MetadataRestController {
       @PathVariable String id,
       HttpServletRequest request,
       HttpServletResponse response) {
-
+    if(!UUIDValidator.isValid(id)){
+      return UUIDValidator.uuidErrorMsg(id)
+    }
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def links = buildLinks(request, type, source, id)
-    def result = metadataStore.retrieveParsed(recordType, source, id)
+    def result = metadataStore.retrieveParsed(recordType, source, id as String)
     links.self = links.remove('parsed')
 
     if (result) {

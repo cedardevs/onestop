@@ -14,7 +14,7 @@ import {withRouter} from 'react-router'
 const mapStateToProps = state => {
   return {
     showMap: state.layout.showMap,
-    geoJSON: state.search.granuleFilter.geoJSON,
+    bbox: state.search.granuleFilter.bbox,
     geoRelationship: state.search.granuleFilter.geoRelationship,
     excludeGlobal: state.search.granuleFilter.excludeGlobal,
   }
@@ -38,7 +38,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(toggleMapClose())
     },
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
-    handleNewGeometry: geoJSON => dispatch(granuleUpdateGeometry(geoJSON)),
+    handleNewGeometry: bbox => dispatch(granuleUpdateGeometry(bbox)),
   }
 }
 

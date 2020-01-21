@@ -16,6 +16,112 @@ tags:
   - name: flattened-granule
     description: Flattened granules are a representation of the granules which inherit all the metadata from the parent collection.
 paths:
+  /docs/attributes/{resourceType}:
+    head:
+      tags:
+        - collection
+        - granule
+        - flattened-granule
+      summary: Get documentation about attributes
+      parameters:
+        - in: path
+          name: resourceType
+          schema:
+            type: string
+            enum:
+              - collection
+              - granule
+              - flattened-granule
+          required: true
+          description: resource type
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Request Parsing Error
+    get:
+      tags:
+        - collection
+        - granule
+        - flattened-granule
+      summary: Get documentation about attributes
+      parameters:
+        - in: path
+          name: resourceType
+          schema:
+            type: string
+            enum:
+              - collection
+              - granule
+              - flattened-granule
+          required: true
+          description: resource type
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - meta
+                  - data
+                properties:
+                  data:
+                    type: array
+                    maxItems: 1
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: "identifier for the mapping"
+                        type:
+                          type: string
+                          enum:
+                            - docs-attributes
+                        attributes:
+                          type: object
+                          additionalProperties:
+                            description: The key / property name is a field in the mapping.
+                            type: object
+                            required:
+                              - queryable
+                              - exactMatchRequired
+                              - applicableFilter
+                            properties:
+                              queryable:
+                                type: boolean
+                                description: Whether an attribute can be searched against. Non-queryable fields provide supplemental information about a record only, such as link URLs.
+                              exactMatchRequired:
+                                type: boolean
+                                description: Only applicable to queryable fields. If true, text must match exactly or a regular expression pattern must exactly match the full text. If false, partial matches will return results.
+                              applicableFilter:
+                                type: string
+                                description: Filter correlating to this attribute. Filters are faster and more precise in narrowing results but do not affect search rankings.
+                  meta:
+                    properties:
+                      info:
+                        description: Information about the field attributes
+                        type: object
+                        properties:
+                          queryable:
+                            type: string
+                            description: Explanation of the 'queryable' property on fields.
+                          exactMatchRequired:
+                            type: string
+                            description: Explanation of the 'exactMatchRequired' property on fields.
+                          applicableFilter:
+                            type: string
+                            description: Explanation of the 'applicableFilter' property on fields.
+                    type: object
+                    required:
+                      - totalGranules
+
+        '404':
+          description: Request Parsing Error
+
+
   /collection:
     head:
       operationId: headCollection
@@ -1397,7 +1503,7 @@ components:
         $ref: "#/components/schemas/linearRing"
       type: array
     position:
-      description: "A single position"
+      description: "A single position. [Longitude, Latitude]. Longitude must be within the range ±360. Latitude must be within the range ±90."
       items:
         description: coordinate
         type: number

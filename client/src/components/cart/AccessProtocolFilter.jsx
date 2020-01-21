@@ -1,5 +1,6 @@
 import React from 'react'
-import {renderBadgeIcon, styleBadge} from '../../utils/resultUtils'
+import {styleBadge} from '../../utils/resultUtils'
+import {renderBadgeIcon} from '../../utils/resultComponentUtils'
 
 const styleLegendList = {
   justifyContent: 'flex-start',
