@@ -11,8 +11,6 @@ import org.apache.http.ssl.TrustStrategy;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -24,20 +22,17 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 public class ElasticsearchClient {
-  private static final Logger log = LoggerFactory.getLogger(DocumentUtil.class);
 
   public static RestHighLevelClient create(List<String> elasticHosts, int elasticPort, boolean sslEnabled, String user, String pass) {
-
     HttpHost[] hosts = elasticHosts
         .stream()
-        .map(host -> new HttpHost(host, elasticPort, "https"))
+        .map(host -> new HttpHost(host, elasticPort, sslEnabled ? "https" : "http"))
         .toArray(HttpHost[]::new);
 
     final CredentialsProvider credentialsProvider =
         new BasicCredentialsProvider();
     credentialsProvider.setCredentials(AuthScope.ANY,
-        new UsernamePasswordCredentials("elastic", "6l9srfmdzw6bcm9g6v5b4wn9"));
-
+        new UsernamePasswordCredentials(user, pass));
 
     HostnameVerifier hostnameVerifier = NoopHostnameVerifier.INSTANCE;
 
