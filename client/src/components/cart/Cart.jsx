@@ -11,7 +11,6 @@ import {FEATURE_CART} from '../../utils/featureUtils'
 import CartListItem from './CartListItem'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 
-
 const styleCenterContent = {
   display: 'flex',
   justifyContent: 'center',
