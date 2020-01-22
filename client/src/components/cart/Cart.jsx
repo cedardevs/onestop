@@ -9,8 +9,8 @@ import {fontFamilySerif} from '../../utils/styleUtils'
 import ScriptDownloader from './ScriptDownloader'
 import {FEATURE_CART} from '../../utils/featureUtils'
 import CartListItem from './CartListItem'
+import {PAGE_SIZE} from '../../utils/queryUtils'
 
-const SHOW_MORE_INCREMENT = 10
 
 const styleCenterContent = {
   display: 'flex',
@@ -66,7 +66,7 @@ export default function Cart(props){
   //only show granules for this page
   const allowed = Object.keys(selectedGranules).slice(
     offset,
-    offset + SHOW_MORE_INCREMENT
+    offset + PAGE_SIZE
   )
 
   const subset = Object.keys(selectedGranules)

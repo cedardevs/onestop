@@ -117,10 +117,7 @@ export default function GranuleList(props){
     )
   }
   else if (totalHits > 0) {
-    var size = 0
-    for (const key in results) {
-      size++
-    }
+    var size = Object.keys(results).length
     message = `Showing ${offset + 1} - ${offset +
       size} of ${totalHits.toLocaleString()} matching files`
   }
