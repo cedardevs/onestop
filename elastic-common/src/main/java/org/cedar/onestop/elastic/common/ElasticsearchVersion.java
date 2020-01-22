@@ -18,15 +18,10 @@ public class ElasticsearchVersion {
   private Byte minorVersion;
   private Byte patchVersion;
 
-  public ElasticsearchVersion(RestHighLevelClient restHighLevelClient) {
+  public ElasticsearchVersion(RestHighLevelClient restHighLevelClient) throws IOException {
     MainResponse.Version version;
-    try {
-      version = restHighLevelClient.info(RequestOptions.DEFAULT).getVersion();
-    } catch (IOException e) {
-      throw new IllegalStateException("Service could not retrieve running Elasticsearch version");
-    }
+    version = restHighLevelClient.info(RequestOptions.DEFAULT).getVersion();
     String versionNumber = version.getNumber();
-
     initAndCheck(versionNumber);
   }
 

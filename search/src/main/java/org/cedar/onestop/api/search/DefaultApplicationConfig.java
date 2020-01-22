@@ -4,6 +4,8 @@ import org.cedar.onestop.elastic.common.ElasticsearchClient;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.elastic.common.ElasticsearchVersion;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +20,7 @@ import java.util.List;
 
 @Configuration
 public class DefaultApplicationConfig {
+  private static final Logger log = LoggerFactory.getLogger(DefaultApplicationConfig.class);
 
   @Autowired
   Environment environment;
@@ -55,7 +58,7 @@ public class DefaultApplicationConfig {
 
   @Bean(name = "elasticsearchVersion")
   @DependsOn("restHighLevelClient")
-  ElasticsearchVersion elasticsearchVersion(RestHighLevelClient restHighLevelClient) {
+  ElasticsearchVersion elasticsearchVersion(RestHighLevelClient restHighLevelClient) throws IOException {
     // check for compatible elastic version (will throw exception if not compatible)
     return new ElasticsearchVersion(restHighLevelClient);
   }

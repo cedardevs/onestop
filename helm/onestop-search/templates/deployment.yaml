@@ -80,6 +80,13 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
+
+            - name: elasticsearch.ro.pass
+              valueFrom:
+                secretKeyRef:
+                  name: onestop-es-elastic-user
+                  key: {{ .Values.elastic.user }}
+
           # This liveness probe is necessary on both API deployments because they now trigger a runtime exception when
           # they cannot gather the Elasticsearch version information from a running Elasticsearch service.
           #
@@ -89,19 +96,26 @@ spec:
           #
           # The initial delay here allows Tomcat time to deploy the WAR. The fact that an endpoint comes back also
           # guarantees that a running Elasticsearch version was gathered upon Spring startup.
-          livenessProbe:
+#          livenessProbe:
+#            httpGet:
+#              port: http
+#              path: /onestop-search/actuator/info
+#            initialDelaySeconds: 60 # wait n seconds before initiating the probe
+#            periodSeconds: 20       # how often this probe should be run
+#            timeoutSeconds: 10      # how long to wait before timing out the probe
+#            failureThreshold: 1     # try n times before restarting the pod
+#            successThreshold: 1     # min # of consecutive successes for probe to be successful after having failed
+          readinessProbe:
             httpGet:
-              port: http
-              path: /onestop-search/actuator/info
+              host: onestop-es-http
+              port: 9200
+              path: /
             initialDelaySeconds: 60 # wait n seconds before initiating the probe
             periodSeconds: 20       # how often this probe should be run
             timeoutSeconds: 10      # how long to wait before timing out the probe
             failureThreshold: 1     # try n times before restarting the pod
             successThreshold: 1     # min # of consecutive successes for probe to be successful after having failed
-#          readinessProbe:
-#            httpGet:
-#              path: /
-#              port: http
+
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -123,6 +137,10 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
+          # MOUNT PUBLIC CERTS FOR ELASTICSEARCH
+            - name: onestop-es-http-certs-public-volume
+              mountPath: /etc/onestop-search/elastic
+              readOnly: true
       volumes:
         # CREATE VOLUME FOR ADDITIONAL CONFIG (if config provided)
         # additional location for Spring config allows overriding defaults
@@ -143,6 +161,11 @@ spec:
             {{- end }}
           {{- end }}
         {{- end }}
+        # CREATE VOLUME FOR ELASTICSEARCH PUBLIC CERTS
+        # the secret name used here is the default used for the ECK operator
+          - name: onestop-es-http-certs-public-volume
+            secret:
+              secretName: onestop-es-http-certs-public
 #      restartPolicy: Always
       {{- with .Values.nodeSelector }}
       nodeSelector:

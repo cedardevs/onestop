@@ -111,6 +111,9 @@ secrets:
       - KEYSTORE_ALIAS    # [secret] login-gov-keystore-credentials.KEYSTORE_ALIAS    => [env] LOGIN_GOV_KEYSTORE_ALIAS
       - KEY_PASSWORD      # [secret] login-gov-keystore-credentials.KEY_PASSWORD      => [env] LOGIN_GOV_KEY_PASSWORD
 
+elastic:
+  user: elastic
+
 keystoreFiles:
   jks:
     loginGov: "/etc/onestop-search/login-gov-keystore.jks"
