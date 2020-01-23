@@ -15,7 +15,7 @@ kind: Elasticsearch
 metadata:
   name: onestop
 spec:
-  version: 7.5.1
+  version: 7.5.2
   nodeSets:
     - name: default
       count: 1
@@ -29,9 +29,9 @@ spec:
 apiVersion: kibana.k8s.elastic.co/v1beta1
 kind: Kibana
 metadata:
-  name: onestop-kibana
+  name: onestop
 spec:
-  version: 7.5.1
+  version: 7.5.2
   count: 1
   elasticsearchRef:
     name: onestop
