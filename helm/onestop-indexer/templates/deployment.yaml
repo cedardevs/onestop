@@ -42,10 +42,22 @@ spec:
               value: {{ $envVal | quote }}
             {{- end }}
           {{- end }}
-#          readinessProbe:
-#            httpGet:
-#              path: /
-#              port: http
+          # DEFINE ENVIRONMENT VARIABLES FOR ELASTICSEARCH
+          # this will effectively override defaults in the application YML
+            - name: elasticsearch.host
+              value: {{ .Values.elasticsearch.host }}
+            - name: elasticsearch.port
+              value: {{ .Values.elasticsearch.port | quote }}
+            - name: elasticsearch.ssl.enabled
+              value: {{ .Values.elasticsearch.ssl.enabled | quote }}
+            - name: elasticsearch.rw.user
+              value: {{ .Values.elasticsearch.rw.user }}
+            # The password, specifically, is derived from the ECK operator secret, keyed by the username
+            - name: elasticsearch.rw.pass
+              valueFrom:
+                secretKeyRef:
+                  name: onestop-es-elastic-user
+                  key: {{ .Values.elasticsearch.rw.user }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

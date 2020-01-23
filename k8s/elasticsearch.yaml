@@ -1,11 +1,13 @@
 ---
 # assumes you've installed the ECK CRDs in your cluster
+# [infraInstall.sh]
 # https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-quickstart.html
 
 # upgrading from previous versions:
 # https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-upgrading-eck.html
 
 # if you need to uninstall ECK:
+# [infraUninstall.sh]
 # https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-uninstalling-eck.html
 
 apiVersion: elasticsearch.k8s.elastic.co/v1beta1
@@ -22,6 +24,7 @@ spec:
         node.data: true
         node.ingest: true
         node.store.allow_mmap: false
+
 ---
 apiVersion: kibana.k8s.elastic.co/v1beta1
 kind: Kibana

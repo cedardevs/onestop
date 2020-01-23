@@ -15,8 +15,7 @@ elasticsearch:
   ssl:
     enabled: true
   rw:
-    user: "elastic"
-    pass: "dvmxd6cbh8ssk6hrcl5jqm6j"
+    user: elastic
   index:
     prefix: ""
   max-tasks: 10

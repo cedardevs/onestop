@@ -18,11 +18,9 @@ public class ElasticsearchFactory {
 
   public static RestHighLevelClient buildElasticClient(AppConfig config) {
     String elasticHost = config.getOrDefault("elasticsearch.host", "").toString();
-    log.info("ElasticsearchFactory::elasticHost = " + elasticHost);
     List<String> elasticHosts = Arrays.asList(elasticHost.split(","));
 
     int elasticPort = Integer.parseInt(config.getOrDefault("elasticsearch.port", "-1").toString());
-    log.info("ElasticsearchFactory::elasticPort = " + elasticPort);
 
     if (elasticHost.isBlank() || elasticPort < 0) {
       throw new IllegalStateException("`elasticsearch.host` and `elasticsearch.port` configuration values are required");
