@@ -36,7 +36,7 @@ dependencyCheck {
 subprojects {
 
   project.ext {
-    schemasVersion = '0.5.2'
+    schemasVersion = '0.5.3'
     esVersion = '6.8.4'
     spockVersion = '1.2-groovy-2.5'
     testContainersVersion = '1.12.2'
