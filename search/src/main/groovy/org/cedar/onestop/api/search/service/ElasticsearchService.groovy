@@ -284,6 +284,9 @@ class ElasticsearchService {
     if (params.containsKey('page')) {
       requestBody = addPagination(requestBody, params.page as Map)
     }
+    if (params.containsKey('sort')) {
+      requestBody = addSort(requestBody, params.sort as List)
+    }
     requestBody = pruneEmptyElements(requestBody)
     return requestBody
   }
@@ -315,14 +318,39 @@ class ElasticsearchService {
         "links",
         "citeAsStatements",
         "serviceLinks"
-    ]
+  ]
     requestBody._source = sourceFilter
     return requestBody
   }
 
   private static Map addPagination(Map requestBody, Map pageParams) {
+
     requestBody.size = pageParams?.max != null ? pageParams.max : 10
     requestBody.from = pageParams?.offset ?: 0
+    return requestBody
+  }
+
+  // {
+  //     "sort" : [
+  //         { "post_date" : {"order" : "asc"}},
+  //         "user",
+  //         { "name" : "desc" },
+  //         { "age" : "desc" },
+  //         "_score"
+  //     ],
+  //     "query" : {
+  //         "term" : { "user" : "kimchy" }
+  //     }
+  // }
+  private static Map addSort(Map requestBody, List sortParams) {
+    if(sortParams != [] && sortParams.size() > 0 ){
+      requestBody.sort = sortParams
+    }else{
+      requestBody.sort = [[
+        "_id": ["order": "desc"],
+        "_score" : ["order":"desc"]
+      ]]
+    }
     return requestBody
   }
 

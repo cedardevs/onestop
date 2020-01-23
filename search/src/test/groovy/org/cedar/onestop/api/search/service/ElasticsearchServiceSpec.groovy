@@ -45,6 +45,22 @@ class ElasticsearchServiceSpec extends Specification {
     dataPipe << ElasticsearchTestVersion.versionedTestCases()
   }
 
+  def "preserve sort request using ES version #dataPipe.version" () {
+    given:
+    Version version = dataPipe.version as Version
+    ElasticsearchConfig esConfig = esVersionedConfigs[version]
+    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient, esConfig)
+    // post processing on the request was altering the results after addPagination
+    when:
+    def queryResult = elasticsearchService.buildRequestBody([sort:[[stagedDate: "desc"]]])
+
+    then:
+    queryResult.sort == [[stagedDate: "desc"]]
+
+    where:
+    dataPipe << ElasticsearchTestVersion.versionedTestCases()
+  }
+
   def 'executes a search using ES version #dataPipe.version'() {
     def testIndex = 'test_index'
     def searchRequest = [
@@ -112,6 +128,15 @@ class ElasticsearchServiceSpec extends Specification {
     [max: 0, offset: 0]   | [size: 0, from: 0]
   }
 
+  def 'supports sort parameters'() {
+    expect:
+    ElasticsearchService.addSort([:], params).sort == expected
+
+    where:
+    params                | expected
+    []                    | [["_id": ["order": "desc"], "_score" : ["order":"desc"]]]
+    [["date":"desc"]]     | [["date":"desc"]]
+  }
 
   private Response buildMockElasticResponse(int status, Map body) {
     Response mockResponse = Mock(Response)

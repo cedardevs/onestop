@@ -250,4 +250,33 @@ class TimeFilterIntegrationTests extends Specification {
     'intersects' | ['p1', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8']
     'within'     | ['p1', 'p5']
   }
+
+  def 'Sort by date'() {
+    given:
+    def requestParams = [
+        sort: [[ stagedDate  : relation ]]
+    ]
+
+    when:
+    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX_ALIAS)
+    def actualMatchingIds = queryResponse.data.collect { it.id }
+    def stagedDates = queryResponse.data.collect { it.stagedDate }
+
+    log.info(queryResponse)
+
+    then:
+    expectedMatchingIds.containsAll(actualMatchingIds)
+    stagedDates == []
+
+    and:
+    actualMatchingIds.containsAll(expectedMatchingIds)
+
+    and:
+    queryResponse.meta.total == expectedMatchingIds.size()
+
+    where:
+    relation | expectedMatchingIds
+    'asc'    | [ 2, 3, 16, 1, 17, 9, 18, 8, 7, 19]
+    'desc'   | [19, 7, 8, 18, 9, 17, 1, 16, 3, 2]
+  }
 }

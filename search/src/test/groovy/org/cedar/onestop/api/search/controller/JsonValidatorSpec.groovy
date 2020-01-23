@@ -129,6 +129,51 @@ class JsonValidatorSpec extends Specification {
         """{"max":9999999, "offset":0}"""
   }
 
+  def 'valid sorting: #desc'() {
+    given:
+    def schema = 'sort'
+    def singleQuery = """{"sort":[ ${request} ]}"""
+    // def singleQuery = """{ "sort" : [ ${request} ] }"""
+
+    when:
+    def validation = validateAgainstSpec(singleQuery, schema)
+
+    then:
+    validation.success
+
+    and: 'no errors are returned'
+    !validation.errors
+
+    when:
+    def validSearch = validateSearchSchema(singleQuery)
+
+    then:
+    validSearch.success
+
+    where:
+    desc | request
+    'sort by date descsending' |
+        """{ "stagedDate": "desc" }"""
+  }
+
+  def 'invalid sorting: #desc'() {
+    given:
+    def schema = 'sort'
+    def singleQuery = """{ "sort": ${request} }"""
+
+    when:
+    def validation = validateSearchSchema(singleQuery)
+
+    then: "exception is thrown"
+    def searchException = thrown(Exception)
+    searchException.message.contains('not a valid request')
+
+    where:
+    desc | request
+    'sort by unsupported name' |
+        """[{ "name": "desc" }]"""
+  }
+
   def 'valid text query: #desc'() {
     given:
     def schema = 'textQuery'
