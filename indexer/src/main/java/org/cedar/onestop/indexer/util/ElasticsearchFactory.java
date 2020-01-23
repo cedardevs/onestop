@@ -27,10 +27,14 @@ public class ElasticsearchFactory {
     }
 
     boolean sslEnabled = Boolean.parseBoolean(config.getOrDefault("elasticsearch.ssl.enabled", "").toString());
+    String certPath = config.getOrDefault("elasticsearch.ssl.cert.path", "").toString();
+    String certTLS = config.getOrDefault("elasticsearch.ssl.cert.tls", "").toString();
+    String certFilePath = certPath + "/" + certTLS;
+
     String rwUser = config.getOrDefault("elasticsearch.rw.user", "").toString();
     String rwPassword = config.getOrDefault("elasticsearch.rw.pass", "").toString();
 
-    return ElasticsearchClient.create(elasticHosts, elasticPort, sslEnabled, rwUser, rwPassword);
+    return ElasticsearchClient.create(elasticHosts, elasticPort, sslEnabled, certFilePath, rwUser, rwPassword);
   }
 
   public static ElasticsearchConfig buildElasticConfig(AppConfig config, RestHighLevelClient elasticClient) throws IOException {

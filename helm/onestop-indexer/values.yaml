@@ -17,6 +17,9 @@ elasticsearch:
   port: "9200"
   ssl:
     enabled: true
+    cert:
+      path: "/etc/onestop-indexer/elastic"
+      tls: "tls.crt"
   rw:
     user: elastic
 

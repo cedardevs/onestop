@@ -50,6 +50,10 @@ spec:
               value: {{ .Values.elasticsearch.port | quote }}
             - name: elasticsearch.ssl.enabled
               value: {{ .Values.elasticsearch.ssl.enabled | quote }}
+            - name: elasticsearch.ssl.cert.path
+              value: {{ .Values.elasticsearch.ssl.cert.path }}
+            - name: elasticsearch.ssl.cert.tls
+              value: {{ .Values.elasticsearch.ssl.cert.tls }}
             - name: elasticsearch.rw.user
               value: {{ .Values.elasticsearch.rw.user }}
             # The password, specifically, is derived from the ECK operator secret, keyed by the username
@@ -67,6 +71,10 @@ spec:
             - name: config-volume
               mountPath: /etc/conf/
           {{- end }}
+          # MOUNT PUBLIC CERTS FOR ELASTICSEARCH (ca.crt & tls.crt)
+            - name: onestop-es-http-certs-public-volume
+              mountPath: {{ .Values.elasticsearch.ssl.cert.path }}
+              readOnly: true
       volumes:
       # CREATE VOLUME FOR ADDITIONAL CONFIG (if config provided)
       # additional location for Spring config allows overriding defaults
@@ -75,6 +83,11 @@ spec:
           configMap:
             name: {{ include "onestop-indexer.configname" . }}
       {{- end }}
+      # CREATE VOLUME FOR ELASTICSEARCH PUBLIC CERTS
+      # the secret name used here is the default used for the ECK operator
+        - name: onestop-es-http-certs-public-volume
+          secret:
+            secretName: onestop-es-http-certs-public
 #      restartPolicy: Always
       {{- with .Values.nodeSelector }}
       nodeSelector:

@@ -89,6 +89,10 @@ spec:
               value: {{ .Values.elasticsearch.port | quote }}
             - name: elasticsearch.ssl.enabled
               value: {{ .Values.elasticsearch.ssl.enabled | quote }}
+            - name: elasticsearch.ssl.cert.path
+              value: {{ .Values.elasticsearch.ssl.cert.path }}
+            - name: elasticsearch.ssl.cert.tls
+              value: {{ .Values.elasticsearch.ssl.cert.tls }}
             - name: elasticsearch.ro.user
               value: {{ .Values.elasticsearch.ro.user }}
             # The password, specifically, is derived from the ECK operator secret, keyed by the username
@@ -118,9 +122,9 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          # MOUNT PUBLIC CERTS FOR ELASTICSEARCH
+          # MOUNT PUBLIC CERTS FOR ELASTICSEARCH (ca.crt & tls.crt)
             - name: onestop-es-http-certs-public-volume
-              mountPath: /etc/onestop-search/elastic
+              mountPath: {{ .Values.elasticsearch.ssl.cert.path }}
               readOnly: true
       volumes:
         # CREATE VOLUME FOR ADDITIONAL CONFIG (if config provided)
