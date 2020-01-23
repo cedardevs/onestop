@@ -2,9 +2,9 @@ package org.cedar.onestop.indexer
 
 
 import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.streams.TestInputTopic
+import org.apache.kafka.streams.TestOutputTopic
 
-//import org.apache.kafka.streams.TestInputTopic
-//import org.apache.kafka.streams.TestOutputTopic
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.TopologyTestDriver
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
@@ -33,7 +33,6 @@ import java.time.Instant
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
 import static org.apache.kafka.streams.StreamsConfig.*
-import static org.cedar.onestop.indexer.util.StreamsTestingPolyfills.*
 import static org.elasticsearch.action.DocWriteRequest.OpType.DELETE
 
 @Unroll
@@ -81,11 +80,6 @@ class SearchIndexTopologySpec extends Specification {
     mockEsService.buildFlatteningTriggerTransformer(_ as String) >> mockFlatteningTransformer
     topology = SearchIndexTopology.buildSearchIndexTopology(mockEsService, testAppConfig)
     driver = new TopologyTestDriver(topology, new Properties(streamsConfig))
-
-    //---------
-    // Apply Polyfills (remove w/ kafka 2.4+)
-    // --------
-    applyPolyfills(driver)
 
     def advance1Min = Duration.ofMinutes(1)
     collectionInput = driver.createInputTopic(
