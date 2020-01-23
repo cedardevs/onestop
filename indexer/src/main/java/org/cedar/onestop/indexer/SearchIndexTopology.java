@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,27 +50,34 @@ public class SearchIndexTopology {
     var collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection);
     var inputCollections = streamsBuilder.<String, ParsedRecord>stream(collectionTopic);
     var timestampedInputCollections = inputCollections.transformValues(Timestamper<ParsedRecord>::new);
-    var collectionRequests = timestampedInputCollections.mapValues(new ElasticsearchRequestMapper(collectionIndex));
+    var collectionRequests = timestampedInputCollections
+        // insert into and delete from collection index
+        .flatMapValues(new ElasticsearchRequestMapper(List.of(collectionIndex), List.of(collectionIndex)));
 
     // transform granule messages into elasticsearch delete/index requests
     var granuleIndex = esService.getConfig().GRANULE_SEARCH_INDEX_ALIAS;
+    var flattenedIndex = esService.getConfig().FLAT_GRANULE_SEARCH_INDEX_ALIAS;
     var granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule);
     var inputGranules = streamsBuilder.<String, ParsedRecord>stream(granuleTopic);
     var timestampedInputGranules = inputGranules.transformValues(Timestamper<ParsedRecord>::new);
-    var granuleRequests = timestampedInputGranules.mapValues(new ElasticsearchRequestMapper(granuleIndex));
+    var granuleRequests = timestampedInputGranules
+        // insert into granule index and delete from both granule and flattened granule indices
+        .flatMapValues(new ElasticsearchRequestMapper(List.of(granuleIndex), List.of(granuleIndex, flattenedIndex)));
 
     // merge delete/index requests and send them to ES in bulk
-    var indexResults = collectionRequests.merge(granuleRequests)
+    collectionRequests.merge(granuleRequests)
         .filter((key, value) -> value != null)
         .peek((k, v) -> log.debug("submitting [{} => {}] to bulk indexer", k, v))
         .transform(() -> esService.buildBulkIndexingTransformer(Duration.ofMillis(bulkIntervalMillis), bulkMaxBytes));
 
     var flatteningTriggersFromGranules = timestampedInputGranules
+        .filter((k, v) -> v != null) // tombstones don't trigger flattening
         .flatMap((granuleId, granuleAndTimestamp) -> getParentIds(granuleAndTimestamp.value())
             .map(parentId -> new KeyValue<>(parentId, granuleAndTimestamp.timestamp()))
             .collect(Collectors.toList())); // stream of collectionId => timestamp of granule to flatten from
 
     var flatteningTriggersFromCollections = timestampedInputCollections
+        .filter((k, v) -> v != null) // tombstones don't trigger flattening
         .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
 
     var flatteningTopicName = appConfig.get("flattening.topic.name").toString();

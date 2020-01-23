@@ -48,7 +48,7 @@ class StreamsTestingPolyfills {
     }
 
     void pipeInput(K key, V value) {
-      driver.pipeInput(inputFactory.create(topic, key, value, publishTime.toEpochMilli()))
+      driver.pipeInput(inputFactory.create(topic, (K) key, (V) value, publishTime.toEpochMilli()))
       publishTime == publishTime.plus(publishInterval)
     }
   }

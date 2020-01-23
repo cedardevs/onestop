@@ -23,6 +23,7 @@ import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
 import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
+import org.elasticsearch.action.DocWriteRequest
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -33,6 +34,7 @@ import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
 import static org.apache.kafka.streams.StreamsConfig.*
 import static org.cedar.onestop.indexer.util.StreamsTestingPolyfills.*
+import static org.elasticsearch.action.DocWriteRequest.OpType.DELETE
 
 @Unroll
 class SearchIndexTopologySpec extends Specification {
@@ -134,6 +136,21 @@ class SearchIndexTopologySpec extends Specification {
     then:
     1 * mockIndexingTransformer.transform(testKey1, _)
     1 * mockIndexingTransformer.transform(testKey2, _)
+  }
+
+  def "granule tombstones send deletes to granule and flattened indices"() {
+    def testKey = 'a'
+
+    when:
+    granuleInput.pipeInput(testKey, null)
+
+    then:
+    1 * mockIndexingTransformer.transform(testKey, { DocWriteRequest r ->
+      r.opType() == DELETE && r.index() == testEsConfig.GRANULE_SEARCH_INDEX_ALIAS
+    })
+    1 * mockIndexingTransformer.transform(testKey, { DocWriteRequest r ->
+      r.opType() == DELETE && r.index() == testEsConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS
+    })
   }
 
   def "collection triggers flattening from beginning on time"() {

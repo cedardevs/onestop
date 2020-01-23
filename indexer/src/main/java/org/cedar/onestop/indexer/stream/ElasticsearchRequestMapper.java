@@ -12,25 +12,35 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class ElasticsearchRequestMapper implements ValueMapperWithKey<String, ValueAndTimestamp<ParsedRecord>, DocWriteRequest> {
+public class ElasticsearchRequestMapper implements ValueMapperWithKey<String, ValueAndTimestamp<ParsedRecord>, List<DocWriteRequest>> {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchRequestMapper.class);
 
-  private final String indexName;
+  private final Stream<String> insertIndices;
+  private final Stream<String> deleteIndices;
 
-  public ElasticsearchRequestMapper(String indexName) {
-    this.indexName = indexName;
+  public ElasticsearchRequestMapper(Collection<String> insertIndices, Collection<String> deleteIndices) {
+    this.insertIndices = insertIndices.stream();
+    this.deleteIndices = deleteIndices.stream();
   }
 
   @Override
-  public DocWriteRequest apply(String readOnlyKey, ValueAndTimestamp<ParsedRecord> value) {
+  public List<DocWriteRequest> apply(String readOnlyKey, ValueAndTimestamp<ParsedRecord> value) {
     if (isTombstone(value) || isPrivate(value)) {
-      return new DeleteRequest(indexName).id(readOnlyKey);
+      return deleteIndices
+          .map(indexName -> new DeleteRequest(indexName).id(readOnlyKey))
+          .collect(Collectors.toList());
     }
     try {
       var formattedRecord = IndexingHelpers.reformatMessageForSearch(value.value());
-      return new IndexRequest(indexName).id(readOnlyKey).source(formattedRecord);
+      return insertIndices
+          .map(indexName -> new IndexRequest(indexName).id(readOnlyKey).source(formattedRecord))
+          .collect(Collectors.toList());
     } catch (ElasticsearchGenerationException e) {
       log.error("Failed to serialize record with key [" + readOnlyKey + "] to json", e);
       return null;
