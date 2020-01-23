@@ -20,7 +20,6 @@ import java.util.List;
 
 @Configuration
 public class DefaultApplicationConfig {
-  private static final Logger log = LoggerFactory.getLogger(DefaultApplicationConfig.class);
 
   @Autowired
   Environment environment;

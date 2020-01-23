@@ -19,8 +19,7 @@ public class ElasticsearchVersion {
   private Byte patchVersion;
 
   public ElasticsearchVersion(RestHighLevelClient restHighLevelClient) throws IOException {
-    MainResponse.Version version;
-    version = restHighLevelClient.info(RequestOptions.DEFAULT).getVersion();
+    MainResponse.Version version = restHighLevelClient.info(RequestOptions.DEFAULT).getVersion();
     String versionNumber = version.getNumber();
     initAndCheck(versionNumber);
   }

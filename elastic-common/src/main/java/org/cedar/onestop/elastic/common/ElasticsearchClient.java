@@ -27,7 +27,6 @@ public class ElasticsearchClient {
 
     String scheme = sslEnabled ? "https" : "http";
 
-    // map the 
     HttpHost[] hosts = elasticHosts
         .stream()
         .map(host -> new HttpHost(host, elasticPort, scheme))
