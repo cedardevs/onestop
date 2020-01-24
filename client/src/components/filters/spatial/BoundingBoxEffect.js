@@ -38,7 +38,7 @@ function useCoordinate(name, defaultValue, typeName, limit){
       if (Math.abs(num) > limit) {
         field.setValid(false)
         field.setError(
-          `${name}: Invalid coordinates entered. Valid ${typeName} are between -${limit} and ${limit}.`
+          `${name}: Invalid coordinates entered. Valid ${typeName} coordinates are between -${limit} and ${limit}.`
         )
         return
       }

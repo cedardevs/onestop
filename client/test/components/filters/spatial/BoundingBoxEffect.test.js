@@ -253,25 +253,25 @@ describe('The BoundingBoxEffect hook', () => {
           field: 'west',
           value: '-181',
           error:
-            'West: Invalid coordinates entered. Valid longitude are between -180 and 180.',
-        }, // TODO the phrasing 'valid longitude' should be 'valid latitude coordinates'
+              'West: Invalid coordinates entered. Valid longitude coordinates are between -180 and 180.',
+        },
         {
           field: 'east',
           value: '181',
           error:
-            'East: Invalid coordinates entered. Valid longitude are between -180 and 180.',
+            'East: Invalid coordinates entered. Valid longitude coordinates are between -180 and 180.',
         },
         {
           field: 'north',
           value: '91',
           error:
-            'North: Invalid coordinates entered. Valid latitude are between -90 and 90.',
+            'North: Invalid coordinates entered. Valid latitude coordinates are between -90 and 90.',
         },
         {
           field: 'south',
           value: '-91',
           error:
-            'South: Invalid coordinates entered. Valid latitude are between -90 and 90.',
+            'South: Invalid coordinates entered. Valid latitude coordinates are between -90 and 90.',
         },
       ],
     }
