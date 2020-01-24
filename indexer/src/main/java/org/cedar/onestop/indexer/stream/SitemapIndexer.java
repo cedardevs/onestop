@@ -28,7 +28,6 @@ public class SitemapIndexer {
     log.info("starting sitemap update process for timestamp + " + timestamp);
     try {
       var start = System.currentTimeMillis();
-//      var sitemapIndex = elasticsearchService.createIndex(elasticsearchService.config().SITEMAP_INDEX_ALIAS);
       var params = new SitemapParams(
           esService.getConfig().COLLECTION_SEARCH_INDEX_ALIAS,
           esService.getConfig().SITEMAP_INDEX_ALIAS,
@@ -39,7 +38,6 @@ public class SitemapIndexer {
         log.info("Sitemap has already been updated beyond timestamp " + timestamp);
       }
       var sitemapResult = runSitemapEtl(esService.getClient(), params);
-//      elasticsearchService.moveAliasToIndex(elasticsearchService.config().SITEMAP_INDEX_ALIAS, newSitemapIndex, true);
       var end = System.currentTimeMillis();
       log.info("Sitemap updated with " + sitemapResult + "collections in " + (end - start) / 1000 + "s");
     } catch (IOException e) {
