@@ -152,8 +152,12 @@ class JsonValidatorSpec extends Specification {
 
     where:
     desc | request
-    'sort by date descsending' |
+    'sort by stagedDate descsending' |
         """{ "stagedDate": "desc" }"""
+    'sort by beginDate descsending' |
+        """{ "beginDate": "desc" }"""
+    'sort by endDate descsending' |
+        """{ "endDate": "desc" }"""
   }
 
   def 'invalid sorting: #desc'() {

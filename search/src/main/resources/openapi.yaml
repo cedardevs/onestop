@@ -1089,6 +1089,8 @@ components:
           default: asc
         beginDate:
           default: asc
+        endDate:
+          default: asc
     page:
       description: "Result page"
       properties:
