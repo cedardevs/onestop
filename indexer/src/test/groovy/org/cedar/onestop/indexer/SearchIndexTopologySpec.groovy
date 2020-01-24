@@ -2,6 +2,7 @@ package org.cedar.onestop.indexer
 
 
 import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.TestInputTopic
 import org.apache.kafka.streams.TestOutputTopic
 
@@ -77,7 +78,7 @@ class SearchIndexTopologySpec extends Specification {
     mockIndexingTransformer = Mock(BulkIndexingTransformer)
     mockEsService.buildBulkIndexingTransformer(_ as Duration, _ as Long) >> mockIndexingTransformer
     mockFlatteningTransformer = Mock(FlatteningTriggerTransformer)
-    mockEsService.buildFlatteningTriggerTransformer(_ as String) >> mockFlatteningTransformer
+    mockEsService.buildFlatteningTriggerTransformer(_ as String, _ as String, _ as Duration) >> mockFlatteningTransformer
     topology = SearchIndexTopology.buildSearchIndexTopology(mockEsService, testAppConfig)
     driver = new TopologyTestDriver(topology, new Properties(streamsConfig))
 
@@ -147,7 +148,7 @@ class SearchIndexTopologySpec extends Specification {
     })
   }
 
-  def "collection triggers flattening from beginning on time"() {
+  def "collection triggers flattening from beginning of time"() {
     def testKey1 = 'a'
     def testValue1 = buildTestRecord(RecordType.collection)
 
@@ -195,19 +196,32 @@ class SearchIndexTopologySpec extends Specification {
     result[testCollId2] == publishingStartTime.toEpochMilli()
   }
 
-  def "flattening triggers are windowed and the earliest timestamp is used"() {
-    def testId = 'a'
-    def timestamp1 = 1000L
-    def timestamp2 = 2000L
-    def timestamp3 = 3000L
+  def "flattening triggers are sent to the flattening transformer"() {
+    def id = 'a'
+    def timestamp = 1000L
 
     when:
-    flatteningTriggersIn.pipeInput(testId, timestamp2)
-    flatteningTriggersIn.pipeInput(testId, timestamp1)
-    flatteningTriggersIn.pipeInput(testId, timestamp3)
+    flatteningTriggersIn.pipeInput(id, timestamp)
 
     then:
-    1 * mockFlatteningTransformer.transform(_, timestamp1)
+    1 * mockFlatteningTransformer.transform(id, timestamp)
+  }
+
+  def "failed flattening results are produced back to the triggers topic"() {
+    def id = 'a'
+    def timestamp = 1000L
+
+    when:
+    flatteningTriggersIn.pipeInput(id, timestamp)
+
+    then:
+    1 * mockFlatteningTransformer.transform(id, timestamp) >>
+        new KeyValue<>(id, new FlatteningTriggerTransformer.FlatteningTriggerResult(false, timestamp))
+    1 * mockFlatteningTransformer.transform(id, timestamp) // <-- gets called a second time because of message cycle
+
+    and:
+    def result = flatteningTriggersOut.readKeyValuesToMap()
+    result[id] == timestamp
   }
 
   def "collection triggers sitemap building with its timestamp and a common key"() {

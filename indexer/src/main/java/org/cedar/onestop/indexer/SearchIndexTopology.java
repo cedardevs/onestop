@@ -5,10 +5,8 @@ import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Produced;
-import org.apache.kafka.streams.kstream.Suppressed;
-import org.apache.kafka.streams.kstream.TimeWindows;
+import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.state.Stores;
 import org.apache.kafka.streams.state.WindowStore;
 import org.cedar.onestop.elastic.common.FileUtil;
 import org.cedar.onestop.indexer.stream.ElasticsearchRequestMapper;
@@ -80,6 +78,9 @@ public class SearchIndexTopology {
         .filter((k, v) -> v != null) // tombstones don't trigger flattening
         .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
 
+    var flatteningTriggerStoreName = "flattening-trigger-store";
+    streamsBuilder.addStateStore(Stores.keyValueStoreBuilder(
+        Stores.persistentKeyValueStore(flatteningTriggerStoreName), Serdes.String(), Serdes.Long()).withLoggingDisabled());
     var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
     long flatteningIntervalMillis = Long.parseLong(appConfig.get("flattening.interval.ms").toString());
     flatteningTriggersFromCollections.merge(flatteningTriggersFromGranules)
@@ -87,14 +88,7 @@ public class SearchIndexTopology {
         // re-partition so all triggers for a given collection go to the same consumer
         .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()))
         .peek((k, v) -> log.debug("consuming flattening trigger [{} => {}]", k, v))
-        .groupByKey()
-        .windowedBy(TimeWindows.of(Duration.ofMillis(flatteningIntervalMillis)))
-        // each trigger uses the *earliest* time value in the window so all related granules are flattened
-        .reduce(Math::min, Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("flattening-triggers").withLoggingDisabled())
-        .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
-        .toStream()
-        .peek((k, v) -> log.debug("releasing flattening trigger [{} => {}]", k, v))
-        .transform(() -> esService.buildFlatteningTriggerTransformer(flatteningScript))
+        .transform(() -> esService.buildFlatteningTriggerTransformer(flatteningTriggerStoreName, flatteningScript, Duration.ofMillis(flatteningIntervalMillis)))
         // cycle failed flattening requests back into the queue so nothing is lost
         .filter((k, v) -> !v.successful)
         .mapValues(v -> v.timestamp)

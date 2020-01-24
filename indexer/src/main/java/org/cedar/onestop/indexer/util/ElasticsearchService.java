@@ -6,6 +6,7 @@ import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
 import org.cedar.onestop.indexer.stream.FlatteningTriggerTransformer;
 import org.cedar.onestop.indexer.stream.SitemapIndexer;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.admin.cluster.node.tasks.list.ListTasksRequest;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.AliasActions;
@@ -35,6 +36,8 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.lang.Thread.sleep;
 
 public class ElasticsearchService {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchService.class);
@@ -179,6 +182,16 @@ public class ElasticsearchService {
     return client.get(request, RequestOptions.DEFAULT);
   }
 
+  public void blockUntilTasksAvailable() throws IOException {
+    while (client.tasks().list(new ListTasksRequest(), RequestOptions.DEFAULT).getTasks().size() >= config.MAX_TASKS) {
+      try {
+        sleep(100);
+      } catch (InterruptedException e) {
+        log.info("blocking for tasks interrupted", e);
+      }
+    }
+  }
+
   public Cancellable reindexAsync(ReindexRequest request, ActionListener<BulkByScrollResponse> listener) {
     return client.reindexAsync(request, RequestOptions.DEFAULT, listener);
   }
@@ -187,8 +200,8 @@ public class ElasticsearchService {
     return new BulkIndexingTransformer(this, publishInterval, bulkMaxBytes);
   }
 
-  public FlatteningTriggerTransformer buildFlatteningTriggerTransformer(String flatteningScript) {
-    return new FlatteningTriggerTransformer(this, flatteningScript);
+  public FlatteningTriggerTransformer buildFlatteningTriggerTransformer(String keyValueStoreName, String flatteningScript, Duration interval) {
+    return new FlatteningTriggerTransformer(keyValueStoreName, this, flatteningScript, interval);
   }
 
   public void buildSitemap(Long timestamp) {

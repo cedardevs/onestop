@@ -2,8 +2,9 @@ package org.cedar.onestop.indexer.stream;
 
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
-import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.PunctuationType;
+import org.apache.kafka.streams.state.KeyValueStore;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.elasticsearch.action.ActionListener;
@@ -16,46 +17,74 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 
-public class FlatteningTriggerTransformer implements Transformer<Windowed<String>, Long, KeyValue<String, FlatteningTriggerTransformer.FlatteningTriggerResult>> {
+public class FlatteningTriggerTransformer implements Transformer<String, Long, KeyValue<String, FlatteningTriggerTransformer.FlatteningTriggerResult>> {
   private static final Logger log = LoggerFactory.getLogger(FlatteningTriggerTransformer.class);
 
+  private final String storeName;
   private final ElasticsearchService service;
   private final ElasticsearchConfig config;
   private final String flatteningScript;
+  private final Duration interval;
 
   private ProcessorContext context;
+  private KeyValueStore<String, Long> store;
 
-  public FlatteningTriggerTransformer(ElasticsearchService esService, String flatteningScript) {
+  public FlatteningTriggerTransformer(String keyValueStoreName, ElasticsearchService esService, String flatteningScript, Duration interval) {
+    this.storeName = keyValueStoreName;
     this.service = esService;
     this.config = esService.getConfig();
     this.flatteningScript = flatteningScript;
+    this.interval = interval;
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void init(ProcessorContext context) {
     this.context = context;
+    this.store = (KeyValueStore<String, Long>) this.context.getStateStore(storeName);
+    this.context.schedule(interval, PunctuationType.WALL_CLOCK_TIME, timestamp -> triggerAll());
   }
 
   @Override
-  public KeyValue<String, FlatteningTriggerResult> transform(Windowed<String> collectionWindow, Long timeToFlattenFrom) {
-    var collectionId = collectionWindow.key();
-    try {
-      triggerFlattening(collectionId, timeToFlattenFrom);
-      return null; // produces results asynchronously when flattening job completes
+  public KeyValue<String, FlatteningTriggerResult> transform(String collectionId, Long timeToFlattenFrom) {
+    if (collectionId == null) {
+      return null;
     }
-    catch(IOException e) {
-      throw new IllegalStateException("Elasticsearch request failed while triggering flattening for collection " + collectionId, e);
+    if (timeToFlattenFrom == null) {
+      store.delete(collectionId);
+      return null;
     }
+    var curr = store.get(collectionId);
+    var next = curr == null ? timeToFlattenFrom : Math.min(curr, timeToFlattenFrom);
+    store.put(collectionId, next);
+    return null;
+  }
+
+  private void triggerAll() {
+    store.all().forEachRemaining(kv -> {
+      try {
+        triggerFlattening(kv.key, kv.value);
+        store.delete(kv.key);
+      }
+      catch(IOException e) {
+        log.error("Triggering flattening for collection ["+ kv.key + "] starting at [" + kv.value +"] failed", e);
+        context.forward(kv.key, new FlatteningTriggerResult(false, kv.value));
+      }
+    });
   }
 
   private void triggerFlattening(String collectionId, Long timeToFlattenFrom) throws IOException {
-    var collectionResponse = service.get(config.COLLECTION_SEARCH_INDEX_ALIAS, collectionId); // TODO -- uuuggghh this sucks!
-    var collectionBody = collectionResponse.getSourceAsMap();
+    // Unfortunately we have to retrieve the collection to provide the flattening script parameters
+    var collectionResponse = service.get(config.COLLECTION_SEARCH_INDEX_ALIAS, collectionId);
+    if (!collectionResponse.isExists()) {
+      return; // no parent collection => no flattening
+    }
 
     var params = new HashMap<String, Object>();
-    params.put("defaults", collectionBody);
+    params.put("defaults", collectionResponse.getSourceAsMap());
     params.put("stagedDate", timeToFlattenFrom);
     var script = new Script(ScriptType.INLINE, "painless", flatteningScript, params);
 
@@ -73,6 +102,7 @@ public class FlatteningTriggerTransformer implements Transformer<Windowed<String
       request.setRequestsPerSecond(config.REQUESTS_PER_SECOND);
     }
 
+    service.blockUntilTasksAvailable();
     log.debug("starting flattening for granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
     service.reindexAsync(request, new ActionListener<>() {
       @Override
