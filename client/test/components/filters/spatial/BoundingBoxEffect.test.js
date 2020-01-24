@@ -449,7 +449,7 @@ describe('The BoundingBoxEffect hook', () => {
         c.fields.forEach(field => {
           expect(bounds[field].valid).toBeFalsy()
           expect(bounds[field].validInternal).toBeTruthy()
-          // expect(bounds.north.required).toBeTruthy() // TODO add this
+          // expect(bounds.north.required).toBeTruthy() // TODO add this level of validation in the future
         })
       })
     })
