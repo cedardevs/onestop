@@ -210,11 +210,6 @@ describe('The BoundingBoxEffect hook', () => {
   })
 
   describe('validation - field level', () => {
-    // let hook = null // TODO this didn't work correctly...
-    // beforeAll(async () => {
-    //   // init hook with defaults
-    //   hook = init(null)
-    // })
 
     const testCases = {
       NaN: [
