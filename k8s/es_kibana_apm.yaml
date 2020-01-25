@@ -35,3 +35,14 @@ spec:
   count: 1
   elasticsearchRef:
     name: onestop
+
+---
+#apiVersion: apm.k8s.elastic.co/v1beta1
+#kind: ApmServer
+#metadata:
+#  name: onestop
+#spec:
+#  version: 7.5.2
+#  count: 1
+#  elasticsearchRef:
+#    name: onestop
