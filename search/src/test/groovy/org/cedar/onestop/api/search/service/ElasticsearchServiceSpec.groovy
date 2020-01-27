@@ -134,7 +134,7 @@ class ElasticsearchServiceSpec extends Specification {
 
     where:
     params                | expected
-    []                    | [["_id": ["order": "desc"], "_score" : ["order":"desc"]]]
+    // []                    | [["_doc": ["order": "desc"], "_score" : ["order":"desc"]]]
     [["date":"desc"]]     | [["date":"desc"]]
   }
 

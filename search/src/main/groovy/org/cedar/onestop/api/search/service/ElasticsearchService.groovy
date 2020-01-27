@@ -332,12 +332,13 @@ class ElasticsearchService {
   private static Map addSort(Map requestBody, List sortParams) {
     if(sortParams != [] && sortParams.size() > 0 ){
       requestBody.sort = sortParams
-    }else{
-      requestBody.sort = [[
-        "_id": ["order": "desc"],
-        "_score" : ["order":"desc"]
-      ]]
     }
+    // else{
+    //   requestBody.sort = [[
+    //     "_doc": ["order": "desc"],
+    //     "_score" : ["order":"desc"]
+    //   ]]
+    // }
     return requestBody
   }
 
