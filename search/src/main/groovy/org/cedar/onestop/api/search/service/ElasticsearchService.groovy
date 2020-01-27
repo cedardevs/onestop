@@ -324,24 +324,11 @@ class ElasticsearchService {
   }
 
   private static Map addPagination(Map requestBody, Map pageParams) {
-
     requestBody.size = pageParams?.max != null ? pageParams.max : 10
     requestBody.from = pageParams?.offset ?: 0
     return requestBody
   }
 
-  // {
-  //     "sort" : [
-  //         { "post_date" : {"order" : "asc"}},
-  //         "user",
-  //         { "name" : "desc" },
-  //         { "age" : "desc" },
-  //         "_score"
-  //     ],
-  //     "query" : {
-  //         "term" : { "user" : "kimchy" }
-  //     }
-  // }
   private static Map addSort(Map requestBody, List sortParams) {
     if(sortParams != [] && sortParams.size() > 0 ){
       requestBody.sort = sortParams

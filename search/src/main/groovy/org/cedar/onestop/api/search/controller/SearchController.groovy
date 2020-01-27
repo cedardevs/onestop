@@ -63,7 +63,7 @@ class SearchController {
   Map searchCollections(@RequestBody Map params, HttpServletResponse response, HttpServletRequest request) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
     if (!validation.success) {
-      log.info("invalid request: ${validation.errors.detail?.join(', ')}")
+      log.debug("invalid request: ${validation.errors.detail?.join(', ')}")
       response.status = HttpStatus.BAD_REQUEST.value()
       return [errors: validation.errors]
     }
