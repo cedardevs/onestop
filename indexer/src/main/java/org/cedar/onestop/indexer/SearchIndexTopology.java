@@ -88,7 +88,7 @@ public class SearchIndexTopology {
         // re-partition so all triggers for a given collection go to the same consumer
         .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()))
         .peek((k, v) -> log.debug("consuming flattening trigger [{} => {}]", k, v))
-        .transform(() -> esService.buildFlatteningTriggerTransformer(flatteningTriggerStoreName, flatteningScript, Duration.ofMillis(flatteningIntervalMillis)))
+        .transform(() -> esService.buildFlatteningTriggerTransformer(flatteningTriggerStoreName, flatteningScript, Duration.ofMillis(flatteningIntervalMillis)), flatteningTriggerStoreName)
         // cycle failed flattening requests back into the queue so nothing is lost
         .filter((k, v) -> !v.successful)
         .mapValues(v -> v.timestamp)
