@@ -333,12 +333,6 @@ class ElasticsearchService {
     if(sortParams != [] && sortParams.size() > 0 ){
       requestBody.sort = sortParams
     }
-    // else{
-    //   requestBody.sort = [[
-    //     "_doc": ["order": "desc"],
-    //     "_score" : ["order":"desc"]
-    //   ]]
-    // }
     return requestBody
   }
 
