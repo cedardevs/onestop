@@ -45,17 +45,19 @@ class ElasticsearchServiceSpec extends Specification {
     dataPipe << ElasticsearchTestVersion.versionedTestCases()
   }
 
+//todo is this necessary?
   def "preserve sort request using ES version #dataPipe.version" () {
     given:
     Version version = dataPipe.version as Version
     ElasticsearchConfig esConfig = esVersionedConfigs[version]
     ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestClient, esConfig)
+    Map paramsAndResult = [sort:[[stagedDate: "desc"]]]
     // post processing on the request was altering the results after addPagination
     when:
-    def queryResult = elasticsearchService.buildRequestBody([sort:[[stagedDate: "desc"]]])
+    def queryResult = elasticsearchService.buildRequestBody(paramsAndResult)
 
     then:
-    queryResult.sort == [[stagedDate: "desc"]]
+    queryResult.sort == paramsAndResult.sort
 
     where:
     dataPipe << ElasticsearchTestVersion.versionedTestCases()
@@ -128,13 +130,12 @@ class ElasticsearchServiceSpec extends Specification {
     [max: 0, offset: 0]   | [size: 0, from: 0]
   }
 
-  def 'supports sort parameters'() {
-    expect:
-    ElasticsearchService.addSort([:], params).sort == expected
+  def 'pass through sort parameters'() {
+    given:
+    List params = [["stagedDate":"desc"]]
 
-    where:
-    params                | expected
-    [["date":"desc"]]     | [["date":"desc"]]
+    expect:
+    ElasticsearchService.addSort([:], params).sort == params
   }
 
   private Response buildMockElasticResponse(int status, Map body) {

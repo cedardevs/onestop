@@ -133,7 +133,6 @@ class JsonValidatorSpec extends Specification {
     given:
     def schema = 'sort'
     def singleQuery = """{"sort":[ ${request} ]}"""
-    // def singleQuery = """{ "sort" : [ ${request} ] }"""
 
     when:
     def validation = validateAgainstSpec(singleQuery, schema)
