@@ -192,6 +192,10 @@ public class ElasticsearchService {
     }
   }
 
+  public BulkByScrollResponse reindex(ReindexRequest request) throws IOException {
+    return client.reindex(request, RequestOptions.DEFAULT);
+  }
+
   public Cancellable reindexAsync(ReindexRequest request, ActionListener<BulkByScrollResponse> listener) {
     return client.reindexAsync(request, RequestOptions.DEFAULT, listener);
   }
