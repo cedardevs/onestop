@@ -120,7 +120,7 @@ export const usePaging = props => {
       evt.preventDefault()
       gotoPage(props.currentPage + numSkipNext())
     },
-    [ props.currentPage, state.pageNeighbours ]
+    [ state.totalPages, props.currentPage, state.pageNeighbours ]
   )
 
   const fetchPageNumbers = useCallback(
@@ -440,7 +440,7 @@ PageController.propTypes = {
   pageNeighbours: PropTypes.number,
   setCurrentPage: PropTypes.func,
   setOffset: PropTypes.func,
-  totalRecords: PropTypes.number.isRequired,
+  totalRecords: PropTypes.number,
 }
 
 export default PageController
