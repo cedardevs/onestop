@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '2.2.2.RELEASE'
+    springBootVersion = '2.2.4.RELEASE'
     gradleNodePluginVersion = '1.3.1'
     dependencyCheckGradleVersion = '5.0.0-M3.1'
   }
@@ -46,9 +46,9 @@ subprojects {
     javaxServletAPIVersion = '4.0.1'
     junitVersion = '4.12'
     auth0JavaJWT = '3.4.1'
-    confluentVersion = '5.3.2'
-    kafkaVersion = '2.3.0'
-    springKafkaVersion = '2.3.1.RELEASE'
+    confluentVersion = '5.4.0'
+    kafkaVersion = '2.4.0'
+    springKafkaVersion = '2.4.1.RELEASE'
     avroVersion = '1.9.1'
   }
 

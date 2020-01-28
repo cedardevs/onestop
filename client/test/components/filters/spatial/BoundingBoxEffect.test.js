@@ -210,7 +210,6 @@ describe('The BoundingBoxEffect hook', () => {
   })
 
   describe('validation - field level', () => {
-
     const testCases = {
       NaN: [
         {
@@ -253,7 +252,7 @@ describe('The BoundingBoxEffect hook', () => {
           field: 'west',
           value: '-181',
           error:
-              'West: Invalid coordinates entered. Valid longitude coordinates are between -180 and 180.',
+            'West: Invalid coordinates entered. Valid longitude coordinates are between -180 and 180.',
         },
         {
           field: 'east',
