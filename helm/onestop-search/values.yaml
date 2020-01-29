@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: cedardevs/onestop-search
-  tag: 2.4.0
+  tag: 2.4.1
   pullPolicy: IfNotPresent
 
 nameOverride: ""
