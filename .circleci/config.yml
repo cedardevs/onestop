@@ -161,7 +161,7 @@ jobs:
             - client/node_modules
 
   indexer:
-    <<: *defaults
+    <<: *defaultsWithElasticsearch
     <<: *env
     steps:
     - <<: *attachWorkspace
