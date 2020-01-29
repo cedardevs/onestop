@@ -15,5 +15,9 @@
   {
     "path": "node_modules/webpack-dev-server",
     "justification": "Development dependency: Not packaged in production code."
+  },
+  {
+    "path": "node_modules/handlebars",
+    "justification": "Development dependecy of jest: Not packaged in production code."
   }
 ]
