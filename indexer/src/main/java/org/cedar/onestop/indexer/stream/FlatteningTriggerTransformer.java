@@ -104,18 +104,14 @@ public class FlatteningTriggerTransformer implements Transformer<String, Long, K
 
     service.blockUntilTasksAvailable();
     log.debug("starting flattening for granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
-    service.reindexAsync(request, new ActionListener<>() {
-      @Override
-      public void onResponse(BulkByScrollResponse bulkByScrollResponse) {
-        log.debug("successfully flattened granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
-        context.forward(collectionId, new FlatteningTriggerResult(true, timeToFlattenFrom));
-      }
-      @Override
-      public void onFailure(Exception e) {
-        log.error("failed to flatten granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]", e);
-        context.forward(collectionId, new FlatteningTriggerResult(false, timeToFlattenFrom));
-      }
-    });
+    try{
+      service.reindex(request);
+      log.debug("successfully flattened granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
+      context.forward(collectionId, new FlatteningTriggerResult(true, timeToFlattenFrom));
+    }
+    catch (Exception e){
+      log.error("failed to flatten granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]", e);
+    }
   }
 
   @Override
