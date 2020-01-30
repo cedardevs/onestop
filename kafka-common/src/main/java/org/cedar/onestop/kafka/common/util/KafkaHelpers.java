@@ -1,11 +1,16 @@
 package org.cedar.onestop.kafka.common.util;
 
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.CreateTopicsOptions;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
+import org.cedar.onestop.kafka.common.conf.AppConfig;
+import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
+import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static org.apache.kafka.streams.KafkaStreams.State.ERROR;
 import static org.apache.kafka.streams.KafkaStreams.State.NOT_RUNNING;
+import static org.apache.kafka.streams.StreamsConfig.*;
 
 public class KafkaHelpers {
   private static final Logger log = LoggerFactory.getLogger(KafkaHelpers.class);
@@ -61,6 +67,31 @@ public class KafkaHelpers {
         .map(TopicDefinition::toNewTopicCommand)
         .collect(Collectors.toSet());
     return client.createTopics(newTopics, new CreateTopicsOptions().timeoutMs(30000));
+  }
+
+  public static Properties buildAdminConfig(AppConfig config) {
+    // Filter to only valid config values -- Admin config + possible internal Producer & Consumer config
+    var kafkaConfigs = DataUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
+    var filteredConfigs = DataUtils.filterMapKeys(KafkaConfigNames.admin, kafkaConfigs);
+
+    log.info("Building admin client config for {}", StreamsApps.INDEXER_ID);
+    Properties streamsConfiguration = new Properties();
+    streamsConfiguration.putAll(filteredConfigs);
+    return streamsConfiguration;
+  }
+
+  public static Properties buildStreamsConfig(AppConfig config) {
+    // Filter to only valid config values -- Streams config + possible internal Producer & Consumer config
+    var kafkaConfigs = DataUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
+    var filteredConfigs = DataUtils.filterMapKeys(KafkaConfigNames.streams, kafkaConfigs);
+
+    log.info("Building kafka streams appConfig for {}", StreamsApps.INDEXER_ID);
+    Properties streamsConfiguration = new Properties();
+    streamsConfiguration.put(APPLICATION_ID_CONFIG, StreamsApps.INDEXER_ID);
+    streamsConfiguration.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+    streamsConfiguration.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
+    streamsConfiguration.putAll(filteredConfigs);
+    return streamsConfiguration;
   }
 
   public static class TopicDefinition {

@@ -60,6 +60,7 @@ public class KafkaBeanConfig {
     props.put(APPLICATION_ID_CONFIG, REGISTRY_ID);
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
+    props.put("max.request.size", MaxRequestSize);
     props.putAll(kafkaProps);
     return props;
   }

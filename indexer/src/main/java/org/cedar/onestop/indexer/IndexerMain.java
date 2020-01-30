@@ -1,22 +1,15 @@
 package org.cedar.onestop.indexer;
 
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.common.serialization.Serdes;
 import org.cedar.onestop.indexer.util.ElasticsearchFactory;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
-import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
-import org.cedar.onestop.kafka.common.constants.StreamsApps;
-import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Properties;
 
-import static org.apache.kafka.streams.StreamsConfig.*;
 import static org.cedar.onestop.indexer.SearchIndexTopology.buildSearchIndexTopology;
 
 public class IndexerMain {
@@ -31,7 +24,7 @@ public class IndexerMain {
       var elasticService = new ElasticsearchService(elasticClient, elasticConfig);
       elasticService.initializeCluster();
 
-      var adminConfig = buildAdminConfig(config);
+      var adminConfig = KafkaHelpers.buildAdminConfig(config);
       var adminClient = AdminClient.create(adminConfig);
       var flatteningName = config.get("flattening.topic.name").toString();
       int flatteningPartitions = Integer.parseInt(config.get("flattening.topic.partitions").toString());
@@ -44,7 +37,7 @@ public class IndexerMain {
       KafkaHelpers.ensureTopics(adminClient, List.of(flatteningDefinition, sitemapDefinition)).all().get();
 
       var searchIndexingTopology = buildSearchIndexTopology(elasticService, config);
-      var streamsConfig = buildStreamsConfig(config);
+      var streamsConfig = KafkaHelpers.buildStreamsConfig(config);
       var streamsApp = KafkaHelpers.buildStreamsAppWithKillSwitch(searchIndexingTopology, streamsConfig);
       Runtime.getRuntime().addShutdownHook(new Thread(streamsApp::close));
       streamsApp.start();
@@ -53,31 +46,6 @@ public class IndexerMain {
       log.error("Application failed", e);
       System.exit(1);
     }
-  }
-
-  private static Properties buildAdminConfig(AppConfig config) {
-    // Filter to only valid config values -- Admin config + possible internal Producer & Consumer config
-    var kafkaConfigs = DataUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
-    var filteredConfigs = DataUtils.filterMapKeys(KafkaConfigNames.admin, kafkaConfigs);
-
-    log.info("Building admin client config for {}", StreamsApps.INDEXER_ID);
-    Properties streamsConfiguration = new Properties();
-    streamsConfiguration.putAll(filteredConfigs);
-    return streamsConfiguration;
-  }
-
-  private static Properties buildStreamsConfig(AppConfig config) {
-    // Filter to only valid config values -- Streams config + possible internal Producer & Consumer config
-    var kafkaConfigs = DataUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
-    var filteredConfigs = DataUtils.filterMapKeys(KafkaConfigNames.streams, kafkaConfigs);
-
-    log.info("Building kafka streams appConfig for {}", StreamsApps.INDEXER_ID);
-    Properties streamsConfiguration = new Properties();
-    streamsConfiguration.put(APPLICATION_ID_CONFIG, StreamsApps.INDEXER_ID);
-    streamsConfiguration.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-    streamsConfiguration.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
-    streamsConfiguration.putAll(filteredConfigs);
-    return streamsConfiguration;
   }
 
 }

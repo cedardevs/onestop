@@ -21,24 +21,24 @@ import java.util.stream.Stream;
 public class ElasticsearchRequestMapper implements ValueMapperWithKey<String, ValueAndTimestamp<ParsedRecord>, List<DocWriteRequest>> {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchRequestMapper.class);
 
-  private final Stream<String> insertIndices;
-  private final Stream<String> deleteIndices;
+  private final Collection<String> insertIndices;
+  private final Collection<String> deleteIndices;
 
   public ElasticsearchRequestMapper(Collection<String> insertIndices, Collection<String> deleteIndices) {
-    this.insertIndices = insertIndices.stream();
-    this.deleteIndices = deleteIndices.stream();
+    this.insertIndices = insertIndices;
+    this.deleteIndices = deleteIndices;
   }
 
   @Override
   public List<DocWriteRequest> apply(String readOnlyKey, ValueAndTimestamp<ParsedRecord> value) {
     if (isTombstone(value) || isPrivate(value)) {
-      return deleteIndices
+      return deleteIndices.stream()
           .map(indexName -> new DeleteRequest(indexName).id(readOnlyKey))
           .collect(Collectors.toList());
     }
     try {
       var formattedRecord = IndexingHelpers.reformatMessageForSearch(value.value());
-      return insertIndices
+      return insertIndices.stream()
           .map(indexName -> new IndexRequest(indexName).id(readOnlyKey).source(formattedRecord))
           .collect(Collectors.toList());
     } catch (ElasticsearchGenerationException e) {

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
 import org.cedar.onestop.indexer.stream.FlatteningTriggerTransformer;
-import org.cedar.onestop.indexer.stream.SitemapIndexer;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.cluster.node.tasks.list.ListTasksRequest;
 import org.elasticsearch.action.admin.indices.alias.Alias;
@@ -192,6 +191,10 @@ public class ElasticsearchService {
     }
   }
 
+  public BulkByScrollResponse reindex(ReindexRequest request) throws IOException {
+    return client.reindex(request, RequestOptions.DEFAULT);
+  }
+
   public Cancellable reindexAsync(ReindexRequest request, ActionListener<BulkByScrollResponse> listener) {
     return client.reindexAsync(request, RequestOptions.DEFAULT, listener);
   }
@@ -205,7 +208,7 @@ public class ElasticsearchService {
   }
 
   public void buildSitemap(Long timestamp) {
-    SitemapIndexer.buildSitemap(this, timestamp);
+    SitemapIndexingHelpers.buildSitemap(this, timestamp);
   }
 
 }
