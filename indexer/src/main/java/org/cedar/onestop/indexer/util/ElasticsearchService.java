@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
 import org.cedar.onestop.indexer.stream.FlatteningTriggerTransformer;
-import org.cedar.onestop.indexer.stream.SitemapIndexer;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.cluster.node.tasks.list.ListTasksRequest;
 import org.elasticsearch.action.admin.indices.alias.Alias;
@@ -209,7 +208,7 @@ public class ElasticsearchService {
   }
 
   public void buildSitemap(Long timestamp) {
-    SitemapIndexer.buildSitemap(this, timestamp);
+    SitemapIndexingHelpers.buildSitemap(this, timestamp);
   }
 
 }

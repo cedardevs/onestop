@@ -1,15 +1,14 @@
 package org.cedar.onestop.indexer;
 
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.Stores;
-import org.apache.kafka.streams.state.WindowStore;
 import org.cedar.onestop.elastic.common.FileUtil;
 import org.cedar.onestop.indexer.stream.ElasticsearchRequestMapper;
+import org.cedar.onestop.indexer.stream.SitemapTriggerProcessor;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
@@ -88,12 +87,17 @@ public class SearchIndexTopology {
         // re-partition so all triggers for a given collection go to the same consumer
         .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()))
         .peek((k, v) -> log.debug("consuming flattening trigger [{} => {}]", k, v))
-        .transform(() -> esService.buildFlatteningTriggerTransformer(flatteningTriggerStoreName, flatteningScript, Duration.ofMillis(flatteningIntervalMillis)), flatteningTriggerStoreName)
+        .transform(
+            () -> esService.buildFlatteningTriggerTransformer(flatteningTriggerStoreName, flatteningScript, Duration.ofMillis(flatteningIntervalMillis)),
+            flatteningTriggerStoreName)
         // cycle failed flattening requests back into the queue so nothing is lost
         .filter((k, v) -> !v.successful)
         .mapValues(v -> v.timestamp)
         .to(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()));
 
+    var sitemapTriggerStoreName = "sitemap-trigger-store";
+    streamsBuilder.addStateStore(Stores.keyValueStoreBuilder(
+            Stores.persistentKeyValueStore(sitemapTriggerStoreName), Serdes.String(), Serdes.Long()).withLoggingDisabled());
     var sitemapTopicName = appConfig.get("sitemap.topic.name").toString();
     long sitemapIntervalMillis = Long.parseLong(appConfig.get("sitemap.interval.ms").toString());
     timestampedInputCollections
@@ -101,13 +105,9 @@ public class SearchIndexTopology {
         .map((k, v) -> new KeyValue<>("ALL", v.timestamp()))
         // re-partition so all sitemap triggers go to the same consumer
         .through(sitemapTopicName, Produced.with(Serdes.String(), Serdes.Long()))
-        .groupByKey()
-        .windowedBy(TimeWindows.of(Duration.ofMillis(sitemapIntervalMillis)))
-        // uses the *latest* time value in the window so sitemap reflects most recent update
-        .reduce(Math::max, Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("sitemap-triggers").withLoggingDisabled())
-        .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
-        .toStream()
-        .foreach((k, v) -> esService.buildSitemap(v));
+        .process(
+            () -> new SitemapTriggerProcessor(sitemapTriggerStoreName, esService, Duration.ofMillis(sitemapIntervalMillis)),
+            sitemapTriggerStoreName);
 
     return streamsBuilder.build();
   }
