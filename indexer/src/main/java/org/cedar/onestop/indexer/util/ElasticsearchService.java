@@ -109,10 +109,14 @@ public class ElasticsearchService {
   public String createIndex(String aliasName, boolean applyAlias) throws IOException {
     String indexName = newIndexName(aliasName);
     var jsonIndexMapping = getMappingByAlias(aliasName);
+    var jsonIndexSettings = getIndexSettingsByAlias(aliasName);
     var request = new CreateIndexRequest(indexName)
         .mapping(jsonIndexMapping, XContentType.JSON);
     if (applyAlias) {
       request.alias(new Alias(aliasName));
+    }
+    if (!jsonIndexSettings.equals("null")) { // ObjectMapper returns an actual string that says null
+      request.settings(jsonIndexSettings, XContentType.JSON);
     }
     var result = client.indices().create(request, RequestOptions.DEFAULT);
     log.debug("Created new index [" + indexName + "] with alias [" + aliasName + "]");
@@ -154,6 +158,12 @@ public class ElasticsearchService {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     return mapper.writeValueAsString((Map) parsedDefinition.get("mappings"));
+  }
+
+  private String getIndexSettingsByAlias(String alias) throws IOException {
+    var indexDefinition = config.jsonMapping(alias);
+    Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
+    return mapper.writeValueAsString((Map) parsedDefinition.get("settings"));
   }
 
   private String newIndexName(String alias) {
