@@ -1,4 +1,15 @@
 {
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "filename_analyzer": {
+          "type": "pattern",
+          "pattern": "([^\\p{L}\\d]+)|(?<=[\\p{L}&&[^\\p{Lu}]])(?=\\p{Lu})|(?<=\\p{Lu})(?=\\p{Lu}[\\p{L}&&[^\\p{Lu}]])",
+          "lowercase": true
+        }
+      }
+    }
+  },
   "mappings": {
     "dynamic": "strict",
     "properties": {
@@ -20,6 +31,10 @@
       },
       "title": {
         "type": "text"
+      },
+      "filename": {
+        "type": "text",
+        "analyzer": "filename_analyzer"
       },
       "description": {
         "type": "text"
