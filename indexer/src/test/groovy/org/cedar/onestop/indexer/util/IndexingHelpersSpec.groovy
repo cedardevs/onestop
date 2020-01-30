@@ -131,7 +131,7 @@ class IndexingHelpersSpec extends Specification {
 
     when:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream(dataSource).text
-    def record = buildRecordFromXML(xml)
+    def record = TestUtils.buildRecordFromXML(xml)
     def result = IndexingHelpers.reformatMessageForSearch(record)
 
     then:
@@ -169,7 +169,7 @@ class IndexingHelpersSpec extends Specification {
   ////////////////////////////////
   def "prepares service links"() {
     when:
-    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
     def result = IndexingHelpers.prepareServiceLinks(discovery)
 
     then:
@@ -197,7 +197,7 @@ class IndexingHelpersSpec extends Specification {
 
   def "prepares service link protocols"() {
     Set protocols = ['HTTP']
-    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
 
     expect:
     IndexingHelpers.prepareServiceLinkProtocols(discovery) == protocols
@@ -205,7 +205,7 @@ class IndexingHelpersSpec extends Specification {
 
   def "prepares link protocols"() {
     Set protocols = ['HTTP']
-    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
 
     expect:
     IndexingHelpers.prepareLinkProtocols(discovery) == protocols
@@ -215,7 +215,7 @@ class IndexingHelpersSpec extends Specification {
   // Data Formats           //
   ////////////////////////////
   def "prepares data formats"() {
-    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
 
     expect:
     IndexingHelpers.prepareDataFormats(discovery) == [
@@ -232,7 +232,7 @@ class IndexingHelpersSpec extends Specification {
   ////////////////////////////
   def "prepares responsible party names"() {
     when:
-    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
     def result = IndexingHelpers.prepareResponsibleParties(discovery)
 
     then:
@@ -258,7 +258,7 @@ class IndexingHelpersSpec extends Specification {
 
   def "party names are not included in granule search info"() {
     when:
-    def record = buildRecordFromXML(inputGranuleXml) // <-- granule!
+    def record = TestUtils.buildRecordFromXML(inputGranuleXml) // <-- granule!
     def result = IndexingHelpers.reformatMessageForSearch(record) // <-- top level reformat method!
 
     then:
@@ -381,24 +381,6 @@ class IndexingHelpersSpec extends Specification {
 
     then:
     result.accessionValues == null
-  }
-
-  private static ParsedRecord buildRecordFromXML(String xml) {
-    def discovery = ISOParser.parseXMLMetadataToDiscovery(xml)
-    def analysis = Analyzers.analyze(discovery)
-    def builder = ParsedRecord.newBuilder().setDiscovery(discovery).setAnalysis(analysis)
-
-    // Determine RecordType (aka granule or collection) from Discovery & Analysis info
-    String parentIdentifier = discovery.parentIdentifier
-    String hierarchyLevelName = discovery.hierarchyLevelName
-    if (hierarchyLevelName == null || hierarchyLevelName != 'granule' || !parentIdentifier) {
-      builder.setType(RecordType.collection)
-    }
-    else {
-      builder.setType(RecordType.granule)
-    }
-
-    return builder.build()
   }
 
 }

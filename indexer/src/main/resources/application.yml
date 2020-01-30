@@ -5,7 +5,7 @@ kafka:
     servers: "localhost:9092"
   schema:
     registry:
-      url: "localhost:8081"
+      url: "http://localhost:8081"
   commit:
     interval:
       ms: 1000
