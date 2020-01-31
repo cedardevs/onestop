@@ -941,6 +941,8 @@ components:
           type: array
         page:
           $ref: "#/components/schemas/page"
+        sort:
+          $ref: "#/components/schemas/sort"
         queries:
           items:
             oneOf:
@@ -1074,6 +1076,21 @@ components:
         - geometry
       title: "Geometry Filter"
       type: object
+    sort:
+      description: "Sort results"
+      items:
+        anyOf:
+          - $ref: "#/components/schemas/sortFilter"
+    sortFilter:
+      type: object
+      additionalProperties: false
+      properties:
+        stagedDate:
+          default: asc
+        beginDate:
+          default: asc
+        endDate:
+          default: asc
     page:
       description: "Result page"
       properties:
