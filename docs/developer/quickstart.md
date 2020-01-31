@@ -194,11 +194,11 @@ If the upload is pointing to an instance of the registry API which is secured, t
 
 In order for data to be published and flow all the way to the OneStop UI, the following dependencies need to be up and running:
 ```
-             Kafka
-|------------------------------|
-registry --> manager --> indexer --> search --> client
-                         |---------------------------|       
-                                 Elasticsearch
+                   Kafka
+|________________________________________|
+ registry/    \_manager_/   \_ indexer‾\   /‾search --> client
+                          |‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|       
+                                   Elasticsearch
 ```
 
 At a bare minimum, Kafka and the registry should be running to successfully upload.
