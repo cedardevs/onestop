@@ -12,7 +12,7 @@ public class ElasticsearchVersion {
 
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchVersion.class);
 
-  private static final Byte MINIMUM_COMPATIBLE_MAJOR_VERSION = 6;
+  public static final Byte MINIMUM_COMPATIBLE_MAJOR_VERSION = 7;
 
   private Byte majorVersion;
   private Byte minorVersion;
