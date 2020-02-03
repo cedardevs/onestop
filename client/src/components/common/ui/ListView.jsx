@@ -304,6 +304,7 @@ export default function ListView(props){
             styleFocus={styleFocus}
             styleDisable={styleDisable}
             config={config}
+            ariaCurrent={config.isActive}
           >
             {isPrevious ? previousText : isNext ? nextText : page}
           </Button>
