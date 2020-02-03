@@ -8,12 +8,16 @@ import org.apache.kafka.streams.state.Stores
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.indexer.util.ElasticsearchService
-import org.elasticsearch.action.ActionListener
+import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.get.GetResponse
-import org.elasticsearch.client.Cancellable
 import org.elasticsearch.common.bytes.BytesArray
+import org.elasticsearch.common.unit.TimeValue
+import org.elasticsearch.common.xcontent.ToXContent
+import org.elasticsearch.common.xcontent.XContentBuilder
+import org.elasticsearch.common.xcontent.json.JsonXContent
 import org.elasticsearch.index.get.GetResult
 import org.elasticsearch.index.reindex.BulkByScrollResponse
+import org.elasticsearch.index.reindex.BulkByScrollTask
 import org.elasticsearch.index.seqno.SequenceNumbers
 import spock.lang.Specification
 
@@ -41,9 +45,10 @@ class FlatteningTriggerTransformerSpec extends Specification {
   MockProcessorContext mockProcessorContext
   KeyValueStore<String, Long> testStore
   FlatteningTriggerTransformer testTransformer
-
+  BulkByScrollResponse mockBulkByScrollResponse
   def setup() {
     mockEsService = Mock(ElasticsearchService)
+    mockBulkByScrollResponse = Mock(BulkByScrollResponse)
     mockEsService.getConfig() >> testEsConfig
     mockProcessorContext = new MockProcessorContext()
     mockProcessorContext.setTimestamp(startTime.toEpochMilli())
@@ -71,7 +76,7 @@ class FlatteningTriggerTransformerSpec extends Specification {
     testTransformer.transform(testId, timestamp)
 
     then:
-    0 * mockEsService.reindexAsync(_, _)
+    0 * mockEsService.reindex(_)
 
     when:
     advanceWallClockTime(mockProcessorContext, startTimePlusInterval.toEpochMilli())
@@ -79,7 +84,7 @@ class FlatteningTriggerTransformerSpec extends Specification {
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
     1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindexAsync(_, _)
+    1 * mockEsService.reindex(_)
   }
 
   def "flattening triggers are windowed and the earliest timestamp is used"() {
@@ -97,7 +102,7 @@ class FlatteningTriggerTransformerSpec extends Specification {
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
     1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindexAsync({ it.script.params.stagedDate == timestamp1 }, _) // <-- verify timestamp param
+    1 * mockEsService.reindex({ it.script.params.stagedDate == timestamp1 }) // <-- verify timestamp param
   }
 
   def "does not flatten if collection doesn't exist"() {
@@ -111,7 +116,7 @@ class FlatteningTriggerTransformerSpec extends Specification {
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, null)
     0 * mockEsService.blockUntilTasksAvailable()
-    0 * mockEsService.reindexAsync(_, _)
+    0 * mockEsService.reindex(_)
   }
 
   def "flattening requests use the parent collection for defaults"() {
@@ -125,13 +130,12 @@ class FlatteningTriggerTransformerSpec extends Specification {
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
     1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindexAsync({ it.script.params.defaults.title == 'collection' }, _) // <-- verify defaults param
+    1 * mockEsService.reindex({ it.script.params.defaults.title == 'collection' })// <-- verify defaults param
   }
 
   def "successful requests produce successful results"() {
     def testId = 'a'
     def timestamp = 1000L
-    ActionListener testListener
 
     when:
     testTransformer.transform(testId, timestamp)
@@ -140,10 +144,7 @@ class FlatteningTriggerTransformerSpec extends Specification {
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
     1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindexAsync(_, _) >> { r, l -> testListener = l; return Mock(Cancellable)} // <- capture listener
-
-    when:
-    testListener.onResponse(Mock(BulkByScrollResponse))
+    1 * mockEsService.reindex(_) >> buildSuccessBulkByScrollResponse() // <- capture listener
 
     then:
     mockProcessorContext.forwarded().size() == 1
@@ -156,7 +157,6 @@ class FlatteningTriggerTransformerSpec extends Specification {
   def "failed requests produce unsuccessful results"() {
     def testId = 'a'
     def timestamp = 1000L
-    ActionListener testListener
 
     when:
     testTransformer.transform(testId, timestamp)
@@ -165,10 +165,7 @@ class FlatteningTriggerTransformerSpec extends Specification {
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
     1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindexAsync(_, _) >> { r, l -> testListener = l; return Mock(Cancellable)} // <- capture listener
-
-    when:
-    testListener.onFailure(new RuntimeException())
+    1 * mockEsService.reindex(_) >> buildFailBulkByScrollResponse([BulkItemResponse.Failure.PARSER]) // <- capture listener
 
     then:
     mockProcessorContext.forwarded().size() == 1
@@ -189,17 +186,8 @@ class FlatteningTriggerTransformerSpec extends Specification {
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
     1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindexAsync(_, _) >> { throw new IOException() }
-
-    and:
-    noExceptionThrown()
-    mockProcessorContext.forwarded().size() == 1
-    def forwardedKeyValue = mockProcessorContext.forwarded()[0].keyValue()
-    forwardedKeyValue.key == testId
-    forwardedKeyValue.value instanceof FlatteningTriggerTransformer.FlatteningTriggerResult
-    forwardedKeyValue.value.successful == false
+    1 * mockEsService.reindex(_) >> { throw new IOException() }
   }
-
 
   private static advanceWallClockTime(MockProcessorContext context, Long timestamp) {
     context.scheduledPunctuators().get(0).getPunctuator().punctuate(timestamp)
@@ -215,6 +203,24 @@ class FlatteningTriggerTransformerSpec extends Specification {
       result = new GetResult(index, '_doc', id, 1, 1, 0, true, source, null, null)
     }
     return new GetResponse(result)
+  }
+
+  def buildFailBulkByScrollResponse(def failure) {
+    TimeValue took = new TimeValue(1000)
+    XContentBuilder builder = JsonXContent.contentBuilder()
+    BulkByScrollTask.Status status = new BulkByScrollTask.Status(Arrays.asList(null, null), null)
+    status.toXContent(builder, ToXContent.EMPTY_PARAMS)
+    BulkByScrollResponse response = new BulkByScrollResponse(took, status, [failure], [], false)
+    return response
+  }
+
+  def buildSuccessBulkByScrollResponse() {
+    TimeValue took = new TimeValue(1000)
+    XContentBuilder builder = JsonXContent.contentBuilder()
+    BulkByScrollTask.Status status = new BulkByScrollTask.Status(Arrays.asList(null, null), null)
+    status.toXContent(builder, ToXContent.EMPTY_PARAMS)
+    BulkByScrollResponse response = new BulkByScrollResponse(took, status, [], [], false)
+    return response
   }
 
 }

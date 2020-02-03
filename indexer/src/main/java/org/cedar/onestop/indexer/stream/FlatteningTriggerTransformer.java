@@ -1,6 +1,5 @@
 package org.cedar.onestop.indexer.stream;
 
-import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -8,9 +7,7 @@ import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
-import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.ReindexRequest;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
@@ -108,7 +105,7 @@ public class FlatteningTriggerTransformer implements Transformer<String, Long, K
     try{
       var result = service.reindex(request);
       var successful = result.getBulkFailures().size() == 0;
-      log.debug("successfully flattened granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
+      log.info("successfully flattened granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
       context.forward(collectionId, new FlatteningTriggerResult(successful, timeToFlattenFrom));
     }
     catch (Exception e){
