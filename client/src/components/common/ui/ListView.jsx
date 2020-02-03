@@ -290,10 +290,10 @@ export default function ListView(props){
         const title = isFirst
           ? 'Go to first page'
           : isPrevious
-            ? `Skip back by ${numSkip} pages`
+            ? `Skip to ${page}`
             : isNext
-              ? `Skip ahead by ${numSkip} pages`
-              : isLast ? 'Go to last page' : `Go to page ${page}`
+              ? `Skip to ${page}`
+              : isLast ? `Go to last page - ${page}` : `Go to page ${page}`
         return (
           <Button
             onClick={onClick}
