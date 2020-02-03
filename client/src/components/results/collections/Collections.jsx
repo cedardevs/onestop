@@ -7,6 +7,7 @@ import CollectionListItem from './CollectionListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {asterisk, SvgIcon} from '../../common/SvgIcon'
 import {PAGE_SIZE} from '../../../utils/queryUtils'
+import defaultStyles from '../../../style/defaultStyles'
 
 const styleCollections = {
   color: '#222',
@@ -54,8 +55,22 @@ export default function Collections(props){
   }
   else if (totalHits > 0) {
     var size = Object.keys(results).length
-    message = `Showing ${offset + 1} - ${offset +
-      size} of ${totalHits.toLocaleString()} collection results matching '${searchTerms}'`
+    var thru = (
+      <span>
+        <span aria-hidden="true">-</span>
+        <span style={defaultStyles.hideOffscreen}>to</span>
+      </span>
+    )
+    message = (
+      <span>
+        <span>Showing {offset + 1} </span>
+        {thru}{' '}
+        <span>
+          {offset + size} of {totalHits.toLocaleString()} collection results
+          matching '{searchTerms}'
+        </span>
+      </span>
+    )
   }
   const listHeading = (
     <h2 key="Collections::listHeading" style={styleListHeading}>
