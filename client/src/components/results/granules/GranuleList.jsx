@@ -123,7 +123,10 @@ export default function GranuleList(props){
   }
   const listHeading = (
     <h2 key="GranuleList::listHeading" style={styleListHeading}>
-      {message} within&nbsp;
+      <span role="alert" aria-live="polite">
+        {message}
+      </span>{' '}
+      within&nbsp;
       <Link
         style={styleLink(focusingCollectionLink)}
         to={`/collections/details/${collectionId}`}
