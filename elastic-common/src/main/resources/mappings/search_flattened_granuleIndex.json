@@ -20,6 +20,10 @@
       "fileIdentifier": {
         "type": "keyword"
       },
+      "fileIdentifierForFilter": {
+        "type": "text",
+        "analyzer": "filename_analyzer"
+      },
       "parentIdentifier": {
         "type": "keyword"
       },
@@ -31,6 +35,10 @@
       },
       "title": {
         "type": "text"
+      },
+      "titleForFilter": {
+        "type": "text",
+        "analyzer": "filename_analyzer"
       },
       "filename": {
         "type": "text",
