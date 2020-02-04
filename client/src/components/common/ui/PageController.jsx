@@ -97,7 +97,7 @@ export const usePaging = props => {
   }
 
   const numSkipPrevious = () => {
-    return state.pageNeighbours * 2 - 1
+    return state.pageNeighbours * 2 + 1
   }
 
   const numSkipNext = () => {
