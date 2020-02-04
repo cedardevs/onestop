@@ -188,49 +188,66 @@ describe('collection search actions', function(){
         expect(collectionFilter.pageOffset).toBe(20)
       })
 
-      it(`${submitSearchCase.name} does not change existing filters`, function(){
-        store.dispatch(submitSearchCase.function(...submitSearchCase.params))
-
-        const collectionFilter = store.getState().search.collectionFilter
-        expect(collectionFilter.pageOffset).toBe(0)
-        expect(historyPushCallCount).toEqual(1)
-      })
-
-      it(`${submitSearchWithQueryTextCase.name} resets existing filters`, function(){
-        store.dispatch(
-          submitSearchWithQueryTextCase.function(
-            ...submitSearchWithQueryTextCase.params
-          )
-        )
-
-        const collectionFilter = store.getState().search.collectionFilter
-        expect(collectionFilter.queryText).toEqual('hello')
-        expect(collectionFilter.pageOffset).toBe(0)
-        expect(historyPushCallCount).toEqual(1)
-      })
-
-      it(`${submitSearchWithFilterCase.name} resets existing filters`, function(){
-        store.dispatch(
-          submitSearchWithFilterCase.function(
-            ...submitSearchWithFilterCase.params
-          )
-        )
-
-        const collectionFilter = store.getState().search.collectionFilter
-        expect(collectionFilter.startDateTime).toEqual('1998')
-        expect(collectionFilter.pageOffset).toBe(0)
-        expect(historyPushCallCount).toEqual(1)
-      })
-
-      it(`${submitNextPageCase.name} r.....`, function(){
+      it(`${submitNextPageCase.name} replaces in flight request`, function(){
         store.dispatch(
           submitNextPageCase.function(...submitNextPageCase.params)
         )
 
-        const collectionFilter = store.getState().search.collectionFilter
-        expect(collectionFilter.pageOffset).toBe(40)
-        expect(historyPushCallCount).toEqual(0)
+        expect(historyPushCallCount).toEqual(0) // all new searches push a new history request right now (although next page would not)
+        expect(store.getState().search.collectionFilter.pageOffset).toBe(40) // but just in case, this definitely should always be reset to 0, or changed to 40
       })
+
+      standardNewSearchTestCases.forEach(function(testCase){
+        it(`${testCase.name} replaces in flight request`, function(){
+          store.dispatch(testCase.function(...testCase.params))
+
+          expect(historyPushCallCount).toEqual(1) // all new searches push a new history request right now (although next page would not)
+          expect(store.getState().search.collectionFilter.pageOffset).toBe(0) // but just in case, this definitely should always be reset to 0, or changed to 40
+        })
+      })
+      // it(`${submitSearchCase.name} does not change existing filters`, function(){
+      //   store.dispatch(submitSearchCase.function(...submitSearchCase.params))
+      //
+      //   const collectionFilter = store.getState().search.collectionFilter
+      //   expect(collectionFilter.pageOffset).toBe(0)
+      //   expect(historyPushCallCount).toEqual(1)
+      // })
+      //
+      // it(`${submitSearchWithQueryTextCase.name} resets existing filters`, function(){
+      //   store.dispatch(
+      //     submitSearchWithQueryTextCase.function(
+      //       ...submitSearchWithQueryTextCase.params
+      //     )
+      //   )
+      //
+      //   const collectionFilter = store.getState().search.collectionFilter
+      //   expect(collectionFilter.queryText).toEqual('hello')
+      //   expect(collectionFilter.pageOffset).toBe(0)
+      //   expect(historyPushCallCount).toEqual(1)
+      // })
+      //
+      // it(`${submitSearchWithFilterCase.name} resets existing filters`, function(){
+      //   store.dispatch(
+      //     submitSearchWithFilterCase.function(
+      //       ...submitSearchWithFilterCase.params
+      //     )
+      //   )
+      //
+      //   const collectionFilter = store.getState().search.collectionFilter
+      //   expect(collectionFilter.startDateTime).toEqual('1998')
+      //   expect(collectionFilter.pageOffset).toBe(0)
+      //   expect(historyPushCallCount).toEqual(1)
+      // })
+      //
+      // it(`${submitNextPageCase.name} r.....`, function(){
+      //   store.dispatch(
+      //     submitNextPageCase.function(...submitNextPageCase.params)
+      //   )
+      //
+      //   const collectionFilter = store.getState().search.collectionFilter
+      //   expect(collectionFilter.pageOffset).toBe(40)
+      //   expect(historyPushCallCount).toEqual(0)
+      // })
     })
 
     describe('prefetch actions', function(){
@@ -331,7 +348,7 @@ describe('collection search actions', function(){
 
         {
           // keep scoped
-          const {collectionRequest, collectionFilter} = store.getState().search
+          const {collectionRequest} = store.getState().search
           expect(collectionRequest.inFlight).toBeTruthy()
         }
 
@@ -359,11 +376,8 @@ describe('collection search actions', function(){
         )
         expect(collectionResult.collections).toEqual({})
       })
-      // beforeEach(async () => {
-      //
-      // })
 
-      test('new search requst to new search request', async () => {
+      test('new search request success', async () => {
         const collectionNewSearchResultsReceived = jest.spyOn(
           spyableActions,
           'collectionNewSearchResultsReceived'
@@ -403,7 +417,7 @@ describe('collection search actions', function(){
 
         {
           // keep scoped
-          const {collectionRequest, collectionFilter} = store.getState().search
+          const {collectionRequest} = store.getState().search
           expect(collectionRequest.inFlight).toBeTruthy()
         }
 

@@ -168,6 +168,7 @@ describe('collection detail action', function(){
     })
   })
 
+  // TODO add cancel inFLight verification
   describe('success path', function(){
     beforeEach(async () => {
       fetchMock.get(`path:${BASE_URL}/collection/uuid-ABC`, mockPayload)
