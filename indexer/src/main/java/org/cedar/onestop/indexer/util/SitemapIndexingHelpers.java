@@ -1,6 +1,5 @@
-package org.cedar.onestop.indexer.stream;
+package org.cedar.onestop.indexer.util;
 
-import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.RequestOptions;
@@ -21,11 +20,11 @@ import java.util.stream.Collectors;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 
-public class SitemapIndexer {
-  private static final Logger log = LoggerFactory.getLogger(SitemapIndexer.class);
+public class SitemapIndexingHelpers {
+  private static final Logger log = LoggerFactory.getLogger(SitemapIndexingHelpers.class);
 
   public static void buildSitemap(ElasticsearchService esService, long timestamp) {
-    log.info("starting sitemap update process for timestamp + " + timestamp);
+    log.info("starting sitemap update process for timestamp " + timestamp);
     try {
       var start = System.currentTimeMillis();
       var params = new SitemapParams(
@@ -36,6 +35,7 @@ public class SitemapIndexer {
       );
       if (esService.maxValue(params.to, "lastUpdatedDate") >= timestamp) {
         log.info("Sitemap has already been updated beyond timestamp " + timestamp);
+        return;
       }
       var sitemapResult = runSitemapEtl(esService.getClient(), params);
       var end = System.currentTimeMillis();

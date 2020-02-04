@@ -1,3 +1,14 @@
+import org.testcontainers.elasticsearch.ElasticsearchContainer
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.testcontainers:elasticsearch:1.12.5"
+    classpath "org.testcontainers:kafka:1.12.5"
+  }
+}
+
 plugins {
   id 'groovy'
   id 'application'
@@ -41,6 +52,7 @@ dependencies {
   testImplementation("net.bytebuddy:byte-buddy:1.7.11")
   testImplementation("org.spockframework:spock-core:${project.spockVersion}")
   testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
+  testImplementation("org.springframework.kafka:spring-kafka-test:${project.springKafkaVersion}")
   testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
   testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
   testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
@@ -48,6 +60,60 @@ dependencies {
   testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
   testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
   testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:sources")
+}
+
+configurations {
+  integrationTestImplementation.extendsFrom testImplementation
+  integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+sourceSets {
+  integrationTest {
+    compileClasspath += sourceSets.main.output + sourceSets.test.output
+    runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+    groovy.srcDir file('src/integrationTest/groovy')
+    resources.srcDir file('src/integrationTest/resources')
+  }
+}
+
+task integrationTest(type: Test) {
+  doFirst {
+    // `CI` env var is typically "true" inside CircleCI, Travis, and other CI environments.
+    // If you find it is not, the build cmds used within your CI config could also be prefixed like:
+    // `export CI=true && ./gradlew integrationTest ...`
+    Boolean ci = Boolean.valueOf(System.getenv('CI'))
+    if (ci) {
+      // the elasticsearch brought up by CircleCI (see `.circleci/config`) runs on localhost:9200
+      systemProperty 'elasticsearch.host', 'localhost'
+      systemProperty 'elasticsearch.port', '9200'
+    }
+    else {
+      def elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:${project.esVersion}")
+      elasticsearchContainer.start()
+      systemProperty 'elasticsearch.host', 'localhost'
+      systemProperty 'elasticsearch.port', elasticsearchContainer.getMappedPort(9200)
+      systemProperty 'elasticsearch.ssl.enabled', false
+
+      project.ext.set("elasticsearchContainer", elasticsearchContainer)
+    }
+  }
+
+  description = 'Runs the integration tests'
+  group = 'verification'
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  outputs.upToDateWhen { false }
+  shouldRunAfter test
+  finalizedBy { killElasticsearch }
+
+  reports.junitXml.destination = file("${buildDir}/integration-test-results")
+  reports.html.destination = file("${buildDir}/reports/integrationTests")
+}
+check.dependsOn integrationTest
+task killElasticsearch {
+  doFirst {
+    project.ext.get("elasticsearchContainer")?.stop()
+  }
 }
 
 jar {

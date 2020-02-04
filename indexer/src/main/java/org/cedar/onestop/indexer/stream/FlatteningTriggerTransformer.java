@@ -1,5 +1,6 @@
 package org.cedar.onestop.indexer.stream;
 
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -104,18 +105,15 @@ public class FlatteningTriggerTransformer implements Transformer<String, Long, K
 
     service.blockUntilTasksAvailable();
     log.debug("starting flattening for granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
-    service.reindexAsync(request, new ActionListener<>() {
-      @Override
-      public void onResponse(BulkByScrollResponse bulkByScrollResponse) {
-        log.debug("successfully flattened granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
-        context.forward(collectionId, new FlatteningTriggerResult(true, timeToFlattenFrom));
-      }
-      @Override
-      public void onFailure(Exception e) {
-        log.error("failed to flatten granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]", e);
-        context.forward(collectionId, new FlatteningTriggerResult(false, timeToFlattenFrom));
-      }
-    });
+    try{
+      var result = service.reindex(request);
+      var successful = result.getBulkFailures().size() == 0;
+      log.debug("successfully flattened granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
+      context.forward(collectionId, new FlatteningTriggerResult(successful, timeToFlattenFrom));
+    }
+    catch (Exception e){
+      log.error("failed to flatten granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]", e);
+    }
   }
 
   @Override
