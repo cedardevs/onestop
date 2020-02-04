@@ -15,12 +15,19 @@ import {
   collectionSearchError,
 } from './CollectionSearchStateActions'
 
+let controller // shared internal state to track controller, since only one request within this context is allowed to be inFlight
+
 const getFilterFromState = state => {
   return (state && state.search && state.search.collectionFilter) || {}
 }
 
-const isRequestInvalid = state => {
+const isRequestInvalid = (dispatch, state) => {
   const inFlight = state.search.collectionRequest.inFlight
+  if (inFlight && controller) {
+    controller.abort()
+    controller = null
+    return false
+  }
   return inFlight
 }
 
@@ -65,9 +72,20 @@ const collectionPromise = (
     return
   }
   // return promise for search
-  return fetchCollectionSearch(body, successHandler(dispatch), e => {
-    dispatch(collectionSearchError(e.errors || e))
+  let [
+    promise,
+    abort_controller,
+  ] = fetchCollectionSearch(body, successHandler(dispatch), e => {
+    if (abort_controller.signal.aborted) {
+      // do not process error handling for aborted requests, just in case it gets to this point
+      return
+    }
+    else {
+      dispatch(collectionSearchError(e.errors || e))
+    }
   })
+  controller = abort_controller
+  return promise
 }
 
 export const submitCollectionSearchWithQueryText = (history, queryText) => {
@@ -78,7 +96,7 @@ export const submitCollectionSearchWithFilter = (history, filterState) => {
   // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
   // use middleware to dispatch an async function
   return async (dispatch, getState) => {
-    if (isRequestInvalid(getState())) {
+    if (isRequestInvalid(dispatch, getState())) {
       // short circuit silently if minimum request requirements are not met
       return
     }
@@ -101,7 +119,7 @@ export const submitCollectionSearch = history => {
   // note: this updates the URL as well, it is not intended to be just a background search - make a new action if we need that case handled
   // use middleware to dispatch an async function
   return async (dispatch, getState) => {
-    if (isRequestInvalid(getState())) {
+    if (isRequestInvalid(dispatch, getState())) {
       // short circuit silently if minimum request requirements are not met
       return
     }
@@ -124,7 +142,7 @@ export const submitCollectionSearchNextPage = () => {
   // note that this function does *not* make any changes to the URL - including push the user to the collection view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
   // use middleware to dispatch an async function
   return async (dispatch, getState) => {
-    if (isRequestInvalid(getState())) {
+    if (isRequestInvalid(dispatch, getState())) {
       // short circuit silently if minimum request requirements are not met
       return
     }
