@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
 import ResizeObserver from 'resize-observer-polyfill' // handle browsers not supporting ResizeObserver
-import 'geometry-polyfill' // handle browsers not supporting DOMRect
+import '../../../utils/polyfillDOMRect'
 
 const ANIMATION_DURATION = 200
 
