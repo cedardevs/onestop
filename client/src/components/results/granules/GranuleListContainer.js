@@ -9,7 +9,7 @@ import GranuleList from './GranuleList'
 import {withRouter} from 'react-router'
 import {
   submitGranuleSearchForCart,
-  submitGranuleSearchNextPage,
+  submitGranuleSearchWithPage,
 } from '../../../actions/routing/GranuleSearchRouteActions'
 import {CART_CAPACITY, MAX_CART_ADDITION} from '../../../utils/cartUtils'
 
@@ -39,8 +39,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    fetchMoreResults: () => {
-      dispatch(submitGranuleSearchNextPage())
+    fetchResultPage: (offset, max) => {
+      dispatch(submitGranuleSearchWithPage(offset, max))
     },
     addFilteredGranulesToCart: granuleFilter => {
       dispatch(

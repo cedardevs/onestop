@@ -8,13 +8,14 @@ import {
   submitCollectionSearch,
   submitCollectionSearchWithFilter,
   submitCollectionSearchWithQueryText,
-  submitCollectionSearchNextPage,
+  submitCollectionSearchWithPage,
 } from '../../../src/actions/routing/CollectionSearchRouteActions'
 import {
   // used to set up pre-test conditions
   collectionNewSearchResetFiltersRequested,
-  collectionMoreResultsRequested,
+  collectionResultsPageRequested,
   collectionNewSearchResultsReceived,
+  collectionResultsPageReceived,
   collectionUpdateDateRange,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
@@ -103,8 +104,8 @@ describe('collection search actions', function(){
   }
   const submitNextPageCase = {
     name: 'submit next page',
-    function: submitCollectionSearchNextPage,
-    params: [],
+    function: submitCollectionSearchWithPage,
+    params: [ 2, 2 ],
   }
 
   const standardNewSearchTestCases = [
@@ -183,7 +184,7 @@ describe('collection search actions', function(){
     describe('submit overwrites inFlight', function(){
       beforeEach(async () => {
         //setup send something into flight first
-        store.dispatch(collectionMoreResultsRequested())
+        store.dispatch(collectionResultsPageRequested(20, 20))
         const {collectionRequest, collectionFilter} = store.getState().search
         expect(collectionRequest.inFlight).toBeTruthy()
         expect(collectionFilter.pageOffset).toBe(20)
@@ -195,7 +196,8 @@ describe('collection search actions', function(){
         )
 
         expect(historyPushCallCount).toEqual(0) // all new searches push a new history request right now (although next page would not)
-        expect(store.getState().search.collectionFilter.pageOffset).toBe(40) // but just in case, this definitely should always be reset to 0, or changed to 40
+        expect(store.getState().search.collectionFilter.pageOffset).toBe(2)
+        expect(store.getState().search.collectionFilter.pageSize).toBe(2) // but just in case, this definitely should always be reset to 0, or changed to 40
       })
 
       standardNewSearchTestCases.forEach(function(testCase){
@@ -211,11 +213,12 @@ describe('collection search actions', function(){
     describe('prefetch actions', function(){
       beforeEach(async () => {
         // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
-        store.dispatch(collectionMoreResultsRequested())
+        store.dispatch(collectionResultsPageRequested(20, 20))
         store.dispatch(collectionNewSearchResultsReceived(0, [], {}))
         const {collectionRequest, collectionFilter} = store.getState().search
         expect(collectionRequest.inFlight).toBeFalsy()
         expect(collectionFilter.pageOffset).toEqual(20)
+        expect(collectionFilter.pageSize).toEqual(20)
       })
 
       describe('all submit options update the state correctly', function(){
@@ -241,7 +244,7 @@ describe('collection search actions', function(){
           const {collectionRequest, collectionFilter} = store.getState().search
 
           expect(collectionRequest.inFlight).toBeTruthy()
-          expect(collectionFilter.pageOffset).toEqual(40)
+          expect(collectionFilter.pageOffset).toEqual(2)
         })
       })
 
@@ -289,9 +292,9 @@ describe('collection search actions', function(){
         spyOnQueryUtils,
         'assembleSearchRequest'
       )
-      const collectionMoreResultsReceived = jest.spyOn(
+      const collectionResultsPageReceived = jest.spyOn(
         spyableActions,
-        'collectionMoreResultsReceived'
+        'collectionResultsPageReceived'
       )
       const collectionNewSearchResultsReceived = jest.spyOn(
         spyableActions,
@@ -304,18 +307,18 @@ describe('collection search actions', function(){
       beforeEach(async () => {
         assembleSearchRequest.mockClear()
         collectionNewSearchResultsReceived.mockClear()
-        collectionMoreResultsReceived.mockClear()
+        collectionResultsPageReceived.mockClear()
         collectionSearchError.mockClear()
       })
       afterAll(async () => {
         assembleSearchRequest.mockClear()
         collectionNewSearchResultsReceived.mockClear()
-        collectionMoreResultsReceived.mockClear()
+        collectionResultsPageReceived.mockClear()
         collectionSearchError.mockClear()
         // restore the original (non-mocked) implementation:
         assembleSearchRequest.mockRestore()
         collectionNewSearchResultsReceived.mockRestore()
-        collectionMoreResultsReceived.mockRestore()
+        collectionResultsPageReceived.mockRestore()
         collectionSearchError.mockRestore()
       })
 
@@ -366,7 +369,7 @@ describe('collection search actions', function(){
         expect(fetchMock.calls().length).toEqual(2)
         expect(assembleSearchRequest.mock.calls.length).toEqual(2)
         expect(collectionNewSearchResultsReceived.mock.calls.length).toEqual(0) // first request never completed and called this!
-        expect(collectionMoreResultsReceived.mock.calls.length).toEqual(1)
+        expect(collectionResultsPageReceived.mock.calls.length).toEqual(1)
 
         expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
         expect(collectionRequest.errorMessage).toEqual('')
@@ -378,7 +381,8 @@ describe('collection search actions', function(){
         const finalStateToAssembleQueryFrom =
           assembleSearchRequest.mock.calls[1][0]
         expect(finalStateToAssembleQueryFrom.startDateTime).toEqual('1998') // has filter from the first request
-        expect(finalStateToAssembleQueryFrom.pageOffset).toEqual(20) // has page offset from the second request
+        expect(finalStateToAssembleQueryFrom.pageOffset).toEqual(2) // has page offset from the second request
+        expect(finalStateToAssembleQueryFrom.pageSize).toEqual(2)
         expect(assembleSearchRequest.mock.results[1].value).toEqual({
           // confirm result of assemble query has both filter and page pieces
           facets: false,
@@ -390,13 +394,13 @@ describe('collection search actions', function(){
             },
           ],
           page: {
-            max: 20,
-            offset: 20,
+            max: 2,
+            offset: 2,
           },
           queries: [],
         }) // create the request with both the recently applied filter (for the request that did not complete) PLUS the next page offset
         expect(
-          collectionMoreResultsReceived.mock.results[0].value.items
+          collectionResultsPageReceived.mock.results[0].value.items
         ).toEqual(mockPayload.data) // and not "INTERUPTED" payload
       })
 
@@ -570,29 +574,39 @@ describe('collection search actions', function(){
           })
         })
       })
+    })
 
-      describe('next page updates the result state correctly', function(){
-        it(`${submitNextPageCase.name}`, async () => {
-          await store.dispatch(
-            submitNextPageCase.function(...submitNextPageCase.params)
-          )
+    describe('next page updates the result state correctly', function(){
+      afterEach(() => {
+        fetchMock.reset()
+      })
 
-          const {
-            collectionRequest,
-            collectionResult,
-            collectionFilter,
-          } = store.getState().search
+      beforeEach(async () => {
+        fetchMock.reset()
+        fetchMock.post(
+          (url, opts) => url == `${BASE_URL}/search/collection`,
+          mockPayload
+        )
+      })
 
-          expect(collectionResult.collections).toEqual({
-            'uuid-ABC': {title: 'ABC'},
-            'uuid-123': {title: '123'},
-            'uuid-XYZ': {title: 'XYZ'},
-            'uuid-987': {title: '987'},
-          })
-          expect(collectionResult.facets).toEqual(mockFacets)
-          expect(collectionResult.totalCollectionCount).toEqual(10)
-          expect(collectionResult.loadedCollectionCount).toEqual(4)
+      it(`${submitNextPageCase.name}`, async () => {
+        await store.dispatch(
+          submitNextPageCase.function(...submitNextPageCase.params)
+        )
+
+        const {
+          collectionRequest,
+          collectionResult,
+          collectionFilter,
+        } = store.getState().search
+
+        expect(collectionResult.collections).toEqual({
+          'uuid-123': {title: '123'},
+          'uuid-ABC': {title: 'ABC'},
         })
+        expect(collectionResult.totalCollectionCount).toEqual(10)
+
+        expect(collectionResult.loadedCollectionCount).toEqual(2)
       })
     })
 

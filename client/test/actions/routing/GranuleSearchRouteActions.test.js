@@ -8,14 +8,14 @@ import * as spyOnQueryUtils from '../../../src/utils/queryUtils'
 import {
   submitGranuleSearch,
   submitGranuleSearchWithFilter,
-  submitGranuleSearchNextPage,
+  submitGranuleSearchWithPage,
   submitGranuleSearchForCart,
 } from '../../../src/actions/routing/GranuleSearchRouteActions'
 import {
   // used to set up pre-test conditions
   granuleNewSearchRequested,
+  granuleResultsPageRequested,
   granuleNewSearchResultsReceived,
-  granuleMoreResultsRequested,
   granuleUpdateDateRange,
   granulesForCartRequested,
   granulesForCartResultsReceived,
@@ -159,8 +159,8 @@ describe('granule search actions', function(){
   }
   const submitNextPageCase = {
     name: 'submit next page',
-    function: submitGranuleSearchNextPage,
-    params: [],
+    function: submitGranuleSearchWithPage,
+    params: [ 2, 2 ],
   }
 
   const submitGranuleSearchForCartCase = {
@@ -270,10 +270,11 @@ describe('granule search actions', function(){
   describe('submit overwrites inFlight', function(){
     beforeEach(async () => {
       //setup send something into flight first
-      store.dispatch(submitGranuleSearchNextPage())
+      store.dispatch(submitGranuleSearchWithPage(20, 20))
       const {granuleRequest, granuleFilter} = store.getState().search
       expect(granuleRequest.inFlight).toBeTruthy()
       expect(granuleFilter.pageOffset).toBe(20)
+      expect(granuleFilter.pageSize).toEqual(20)
     })
 
     it(`${submitNextPageCase.name} replaces in flight request`, function(){
@@ -283,7 +284,8 @@ describe('granule search actions', function(){
       expect(
         store.getState().search.granuleFilter.selectedCollectionIds
       ).toEqual([ 'original-uuid' ])
-      expect(store.getState().search.granuleFilter.pageOffset).toBe(40) // but just in case, this definitely should always be reset to 0, or changed to 40
+      expect(store.getState().search.granuleFilter.pageOffset).toBe(2)
+      expect(store.getState().search.granuleFilter.pageSize).toBe(2) // but just in case, this definitely should always be reset to 0, or changed to 40
     })
 
     standardNewSearchTestCases.forEach(function(testCase){
@@ -299,11 +301,12 @@ describe('granule search actions', function(){
   describe('prefetch actions', function(){
     beforeEach(async () => {
       // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
-      store.dispatch(granuleMoreResultsRequested())
+      store.dispatch(granuleResultsPageRequested(20, 20))
       store.dispatch(granuleNewSearchResultsReceived([], {}, 0))
       const {granuleRequest, granuleFilter} = store.getState().search
       expect(granuleRequest.inFlight).toBeFalsy()
       expect(granuleFilter.pageOffset).toEqual(20)
+      expect(granuleFilter.pageSize).toEqual(20)
     })
 
     describe('all submit options update the state correctly', function(){
@@ -328,7 +331,7 @@ describe('granule search actions', function(){
 
         expect(granuleFilter.selectedCollectionIds).toEqual([ 'original-uuid' ])
         expect(granuleRequest.inFlight).toBeTruthy()
-        expect(granuleFilter.pageOffset).toEqual(40)
+        expect(granuleFilter.pageOffset).toEqual(2)
       })
     })
 
@@ -370,9 +373,9 @@ describe('granule search actions', function(){
       spyOnQueryUtils,
       'assembleSearchRequest'
     )
-    const granuleMoreResultsReceived = jest.spyOn(
+    const granuleResultsPageReceived = jest.spyOn(
       spyableActions,
-      'granuleMoreResultsReceived'
+      'granuleResultsPageReceived'
     )
     const granuleNewSearchResultsReceived = jest.spyOn(
       spyableActions,
@@ -382,18 +385,18 @@ describe('granule search actions', function(){
     beforeEach(async () => {
       assembleSearchRequest.mockClear()
       granuleNewSearchResultsReceived.mockClear()
-      granuleMoreResultsReceived.mockClear()
+      granuleResultsPageReceived.mockClear()
       granuleSearchError.mockClear()
     })
     afterAll(async () => {
       assembleSearchRequest.mockClear()
       granuleNewSearchResultsReceived.mockClear()
-      granuleMoreResultsReceived.mockClear()
+      granuleResultsPageReceived.mockClear()
       granuleSearchError.mockClear()
       // restore the original (non-mocked) implementation:
       assembleSearchRequest.mockRestore()
       granuleNewSearchResultsReceived.mockRestore()
-      granuleMoreResultsReceived.mockRestore()
+      granuleResultsPageReceived.mockRestore()
       granuleSearchError.mockRestore()
     })
 
@@ -444,7 +447,7 @@ describe('granule search actions', function(){
       expect(fetchMock.calls().length).toEqual(2)
       expect(assembleSearchRequest.mock.calls.length).toEqual(2)
       expect(granuleNewSearchResultsReceived.mock.calls.length).toEqual(0) // first request never completed and called this!
-      expect(granuleMoreResultsReceived.mock.calls.length).toEqual(1)
+      expect(granuleResultsPageReceived.mock.calls.length).toEqual(1)
 
       expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
       expect(granuleRequest.errorMessage).toEqual('')
@@ -456,7 +459,8 @@ describe('granule search actions', function(){
       const finalStateToAssembleQueryFrom =
         assembleSearchRequest.mock.calls[1][0]
       expect(finalStateToAssembleQueryFrom.startDateTime).toEqual('1998') // has filter from the first request
-      expect(finalStateToAssembleQueryFrom.pageOffset).toEqual(20) // has page offset from the second request
+      expect(finalStateToAssembleQueryFrom.pageOffset).toEqual(2) // has page offset from the second request
+      expect(finalStateToAssembleQueryFrom.pageSize).toEqual(2)
       expect(assembleSearchRequest.mock.results[1].value).toEqual({
         // confirm result of assemble query has both filter and page pieces
         facets: false,
@@ -472,12 +476,12 @@ describe('granule search actions', function(){
           },
         ],
         page: {
-          max: 20,
-          offset: 20,
+          max: 2,
+          offset: 2,
         },
         queries: [],
       }) // create the request with both the recently applied filter (for the request that did not complete) PLUS the next page offset
-      expect(granuleMoreResultsReceived.mock.results[0].value.granules).toEqual(
+      expect(granuleResultsPageReceived.mock.results[0].value.granules).toEqual(
         mockPayload.data
       ) // and not "INTERUPTED" payload
     })
@@ -581,6 +585,7 @@ describe('granule search actions', function(){
 
   describe('success path', function(){
     beforeEach(async () => {
+      fetchMock.reset()
       fetchMock.post(
         (url, opts) => url == `${BASE_URL}/search/granule`,
         mockPayload
@@ -644,32 +649,35 @@ describe('granule search actions', function(){
         })
       })
     })
-
-    describe('next page updates the result state correctly', function(){
-      it(`${submitNextPageCase.name}`, async () => {
-        await store.dispatch(
-          submitNextPageCase.function(...submitNextPageCase.params)
-        )
-
-        const {
-          granuleRequest,
-          granuleResult,
-          collectionFilter,
-        } = store.getState().search
-
-        expect(granuleResult.granules).toEqual({
-          'uuid-ABC': {title: 'ABC'},
-          'uuid-123': {title: '123'},
-          'uuid-XYZ': {title: 'XYZ'},
-          'uuid-987': {title: '987'},
-        })
-        expect(granuleResult.facets).toEqual(mockFacets)
-        expect(granuleResult.totalGranuleCount).toEqual(10)
-        expect(granuleResult.loadedGranuleCount).toEqual(4)
-      })
-    })
   })
 
+  describe('next page updates the result state correctly', function(){
+    beforeEach(async () => {
+      fetchMock.reset()
+      fetchMock.post(
+        (url, opts) => url == `${BASE_URL}/search/granule`,
+        mockPayload
+      )
+    })
+    it(`${submitNextPageCase.name}`, async () => {
+      await store.dispatch(
+        submitNextPageCase.function(...submitNextPageCase.params)
+      )
+
+      const {
+        granuleRequest,
+        granuleResult,
+        collectionFilter,
+      } = store.getState().search
+
+      expect(granuleResult.granules).toEqual({
+        'uuid-ABC': {title: 'ABC'},
+        'uuid-123': {title: '123'},
+      })
+      expect(granuleResult.totalGranuleCount).toEqual(10)
+      expect(granuleResult.loadedGranuleCount).toEqual(2)
+    })
+  })
   describe('Add Filtered Granules to Cart Actions', function(){
     let mockMaxCartAdditions = 3
     let mockCartCapacity = 5

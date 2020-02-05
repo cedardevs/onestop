@@ -6,9 +6,9 @@ import {
 import {
   granuleNewSearchRequested,
   granuleNewSearchResetFiltersRequested,
-  granuleMoreResultsRequested,
+  granuleResultsPageRequested,
   granuleNewSearchResultsReceived,
-  granuleMoreResultsReceived,
+  granuleResultsPageReceived,
   granuleSearchError,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 
@@ -43,7 +43,7 @@ describe('The request reducer', function(){
 
   it('next page marks inFlight', function(){
     const initial = Immutable({inFlight: false})
-    const result = granuleRequest(initial, granuleMoreResultsRequested())
+    const result = granuleRequest(initial, granuleResultsPageRequested())
     expect(result.inFlight).toBeTruthy()
   })
 
@@ -59,7 +59,7 @@ describe('The request reducer', function(){
     const initial = Immutable({
       errorMessage: 'error from previous search request',
     })
-    const result = granuleRequest(initial, granuleMoreResultsRequested())
+    const result = granuleRequest(initial, granuleResultsPageRequested())
     expect(result.errorMessage).toEqual('')
   })
 
@@ -71,7 +71,7 @@ describe('The request reducer', function(){
 
   it('result from next page resets inFlight', function(){
     const initial = Immutable({inFlight: true})
-    const result = granuleRequest(initial, granuleMoreResultsReceived())
+    const result = granuleRequest(initial, granuleResultsPageReceived(0, []))
     expect(result.inFlight).toBeFalsy()
   })
 
