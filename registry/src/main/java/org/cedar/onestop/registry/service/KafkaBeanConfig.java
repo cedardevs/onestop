@@ -43,6 +43,9 @@ public class KafkaBeanConfig {
   @Value("${publishing.interval.ms:300000}")
   private long publishInterval;
 
+  @Value("${publishing.message.request.size:3000000}")
+  private int MaxRequestSize;
+
   @ConfigurationProperties(prefix = "kafka")
   @Bean
   Properties kafkaProps() {
@@ -62,6 +65,7 @@ public class KafkaBeanConfig {
     props.put(APPLICATION_ID_CONFIG, REGISTRY_ID);
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
+    props.put("max.request.size", MaxRequestSize);
     props.putAll(kafkaProps);
     return props;
   }
@@ -123,6 +127,7 @@ public class KafkaBeanConfig {
     configProps.put(ProducerConfig.CLIENT_ID_CONFIG, "api_publisher");
     configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class.getName());
+    configProps.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, MaxRequestSize);
     producerConfig.forEach( (k, v) -> {
       configProps.put((String) k, v);
     });
