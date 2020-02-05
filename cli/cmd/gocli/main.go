@@ -3,6 +3,9 @@ package main
 import (
 	"crypto/tls"
 	"github.com/danielgtaylor/openapi-cli-generator/cli"
+	"github.com/StrayCat1/gocli/internal/app/onestop"
+	"github.com/StrayCat1/gocli/internal/app/scdr"
+	"github.com/StrayCat1/gocli/internal/app/generated"
 	gtls "gopkg.in/h2non/gentleman.v2/plugins/tls"
 )
 
@@ -16,14 +19,14 @@ func main() {
 	cli.Client.Use(gtls.Config(&tls.Config{InsecureSkipVerify: true}))
 
 	//scdr-files.go
-	setScdrFlags()
-	scdrRegister()
+	scdr.SetScdrFlags()
+	scdr.ScdrRegister()
 
 	//onestop-flags.go
-	setOneStopFlags()
+	onestop.SetOneStopFlags()
 
 	//openapi.go
-	openapiRegister(false)
+	generated.OpenapiRegister(false)
 
 	cli.Root.Execute()
 }
