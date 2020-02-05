@@ -12,7 +12,7 @@ import {
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
   COLLECTION_NEW_SEARCH_REQUESTED,
   COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED,
-  COLLECTION_MORE_RESULTS_REQUESTED,
+  COLLECTION_RESULTS_PAGE_REQUESTED,
 } from '../../actions/routing/CollectionSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
@@ -92,8 +92,9 @@ export const collectionFilter = (state = initialState, action) => {
         {pageOffset: initialState.pageOffset},
       ])
 
-    case COLLECTION_MORE_RESULTS_REQUESTED:
-      return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)
+    case COLLECTION_RESULTS_PAGE_REQUESTED:
+      let updateSize = Immutable.set(state, 'pageSize', action.max)
+      return Immutable.set(updateSize, 'pageOffset', action.offset)
 
     default:
       return state

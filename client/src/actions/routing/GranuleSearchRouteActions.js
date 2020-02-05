@@ -6,8 +6,7 @@ import {
 } from '../../utils/queryUtils'
 import {isPathNew, ROUTE} from '../../utils/urlUtils'
 import {
-  granuleMoreResultsReceived,
-  granuleMoreResultsRequested,
+  granuleResultsPageReceived,
   granuleNewSearchRequested,
   granuleNewSearchResetFiltersRequested,
   granuleNewSearchResultsReceived,
@@ -16,6 +15,7 @@ import {
   granulesForCartError,
   granulesForCartRequested,
   granulesForCartResultsReceived,
+  granuleResultsPageRequested,
 } from './GranuleSearchStateActions'
 import {
   warningExceedsMaxAddition,
@@ -140,7 +140,7 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
 const pageSuccessHandler = dispatch => {
   return payload => {
     const granules = payload.data
-    dispatch(granuleMoreResultsReceived(granules))
+    dispatch(granuleResultsPageReceived(granules, payload.meta.total))
   }
 }
 
@@ -151,7 +151,11 @@ const granulePromise = (
   successHandler
 ) => {
   // generate the request body based on filters, and if we need facets or not
-  const body = granuleBodyBuilder(filterState, requestFacets)
+  const body = granuleBodyBuilder(
+    filterState,
+    requestFacets,
+    filterState.pageSize
+  )
   if (!body) {
     // not covered by tests, since this should never actually occur due to the collectionId being provided, but included to prevent accidentally sending off really unreasonable requests
     dispatch(granuleSearchError('Invalid Request'))
@@ -299,18 +303,14 @@ export const submitGranuleSearch = (history, collectionId) => {
   }
 }
 
-export const submitGranuleSearchNextPage = () => {
-  // note that this function does *not* make any changes to the URL - including push the user to the granule view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
-  // fetch the next page of granules granule search *for granules within a single collection*
-
-  // use middleware to dispatch an async function
+export const submitGranuleSearchWithPage = (offset, max) => {
   return async (dispatch, getState) => {
     if (isAlreadyInFlight(getState())) {
       // short circuit silently if minimum request requirements are not met
       return
     }
     // send notifications that request has begun
-    dispatch(granuleMoreResultsRequested())
+    dispatch(granuleResultsPageRequested(offset, max))
     const updatedFilterState = getFilterFromState(getState())
     // start async request
     return granulePromise(

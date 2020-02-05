@@ -4,33 +4,12 @@ import _ from 'lodash'
 import './LoadingBar.css'
 import InlineError from '../error/InlineError'
 import {Route, Switch} from 'react-router'
-import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 
 export class LoadingBar extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      loadingText: '',
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    this.setState(prevState => {
-      let newText = !_.isEqual(this.props.loadingText, nextProps.loadingText)
-        ? nextProps.loadingText
-        : ''
-      return {
-        ...prevState,
-        loadingText: !_.isEqual(this.props.loadingText, nextProps.loadingText)
-          ? nextProps.loadingText
-          : '',
-      }
-    })
-  }
+  // TODO this isn't really used as a loading bar at all anymore - rename or get rid of?
 
   render() {
-    const {loading, loadingText, style, error} = this.props
+    const {style, error} = this.props
     const displayErrors = !_.isEmpty(error) ? (
       <InlineError errors={this.props.errors} />
     ) : null
@@ -39,15 +18,7 @@ export class LoadingBar extends React.Component {
       <Switch>
         <Route path="/" exact />
         <Route path="/">
-          <div style={style}>
-            <LiveAnnouncer>
-              <LiveMessage
-                message={this.state.loadingText}
-                aria-live="polite"
-              />
-            </LiveAnnouncer>
-            {displayErrors}
-          </div>
+          <div style={style}>{displayErrors}</div>
         </Route>
       </Switch>
     )

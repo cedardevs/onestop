@@ -16,7 +16,7 @@ import {
   granuleToggleFacet,
   granuleNewSearchRequested,
   granuleNewSearchResetFiltersRequested,
-  granuleMoreResultsRequested,
+  granuleResultsPageRequested,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 
 const assertParam = (param, result, expected, fallback) => {
@@ -126,14 +126,16 @@ describe('The granule filter reducer', function(){
           name:
             'makes no changes to initial state except pagination (increments by 20)',
           initialState: initialState, // although this is a terrible request, with no filters
-          function: granuleMoreResultsRequested,
-          expectedChanges: {pageOffset: 20},
+          function: granuleResultsPageRequested,
+          params: [ 20, 20 ],
+          expectedChanges: {pageOffset: 20, pageSize: 20},
         },
         {
           name: 'changes only pageOffset (increments by 20)',
           initialState: nonInitialState,
-          function: granuleMoreResultsRequested,
-          expectedChanges: {pageOffset: 60},
+          function: granuleResultsPageRequested,
+          params: [ 60, 20 ],
+          expectedChanges: {pageOffset: 60, pageSize: 20},
         },
       ],
     },

@@ -10,10 +10,12 @@ export const collectionNewSearchResetFiltersRequested = filters => ({
   filters: filters,
 })
 
-export const COLLECTION_MORE_RESULTS_REQUESTED =
-  'COLLECTION_MORE_RESULTS_REQUESTED'
-export const collectionMoreResultsRequested = () => ({
-  type: COLLECTION_MORE_RESULTS_REQUESTED,
+export const COLLECTION_RESULTS_PAGE_REQUESTED =
+  'COLLECTION_RESULTS_PAGE_REQUESTED'
+export const collectionResultsPageRequested = (offset, max) => ({
+  offset: offset,
+  max: max,
+  type: COLLECTION_RESULTS_PAGE_REQUESTED,
 })
 
 export const COLLECTION_NEW_SEARCH_RESULTS_RECEIVED =
@@ -25,11 +27,12 @@ export const collectionNewSearchResultsReceived = (total, items, facets) => ({
   items: items,
 })
 
-export const COLLECTION_MORE_RESULTS_RECEIVED =
-  'COLLECTION_MORE_RESULTS_RECEIVED'
-export const collectionMoreResultsReceived = items => ({
-  type: COLLECTION_MORE_RESULTS_RECEIVED,
+export const COLLECTION_RESULTS_PAGE_RECEIVED =
+  'COLLECTION_RESULTS_PAGE_RECEIVED'
+export const collectionResultsPageReceived = (total, items) => ({
+  type: COLLECTION_RESULTS_PAGE_RECEIVED,
   items: items,
+  total: total,
 })
 
 export const COLLECTION_SEARCH_ERROR = 'COLLECTION_SEARCH_ERROR'

@@ -6,14 +6,14 @@ import Immutable from 'seamless-immutable'
 import {
   submitGranuleSearch,
   submitGranuleSearchWithFilter,
-  submitGranuleSearchNextPage,
+  submitGranuleSearchWithPage,
   submitGranuleSearchForCart,
 } from '../../../src/actions/routing/GranuleSearchRouteActions'
 import {
   // used to set up pre-test conditions
   granuleNewSearchRequested,
+  granuleResultsPageRequested,
   granuleNewSearchResultsReceived,
-  granuleMoreResultsRequested,
   granuleUpdateDateRange,
   granulesForCartRequested,
   granulesForCartResultsReceived,
@@ -157,8 +157,8 @@ describe('granule search actions', function(){
   }
   const submitNextPageCase = {
     name: 'submit next page',
-    function: submitGranuleSearchNextPage,
-    params: [],
+    function: submitGranuleSearchWithPage,
+    params: [ 2, 2 ],
   }
 
   const submitGranuleSearchForCartCase = {
@@ -268,10 +268,11 @@ describe('granule search actions', function(){
   describe('all submit options behave the same when a detail request is already in flight', function(){
     beforeEach(async () => {
       //setup send something into flight first
-      store.dispatch(granuleMoreResultsRequested())
+      store.dispatch(granuleResultsPageRequested(20, 20))
       const {granuleRequest, granuleFilter} = store.getState().search
       expect(granuleRequest.inFlight).toBeTruthy()
       expect(granuleFilter.pageOffset).toBe(20)
+      expect(granuleFilter.pageSize).toEqual(20)
     })
 
     allTestCases.forEach(function(testCase){
@@ -287,11 +288,12 @@ describe('granule search actions', function(){
   describe('prefetch actions', function(){
     beforeEach(async () => {
       // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
-      store.dispatch(granuleMoreResultsRequested())
+      store.dispatch(granuleResultsPageRequested(20, 20))
       store.dispatch(granuleNewSearchResultsReceived([], {}, 0))
       const {granuleRequest, granuleFilter} = store.getState().search
       expect(granuleRequest.inFlight).toBeFalsy()
       expect(granuleFilter.pageOffset).toEqual(20)
+      expect(granuleFilter.pageSize).toEqual(20)
     })
 
     describe('all submit options update the state correctly', function(){
@@ -316,7 +318,7 @@ describe('granule search actions', function(){
 
         expect(granuleFilter.selectedCollectionIds).toEqual([ 'original-uuid' ])
         expect(granuleRequest.inFlight).toBeTruthy()
-        expect(granuleFilter.pageOffset).toEqual(40)
+        expect(granuleFilter.pageOffset).toEqual(2)
       })
     })
 
@@ -355,6 +357,7 @@ describe('granule search actions', function(){
 
   describe('success path', function(){
     beforeEach(async () => {
+      fetchMock.reset()
       fetchMock.post(
         (url, opts) => url == `${BASE_URL}/search/granule`,
         mockPayload
@@ -418,32 +421,35 @@ describe('granule search actions', function(){
         })
       })
     })
-
-    describe('next page updates the result state correctly', function(){
-      it(`${submitNextPageCase.name}`, async () => {
-        await store.dispatch(
-          submitNextPageCase.function(...submitNextPageCase.params)
-        )
-
-        const {
-          granuleRequest,
-          granuleResult,
-          collectionFilter,
-        } = store.getState().search
-
-        expect(granuleResult.granules).toEqual({
-          'uuid-ABC': {title: 'ABC'},
-          'uuid-123': {title: '123'},
-          'uuid-XYZ': {title: 'XYZ'},
-          'uuid-987': {title: '987'},
-        })
-        expect(granuleResult.facets).toEqual(mockFacets)
-        expect(granuleResult.totalGranuleCount).toEqual(10)
-        expect(granuleResult.loadedGranuleCount).toEqual(4)
-      })
-    })
   })
 
+  describe('next page updates the result state correctly', function(){
+    beforeEach(async () => {
+      fetchMock.reset()
+      fetchMock.post(
+        (url, opts) => url == `${BASE_URL}/search/granule`,
+        mockPayload
+      )
+    })
+    it(`${submitNextPageCase.name}`, async () => {
+      await store.dispatch(
+        submitNextPageCase.function(...submitNextPageCase.params)
+      )
+
+      const {
+        granuleRequest,
+        granuleResult,
+        collectionFilter,
+      } = store.getState().search
+
+      expect(granuleResult.granules).toEqual({
+        'uuid-ABC': {title: 'ABC'},
+        'uuid-123': {title: '123'},
+      })
+      expect(granuleResult.totalGranuleCount).toEqual(10)
+      expect(granuleResult.loadedGranuleCount).toEqual(2)
+    })
+  })
   describe('Add Filtered Granules to Cart Actions', function(){
     let mockMaxCartAdditions = 3
     let mockCartCapacity = 5
