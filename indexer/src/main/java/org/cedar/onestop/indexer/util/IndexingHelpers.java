@@ -89,11 +89,13 @@ public class IndexingHelpers {
     discoveryMap.put("linkProtocol", prepareLinkProtocols(discovery));
     discoveryMap.put("serviceLinks", prepareServiceLinks(discovery));
     discoveryMap.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
+    // FIXME Check type here or within the methods (and remove those fields at the end) but not both -- we're not testing used logic currently with the way this and tests for following helper calls are written
     if (record.getType() == RecordType.collection) {
       discoveryMap.putAll(prepareResponsibleParties(discovery));
     }
     if (record.getType() == RecordType.granule) {
       discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+      discoveryMap.putAll(prepareGranuleNameFilterFields(record));
     }
 
     // drop fields not used for searching
@@ -177,7 +179,7 @@ public class IndexingHelpers {
       ));
 
   ////////////////////////////////
-  // Identifiers                //
+  // Identifiers, "Names"       //
   ////////////////////////////////
   static String prepareInternalParentIdentifier(ParsedRecord record) {
     return Optional.ofNullable(record)
@@ -189,6 +191,16 @@ public class IndexingHelpers {
         .findFirst()
         .map(Relationship::getId)
         .orElse(null);
+  }
+
+  static Map <String, String> prepareGranuleNameFilterFields(ParsedRecord record) {
+    var fileInfo = record.getFileInformation();
+
+    var result = new HashMap<String, String>();
+    result.put("titleForFilter", record.getDiscovery().getTitle());
+    result.put("fileIdentifierForFilter", record.getDiscovery().getFileIdentifier());
+    result.put("filename", fileInfo != null ? fileInfo.getName() : null);
+    return result;
   }
 
   ////////////////////////////////

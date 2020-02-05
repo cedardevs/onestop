@@ -138,13 +138,13 @@ class IndexingHelpersSpec extends Specification {
     result.keySet().each({ assert fields.contains(it) })
 
     where:
-    type          | mappingSource                               | dataSource
+    type          | mappingSource                           | dataSource
     'collection'  | 'mappings/search_collectionIndex.json'  | 'test-iso-collection.xml'
     'granule'     | 'mappings/search_granuleIndex.json'     | 'test-iso-granule.xml'
   }
 
   ////////////////////////////////
-  // Identifiers                //
+  // Identifiers, "Names"       //
   ////////////////////////////////
   def "produces internalParentIdentifier for collection record correctly"() {
     expect:
@@ -162,6 +162,18 @@ class IndexingHelpersSpec extends Specification {
 
     expect:
     IndexingHelpers.prepareInternalParentIdentifier(record) == testId
+  }
+
+  def "produces extra 'name' fields for collection record correctly"() {
+    // FIXME -- where does the type-checking logic live?
+    expect:
+    1 == 0 // TODO forced fail for unwritten test
+  }
+
+  def "produces extra 'name' fields for granule record correctly"() {
+    // FIXME -- where does the type-checking logic live?
+    expect:
+    1 == 0 // TODO forced fail for unwritten test
   }
 
   ////////////////////////////////
