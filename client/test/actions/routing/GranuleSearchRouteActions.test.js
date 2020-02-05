@@ -3,6 +3,7 @@ import {RESET_STORE} from '../../../src/reducer'
 import fetchMock from 'fetch-mock'
 import Immutable from 'seamless-immutable'
 import * as spyableActions from '../../../src/actions/routing/GranuleSearchStateActions'
+import * as spyOnQueryUtils from '../../../src/utils/queryUtils'
 
 import {
   submitGranuleSearch,
@@ -295,123 +296,6 @@ describe('granule search actions', function(){
     })
   })
 
-  describe('interupt in flight request', () => {
-    // TODO cancelling new search request (presumed by new facets) with a new page request could continue to cause the misaligned "applied filter" state vs reality
-    test('new search request which errors', async () => {
-      const granuleSearchError = jest.spyOn(
-        spyableActions,
-        'granuleSearchError'
-      )
-
-      fetchMock
-        // mock the results of the first search request:
-        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, 400)
-        // mock the results of the second search request:
-        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, 500)
-      //setup send something into flight first
-
-      // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
-      const promise = submitSearchCase.function(...submitSearchCase.params)(
-        store.dispatch,
-        store.getState
-      )
-
-      {
-        // keep scoped
-        const {granuleRequest} = store.getState().search
-        expect(granuleRequest.inFlight).toBeTruthy()
-      }
-
-      await store.dispatch(
-        submitSearchCase.function(...submitSearchCase.params)
-      )
-
-      // allow the initial request to resolve
-      await promise
-
-      const {granuleRequest, granuleResult} = store.getState().search
-
-      // we made 2 fetches
-      expect(fetchMock.calls().length).toEqual(2)
-      // but only one granuleSearchError via errorHandler
-      expect(granuleSearchError.mock.calls.length).toEqual(1)
-
-      granuleSearchError.mockRestore() // cleanup
-
-      expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
-      expect(granuleRequest.errorMessage).toEqual(
-        new Error('Internal Server Error')
-      )
-      expect(granuleResult.granules).toEqual({})
-    })
-
-    test('new search request success', async () => {
-      const granuleNewSearchResultsReceived = jest.spyOn(
-        spyableActions,
-        'granuleNewSearchResultsReceived'
-      )
-
-      fetchMock
-        // mock the results of the first search request:
-        .postOnce(
-          (url, opts) => url == `${BASE_URL}/search/granule`,
-          // 400
-          {
-            data: [
-              {
-                id: 'INTERUPTED',
-              },
-            ],
-            meta: {
-              facets: {},
-              total: 2,
-            },
-          }
-        )
-        // mock the results of the second search request:
-        .postOnce(
-          (url, opts) => url == `${BASE_URL}/search/granule`,
-          mockPayload
-        )
-      //setup send something into flight first
-
-      // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
-      const promise = submitSearchCase.function(...submitSearchCase.params)(
-        store.dispatch,
-        store.getState
-      )
-
-      {
-        // keep scoped
-        const {granuleRequest} = store.getState().search
-        expect(granuleRequest.inFlight).toBeTruthy()
-      }
-
-      await store.dispatch(
-        submitSearchCase.function(...submitSearchCase.params)
-      )
-
-      // allow the initial request to resolve (red-green testing: without the fetch checking the abort controller status, this would cause the number of calls to granuleNewSearchResultsReceived to be incorrect)
-      await promise
-
-      const {granuleRequest, granuleResult} = store.getState().search
-
-      // we made 2 fetches
-      expect(fetchMock.calls().length).toEqual(2)
-      // but only one granuleNewSearchResultsReceived via successHandler
-      expect(granuleNewSearchResultsReceived.mock.calls.length).toEqual(1)
-
-      granuleNewSearchResultsReceived.mockRestore() // cleanup
-
-      expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
-      expect(granuleRequest.errorMessage).toEqual('')
-      expect(granuleResult.granules).toEqual({
-        'uuid-ABC': {title: 'ABC'},
-        'uuid-123': {title: '123'},
-      })
-    })
-  })
-
   describe('prefetch actions', function(){
     beforeEach(async () => {
       // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
@@ -477,6 +361,220 @@ describe('granule search actions', function(){
         )
 
         expect(historyPushCallCount).toEqual(0)
+      })
+    })
+  })
+
+  describe('interupt in flight request', () => {
+    const assembleSearchRequest = jest.spyOn(
+      spyOnQueryUtils,
+      'assembleSearchRequest'
+    )
+    const granuleMoreResultsReceived = jest.spyOn(
+      spyableActions,
+      'granuleMoreResultsReceived'
+    )
+    const granuleNewSearchResultsReceived = jest.spyOn(
+      spyableActions,
+      'granuleNewSearchResultsReceived'
+    )
+    const granuleSearchError = jest.spyOn(spyableActions, 'granuleSearchError')
+    beforeEach(async () => {
+      assembleSearchRequest.mockClear()
+      granuleNewSearchResultsReceived.mockClear()
+      granuleMoreResultsReceived.mockClear()
+      granuleSearchError.mockClear()
+    })
+    afterAll(async () => {
+      assembleSearchRequest.mockClear()
+      granuleNewSearchResultsReceived.mockClear()
+      granuleMoreResultsReceived.mockClear()
+      granuleSearchError.mockClear()
+      // restore the original (non-mocked) implementation:
+      assembleSearchRequest.mockRestore()
+      granuleNewSearchResultsReceived.mockRestore()
+      granuleMoreResultsReceived.mockRestore()
+      granuleSearchError.mockRestore()
+    })
+
+    test('new filter interupted by next page leaves the UI (redux store) in consistent state', async () => {
+      fetchMock
+        // mock the results of the first search request:
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, {
+          data: [
+            {
+              id: 'INTERUPTED',
+            },
+          ],
+          meta: {
+            facets: {},
+            total: 2,
+          },
+        })
+        // mock the results of the second search request:
+        .postOnce(
+          (url, opts) => url == `${BASE_URL}/search/granule`,
+          mockPayload
+        )
+      //setup send something into flight first
+
+      // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+      // initially we trigger a query with a filter
+      const promise = submitSearchWithFilterCase.function(
+        ...submitSearchWithFilterCase.params
+      )(store.dispatch, store.getState)
+
+      {
+        // keep scoped
+        const {granuleRequest} = store.getState().search
+        expect(granuleRequest.inFlight).toBeTruthy()
+      }
+
+      // which is interupted by a Next Page query
+      await store.dispatch(
+        submitNextPageCase.function(...submitNextPageCase.params)
+      )
+
+      // allow the initial request to resolve
+      await promise
+
+      const {granuleRequest, granuleResult} = store.getState().search
+
+      // we made 2 fetches
+      expect(fetchMock.calls().length).toEqual(2)
+      expect(assembleSearchRequest.mock.calls.length).toEqual(2)
+      expect(granuleNewSearchResultsReceived.mock.calls.length).toEqual(0) // first request never completed and called this!
+      expect(granuleMoreResultsReceived.mock.calls.length).toEqual(1)
+
+      expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+      expect(granuleRequest.errorMessage).toEqual('')
+      expect(granuleResult.granules).toEqual({
+        'uuid-ABC': {title: 'ABC'},
+        'uuid-123': {title: '123'},
+      })
+
+      const finalStateToAssembleQueryFrom =
+        assembleSearchRequest.mock.calls[1][0]
+      expect(finalStateToAssembleQueryFrom.startDateTime).toEqual('1998') // has filter from the first request
+      expect(finalStateToAssembleQueryFrom.pageOffset).toEqual(20) // has page offset from the second request
+      expect(assembleSearchRequest.mock.results[1].value).toEqual({
+        // confirm result of assemble query has both filter and page pieces
+        facets: false,
+        filters: [
+          {
+            after: '1998',
+            relation: 'intersects',
+            type: 'datetime',
+          },
+          {
+            type: 'collection',
+            values: [ 'parent-uuid' ],
+          },
+        ],
+        page: {
+          max: 20,
+          offset: 20,
+        },
+        queries: [],
+      }) // create the request with both the recently applied filter (for the request that did not complete) PLUS the next page offset
+      expect(granuleMoreResultsReceived.mock.results[0].value.granules).toEqual(
+        mockPayload.data
+      ) // and not "INTERUPTED" payload
+    })
+
+    test('new search request which errors', async () => {
+      fetchMock
+        // mock the results of the first search request:
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, 400)
+        // mock the results of the second search request:
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, 500)
+      //setup send something into flight first
+
+      // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+      const promise = submitSearchCase.function(...submitSearchCase.params)(
+        store.dispatch,
+        store.getState
+      )
+
+      {
+        // keep scoped
+        const {granuleRequest} = store.getState().search
+        expect(granuleRequest.inFlight).toBeTruthy()
+      }
+
+      await store.dispatch(
+        submitSearchCase.function(...submitSearchCase.params)
+      )
+
+      // allow the initial request to resolve
+      await promise
+
+      const {granuleRequest, granuleResult} = store.getState().search
+
+      // we made 2 fetches
+      expect(fetchMock.calls().length).toEqual(2)
+      // but only one granuleSearchError via errorHandler
+      expect(granuleSearchError.mock.calls.length).toEqual(1)
+
+      expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+      expect(granuleRequest.errorMessage).toEqual(
+        new Error('Internal Server Error')
+      )
+      expect(granuleResult.granules).toEqual({})
+    })
+
+    test('new search request success', async () => {
+      fetchMock
+        // mock the results of the first search request:
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, {
+          data: [
+            {
+              id: 'INTERUPTED',
+            },
+          ],
+          meta: {
+            facets: {},
+            total: 2,
+          },
+        })
+        // mock the results of the second search request:
+        .postOnce(
+          (url, opts) => url == `${BASE_URL}/search/granule`,
+          mockPayload
+        )
+      //setup send something into flight first
+
+      // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+      const promise = submitSearchCase.function(...submitSearchCase.params)(
+        store.dispatch,
+        store.getState
+      )
+
+      {
+        // keep scoped
+        const {granuleRequest} = store.getState().search
+        expect(granuleRequest.inFlight).toBeTruthy()
+      }
+
+      await store.dispatch(
+        submitSearchCase.function(...submitSearchCase.params)
+      )
+
+      // allow the initial request to resolve (red-green testing: without the fetch checking the abort controller status, this would cause the number of calls to granuleNewSearchResultsReceived to be incorrect)
+      await promise
+
+      const {granuleRequest, granuleResult} = store.getState().search
+
+      // we made 2 fetches
+      expect(fetchMock.calls().length).toEqual(2)
+      // but only one granuleNewSearchResultsReceived via successHandler
+      expect(granuleNewSearchResultsReceived.mock.calls.length).toEqual(1)
+
+      expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+      expect(granuleRequest.errorMessage).toEqual('')
+      expect(granuleResult.granules).toEqual({
+        'uuid-ABC': {title: 'ABC'},
+        'uuid-123': {title: '123'},
       })
     })
   })

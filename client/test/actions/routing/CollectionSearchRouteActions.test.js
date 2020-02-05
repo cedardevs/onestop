@@ -2,6 +2,7 @@ import store from '../../../src/store' // create Redux store with appropriate mi
 import {RESET_STORE} from '../../../src/reducer'
 import fetchMock from 'fetch-mock'
 import * as spyableActions from '../../../src/actions/routing/CollectionSearchStateActions'
+import * as spyOnQueryUtils from '../../../src/utils/queryUtils'
 
 import {
   submitCollectionSearch,
@@ -205,49 +206,6 @@ describe('collection search actions', function(){
           expect(store.getState().search.collectionFilter.pageOffset).toBe(0) // but just in case, this definitely should always be reset to 0, or changed to 40
         })
       })
-      // it(`${submitSearchCase.name} does not change existing filters`, function(){
-      //   store.dispatch(submitSearchCase.function(...submitSearchCase.params))
-      //
-      //   const collectionFilter = store.getState().search.collectionFilter
-      //   expect(collectionFilter.pageOffset).toBe(0)
-      //   expect(historyPushCallCount).toEqual(1)
-      // })
-      //
-      // it(`${submitSearchWithQueryTextCase.name} resets existing filters`, function(){
-      //   store.dispatch(
-      //     submitSearchWithQueryTextCase.function(
-      //       ...submitSearchWithQueryTextCase.params
-      //     )
-      //   )
-      //
-      //   const collectionFilter = store.getState().search.collectionFilter
-      //   expect(collectionFilter.queryText).toEqual('hello')
-      //   expect(collectionFilter.pageOffset).toBe(0)
-      //   expect(historyPushCallCount).toEqual(1)
-      // })
-      //
-      // it(`${submitSearchWithFilterCase.name} resets existing filters`, function(){
-      //   store.dispatch(
-      //     submitSearchWithFilterCase.function(
-      //       ...submitSearchWithFilterCase.params
-      //     )
-      //   )
-      //
-      //   const collectionFilter = store.getState().search.collectionFilter
-      //   expect(collectionFilter.startDateTime).toEqual('1998')
-      //   expect(collectionFilter.pageOffset).toBe(0)
-      //   expect(historyPushCallCount).toEqual(1)
-      // })
-      //
-      // it(`${submitNextPageCase.name} r.....`, function(){
-      //   store.dispatch(
-      //     submitNextPageCase.function(...submitNextPageCase.params)
-      //   )
-      //
-      //   const collectionFilter = store.getState().search.collectionFilter
-      //   expect(collectionFilter.pageOffset).toBe(40)
-      //   expect(historyPushCallCount).toEqual(0)
-      // })
     })
 
     describe('prefetch actions', function(){
@@ -327,13 +285,122 @@ describe('collection search actions', function(){
     })
 
     describe('interupt in flight request', () => {
-      // TODO cancelling new search request (presumed by new facets) with a new page request could continue to cause the misaligned "applied filter" state vs reality - or is it? the new state should include both the increased page and any added filters - so it actually should be fine? test this! (goal: assert what body the 2nd request was called with)
-      test('new search request which errors', async () => {
-        const collectionSearchError = jest.spyOn(
-          spyableActions,
-          'collectionSearchError'
+      const assembleSearchRequest = jest.spyOn(
+        spyOnQueryUtils,
+        'assembleSearchRequest'
+      )
+      const collectionMoreResultsReceived = jest.spyOn(
+        spyableActions,
+        'collectionMoreResultsReceived'
+      )
+      const collectionNewSearchResultsReceived = jest.spyOn(
+        spyableActions,
+        'collectionNewSearchResultsReceived'
+      )
+      const collectionSearchError = jest.spyOn(
+        spyableActions,
+        'collectionSearchError'
+      )
+      beforeEach(async () => {
+        assembleSearchRequest.mockClear()
+        collectionNewSearchResultsReceived.mockClear()
+        collectionMoreResultsReceived.mockClear()
+        collectionSearchError.mockClear()
+      })
+      afterAll(async () => {
+        assembleSearchRequest.mockClear()
+        collectionNewSearchResultsReceived.mockClear()
+        collectionMoreResultsReceived.mockClear()
+        collectionSearchError.mockClear()
+        // restore the original (non-mocked) implementation:
+        assembleSearchRequest.mockRestore()
+        collectionNewSearchResultsReceived.mockRestore()
+        collectionMoreResultsReceived.mockRestore()
+        collectionSearchError.mockRestore()
+      })
+
+      test('new filter interupted by next page leaves the UI (redux store) in consistent state', async () => {
+        fetchMock
+          // mock the results of the first search request:
+          .postOnce((url, opts) => url == `${BASE_URL}/search/collection`, {
+            data: [
+              {
+                id: 'INTERUPTED',
+              },
+            ],
+            meta: {
+              facets: {},
+              total: 2,
+            },
+          })
+          // mock the results of the second search request:
+          .postOnce(
+            (url, opts) => url == `${BASE_URL}/search/collection`,
+            mockPayload
+          )
+        //setup send something into flight first
+
+        // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+        // initially we trigger a query with a filter
+        const promise = submitSearchWithFilterCase.function(
+          ...submitSearchWithFilterCase.params
+        )(store.dispatch, store.getState)
+
+        {
+          // keep scoped
+          const {collectionRequest} = store.getState().search
+          expect(collectionRequest.inFlight).toBeTruthy()
+        }
+
+        // which is interupted by a Next Page query
+        await store.dispatch(
+          submitNextPageCase.function(...submitNextPageCase.params)
         )
 
+        // allow the initial request to resolve
+        await promise
+
+        const {collectionRequest, collectionResult} = store.getState().search
+
+        // we made 2 fetches
+        expect(fetchMock.calls().length).toEqual(2)
+        expect(assembleSearchRequest.mock.calls.length).toEqual(2)
+        expect(collectionNewSearchResultsReceived.mock.calls.length).toEqual(0) // first request never completed and called this!
+        expect(collectionMoreResultsReceived.mock.calls.length).toEqual(1)
+
+        expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+        expect(collectionRequest.errorMessage).toEqual('')
+        expect(collectionResult.collections).toEqual({
+          'uuid-ABC': {title: 'ABC'},
+          'uuid-123': {title: '123'},
+        })
+
+        const finalStateToAssembleQueryFrom =
+          assembleSearchRequest.mock.calls[1][0]
+        expect(finalStateToAssembleQueryFrom.startDateTime).toEqual('1998') // has filter from the first request
+        expect(finalStateToAssembleQueryFrom.pageOffset).toEqual(20) // has page offset from the second request
+        expect(assembleSearchRequest.mock.results[1].value).toEqual({
+          // confirm result of assemble query has both filter and page pieces
+          facets: false,
+          filters: [
+            {
+              after: '1998',
+              relation: 'intersects',
+              type: 'datetime',
+            },
+          ],
+          page: {
+            max: 20,
+            offset: 20,
+          },
+          queries: [],
+        }) // create the request with both the recently applied filter (for the request that did not complete) PLUS the next page offset
+        expect(
+          collectionMoreResultsReceived.mock.results[0].value.items
+        ).toEqual(mockPayload.data) // and not "INTERUPTED" payload
+      })
+
+      test('new search request which errors', async () => {
         fetchMock
           // mock the results of the first search request:
           .postOnce((url, opts) => url == `${BASE_URL}/search/collection`, 400)
@@ -368,8 +435,6 @@ describe('collection search actions', function(){
         // but only one collectionSearchError via errorHandler
         expect(collectionSearchError.mock.calls.length).toEqual(1)
 
-        collectionSearchError.mockRestore() // cleanup
-
         expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
         expect(collectionRequest.errorMessage).toEqual(
           new Error('Internal Server Error')
@@ -378,28 +443,19 @@ describe('collection search actions', function(){
       })
 
       test('new search request success', async () => {
-        const collectionNewSearchResultsReceived = jest.spyOn(
-          spyableActions,
-          'collectionNewSearchResultsReceived'
-        )
-
         fetchMock
           // mock the results of the first search request:
-          .postOnce(
-            (url, opts) => url == `${BASE_URL}/search/collection`,
-            // 400
-            {
-              data: [
-                {
-                  id: 'INTERUPTED',
-                },
-              ],
-              meta: {
-                facets: {},
-                total: 2,
+          .postOnce((url, opts) => url == `${BASE_URL}/search/collection`, {
+            data: [
+              {
+                id: 'INTERUPTED',
               },
-            }
-          )
+            ],
+            meta: {
+              facets: {},
+              total: 2,
+            },
+          })
           // mock the results of the second search request:
           .postOnce(
             (url, opts) => url == `${BASE_URL}/search/collection`,
@@ -433,8 +489,6 @@ describe('collection search actions', function(){
         expect(fetchMock.calls().length).toEqual(2)
         // but only one collectionNewSearchResultsReceived via successHandler
         expect(collectionNewSearchResultsReceived.mock.calls.length).toEqual(1)
-
-        collectionNewSearchResultsReceived.mockRestore() // cleanup
 
         expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
         expect(collectionRequest.errorMessage).toEqual('')

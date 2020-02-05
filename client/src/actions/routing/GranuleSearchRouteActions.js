@@ -345,7 +345,13 @@ export const submitGranuleSearchNextPage = () => {
 
   // use middleware to dispatch an async function
   return async (dispatch, getState) => {
-    if (isAlreadyInFlight(getState())) {
+    let state = getState()
+    if (
+      isRequestInvalid(
+        state.search.granuleFilter.selectedCollectionIds[0],
+        state
+      )
+    ) {
       // short circuit silently if minimum request requirements are not met
       return
     }

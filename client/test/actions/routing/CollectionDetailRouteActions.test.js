@@ -170,17 +170,41 @@ describe('collection detail action', function(){
   })
 
   describe('interupt in flight request', () => {
-    // TODO cancelling new search request (presumed by new facets) with a new page request could continue to cause the misaligned "applied filter" state vs reality
-    test('new search request which errors', async () => {
-      const collectionDetailError = jest.spyOn(
-        spyableActions,
-        'collectionDetailError'
-      )
-      const granuleMatchingCountError = jest.spyOn(
-        spyableActions,
-        'granuleMatchingCountError'
-      )
+    const collectionDetailError = jest.spyOn(
+      spyableActions,
+      'collectionDetailError'
+    )
+    const granuleMatchingCountError = jest.spyOn(
+      spyableActions,
+      'granuleMatchingCountError'
+    )
+    const collectionDetailReceived = jest.spyOn(
+      spyableActions,
+      'collectionDetailReceived'
+    )
+    const granuleMatchingCountReceived = jest.spyOn(
+      spyableActions,
+      'granuleMatchingCountReceived'
+    )
+    beforeEach(async () => {
+      collectionDetailError.mockClear()
+      granuleMatchingCountError.mockClear()
+      collectionDetailReceived.mockClear()
+      granuleMatchingCountReceived.mockClear()
+    })
+    afterAll(async () => {
+      collectionDetailError.mockClear()
+      granuleMatchingCountError.mockClear()
+      collectionDetailReceived.mockClear()
+      granuleMatchingCountReceived.mockClear()
+      // restore the original (non-mocked) implementation:
+      collectionDetailError.mockRestore()
+      granuleMatchingCountError.mockRestore()
+      collectionDetailReceived.mockRestore()
+      granuleMatchingCountReceived.mockRestore()
+    })
 
+    test('new search request which errors', async () => {
       fetchMock
         // mock the results of the first search request:
         .getOnce(`path:${BASE_URL}/collection/uuid-ABC`, 400)
@@ -220,9 +244,6 @@ describe('collection detail action', function(){
       expect(collectionDetailError.mock.calls.length).toEqual(1)
       expect(granuleMatchingCountError.mock.calls.length).toEqual(1)
 
-      collectionDetailError.mockRestore() // cleanup
-      granuleMatchingCountError.mockRestore()
-
       expect(collectionDetailRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
       expect(collectionDetailRequest.errorMessage).toEqual(
         new Error('Internal Server Error')
@@ -235,15 +256,6 @@ describe('collection detail action', function(){
     })
 
     test('new search request success', async () => {
-      const collectionDetailReceived = jest.spyOn(
-        spyableActions,
-        'collectionDetailReceived'
-      )
-      const granuleMatchingCountReceived = jest.spyOn(
-        spyableActions,
-        'granuleMatchingCountReceived'
-      )
-
       fetchMock
         // mock the results of the first search request:
         .getOnce(`path:${BASE_URL}/collection/uuid-ABC`, {
@@ -301,9 +313,6 @@ describe('collection detail action', function(){
       // but only one collectionDetailReceived via successHandler
       expect(collectionDetailReceived.mock.calls.length).toEqual(1)
       expect(granuleMatchingCountReceived.mock.calls.length).toEqual(1)
-
-      collectionDetailReceived.mockRestore() // cleanup
-      granuleMatchingCountReceived.mockRestore()
 
       expect(collectionDetailRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
       expect(collectionDetailRequest.errorMessage).toEqual('')
