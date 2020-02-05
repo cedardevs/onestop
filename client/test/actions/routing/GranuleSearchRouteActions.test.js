@@ -333,7 +333,7 @@ describe('granule search actions', function(){
 
       // we made 2 fetches
       expect(fetchMock.calls().length).toEqual(2)
-      // but only one granuleNewSearchResultsReceived via successHandler
+      // but only one granuleSearchError via errorHandler
       expect(granuleSearchError.mock.calls.length).toEqual(1)
 
       granuleSearchError.mockRestore() // cleanup
@@ -359,10 +359,7 @@ describe('granule search actions', function(){
           {
             data: [
               {
-                id: 'TIME OUT TEST',
-                attributes: {
-                  title: 'DID IT TIME OUT',
-                },
+                id: 'INTERUPTED',
               },
             ],
             meta: {

@@ -327,7 +327,7 @@ describe('collection search actions', function(){
     })
 
     describe('interupt in flight request', () => {
-      // TODO cancelling new search request (presumed by new facets) with a new page request could continue to cause the misaligned "applied filter" state vs reality
+      // TODO cancelling new search request (presumed by new facets) with a new page request could continue to cause the misaligned "applied filter" state vs reality - or is it? the new state should include both the increased page and any added filters - so it actually should be fine? test this! (goal: assert what body the 2nd request was called with)
       test('new search request which errors', async () => {
         const collectionSearchError = jest.spyOn(
           spyableActions,
@@ -365,7 +365,7 @@ describe('collection search actions', function(){
 
         // we made 2 fetches
         expect(fetchMock.calls().length).toEqual(2)
-        // but only one collectionNewSearchResultsReceived via successHandler
+        // but only one collectionSearchError via errorHandler
         expect(collectionSearchError.mock.calls.length).toEqual(1)
 
         collectionSearchError.mockRestore() // cleanup
@@ -391,10 +391,7 @@ describe('collection search actions', function(){
             {
               data: [
                 {
-                  id: 'TIME OUT TEST',
-                  attributes: {
-                    title: 'DID IT TIME OUT',
-                  },
+                  id: 'INTERUPTED',
                 },
               ],
               meta: {
