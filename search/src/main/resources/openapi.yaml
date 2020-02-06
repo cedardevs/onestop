@@ -945,6 +945,7 @@ components:
           items:
             oneOf:
               - $ref: "#/components/schemas/textQuery"
+              - $ref: "#/components/schemas/granuleNameQuery"
           type: array
         summary:
           default: true
@@ -1093,7 +1094,7 @@ components:
       description: "When providing multiple queryText objects in your search request, keep in mind that they will be combined with a logical AND. Terms use Lucene Query Syntax."
       properties:
         type:
-          description: "Filter type."
+          description: "Query type."
           enum:
             - queryText
         value:
@@ -1132,6 +1133,31 @@ components:
       required:
         - type
       title: "Year Filter"
+      type: object
+    granuleNameQuery:
+      additionalProperties: false
+      description: "When providing multiple granuleName objects in your search request, keep in mind that they will be combined with a logical AND. Terms use Lucene Query Syntax."
+      properties:
+        type:
+          description: "Query type."
+          enum:
+            - granuleName
+        value:
+          description: "Text query to search one or all of the granule name fields that is valid so long as it does not have a leading wildcard ('*' or '?')."
+          pattern: "^(?!\\s*[\\*\\?]+).*"
+          type: string
+        field:
+          description: "The single \"name\" field to query against, or all of the possible fields."
+          enum:
+            - title
+            - fileIdentifier
+            - filename
+            - all
+          default: all
+      required:
+        - type
+        - value
+      title: "Granule Name Query"
       type: object
 
     # Record field schemas
