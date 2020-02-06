@@ -1,0 +1,37 @@
+plugins {
+  id 'groovy'
+}
+
+repositories {
+  mavenCentral()
+  maven { url "https://jitpack.io" }
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+dependencies {
+  implementation("org.codehaus.groovy:groovy:${project.groovyVersion}")
+  implementation("org.codehaus.groovy:groovy-json:${project.groovyVersion}")
+  implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
+  implementation("org.apache.avro:avro:${project.avroVersion}")
+  implementation("org.slf4j:slf4j-api:1.7.25")
+  implementation("ch.qos.logback:logback-classic:1.2.3")
+  implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
+
+  testImplementation("org.spockframework:spock-core:${project.spockVersion}")
+  testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
+  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}")
+  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
+  testImplementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
+  testImplementation("com.github.everit-org.json-schema:org.everit.json.schema:1.9.2")
+  testImplementation("org.json:json:20180813")
+}
+
+jar {
+  baseName = "${rootProject.name}-${project.name}"
+}
