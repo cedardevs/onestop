@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import FlexRow from '../common/ui/FlexRow'
 import {processUrl} from '../../utils/urlUtils'
 import {fontFamilySerif} from '../../utils/styleUtils'
@@ -144,281 +144,233 @@ const Timer = function(callback, delay){
   this.resume()
 }
 
-class FeaturedDatasets extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      current: 0,
-      carouselLength: 0,
-      timer: undefined,
-      collapseImage: false,
-      hovering: false,
-      focusing: false,
-      manualPause: false,
-    }
-  }
+const FeaturedDatasets = props => {
+  const [ current, setCurrent ] = useState(0)
+  const [ carouselLength, setCarouselLength ] = useState(0)
+  const [ timer, setTimer ] = useState()
+  const [ collapseImage, setCollapseImage ] = useState(false)
+  const [ hovering, setHovering ] = useState(false)
+  const [ focusing, setFocusing ] = useState(false)
+  const [ focusingCurrent, setFocusingCurrent ] = useState()
+  const [ manualPause, setManualPause ] = useState(false)
+  const featuredRef = useRef()
 
-  isPaused = () => {
-    const {focusing, hovering, manualPause} = this.state
+  const isPaused = () => {
     return !focusing && !hovering && !manualPause
   }
 
-  search = query => {
-    const {submit} = this.props
+  const search = query => {
+    const {submit} = props
     submit(query)
   }
 
-  togglePause = () => {
-    if (this.isPaused()) {
-      this.state.timer.resume()
+  const togglePause = () => {
+    if (isPaused()) {
+      timer.resume()
     }
   }
 
-  toggleManualPause = () => {
-    this.state.timer.pause()
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        manualPause: !prevState.manualPause,
-      }
-    }, this.togglePause)
+  const toggleManualPause = () => {
+    timer.pause()
+    setManualPause(!manualPause)
+    togglePause()
   }
 
-  handleBlur = () => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: false,
-        focusingCurrent: null,
-      }
-    }, this.togglePause)
+  const handleBlur = () => {
+    setFocusing(false)
+    setFocusingCurrent(null)
+    togglePause()
   }
 
-  handleFocus = i => {
-    this.state.timer.pause()
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: true,
-        focusingCurrent: i,
-        current: i,
-      }
-    }, this.togglePause)
+  const handleFocus = i => {
+    timer.pause()
+    setFocusing(true)
+    setFocusingCurrent(i)
+    setCurrent(i)
+    togglePause()
   }
 
-  handleMouseOut = () => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        hovering: false,
-        current: prevState.focusing
-          ? prevState.focusingCurrent
-          : prevState.current,
-      }
-    }, this.togglePause)
+  const handleMouseOut = () => {
+    setHovering(false)
+    setCurrent(focusing ? focusingCurrent : current)
+    togglePause()
   }
 
-  handleMouseOver = i => {
-    this.state.timer.pause()
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        hovering: true,
-        current: i,
-      }
-    }, this.togglePause)
+  const handleMouseOver = i => {
+    timer.pause()
+    setHovering(true)
+    setCurrent(i)
+    togglePause()
   }
 
-  setupTimer = items => {
-    const {carouselLength, timer} = this.state
-
+  const setupTimer = items => {
     if (items && (items.length || carouselLength !== items.length)) {
-      this.setState({carouselLength: items.length})
+      setCarouselLength(items.length)
 
       if (!timer) {
-        this.setTimerState()
+        setTimerState()
       }
     }
   }
 
-  setTimerState = () => {
-    this.setState({
-      timer: new Timer(() => this.rotateCarousel(), 5000),
-    })
+  const setTimerState = () => {
+    setTimer(new Timer(() => rotateCarousel(), 5000))
   }
 
-  rotateCarousel = () => {
-    const {carouselLength, current} = this.state
-    if (this.isPaused()) {
+  const rotateCarousel = () => {
+    if (isPaused()) {
       const newCurrent = (current + 1) % carouselLength
-      this.setState({current: newCurrent})
+      setCurrent(newCurrent)
     }
-    else {
+    setTimerState()
+  }
+
+  useEffect(
+    // will recieve props
+    () => {
+      setupTimer(props.featured)
+    },
+    [ props.featured ]
+  )
+
+  useEffect(() => {
+    // did mount:
+    setupTimer(props.featured)
+    debounceResize()
+    window.addEventListener('resize', debounceResize)
+
+    // unmount:
+    return function cleanup(){
+      if (timer) {
+        timer.pause()
+      }
+      window.removeEventListener('resize', debounceResize)
     }
-    this.setTimerState()
-  }
+  })
 
-  UNSAFE_componentWillReceiveProps({featured}) {
-    this.setupTimer(featured)
-  }
-
-  componentDidMount() {
-    const {featured} = this.props
-    this.setupTimer(featured)
-
-    // need to set dimensions intially before resize events
-    this.debounceResize()
-    // subsequent resize event will retrigger our calculation
-    window.addEventListener('resize', this.debounceResize)
-  }
-
-  componentWillUnmount() {
-    if (this.state.timer) {
-      this.state.timer.pause()
-    }
-
-    // remember to remove custom listeners before unmounting
-    window.removeEventListener('resize', this.debounceResize)
-  }
-
-  debounceResize = () => {
+  let resizeId // ???? TODO hook version of this ok?
+  const debounceResize = () => {
     // prevent resize work unless threshold is reached
     // this helps ensure the new width doesn't stick on a transient value
     const resizeThreshold = 250 // ms
-    clearTimeout(this.resizeId)
-    this.resizeId = setTimeout(this.resize, resizeThreshold)
+    clearTimeout(resizeId)
+    resizeId = setTimeout(resize, resizeThreshold)
   }
 
-  resize = () => {
+  const resize = () => {
     // do work only if iframe exists
-    if (this.featuredRef) {
+    if (featuredRef) {
       // get new width dynamically
-      const featuredRect = this.featuredRef.getBoundingClientRect()
+      const featuredRect = featuredRef.current.getBoundingClientRect()
       const newWidth = parseFloat(featuredRect.width)
       // if the image's new width goes below our threshold, collapse
-      this.setState(prevState => {
-        return {
-          ...prevState,
-          collapseImage: newWidth < 700,
-        }
-      })
+      setCollapseImage(newWidth < 700)
     }
   }
 
-  render() {
-    const {featured} = this.props
-    const {current, collapseImage, manualPause} = this.state
+  // render:
+  const manualPauseLabel = !manualPause ? 'Pause Animation' : 'Start Animation'
+  const manualPauseAriaLabel = !manualPause
+    ? 'Pause Featured Datasets Animation'
+    : 'Start Featured Datasets Animation'
+  const manualPauseButton = (
+    <Button
+      title={manualPauseAriaLabel}
+      text={manualPauseLabel}
+      onClick={toggleManualPause}
+      style={stylePlayPauseButton(collapseImage)}
+      styleFocus={stylePlayPauseFocus}
+      styleHover={stylePlayPauseHover}
+      ariaSelected={!isPaused()}
+    >
+      <SvgIcon
+        size="1.3em"
+        path={!manualPause ? pause_circle_o : play_circle_o}
+      />{' '}
+      <span>{manualPauseLabel}</span>
+    </Button>
+  )
 
-    const manualPauseLabel = !manualPause
-      ? 'Pause Animation'
-      : 'Start Animation'
-    const manualPauseAriaLabel = !manualPause
-      ? 'Pause Featured Datasets Animation'
-      : 'Start Featured Datasets Animation'
-    const manualPauseButton = (
-      <Button
-        title={manualPauseAriaLabel}
-        text={manualPauseLabel}
-        onClick={this.toggleManualPause}
-        style={stylePlayPauseButton(collapseImage)}
-        styleFocus={stylePlayPauseFocus}
-        styleHover={stylePlayPauseHover}
-        ariaSelected={!this.isPaused()}
-      >
-        <SvgIcon
-          size="1.3em"
-          path={!manualPause ? pause_circle_o : play_circle_o}
-        />{' '}
-        <span>{manualPauseLabel}</span>
-      </Button>
+  if (props.featured !== null && props.featured.length > 0) {
+    const titleList = (
+      <ul key="title-list" style={styleTitleList(collapseImage)}>
+        {props.featured.map((f, i, arr) => {
+          const active = current === i
+          const first = i === 0
+          // const last = i === arr.length - 1
+          const last = false
+          return (
+            <li
+              style={styleTitle(active, first, last, collapseImage)}
+              key={i}
+              onMouseEnter={() => handleMouseOver(i)}
+              onMouseLeave={handleMouseOut}
+            >
+              <Button
+                text={f.title}
+                title={`${f.title} Featured Data Search`}
+                onClick={() => search(f.searchTerm)}
+                onFocus={() => handleFocus(i)}
+                onBlur={handleBlur}
+                style={styleFeaturedButton(collapseImage)}
+                styleHover={styleFeaturedButtonHover}
+                styleFocus={styleFeaturedButtonFocus}
+              />
+            </li>
+          )
+        })}
+        <li style={styleTitle(false, false, true, collapseImage)}>
+          {manualPauseButton}
+        </li>
+      </ul>
     )
 
-    if (featured !== null && featured.length > 0) {
-      const titleList = (
-        <ul key="title-list" style={styleTitleList(collapseImage)}>
-          {featured.map((f, i, arr) => {
-            const active = current === i
-            const first = i === 0
-            // const last = i === arr.length - 1
-            const last = false
+    const imageContainer = (
+      <div key="image-container" style={styleImageContainer}>
+        {props.featured.map((f, i) => {
+          const active = current === i
+          if (active) {
+            const backgroundURL = processUrl(f.imageUrl)
             return (
-              <li
-                style={styleTitle(active, first, last, collapseImage)}
-                key={i}
-                onMouseEnter={() => this.handleMouseOver(i)}
-                onMouseLeave={this.handleMouseOut}
-              >
-                <Button
-                  text={f.title}
-                  title={`${f.title} Featured Data Search`}
-                  onClick={() => this.search(f.searchTerm)}
-                  onFocus={() => this.handleFocus(i)}
-                  onBlur={this.handleBlur}
-                  style={styleFeaturedButton(collapseImage)}
-                  styleHover={styleFeaturedButtonHover}
-                  styleFocus={styleFeaturedButtonFocus}
+              <div key={i} style={styleImage} aria-hidden={true}>
+                <div
+                  title={f.title}
+                  style={styleFeaturedImage(backgroundURL)}
+                  onClick={() => {
+                    search(f.searchTerm)
+                  }}
+                  onMouseEnter={() => handleMouseOver(i)}
+                  onMouseLeave={handleMouseOut}
                 />
-              </li>
+              </div>
             )
-          })}
-          <li style={styleTitle(false, false, true, collapseImage)}>
-            {manualPauseButton}
-          </li>
-        </ul>
-      )
+          }
+        })}
+      </div>
+    )
 
-      const imageContainer = (
-        <div key="image-container" style={styleImageContainer}>
-          {featured.map((f, i) => {
-            const active = current === i
-            if (active) {
-              const backgroundURL = processUrl(f.imageUrl)
-              return (
-                <div key={i} style={styleImage} aria-hidden={true}>
-                  <div
-                    title={f.title}
-                    style={styleFeaturedImage(backgroundURL)}
-                    onClick={() => {
-                      this.search(f.searchTerm)
-                    }}
-                    onMouseEnter={() => this.handleMouseOver(i)}
-                    onMouseLeave={this.handleMouseOut}
-                  />
-                </div>
-              )
-            }
-          })}
+    const flexItems = collapseImage
+      ? [ titleList ]
+      : [ titleList, imageContainer ]
+
+    return (
+      <nav
+        aria-labelledby="featuredDatasets"
+        style={styleFeaturedDatasetsWrapper}
+      >
+        <h2 style={styleFeaturedDatasetsLabel} id="featuredDatasets">
+          Featured Data Sets
+        </h2>
+        <div ref={featuredRef} style={styleFeaturedDatasets}>
+          <FlexRow items={flexItems} />
         </div>
-      )
-
-      const flexItems = collapseImage
-        ? [ titleList ]
-        : [ titleList, imageContainer ]
-
-      return (
-        <nav
-          aria-labelledby="featuredDatasets"
-          style={styleFeaturedDatasetsWrapper}
-        >
-          <h2 style={styleFeaturedDatasetsLabel} id="featuredDatasets">
-            Featured Data Sets
-          </h2>
-          <div
-            ref={featuredRef => {
-              this.featuredRef = featuredRef
-            }}
-            style={styleFeaturedDatasets}
-          >
-            <FlexRow items={flexItems} />
-          </div>
-          <br />
-          <br />
-        </nav>
-      )
-    }
-    else {
-      return null
-    }
+        <br />
+        <br />
+      </nav>
+    )
+  }
+  else {
+    return null
   }
 }
 
