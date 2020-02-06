@@ -1,10 +1,9 @@
-package main
+package middleware
 
 import (
 	"testing"
 	"reflect"
 	"github.com/rs/zerolog/log"
-	"github.com/StrayCat1/gocli/internal/pkg/middleware"
 )
 
 func TestFindGaps(t *testing.T) {
@@ -26,7 +25,7 @@ func TestFindGaps(t *testing.T) {
 		"2019-10-07T12:30:00.000Z | 2019-10-07T13:00:29.000Z | 30m29s",
 	}
 
-	result := middleware.FindGaps(intervalSeconds, mockItemList)
+	result := FindGaps(intervalSeconds, mockItemList)
 
 	eq := reflect.DeepEqual(expectedScdrResponse, result)
 

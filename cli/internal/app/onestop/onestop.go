@@ -2,8 +2,8 @@ package onestop
 
 import (
 	"github.com/danielgtaylor/openapi-cli-generator/cli"
-	"github.com/StrayCat1/gocli/internal/pkg/flags"
-	"github.com/StrayCat1/gocli/internal/pkg/utils"
+	"github.com/CEDARDEVS/onestop/cli/internal/pkg/flags"
+	"github.com/CEDARDEVS/onestop/cli/internal/pkg/utils"
 )
 
 const SearchCollectionCmd = "searchcollection"

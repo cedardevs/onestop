@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"github.com/rs/zerolog/log"
@@ -6,8 +6,7 @@ import (
 	"testing"
 	"time"
 	"strconv"
-	"github.com/StrayCat1/gocli/internal/pkg/flags"
-	"github.com/StrayCat1/gocli/internal/pkg/utils"
+	"github.com/CEDARDEVS/onestop/cli/internal/pkg/flags"
 )
 
 func TestParseStartAndEndTime(t *testing.T) {
@@ -70,7 +69,7 @@ func TestParseStartAndEndTime(t *testing.T) {
 	}
 
 	for i := 1; i < len(expectedResults); i++ {
-		got := utils.ParseStartAndEndTime(paramList[i])
+		got := ParseStartAndEndTime(paramList[i])
 		if len(got) > 0 && got[0] != expectedResults[i][0] {
 			log.Info().Msg(got[0])
 			log.Info().Msg(expectedResults[i][0])
@@ -102,7 +101,7 @@ func TestParseDateTime(t *testing.T) {
 
 	expectedResults := [][]string{expectedResult1, expectedResult2, expectedResult3}
 	for i := 1; i < len(expectedResults); i++ {
-		got := utils.ParseDate(paramList[i])
+		got := ParseDate(paramList[i])
 		if got[0] != expectedResults[i][0] {
 			log.Info().Msg("GOT")
 			log.Info().Msg(got[0])
@@ -117,7 +116,7 @@ func TestParseYear(t *testing.T) {
 	params := viper.New()
 	params.Set(flags.YearFlag, "2018")
 	expectedResult := []string{"{\"type\":\"datetime\", \"after\":\"2018-01-01T00:00:00Z\", \"before\":\"2019-01-01T00:00:00Z\"}"}
-	got := utils.ParseYear(params)
+	got := ParseYear(params)
 	if got[0] != expectedResult[0] {
 		log.Info().Msg(got[0])
 		log.Info().Msg(expectedResult[0])
@@ -131,7 +130,7 @@ func TestParsePolygon(t *testing.T) {
 	params.Set(flags.SpatialFilterFlag, "POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))")
 	expectedResult := []string{"{\"geometry\": { \"coordinates\": [[[22.686768,34.051522], [30.606537,34.051522], [30.606537,41.280903], [22.686768,41.280903], [22.686768,34.051522]]], \"type\": \"Polygon\"}, \"type\": \"geometry\"}"}
 
-	got := utils.ParsePolygon(params)
+	got := ParsePolygon(params)
 	if got[0] != expectedResult[0] {
 		t.Error("TestParsePolygon Failed")
 	}

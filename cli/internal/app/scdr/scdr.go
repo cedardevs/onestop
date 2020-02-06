@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/viper"
 	"gopkg.in/h2non/gentleman.v2"
 	"strings"
-	"github.com/StrayCat1/gocli/internal/pkg/flags"
-	"github.com/StrayCat1/gocli/internal/app/generated"
-	"github.com/StrayCat1/gocli/internal/pkg/utils"
-	"github.com/StrayCat1/gocli/internal/pkg/middleware"
+	"github.com/CEDARDEVS/onestop/cli/internal/pkg/flags"
+	"github.com/CEDARDEVS/onestop/cli/internal/app/generated"
+	"github.com/CEDARDEVS/onestop/cli/internal/pkg/utils"
+	"github.com/CEDARDEVS/onestop/cli/internal/pkg/middleware"
 )
 
 const ScdrFileCmd = "scdr-files"

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/StrayCat1/gocli/internal/pkg/flags"
+	"github.com/CEDARDEVS/onestop/cli/internal/pkg/flags"
 )
 
 //this function is pre-request RegisterBefore
