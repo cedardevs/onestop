@@ -84,6 +84,7 @@ task integrationTest(type: Test) {
       // the elasticsearch brought up by CircleCI (see `.circleci/config`) runs on localhost:9200
       systemProperty 'elasticsearch.host', 'localhost'
       systemProperty 'elasticsearch.port', '9200'
+      systemProperty 'elasticsearch.ssl.enabled', false
     }
     else {
       def elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:${project.esVersion}")
