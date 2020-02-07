@@ -2,8 +2,14 @@ package org.cedar.onestop.indexer.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
+import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.schemas.avro.psi.*;
 import org.cedar.schemas.avro.util.AvroUtils;
+import org.elasticsearch.ElasticsearchGenerationException;
+import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,21 +21,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.cedar.schemas.avro.psi.ValidDescriptor.*;
+import static org.elasticsearch.action.DocWriteRequest.OpType.*;
+import static org.elasticsearch.action.DocWriteRequest.OpType.UPDATE;
 
 public class IndexingHelpers {
   static final private Logger log = LoggerFactory.getLogger(IndexingHelpers.class);
 
-  public static boolean isTombstone(ParsedRecord value) {
-    return value == null;
-  }
-
-  public static boolean isPrivate(ParsedRecord value) {
-    var optionalPublishing = Optional.of(value).map(ParsedRecord::getPublishing);
-    var isPrivate = optionalPublishing.map(Publishing::getIsPrivate).orElse(false);
-    var until = optionalPublishing.map(Publishing::getUntil).orElse(null);
-    return (until == null || until > System.currentTimeMillis()) ? isPrivate : !isPrivate;
-  }
-
+  ////////////////////////////
+  // Validation             //
+  ////////////////////////////
   public static Map validateMessage(String id, ParsedRecord messageMap) {
     // FIXME Improve testability of failures by creating an Enum for invalid messages
     List<String> errors = new ArrayList<>();
@@ -86,6 +86,51 @@ public class IndexingHelpers {
       result.put("valid", true);
       return result;
     }
+  }
+
+  ////////////////////////////
+  // Transformation         //
+  ////////////////////////////
+  public static List<DocWriteRequest<?>> mapRecordToRequests(String topic, String id, ValueAndTimestamp<ParsedRecord> value, BulkIndexingConfig config) {
+    try {
+      var record = ValueAndTimestamp.getValueOrNull(value);
+      var operation = (isTombstone(record) || isPrivate(record)) ? DELETE : INDEX;
+      var indices = config.getTargetIndices(topic, operation);
+      return indices.stream()
+          .map(indexName -> buildWriteRequest(indexName, operation, id, value))
+          .collect(Collectors.toList());
+    } catch (ElasticsearchGenerationException e) {
+      log.error("failed to serialize record with key [" + id + "] to json", e);
+      return new ArrayList<>();
+    }
+  }
+
+  public static DocWriteRequest<?> buildWriteRequest(String indexName, DocWriteRequest.OpType opType, String id, ValueAndTimestamp<ParsedRecord> record) {
+    if (opType == DELETE) {
+      return new DeleteRequest(indexName).id(id);
+    }
+
+    var formattedRecord = reformatMessageForSearch(record.value());
+    formattedRecord.put("stagedDate", record.timestamp());
+
+    if (opType == INDEX || opType == CREATE) {
+      return new IndexRequest(indexName).opType(opType).id(id).source(formattedRecord);
+    }
+    if (opType == UPDATE) {
+      return new UpdateRequest(indexName, id).doc(formattedRecord);
+    }
+    throw new UnsupportedOperationException("unsupported elasticsearch OpType: " + opType);
+  }
+
+  public static boolean isTombstone(ParsedRecord value) {
+    return value == null;
+  }
+
+  public static boolean isPrivate(ParsedRecord value) {
+    var optionalPublishing = Optional.of(value).map(ParsedRecord::getPublishing);
+    var isPrivate = optionalPublishing.map(Publishing::getIsPrivate).orElse(false);
+    var until = optionalPublishing.map(Publishing::getUntil).orElse(null);
+    return (until == null || until > System.currentTimeMillis()) ? isPrivate : !isPrivate;
   }
 
   public static Map<String, Object> reformatMessageForSearch(ParsedRecord record) {

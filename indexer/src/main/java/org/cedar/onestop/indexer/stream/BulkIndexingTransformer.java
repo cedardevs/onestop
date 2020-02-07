@@ -4,7 +4,7 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.PunctuationType;
-import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.onestop.indexer.util.BulkIndexingConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
@@ -13,21 +13,11 @@ import org.cedar.onestop.indexer.util.IndexingOutput;
 import org.cedar.schemas.analyze.Analyzers;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.parse.DefaultParser;
-import org.elasticsearch.ElasticsearchGenerationException;
-import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.elasticsearch.action.DocWriteRequest.OpType.*;
 
 public class BulkIndexingTransformer implements Transformer<String, ValueAndTimestamp<ParsedRecord>, KeyValue<String, IndexingOutput>> {
   private static final Logger log = LoggerFactory.getLogger(BulkIndexingTransformer.class);
@@ -36,7 +26,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
   private final ElasticsearchService client;
   private final BulkIndexingConfig config;
 
-  private KeyValueStore<String, ValueAndTimestamp<ParsedRecord>> store;
+  private TimestampedKeyValueStore<String, ParsedRecord> store;
   private ProcessorContext context;
   private BulkRequest request;
 
@@ -50,7 +40,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
   @SuppressWarnings("unchecked")
   public void init(ProcessorContext context) {
     this.context = context;
-    this.store = (KeyValueStore<String, ValueAndTimestamp<ParsedRecord>>) this.context.getStateStore(storeName);
+    this.store = (TimestampedKeyValueStore<String, ParsedRecord>) this.context.getStateStore(storeName);
     this.request = new BulkRequest();
     this.context.schedule(config.getMaxPublishInterval(), PunctuationType.WALL_CLOCK_TIME, timestamp -> flushRequest());
   }
@@ -66,44 +56,13 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
     }
 
     store.put(key, record);
-    var requests = mapRecordToRequests(context.topic(), key, record);
+    var requests = IndexingHelpers.mapRecordToRequests(context.topic(), key, record, config);
     requests.forEach(request::add);
     if (request.estimatedSizeInBytes() >= config.getMaxPublishBytes()) {
       log.debug("flushing request due to size: {} >= {}", request.estimatedSizeInBytes(), config.getMaxPublishBytes());
       flushRequest();
     }
     return null; // outputs are forwarded later when bulk request is flushed
-  }
-
-  private List<DocWriteRequest> mapRecordToRequests(String topic, String id, ValueAndTimestamp<ParsedRecord> value) {
-    try {
-      var record = ValueAndTimestamp.getValueOrNull(value);
-      var operation = (IndexingHelpers.isTombstone(record) || IndexingHelpers.isPrivate(record)) ? DELETE : INDEX;
-      var indices = config.getTargetIndices(topic, operation);
-      return indices.stream()
-          .map(indexName -> buildWriteRequest(indexName, operation, id, value))
-          .collect(Collectors.toList());
-    } catch (ElasticsearchGenerationException e) {
-      log.error("failed to serialize record with key [" + id + "] to json", e);
-      return new ArrayList<>();
-    }
-  }
-
-  private DocWriteRequest buildWriteRequest(String indexName, DocWriteRequest.OpType opType, String id, ValueAndTimestamp<ParsedRecord> record) {
-    if (opType == DELETE) {
-      return new DeleteRequest(indexName).id(id);
-    }
-
-    var formattedRecord = IndexingHelpers.reformatMessageForSearch(record.value());
-    formattedRecord.put("stagedDate", record.timestamp());
-
-    if (opType == INDEX || opType == CREATE) {
-      return new IndexRequest(indexName).opType(opType).id(id).source(formattedRecord);
-    }
-    if (opType == UPDATE) {
-      return new UpdateRequest(indexName, id).doc(formattedRecord);
-    }
-    throw new UnsupportedOperationException("unsupported elasticsearch OpType: " + opType);
   }
 
   private void flushRequest() {

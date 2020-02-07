@@ -1,12 +1,14 @@
 package org.cedar.onestop.indexer.util
 
 import groovy.json.JsonSlurper
+import org.apache.kafka.streams.state.ValueAndTimestamp
 import org.cedar.onestop.elastic.common.FileUtil
 import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.avro.psi.Analysis
 import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.IdentificationAnalysis
 import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.Publishing
 import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
@@ -16,10 +18,17 @@ import org.cedar.schemas.avro.psi.TitleAnalysis
 import org.cedar.schemas.avro.psi.ValidDescriptor
 import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.parse.ISOParser
+import org.elasticsearch.action.DocWriteRequest
+import org.elasticsearch.action.delete.DeleteRequest
+import org.elasticsearch.action.index.IndexRequest
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.Duration
+
 import static org.cedar.schemas.avro.util.TemporalTestData.getSituations
+import static org.elasticsearch.action.DocWriteRequest.OpType.DELETE
+import static org.elasticsearch.action.DocWriteRequest.OpType.INDEX
 
 
 @Unroll
@@ -33,7 +42,18 @@ class IndexingHelpersSpec extends Specification {
   static inputRecord = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
 
   static inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml').text
+  static inputCollectionDiscovery = ISOParser.parseXMLMetadataToDiscovery(inputCollectionXml)
+  static inputCollectionAnalysis = Analyzers.analyze(inputCollectionDiscovery)
   static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-granule.xml').text
+
+  static testTopic = 'testtopic'
+  static testIndex = 'testindex'
+  static indexingConfig = BulkIndexingConfig.newBuilder()
+      .withMaxPublishInterval(Duration.ofSeconds(10))
+      .withMaxPublishBytes(10000)
+      .addIndexMapping(testTopic, INDEX, testIndex)
+      .addIndexMapping(testTopic, DELETE, testIndex)
+      .build()
 
   static expectedKeywords = [
       "SIO > Super Important Organization",
@@ -122,6 +142,111 @@ class IndexingHelpersSpec extends Specification {
     !IndexingHelpers.validateMessage('dummy id', record)?.valid
   }
 
+  ////////////////////////////
+  // Transform ES Requests  //
+  ////////////////////////////
+  def "tombstones create delete requests"() {
+    def testKey = "ABC"
+
+    when:
+    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, null, indexingConfig)
+
+    then:
+    results.size() == 1
+    results[0] instanceof DeleteRequest
+    results[0].index() == testIndex
+    results[0].id() == testKey
+  }
+
+  def "tombstones create multiple delete requests when configured"() {
+    def testKey = 'ABC'
+    def multipleDeleteConfig = BulkIndexingConfig.newBuilder()
+        .withMaxPublishInterval(Duration.ofSeconds(10))
+        .withMaxPublishBytes(10000)
+        .addIndexMapping(testTopic, DELETE, 'a')
+        .addIndexMapping(testTopic, DELETE, 'b')
+        .build()
+
+    when:
+    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, null, multipleDeleteConfig)
+
+    then:
+    results.size() == 2
+    results.every { it instanceof DeleteRequest }
+    results.every { it.id() == testKey }
+    results*.index() == ['a', 'b']
+  }
+
+  def "creates multiple index requests when configured"() {
+    def testKey = 'ABC'
+    def testRecord = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
+        .setAnalysis(inputCollectionAnalysis)
+        .setDiscovery(inputCollectionDiscovery)
+        .setPublishing(Publishing.newBuilder().build()).build()
+    def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
+    def multipleIndexConfig = BulkIndexingConfig.newBuilder()
+        .withMaxPublishInterval(Duration.ofSeconds(10))
+        .withMaxPublishBytes(10000)
+        .addIndexMapping(testTopic, INDEX, 'a')
+        .addIndexMapping(testTopic, INDEX, 'b')
+        .build()
+
+    when:
+    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, testValue, multipleIndexConfig)
+
+    then:
+    results.size() == 2
+    results.every { it instanceof IndexRequest }
+    results.every { it.id() == testKey }
+    results*.index() == ['a', 'b']
+  }
+
+  def "record that is #testCase creates delete request"() {
+    def testKey = "ABC"
+    def testRecord = ParsedRecord.newBuilder().setPublishing(publishingObject).build()
+    def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
+
+    when:
+    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, testValue, indexingConfig)
+
+    then:
+    results.size() == 1
+    results[0].id() == testKey
+    results[0].index() == testIndex
+    results[0] instanceof DeleteRequest
+
+    where:
+    testCase               | publishingObject
+    "private with no time" | Publishing.newBuilder().setIsPrivate(true).build()
+    "private until future" | Publishing.newBuilder().setIsPrivate(true).setUntil(System.currentTimeMillis() + 60000).build()
+    "public until past"    | Publishing.newBuilder().setIsPrivate(false).setUntil(System.currentTimeMillis() - 60000).build()
+  }
+
+  def "record that is #testCase creates index request"() {
+    def testKey = "ABC"
+    def testRecord = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
+        .setAnalysis(inputCollectionAnalysis)
+        .setDiscovery(inputCollectionDiscovery)
+        .setPublishing(publishingObject).build()
+    def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
+
+    when:
+    def result = IndexingHelpers.mapRecordToRequests(testTopic, testKey, testValue, indexingConfig)
+
+    then:
+    result[0].id() == testKey
+    result[0].index() == testIndex
+    result[0] instanceof IndexRequest
+
+    where:
+    testCase              | publishingObject
+    "private until past"  | Publishing.newBuilder().setIsPrivate(true).setUntil(System.currentTimeMillis() - 60000).build()
+    "public with no time" | Publishing.newBuilder().setIsPrivate(false).build()
+    "public until future" | Publishing.newBuilder().setIsPrivate(false).setUntil(System.currentTimeMillis() + 60000).build()
+  }
+
   ///////////////////////////////
   // Generic Indexed Fields    //
   ///////////////////////////////
@@ -138,9 +263,9 @@ class IndexingHelpersSpec extends Specification {
     result.keySet().each({ assert fields.contains(it) })
 
     where:
-    type          | mappingSource                               | dataSource
-    'collection'  | 'mappings/search_collectionIndex.json'  | 'test-iso-collection.xml'
-    'granule'     | 'mappings/search_granuleIndex.json'     | 'test-iso-granule.xml'
+    type         | mappingSource                          | dataSource
+    'collection' | 'mappings/search_collectionIndex.json' | 'test-iso-collection.xml'
+    'granule'    | 'mappings/search_granuleIndex.json'    | 'test-iso-granule.xml'
   }
 
   ////////////////////////////////
