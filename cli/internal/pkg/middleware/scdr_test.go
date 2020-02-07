@@ -38,6 +38,6 @@ func TestFindGaps(t *testing.T) {
 		for _,  v := range expectedScdrResponse{
 			log.Info().Msg(v)
 		}
-		t.Error("FAILED BRO!")
+		t.Error("FindGaps FAILED")
 	}
 }
