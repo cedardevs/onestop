@@ -33,28 +33,6 @@ class SearchRequestParserService {
     return requestQuery
   }
 
-  static Map createCollectionsAggregation() {
-    return [
-        terms       : [
-            field: "internalParentIdentifier",
-            size : Integer.MAX_VALUE,
-            order: [
-                "score_agg.max": "desc"
-            ]
-        ],
-        aggregations: [
-            "score_agg": [
-                stats: [
-                    script: [
-                        source: "_score",
-                        lang  : "expression"
-                    ]
-                ]
-            ]
-        ]
-    ]
-  }
-
   Map createFacetAggregations() {
     def aggregations = [:]
     facetNameMappings.each { name, field ->
@@ -70,25 +48,6 @@ class SearchRequestParserService {
       aggregations.put(name, agg)
     }
     return aggregations
-  }
-
-  private List<Map> assembleTextFilterAsQuery(List<Map> filters) {
-    if (!filters) {
-      return null
-    }
-    def groupedFilters = filters.groupBy { it.type }
-    return groupedFilters.text.collect {
-      return [
-        query_string: [
-          query               : (it.value as String).trim(),
-          fields              : ["${(it.field as String).trim()}^1"],
-          phrase_slop         : config?.phraseSlop ?: 0,
-          tie_breaker         : config?.tieBreaker ?: 0,
-          minimum_should_match: config?.minimumShouldMatch ?: '75%',
-          lenient             : true
-        ]
-      ]
-    }
   }
 
   private List<Map> assembleScoringContext(List<Map> queries) {
