@@ -172,6 +172,49 @@ class JsonValidatorSpec extends Specification {
         """{"type": "queryText", "value": "temperature", "cat": "meow"}"""
   }
 
+  def 'valid granule name filter: #desc'() {
+    given:
+    def schema = 'granuleNameFilter'
+    def singleQuery = """{ "filters": [ ${request} ] }"""
+
+    when:
+    def validSearch = validateSearchSchema(singleQuery)
+
+    then:
+    validSearch.success
+
+    where:
+    desc | request
+    'without field specified' |
+        """{"type": "granuleName", "value": "abc123"}"""
+    'with field specified' |
+        """{"type": "granuleName", "value": "abc123", "field": "title"}"""
+  }
+
+  def 'invalid granule name filter: #desc (reason: #reasoning)'() {
+    given:
+    def schema = 'granuleNameFilter'
+    def singleQuery = """{ "filters": [ ${request} ] }"""
+
+    when:
+    validateSearchSchema(singleQuery)
+
+    then: "exception is thrown"
+    def searchException = thrown(Exception)
+    searchException.message.contains('not a valid request')
+
+    where:
+    desc | reasoning | request
+    'begins with ?' | 'cripples services' |
+        """{"type": "granuleName", "value": "?abc123"}"""
+    'begins with *' | 'cripples services' |
+        """{"type": "granuleName", "value": "*abc123"}"""
+    'begins with * not circumvented by leading whitespace' | '' |
+        """{"type": "granuleName", "value": " *abc123"}"""
+    'invalid field' | "'cat' is not a field on the query object" |
+        """{"type": "granuleName", "value": "abc123", "cat": "meow"}"""
+  }
+
   def 'valid filter: #component #desc'() {
     given:
     def singleQuery = """{ "filters": [ ${request} ] }"""

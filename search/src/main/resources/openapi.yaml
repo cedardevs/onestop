@@ -938,6 +938,7 @@ components:
               - $ref: "#/components/schemas/geometryFilter"
               - $ref: "#/components/schemas/collectionFilter"
               - $ref: "#/components/schemas/excludeGlobalFilter"
+              - $ref: "#/components/schemas/granuleNameFilter"
           type: array
         page:
           $ref: "#/components/schemas/page"
@@ -945,7 +946,6 @@ components:
           items:
             oneOf:
               - $ref: "#/components/schemas/textQuery"
-              - $ref: "#/components/schemas/granuleNameQuery"
           type: array
         summary:
           default: true
@@ -1134,16 +1134,16 @@ components:
         - type
       title: "Year Filter"
       type: object
-    granuleNameQuery:
+    granuleNameFilter:
       additionalProperties: false
-      description: "When providing multiple granuleName objects in your search request, keep in mind that they will be combined with a logical AND. Terms use Lucene Query Syntax."
+      description: "Filter by granule \"name\" fields with partial matches possible (unlike the standard Text Query) when strings are camel-cased, and/or have underscores or hyphens."
       properties:
         type:
-          description: "Query type."
+          description: "Filter type."
           enum:
             - granuleName
         value:
-          description: "Text query to search one or all of the granule name fields that is valid so long as it does not have a leading wildcard ('*' or '?')."
+          description: "Text to search one or all of the granule name fields. Text is valid so long as it does not have a leading wildcard ('*' or '?')."
           pattern: "^(?!\\s*[\\*\\?]+).*"
           type: string
         field:
