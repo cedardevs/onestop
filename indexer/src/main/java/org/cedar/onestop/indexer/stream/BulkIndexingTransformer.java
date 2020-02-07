@@ -10,9 +10,7 @@ import org.cedar.onestop.indexer.util.BulkIndexingConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.indexer.util.IndexingHelpers;
 import org.cedar.onestop.indexer.util.IndexingOutput;
-import org.cedar.schemas.analyze.Analyzers;
 import org.cedar.schemas.avro.psi.ParsedRecord;
-import org.cedar.schemas.parse.DefaultParser;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +45,6 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
 
   @Override
   public KeyValue<String, IndexingOutput> transform(String key, ValueAndTimestamp<ParsedRecord> record) {
-    var filledInRecord = DefaultParser.fillInDefaults(record != null ? record.value() : null);
-    var analyzedRecord = Analyzers.addAnalysis(filledInRecord);
-    var validationResult = IndexingHelpers.validateMessage(key, analyzedRecord);
-    if (analyzedRecord != null && !((Boolean) validationResult.get("valid"))) {
-      var output = new IndexingOutput(false, record, null);
-      return new KeyValue<>(key, output);
-    }
-
     store.put(key, record);
     var requests = IndexingHelpers.mapRecordToRequests(context.topic(), key, record, config);
     requests.forEach(request::add);
@@ -83,7 +73,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
           log.debug(item.getOpType() + " record with key [" + id + "] and index [" + item.getIndex() + "] succeeded");
         }
         var record = store.get(id);
-        var result = new IndexingOutput(true, record, item);
+        var result = new IndexingOutput(record, item);
         context.forward(id, result);
         store.delete(id);
       });

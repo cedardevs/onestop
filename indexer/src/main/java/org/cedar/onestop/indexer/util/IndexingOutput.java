@@ -7,19 +7,12 @@ import org.elasticsearch.action.bulk.BulkItemResponse;
 
 public class IndexingOutput {
 
-  private final boolean valid;
   private final ValueAndTimestamp<ParsedRecord> recordAndTimestamp;
   private final BulkItemResponse itemResponse;
 
-
-  public IndexingOutput(boolean valid, ValueAndTimestamp<ParsedRecord> recordAndTimestamp, BulkItemResponse itemResponse) {
-    this.valid = valid;
+  public IndexingOutput(ValueAndTimestamp<ParsedRecord> recordAndTimestamp, BulkItemResponse itemResponse) {
     this.recordAndTimestamp = recordAndTimestamp;
     this.itemResponse = itemResponse;
-  }
-
-  public boolean isValid() {
-    return valid;
   }
 
   public ValueAndTimestamp<ParsedRecord> getRecordAndTimestamp() {
@@ -53,8 +46,7 @@ public class IndexingOutput {
   @Override
   public String toString() {
     return "IndexingOutput{" +
-        "valid=" + valid +
-        ", id=" + getId() +
+        "id=" + getId() +
         ", index=" + getIndex() +
         ", operation=" + getOperation() +
         ", successful=" + isSuccessful() +

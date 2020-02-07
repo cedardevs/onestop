@@ -11,15 +11,18 @@ import org.cedar.onestop.elastic.common.FileUtil;
 import org.cedar.onestop.indexer.stream.SitemapTriggerProcessor;
 import org.cedar.onestop.indexer.util.BulkIndexingConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
+import org.cedar.onestop.indexer.util.IndexingHelpers;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.constants.Topics;
 import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.kafka.common.util.Timestamper;
+import org.cedar.schemas.analyze.Analyzers;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
 import org.cedar.schemas.avro.psi.Relationship;
 import org.cedar.schemas.avro.psi.RelationshipType;
+import org.cedar.schemas.parse.DefaultParser;
 import org.elasticsearch.action.DocWriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,21 +71,23 @@ public class SearchIndexTopology {
         .build();
 
     // merge delete/index requests and send them to ES in bulk
-    var bulkResults = streamsBuilder.<String, ParsedRecord>stream(Topics.parsedChangelogTopics(StreamsApps.REGISTRY_ID))
+    var inputRecords = streamsBuilder.<String, ParsedRecord>stream(Topics.parsedChangelogTopics(StreamsApps.REGISTRY_ID));
+    var filledInRecords = inputRecords.mapValues(DefaultParser::fillInDefaults);
+    var analyzedRecords = filledInRecords.mapValues(Analyzers::addAnalysis);
+    var validRecords = analyzedRecords.filter((k, v) -> v == null || (Boolean) IndexingHelpers.validateMessage(k, v).get("valid"));
+    var bulkResults = validRecords
         .peek((k, v) -> log.debug("submitting [{} => {}] to bulk indexer", k, v))
         .transformValues(Timestamper<ParsedRecord>::new)
         .transform(
             () -> esService.buildBulkIndexingTransformer(bulkIndexerStoreName, bulkConfig),
             bulkIndexerStoreName);
+    var successfulBulkResults = bulkResults.filter((k, v) -> v != null && v.isSuccessful());
 
-    var successfulBulkResults = bulkResults
-        .filter((k, v) -> v != null && v.isValid() && v.isSuccessful());
     var flatteningTriggersFromGranules = successfulBulkResults
         .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(granuleIndex))
         .flatMap((k, v) -> getParentIds(v.getRecord())
             .map(parentId -> new KeyValue<>(parentId, v.getTimestamp()))
             .collect(Collectors.toList())); // stream of collectionId => timestamp of granule to flatten from
-
     var flatteningTriggersFromCollections = successfulBulkResults
         .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
         .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
