@@ -367,7 +367,7 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
-  def 'Facet filter request includes exclude global filter in query when true'() {
+  def 'Filter request includes exclude global filter in query when true'() {
     given:
     def request = '{"filters":[{"type": "excludeGlobal", "value": true}]}'
     def params = slurper.parseText(request)
@@ -388,7 +388,7 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
-  def 'Facet filter request doesn\'t include exclude global filter in query when false'() {
+  def 'Filter request doesn\'t include exclude global filter in query when false'() {
     given:
     def request = '{"filters":[{"type": "excludeGlobal", "value": false}]}'
     def params = slurper.parseText(request)
@@ -606,5 +606,29 @@ class SearchRequestParserServiceTest extends Specification {
 
     then:
     aggsResult == expectedAggs
+  }
+
+  def 'Granule name filter generates expected elasticsearch query'() {
+    given:
+    def request = '{"filters":[{"type": "granuleName", "value": "ghrsst"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [:],
+            filter: [
+                [multi_match: [
+                    query: "ghrsst",
+                    fields: ['titleForFilter', 'fileIdentifierForFilter', 'filename'],
+                    operator: 'AND',
+                    type: 'cross_fields'
+                ]]
+            ]]
+    ]
+
+    then:
+    queryResult == expectedQuery
   }
 }

@@ -137,6 +137,12 @@ class SearchRequestParserService {
       allFilters.add(constructFacetFilter(it))
     }
 
+    // Granule name filters:
+    groupedFilters.granuleName.each {
+      // Note -- For a collection-level search, these nonexistent fields are ignored by Elasticsearch
+      allFilters.add(constructGranuleNameFilter(it))
+    }
+
     // Exclude global results filter:
     if (groupedFilters.excludeGlobal) {
       // Handling filter & null awkwardness of 'isGlobal' property -- passing false through excludes all non-global
@@ -374,6 +380,28 @@ class SearchRequestParserService {
     return [
         terms: [
             (fieldName): filterRequest.values
+        ]
+    ]
+  }
+
+  private Map constructGranuleNameFilter(Map filterRequest) {
+    String fieldRequested = filterRequest.field
+    List<String> fields = new ArrayList<>()
+    if(fieldRequested == null || fieldRequested == 'all') {
+      fields.addAll(['titleForFilter', 'fileIdentifierForFilter', 'filename'])
+    }
+    else if(fieldRequested == 'filename') {
+      fields.add('filename')
+    }
+    else {
+      fields.add(fieldRequested + 'ForFilter')
+    }
+    return [
+        multi_match: [
+            query: filterRequest.value,
+            fields: fields,
+            operator: 'AND',
+            type: 'cross_fields'
         ]
     ]
   }
