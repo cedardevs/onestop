@@ -104,15 +104,14 @@ class SearchRequestParserServiceTest extends Specification {
                     function_score: [
                         query             : [
                             bool: [
-                                must: [[[
+                                must: [[
                                            query_string: [
                                                query               : "winter",
-                                               fields              : ["_all"],
                                                phrase_slop         : 0,
                                                tie_breaker         : 0,
                                                minimum_should_match: '75%',
                                                lenient             : true
-                                           ]]]]]
+                                           ]]]]
                         ],
                         field_value_factor: [
                             field   : 'dsmmAverage',
@@ -150,7 +149,7 @@ class SearchRequestParserServiceTest extends Specification {
                     function_score: [
                         query             : [
                             bool: [
-                                must: [[[
+                                must: [[
                                            query_string: [
                                                query               : "winter",
                                                fields              : ["title^4.0"],
@@ -158,7 +157,48 @@ class SearchRequestParserServiceTest extends Specification {
                                                tie_breaker         : 0,
                                                minimum_should_match: '75%',
                                                lenient             : true
-                                           ]]]]]
+                                           ]]]]
+                        ],
+                        field_value_factor: [
+                            field   : 'dsmmAverage',
+                            modifier: 'log1p',
+                            factor  : 1.0,
+                            missing : 0
+                        ],
+                        boost_mode        : 'sum'
+                    ]
+                ]
+            ],
+            filter: [:]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Multiple queryText objects builds right request'() {
+    given:
+    def request = '{"queries":[{"type":"queryText","value":"winter"},{"type":"queryText","value":"is"},{"type":"queryText","value":"coming"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [
+                [
+                    function_score: [
+                        query             : [
+                            bool: [
+                                must: [[
+                                           query_string: [
+                                               query               : "(winter) AND (is) AND (coming)",
+                                               phrase_slop         : 0,
+                                               tie_breaker         : 0,
+                                               minimum_should_match: '75%',
+                                               lenient             : true
+                                           ]]]]
                         ],
                         field_value_factor: [
                             field   : 'dsmmAverage',

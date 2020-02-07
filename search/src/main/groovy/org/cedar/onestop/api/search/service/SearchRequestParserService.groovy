@@ -4,6 +4,8 @@ import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+import java.util.stream.Collectors
+
 @Slf4j
 @Service
 class SearchRequestParserService {
@@ -98,19 +100,37 @@ class SearchRequestParserService {
 
     if(queries) {
       def groupedQueries = queries.groupBy { it.type }
-      allTextQueries.add(groupedQueries.queryText.collect {
-        return [
-            query_string: [
-                query               : (it.value as String).trim(),
-                // FIXME: Test if default of _all is necessary; if so, we should control the fields in it. #190
-                fields              : config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: ['_all'],
-                phrase_slop         : config?.phraseSlop ?: 0,
-                tie_breaker         : config?.tieBreaker ?: 0,
-                minimum_should_match: config?.minimumShouldMatch ?: '75%',
-                lenient             : true
-            ]
-        ]
-      })
+
+      // Assemble query text
+      def queryTextQueries = groupedQueries.queryText
+      List<String> queryValues = []
+      queryTextQueries.each {it -> queryValues.add(it.value as String)}
+      String query
+      if(queryValues.size() > 1) {
+        query = queryValues.stream()
+            .map({s -> new String("(" + s.trim() + ")")})
+            .collect(Collectors.joining(" AND "))
+      }
+      else {
+        query = (queryValues.get(0) as String).trim()
+      }
+
+      // Assemble fields list, if given, and create the query string query object
+      def fields = config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: null
+
+      def queryStringMap = [
+          query_string: [
+              query               : query,
+              phrase_slop         : config?.phraseSlop ?: 0,
+              tie_breaker         : config?.tieBreaker ?: 0,
+              minimum_should_match: config?.minimumShouldMatch ?: '75%',
+              lenient             : true
+          ]
+      ]
+
+      if(fields != null) { queryStringMap.query_string.put("fields", fields) }
+
+      allTextQueries.add(queryStringMap)
     }
 
     return [[
