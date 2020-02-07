@@ -111,7 +111,10 @@ task integrationTest(type: Test) {
 check.dependsOn integrationTest
 task killElasticsearch {
   doFirst {
-    project.ext.get("elasticsearchContainer")?.stop()
+    def container = project.ext.get("elasticsearchContainer")
+    if (container) {
+      container.stop()
+    }
   }
 }
 
