@@ -30,6 +30,8 @@ targetCompatibility = 11
 configurations {
   integrationTestCompile.extendsFrom testCompile
   integrationTestRuntime.extendsFrom testRuntime
+  integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+  integrationTestImplementation.extendsFrom testImplementation
 }
 
 dependencies {
@@ -48,6 +50,7 @@ dependencies {
   implementation("org.apache.commons:commons-text:1.2")
 
 
+  testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
   testImplementation("org.objenesis:objenesis:3.1")
   testImplementation("net.bytebuddy:byte-buddy:1.7.11")
   testImplementation("org.spockframework:spock-core:${project.spockVersion}")
@@ -60,11 +63,6 @@ dependencies {
   testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
   testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
   testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:sources")
-}
-
-configurations {
-  integrationTestImplementation.extendsFrom testImplementation
-  integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 sourceSets {

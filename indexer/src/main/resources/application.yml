@@ -33,8 +33,7 @@ flattening:
   interval:
     ms: 30000 # 30s
 sitemap:
-#  scroll-size: 10
-#  collections-per-submap:
+  scroll-size: 1000
   topic:
     name: "sitemap-triggers"
     partitions: 1

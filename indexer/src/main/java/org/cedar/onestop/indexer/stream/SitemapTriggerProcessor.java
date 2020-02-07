@@ -36,15 +36,12 @@ public class SitemapTriggerProcessor implements Processor<String, Long> {
   @Override
   public void process(String key, Long value) {
     log.debug("processing sitemap trigger with key [" + key + "] and value [" + value + "]");
-    if (value == null) {
-      log.debug("deleting stored timestamp");
-      store.delete(constantKey);
-      return;
-    }
-    var curr = store.get(constantKey);
-    var next = curr == null ? value : Math.max(curr, value);
-    log.debug("updating stored timestamp to [" + next + "]");
-    store.put(constantKey, next);
+    var storeState = store.get(constantKey);
+    var currentValue = storeState != null ? storeState : 0L;
+    var incomingValue = value != null ? value : currentValue + 1;
+    var nextValue = Math.max(currentValue, incomingValue);
+    log.debug("updating stored timestamp to [" + nextValue + "]");
+    store.put(constantKey, nextValue);
   }
 
   private void triggerSitemap() {

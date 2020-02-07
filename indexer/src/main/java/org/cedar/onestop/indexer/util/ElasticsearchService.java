@@ -199,8 +199,8 @@ public class ElasticsearchService {
     return client.reindexAsync(request, RequestOptions.DEFAULT, listener);
   }
 
-  public BulkIndexingTransformer buildBulkIndexingTransformer(Duration publishInterval, Long bulkMaxBytes) {
-    return new BulkIndexingTransformer(this, publishInterval, bulkMaxBytes);
+  public BulkIndexingTransformer buildBulkIndexingTransformer(String keyValueStoreName, BulkIndexingConfig config) {
+    return new BulkIndexingTransformer(keyValueStoreName, this, config);
   }
 
   public FlatteningTriggerTransformer buildFlatteningTriggerTransformer(String keyValueStoreName, String flatteningScript, Duration interval) {

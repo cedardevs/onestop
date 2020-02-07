@@ -19,6 +19,17 @@ import static org.cedar.schemas.avro.psi.ValidDescriptor.*;
 public class IndexingHelpers {
   static final private Logger log = LoggerFactory.getLogger(IndexingHelpers.class);
 
+  public static boolean isTombstone(ParsedRecord value) {
+    return value == null;
+  }
+
+  public static boolean isPrivate(ParsedRecord value) {
+    var optionalPublishing = Optional.of(value).map(ParsedRecord::getPublishing);
+    var isPrivate = optionalPublishing.map(Publishing::getIsPrivate).orElse(false);
+    var until = optionalPublishing.map(Publishing::getUntil).orElse(null);
+    return (until == null || until > System.currentTimeMillis()) ? isPrivate : !isPrivate;
+  }
+
   public static Map validateMessage(String id, ParsedRecord messageMap) {
     // FIXME Improve testability of failures by creating an Enum for invalid messages
     List<String> errors = new ArrayList<>();

@@ -1,5 +1,6 @@
 package org.cedar.onestop.indexer
 
+import groovy.json.JsonOutput
 import io.confluent.kafka.schemaregistry.RestApp
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer
 import org.apache.kafka.clients.admin.AdminClient
@@ -17,6 +18,7 @@ import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest
 import org.elasticsearch.action.get.GetRequest
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.RequestOptions
@@ -30,8 +32,9 @@ import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA
 
 class IndexerIntegrationSpec extends Specification {
 
-  static inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml').text
-  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-granule.xml').text
+  // test iso records from elastic-common
+  static inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/C1.xml').text
+  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/G1.xml').text
   static indexingIntervalMs = 1000
   static indexPrefix = 'indexer_integration_spec_'
 
@@ -91,7 +94,7 @@ class IndexerIntegrationSpec extends Specification {
     app.adminClient.describeCluster().clusterId().get(10, TimeUnit.SECONDS) instanceof String
   }
 
-  def "indexes a granule and a collection"() {
+  def "indexes then deletes a granule and a collection"() {
     def collectionId = "C"
     def collection = TestUtils.buildRecordFromXML(inputCollectionXml)
     def collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection)
@@ -102,20 +105,61 @@ class IndexerIntegrationSpec extends Specification {
         .build()
     def granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule)
     def granuleRecord = new ProducerRecord<>(granuleTopic, granuleId, granule)
+    def collectionIndex = app.elasticConfig.COLLECTION_SEARCH_INDEX_ALIAS
+    def granuleIndex = app.elasticConfig.GRANULE_SEARCH_INDEX_ALIAS
+    def flattenedIndex = app.elasticConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS
+    def sitemapIndex = app.elasticConfig.SITEMAP_INDEX_ALIAS
 
-    when:
+    when: // produce records before starting app so the input topics get created
     producer.send(collectionRecord).get()
     producer.send(granuleRecord).get()
     app.start()
-    sleep(indexingIntervalMs + 2000)
+    sleep(indexingIntervalMs + 5000)
+    refresh(collectionIndex, granuleIndex, flattenedIndex, sitemapIndex)
 
     then:
-    getDocument(app.elasticConfig.COLLECTION_SEARCH_INDEX_ALIAS, collectionId).exists
-    getDocument(app.elasticConfig.GRANULE_SEARCH_INDEX_ALIAS, granuleId).exists
+    def collectionResult = getDocument(collectionIndex, collectionId)
+    def granuleResult = getDocument(granuleIndex, granuleId)
+    def flattenedResult = getDocument(flattenedIndex, granuleId)
+    def sitemapResult = getDocument(sitemapIndex, '0')
+    printSource(collectionResult)
+    printSource(granuleResult)
+    printSource(flattenedResult)
+
+    collectionResult.exists
+    collectionResult.id == collectionId
+    granuleResult.exists
+    granuleResult.id == granuleId
+    flattenedResult.exists
+    flattenedResult.id == granuleId
+    sitemapResult.exists
+    sitemapResult.source["content"] instanceof List
+    sitemapResult.source["content"].contains(collectionId)
+
+    when: // send tombstones for inputs
+    producer.send(new ProducerRecord<>(granuleTopic, granuleId, null))
+    producer.send(new ProducerRecord<>(collectionTopic, collectionId, null))
+    sleep(indexingIntervalMs + 5000)
+    refresh(collectionIndex, granuleIndex, flattenedIndex, sitemapIndex)
+
+    then:
+    !getDocument(collectionIndex, collectionId).exists
+    !getDocument(granuleIndex, granuleId).exists
+    !getDocument(flattenedIndex, granuleId).exists
+    !getDocument(sitemapIndex, '0').exists
+  }
+
+  private void refresh(String... indices) {
+    app.elasticClient.indices().refresh(new RefreshRequest(indices), RequestOptions.DEFAULT)
   }
 
   private GetResponse getDocument(String index, String id) {
     return app.elasticClient.get(new GetRequest(index, id), RequestOptions.DEFAULT)
+  }
+
+  private static void printSource(GetResponse result) {
+    println "get result from index $result.index with id $result.id:"
+    println JsonOutput.prettyPrint(JsonOutput.toJson(result.source))
   }
 
 }
