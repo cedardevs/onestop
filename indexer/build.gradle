@@ -111,9 +111,8 @@ task integrationTest(type: Test) {
 check.dependsOn integrationTest
 task killElasticsearch {
   doFirst {
-    def container = project.ext.get("elasticsearchContainer")
-    if (container) {
-      container.stop()
+    if (project.extensions.hasProperty("elasticsearchContainer")) {
+      project.ext.get("elasticsearchContainer").stop()
     }
   }
 }
