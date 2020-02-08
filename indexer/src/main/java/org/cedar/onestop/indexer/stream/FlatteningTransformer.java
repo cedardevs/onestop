@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
 
-public class FlatteningTriggerTransformer implements Transformer<String, Long, KeyValue<String, FlatteningTriggerTransformer.FlatteningTriggerResult>> {
-  private static final Logger log = LoggerFactory.getLogger(FlatteningTriggerTransformer.class);
+public class FlatteningTransformer implements Transformer<String, Long, KeyValue<String, FlatteningTransformer.FlatteningTriggerResult>> {
+  private static final Logger log = LoggerFactory.getLogger(FlatteningTransformer.class);
 
   private final String storeName;
   private final ElasticsearchService service;
@@ -30,12 +30,12 @@ public class FlatteningTriggerTransformer implements Transformer<String, Long, K
   private ProcessorContext context;
   private KeyValueStore<String, Long> store;
 
-  public FlatteningTriggerTransformer(String keyValueStoreName, ElasticsearchService esService, String flatteningScript, Duration interval) {
-    this.storeName = keyValueStoreName;
+  public FlatteningTransformer(ElasticsearchService esService, FlatteningConfig config) {
+    this.storeName = config.getStoreName();
     this.service = esService;
     this.config = esService.getConfig();
-    this.flatteningScript = flatteningScript;
-    this.interval = interval;
+    this.flatteningScript = config.getScript();
+    this.interval = config.getInterval();
   }
 
   @Override

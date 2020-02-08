@@ -24,7 +24,7 @@ import spock.lang.Specification
 import java.time.Duration
 import java.time.Instant
 
-class FlatteningTriggerTransformerSpec extends Specification {
+class FlatteningTransformerSpec extends Specification {
 
   static testEsConfig = new ElasticsearchConfig(
       new ElasticsearchVersion("7.5.1"),
@@ -36,7 +36,7 @@ class FlatteningTriggerTransformerSpec extends Specification {
       false
   )
   static storeName = "FlatteningTriggerTransformerSpecStore"
-  static mockScript = "println('test')"
+  static testScript = "scripts/flattenGranules.painless"
   static startTime = Instant.parse("2020-01-01T00:00:00Z")
   static testInterval = Duration.ofSeconds(1)
   static startTimePlusInterval = startTime + testInterval
@@ -44,18 +44,26 @@ class FlatteningTriggerTransformerSpec extends Specification {
   ElasticsearchService mockEsService
   MockProcessorContext mockProcessorContext
   KeyValueStore<String, Long> testStore
-  FlatteningTriggerTransformer testTransformer
+  FlatteningConfig testConfig
+  FlatteningTransformer testTransformer
   BulkByScrollResponse mockBulkByScrollResponse
+
   def setup() {
     mockEsService = Mock(ElasticsearchService)
     mockBulkByScrollResponse = Mock(BulkByScrollResponse)
     mockEsService.getConfig() >> testEsConfig
     mockProcessorContext = new MockProcessorContext()
     mockProcessorContext.setTimestamp(startTime.toEpochMilli())
-    testStore = Stores.keyValueStoreBuilder(Stores.inMemoryKeyValueStore(storeName), Serdes.String(), Serdes.Long())
-        .withLoggingDisabled().build()
+    testStore = Stores.keyValueStoreBuilder(
+        Stores.inMemoryKeyValueStore(storeName), Serdes.String(), Serdes.Long()
+    ).withLoggingDisabled().build()
     testStore.init(mockProcessorContext, testStore)
-    testTransformer = new FlatteningTriggerTransformer(storeName, mockEsService, mockScript, testInterval)
+    testConfig = FlatteningConfig.newBuilder()
+        .withStoreName(storeName)
+        .withScriptPath(testScript)
+        .withInterval(testInterval)
+        .build()
+    testTransformer = new FlatteningTransformer(mockEsService, testConfig)
     testTransformer.init(mockProcessorContext)
   }
 
@@ -150,7 +158,7 @@ class FlatteningTriggerTransformerSpec extends Specification {
     mockProcessorContext.forwarded().size() == 1
     def forwardedKeyValue = mockProcessorContext.forwarded()[0].keyValue()
     forwardedKeyValue.key == testId
-    forwardedKeyValue.value instanceof FlatteningTriggerTransformer.FlatteningTriggerResult
+    forwardedKeyValue.value instanceof FlatteningTransformer.FlatteningTriggerResult
     forwardedKeyValue.value.successful == true
   }
 
@@ -171,7 +179,7 @@ class FlatteningTriggerTransformerSpec extends Specification {
     mockProcessorContext.forwarded().size() == 1
     def forwardedKeyValue = mockProcessorContext.forwarded()[0].keyValue()
     forwardedKeyValue.key == testId
-    forwardedKeyValue.value instanceof FlatteningTriggerTransformer.FlatteningTriggerResult
+    forwardedKeyValue.value instanceof FlatteningTransformer.FlatteningTriggerResult
     forwardedKeyValue.value.successful == false
   }
 

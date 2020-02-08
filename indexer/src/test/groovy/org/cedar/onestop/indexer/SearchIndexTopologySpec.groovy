@@ -13,6 +13,7 @@ import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.elastic.common.FileUtil
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer
+import org.cedar.onestop.indexer.stream.FlatteningConfig
 import org.cedar.onestop.indexer.stream.FlatteningTransformer
 import org.cedar.onestop.indexer.stream.BulkIndexingConfig
 import org.cedar.onestop.indexer.util.ElasticsearchService
@@ -88,7 +89,7 @@ class SearchIndexTopologySpec extends Specification {
     mockIndexingTransformer = Mock(BulkIndexingTransformer)
     mockEsService.buildBulkIndexingTransformer(_ as BulkIndexingConfig) >> mockIndexingTransformer
     mockFlatteningTransformer = Mock(FlatteningTransformer)
-    mockEsService.buildFlatteningTriggerTransformer(_ as String, _ as String, _ as Duration) >> mockFlatteningTransformer
+    mockEsService.buildFlatteningTransformer(_ as FlatteningConfig) >> mockFlatteningTransformer
     topology = SearchIndexTopology.buildSearchIndexTopology(mockEsService, testAppConfig)
     driver = new TopologyTestDriver(topology, new Properties(streamsConfig))
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
+import org.cedar.onestop.indexer.stream.FlatteningConfig;
 import org.cedar.onestop.indexer.stream.FlatteningTransformer;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.cluster.node.tasks.list.ListTasksRequest;
@@ -204,8 +205,8 @@ public class ElasticsearchService {
     return new BulkIndexingTransformer(this, config);
   }
 
-  public FlatteningTransformer buildFlatteningTriggerTransformer(String keyValueStoreName, String flatteningScript, Duration interval) {
-    return new FlatteningTransformer(keyValueStoreName, this, flatteningScript, interval);
+  public FlatteningTransformer buildFlatteningTransformer(FlatteningConfig config) {
+    return new FlatteningTransformer(this, config);
   }
 
   public void buildSitemap(Long timestamp) {

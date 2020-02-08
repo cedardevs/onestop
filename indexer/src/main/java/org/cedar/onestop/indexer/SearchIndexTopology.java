@@ -6,10 +6,11 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 import org.apache.kafka.streams.state.TimestampedKeyValueStore;
-import org.cedar.onestop.elastic.common.FileUtil;
+import org.cedar.onestop.indexer.stream.FlatteningConfig;
 import org.cedar.onestop.indexer.stream.SitemapTriggerProcessor;
 import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
@@ -29,7 +30,6 @@ import org.elasticsearch.action.DocWriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Optional;
@@ -40,13 +40,11 @@ public class SearchIndexTopology {
   private static final Logger log = LoggerFactory.getLogger(SearchIndexTopology.class);
   private static final String FLATTEN_SCRIPT_PATH = "scripts/flattenGranules.painless";
   private static final String INDEXER_STORE_NAME = "bulk-indexer-buffer";
+  public static final String FLATTENING_STORE_NAME = "flattening-trigger-store";
 
-  public static Topology buildSearchIndexTopology(ElasticsearchService esService, AppConfig appConfig) throws IOException {
+  public static Topology buildSearchIndexTopology(ElasticsearchService esService, AppConfig appConfig) {
     var streamsBuilder = new StreamsBuilder();
-    var flatteningScript = FileUtil.textFromClasspathFile(FLATTEN_SCRIPT_PATH);
-    if (flatteningScript == null || flatteningScript.isEmpty()) {
-      throw new IllegalStateException("Unable to load required flattening script from [" + FLATTEN_SCRIPT_PATH + "]");
-    }
+
     var collectionIndex = esService.getConfig().COLLECTION_SEARCH_INDEX_ALIAS;
     var granuleIndex = esService.getConfig().GRANULE_SEARCH_INDEX_ALIAS;
 
@@ -75,20 +73,17 @@ public class SearchIndexTopology {
         .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
         .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
 
-    var flatteningStoreName = "flattening-trigger-store";
-    streamsBuilder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(flatteningStoreName), Serdes.String(), Serdes.Long()).withLoggingDisabled());
+    var flatteningConfig = flatteningConfig(appConfig);
+    var flatteningStoreBuilder = flatteningStoreBuilder(flatteningConfig);
+    streamsBuilder.addStateStore(flatteningStoreBuilder);
     var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
-    long flatteningIntervalMillis = Long.parseLong(appConfig.get("flattening.interval.ms").toString());
-    var flatteningInterval = Duration.ofMillis(flatteningIntervalMillis);
+
     flatteningTriggersFromCollections.merge(flatteningTriggersFromGranules)
         .peek((k, v) -> log.debug("producing flattening trigger [{} => {}]", k, v))
         // re-partition so all triggers for a given collection go to the same consumer
         .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()))
         .peek((k, v) -> log.debug("consuming flattening trigger [{} => {}]", k, v))
-        .transform(
-            () -> esService.buildFlatteningTriggerTransformer(flatteningStoreName, flatteningScript, flatteningInterval),
-            flatteningStoreName)
+        .transform(() -> esService.buildFlatteningTransformer(flatteningConfig), flatteningConfig.getStoreName())
         // cycle failed flattening requests back into the queue so nothing is lost
         .filter((k, v) -> !v.successful)
         .mapValues(v -> v.timestamp)
@@ -139,6 +134,21 @@ public class SearchIndexTopology {
     parseRecordSerde.configure(KafkaHelpers.buildAvroSerdeConfig(appConfig), false);
     var bulkIndexerStoreSupplier = Stores.persistentTimestampedKeyValueStore(indexingConfig.getStoreName());
     return Stores.timestampedKeyValueStoreBuilder(bulkIndexerStoreSupplier, Serdes.String(), parseRecordSerde);
+  }
+
+  private static FlatteningConfig flatteningConfig(AppConfig appConfig) {
+    long flatteningIntervalMillis = Long.parseLong(appConfig.get("flattening.interval.ms").toString());
+    var flatteningInterval = Duration.ofMillis(flatteningIntervalMillis);
+    return FlatteningConfig.newBuilder()
+        .withStoreName(FLATTENING_STORE_NAME)
+        .withScriptPath(FLATTEN_SCRIPT_PATH)
+        .withInterval(flatteningInterval)
+        .build();
+  }
+
+  private static StoreBuilder<KeyValueStore<String, Long>> flatteningStoreBuilder(FlatteningConfig config) {
+    return Stores.keyValueStoreBuilder(
+        Stores.persistentKeyValueStore(config.getStoreName()), Serdes.String(), Serdes.Long()).withLoggingDisabled();
   }
 
   private static Stream<String> getParentIds(ParsedRecord value) {
