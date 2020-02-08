@@ -3,74 +3,13 @@ package utils
 import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
-	"gopkg.in/h2non/gentleman.v2"
 	"strconv"
 	"strings"
 	"time"
 	"github.com/CEDARDEVS/onestop/cli/internal/pkg/flags"
 )
 
-//this function is pre-request RegisterBefore
-func ParseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
-	filters := []string{}
-	queries := []string{}
-
-	dateTimeFilter := ParseDate(params)
-	filters = append(filters, dateTimeFilter...)
-	startEndTimeFilter := ParseStartAndEndTime(params)
-	filters = append(filters, startEndTimeFilter...)
-	geoSpatialFilter := ParsePolygon(params)
-	filters = append(filters, geoSpatialFilter...)
-	query := parseTextQuery(params)
-	queries = append(queries, query...)
-	requestMeta := parseRequestMeta(params)
-	if len(queries) > 0 || len(filters) > 0 {
-		req.AddHeader("content-type", "application/json")
-		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
-	}
-}
-
-func ParseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
-
-	//apply a default filter for STAR
-	filters := []string{"{\"type\":\"facet\",\"name\":\"dataCenters\",\"values\":[\"DOC/NOAA/NESDIS/STAR > Center for Satellite Applications and Research, NESDIS, NOAA, U.S. Department of Commerce\"]}"}
-	queries := []string{}
-
-	// isSummaryWithType := params.GetString(AvailableFlag) == "true" && len(params.GetString("type")) > 0
-
-	collectionIdFilter := parseTypeFlag(params)
-	filters = append(filters, collectionIdFilter...)
-	// datacenterFilter := parseAvailableFlag(params)
-	// filters = append(filters, datacenterFilter...)
-	dateTimeFilter := ParseDate(params)
-	filters = append(filters, dateTimeFilter...)
-	yearFilter := ParseYear(params)
-	filters = append(filters, yearFilter...)
-	startEndTimeFilter := ParseStartAndEndTime(params)
-	filters = append(filters, startEndTimeFilter...)
-	geoSpatialFilter := ParsePolygon(params)
-	filters = append(filters, geoSpatialFilter...)
-
-	satnameQuery := parseSatName(params)
-	queries = append(queries, satnameQuery...)
-	fileNameQuery := parseFileName(params)
-	queries = append(queries, fileNameQuery...)
-	refileNameQuery := parseRegexFileName(params)
-	queries = append(queries, refileNameQuery...)
-	query := parseTextQuery(params)
-	queries = append(queries, query...)
-	keyWordFilter := parseKeyword(params)
-	queries = append(queries, keyWordFilter...)
-	requestMeta := parseRequestMeta(params)
-
-	if len(queries) > 0 || len(filters) > 0 {
-		req.AddHeader("content-type", "application/json")
-		req.BodyString("{\"summary\":false, \"sort\":[{\"stagedDate\":\"desc\"}], \"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
-	}
-
-}
-
-func parseTypeFlag(params *viper.Viper) []string {
+func ParseTypeFlag(params *viper.Viper) []string {
 	facetFilter := []string{}
 	typeArg := params.GetString(flags.TypeFlag)
 	if len(typeArg) > 0 {
@@ -78,6 +17,15 @@ func parseTypeFlag(params *viper.Viper) []string {
 		facetFilter = []string{"{\"type\":\"collection\", \"values\":[\"" + typeArg + "\"]}"}
 	}
 	return facetFilter
+}
+
+func ParseSort(params *viper.Viper) string {
+	sortArg := params.GetString(flags.SortFlag)
+	sort := ""
+	if len(sortArg) > 0 {
+		sort = "{\"" + sortArg + "\": \"desc\"}"
+	}
+	return sort
 }
 
 // func parseAvailableFlag(params *viper.Viper) []string {
@@ -88,7 +36,7 @@ func parseTypeFlag(params *viper.Viper) []string {
 // 	return facetFilter
 // }
 
-func parseSatName(params *viper.Viper) []string {
+func ParseSatName(params *viper.Viper) []string {
 	// {"type":"queryText", "value":"gcmdPlatforms:/GOES-16.*/"}
 	satname := params.GetString(flags.SatnameFlag)
 	querySatFilter := []string{}
@@ -98,7 +46,7 @@ func parseSatName(params *viper.Viper) []string {
 	return querySatFilter
 }
 
-func parseRequestMeta(params *viper.Viper) string {
+func ParseRequestMeta(params *viper.Viper) string {
 	max := params.GetString(flags.MaxFlag)
 	offset := params.GetString(flags.OffsetFlag)
 	if len(max) == 0 {
@@ -232,7 +180,7 @@ func ParseDate(params *viper.Viper) []string {
 	return []string{"{\"type\":\"datetime\", \"after\":\"" + beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
-func parseFileName(params *viper.Viper) []string {
+func ParseFileName(params *viper.Viper) []string {
 	fileName := params.GetString(flags.FileFlag)
 	if len(fileName) == 0 {
 		return []string{}
@@ -252,7 +200,7 @@ func ParseYear(params *viper.Viper) []string {
 	return []string{"{\"type\":\"datetime\", \"after\":\"" + beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
-func parseRegexFileName(params *viper.Viper) []string {
+func ParseRegexFileName(params *viper.Viper) []string {
 	regex := params.GetString(flags.ReFileFlag)
 	if len(regex) == 0 {
 		return []string{}
@@ -260,7 +208,7 @@ func parseRegexFileName(params *viper.Viper) []string {
 	return []string{"{\"type\":\"queryText\", \"value\":\"title:/" + regex + "/\"}"}
 }
 
-func parseTextQuery(params *viper.Viper) []string {
+func ParseTextQuery(params *viper.Viper) []string {
 	query := params.GetString(flags.TextQueryFlag)
 	if len(query) == 0 {
 		query = params.GetString(flags.MetadataFlag)
@@ -293,7 +241,7 @@ func ParsePolygon(params *viper.Viper) []string {
 	return []string{"{\"geometry\": { \"coordinates\": [[" + strings.Join(geospatialFilter, "") + "]], \"type\": \"Polygon\"}, \"type\": \"geometry\"}"}
 }
 
-func parseKeyword(params *viper.Viper) []string {
+func ParseKeyword(params *viper.Viper) []string {
 	keyword := params.GetString(flags.KeywordFlag)
 	if len(keyword) == 0 {
 		return []string{}

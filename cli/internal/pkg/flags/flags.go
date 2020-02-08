@@ -71,7 +71,6 @@ const RegexDescription = "Locate files whose names match the case-insensitive re
 const SatnameFlag = "satname"
 const SatnameDescription = "Select files from the SATNAME satellite."
 
-
 const YearFlag = "year"
 const YearShortFlag = "y"
 const YearDescription = "Specifies a year. YEAR must be a positive integer, ranging between 1978 and current year. Files with data start times in that year will be listed."
@@ -79,6 +78,10 @@ const YearDescription = "Specifies a year. YEAR must be a positive integer, rang
 const KeywordFlag = "label"
 const KeywordShortFlag = "l"
 const KeywordDescription = "Pick files tagged with a label whose value is LABEL. Files can be tagged with more than one label. Satellite names (see option --satname) are just one type of labels."
+
+const SortFlag = "sort"
+const SortShortFlag = ""
+const SortDescription = "Sort results by stagedDate, beginDate, or endDate."
 
 const CloudFlag = "cloud"
 const CloudUrl = "http://acf3425c8d41b11e9a12912cf37a7528-1694331899.us-east-1.elb.amazonaws.com/onestop-search"

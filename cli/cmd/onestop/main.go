@@ -20,10 +20,12 @@ func main() {
 
 	//scdr-files.go
 	scdr.SetScdrFlags()
+	scdr.InjectMiddleware()
 	scdr.ScdrRegister()
 
 	//onestop-flags.go
 	onestop.SetOneStopFlags()
+	onestop.InjectMiddleware()
 
 	//openapi.go
 	generated.OpenapiRegister(false)

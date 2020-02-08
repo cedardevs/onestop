@@ -180,6 +180,15 @@ func scdrOutputFormatAndPrint(params *viper.Viper, decoded map[string]interface{
 	}
 }
 
+func InjectMiddleware(){
+	//ParseScdrRequestFlags in parsing-util.go
+	cli.RegisterBefore(ScdrFileCmd, ParseScdrRequestFlags)
+	cli.RegisterAfter(ScdrFileCmd, func(cmd string, params *viper.Viper, resp *gentleman.Response, data interface{}) interface{} {
+		scdrResp := middleware.MarshalScdrResponse(params, data)
+		return scdrResp
+	})
+}
+
 func SetScdrFlags() {
 	//flags are in flags.go
 	cli.AddFlag(ScdrFileCmd, flags.DateFilterFlag, flags.DateFilterShortFlag, flags.DateDescription, "")
@@ -204,11 +213,47 @@ func SetScdrFlags() {
 	cli.AddFlag(ScdrFileCmd, flags.TextQueryFlag, flags.TextQueryShortFlag, flags.QueryDescription, "")
 	cli.AddFlag(ScdrFileCmd, flags.CloudServerFlag, flags.CloudServerShortFlag, flags.CloudServerDescription, false)
 	cli.AddFlag(ScdrFileCmd, flags.TestServerFlag, flags.TestServerShortFlag, flags.TestServerDescription, false)
+	cli.AddFlag(ScdrFileCmd, flags.SortFlag, flags.SortShortFlag, flags.SortDescription, "")
 
-	//ParseScdrRequestFlags in parsing-util.go
-	cli.RegisterBefore(ScdrFileCmd, utils.ParseScdrRequestFlags)
-	cli.RegisterAfter(ScdrFileCmd, func(cmd string, params *viper.Viper, resp *gentleman.Response, data interface{}) interface{} {
-		scdrResp := middleware.MarshalScdrResponse(params, data)
-		return scdrResp
-	})
+}
+
+func ParseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
+
+	//apply a default filter for STAR
+	filters := []string{"{\"type\":\"facet\",\"name\":\"dataCenters\",\"values\":[\"DOC/NOAA/NESDIS/STAR > Center for Satellite Applications and Research, NESDIS, NOAA, U.S. Department of Commerce\"]}"}
+	queries := []string{}
+
+	// isSummaryWithType := params.GetString(AvailableFlag) == "true" && len(params.GetString("type")) > 0
+
+	collectionIdFilter := utils.ParseTypeFlag(params)
+	filters = append(filters, collectionIdFilter...)
+	// datacenterFilter := parseAvailableFlag(params)
+	// filters = append(filters, datacenterFilter...)
+	dateTimeFilter := utils.ParseDate(params)
+	filters = append(filters, dateTimeFilter...)
+	yearFilter := utils.ParseYear(params)
+	filters = append(filters, yearFilter...)
+	startEndTimeFilter := utils.ParseStartAndEndTime(params)
+	filters = append(filters, startEndTimeFilter...)
+	geoSpatialFilter := utils.ParsePolygon(params)
+	filters = append(filters, geoSpatialFilter...)
+
+	satnameQuery := utils.ParseSatName(params)
+	queries = append(queries, satnameQuery...)
+	fileNameQuery := utils.ParseFileName(params)
+	queries = append(queries, fileNameQuery...)
+	refileNameQuery := utils.ParseRegexFileName(params)
+	queries = append(queries, refileNameQuery...)
+	query := utils.ParseTextQuery(params)
+	queries = append(queries, query...)
+	keyWordFilter := utils.ParseKeyword(params)
+	queries = append(queries, keyWordFilter...)
+	requestMeta := utils.ParseRequestMeta(params)
+
+	parseSort := utils.ParseSort(params)
+
+	if len(queries) > 0 || len(filters) > 0 {
+		req.AddHeader("content-type", "application/json")
+		req.BodyString("{\"summary\":false, \"sort\":[" + parseSort + "], \"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
+	}
 }
