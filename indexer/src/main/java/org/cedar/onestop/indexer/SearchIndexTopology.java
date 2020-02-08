@@ -45,16 +45,17 @@ public class SearchIndexTopology {
   public static final String SITEMAP_STORE_NAME = "sitemap-trigger-store";
 
   public static Topology buildSearchIndexTopology(ElasticsearchService esService, AppConfig appConfig) {
-    var streamsBuilder = new StreamsBuilder();
-
     var collectionIndex = esService.getConfig().COLLECTION_SEARCH_INDEX_ALIAS;
     var granuleIndex = esService.getConfig().GRANULE_SEARCH_INDEX_ALIAS;
 
+    var streamsBuilder = new StreamsBuilder();
+
+    //----- Indexing Setup --------
     var bulkConfig = indexingConfig(esService, appConfig);
     var indexerStoreBuilder = indexerStoreBuilder(appConfig, bulkConfig);
     streamsBuilder.addStateStore(indexerStoreBuilder);
 
-    // validate collection/granule records and send them to ES in bulk
+    //----- Indexing Stream --------
     var inputRecords = streamsBuilder.<String, ParsedRecord>stream(Topics.parsedChangelogTopics(StreamsApps.REGISTRY_ID));
     var filledInRecords = inputRecords.mapValues(DefaultParser::fillInDefaults);
     var analyzedRecords = filledInRecords.mapValues(Analyzers::addAnalysis);
@@ -65,11 +66,13 @@ public class SearchIndexTopology {
         .transform(() -> esService.buildBulkIndexingTransformer(bulkConfig), bulkConfig.getStoreName());
     var successfulBulkResults = bulkResults.filter((k, v) -> v != null && v.isSuccessful());
 
+    //----- Flattening Setup --------
     var flatteningConfig = flatteningConfig(appConfig);
     var flatteningStoreBuilder = flatteningStoreBuilder(flatteningConfig);
     streamsBuilder.addStateStore(flatteningStoreBuilder);
     var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
 
+    //----- Flattening Stream --------
     var flatteningTriggersFromGranules = successfulBulkResults
         .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(granuleIndex))
         .flatMap((k, v) ->
@@ -91,10 +94,13 @@ public class SearchIndexTopology {
         .mapValues(v -> v.timestamp)
         .to(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()));
 
+    //----- Sitemap Setup --------
     var sitemapConfig = sitemapConfig(appConfig);
     var sitemapStoreBuilder = sitemapStoreBuilder(sitemapConfig);
     streamsBuilder.addStateStore(sitemapStoreBuilder);
     var sitemapTopicName = appConfig.get("sitemap.topic.name").toString();
+
+    //----- Sitemap Stream --------
     successfulBulkResults
         .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
         // group all collection changes under one key/partition so sitemap is generated once per window at most
