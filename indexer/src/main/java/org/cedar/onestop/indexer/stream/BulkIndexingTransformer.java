@@ -11,6 +11,7 @@ import org.cedar.onestop.indexer.util.IndexingHelpers;
 import org.cedar.onestop.indexer.util.IndexingOutput;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.support.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
   public void init(ProcessorContext context) {
     this.context = context;
     this.store = (TimestampedKeyValueStore<String, ParsedRecord>) this.context.getStateStore(config.getStoreName());
-    this.request = new BulkRequest();
+    this.request = buildEmptyRequest();
     this.context.schedule(config.getMaxPublishInterval(), PunctuationType.WALL_CLOCK_TIME, timestamp -> flushRequest());
   }
 
@@ -79,8 +80,13 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
       log.error("failed to execute bulk request wth [" + numActions + "] actions", e);
       this.request.requests().forEach(docWriteRequest -> this.store.delete(docWriteRequest.id()));
     } finally {
-      this.request = new BulkRequest();
+      this.request = buildEmptyRequest();
     }
+  }
+
+  private BulkRequest buildEmptyRequest() {
+    // wait until indexed items are available to handle response
+    return new BulkRequest().setRefreshPolicy(WriteRequest.RefreshPolicy.WAIT_UNTIL);
   }
 
   @Override

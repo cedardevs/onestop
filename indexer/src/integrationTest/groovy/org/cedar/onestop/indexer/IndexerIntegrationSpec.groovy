@@ -18,13 +18,13 @@ import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest
 import org.elasticsearch.action.get.GetRequest
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.RequestOptions
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.utils.KafkaTestUtils
 import spock.lang.Specification
+import spock.util.concurrent.PollingConditions
 
 import java.util.concurrent.TimeUnit
 
@@ -109,52 +109,48 @@ class IndexerIntegrationSpec extends Specification {
     def granuleIndex = app.elasticConfig.GRANULE_SEARCH_INDEX_ALIAS
     def flattenedIndex = app.elasticConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS
     def sitemapIndex = app.elasticConfig.SITEMAP_INDEX_ALIAS
+    def pollingConditions = new PollingConditions(initialDelay: (indexingIntervalMs / 1000) * 3, factor: 2.0)
 
     when: // produce records before starting app so the input topics get created
     producer.send(collectionRecord).get()
     producer.send(granuleRecord).get()
     app.start()
-    sleep(indexingIntervalMs + 5000)
-    refresh(collectionIndex, granuleIndex, flattenedIndex, sitemapIndex)
 
     then:
-    def collectionResult = getDocument(collectionIndex, collectionId)
-    def granuleResult = getDocument(granuleIndex, granuleId)
-    def flattenedResult = getDocument(flattenedIndex, granuleId)
-    def sitemapResult = getDocument(sitemapIndex, '0')
-    printSource(collectionResult)
-    printSource(granuleResult)
-    printSource(flattenedResult)
-
-    collectionResult.exists
-    collectionResult.id == collectionId
-    granuleResult.exists
-    granuleResult.id == granuleId
-    flattenedResult.exists
-    flattenedResult.id == granuleId
-    sitemapResult.exists
-    sitemapResult.source["content"] instanceof List
-    sitemapResult.source["content"].contains(collectionId)
+    pollingConditions.within(10, {
+      def collectionResult = getDocument(collectionIndex, collectionId)
+      def granuleResult = getDocument(granuleIndex, granuleId)
+      def flattenedResult = getDocument(flattenedIndex, granuleId)
+      def sitemapResult = getDocument(sitemapIndex, '0')
+//      printSource(collectionResult)
+//      printSource(granuleResult)
+//      printSource(flattenedResult)
+      assert collectionResult.exists
+      assert collectionResult.id == collectionId
+      assert granuleResult.exists
+      assert granuleResult.id == granuleId
+      assert flattenedResult.exists
+      assert flattenedResult.id == granuleId
+      assert sitemapResult.exists
+      assert sitemapResult.source["content"] instanceof List
+      assert sitemapResult.source["content"].contains(collectionId)
+    })
 
     when: // send tombstones for inputs
     producer.send(new ProducerRecord<>(granuleTopic, granuleId, null))
     producer.send(new ProducerRecord<>(collectionTopic, collectionId, null))
-    sleep(indexingIntervalMs + 5000)
-    refresh(collectionIndex, granuleIndex, flattenedIndex, sitemapIndex)
 
     then:
-    !getDocument(collectionIndex, collectionId).exists
-    !getDocument(granuleIndex, granuleId).exists
-    !getDocument(flattenedIndex, granuleId).exists
-    !getDocument(sitemapIndex, '0').exists
-  }
-
-  private void refresh(String... indices) {
-    app.elasticClient.indices().refresh(new RefreshRequest(indices), RequestOptions.DEFAULT)
+    pollingConditions.within(10, {
+      assert !getDocument(collectionIndex, collectionId).exists
+      assert !getDocument(granuleIndex, granuleId).exists
+      assert !getDocument(flattenedIndex, granuleId).exists
+      assert !getDocument(sitemapIndex, '0').exists
+    })
   }
 
   private GetResponse getDocument(String index, String id) {
-    return app.elasticClient.get(new GetRequest(index, id), RequestOptions.DEFAULT)
+    return app.elasticClient.get(new GetRequest(index, id).refresh(true), RequestOptions.DEFAULT)
   }
 
   private static void printSource(GetResponse result) {
