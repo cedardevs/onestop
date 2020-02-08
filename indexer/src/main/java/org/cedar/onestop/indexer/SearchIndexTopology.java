@@ -11,7 +11,8 @@ import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 import org.cedar.onestop.indexer.stream.FlatteningConfig;
-import org.cedar.onestop.indexer.stream.SitemapTriggerProcessor;
+import org.cedar.onestop.indexer.stream.SitemapConfig;
+import org.cedar.onestop.indexer.stream.SitemapProcessor;
 import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.indexer.util.IndexingHelpers;
@@ -41,6 +42,7 @@ public class SearchIndexTopology {
   private static final String FLATTEN_SCRIPT_PATH = "scripts/flattenGranules.painless";
   private static final String INDEXER_STORE_NAME = "bulk-indexer-buffer";
   public static final String FLATTENING_STORE_NAME = "flattening-trigger-store";
+  public static final String SITEMAP_STORE_NAME = "sitemap-trigger-store";
 
   public static Topology buildSearchIndexTopology(ElasticsearchService esService, AppConfig appConfig) {
     var streamsBuilder = new StreamsBuilder();
@@ -63,6 +65,11 @@ public class SearchIndexTopology {
         .transform(() -> esService.buildBulkIndexingTransformer(bulkConfig), bulkConfig.getStoreName());
     var successfulBulkResults = bulkResults.filter((k, v) -> v != null && v.isSuccessful());
 
+    var flatteningConfig = flatteningConfig(appConfig);
+    var flatteningStoreBuilder = flatteningStoreBuilder(flatteningConfig);
+    streamsBuilder.addStateStore(flatteningStoreBuilder);
+    var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
+
     var flatteningTriggersFromGranules = successfulBulkResults
         .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(granuleIndex))
         .flatMap((k, v) ->
@@ -72,11 +79,6 @@ public class SearchIndexTopology {
     var flatteningTriggersFromCollections = successfulBulkResults
         .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
         .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
-
-    var flatteningConfig = flatteningConfig(appConfig);
-    var flatteningStoreBuilder = flatteningStoreBuilder(flatteningConfig);
-    streamsBuilder.addStateStore(flatteningStoreBuilder);
-    var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
 
     flatteningTriggersFromCollections.merge(flatteningTriggersFromGranules)
         .peek((k, v) -> log.debug("producing flattening trigger [{} => {}]", k, v))
@@ -89,21 +91,17 @@ public class SearchIndexTopology {
         .mapValues(v -> v.timestamp)
         .to(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()));
 
-    var sitemapTriggerStoreName = "sitemap-trigger-store";
-    streamsBuilder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(sitemapTriggerStoreName), Serdes.String(), Serdes.Long()).withLoggingDisabled());
+    var sitemapConfig = sitemapConfig(appConfig);
+    var sitemapStoreBuilder = sitemapStoreBuilder(sitemapConfig);
+    streamsBuilder.addStateStore(sitemapStoreBuilder);
     var sitemapTopicName = appConfig.get("sitemap.topic.name").toString();
-    long sitemapIntervalMillis = Long.parseLong(appConfig.get("sitemap.interval.ms").toString());
-    var sitemapInterval = Duration.ofMillis(sitemapIntervalMillis);
     successfulBulkResults
         .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
         // group all collection changes under one key/partition so sitemap is generated once per window at most
         .map((k, v) -> new KeyValue<>("ALL", v == null ? null : v.getTimestamp()))
         // re-partition so all sitemap triggers go to the same consumer
         .through(sitemapTopicName, Produced.with(Serdes.String(), Serdes.Long()))
-        .process(
-            () -> new SitemapTriggerProcessor(sitemapTriggerStoreName, esService, sitemapInterval),
-            sitemapTriggerStoreName);
+        .process(() -> new SitemapProcessor(esService, sitemapConfig), sitemapConfig.getStoreName());
 
     return streamsBuilder.build();
   }
@@ -147,6 +145,20 @@ public class SearchIndexTopology {
   }
 
   private static StoreBuilder<KeyValueStore<String, Long>> flatteningStoreBuilder(FlatteningConfig config) {
+    return Stores.keyValueStoreBuilder(
+        Stores.persistentKeyValueStore(config.getStoreName()), Serdes.String(), Serdes.Long()).withLoggingDisabled();
+  }
+
+  private static SitemapConfig sitemapConfig(AppConfig appConfig) {
+    long sitemapIntervalMillis = Long.parseLong(appConfig.get("sitemap.interval.ms").toString());
+    var sitemapInterval = Duration.ofMillis(sitemapIntervalMillis);
+    return SitemapConfig.newBuilder()
+        .withStoreName(SITEMAP_STORE_NAME)
+        .withInterval(sitemapInterval)
+        .build();
+  }
+
+  private static StoreBuilder<KeyValueStore<String, Long>> sitemapStoreBuilder(SitemapConfig config) {
     return Stores.keyValueStoreBuilder(
         Stores.persistentKeyValueStore(config.getStoreName()), Serdes.String(), Serdes.Long()).withLoggingDisabled();
   }

@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-public class SitemapTriggerProcessor implements Processor<String, Long> {
-  private static final Logger log = LoggerFactory.getLogger(SitemapTriggerProcessor.class);
+public class SitemapProcessor implements Processor<String, Long> {
+  private static final Logger log = LoggerFactory.getLogger(SitemapProcessor.class);
   private static final String constantKey = "update_until";
 
   private final ElasticsearchService service;
@@ -20,10 +20,10 @@ public class SitemapTriggerProcessor implements Processor<String, Long> {
 
   private KeyValueStore<String, Long> store;
 
-  public SitemapTriggerProcessor(String storeName, ElasticsearchService service, Duration interval) {
-    this.storeName = storeName;
+  public SitemapProcessor(ElasticsearchService service, SitemapConfig config) {
+    this.storeName = config.getStoreName();
     this.service = service;
-    this.interval = interval;
+    this.interval = config.getInterval();
   }
 
   @Override
