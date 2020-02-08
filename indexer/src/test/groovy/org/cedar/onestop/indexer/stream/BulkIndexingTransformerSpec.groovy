@@ -1,6 +1,5 @@
 package org.cedar.onestop.indexer.stream
 
-
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.processor.MockProcessorContext
 import org.apache.kafka.streams.processor.PunctuationType
@@ -61,11 +60,12 @@ class BulkIndexingTransformerSpec extends Specification {
         .withLoggingDisabled().build()
     testStore.init(mockProcessorContext, testStore)
     testIndexingConfig = BulkIndexingConfig.newBuilder()
+        .withStoreName(storeName)
         .withMaxPublishBytes(testMaxBytes)
         .withMaxPublishInterval(testBulkInterval)
-        .addIndexMapping(testTopic, DocWriteRequest.OpType.INDEX, testIndex)
+        .addIndexMapping(testTopic, OpType.INDEX, testIndex)
         .build()
-    testIndexingTransformer = new BulkIndexingTransformer(storeName, mockEsService, testIndexingConfig)
+    testIndexingTransformer = new BulkIndexingTransformer(mockEsService, testIndexingConfig)
     testIndexingTransformer.init(mockProcessorContext)
   }
 

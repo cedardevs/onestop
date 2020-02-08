@@ -3,6 +3,7 @@ package org.cedar.onestop.indexer.util;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
+import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.schemas.avro.psi.*;
 import org.cedar.schemas.avro.util.AvroUtils;
 import org.elasticsearch.ElasticsearchGenerationException;

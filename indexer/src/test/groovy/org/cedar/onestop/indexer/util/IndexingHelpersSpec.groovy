@@ -3,6 +3,7 @@ package org.cedar.onestop.indexer.util
 import groovy.json.JsonSlurper
 import org.apache.kafka.streams.state.ValueAndTimestamp
 import org.cedar.onestop.elastic.common.FileUtil
+import org.cedar.onestop.indexer.stream.BulkIndexingConfig
 import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.avro.psi.Analysis
 import org.cedar.schemas.avro.psi.Discovery
@@ -18,7 +19,6 @@ import org.cedar.schemas.avro.psi.TitleAnalysis
 import org.cedar.schemas.avro.psi.ValidDescriptor
 import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.parse.ISOParser
-import org.elasticsearch.action.DocWriteRequest
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.index.IndexRequest
 import spock.lang.Specification
@@ -49,6 +49,7 @@ class IndexingHelpersSpec extends Specification {
   static testTopic = 'testtopic'
   static testIndex = 'testindex'
   static indexingConfig = BulkIndexingConfig.newBuilder()
+      .withStoreName('teststore')
       .withMaxPublishInterval(Duration.ofSeconds(10))
       .withMaxPublishBytes(10000)
       .addIndexMapping(testTopic, INDEX, testIndex)
@@ -161,6 +162,7 @@ class IndexingHelpersSpec extends Specification {
   def "tombstones create multiple delete requests when configured"() {
     def testKey = 'ABC'
     def multipleDeleteConfig = BulkIndexingConfig.newBuilder()
+        .withStoreName('teststore')
         .withMaxPublishInterval(Duration.ofSeconds(10))
         .withMaxPublishBytes(10000)
         .addIndexMapping(testTopic, DELETE, 'a')
@@ -186,6 +188,7 @@ class IndexingHelpersSpec extends Specification {
         .setPublishing(Publishing.newBuilder().build()).build()
     def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
     def multipleIndexConfig = BulkIndexingConfig.newBuilder()
+        .withStoreName('teststore')
         .withMaxPublishInterval(Duration.ofSeconds(10))
         .withMaxPublishBytes(10000)
         .addIndexMapping(testTopic, INDEX, 'a')

@@ -6,7 +6,6 @@ import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
-import org.cedar.onestop.indexer.util.BulkIndexingConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.indexer.util.IndexingHelpers;
 import org.cedar.onestop.indexer.util.IndexingOutput;
@@ -20,7 +19,6 @@ import java.io.IOException;
 public class BulkIndexingTransformer implements Transformer<String, ValueAndTimestamp<ParsedRecord>, KeyValue<String, IndexingOutput>> {
   private static final Logger log = LoggerFactory.getLogger(BulkIndexingTransformer.class);
 
-  private final String storeName;
   private final ElasticsearchService client;
   private final BulkIndexingConfig config;
 
@@ -28,8 +26,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
   private ProcessorContext context;
   private BulkRequest request;
 
-  public BulkIndexingTransformer(String storeName, ElasticsearchService client, BulkIndexingConfig config) {
-    this.storeName = storeName;
+  public BulkIndexingTransformer(ElasticsearchService client, BulkIndexingConfig config) {
     this.client = client;
     this.config = config;
   }
@@ -38,7 +35,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
   @SuppressWarnings("unchecked")
   public void init(ProcessorContext context) {
     this.context = context;
-    this.store = (TimestampedKeyValueStore<String, ParsedRecord>) this.context.getStateStore(storeName);
+    this.store = (TimestampedKeyValueStore<String, ParsedRecord>) this.context.getStateStore(config.getStoreName());
     this.request = new BulkRequest();
     this.context.schedule(config.getMaxPublishInterval(), PunctuationType.WALL_CLOCK_TIME, timestamp -> flushRequest());
   }
