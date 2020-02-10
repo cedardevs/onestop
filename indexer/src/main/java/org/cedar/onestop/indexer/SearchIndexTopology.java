@@ -59,7 +59,8 @@ public class SearchIndexTopology {
     var inputRecords = streamsBuilder.<String, ParsedRecord>stream(Topics.parsedChangelogTopics(StreamsApps.REGISTRY_ID));
     var filledInRecords = inputRecords.mapValues(DefaultParser::fillInDefaults);
     var analyzedRecords = filledInRecords.mapValues(Analyzers::addAnalysis);
-    var validRecords = analyzedRecords.filter((k, v) -> v == null || (Boolean) IndexingHelpers.validateMessage(k, v).get("valid"));
+    var validatedRecords = analyzedRecords.mapValues(IndexingHelpers::addValidationErrors);
+    var validRecords = validatedRecords.filter((k, v) -> v == null || v.getErrors().isEmpty());
     var bulkResults = validRecords
         .peek((k, v) -> log.debug("submitting [{} => {}] to bulk indexer", k, v))
         .transformValues(Timestamper<ParsedRecord>::new)

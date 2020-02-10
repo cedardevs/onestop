@@ -27,66 +27,99 @@ import static org.elasticsearch.action.DocWriteRequest.OpType.UPDATE;
 
 public class IndexingHelpers {
   static final private Logger log = LoggerFactory.getLogger(IndexingHelpers.class);
+  static final private String VALIDATION_ERROR_TITLE = "Invalid for search indexing";
 
   ////////////////////////////
   // Validation             //
   ////////////////////////////
-  public static Map validateMessage(String id, ParsedRecord messageMap) {
-    // FIXME Improve testability of failures by creating an Enum for invalid messages
-    List<String> errors = new ArrayList<>();
-
-    var discovery = messageMap != null ? messageMap.getDiscovery() : null;
-    if (discovery == null || discovery == Discovery.newBuilder().build()) {
-      errors.add("Discovery metadata missing. No metadata to load into OneStop.");
+  public static ParsedRecord addValidationErrors(ParsedRecord record) {
+    if (record == null) {
+      return null;
     }
-    else {
-      var analysis = messageMap.getAnalysis();
-      if (analysis == null || analysis == Analysis.newBuilder().build()) {
-        errors.add("Analysis metadata missing. Cannot verify metadata quality for OneStop.");
-      }
-      else {
-        var titles = analysis.getTitles();
-        var identification = analysis.getIdentification();
-        var temporal = analysis.getTemporalBounding();
-        var spatial = analysis.getSpatialBounding();
+    List<ErrorEvent> errors = record.getErrors();
+    List<ErrorEvent> rootErrors = validateRootRecord(record);
+    errors.addAll(rootErrors);
+    if (rootErrors.isEmpty()) {
+      errors.addAll(validateIdentification(record));
+      errors.addAll(validateTitles(record));
+      errors.addAll(validateTemporalBounds(record));
+      errors.addAll(validateSpatialBounds(record));
+    }
+    return ParsedRecord.newBuilder(record).setErrors(errors).build();
+  }
 
-        if (identification != null && !identification.getFileIdentifierExists() && !identification.getDoiExists()) {
-          errors.add("Missing identifier - record contains neither a fileIdentifier nor a DOI");
-        }
-        if (messageMap.getType() == null || (identification != null && !identification.getMatchesIdentifiers())) {
-          errors.add("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided OR type unknown.");
-        }
-        if (!titles.getTitleExists()) {
-          errors.add("Missing title");
-        }
-        if (temporal.getBeginDescriptor() == INVALID) {
-          errors.add("Invalid beginDate");
-        }
-        if (temporal.getEndDescriptor() == INVALID) {
-          errors.add("Invalid endDate");
-        }
-        if (temporal.getBeginDescriptor() != UNDEFINED && temporal.getEndDescriptor() != UNDEFINED && temporal.getInstantDescriptor() == INVALID) {
-          errors.add("Invalid instant-only date");
-        }
-        if (spatial.getSpatialBoundingExists() && !spatial.getIsValid()) {
-          errors.add("Invalid geoJSON for spatial bounding");
-        }
+  private static List<ErrorEvent> validateRootRecord(ParsedRecord record) {
+    var result = new ArrayList<ErrorEvent>();
+    if (record != null) {
+      if (record.getDiscovery() == null || record.getDiscovery() == Discovery.newBuilder().build()) {
+        result.add(buildValidationError("Discovery metadata missing. No metadata to load into OneStop."));
+      }
+      if (record.getAnalysis() == null || record.getAnalysis() == Analysis.newBuilder().build()) {
+        result.add(buildValidationError("Analysis metadata missing. Cannot verify metadata quality for OneStop."));
       }
     }
+    return result;
+  }
 
-    if (errors.size() > 0) {
-      log.info("INVALID RECORD [ " + id + " ]. VALIDATION FAILURES: " + errors);
-      var result = new HashMap<>();
-      result.put("title", "Invalid record");
-      result.put("detail", String.join(", ", errors));
-      result.put("valid", false);
-      return result;
+  private static List<ErrorEvent> validateIdentification(ParsedRecord record) {
+    var result = new ArrayList<ErrorEvent>();
+    if (record != null && record.getAnalysis() != null) {
+      var analysis = record.getAnalysis();
+      var identification = analysis.getIdentification();
+      if (identification != null && !identification.getFileIdentifierExists() && !identification.getDoiExists()) {
+        result.add(buildValidationError("Missing identifier - record contains neither a fileIdentifier nor a DOI"));
+      }
+      if (record.getType() == null || (identification != null && !identification.getMatchesIdentifiers())) {
+        result.add(buildValidationError("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided OR type unknown."));
+      }
     }
-    else {
-      var result = new HashMap<>();
-      result.put("valid", true);
-      return result;
+    return result;
+  }
+
+  private static List<ErrorEvent> validateTitles(ParsedRecord record) {
+    var result = new ArrayList<ErrorEvent>();
+    if (record != null && record.getAnalysis() != null) {
+      var titles = record.getAnalysis().getTitles();
+      if (!titles.getTitleExists()) {
+        result.add(buildValidationError("Missing title"));
+      }
     }
+    return result;
+  }
+
+  private static List<ErrorEvent> validateTemporalBounds(ParsedRecord record) {
+    var result = new ArrayList<ErrorEvent>();
+    if (record != null && record.getAnalysis() != null) {
+      var temporal = record.getAnalysis().getTemporalBounding();
+      if (temporal.getBeginDescriptor() == INVALID) {
+        result.add(buildValidationError("Invalid beginDate"));
+      }
+      if (temporal.getEndDescriptor() == INVALID) {
+        result.add(buildValidationError("Invalid endDate"));
+      }
+      if (temporal.getBeginDescriptor() != UNDEFINED && temporal.getEndDescriptor() != UNDEFINED && temporal.getInstantDescriptor() == INVALID) {
+        result.add(buildValidationError("Invalid instant-only date"));
+      }
+    }
+    return result;
+  }
+
+  private static List<ErrorEvent> validateSpatialBounds(ParsedRecord record) {
+    var result = new ArrayList<ErrorEvent>();
+    if (record != null && record.getAnalysis() != null) {
+      var spatial = record.getAnalysis().getSpatialBounding();
+      if (spatial.getSpatialBoundingExists() && !spatial.getIsValid()) {
+        result.add(buildValidationError("Invalid geoJSON for spatial bounding"));
+      }
+    }
+    return result;
+  }
+
+  private static ErrorEvent buildValidationError(String details) {
+    return ErrorEvent.newBuilder()
+        .setTitle(VALIDATION_ERROR_TITLE)
+        .setDetail(details)
+        .build();
   }
 
   ////////////////////////////
