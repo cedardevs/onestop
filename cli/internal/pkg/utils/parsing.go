@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/CEDARDEVS/onestop/cli/internal/pkg/flags"
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 )
 
 func ParseTypeFlag(params *viper.Viper) []string {

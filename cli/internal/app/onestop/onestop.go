@@ -5,8 +5,8 @@ import (
 	"github.com/spf13/viper"
 	"strings"
 	"github.com/danielgtaylor/openapi-cli-generator/cli"
-	"github.com/CEDARDEVS/onestop/cli/internal/pkg/flags"
-	"github.com/CEDARDEVS/onestop/cli/internal/pkg/utils"
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
+	"github.com/cedardevs/onestop/cli/internal/pkg/utils"
 )
 
 const SearchCollectionCmd = "searchcollection"

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 	"strconv"
-	"github.com/CEDARDEVS/onestop/cli/internal/pkg/flags"
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 )
 
 func TestParseStartAndEndTime(t *testing.T) {

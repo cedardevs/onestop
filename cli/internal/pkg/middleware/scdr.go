@@ -4,7 +4,7 @@ import(
   "github.com/spf13/viper"
   "strconv"
   "time"
-  "github.com/CEDARDEVS/onestop/cli/internal/pkg/flags"
+  "github.com/cedardevs/onestop/cli/internal/pkg/flags"
 )
 
 func MarshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
