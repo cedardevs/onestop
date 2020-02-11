@@ -50,67 +50,56 @@ public class IndexingHelpers {
 
   private static List<ErrorEvent> validateRootRecord(ParsedRecord record) {
     var result = new ArrayList<ErrorEvent>();
-    if (record != null) {
-      if (record.getDiscovery() == null || record.getDiscovery() == Discovery.newBuilder().build()) {
-        result.add(buildValidationError("Discovery metadata missing. No metadata to load into OneStop."));
-      }
-      if (record.getAnalysis() == null || record.getAnalysis() == Analysis.newBuilder().build()) {
-        result.add(buildValidationError("Analysis metadata missing. Cannot verify metadata quality for OneStop."));
-      }
+    if (record.getDiscovery() == null || record.getDiscovery() == Discovery.newBuilder().build()) {
+      result.add(buildValidationError("Discovery metadata missing. No metadata to load into OneStop."));
+    }
+    if (record.getAnalysis() == null || record.getAnalysis() == Analysis.newBuilder().build()) {
+      result.add(buildValidationError("Analysis metadata missing. Cannot verify metadata quality for OneStop."));
     }
     return result;
   }
 
   private static List<ErrorEvent> validateIdentification(ParsedRecord record) {
     var result = new ArrayList<ErrorEvent>();
-    if (record != null && record.getAnalysis() != null) {
-      var analysis = record.getAnalysis();
-      var identification = analysis.getIdentification();
-      if (identification != null && !identification.getFileIdentifierExists() && !identification.getDoiExists()) {
-        result.add(buildValidationError("Missing identifier - record contains neither a fileIdentifier nor a DOI"));
-      }
-      if (record.getType() == null || (identification != null && !identification.getMatchesIdentifiers())) {
-        result.add(buildValidationError("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided OR type unknown."));
-      }
+    var identification = record.getAnalysis().getIdentification();
+    if (identification != null && !identification.getFileIdentifierExists() && !identification.getDoiExists()) {
+      result.add(buildValidationError("Missing identifier - record contains neither a fileIdentifier nor a DOI"));
+    }
+    if (record.getType() == null || (identification != null && !identification.getMatchesIdentifiers())) {
+      result.add(buildValidationError("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided OR type unknown."));
     }
     return result;
   }
 
   private static List<ErrorEvent> validateTitles(ParsedRecord record) {
     var result = new ArrayList<ErrorEvent>();
-    if (record != null && record.getAnalysis() != null) {
-      var titles = record.getAnalysis().getTitles();
-      if (!titles.getTitleExists()) {
-        result.add(buildValidationError("Missing title"));
-      }
+    var titles = record.getAnalysis().getTitles();
+    if (!titles.getTitleExists()) {
+      result.add(buildValidationError("Missing title"));
     }
     return result;
   }
 
   private static List<ErrorEvent> validateTemporalBounds(ParsedRecord record) {
     var result = new ArrayList<ErrorEvent>();
-    if (record != null && record.getAnalysis() != null) {
-      var temporal = record.getAnalysis().getTemporalBounding();
-      if (temporal.getBeginDescriptor() == INVALID) {
-        result.add(buildValidationError("Invalid beginDate"));
-      }
-      if (temporal.getEndDescriptor() == INVALID) {
-        result.add(buildValidationError("Invalid endDate"));
-      }
-      if (temporal.getBeginDescriptor() != UNDEFINED && temporal.getEndDescriptor() != UNDEFINED && temporal.getInstantDescriptor() == INVALID) {
-        result.add(buildValidationError("Invalid instant-only date"));
-      }
+    var temporal = record.getAnalysis().getTemporalBounding();
+    if (temporal.getBeginDescriptor() == INVALID) {
+      result.add(buildValidationError("Invalid beginDate"));
+    }
+    if (temporal.getEndDescriptor() == INVALID) {
+      result.add(buildValidationError("Invalid endDate"));
+    }
+    if (temporal.getBeginDescriptor() != UNDEFINED && temporal.getEndDescriptor() != UNDEFINED && temporal.getInstantDescriptor() == INVALID) {
+      result.add(buildValidationError("Invalid instant-only date"));
     }
     return result;
   }
 
   private static List<ErrorEvent> validateSpatialBounds(ParsedRecord record) {
     var result = new ArrayList<ErrorEvent>();
-    if (record != null && record.getAnalysis() != null) {
-      var spatial = record.getAnalysis().getSpatialBounding();
-      if (spatial.getSpatialBoundingExists() && !spatial.getIsValid()) {
-        result.add(buildValidationError("Invalid geoJSON for spatial bounding"));
-      }
+    var spatial = record.getAnalysis().getSpatialBounding();
+    if (spatial.getSpatialBoundingExists() && !spatial.getIsValid()) {
+      result.add(buildValidationError("Invalid geoJSON for spatial bounding"));
     }
     return result;
   }
@@ -380,11 +369,9 @@ public class IndexingHelpers {
 
     if (name == null) {
       return null;
-    }
-    else if (version == null) {
+    } else if (version == null) {
       return name;
-    }
-    else {
+    } else {
       return name + " > " + version;
     }
   }
@@ -443,19 +430,16 @@ public class IndexingHelpers {
       if (precision.equals(ChronoUnit.DAYS.toString())) {
         // End of day
         endDate = bounding.getInstant() + "T23:59:59Z";
-      }
-      else if (precision.equals(ChronoUnit.YEARS.toString())) {
+      } else if (precision.equals(ChronoUnit.YEARS.toString())) {
         if (!analysis.getInstantIndexable()) {
           // Paleo date, so only return year value (null out dates)
           beginDate = null;
           endDate = null;
-        }
-        else {
+        } else {
           // Last day of year + end of day
           endDate = bounding.getInstant() + "-12-31T23:59:59Z";
         }
-      }
-      else {
+      } else {
         // Precision is NANOS so use instant value as-is
         endDate = beginDate;
       }
@@ -465,8 +449,7 @@ public class IndexingHelpers {
       result.put("endDate", endDate);
       result.put("endYear", year);
       return result;
-    }
-    else {
+    } else {
       // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
       // use value from analysis block where dates are UTC datetime normalized
       var result = new HashMap<String, Object>();
@@ -481,8 +464,7 @@ public class IndexingHelpers {
   private static Long parseYear(String utcDateTime) {
     if (StringUtils.isBlank(utcDateTime)) {
       return null;
-    }
-    else {
+    } else {
       // Watch out for BCE years
       return Long.parseLong(utcDateTime.substring(0, utcDateTime.indexOf('-', 1)));
     }
@@ -555,33 +537,24 @@ public class IndexingHelpers {
       if (namespace.contains("science")) {
         if (value.startsWith("earth science services")) {
           return KeywordCategory.gcmdScienceServices;
-        }
-        else if (value.startsWith("earth science")) {
+        } else if (value.startsWith("earth science")) {
           return KeywordCategory.gcmdScience;
         }
-      }
-      else if (namespace.contains("location") || namespace.contains("place")) {
+      } else if (namespace.contains("location") || namespace.contains("place")) {
         return KeywordCategory.gcmdLocations;
-      }
-      else if (namespace.contains("platform")) {
+      } else if (namespace.contains("platform")) {
         return KeywordCategory.gcmdPlatforms;
-      }
-      else if (namespace.contains("instrument")) {
+      } else if (namespace.contains("instrument")) {
         return KeywordCategory.gcmdInstruments;
-      }
-      else if (namespace.contains("data center")) {
+      } else if (namespace.contains("data center")) {
         return KeywordCategory.gcmdDataCenters;
-      }
-      else if (namespace.contains("horizontal data resolution")) {
+      } else if (namespace.contains("horizontal data resolution")) {
         return KeywordCategory.gcmdHorizontalResolution;
-      }
-      else if (namespace.contains("vertical data resolution")) {
+      } else if (namespace.contains("vertical data resolution")) {
         return KeywordCategory.gcmdVerticalResolution;
-      }
-      else if (namespace.contains("temporal data resolution")) {
+      } else if (namespace.contains("temporal data resolution")) {
         return KeywordCategory.gcmdTemporalResolution;
-      }
-      else if (namespace.contains("project")) {
+      } else if (namespace.contains("project")) {
         return KeywordCategory.gcmdProjects;
       }
       return KeywordCategory.other;
