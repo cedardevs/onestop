@@ -173,3 +173,66 @@ We use the [Open Containers Spec](https://github.com/opencontainers/image-spec/b
 The same image annotations can be seen via Kubernetes, using the following command:
 
 `kubectl describe pod ${podName}`
+
+## Using Docker Hub API
+
+### Request all public tags (no credentials or token needed)
+```
+fun requestDockerHubTags(publish: Publish, url: String? = null, tags: JSONArray = JSONArray()): JSONArray {
+    val urlTags = url ?: "${RegistryAPI.DOCKER_HUB}/repositories/${publish.vendor}/${publish.title}/tags"
+    val response: Response = khttp.get(urlTags)
+    val jsonResponse: JSONObject = response.jsonObject
+    val urlNext: String = try {
+        jsonResponse.getString("next")
+    } catch (e: JSONException) {
+        ""
+    } as String
+
+    if (urlNext.isBlank()) return tags
+
+    val jsonTags: JSONArray = jsonResponse.getJSONArray("results")
+    val jsonTagsRefined = JSONArray()
+    jsonTags.forEach { t ->
+        val tag: JSONObject = t as JSONObject
+
+        val name = tag.getString("name")
+        val lastUpdated = tag.getString("last_updated")
+        val refinedTag = JSONObject(mapOf(Pair("name", name), Pair("last_updated", lastUpdated)))
+        jsonTagsRefined.put(refinedTag)
+    }
+    return requestDockerHubTags(publish, urlNext, concat(tags, jsonTagsRefined))
+}
+```
+
+### Retrieve token needed to call delete tag endpoint
+```
+# Retrieve Token needed to call delete tag endpoint
+fun requestDockerHubToken(publish: Publish): String? {
+    val urlToken = "${RegistryAPI.DOCKER_HUB}/users/login"
+    val payload = mapOf(Pair("username", publish.username), Pair("password", publish.password))
+    val response: Response = khttp.post(
+            url = urlToken,
+            headers = mapOf(Pair("Content-Type", "application/json")),
+            data = JSONObject(payload)
+    )
+    if (response.statusCode == 200) {
+        val jsonResponse: JSONObject = response.jsonObject
+        return jsonResponse.getString("token")
+    }
+    return null
+}
+```
+
+### Delete a tag
+```
+fun requestDockerHubRemoveTag(publish: Publish, tag: String): Boolean {
+    val jwt: String? = requestDockerHubToken(publish)
+    val urlDelete = "${RegistryAPI.DOCKER_HUB}/repositories/${publish.vendor}/${publish.title}/tags/${tag}"
+    val response: Response = khttp.delete(
+            url = urlDelete,
+            headers = mapOf(Pair("Authorization", "JWT ${jwt ?: ""}"))
+    )
+    println("DELETE STATUS CODE = " + response.statusCode)
+    return response.statusCode == 202
+}
+```
