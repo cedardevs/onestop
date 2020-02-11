@@ -258,7 +258,7 @@ public class IndexingHelpers {
   ////////////////////////////////
   // Identifiers                //
   ////////////////////////////////
-  static String prepareInternalParentIdentifier(ParsedRecord record) {
+  private static String prepareInternalParentIdentifier(ParsedRecord record) {
     return Optional.ofNullable(record)
         .filter(r -> r.getType() == RecordType.granule)
         .map(ParsedRecord::getRelationships)
@@ -273,7 +273,7 @@ public class IndexingHelpers {
   ////////////////////////////////
   // Services, Links, Protocols //
   ////////////////////////////////
-  static List<Map> prepareServiceLinks(Discovery discovery) {
+  private static List<Map> prepareServiceLinks(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getServices)
         .orElse(Collections.emptyList())
@@ -290,7 +290,7 @@ public class IndexingHelpers {
   }
 
   // see: https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
-  static Set<String> prepareServiceLinkProtocols(Discovery discovery) {
+  private static Set<String> prepareServiceLinkProtocols(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getServices)
         .orElse(Collections.emptyList())
@@ -306,7 +306,7 @@ public class IndexingHelpers {
   }
 
   // see: https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
-  static Set<String> prepareLinkProtocols(Discovery discovery) {
+  private static Set<String> prepareLinkProtocols(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getLinks)
         .orElse(Collections.emptyList())
@@ -340,7 +340,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Data Formats           //
   ////////////////////////////
-  static Set<String> prepareDataFormats(Discovery discovery) {
+  private static Set<String> prepareDataFormats(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getDataFormats)
         .orElse(Collections.emptyList())
@@ -379,7 +379,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
-  static Map<String, Set<String>> prepareResponsibleParties(Discovery discovery) {
+  private static Map<String, Set<String>> prepareResponsibleParties(Discovery discovery) {
     Set<String> individualNames = new HashSet<>();
     Set<String> organizationNames = new HashSet<>();
     Optional.ofNullable(discovery)
@@ -416,7 +416,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Dates                  //
   ////////////////////////////
-  static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
+  private static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     String beginDate, endDate;
     Long year;
 
@@ -473,7 +473,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Keywords               //
   ////////////////////////////
-  static Map<String, Set<String>> prepareGcmdKeyword(Discovery discovery) {
+  private static Map<String, Set<String>> prepareGcmdKeyword(Discovery discovery) {
     var allKeywords = new HashSet<String>();
     var groupedKeywords = Optional.ofNullable(discovery)
         .map(Discovery::getKeywords)
@@ -561,7 +561,7 @@ public class IndexingHelpers {
     }
   }
 
-  static private SingleKeyword normalizeKeyword(SingleKeyword keyword) {
+  private static SingleKeyword normalizeKeyword(SingleKeyword keyword) {
     Function<String, String> normalizer = keyword.category.normalizer;
     return new SingleKeyword(keyword.namespace, normalizer.apply(keyword.value), keyword.category); // preserve input category
   }
