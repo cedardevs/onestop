@@ -171,7 +171,7 @@ func determineEndpoint(params *viper.Viper, isSummaryWithType bool) string {
 }
 
 func scdrOutputFormatAndPrint(params *viper.Viper, decoded map[string]interface{}) {
-	if output, ok := decoded["scdr-ouput"].([]string); ok {
+	if output, ok := decoded["scdr-output"].([]string); ok {
 		for _, row := range output {
 			fmt.Println(strings.TrimSpace(row))
 		}

@@ -29,7 +29,7 @@ func transformResponse(params *viper.Viper, responseMap map[string]interface{}) 
 		} else {
 			scdrOuput = buildLinkResponse(items)
 		}
-		translatedResponseMap["scdr-ouput"] = scdrOuput
+		translatedResponseMap["scdr-output"] = scdrOuput
 	}
 	return translatedResponseMap
 }
