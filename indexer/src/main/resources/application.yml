@@ -33,6 +33,7 @@ flattening:
   interval:
     ms: 30000 # 30s
 sitemap:
+  enabled: true
   scroll-size: 1000
   topic:
     name: "sitemap-triggers"

@@ -51,17 +51,16 @@ public class ElasticsearchFactory {
         .map(Object::toString)
         .map(Integer::valueOf)
         .orElse(null);
-    var elasticSitemapCollectionsPerSubmap = Optional.ofNullable(config.get("sitemap.collections-per-submap"))
+    var elasticSitemapEnabled = Optional.ofNullable(config.get("sitemap.enabled"))
         .map(Object::toString)
-        .map(Integer::valueOf)
-        .orElse(null);
-    var elasticSitemapEnabled = true; // TODO - any reason to configure this?
+        .map(Boolean::valueOf)
+        .orElse(true);
 
     // check for compatible elastic version (will throw exception if not compatible)
     ElasticsearchVersion elasticVersion = new ElasticsearchVersion(elasticClient);
 
     return new ElasticsearchConfig(
         elasticVersion, elasticPrefix, elasticMaxTasks, elasticRequestsPerSecond, elasticSitemapScrollSize,
-        elasticSitemapCollectionsPerSubmap, elasticSitemapEnabled);
+        elasticSitemapScrollSize, elasticSitemapEnabled);
   }
 }
