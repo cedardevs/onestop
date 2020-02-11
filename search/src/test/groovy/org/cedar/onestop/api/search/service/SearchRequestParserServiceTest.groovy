@@ -161,7 +161,7 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
-  def 'Multiple queryText objects builds right request'() {
+  def 'Multiple queryText objects build right request'() {
     given:
     def request = '{"queries":[{"type":"queryText","value":"winter"},{"type":"queryText","value":"is"},{"type":"queryText","value":"coming"}]}'
     def params = slurper.parseText(request)
@@ -183,6 +183,153 @@ class SearchRequestParserServiceTest extends Specification {
                                                minimum_should_match: '75%',
                                                lenient             : true
                                            ]]]]
+                        ],
+                        field_value_factor: [
+                            field   : 'dsmmAverage',
+                            modifier: 'log1p',
+                            factor  : 1.0,
+                            missing : 0
+                        ],
+                        boost_mode        : 'sum'
+                    ]
+                ]
+            ],
+            filter: [:]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Granule name query generates expected elasticsearch query when #desc'() {
+    given:
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [
+                [
+                    function_score: [
+                        query             : [
+                            bool: [
+                                must: [[
+                                           multi_match: [
+                                               query: "ghrsst goes",
+                                               fields: expectedFields,
+                                               operator: expectedOperator,
+                                               type: 'cross_fields'
+                                           ]]]]
+                        ],
+                        field_value_factor: [
+                            field   : 'dsmmAverage',
+                            modifier: 'log1p',
+                            factor  : 1.0,
+                            missing : 0
+                        ],
+                        boost_mode        : 'sum'
+                    ]
+                ]
+            ],
+            filter: [:]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+
+    where:
+    desc | request | expectedOperator | expectedFields
+    'defaults for field' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes" }]}' | 'OR' | ['titleForFilter', 'fileIdentifierForFilter', 'filename']
+    'declared field' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "field": "title" }]}' | 'OR' | ['titleForFilter']
+  }
+
+  def 'Multiple granuleName objects build right request'() {
+    given:
+    def request = '{"queries":[{"type":"granuleName","value":"goes","field":"filename"},{"type":"granuleName","value":"ghrsst","field":"title"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [
+                [
+                    function_score: [
+                        query             : [
+                            bool: [
+                                must: [
+                                    [
+                                        multi_match: [
+                                            query   : "goes",
+                                            fields  : ['filename'],
+                                            operator: 'OR',
+                                            type    : 'cross_fields'
+                                        ]
+                                    ],
+                                    [
+                                        multi_match: [
+                                            query   : "ghrsst",
+                                            fields  : ['titleForFilter'],
+                                            operator: 'OR',
+                                            type    : 'cross_fields'
+                                        ]
+                                    ]
+                                ]]
+                        ],
+                        field_value_factor: [
+                            field   : 'dsmmAverage',
+                            modifier: 'log1p',
+                            factor  : 1.0,
+                            missing : 0
+                        ],
+                        boost_mode        : 'sum'
+                    ]
+                ]
+            ],
+            filter: [:]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Granule name and query text queries in request build expected request'() {
+    given:
+    def request = '{"queries":[{"type":"queryText","value":"winter"},{"type":"granuleName","value":"ghrsst goes"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [
+                [
+                    function_score: [
+                        query             : [
+                            bool: [
+                                must: [
+                                    [
+                                        query_string: [
+                                            query               : "winter",
+                                            phrase_slop         : 0,
+                                            tie_breaker         : 0,
+                                            minimum_should_match: '75%',
+                                            lenient             : true
+                                        ]
+                                    ],
+                                    [
+                                        multi_match: [
+                                            query   : "ghrsst goes",
+                                            fields  : ['titleForFilter', 'fileIdentifierForFilter', 'filename'],
+                                            operator: 'OR',
+                                            type    : 'cross_fields'
+                                        ]
+                                    ]
+                                ]]
                         ],
                         field_value_factor: [
                             field   : 'dsmmAverage',
@@ -608,9 +755,8 @@ class SearchRequestParserServiceTest extends Specification {
     aggsResult == expectedAggs
   }
 
-  def 'Granule name filter generates expected elasticsearch query'() {
+  def 'Granule name filter generates expected elasticsearch query when #desc'() {
     given:
-    def request = '{"filters":[{"type": "granuleName", "value": "ghrsst"}]}'
     def params = slurper.parseText(request)
 
     when:
@@ -620,15 +766,23 @@ class SearchRequestParserServiceTest extends Specification {
             must  : [:],
             filter: [
                 [multi_match: [
-                    query: "ghrsst",
-                    fields: ['titleForFilter', 'fileIdentifierForFilter', 'filename'],
-                    operator: 'AND',
-                    type: 'cross_fields'
+                    query   : "ghrsst goes",
+                    fields  : expectedFields,
+                    operator: expectedOperator,
+                    type    : 'cross_fields'
                 ]]
             ]]
     ]
 
     then:
     queryResult == expectedQuery
+
+    where:
+    desc | request | expectedOperator | expectedFields
+    'defaults for field and allTermsMustMatch' | '{"filters":[{"type": "granuleName", "value": "ghrsst goes"}]}' | 'AND' | ['titleForFilter', 'fileIdentifierForFilter', 'filename']
+    'declared single field value' | '{"filters":[{"type": "granuleName", "value": "ghrsst goes", "field": "title" }]}' | 'AND' | ['titleForFilter']
+    'declared "all" field value' | '{"filters":[{"type": "granuleName", "value": "ghrsst goes", "field": "all" }]}' | 'AND' | ['titleForFilter', 'fileIdentifierForFilter', 'filename']
+    'allTermsMustMatch is false' | '{"filters":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": false }]}' | 'OR' | ['titleForFilter', 'fileIdentifierForFilter', 'filename']
+    'allTermsMustMatch is true' | '{"filters":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": true }]}' | 'AND' | ['titleForFilter', 'fileIdentifierForFilter', 'filename']
   }
 }

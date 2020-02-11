@@ -946,6 +946,7 @@ components:
           items:
             oneOf:
               - $ref: "#/components/schemas/textQuery"
+              - $ref: "#/components/schemas/granuleNameQuery"
           type: array
         summary:
           default: true
@@ -1136,10 +1137,39 @@ components:
       type: object
     granuleNameFilter:
       additionalProperties: false
-      description: "Filter by granule \"name\" fields with partial matches possible (unlike the standard Text Query) when strings are camel-cased, and/or have underscores or hyphens."
+      description: "Filter by granule \"name\" fields. Filter matches do not affect relevancy score rankings like the \"granuleNameQuery\" but can enable a more harsh match requirement, in effect filtering out far more records from appearing in your results."
       properties:
         type:
           description: "Filter type."
+          enum:
+            - granuleName
+        value:
+          description: "Text to search one or all of the granule name fields. Text is valid so long as it does not have a leading wildcard ('*' or '?')."
+          pattern: "^(?!\\s*[\\*\\?]+).*"
+          type: string
+        field:
+          description: "The single \"name\" field to query against, or all of the possible fields."
+          enum:
+            - title
+            - fileIdentifier
+            - filename
+            - all
+          default: all
+        allTermsMustMatch:
+          description: "Controls the underlying behavior of the filter. True means that results are excluded if all terms in the given \"value\" are not found within the specified \"field\". False only excludes results if no terms match at all. Defaults to true."
+          type: boolean
+          default: true
+      required:
+        - type
+        - value
+      title: "Granule Name Filter"
+      type: object
+    granuleNameQuery:
+      additionalProperties: false
+      description: "Query by granule \"name\" fields ONLY. Does not allow regular expressions or other advanced syntax like the main textQuery. Note that when combined with the textQuery, matches against the \"name\" fields will be given a double boost in relevance score (due to matching twice across both query objects). Further, if providing multiple granuleNameQuery objects in your search request, keep in mind that they will be combined with a logical AND. Terms use Lucene Query Syntax."
+      properties:
+        type:
+          description: "Query type."
           enum:
             - granuleName
         value:
