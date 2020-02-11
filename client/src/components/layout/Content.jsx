@@ -12,7 +12,6 @@ const styleContent = {
   alignItems: 'stretch',
   width: '100%',
 }
-
 export default class Content extends React.Component {
   render() {
     const {
@@ -32,36 +31,43 @@ export default class Content extends React.Component {
     } = this.props
     const styles = Object.assign({}, styleContent, style)
     return (
-      <FlexRow
-        items={[
-          <Left
-            content={left}
-            width={leftWidth}
-            padding={padding}
-            open={leftOpen}
-            visible={leftVisible}
-            style={leftStyle}
-            key={'left'}
-          />,
-          <Middle
-            content={middle}
-            maxWidth={middleMaxWidth}
-            padding={padding}
-            key={'middle'}
-          />,
-          right ? (
-            <Right
-              content={right}
-              width={rightWidth}
+      <div
+        style={{
+          background:
+            'linear-gradient(to right, #F9F9F900, #F9F9F936, #F9F9F900)',
+        }}
+      >
+        <FlexRow
+          items={[
+            <Left
+              content={left}
+              width={leftWidth}
               padding={padding}
-              open={rightOpen}
-              visible={rightVisible}
-              key={'right'}
-            />
-          ) : null,
-        ]}
-        style={styles}
-      />
+              open={leftOpen}
+              visible={leftVisible}
+              style={leftStyle}
+              key={'left'}
+            />,
+            <Middle
+              content={middle}
+              maxWidth={middleMaxWidth}
+              padding={padding}
+              key={'middle'}
+            />,
+            right ? (
+              <Right
+                content={right}
+                width={rightWidth}
+                padding={padding}
+                open={rightOpen}
+                visible={rightVisible}
+                key={'right'}
+              />
+            ) : null,
+          ]}
+          style={styles}
+        />
+      </div>
     )
   }
 }

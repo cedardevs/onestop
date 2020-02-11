@@ -4,6 +4,7 @@ import FlexColumn from '../common/ui/FlexColumn'
 import {processUrl} from '../../utils/urlUtils'
 import {fontFamilySerif} from '../../utils/styleUtils'
 import Button from '../common/input/Button'
+import ResultGraphic from '../results/ResultGraphic'
 import {play_circle_o, pause_circle_o, SvgIcon} from '../common/SvgIcon'
 
 const styleFeaturedDatasetsWrapper = {
@@ -16,61 +17,30 @@ const styleFeaturedDatasetsLabel = {
   margin: '0 0 0.618em 0',
 }
 
-const styleFeaturedDatasets = {
-  color: '#F9F9F9',
-}
-
-const styleTitle =  {
-    background: '#026dab',
-    fontFamily: fontFamilySerif(),
-    padding: '.609em 1.018em',
-    display: 'flex',
-}
-
-const styleImageContainer = {
-  justifyContent: 'center',
-  alignItems: 'center',
-  flex: 2,
-  cursor: 'pointer',
-  height: '20em',
-}
-
-const styleImage = {
+const styleListItem = {
+  fontFamily: fontFamilySerif(),
+  padding: '1.018em',
   display: 'flex',
-  width: '100%',
-  height: '100%',
-  justifyContent: 'center',
 }
 
-const styleFeaturedImage = backgroundURL => {
+const styleFeaturedButton = isReversed => {
   return {
-    flex: 1,
-    alignSelf: 'stretch',
-    background: `url(${backgroundURL})`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-  }
-}
-
-const styleFeaturedButton =  {
-    flex: 1,
     textDecoration: 'underline',
     fontFamily: fontFamilySerif(),
     fontSize: '1.25em',
     width: '100%',
+    height: 'fit-content',
     background: 'transparent',
     color: 'inherit',
-    textAlign: 'right',
-    justifyContent: 'flex-end',
+    textAlign: isReversed ? 'left' : 'right',
     padding: '.309em',
-    margin: '.309em 0',
-    marginRight: '1.018em',
-    height: 'fit-content',
+    display: 'block',
+  }
 }
 
 const styleFeaturedButtonFocus = {
   textDecoration: 'underline',
+  outline: '2px dashed #5C87AC',
   background: 'transparent',
 }
 
@@ -78,57 +48,87 @@ const styleFeaturedButtonHover = {
   background: 'transparent',
 }
 
-const FeaturedDatasets = props => {
+const styleDescriptionWrapper = {
+  border: '2px solid black',
+  background: '#F9F9F9',
+  flex: 3,
+  display: 'flex',
+  justifyContent: 'center',
+  alignSelf: 'stretch',
+  height: '100%',
+  margin: 0,
+}
 
+const styleDescription = {
+  width: '100%',
+  padding: '0.618em 1.618em 1.618em 1.618em',
+  margin: 0,
+  fontSize: '1.1em',
+}
+
+const styleImage = {
+  float: 'left',
+  alignSelf: 'flex-start',
+  margin: '0 1.618em 1.618em 0',
+  // width: '32%',
+  width: '60%',
+  minWidth: '15em',
+  objectFit: 'cover',
+  border: '1px solid black',
+}
+
+const FeaturedDatasets = props => {
   const search = query => {
     const {submit} = props
     submit(query)
   }
 
-  // render:
-  if (props.featured !== null && props.featured.length > 0) {
-    const titleList = //(
-      // <ul key="title-list" style={styleTitleList(collapseImage)}>
-      props.featured.map((f, i, arr) => {
-        const backgroundURL = processUrl(f.imageUrl)
+  const renderCollectionImage = thumbnail => {
+    const imgUrl = processUrl(thumbnail)
+    return <img style={styleImage} src={imgUrl} alt="" aria-hidden="true" />
+  }
 
-        return (
-          <li
-            style={styleTitle}
-            key={i}
-          >
-            <FlexRow
-              style={{width: '100%'}}
-              items={[
+  if (props.featured !== null && props.featured.length > 0) {
+    const featuredList = props.featured.map((f, i, arr) => {
+      const backgroundURL = processUrl(f.imageUrl)
+      const isReversed = i % 2 == 1
+      const collectionImage = renderCollectionImage(backgroundURL)
+
+      return (
+        <li style={styleListItem} key={i}>
+          <FlexRow
+            style={{flexDirection: isReversed ? 'row-reverse' : 'row'}}
+            items={[
+              <div
+                key="button"
+                style={{
+                  width: '100%',
+                  borderBottom: '2px solid black',
+                  flex: 1,
+                  height: 'fit-content',
+                  justifyContent: 'flex-end',
+                }}
+              >
                 <Button
-                  key="button"
                   text={f.title}
                   title={`${f.title} Featured Data Search`}
                   onClick={() => search(f.searchTerm)}
-                  style={styleFeaturedButton}
+                  style={styleFeaturedButton(isReversed)}
                   styleHover={styleFeaturedButtonHover}
                   styleFocus={styleFeaturedButtonFocus}
-                />,
-                <div key="image" style={styleImageContainer}>
-                  <div style={styleImage} aria-hidden={true}>
-                    <div
-                      title={f.title}
-                      style={styleFeaturedImage(backgroundURL)}
-                    />
-                  </div>
-                </div>,
-                <div style={{flex: 2, marginLeft: '1.018em'}} key="description">
+                />
+              </div>,
+              <div key="content" style={styleDescriptionWrapper}>
+                <p style={styleDescription}>
+                  {collectionImage}
                   {f.description}
-                </div>,
-              ]}
-            />
-          </li>
-        )
-      }) //}
-    // </ul>
-    // )
-
-    const flexItems = [ titleList ]
+                </p>
+              </div>,
+            ]}
+          />
+        </li>
+      )
+    })
 
     return (
       <nav
@@ -138,8 +138,8 @@ const FeaturedDatasets = props => {
         <h2 style={styleFeaturedDatasetsLabel} id="featuredDatasets">
           Featured Data Sets
         </h2>
-        <ul style={styleFeaturedDatasets}>
-          <FlexColumn items={flexItems} />
+        <ul>
+          <FlexColumn items={[ featuredList ]} />
         </ul>
         <br />
         <br />
