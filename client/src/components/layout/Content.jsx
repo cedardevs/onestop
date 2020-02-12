@@ -31,12 +31,6 @@ export default class Content extends React.Component {
     } = this.props
     const styles = Object.assign({}, styleContent, style)
     return (
-      <div
-        style={{
-          background:
-            'linear-gradient(to right, #F9F9F900, #F9F9F936, #F9F9F900)',
-        }}
-      >
         <FlexRow
           items={[
             <Left
@@ -67,7 +61,6 @@ export default class Content extends React.Component {
           ]}
           style={styles}
         />
-      </div>
     )
   }
 }
