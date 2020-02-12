@@ -63,20 +63,8 @@ public class RequestUtil {
     return resetIndices(alias, jsonMapping, restClient);
   }
 
-  public static Response resetStagedCollectionsIndices(ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
-    String alias = esConfig.COLLECTION_STAGING_INDEX_ALIAS;
-    String jsonMapping = esConfig.jsonMapping(alias);
-    return resetIndices(alias, jsonMapping, restClient);
-  }
-
   public static Response resetSearchGranulesIndices(ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
     String alias = esConfig.GRANULE_SEARCH_INDEX_ALIAS;
-    String jsonMapping = esConfig.jsonMapping(alias);
-    return resetIndices(alias, jsonMapping, restClient);
-  }
-
-  public static Response resetStagedGranulesIndies(ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
-    String alias = esConfig.GRANULE_STAGING_INDEX_ALIAS;
     String jsonMapping = esConfig.jsonMapping(alias);
     return resetIndices(alias, jsonMapping, restClient);
   }
@@ -106,18 +94,8 @@ public class RequestUtil {
     return putMetadataRecord(alias, id, metadata, restClient);
   }
 
-  public static Response putStagedCollectionMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
-    String alias = esConfig.COLLECTION_STAGING_INDEX_ALIAS;
-    return putMetadataRecord(alias, id, metadata, restClient);
-  }
-
   public static Response putSearchGranuleMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
     String alias = esConfig.GRANULE_SEARCH_INDEX_ALIAS;
-    return putMetadataRecord(alias, id, metadata, restClient);
-  }
-
-  public static Response putStagedGranulenMetadataRecord(String id, String metadata, ElasticsearchConfig esConfig, RestClient restClient) throws IOException {
-    String alias = esConfig.GRANULE_STAGING_INDEX_ALIAS;
     return putMetadataRecord(alias, id, metadata, restClient);
   }
 

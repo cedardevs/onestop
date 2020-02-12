@@ -8,20 +8,12 @@ import org.apache.kafka.streams.state.Stores
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.indexer.util.ElasticsearchService
-import org.cedar.onestop.indexer.util.SitemapIndexingHelpers
-import org.elasticsearch.action.ActionListener
-import org.elasticsearch.action.get.GetResponse
-import org.elasticsearch.client.Cancellable
-import org.elasticsearch.common.bytes.BytesArray
-import org.elasticsearch.index.get.GetResult
-import org.elasticsearch.index.reindex.BulkByScrollResponse
-import org.elasticsearch.index.seqno.SequenceNumbers
 import spock.lang.Specification
 
 import java.time.Duration
 import java.time.Instant
 
-class SitemapTriggerProcessorSpec extends Specification {
+class SitemapProcessorSpec extends Specification {
 
   static testEsConfig = new ElasticsearchConfig(
       new ElasticsearchVersion("7.5.1"),
@@ -40,7 +32,8 @@ class SitemapTriggerProcessorSpec extends Specification {
   ElasticsearchService mockEsService
   MockProcessorContext mockProcessorContext
   KeyValueStore<String, Long> testStore
-  SitemapTriggerProcessor testProcessor
+  SitemapConfig testConfig
+  SitemapProcessor testProcessor
 
   def setup() {
     mockEsService = Mock(ElasticsearchService)
@@ -50,7 +43,8 @@ class SitemapTriggerProcessorSpec extends Specification {
     testStore = Stores.keyValueStoreBuilder(Stores.inMemoryKeyValueStore(storeName), Serdes.String(), Serdes.Long())
         .withLoggingDisabled().build()
     testStore.init(mockProcessorContext, testStore)
-    testProcessor = new SitemapTriggerProcessor(storeName, mockEsService, testInterval)
+    testConfig = SitemapConfig.newBuilder().withStoreName(storeName).withInterval(testInterval).build()
+    testProcessor = new SitemapProcessor(mockEsService, testConfig)
     testProcessor.init(mockProcessorContext)
   }
 

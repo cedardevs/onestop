@@ -1,25 +1,37 @@
 package org.cedar.onestop.indexer.util
 
 import groovy.json.JsonSlurper
+import org.apache.kafka.streams.state.ValueAndTimestamp
 import org.cedar.onestop.elastic.common.FileUtil
+import org.cedar.onestop.indexer.stream.BulkIndexingConfig
 import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.avro.psi.Analysis
 import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.IdentificationAnalysis
 import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.Publishing
 import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
+import org.cedar.schemas.avro.psi.SpatialBoundingAnalysis
 import org.cedar.schemas.avro.psi.TemporalBounding
 import org.cedar.schemas.avro.psi.TemporalBoundingAnalysis
 import org.cedar.schemas.avro.psi.TitleAnalysis
 import org.cedar.schemas.avro.psi.ValidDescriptor
 import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.parse.ISOParser
+import org.elasticsearch.action.delete.DeleteRequest
+import org.elasticsearch.action.index.IndexRequest
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.Duration
+
+import static org.cedar.schemas.avro.psi.ValidDescriptor.INVALID
+import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID
 import static org.cedar.schemas.avro.util.TemporalTestData.getSituations
+import static org.elasticsearch.action.DocWriteRequest.OpType.DELETE
+import static org.elasticsearch.action.DocWriteRequest.OpType.INDEX
 
 
 @Unroll
@@ -33,7 +45,19 @@ class IndexingHelpersSpec extends Specification {
   static inputRecord = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
 
   static inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml').text
+  static inputCollectionDiscovery = ISOParser.parseXMLMetadataToDiscovery(inputCollectionXml)
+  static inputCollectionAnalysis = Analyzers.analyze(inputCollectionDiscovery)
   static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-granule.xml').text
+
+  static testTopic = 'testtopic'
+  static testIndex = 'testindex'
+  static indexingConfig = BulkIndexingConfig.newBuilder()
+      .withStoreName('teststore')
+      .withMaxPublishInterval(Duration.ofSeconds(10))
+      .withMaxPublishBytes(10000)
+      .addIndexMapping(testTopic, INDEX, testIndex)
+      .addIndexMapping(testTopic, DELETE, testIndex)
+      .build()
 
   static expectedKeywords = [
       "SIO > Super Important Organization",
@@ -88,11 +112,15 @@ class IndexingHelpersSpec extends Specification {
   ////////////////////////////
   def "valid message passes validation check"() {
     expect:
-    IndexingHelpers.validateMessage('dummy id', inputRecord)
+    IndexingHelpers.addValidationErrors(inputRecord).errors.isEmpty()
   }
 
-  // FIXME verify each validation check in isolation
-  def "invalid message fails validation check"() {
+  def "validation passes tombstones through"() {
+    expect:
+    IndexingHelpers.addValidationErrors(null) == null
+  }
+
+  def "invalid records have errors added"() {
     given:
     def titleAnalysis = TitleAnalysis.newBuilder(inputRecord.analysis.titles)
         .setTitleExists(false)
@@ -102,9 +130,9 @@ class IndexingHelpersSpec extends Specification {
         .setParentIdentifierExists(false)
         .build()
     def timeAnalysis = TemporalBoundingAnalysis.newBuilder(inputRecord.analysis.temporalBounding)
-        .setBeginDescriptor(ValidDescriptor.INVALID)
+        .setBeginDescriptor(INVALID)
         .setBeginUtcDateTimeString(null)
-        .setEndDescriptor(ValidDescriptor.INVALID)
+        .setEndDescriptor(INVALID)
         .setEndUtcDateTimeString(null)
         .setInstantDescriptor(ValidDescriptor.UNDEFINED)
         .setInstantUtcDateTimeString(null)
@@ -118,8 +146,205 @@ class IndexingHelpersSpec extends Specification {
         .setAnalysis(analysis)
         .build()
 
-    expect:
-    !IndexingHelpers.validateMessage('dummy id', record)?.valid
+    when:
+    def validated = IndexingHelpers.addValidationErrors(record)
+
+    then:
+    !validated.errors.isEmpty()
+  }
+
+  def "validates titles when #testCase"() {
+    def titleAnalysis = TitleAnalysis.newBuilder(inputRecord.analysis.titles).setTitleExists(titleExists).build()
+    def analysis = Analysis.newBuilder(inputRecord.analysis).setTitles(titleAnalysis).build()
+    def record = ParsedRecord.newBuilder(inputRecord).setAnalysis(analysis).build()
+
+    when:
+    def validated = IndexingHelpers.addValidationErrors(record)
+
+    then:
+    validated.errors.isEmpty() == isValid
+
+    where:
+    testCase                | isValid | titleExists
+    "title is missing"      | false   | false
+    "title is not missing"  | true    | true
+  }
+
+  def "validates identification when #testCase"() {
+    def identificationAnalysis = IdentificationAnalysis.newBuilder(inputRecord.analysis.identification)
+        .setFileIdentifierExists(hasFileId)
+        .setDoiExists(hasDoi)
+        .setMatchesIdentifiers(matches)
+        .build()
+    def analysis = Analysis.newBuilder(inputRecord.analysis).setIdentification(identificationAnalysis).build()
+    def record = ParsedRecord.newBuilder(inputRecord).setAnalysis(analysis).build()
+
+    when:
+    def validated = IndexingHelpers.addValidationErrors(record)
+
+    then:
+    validated.errors.size() == errors
+
+    where:
+    testCase                | errors  | hasFileId | hasDoi  | matches
+    "has only fileId"       | 0       | true      | false   | true
+    "has only doi"          | 0       | false     | true    | true
+    "has no fileId nor doi" | 1       | false     | false   | true
+    "has mismatched type"   | 1       | true      | true    | false
+    "no id and mismatched"  | 2       | false     | false   | false
+  }
+
+  def "validates temporal bounds when #testCase"() {
+    def temporalAnalysis = TemporalBoundingAnalysis.newBuilder(inputRecord.analysis.temporalBounding)
+        .setBeginDescriptor(beginValid ? VALID : INVALID)
+        .setEndDescriptor(endValid ? VALID : INVALID)
+        .setInstantDescriptor(instantValid ? VALID : INVALID)
+        .build()
+    def analysis = Analysis.newBuilder(inputRecord.analysis).setTemporalBounding(temporalAnalysis).build()
+    def record = ParsedRecord.newBuilder(inputRecord).setAnalysis(analysis).build()
+
+    when:
+    def validated = IndexingHelpers.addValidationErrors(record)
+
+    then:
+    validated.errors.size() == errors
+
+    where:
+    testCase                    | errors  | beginValid| endValid| instantValid
+    "has valid bounds"          | 0       | true      | true    | true
+    "has invalid start"         | 1       | false     | true    | true
+    "has invalid end"           | 1       | true      | false   | true
+    "has invalid start and end" | 2       | false     | false   | true
+    "is invalid instant"        | 1       | true      | true    | false
+    "is completely invalid"     | 3       | false     | false   | false
+  }
+
+  def "validates spatial bounds when #testCase"() {
+    def spatialAnalysis = SpatialBoundingAnalysis.newBuilder(inputRecord.analysis.spatialBounding)
+        .setSpatialBoundingExists(exists)
+        .setIsValid(valid)
+        .build()
+    def analysis = Analysis.newBuilder(inputRecord.analysis).setSpatialBounding(spatialAnalysis).build()
+    def record = ParsedRecord.newBuilder(inputRecord).setAnalysis(analysis).build()
+
+    when:
+    def validated = IndexingHelpers.addValidationErrors(record)
+
+    then:
+    validated.errors.size() == errors
+
+    where:
+    testCase                | errors  | exists  | valid
+    "bounds are valid"      | 0       | true    | true
+    "bounds are invalid"    | 1       | true    | false
+    "bounds not not exist"  | 0       | false   | false
+  }
+
+  ////////////////////////////
+  // Transform ES Requests  //
+  ////////////////////////////
+  def "tombstones create delete requests"() {
+    def testKey = "ABC"
+
+    when:
+    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, null, indexingConfig)
+
+    then:
+    results.size() == 1
+    results[0] instanceof DeleteRequest
+    results[0].index() == testIndex
+    results[0].id() == testKey
+  }
+
+  def "tombstones create multiple delete requests when configured"() {
+    def testKey = 'ABC'
+    def multipleDeleteConfig = BulkIndexingConfig.newBuilder()
+        .withStoreName('teststore')
+        .withMaxPublishInterval(Duration.ofSeconds(10))
+        .withMaxPublishBytes(10000)
+        .addIndexMapping(testTopic, DELETE, 'a')
+        .addIndexMapping(testTopic, DELETE, 'b')
+        .build()
+
+    when:
+    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, null, multipleDeleteConfig)
+
+    then:
+    results.size() == 2
+    results.every { it instanceof DeleteRequest }
+    results.every { it.id() == testKey }
+    results*.index() == ['a', 'b']
+  }
+
+  def "creates multiple index requests when configured"() {
+    def testKey = 'ABC'
+    def testRecord = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
+        .setAnalysis(inputCollectionAnalysis)
+        .setDiscovery(inputCollectionDiscovery)
+        .setPublishing(Publishing.newBuilder().build()).build()
+    def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
+    def multipleIndexConfig = BulkIndexingConfig.newBuilder()
+        .withStoreName('teststore')
+        .withMaxPublishInterval(Duration.ofSeconds(10))
+        .withMaxPublishBytes(10000)
+        .addIndexMapping(testTopic, INDEX, 'a')
+        .addIndexMapping(testTopic, INDEX, 'b')
+        .build()
+
+    when:
+    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, testValue, multipleIndexConfig)
+
+    then:
+    results.size() == 2
+    results.every { it instanceof IndexRequest }
+    results.every { it.id() == testKey }
+    results*.index() == ['a', 'b']
+  }
+
+  def "record that is #testCase creates delete request"() {
+    def testKey = "ABC"
+    def testRecord = ParsedRecord.newBuilder().setPublishing(publishingObject).build()
+    def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
+
+    when:
+    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, testValue, indexingConfig)
+
+    then:
+    results.size() == 1
+    results[0].id() == testKey
+    results[0].index() == testIndex
+    results[0] instanceof DeleteRequest
+
+    where:
+    testCase               | publishingObject
+    "private with no time" | Publishing.newBuilder().setIsPrivate(true).build()
+    "private until future" | Publishing.newBuilder().setIsPrivate(true).setUntil(System.currentTimeMillis() + 60000).build()
+    "public until past"    | Publishing.newBuilder().setIsPrivate(false).setUntil(System.currentTimeMillis() - 60000).build()
+  }
+
+  def "record that is #testCase creates index request"() {
+    def testKey = "ABC"
+    def testRecord = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
+        .setAnalysis(inputCollectionAnalysis)
+        .setDiscovery(inputCollectionDiscovery)
+        .setPublishing(publishingObject).build()
+    def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
+
+    when:
+    def result = IndexingHelpers.mapRecordToRequests(testTopic, testKey, testValue, indexingConfig)
+
+    then:
+    result[0].id() == testKey
+    result[0].index() == testIndex
+    result[0] instanceof IndexRequest
+
+    where:
+    testCase              | publishingObject
+    "private until past"  | Publishing.newBuilder().setIsPrivate(true).setUntil(System.currentTimeMillis() - 60000).build()
+    "public with no time" | Publishing.newBuilder().setIsPrivate(false).build()
+    "public until future" | Publishing.newBuilder().setIsPrivate(false).setUntil(System.currentTimeMillis() + 60000).build()
   }
 
   ///////////////////////////////
@@ -131,7 +356,7 @@ class IndexingHelpersSpec extends Specification {
 
     when:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream(dataSource).text
-    def record = buildRecordFromXML(xml)
+    def record = TestUtils.buildRecordFromXML(xml)
     def result = IndexingHelpers.reformatMessageForSearch(record)
 
     then:
@@ -181,7 +406,7 @@ class IndexingHelpersSpec extends Specification {
   ////////////////////////////////
   def "prepares service links"() {
     when:
-    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
     def result = IndexingHelpers.prepareServiceLinks(discovery)
 
     then:
@@ -209,7 +434,7 @@ class IndexingHelpersSpec extends Specification {
 
   def "prepares service link protocols"() {
     Set protocols = ['HTTP']
-    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
 
     expect:
     IndexingHelpers.prepareServiceLinkProtocols(discovery) == protocols
@@ -217,7 +442,7 @@ class IndexingHelpersSpec extends Specification {
 
   def "prepares link protocols"() {
     Set protocols = ['HTTP']
-    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
 
     expect:
     IndexingHelpers.prepareLinkProtocols(discovery) == protocols
@@ -227,7 +452,7 @@ class IndexingHelpersSpec extends Specification {
   // Data Formats           //
   ////////////////////////////
   def "prepares data formats"() {
-    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
 
     expect:
     IndexingHelpers.prepareDataFormats(discovery) == [
@@ -244,7 +469,7 @@ class IndexingHelpersSpec extends Specification {
   ////////////////////////////
   def "prepares responsible party names"() {
     when:
-    def discovery = buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
     def result = IndexingHelpers.prepareResponsibleParties(discovery)
 
     then:
@@ -270,7 +495,7 @@ class IndexingHelpersSpec extends Specification {
 
   def "party names are not included in granule search info"() {
     when:
-    def record = buildRecordFromXML(inputGranuleXml) // <-- granule!
+    def record = TestUtils.buildRecordFromXML(inputGranuleXml) // <-- granule!
     def result = IndexingHelpers.reformatMessageForSearch(record) // <-- top level reformat method!
 
     then:
@@ -393,24 +618,6 @@ class IndexingHelpersSpec extends Specification {
 
     then:
     result.accessionValues == null
-  }
-
-  private static ParsedRecord buildRecordFromXML(String xml) {
-    def discovery = ISOParser.parseXMLMetadataToDiscovery(xml)
-    def analysis = Analyzers.analyze(discovery)
-    def builder = ParsedRecord.newBuilder().setDiscovery(discovery).setAnalysis(analysis)
-
-    // Determine RecordType (aka granule or collection) from Discovery & Analysis info
-    String parentIdentifier = discovery.parentIdentifier
-    String hierarchyLevelName = discovery.hierarchyLevelName
-    if (hierarchyLevelName == null || hierarchyLevelName != 'granule' || !parentIdentifier) {
-      builder.setType(RecordType.collection)
-    }
-    else {
-      builder.setType(RecordType.granule)
-    }
-
-    return builder.build()
   }
 
 }

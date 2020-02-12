@@ -2,8 +2,10 @@ package org.cedar.onestop.indexer.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
+import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
-import org.cedar.onestop.indexer.stream.FlatteningTriggerTransformer;
+import org.cedar.onestop.indexer.stream.FlatteningConfig;
+import org.cedar.onestop.indexer.stream.FlatteningTransformer;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.cluster.node.tasks.list.ListTasksRequest;
 import org.elasticsearch.action.admin.indices.alias.Alias;
@@ -209,12 +211,12 @@ public class ElasticsearchService {
     return client.reindexAsync(request, RequestOptions.DEFAULT, listener);
   }
 
-  public BulkIndexingTransformer buildBulkIndexingTransformer(Duration publishInterval, Long bulkMaxBytes) {
-    return new BulkIndexingTransformer(this, publishInterval, bulkMaxBytes);
+  public BulkIndexingTransformer buildBulkIndexingTransformer(BulkIndexingConfig config) {
+    return new BulkIndexingTransformer(this, config);
   }
 
-  public FlatteningTriggerTransformer buildFlatteningTriggerTransformer(String keyValueStoreName, String flatteningScript, Duration interval) {
-    return new FlatteningTriggerTransformer(keyValueStoreName, this, flatteningScript, interval);
+  public FlatteningTransformer buildFlatteningTransformer(FlatteningConfig config) {
+    return new FlatteningTransformer(this, config);
   }
 
   public void buildSitemap(Long timestamp) {

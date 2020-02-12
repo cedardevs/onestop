@@ -4,7 +4,10 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -34,18 +37,30 @@ public class SitemapIndexingHelpers {
           timestamp
       );
       if (esService.maxValue(params.to, "lastUpdatedDate") >= timestamp) {
-        log.info("Sitemap has already been updated beyond timestamp " + timestamp);
+        log.info("sitemap has already been updated beyond timestamp " + timestamp);
         return;
       }
       var sitemapResult = runSitemapEtl(esService.getClient(), params);
       var end = System.currentTimeMillis();
-      log.info("Sitemap updated with " + sitemapResult + "collections in " + (end - start) / 1000 + "s");
+      log.info("sitemap updated with " + sitemapResult + " collections in " + (end - start) / 1000 + "s");
     } catch (IOException e) {
-      log.error("Updating sitemap failed", e);
+      log.error("updating sitemap failed", e);
     }
   }
 
   private static int runSitemapEtl(RestHighLevelClient client, SitemapParams params) throws IOException {
+    var sourceCount = client.count(new CountRequest(params.from), RequestOptions.DEFAULT).getCount();
+    var pagesNeeded = sourceCount / params.pageSize;
+    if (sourceCount % params.pageSize != 0) {
+      pagesNeeded++;
+    }
+    var currPageCount = client.count(new CountRequest(params.to), RequestOptions.DEFAULT).getCount();
+    if (pagesNeeded < currPageCount) {
+      log.info("number of sitemap pages is shrinking, rebuilding from scratch");
+      var deleteAllRequest = new DeleteByQueryRequest(params.to).setQuery(QueryBuilders.matchAllQuery());
+      client.deleteByQuery(deleteAllRequest, RequestOptions.DEFAULT);
+    }
+
     final Scroll scroll = new Scroll(TimeValue.timeValueMinutes(1L));
     var searchSourceBuilder = new SearchSourceBuilder()
         .size(params.pageSize)

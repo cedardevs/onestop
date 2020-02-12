@@ -35,11 +35,11 @@ The query text box is the main starting point for searching on the OneStop UI. T
 
 ![Query text box on landing page](../../images/ui-id/landing-page-query-box.png)
 
-Once you've begun searching, however, the query box migrates to the site header. 
+Once you've begun searching, however, the query box migrates to the site header.
 
 ![Query text box in site header](../../images/ui-id/header-query-box.png)
 
-Entering text in the query box will always start a new search on OneStop, resetting any filters you may have added in an existing search. The text entered for your query can be a simple term or phrase, but can also support a much richer syntax allowing for a very precise request. 
+Entering text in the query box will always start a new search on OneStop, resetting any filters you may have added in an existing search. The text entered for your query can be a simple term or phrase, but can also support a much richer syntax allowing for a very precise request.
 
 Check out our guide on [Query Syntax](../../public-user/api/query-syntax) for thorough coverage of available options.
 
@@ -50,7 +50,7 @@ Both of these features found on the landing page pre-populate a query for the us
 All queries on the UI currently initialize to a search against collections. Collections are a high level grouping of similar data files -- they can represent all the data gathered by a single instrument on a satellite to a poster about a hurricane, and everything in between.
 
 ### Grid View and List View
-The collection results can be displayed in grid or list view. The default, grid view, displays a representative image for the collection (or map of spatial bounds if none is available) with the title overlaid. Putting the tile in focus (via mouse hover, tabbing to it, etc.) expands the visible title length to three lines of text as opposed to one. 
+The collection results can be displayed in grid or list view. The default, grid view, displays a representative image for the collection (or map of spatial bounds if none is available) with the title overlaid. Putting the tile in focus (via mouse hover, tabbing to it, etc.) expands the visible title length to three lines of text as opposed to one.
 
 Default out-of-focus grid collection tile appearance:
 
@@ -92,8 +92,8 @@ This relation can be changed using the drop-down list located at the bottom of t
 
 #### Bounding Box Coordinates
 The bounding box coordinates can be manually entered into a set of text fields, and must abide by a few guidelines:
-* Longitudes (East and West) must be between -180 and 180 degrees, whereas latitudes (North and South) must be between -90 and 90 degrees. 
-* The North coordinate value must always be greater than the South coordinate value. 
+* Longitudes (East and West) must be between -180 and 180 degrees, whereas latitudes (North and South) must be between -90 and 90 degrees.
+* The North coordinate value must always be greater than the South coordinate value.
 * The coordinates must create a rectangle, i.e., West cannot be equal to East and North cannot be equal to South (which would actually represent a line or point).
 
 If any of the above are attempted, an error is shown:
@@ -128,14 +128,14 @@ Only one date filter can be applied at any given time. What this means is that y
 ![Warning on Geologic tab when a Datetime filter has already been applied](../../images/ui-id/multi-date-warning.png)
 
 #### Datetime
-The default date option is the `Datetime` filter. Dates here can be anytime between January 1, 0000 to the present date. It is possible to submit a datetime filter by entering only a year or a year and month. The filter will auto-populate the missing field(s) -- to January if no month is specified, and to day 1 if no day is specified. 
+The default date option is the `Datetime` filter. Dates here can be anytime between January 1, 0000 to the present date. It is possible to submit a datetime filter by entering only a year or a year and month. The filter will auto-populate the missing field(s) -- to January if no month is specified, and to day 1 if no day is specified.
 
-To the right of each date entry form there will either be a green check mark or red cross to immediately indicate if a date is valid or invalid, respectively. Selecting the `Apply` button with one or both dates being erroneous will generate an error message specifying what dates are in error and a filter will not be applied to the search. Typical reasons for a date being considered incorrect are: non-existent dates, proving a day without also including a month and year, future dates, and non-numerical text (which includes a negative sign).
+To the right of each date entry form there will either be a green check mark or red cross to immediately indicate if a date is valid or invalid, respectively. The label for specific fields will be marked to indicate which part is incorrect, or is required based on other entries. Selecting the `Apply` button with one or both dates being erroneous will validate that the date range is also valid, and if there are any errors, a filter will not be applied to the search. Typical reasons for a date being considered incorrect are: non-existent dates, proving a day without also including a month and year, future dates, and non-numerical text (which includes a negative sign).
 
 ![Error indicators and message displayed on invalid start and end dates](../../images/ui-id/datetime-errors.png)
 
 #### Geologic
-The `Geologic` Date filter allows the user to search by year without a lower limit, which is typically useful for paleontological time frames. 
+The `Geologic` Date filter allows the user to search by year without a lower limit, which is typically useful for paleontological time frames.
 
 Two year formats are permitted here: Common (or Current) Era, C.E., and Before Present, B.P. The C.E. format correlates to the year as described in the `Datetime` filter, so 2010 there is exactly the same as 2010 here. On the other hand, B.P. refers to the number of years _before_ the present, which is conventionally defined as 1950 C.E. This means, for example, 2010 C.E. is equivalent to -60 B.P. and -50 C.E./50 B.C.E. corresponds to 2000 B.P. Values entered in the text boxes are automatically adjusted to the correct value if the other Year Format radio button is selected.
 
@@ -162,49 +162,49 @@ The third option in the Filters sidebar (or fourth if you're looking at individu
 
 Given that the GCMD Keywords are continually evolving, this list is subject to change.
 
-Most of the Attributes are presented in a non-hierarchical form except for `Link Protocols` and `Data Theme`. Where GCMD Keyword categories are concerned, this is done because that category's hierarchy is non-existent (the Resolution categories) or in the form "Short Name > Long Name" and we are displaying only the "Long Name" value. For the hierarchically rendered keywords, the filter can be applied at any level. 
+Most of the Attributes are presented in a non-hierarchical form except for `Link Protocols` and `Data Theme`. Where GCMD Keyword categories are concerned, this is done because that category's hierarchy is non-existent (the Resolution categories) or in the form "Short Name > Long Name" and we are displaying only the "Long Name" value. For the hierarchically rendered keywords, the filter can be applied at any level.
 
 Categories can be expanded or collapsed by clicking on the category header bar. The numbers beside each keyword indicate the subset of results matching the attribute term. Applying an Attribute term filter to your search is straightforward -- simply select the checkbox to the left of the term -- but how it ends up applied to your search varies if multiple terms are chosen from the same or multiple categories.
 
 #### Selecting Filters From Only One Category
-In the image below, the Data Theme category is expanded to show several layers of keywords. In this instance there are 83 matches for "Oceans > Ocean Temperature" but 5 matches for "Oceans > Ocean Temperature > Sea Surface Temperature > Blended Sea Surface Temperature", the latter being a subset of the former.
+In the image below, the Data Theme category is expanded to show several layers of keywords. In this instance there are 84 matches for "Oceans > Ocean Temperature" but 5 matches for "Oceans > Ocean Temperature > Sea Surface Temperature > Blended Sea Surface Temperature", the latter being a subset of the former.
 
 ![Data Theme category expanded to show multiple sub-keywords under "Oceans"](../../images/ui-id/expanded-data-theme.png)
 
-If we check the box to apply the "Oceans > Ocean Temperature" keyword filter, you'll notice some other keywords appear greyed-out and can no longer be selected. Likewise, counts have updated on many keywords to continue to show the subset of updated results matching the attribute term. What this means is that these keywords no longer apply to your results. 
+If we check the box to apply the "Oceans > Ocean Temperature" keyword filter, you'll notice some other keywords appear greyed-out and can no longer be selected. Likewise, counts have updated on many keywords to continue to show the subset of updated results matching the attribute term. What this means is that these keywords no longer apply to your results.
 
 ![Data Theme category expanded with a keyword selected](../../images/ui-id/selected-expanded-data-theme.png)
 
-It is possible to select additional keywords to apply as filters from the same category. However, multiple same-category filters are applied with OR logic, meaning results can contain _either or both_ keywords (plus your text query) in order to match. If you select multiple filters from the same category, you will see either no change in the result count or an increase in the result count. 
+It is possible to select additional keywords to apply as filters from the same category. However, multiple same-category filters are applied with OR logic, meaning results can contain _either or both_ keywords (plus your text query) in order to match. If you select multiple filters from the same category, you will see either no change in the result count or an increase in the result count.
 
 Just "Oceans > Ocean Temperature" applied:
 
-![Showing 83 results with just "Oceans > Ocean Temperature" selected](../../images/ui-id/one-theme-results.png)
+![Showing 84 results with just "Oceans > Ocean Temperature" selected](../../images/ui-id/one-theme-results.png)
 
 No change when "Oceans > Ocean Temperature" and "Atmosphere > Aerosols" applied:
 
-![Showing 83 results with both "Ocean Temperature" and "Aerosols" selected](../../images/ui-id/multi-theme-1.png)
+![Showing 84 results with both "Ocean Temperature" and "Aerosols" selected](../../images/ui-id/multi-theme-1.png)
 
 An increase when "Oceans > Ocean Temperature" and "Spectral/Engineering" applied:
 
-![Showing 87 results with both "Ocean Temperature" and "Spectral/Engineering" selected](../../images/ui-id/multi-theme-2.png)
+![Showing 85 results with both "Ocean Temperature" and "Spectral/Engineering" selected](../../images/ui-id/multi-theme-2.png)
 
-In the last case, you'll notice the number of records matching the "Spectral/Engineering" keyword jumped from 1 to 5. The adjusted counts simply reflect that the results match the query text AND one of "Oceans > Ocean Temperature" OR "Spectral/Engineering". You can sanity check this by removing both keyword filters. The updated Data Theme list shows a count of 5 matches for "Spectral/Engineering".
+In the last case, you'll notice the number of records matching the "Spectral/Engineering" keyword jumped from 1 to 2. The adjusted counts simply reflect that the results match the query text AND one of "Oceans > Ocean Temperature" OR "Spectral/Engineering". You can sanity check this by removing both keyword filters. The updated Data Theme list shows a count of 2 matches for "Spectral/Engineering".
 
 ![Data Theme keyword counts with just the text query applied](../../images/ui-id/results-without-theme-keywords.png)
 
 #### Selecting Filters From Multiple Categories
-Filters from different categories are applied to the search with AND logic as opposed to OR logic when from the same category. This means that, for instance, if you were to filter by the Data Theme "Spectral/Engineering" and the Link Protocol "FTP", your results are a cross-section of records matching your text query AND "Spectral/Engineering" AND "FTP". As a consequence of this, selecting filters from more than one category will either produce no change in the result count or a decrease in the result count.
+Filters from different categories are applied to the search with AND logic as opposed to OR logic when from the same category. This means that, for instance, if you were to filter by the Data Theme "Spectral/Engineering" and the Link Protocol "NETCDF", your results are a cross-section of records matching your text query AND "Spectral/Engineering" AND "NETCDF". As a consequence of this, selecting filters from more than one category will either produce no change in the result count or a decrease in the result count.
 
 ![Showing a narrowed down result count when attributes from multiple categories are selected](../../images/ui-id/results-multi-category.png)
 
 ### Filter Tags
-Every filter applied to the search from the Filters sidebar creates a tag at the top of the search results. Filters can be quickly removed from the search by clicking on the tags. 
+Every filter applied to the search from the Filters sidebar creates a tag at the top of the search results. Filters can be quickly removed from the search by clicking on the tags.
 
 ![File results view with tags for every available filter type shown](../../images/ui-id/filter-tags.png)
 
 ### Collection Detail View
-Selecting a collection result will take you to that collection's detailed view page. From the top down, you'll encounter the full title, a representative image for the collection, and the full description. To the right of the description is a link taking you to the searchable granules, if any, available on OneStop for this collection. These results maintain any filters you may have applied, so you may come across text like "Show 0 matching files of 28 in collection" here. Beneath the `Files` section are expandable sections for `Citation` (use this for citing the data in your own research) and `Identifier(s)` (collection file identifier and DOI, if exists). 
+Selecting a collection result will take you to that collection's detailed view page. From the top down, you'll encounter the full title, a representative image for the collection, and the full description. To the right of the description is a link taking you to the searchable granules, if any, available on OneStop for this collection. These results maintain any filters you may have applied, so you may come across text like "Show 0 matching files of 28 in collection" here. Beneath the `Files` section are expandable sections for `Citation` (use this for citing the data in your own research) and `Identifier(s)` (collection file identifier and DOI, if exists).
 
 ![The top half of a collection detail page](../../images/ui-id/top-collection-detail.png)
 
@@ -231,7 +231,7 @@ The first filter in the Filters sidebar for File Results _only_ is the `Filename
 ![The Filename Filter expanded with the associated filter tag also visible](../../images/ui-id/filename-filter.png)
 
 ### Cart
-Once you have found and added files to your cart, you'll want to download them for use. From the cart page, you can generate a list of links from your chosen files by file access type (e.g., FTP or THREDDS). This list can then be used in concert with a downloading utility, like `wget`, to download the actual data to your machine. If, however, you would like to empty your cart, this can be accomplished by selecting the "Clear All Files From Cart" button on the very left edge of the cart's count header above the list of files. 
+Once you have found and added files to your cart, you'll want to download them for use. From the cart page, you can generate a list of links from your chosen files by file access type (e.g., FTP or THREDDS). This list can then be used in concert with a downloading utility, like `wget`, to download the actual data to your machine. If, however, you would like to empty your cart, this can be accomplished by selecting the "Clear All Files From Cart" button on the very left edge of the cart's count header above the list of files.
 
 A view of the cart page with info section expanded:
 
