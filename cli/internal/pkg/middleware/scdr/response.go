@@ -24,7 +24,7 @@ func transformResponse(params *viper.Viper, responseMap map[string]interface{}) 
 
     //gap is ignored if no type is passed or if --available is passed
 		if len(gapInterval) > 0 && len(typeArg) > 0 && isSummary ==  "false" {
-			scdrOuput = FindGaps(gapInterval, items)
+			scdrOuput = FindGaps(typeArg, gapInterval, items)
 		} else if isSummary == "true" {
 			count := getCount(responseMap)
 			scdrOuput = buildSummary(items, count)
@@ -45,8 +45,9 @@ func getCount(responseMap map[string]interface{}) string {
 	return count
 }
 
-func FindGaps(gapInterval string, items []interface{}) []string{
-	gapResponse := []string{
+func FindGaps(typeArg string, gapInterval string, items []interface{}) []string{
+  gapResponse := []string{
+    "Data collection: " + typeArg,
 		"Gap Start Time           | Gap End Time             | Gap Duration",
 		"-------------------------+--------------------------+-------------",
 	}
@@ -64,7 +65,7 @@ func FindGaps(gapInterval string, items []interface{}) []string{
 		 attrs := item["attributes"].(map[string]interface{})
      start, b1 := attrs["beginDate"].(string)
      end, b2 := attrs["endDate"].(string)
-     
+
      if b1 && b2 {
        startTime, e1 := time.Parse(dateFormat, start)
        endTime, e2 := time.Parse(dateFormat, end)
