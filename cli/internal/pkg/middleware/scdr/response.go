@@ -20,8 +20,10 @@ func transformResponse(params *viper.Viper, responseMap map[string]interface{}) 
 	if items, ok := responseMap["data"].([]interface{}); ok && len(items) > 0 {
 		isSummary := params.GetString(flags.AvailableFlag)
 		gapInterval := params.GetString(flags.GapFlag)
+    typeArg := params.GetString(flags.TypeFlag)
 
-		if len(gapInterval) > 0  {
+    //gap is ignored if no type is passed or if --available is passed
+		if len(gapInterval) > 0 && len(typeArg) > 0 && len(isSummary) == 0 {
 			scdrOuput = FindGaps(gapInterval, items)
 		} else if isSummary == "true" {
 			count := getCount(responseMap)
@@ -65,7 +67,8 @@ func FindGaps(gapInterval string, items []interface{}) []string{
 		 //if the temporal distance from this file and the last is greater than interval
 		 //add it to new output
 		 if start.Sub(lastEndDate) > interval {
-			 gapResponse = append(gapResponse, lastEndDate.Format("2006-01-02T15:04:05.000Z") + " | " + start.Format("2006-01-02T15:04:05.000Z") + " | " + start.Sub(lastEndDate).String())
+       gapString := lastEndDate.Format("2006-01-02T15:04:05.000Z") + " | " + start.Format("2006-01-02T15:04:05.000Z") + " | " + start.Sub(lastEndDate).String()
+			 gapResponse = append(gapResponse, gapString)
 		 }
 		 lastEndDate = end
 	}

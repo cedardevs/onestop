@@ -88,4 +88,4 @@ const CloudUrl = "http://acf3425c8d41b11e9a12912cf37a7528-1694331899.us-east-1.e
 
 const GapFlag = "gap"
 const GapShortFlag = "i"
-const GapDescription = "Defines the time interval for reporting data gaps. Any data time gap larger than INTERVAL will be reported. This option is only meaningful when combined with either the --type options. It is silently ignored in all other cases."
+const GapDescription = "Defines the time interval for reporting data gaps. Any data time gap larger than INTERVAL will be reported. This option is only meaningful when combined with the --type option. It is silently ignored if no type is provided or --available is passed."
