@@ -2,7 +2,7 @@ package middleware
 
 import (
   "github.com/cedardevs/onestop/cli/internal/pkg/flags"
-  "github.com/cedardevs/onestop/cli/internal/pkg/utils"
+  "github.com/cedardevs/onestop/cli/internal/pkg/parse"
   "gopkg.in/h2non/gentleman.v2"
   "github.com/spf13/viper"
   "strings"
