@@ -18,7 +18,7 @@ plugins {
 
 apply from: "${rootDir}/gradle/publishing.gradle"
 
-mainClassName = 'org.cedar.onestop.indexer.IndexerMain'
+mainClassName = 'org.cedar.onestop.indexer.IndexerApp'
 
 repositories {
   mavenCentral()
