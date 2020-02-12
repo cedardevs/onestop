@@ -5,21 +5,19 @@ apply plugin: 'groovy'
 sourceCompatibility = 11
 targetCompatibility = 11
 
-repositories {
-  mavenCentral()
-}
-
 dependencies {
+  def Versions = project.Versions
+
   testImplementation(project(':elastic-common'))
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
 
-  testImplementation "org.codehaus.groovy:groovy:${project.groovyVersion}"
-  testImplementation "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
-  testImplementation "org.spockframework:spock-spring:${project.spockVersion}"
-  testImplementation "org.spockframework:spock-core:${project.spockVersion}"
+  testImplementation "org.codehaus.groovy:groovy:${Versions.GROOVY}"
+  testImplementation "org.codehaus.groovy:groovy-json:${Versions.GROOVY}"
+  testImplementation "org.spockframework:spock-spring:${Versions.SPOCK}"
+  testImplementation "org.spockframework:spock-core:${Versions.SPOCK}"
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testImplementation 'org.springframework.boot:spring-boot-starter-web'
-  testImplementation "org.testcontainers:testcontainers:${project.testContainersVersion}"
+  testImplementation "org.testcontainers:testcontainers:${Versions.TEST_CONTAINERS}"
 }
 
 test {

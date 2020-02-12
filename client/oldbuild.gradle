@@ -1,11 +1,3 @@
-plugins {
-  id 'com.google.cloud.tools.jib' version '1.6.1'
-}
-
-apply plugin: 'java'
-apply plugin: "com.moowork.node"
-apply from: "${rootDir}/gradle/publishing.gradle"
-
 node {
     version = '10.15.3'
     download = true
@@ -38,14 +30,6 @@ task compile(type: NodeTask) {
         // Remove previous outputs. Doesn't run if the task if UP-TO-DATE
         file("${buildDir}/dist").deleteDir()
     }
-}
-
-task npmRunDev(type: NpmTask) {
-  args = ['run', 'dev']
-}
-
-task npmRunKub(type: NpmTask) {
-  args = ['run', 'kub']
 }
 
 task tarResults(type: Tar) {
@@ -116,6 +100,11 @@ tasks.jibDockerBuild.dependsOn copyUnpackedTar
 tasks.jibDockerBuild.dependsOn copyEntrypoint
 tasks.jibDockerBuild.dependsOn copyHttpConf
 jib {
+
+  def publish = project.publish
+  def repo = project.repo
+  def ociAnnotations = project.ociAnnotations
+
   extraDirectories {
     // copy all files within the `${buildDir}/jib-dir`` folder to the image's root directory,
     // maintaining the same structure (this is why we had to custom copy items before the jib task
@@ -126,37 +115,21 @@ jib {
     paths = ["${buildDir}/jib-dir".toString()]
   }
 
-  // derive image repository
-  String imageRegistryURL = "registry.hub.docker.com"
-  String imageNamespace = "cedardevs"
-  String imageName = "${rootProject.name}-${project.name}".toString()
-  String imageTag = "${project.version}".toString()
-  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
-
   from {
     // base image
     image = 'httpd:latest'
   }
   to {
-    image = imageRepository
+    image = repo
     auth {
-      username = System.getenv('DOCKER_USER').toString().trim()
-      password = System.getenv('DOCKER_PASSWORD').toString().trim()
+      username = publish.username
+      password = publish.password
     }
   }
   container {
-    // https://github.com/opencontainers/image-spec/blob/master/annotations.md
-    labels = [
-        'org.opencontainers.image.created': project.buildDate.toString(),
-        'org.opencontainers.image.ref.name': imageName,
-        'org.opencontainers.image.description': 'A search API for the OneStop search software.',
-        'org.opencontainers.image.source': project.getVcsUrl().toString(),
-        'org.opencontainers.image.revision': project.getVcsRef().toString(),
-        'org.opencontainers.image.vendor': imageNamespace,
-        'org.opencontainers.image.version': imageTag,
-    ]
+    creationTime = publish.created.toString()
+    labels = ociAnnotations
     ports = ['80'.toString()]
     entrypoint = ["sh", "/usr/app/entrypoint.sh"]
-    creationTime = project.buildDate.toString()
   }
 }

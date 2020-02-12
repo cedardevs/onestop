@@ -7,8 +7,6 @@ plugins {
   id 'com.google.cloud.tools.jib' version '1.6.1'
 }
 
-apply from: "${rootDir}/gradle/publishing.gradle"
-
 sourceCompatibility = 11
 targetCompatibility = 11
 

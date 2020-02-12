@@ -7,19 +7,6 @@ The goals of our tag publishing conventions are to be seamless and consistent. I
 - [local] ./gradlew jib (requires `DOCKER_USER` and `DOCKER_PASSWORD` to be set in environment)
  
 Cleanup of the container registry (Docker Hub) is automated without being destructive or confusing about what a published tag represents.
- 
-## Project Support
-Instead of applying this publishing convention to all projects at the same time, we start with the new User API as we learn how to apply this convention across the board.
-
-### Supported
-- [x] user
-
-### To-Do
-- [ ] cli
-- [ ] client
-- [ ] registry
-- [ ] search
-- [ ] stream-manager
 
 ## Circle CI Configuration
 For Circle CI to [triggers builds from tags](https://circleci.com/docs/2.0/configuration-reference/#tags), it cannot be defined at the workflow level:
