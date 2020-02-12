@@ -12,12 +12,15 @@ func TestFindGaps(t *testing.T) {
   mockRange2 := map[string]interface{}{"beginDate": "2019-10-07T12:20:29.000Z", "endDate": "2019-10-07T12:30:00.000Z"}
 	mockRange3 := map[string]interface{}{"beginDate": "2019-10-07T13:00:29.000Z", "endDate": "2019-10-07T13:10:00.000Z"}
 	mockRange4 := map[string]interface{}{"beginDate": "2019-10-07T13:10:01.000Z", "endDate": "2019-10-07T13:20:00.000Z"}
+	mockRange5 := map[string]interface{}{"beginDate": "2019-10-07T14:20:00.000Z"}
+
 	mockItem1 := map[string]interface{}{"id": "a", "attributes": mockRange1}
 	mockItem2 := map[string]interface{}{"id": "b", "attributes": mockRange2}
 	mockItem3 := map[string]interface{}{"id": "c", "attributes": mockRange3}
 	mockItem4 := map[string]interface{}{"id": "d", "attributes": mockRange4}
+	mockItem5 := map[string]interface{}{"id": "d", "attributes": mockRange5}
 
-	mockItemList := []interface{}{mockItem1, mockItem2, mockItem3, mockItem4}
+	mockItemList := []interface{}{mockItem1, mockItem2, mockItem3, mockItem4, mockItem5}
 	expectedScdrResponse := []string{
 		"Gap Start Time           | Gap End Time             | Gap Duration",
 		"-------------------------+--------------------------+-------------",
