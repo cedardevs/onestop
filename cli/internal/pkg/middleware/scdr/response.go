@@ -26,7 +26,7 @@ func transformResponse(params *viper.Viper, responseMap map[string]interface{}) 
     fmt.Println(isSummary)
 
     //gap is ignored if no type is passed or if --available is passed
-		if len(gapInterval) > 0 && len(typeArg) > 0 && isSummary ==  "false"{
+		if len(gapInterval) > 0 && len(typeArg) > 0 && isSummary ==  "false" {
 			scdrOuput = FindGaps(gapInterval, items)
 		} else if isSummary == "true" {
 			count := getCount(responseMap)

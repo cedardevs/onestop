@@ -12,15 +12,15 @@ func ParseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Re
 	filters := []string{}
 	queries := []string{}
 
-	dateTimeFilter := utils.ParseDate(params)
+	dateTimeFilter := parse.ParseDate(params)
 	filters = append(filters, dateTimeFilter...)
-	startEndTimeFilter := utils.ParseStartAndEndTime(params)
+	startEndTimeFilter := parse.ParseStartAndEndTime(params)
 	filters = append(filters, startEndTimeFilter...)
-	geoSpatialFilter := utils.ParsePolygon(params)
+	geoSpatialFilter := parse.ParsePolygon(params)
 	filters = append(filters, geoSpatialFilter...)
-	query := utils.ParseTextQuery(params)
+	query := parse.ParseTextQuery(params)
 	queries = append(queries, query...)
-	requestMeta := utils.ParseRequestMeta(params)
+	requestMeta := parse.ParseRequestMeta(params)
 	if len(queries) > 0 || len(filters) > 0 {
 		req.AddHeader("content-type", "application/json")
 		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
