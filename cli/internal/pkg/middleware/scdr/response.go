@@ -175,7 +175,6 @@ func buildDescriptionHeaders(items []interface{}) (string, string) {
 	if descriptionLength > 100 {
 		descriptionLength = 100
 	}
-	descriptionHeader, descriptionSubHeader = formatHeader(descriptionHeader, descriptionSubHeader, descriptionLength)
 	return descriptionHeader, descriptionSubHeader
 }
 
