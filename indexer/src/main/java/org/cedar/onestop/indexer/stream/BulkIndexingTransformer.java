@@ -20,15 +20,15 @@ import java.io.IOException;
 public class BulkIndexingTransformer implements Transformer<String, ValueAndTimestamp<ParsedRecord>, KeyValue<String, IndexingOutput>> {
   private static final Logger log = LoggerFactory.getLogger(BulkIndexingTransformer.class);
 
-  private final ElasticsearchService client;
+  private final ElasticsearchService elasticsearchService;
   private final BulkIndexingConfig config;
 
   private TimestampedKeyValueStore<String, ParsedRecord> store;
   private ProcessorContext context;
   private BulkRequest request;
 
-  public BulkIndexingTransformer(ElasticsearchService client, BulkIndexingConfig config) {
-    this.client = client;
+  public BulkIndexingTransformer(ElasticsearchService elasticsearchService, BulkIndexingConfig config) {
+    this.elasticsearchService = elasticsearchService;
     this.config = config;
   }
 
@@ -60,7 +60,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
     }
     try {
       log.info("submitting bulk request with [" + numActions + "] actions and approximately [" + request.estimatedSizeInBytes() + "] bytes");
-      var response = client.bulk(request);
+      var response = elasticsearchService.bulk(request);
       log.info("completed bulk request with [" + numActions + "] actions in [" + response.getTook() + "]");
       response.iterator().forEachRemaining(item -> {
         var id = item.getId();
