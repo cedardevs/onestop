@@ -112,9 +112,9 @@ Purge all tags remaining that do NOT meet the following criteria:
 ```
 
 ## Local Automation
-When the user is running the `jib` Gradle task from their development machine, and they are not 
+When the user is running the `jib` Gradle task from their development machine, the rules for publishing change so that custom published images can be distinguished and preserved in the CI cleanup process.
 
-These rules to publish in a CI environment afford a certain amount of built-in safety to prevent overriding critical tagged releases. The only way for a local `jib` task run to overwrite a published release would require the following conditions to be met:
+The rules to publish in a CI environment afford a certain amount of built-in safety to prevent overriding critical tagged releases. The only way for a local `jib` task run to overwrite a published release would require the following conditions to be met:
 - the Docker Hub credentials, `DOCKER_USER` and `DOCKER_PASSWORD` are correctly set in the environment.
 - the CI environment variable evaluates to a boolean true
 - the CIRCLE_BRANCH environment variable would need to be set and equal "master"
