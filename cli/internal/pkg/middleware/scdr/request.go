@@ -40,11 +40,11 @@ func ParseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	queries = append(queries, keyWordFilter...)
 	requestMeta := parse.ParseRequestMeta(params)
 
-	parseSort := parse.ParseSort(params)
+	sort := parse.ParseSort(params)
 
 	if len(queries) > 0 || len(filters) > 0 {
 		req.AddHeader("content-type", "application/json")
-		req.BodyString("{\"summary\":false, \"sort\":[" + parseSort + "], \"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
+		req.BodyString("{\"summary\":false," + sort + "\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
 	}
 }
 

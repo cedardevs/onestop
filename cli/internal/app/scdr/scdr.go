@@ -10,7 +10,6 @@ import (
 	"gopkg.in/h2non/gentleman.v2"
 	"strings"
 	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
-	"github.com/cedardevs/onestop/cli/internal/app/generated"
 	"github.com/cedardevs/onestop/cli/internal/pkg/middleware/scdr"
 )
 
@@ -152,13 +151,12 @@ func buildRequest(params *viper.Viper) *gentleman.Request {
 	server := viper.GetString("server")
 	if params.GetString("test") == "true" {
 		viper.Set("server-index", 1)
+	}else if params.GetString(flags.CloudFlag) == "true" {
+		viper.Set("server-index", 2)
 	}
-	//since we dont have the aws instance in the openapi spec.
-	if params.GetString(flags.CloudFlag) == "true" {
-		server = flags.CloudUrl
-	}
+
 	if server == "" {
-		server = generated.OpenapiServers()[viper.GetInt("server-index")]["url"]
+		server = scdrServers()[viper.GetInt("server-index")]["url"]
 	}
 
   //the summary view with a type includes a count
@@ -181,7 +179,25 @@ func buildRequest(params *viper.Viper) *gentleman.Request {
 
 	return req
 }
+func scdrServers() []map[string]string {
+	return []map[string]string{
 
+		map[string]string{
+			"description": "NOAA OneStop",
+			"url":         "https://data.noaa.gov/onestop-search",
+		},
+
+		map[string]string{
+			"description": "Development test server (uses test data)",
+			"url":         "https://sciapps.colorado.edu/onestop-search",
+		},
+
+		map[string]string{
+			"description": "Development cloud server (uses test data)",
+			"url":         "http://acf3425c8d41b11e9a12912cf37a7528-1694331899.us-east-1.elb.amazonaws.com/onestop-search",
+		},
+	}
+}
 func scdrOutputFormatAndPrint(params *viper.Viper, decoded map[string]interface{}) {
 	if output, ok := decoded["scdr-output"].([]string); ok {
 		for _, row := range output {

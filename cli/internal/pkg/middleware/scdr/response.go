@@ -5,7 +5,6 @@ import(
   "strconv"
   "time"
   "github.com/cedardevs/onestop/cli/internal/pkg/flags"
-  "fmt"
 )
 
 func MarshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
@@ -22,8 +21,6 @@ func transformResponse(params *viper.Viper, responseMap map[string]interface{}) 
 		isSummary := params.GetString(flags.AvailableFlag)
 		gapInterval := params.GetString(flags.GapFlag)
     typeArg := params.GetString(flags.TypeFlag)
-    fmt.Println(typeArg)
-    fmt.Println(isSummary)
 
     //gap is ignored if no type is passed or if --available is passed
 		if len(gapInterval) > 0 && len(typeArg) > 0 && isSummary ==  "false" {
