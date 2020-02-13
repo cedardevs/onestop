@@ -291,7 +291,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - cli/openapi.go
+            - cli/internal/app/openapi.go
             - cli/.gogradle
 
   cli-publish:

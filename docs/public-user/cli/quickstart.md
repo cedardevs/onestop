@@ -13,17 +13,17 @@ Either golang, or docker. Direct downloads of binaries will be available in the 
 
 ### Install and run using a docker container (golang not required)
 
-Pull the image from Docker Hub (version 2.4.0 and up available).
+Pull the image from Docker Hub (version 2.4.2 and up available).
 
-`docker run cedardevs/onestop-cli:2.4.0 <CMD>`
+`docker run cedardevs/onestop-cli:2.4.2 <CMD>`
 
 For example-
 
-`docker run cedardevs/onestop-cli:2.4.0 searchcollection --query="satellite"`
+`docker run cedardevs/onestop-cli:2.4.2 searchcollection --query="satellite"`
 
 For more commands and flags -
 
-`docker run cedardevs/onestop-cli:2.4.0 <CMD> --help`
+`docker run cedardevs/onestop-cli:2.4.2 <CMD> --help`
 
 
 ### Download and use as Go package
