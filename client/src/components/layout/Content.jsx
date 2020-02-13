@@ -31,36 +31,36 @@ export default class Content extends React.Component {
     } = this.props
     const styles = Object.assign({}, styleContent, style)
     return (
-        <FlexRow
-          items={[
-            <Left
-              content={left}
-              width={leftWidth}
+      <FlexRow
+        items={[
+          <Left
+            content={left}
+            width={leftWidth}
+            padding={padding}
+            open={leftOpen}
+            visible={leftVisible}
+            style={leftStyle}
+            key={'left'}
+          />,
+          <Middle
+            content={middle}
+            maxWidth={middleMaxWidth}
+            padding={padding}
+            key={'middle'}
+          />,
+          right ? (
+            <Right
+              content={right}
+              width={rightWidth}
               padding={padding}
-              open={leftOpen}
-              visible={leftVisible}
-              style={leftStyle}
-              key={'left'}
-            />,
-            <Middle
-              content={middle}
-              maxWidth={middleMaxWidth}
-              padding={padding}
-              key={'middle'}
-            />,
-            right ? (
-              <Right
-                content={right}
-                width={rightWidth}
-                padding={padding}
-                open={rightOpen}
-                visible={rightVisible}
-                key={'right'}
-              />
-            ) : null,
-          ]}
-          style={styles}
-        />
+              open={rightOpen}
+              visible={rightVisible}
+              key={'right'}
+            />
+          ) : null,
+        ]}
+        style={styles}
+      />
     )
   }
 }
