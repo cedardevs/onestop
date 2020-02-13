@@ -10,15 +10,15 @@ The `onstop-cli/openapi.go` file was generated using [open-cli-generator](https:
 
 And then run commands after like so -
 
-`docker run registry.hub.docker.com/cedardevs/onestop-cli:2.4.0 <CMD>`
+`docker run registry.hub.docker.com/cedardevs/onestop-cli:2.4.2 <CMD>`
 
 For example-
 
-`docker run registry.hub.docker.com/cedardevs/onestop-cli:2.4.0 searchcollection --query="satellite"`
+`docker run registry.hub.docker.com/cedardevs/onestop-cli:2.4.2 searchcollection --query="satellite"`
 
 For more commands and flags -
 
-`docker run registry.hub.docker.com/cedardevs/onestop-cli:2.4.0 <CMD> --help`
+`docker run registry.hub.docker.com/cedardevs/onestop-cli:2.4.2 <CMD> --help`
 
 ## Build and run using go
 
@@ -44,7 +44,7 @@ cd cli
 go get ./...
 go install
 ```
-and run with `cli`
+and run with `onestop`
 (This will put dependencies in ~/go)
 
 ## Changing openapi.yml
@@ -53,6 +53,7 @@ First: `go get -u github.com/danielgtaylor/openapi-cli-generator`
 Then: ```
 cd cli
 ~/go/bin/openapi-cli-generator generate ../search/src/main/resources/openapi.yaml
+mv openapi.go ./internal/app/generated/
 ```
 
 ## Developer notes
