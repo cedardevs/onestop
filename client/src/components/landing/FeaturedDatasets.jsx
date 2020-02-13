@@ -47,33 +47,25 @@ const styleButtonCorners = (isReversed, screenClass) => {
 }
 
 const styleButtonWrapper = {
-  borderBottom: '1px solid black',
-  boxShadow: boxShadow,
-  background: '#F9F9F9',
+  background: 'transparent',
   height: 'fit-content',
   margin: 0,
 }
 
 const styleFeaturedButton = {
-  textDecoration: 'underline',
   fontFamily: fontFamilySerif(),
-  fontSize: '1.25em',
   width: '100%',
   height: 'fit-content',
-  background: 'transparent',
-  color: SiteColors.LINK,
-  padding: '.309em',
-  display: 'block',
 }
 
 const styleFeaturedButtonFocus = {
   textDecoration: 'underline',
-  outline: '2px dashed #5C87AC',
-  background: 'transparent',
+  outline: 'none',
+  background: '#263f78',
 }
 
 const styleFeaturedButtonHover = {
-  background: 'transparent',
+  background: '#263f78',
 }
 
 const styleImageCorners = (isReversed, screenClass, isWithoutText) => {
@@ -175,13 +167,13 @@ const styleImage = {
 
 const FeaturedDatasetH3Button = ({styles, title, searchClick}) => {
   return (
-    <h3 style={consolidateStyles(styleButtonWrapper, styles)}>
+    <h3 style={styleButtonWrapper}>
       <Button
         role="link"
         text={title}
         title={`${title} Featured Data Search`}
         onClick={searchClick}
-        style={styleFeaturedButton}
+        style={consolidateStyles(styleFeaturedButton, styles)}
         styleHover={styleFeaturedButtonHover}
         styleFocus={styleFeaturedButtonFocus}
       />
@@ -293,24 +285,10 @@ const FeaturedDatasetRow = ({
     })
   })
 
-  // const imageResizeCallback = currentImageRef => {
-  //   if (!showDescription)
-  //     {
-  //       setImageHeight(imageRef.current.getBoundingClientRect().height)}
-  // }
-
-  // useEffect(() => {
-  //   // after render
-  //   // this gets called *a lot*, but fixes safari
-  //   // description does not render correctly in IE
-  //   if (imageRef.current) {
-  //       setImageHeight(imageRef.current.getBoundingClientRect().height)}
-  //   }
-  // )
-
   // observe resize changes to the content
   useEffect(() => {
     if (imageRef.current) {
+      // set image size right away for fix browsers like Safari, that don't get the events on the first load
       setImageHeight(imageRef.current.getBoundingClientRect().height)
       resizeObserver.observe(imageRef.current)
     }
