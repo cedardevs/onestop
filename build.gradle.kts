@@ -7,7 +7,9 @@ import java.time.format.DateTimeFormatter
 plugins {
     `kotlin-dsl`
 
-    // JaCoCo plugin provides code coverage metrics for Java code via integration with JaCoCo.
+    // The JaCoCo plugin
+    // https://docs.gradle.org/current/userguide/jacoco_plugin.html
+    // - provides code coverage metrics for Java code via integration with JaCoCo
     jacoco
 
     // OWASP Dependency Check Gradle Plugin
@@ -165,7 +167,7 @@ subprojects {
 
         // TODO: apply(plugin =  "kotlin")?
 
-        // Java test reports
+        apply(plugin = "jacoco")
         tasks.jacocoTestReport {
             executionData(fileTree(projectDir).include("build/jacoco/*.exec"))
             reports {
