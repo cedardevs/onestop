@@ -33,7 +33,7 @@ class ElasticsearchService {
 
     this.version = elasticsearchConfig.version
     log.info("Elasticsearch found with version: ${this.version.toString()}" )
-    boolean supported = version.onOrAfter(Version.V_5_6_0)
+    boolean supported = version.onOrAfter(Version.V_6_0_0)
     if(!supported) {
       throw new RuntimeException("Search API does not support version ${version.toString()} of Elasticsearch")
     }
