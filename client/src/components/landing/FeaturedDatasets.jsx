@@ -231,7 +231,8 @@ const FeaturedDatasetDescription = ({
       <FlexColumn
         style={consolidateStyles(styleDescription, {
           minHeight: '3em',
-          maxHeight: showDescription ? '' : `${maxHeight}px`,
+          maxHeight:
+            showDescription || !needsShowButton ? '' : `${maxHeight}px`,
         })}
         items={[
           <div
