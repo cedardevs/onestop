@@ -28,7 +28,7 @@ workflows:
   version: 2
   build:
     jobs:
-      - checkout
+      - checkout:
           <<: *jobFilters
       - client:
           requires:
