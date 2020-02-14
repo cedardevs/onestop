@@ -209,26 +209,20 @@ subprojects {
                 password = environment("DOCKER_PASSWORD")
         )
 
+        // before jib executes, if we are in a CI environment, attempt to clean the container registry
+        tasks.getByName("jib") {
+            doFirst {
+                if(isCI()) {
+                    publish.cleanContainerRegistry()
+                }
+            }
+        }
+
         extra.apply {
             set("publish", publish)
             set("repo", repository(publish))
             set("ociAnnotations", ociAnnotations(publish))
         }
-
-        // before jib executes, if we are in a CI environment, attempt to clean the container registry
-//        tasks.getByName("jibDockerBuild") {
-//            doFirst {
-//                if(isCI()) {
-//                    publish.cleanContainerRegistry()
-//                }
-//            }
-//        }
-
-        tasks.register("whatever") {
-            publish.cleanContainerRegistry()
-        }
-
-
     }
     if (springBootProjects.contains(name)) {
         // apply the spring dependency management plugin to projects using spring

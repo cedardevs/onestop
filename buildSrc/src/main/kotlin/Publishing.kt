@@ -71,16 +71,14 @@ fun isRelease(): Boolean {
     // we're in the CI environment and checking conditions for for an official release
     // in order to treat publishing differently than a regular branch snapshot
     val tag: String = tagCI() ?: ""
-
-    // TODO: remove this once we confirm the CI environment is triggered on tags properly
-    println("Publishing:::isRelease::tag/CIRCLE_TAG = $tag")
-
     val isReleaseTag = tag.startsWith("v")
     val version = tag.removePrefix("v")
     val isSemanticNonSnapshot = isSemanticNonSnapshot(version)
     val branch: String = branchCI() ?: ""
     val isMasterBranch = branch == BRANCH_MASTER
 
+    // TODO: remove this once we confirm the CI environment is triggered on tags/branch properly
+    println("Publishing:::isRelease::tag/CIRCLE_TAG = $tag, branch/CIRCLE_BRANCH = $branch")
     println("isReleaseTag = $isReleaseTag, isSemanticNonSnapshot = $isSemanticNonSnapshot, isMasterBranch = $isMasterBranch")
 
     return isReleaseTag && isSemanticNonSnapshot && isMasterBranch
