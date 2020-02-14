@@ -202,12 +202,15 @@ task setupOpenapiGenPart1(type: Copy) {
 // }
 
 processResources {
+  def Versions = project.Versions
+  def publish = project.publish
+
   outputs.upToDateWhen { false }
   filesMatching("**/application*.yml") {
     expand([
-        esVersion: project.esVersion,
-        version  : project.version,
-        buildDate: project.buildDate,
+        esVersion: Versions.ELASTIC,
+        version  : publish.version.toString(),
+        buildDate: publish.created.toString(),
     ])
   }
 }

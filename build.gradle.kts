@@ -15,6 +15,9 @@ plugins {
 
     // Note: The plugins below are not universally `apply(true)`because subprojects only need them conditionally.
 
+    // JaCoCo plugin provides code coverage metrics for Java code via integration with JaCoCo.
+    jacoco.apply(false)
+
     // Kotlin Plugin
     // - In case we ever want to use Kotlin on a project targeted on the JVM
     kotlin("jvm").version("1.3.61").apply(false)
@@ -112,10 +115,23 @@ val nodeProjects: List<String> = listOf("client", "registry")
 val micronautProjects: List<String> = listOf("user")
 val goProjects: List<String> = listOf("cli")
 
+// allows projects to monitor dependent libraries for known, published vulnerabilities
+dependencyCheck {
+    skipConfigurations = listOf("providedRuntime")
+    suppressionFile = "${rootDir}/owasp-suppressions.xml"
+    failBuildOnCVSS = 4.0F
+
+    // One of our dependencies has an un-parsable pom which causes dependency-checker
+    // to throw an exception. However, the checks still run and it still generates a
+    // report, so I think it's safe(ish) to ignore the error.
+    failOnError = false
+}
+
 allprojects {
     // resolve all subproject dependencies from Bintray jcenter and jitpack
     repositories {
         jcenter()
+        maven(url= "https://repo.spring.io/milestone")
         maven(url = "https://packages.confluent.io/maven/")
         maven(url = "https://jitpack.io")
     }
@@ -148,6 +164,22 @@ subprojects {
         apply(plugin = "groovy")
 
         // TODO: apply(plugin =  "kotlin")?
+
+        // Java test reports
+        apply(plugin = "org.gradle.jacoco")
+        tasks.jacocoTestReport {
+            executionData(fileTree(projectDir).include("build/jacoco/*.exec"))
+            reports {
+                xml.isEnabled = true
+                xml.destination = file("${buildDir}/reports/jacoco/report.xml")
+                html.isEnabled = true
+                html.destination = file("${buildDir}/reports/jacoco/html")
+            }
+        }
+
+        tasks.named("check") {
+            dependsOn("jacocoTestReport")
+        }
 
         extra.apply {
             set("Versions", Versions)
@@ -311,4 +343,83 @@ subprojects {
         // apply the Gogradle plugin to projects using Go
         apply(plugin = "com.github.blindpirate.gogradle")
     }
+
+    afterEvaluate {
+        // override versions of dependencies with vulnerabilities
+        configurations.all {
+            resolutionStrategy.eachDependency {
+                if (requested.group == "org.apache.santuario" && requested.name == "xmlsec") {
+                    if (requested.version!!.startsWith("2.0") && requested.version!! <= "2.1.4") {
+                        useVersion("2.1.4")
+                        because("fixes CVE-2019-12400")
+                    }
+                }
+
+                if (requested.group == "org.apache.avro" && requested.name == "avro") {
+                    if(requested.version!! < Versions.AVRO) {
+                        useVersion(Versions.AVRO)
+                        because("latest avro does not depend on vulnerable jackson-mapper-asl which has not been updated since 2013")
+                    }
+                }
+
+                if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
+                    if (requested.version!!.startsWith("2.9.") || requested.version!!.startsWith("2.10.") ) {
+                        useVersion("2.10.1")
+                        because("fixes vulnerability in 2.9.9 and before")
+                    }
+                }
+                if (requested.group == "org.bouncycastle" && requested.name == "bcprov-jdk15on") {
+                    if (requested.version!!.startsWith("1.5") && requested.version!! <= "1.59") {
+                        useVersion("1.62")
+                        because("fixes vulnerability in 1.5x before 1.6x")
+                    }
+                }
+                if (requested.group == "org.apache.zookeeper" && requested.name == "zookeeper") {
+                    if (requested.version!!.startsWith("3.4") && requested.version!! <= "3.5.5") {
+                        useVersion("3.5.5")
+                        because("Enforce zookeeper 3.4.14+ to avoid vulnerability CVE-2019-0201")
+                    }
+                }
+                if (requested.group == "org.apache.kafka" && requested.name == "kafka_2.11") {
+                    if (requested.version!!.startsWith("2.0.1") && requested.version!! <= "2.2.1") {
+                        useVersion("2.2.1")
+                        because("Enforce kafka_2.11 2.0.1 to avoid vulnerability CVE-2018-17196")
+                    }
+                }
+                if (requested.group == "org.elasticsearch" && requested.name == "elasticsearch") {
+                    if (requested.version!! <= Versions.ELASTIC) {
+                        useVersion(Versions.ELASTIC)
+                        because("some packages had an earlier ES version")
+                    }
+                }
+                if (requested.group == "com.google.guava" && requested.name == "guava") {
+                    if (requested.version!! <= "27.0.1") {
+                        useVersion("27.0.1-jre")
+                        because("fixes CVE-2018-10237")
+                    }
+                }
+                if (requested.group == "io.netty" && requested.name == "netty-all") {
+                    if (requested.version!! < "4.1.42.Final") {
+                        useVersion("4.1.42.Final")
+                        because("fixes CVE-2019-16869")
+                    }
+                }
+                if (requested.group == "com.nimbusds" && requested.name == "nimbus-jose-jwt") {
+                    if (requested.version!! <= "7.8") {
+                        useVersion("7.9")
+                        because("fixes CVE-2019-17195")
+                    }
+                }
+                if (requested.group.startsWith("org.apache.tomcat") &&
+                        requested.name.contains("tomcat") &&
+                        requested.version!! <= "9.0.29") {
+                    useVersion("9.0.30")
+                    because("Enforce tomcat 9.0.20+ to avoid vulnerabilities CVE-2019-0199, CVE-2019-0232, and CVE-2019-10072")
+                }
+            }
+        }
+
+    }
+
+
 }

@@ -37,10 +37,12 @@ test {
 }
 
 processResources {
+  def Versions = project.Versions
+
   outputs.upToDateWhen { false }
   filesMatching("**/docker-compose-e2e.yml") {
     expand([
-        esVersion: project.esVersion
+        esVersion: Versions.ELASTIC
     ])
   }
 }

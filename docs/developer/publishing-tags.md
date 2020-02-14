@@ -2,12 +2,22 @@
 
 The goals of our tag publishing conventions are to be seamless and consistent. In general, a developer or deployer should only need to do one of the following things to publish the right tag:
 
-- [release] create a release and tag via the GitHub interface or create, commit, and push a tag to our repo
+- [release]
+  - [git tag] Create a release and tag via the GitHub interface or create, commit, and push a tag to our repo.
+  - [manual] Trigger locally via `./gradlew jib -Pversion=3.0.0-beta` (on any branch/state)
+    - _WARNINGS:_
+      - Be sure your manually-entered version does not conflict with existing published artifact tags. It _will_ be overwritten.
+      - Manual releases will publish a semver tag, but no `git tag` is associated with the artifacts, so it's difficult to recreate and best suited to to non-official releases and release candidates like:
+        - `-alpha`
+        - `-beta`
+        - `-RC1`
+        - etc.
 - [snapshots] push to a remote branch
-- [local] ./gradlew jib (requires `DOCKER_USER` and `DOCKER_PASSWORD` to be set in environment)
- 
-Cleanup of the container registry (Docker Hub) is automated without being destructive or confusing about what a published tag represents.
+- [local] ./gradlew jib
 
+
+_NOTE:_ Running locally, with or without the release flag, the `DOCKER_USER` and `DOCKER_PASSWORD` environment variables will need to be set just as they are in the CI environment to publish to Docker Hub.
+ 
 ## Circle CI Configuration
 For Circle CI to [triggers builds from tags](https://circleci.com/docs/2.0/configuration-reference/#tags), it cannot be defined at the workflow level:
  
@@ -45,19 +55,18 @@ workflows:
 ## Continuous Integration Automation
  
 Many CI environments, including Circle CI set an environment variable `CI` to facilitate detecting the environment of the build. In the case that we have detected `CI=true`:
-- if build is tagged `CIRCLE_TAG=?` with semantic version format and `CIRCLE_BRANCH=master`
-  - flag the build as `isRelease=true` and leverage `jib`'s ability to publish multiple `to.tags`:  
-     - `"${version}"` (release semantic version: `version = CIRCLE_TAG`) 
-     - `"${versionNoPatch}"` (e.g. version: `2.4.2` -> `2.4`, or version: `2.4.2-RC1` -> `2.4-RC1`)
-     - `"${versionNoMinorNorPatch}"` (e.g. version: `2.4.2` -> `2`, or version: `2.4.2-RC1` -> `2-RC1`)
+- if build is tagged `CIRCLE_TAG=v?` and `CIRCLE_BRANCH=master`
+  - set `jib`'s `to` image to:  
+     - `"${version}"` (`CIRCLE_TAG` must be semantic version without the 'v' prefix) 
 - else (tag is non-semantic or non-existent):
-  - flag the build as `isRelease=false` and use `jib`'s regular `to` full image format with single tag:
-     - `"${branch}-SNAPSHOT"` (branch = `CIRCLE_BRANCH`)
+  - set `jib`'s `to` image to:  
+     - `"${branch}-SNAPSHOT"` (branch = `CIRCLE_BRANCH` or "unknown" if unset)
      
 ## Cleanup Container Registry
+
+Cleanup of the container registry (Docker Hub) is automated without being destructive or confusing about what a published tag represents.
  
-The container registry API for DockerHub can be used to delete tags with the a token obtained from the credentials. The
-continuous integration environment should attempt to clean up the registry before publishing on every run.
+The container registry API for DockerHub can be used to delete tags with the a token obtained from the credentials. The continuous integration environment should attempt to clean up the registry before publishing on every run.
 
 ### Release Tags (retain always)        
 These tags are identified through regex pattern matching and without the `-SNAPSHOT` suffix:
@@ -65,10 +74,6 @@ These tags are identified through regex pattern matching and without the `-SNAPS
 "3.0.0"     [RETAINED] (semantic version and not snapshot)
 "2.4.2"     [RETAINED] (semantic version and not snapshot)
 "2.4.2-RC1" [RETAINED] (semantic version and not snapshot)
-"2.4"       [RETAINED] (semantic derivative and not snapshot)
-"2.4-RC1"   [RETAINED] (semantic derivative and not snapshot)
-"2"         [RETAINED] (semantic derivative and not snapshot)
-"2-RC1"     [RETAINED] (semantic derivative and not snapshot)
 ```
 
 ### Branch Tags
@@ -108,19 +113,22 @@ Purge all tags remaining that do NOT meet the following criteria:
 - have `-SNAPSHOT` suffix
 - have `LOCAL-` prefix
 ```
+"2.4"          [PURGED] (truncated semantic is no longer a convention we use)
+"2.4-RC1"      [PURGED] (truncated semantic is no longer a convention we use)
+"2"            [PURGED] (truncated semantic is no longer a convention we use)
+"2-RC1"        [PURGED] (truncated semantic is no longer a convention we use)
 "dangling-tag" [PURGED] (not semantic, not derived semantic, not prefixed w/"LOCAL-", and not suffixed w/"-SNAPSHOT")
 ```
 
 ## Local Automation
 When the user is running the `jib` Gradle task from their development machine, the rules for publishing change so that custom published images can be distinguished and preserved in the CI cleanup process.
 
-The rules to publish in a CI environment afford a certain amount of built-in safety to prevent overriding critical tagged releases. The only way for a local `jib` task run to overwrite a published release would require the following conditions to be met:
-- the Docker Hub credentials, `DOCKER_USER` and `DOCKER_PASSWORD` are correctly set in the environment.
+The rules to publish in a CI environment afford a certain amount of built-in safety to prevent overriding critical tagged releases. The only way for a local `jib` task to overwrite a published release would require the following conditions to be met:
 - the CI environment variable evaluates to a boolean true
 - the CIRCLE_BRANCH environment variable would need to be set and equal "master"
-- the CIRCLE_TAG would need to be populated and be a valid semantic version
+- the CIRCLE_TAG would need to be populated and be a valid semantic version, prefixed with "v"
 
-If the above conditions are not ALL met (except credentials), then we assume we are in a "local" environment and build docker images and publish accordingly:
+If the above conditions are _NOT_ all met, then we assume we are in a "local" environment and build docker images and publish accordingly:
 - `"LOCAL-${branch}-${whoAmI}"` (e.g. - "LOCAL-123-featureA-elliott")
   - the branch in this case is derived from a `git` command and *not* the CIRCLE_BRANCH env var
   - the `whoAmI` value is literally the output of the `whoami` command
@@ -128,15 +136,19 @@ If the above conditions are not ALL met (except credentials), then we assume we 
 The local user may not have a need for or regularly publish manually, so they may not have the `DOCKER_USER` and `DOCKER_PASSWORD` environment variables set at all times. These credentials are required by the Docker Hub container registry API to delete images. Because of this, non-CI environments, should never attempt to clean up old/obsolete images automatically.
 
 ## Gradle Task Considerations
-In order to pull out clunky logic from the CI configuration itself, we can provide an `onlyIf` closure to the `jib` task on all projects, which takes into account :
-```
-# these values are calculated based on the environmental conditions shown above
-version = versionCICD()
-val shouldPublish: boolean = shouldPublish(...)
+In order to pull out clunky logic from the CI configuration itself, we can create an extension function on the Gradle `Project` object and dynamically determine the version at runtime instead of hard-coding it into a `gradle.properties` file.
 
-tasks.getByName("jib") {
-    onlyIf {
-        shouldPublish
+Then, you can attempt to clean in CI environments before the `jib` (publish) task runs by providing an `doFirst` closure on the task:
+```
+# this version is calculated based on the environmental conditions described above
+version = project.dynamicVersion()
+
+// before jib executes, if we are in a CI environment, attempt to clean the container registry
+tasks.getByName("jibDockerBuild") {
+    doFirst {
+        if(isCI()) {
+            publish.cleanContainerRegistry()
+        }
     }
 }
 ```
