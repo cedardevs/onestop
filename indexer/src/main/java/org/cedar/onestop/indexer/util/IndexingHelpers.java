@@ -168,12 +168,8 @@ public class IndexingHelpers {
     discoveryMap.put("linkProtocol", prepareLinkProtocols(discovery));
     discoveryMap.put("serviceLinks", prepareServiceLinks(discovery));
     discoveryMap.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
-    if (record.getType() == RecordType.collection) {
-      discoveryMap.putAll(prepareResponsibleParties(discovery));
-    }
-    if (record.getType() == RecordType.granule) {
-      discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
-    }
+    discoveryMap.putAll(prepareResponsibleParties(record));
+    discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
 
     // drop fields not present in target index
     var result = new LinkedHashMap<String, Object>(targetFields.size());
@@ -305,10 +301,12 @@ public class IndexingHelpers {
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
-  private static Map<String, Set<String>> prepareResponsibleParties(Discovery discovery) {
+  private static Map<String, Set<String>> prepareResponsibleParties(ParsedRecord record) {
     Set<String> individualNames = new HashSet<>();
     Set<String> organizationNames = new HashSet<>();
-    Optional.ofNullable(discovery)
+    Optional.ofNullable(record)
+        .filter(r -> r.getType() == RecordType.collection)
+        .map(ParsedRecord::getDiscovery)
         .map(Discovery::getResponsibleParties)
         .orElse(Collections.emptyList())
         .stream()

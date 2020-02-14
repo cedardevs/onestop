@@ -477,14 +477,24 @@ class IndexingHelpersSpec extends Specification {
     ] as Set
   }
 
+  def "does not prepare responsible party names for granules"() {
+    when:
+    def record = TestUtils.buildRecordFromXML(inputGranuleXml)
+    def result = IndexingHelpers.prepareResponsibleParties(record)
+
+    then:
+    result.individualNames == [] as Set
+    result.organizationNames == [] as Set
+  }
+
   def "party names are not included in granule search info"() {
     when:
     def record = TestUtils.buildRecordFromXML(inputGranuleXml) // <-- granule!
-    def result = IndexingHelpers.reformatMessageForSearch(record) // <-- top level reformat method!
+    def result = IndexingHelpers.reformatMessageForSearch(record, collectionFields) // <-- top level reformat method!
 
     then:
-    result.individualNames == null
-    result.organizationNames == null
+    result.individualNames == [] as Set
+    result.organizationNames == [] as Set
   }
 
   ////////////////////////////
