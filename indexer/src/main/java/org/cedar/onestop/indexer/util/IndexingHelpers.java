@@ -3,7 +3,6 @@ package org.cedar.onestop.indexer.util;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
-import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.schemas.avro.psi.*;
 import org.cedar.schemas.avro.util.AvroUtils;
 import org.elasticsearch.ElasticsearchGenerationException;
@@ -23,7 +22,6 @@ import java.util.stream.Stream;
 
 import static org.cedar.schemas.avro.psi.ValidDescriptor.*;
 import static org.elasticsearch.action.DocWriteRequest.OpType.*;
-import static org.elasticsearch.action.DocWriteRequest.OpType.UPDATE;
 
 public class IndexingHelpers {
   static final private Logger log = LoggerFactory.getLogger(IndexingHelpers.class);
@@ -114,33 +112,35 @@ public class IndexingHelpers {
   ////////////////////////////
   // Transformation         //
   ////////////////////////////
-  public static List<DocWriteRequest<?>> mapRecordToRequests(String topic, String id, ValueAndTimestamp<ParsedRecord> value, BulkIndexingConfig config) {
+  public static List<DocWriteRequest<?>> mapRecordToRequests(IndexingInput input) {
+    if (input == null) { return null; }
     try {
-      var record = ValueAndTimestamp.getValueOrNull(value);
+      var record = ValueAndTimestamp.getValueOrNull(input.getValue());
       var operation = (isTombstone(record) || isPrivate(record)) ? DELETE : INDEX;
-      var indices = config.getTargetIndices(topic, operation);
+      var indices = input.getIndexingConfig().getTargetIndices(input.getTopic(), operation);
       return indices.stream()
-          .map(indexName -> buildWriteRequest(indexName, operation, id, value))
+          .map(indexName -> buildWriteRequest(indexName, operation, input))
           .collect(Collectors.toList());
     } catch (ElasticsearchGenerationException e) {
-      log.error("failed to serialize record with key [" + id + "] to json", e);
+      log.error("failed to serialize record with key [" + input.getKey() + "] to json", e);
       return new ArrayList<>();
     }
   }
 
-  public static DocWriteRequest<?> buildWriteRequest(String indexName, DocWriteRequest.OpType opType, String id, ValueAndTimestamp<ParsedRecord> record) {
+  public static DocWriteRequest<?> buildWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input) {
     if (opType == DELETE) {
-      return new DeleteRequest(indexName).id(id);
+      return new DeleteRequest(indexName).id(input.getKey());
     }
 
-    var formattedRecord = reformatMessageForSearch(record.value());
-    formattedRecord.put("stagedDate", record.timestamp());
+    var targetFields = input.getEsConfig().indexedProperties(indexName).keySet();
+    var formattedRecord = reformatMessageForSearch(input.getValue().value(), targetFields);
+    formattedRecord.put("stagedDate", input.getValue().timestamp());
 
     if (opType == INDEX || opType == CREATE) {
-      return new IndexRequest(indexName).opType(opType).id(id).source(formattedRecord);
+      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
     }
     if (opType == UPDATE) {
-      return new UpdateRequest(indexName, id).doc(formattedRecord);
+      return new UpdateRequest(indexName, input.getKey()).doc(formattedRecord);
     }
     throw new UnsupportedOperationException("unsupported elasticsearch OpType: " + opType);
   }
@@ -156,7 +156,7 @@ public class IndexingHelpers {
     return (until == null || until > System.currentTimeMillis()) ? isPrivate : !isPrivate;
   }
 
-  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record) {
+  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> targetFields) {
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
     var discoveryMap = AvroUtils.avroToMap(discovery, true);
@@ -175,85 +175,11 @@ public class IndexingHelpers {
       discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
     }
 
-    // drop fields not used for searching
-    fieldsToDrop
-        .getOrDefault(record.getType(), Collections.emptyList())
-        .forEach(discoveryMap::remove);
-
-    return discoveryMap;
+    // drop fields not present in target index
+    var result = new LinkedHashMap<String, Object>(targetFields.size());
+    targetFields.forEach(f -> result.put(f, discoveryMap.get(f)));
+    return result;
   }
-
-  private static final Map<RecordType, List<String>> fieldsToDrop = Map.of(
-      RecordType.granule,
-      List.of(
-          "accessFeeStatement",
-          "accessionValues",
-          "acquisitionInstruments",
-          "acquisitionOperations",
-          "acquisitionPlatforms",
-          "alternateTitle",
-          "creationDate",
-          "credit",
-          "crossReferences",
-          "dsmmAccessibility",
-          "dsmmDataIntegrity",
-          "dsmmDataQualityAssessment",
-          "dsmmDataQualityAssurance",
-          "dsmmDataQualityControlMonitoring",
-          "dsmmPreservability",
-          "dsmmProductionSustainability",
-          "dsmmTransparencyTraceability",
-          "dsmmUsability",
-          "dsmmAverage",
-          "edition",
-          "hierarchyLevelName",
-          "largerWorks",
-          "legalConstraints",
-          "orderingInstructions",
-          "presentationForm",
-          "publicationDate",
-          "purpose",
-          "responsibleParties",
-          "revisionDate",
-          "services",
-          "status",
-          "temporalBounding",
-          "thumbnailDescription",
-          "topicCategories",
-          "updateFrequency",
-          "useLimitation"
-      ),
-      RecordType.collection,
-      List.of(
-          "accessionValues",
-          "acquisitionInstruments",
-          "acquisitionOperations",
-          "acquisitionPlatforms",
-          "alternateTitle",
-          "creationDate",
-          "credit",
-          "dsmmAccessibility",
-          "dsmmDataIntegrity",
-          "dsmmDataQualityAssessment",
-          "dsmmDataQualityAssurance",
-          "dsmmDataQualityControlMonitoring",
-          "dsmmPreservability",
-          "dsmmProductionSustainability",
-          "dsmmTransparencyTraceability",
-          "dsmmUsability",
-          "hierarchyLevelName",
-          "presentationForm",
-          "publicationDate",
-          "purpose",
-          "responsibleParties",
-          "revisionDate",
-          "services",
-          "status",
-          "temporalBounding",
-          "thumbnailDescription",
-          "topicCategories",
-          "updateFrequency"
-      ));
 
   ////////////////////////////////
   // Identifiers                //

@@ -1,23 +1,12 @@
 package org.cedar.onestop.indexer.util
 
-import groovy.json.JsonSlurper
+
 import org.apache.kafka.streams.state.ValueAndTimestamp
-import org.cedar.onestop.elastic.common.FileUtil
+import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.indexer.stream.BulkIndexingConfig
 import org.cedar.schemas.analyze.Analyzers
-import org.cedar.schemas.avro.psi.Analysis
-import org.cedar.schemas.avro.psi.Discovery
-import org.cedar.schemas.avro.psi.IdentificationAnalysis
-import org.cedar.schemas.avro.psi.ParsedRecord
-import org.cedar.schemas.avro.psi.Publishing
-import org.cedar.schemas.avro.psi.RecordType
-import org.cedar.schemas.avro.psi.Relationship
-import org.cedar.schemas.avro.psi.RelationshipType
-import org.cedar.schemas.avro.psi.SpatialBoundingAnalysis
-import org.cedar.schemas.avro.psi.TemporalBounding
-import org.cedar.schemas.avro.psi.TemporalBoundingAnalysis
-import org.cedar.schemas.avro.psi.TitleAnalysis
-import org.cedar.schemas.avro.psi.ValidDescriptor
+import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.parse.ISOParser
 import org.elasticsearch.action.delete.DeleteRequest
@@ -32,7 +21,6 @@ import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID
 import static org.cedar.schemas.avro.util.TemporalTestData.getSituations
 import static org.elasticsearch.action.DocWriteRequest.OpType.DELETE
 import static org.elasticsearch.action.DocWriteRequest.OpType.INDEX
-
 
 @Unroll
 class IndexingHelpersSpec extends Specification {
@@ -58,6 +46,17 @@ class IndexingHelpersSpec extends Specification {
       .addIndexMapping(testTopic, INDEX, testIndex)
       .addIndexMapping(testTopic, DELETE, testIndex)
       .build()
+  static esConfig = new ElasticsearchConfig(
+      new ElasticsearchVersion("7.5.1"),
+      "SearchIndexTopologySpec-",
+      1,
+      1,
+      1,
+      1,
+      false
+  )
+  static collectionFields = esConfig.indexedProperties(esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet()
+  static granuleFields = esConfig.indexedProperties(esConfig.GRANULE_SEARCH_INDEX_ALIAS).keySet()
 
   static expectedKeywords = [
       "SIO > Super Important Organization",
@@ -247,7 +246,7 @@ class IndexingHelpersSpec extends Specification {
     def testKey = "ABC"
 
     when:
-    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, null, indexingConfig)
+    def results = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, testKey, null, indexingConfig, esConfig))
 
     then:
     results.size() == 1
@@ -267,7 +266,7 @@ class IndexingHelpersSpec extends Specification {
         .build()
 
     when:
-    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, null, multipleDeleteConfig)
+    def results = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, testKey, null, multipleDeleteConfig, esConfig))
 
     then:
     results.size() == 2
@@ -293,7 +292,7 @@ class IndexingHelpersSpec extends Specification {
         .build()
 
     when:
-    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, testValue, multipleIndexConfig)
+    def results = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, testKey, testValue, multipleIndexConfig, esConfig))
 
     then:
     results.size() == 2
@@ -308,7 +307,7 @@ class IndexingHelpersSpec extends Specification {
     def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
 
     when:
-    def results = IndexingHelpers.mapRecordToRequests(testTopic, testKey, testValue, indexingConfig)
+    def results = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, testKey, testValue, indexingConfig, esConfig))
 
     then:
     results.size() == 1
@@ -333,7 +332,7 @@ class IndexingHelpersSpec extends Specification {
     def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
 
     when:
-    def result = IndexingHelpers.mapRecordToRequests(testTopic, testKey, testValue, indexingConfig)
+    def result = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, testKey, testValue, indexingConfig, esConfig))
 
     then:
     result[0].id() == testKey
@@ -351,21 +350,18 @@ class IndexingHelpersSpec extends Specification {
   // Generic Indexed Fields    //
   ///////////////////////////////
   def "only mapped #type fields are indexed"() {
-    def indexDef = FileUtil.textFromClasspathFile(mappingSource)
-    def fields = new JsonSlurper().parseText(indexDef).mappings.properties.keySet()
-
     when:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream(dataSource).text
     def record = TestUtils.buildRecordFromXML(xml)
-    def result = IndexingHelpers.reformatMessageForSearch(record)
+    def result = IndexingHelpers.reformatMessageForSearch(record, fields)
 
     then:
     result.keySet().each({ assert fields.contains(it) })
 
     where:
-    type         | mappingSource                          | dataSource
-    'collection' | 'mappings/search_collectionIndex.json' | 'test-iso-collection.xml'
-    'granule'    | 'mappings/search_granuleIndex.json'    | 'test-iso-granule.xml'
+    type          | fields            | dataSource
+    'collection'  | collectionFields  | 'test-iso-collection.xml'
+    'granule'     | granuleFields     | 'test-iso-granule.xml'
   }
 
   ////////////////////////////////
@@ -457,8 +453,8 @@ class IndexingHelpersSpec extends Specification {
   ////////////////////////////
   def "prepares responsible party names"() {
     when:
-    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
-    def result = IndexingHelpers.prepareResponsibleParties(discovery)
+    def record = TestUtils.buildRecordFromXML(inputCollectionXml)
+    def result = IndexingHelpers.prepareResponsibleParties(record)
 
     then:
     result.individualNames == [
@@ -602,7 +598,7 @@ class IndexingHelpersSpec extends Specification {
 
   def "accession values are not included"() {
     when:
-    def result = IndexingHelpers.reformatMessageForSearch(inputRecord)
+    def result = IndexingHelpers.reformatMessageForSearch(inputRecord, esConfig.parsedMapping(esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet())
 
     then:
     result.accessionValues == null

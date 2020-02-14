@@ -8,6 +8,7 @@ import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.indexer.util.IndexingHelpers;
+import org.cedar.onestop.indexer.util.IndexingInput;
 import org.cedar.onestop.indexer.util.IndexingOutput;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -44,7 +45,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
   @Override
   public KeyValue<String, IndexingOutput> transform(String key, ValueAndTimestamp<ParsedRecord> record) {
     store.put(key, record);
-    var requests = IndexingHelpers.mapRecordToRequests(context.topic(), key, record, config);
+    var requests = IndexingHelpers.mapRecordToRequests(new IndexingInput(context.topic(), key, record, config, elasticsearchService.getConfig()));
     requests.forEach(request::add);
     if (request.estimatedSizeInBytes() >= config.getMaxPublishBytes()) {
       log.debug("flushing request due to size: {} >= {}", request.estimatedSizeInBytes(), config.getMaxPublishBytes());
