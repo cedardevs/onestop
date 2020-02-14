@@ -12,9 +12,11 @@ import org.elasticsearch.Version
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
+@Ignore
 @Slf4j
 @Unroll
 class ElasticsearchServiceSpec extends Specification {
