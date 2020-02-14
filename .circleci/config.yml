@@ -346,37 +346,37 @@ workflows:
   version: 2
   build:
     jobs:
-      - checkout
-        <<: *jobFilters
+      - checkout:
+          <<: *jobFilters
       - admin:
           requires:
             - checkout
-        <<: *jobFilters
+          <<: *jobFilters
       - client:
           requires:
             - checkout
-        <<: *jobFilters
+          <<: *jobFilters
       - registry:
           requires:
             - checkout
-        <<: *jobFilters
+          <<: *jobFilters
       - search:
           requires:
             - checkout
-        <<: *jobFilters
+          <<: *jobFilters
       - stream-manager:
           requires:
             - checkout
-        <<: *jobFilters
+          <<: *jobFilters
       - cli-generation:
           requires:
             - checkout
-        <<: *jobFilters
+          <<: *jobFilters
       - cli-publish:
           requires:
             - checkout
             - cli-generation
-        <<: *jobFilters
+          <<: *jobFilters
       - finalize:
           requires:
             - admin
@@ -386,7 +386,7 @@ workflows:
             - stream-manager
             - cli-generation
             - cli-publish
-        <<: *jobFilters
+          <<: *jobFilters
 
   nightly:
     triggers:
