@@ -8,7 +8,7 @@ class ElasticsearchTestVersion {
 
   static boolean checkBackwardCompatibility = true
 
-  static final List<Version> compatibleVersions = [Version.V_5_6_0, Version.V_6_0_0, Version.V_6_4_3]
+  static final List<Version> compatibleVersions = [Version.V_6_0_0, Version.V_6_4_3]
 
   static String TEST_PREFIX = 'prefix-'
   static Integer TEST_MAX_TASKS = 10
