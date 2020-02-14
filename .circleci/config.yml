@@ -59,7 +59,7 @@ saveCache: &saveCache
       - stream-manager/build
       - cli/.gogradle
       - cli/vendor
-    key: onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+    key: onestop-cache-v16-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
