@@ -71,18 +71,27 @@ fun isRelease(): Boolean {
     // we're in the CI environment and checking conditions for for an official release
     // in order to treat publishing differently than a regular branch snapshot
     val tag: String = tagCI() ?: ""
+
+    // TODO: remove this once we confirm the CI environment is triggered on tags properly
+    println("Publishing:::isRelease::tag/CIRCLE_TAG = $tag")
+
     val isReleaseTag = tag.startsWith("v")
     val version = tag.removePrefix("v")
     val isSemanticNonSnapshot = isSemanticNonSnapshot(version)
     val branch: String = branchCI() ?: ""
     val isMasterBranch = branch == BRANCH_MASTER
+
+    println("isReleaseTag = $isReleaseTag, isSemanticNonSnapshot = $isSemanticNonSnapshot, isMasterBranch = $isMasterBranch")
+
     return isReleaseTag && isSemanticNonSnapshot && isMasterBranch
 }
 
 fun Project.dynamicVersion(): String {
     return if(isCI()) {
         // inside a CI environment
+        println("dynamicVersion::: Determined we are IN the CI environment")
         if(isRelease()) {
+            println("dynamicVersion::: Determined we are publishing an actual release tag")
             // publish official release (derived from CIRCLE_TAG)
             // tag = v3.0.0 -> version = 3.0.0
             val tag = tagCI() ?: ""
@@ -91,6 +100,7 @@ fun Project.dynamicVersion(): String {
             versionRelease
         }
         else {
+            println("dynamicVersion::: publishing a branch snapshot")
             // otherwise publish branch snapshot (if CI doesn't have branch name for any reason, assume "unknown" name)
             // e.g -  "123-featureA-SNAPSHOT"
             val versionBranchSnapshot = "${branchCI() ?: "unknown"}${SUFFIX_SNAPSHOT}"

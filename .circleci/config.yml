@@ -40,9 +40,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+      - onestop-cache-v16-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v15-
+      - onestop-cache-v16-
 
 saveCache: &saveCache
   save_cache:
@@ -64,6 +64,11 @@ saveCache: &saveCache
 attachWorkspace: &attachWorkspace
   - attach_workspace:
       at: ~/repo
+
+jobFilters: &jobFilters
+  filters:
+    tags:
+      only: /(?<=^[Vv]|^)(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?<prerelease>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*)))*))?(?:[+](?<build>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+)))*))?)$/
 
 version: 2
 jobs:
@@ -119,13 +124,7 @@ jobs:
           path: admin/build/reports
       - deploy:
           name: Publish Image(s)
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew admin:jib
-            else
-              echo "Skipping publishing"
-            fi
+          command: ./gradlew admin:jib
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -161,13 +160,7 @@ jobs:
           path: search/build/reports
       - deploy:
           name: Publish Image(s)
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew search:jib
-            else
-              echo "Skipping publishing"
-            fi
+          command: ./gradlew search:jib
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -190,13 +183,7 @@ jobs:
           path: ~/tests
       - deploy:
           name: Publish Image(s)
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew client:jib
-            else
-              echo "Skipping publishing"
-            fi
+          command: ./gradlew client:jib
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -224,13 +211,7 @@ jobs:
         path: registry/build/reports
     - deploy:
         name: Publish Image(s)
-        command: |
-          echo "${CIRCLE_BRANCH}"
-          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-            ./gradlew registry:jib
-          else
-            echo "Skipping publishing"
-          fi
+        command: ./gradlew registry:jib
     - persist_to_workspace:
         root: ~/repo
         paths:
@@ -257,13 +238,7 @@ jobs:
         path: stream-manager/build/reports
     - deploy:
         name: Publish Image(s)
-        command: |
-          echo "${CIRCLE_BRANCH}"
-          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-            ./gradlew stream-manager:jib
-          else
-            echo "Skipping publishing"
-          fi
+        command: ./gradlew stream-manager:jib
     - persist_to_workspace:
         root: ~/repo
         paths:
@@ -304,13 +279,7 @@ jobs:
       - <<: *attachWorkspace
       - run:
           name: Build image, publish
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew cli:jib
-            else
-              ./gradlew cli:jib --image=cedardevs/onestop-cli:2.4.0-$CIRCLE_BRANCH
-            fi
+          command: ./gradlew cli:jib
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -378,28 +347,36 @@ workflows:
   build:
     jobs:
       - checkout
+          <<: *jobFilters
       - admin:
           requires:
             - checkout
+          <<: *jobFilters
       - client:
           requires:
             - checkout
+          <<: *jobFilters
       - registry:
           requires:
             - checkout
+          <<: *jobFilters
       - search:
           requires:
             - checkout
+          <<: *jobFilters
       - stream-manager:
           requires:
             - checkout
+          <<: *jobFilters
       - cli-generation:
           requires:
             - checkout
+          <<: *jobFilters
       - cli-publish:
           requires:
             - checkout
             - cli-generation
+          <<: *jobFilters
       - finalize:
           requires:
             - admin
@@ -409,6 +386,7 @@ workflows:
             - stream-manager
             - cli-generation
             - cli-publish
+          <<: *jobFilters
 
   nightly:
     triggers:
