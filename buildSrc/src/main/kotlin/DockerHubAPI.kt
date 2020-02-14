@@ -56,8 +56,6 @@ class DockerHubAPI : ContainerRegistryInterface {
             ""
         } as String
 
-        if (urlNext.isBlank()) return tags
-
         val jsonTags: JSONArray = jsonResponse.getJSONArray("results")
         val jsonTagsRefined = JSONArray()
         jsonTags.forEach { t ->
@@ -68,7 +66,9 @@ class DockerHubAPI : ContainerRegistryInterface {
             val refinedTag = JSONObject(mapOf(Pair("name", name), Pair("last_updated", lastUpdated)))
             jsonTagsRefined.put(refinedTag)
         }
+
         // recurse using the "next" page url of tags, concatenating tags as long as next page exists
-        return this.requestPagedTags(publish, urlNext, this.concat(tags, jsonTagsRefined))
+        val combinedTags = this.concat(tags, jsonTagsRefined)
+        return if (urlNext.isBlank()) combinedTags else this.requestPagedTags(publish, urlNext, combinedTags)
     }
 }
