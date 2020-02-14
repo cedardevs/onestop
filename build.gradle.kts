@@ -63,7 +63,7 @@ repositories {
 
 group = "org.cedar.onestop"
 
-version = versionCICD()
+version = project.dynamicVersion()
 
 val authors: List<Author> = listOf(
         Author(
@@ -116,6 +116,7 @@ allprojects {
     // resolve all subproject dependencies from Bintray jcenter and jitpack
     repositories {
         jcenter()
+        maven(url = "https://packages.confluent.io/maven/")
         maven(url = "https://jitpack.io")
     }
 }
@@ -174,18 +175,27 @@ subprojects {
                 username = environment("DOCKER_USER"),
                 password = environment("DOCKER_PASSWORD")
         )
+
         extra.apply {
             set("publish", publish)
             set("repo", repository(publish))
             set("ociAnnotations", ociAnnotations(publish))
         }
 
+        // before jib executes, if we are in a CI environment, attempt to clean the container registry
+//        tasks.getByName("jibDockerBuild") {
+//            doFirst {
+//                if(isCI()) {
+//                    publish.cleanContainerRegistry()
+//                }
+//            }
+//        }
 
-        tasks.getByName("jib") {
-            onlyIf {
-                false
-            }
+        tasks.register("whatever") {
+            publish.cleanContainerRegistry()
         }
+
+
     }
     if (springBootProjects.contains(name)) {
         // apply the spring dependency management plugin to projects using spring

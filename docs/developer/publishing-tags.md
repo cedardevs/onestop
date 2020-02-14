@@ -49,7 +49,7 @@ Many CI environments, including Circle CI set an environment variable `CI` to fa
   - flag the build as `isRelease=true` and leverage `jib`'s ability to publish multiple `to.tags`:  
      - `"${version}"` (release semantic version: `version = CIRCLE_TAG`) 
      - `"${versionNoPatch}"` (e.g. version: `2.4.2` -> `2.4`, or version: `2.4.2-RC1` -> `2.4-RC1`)
-     - `"${versionNoMinorOrPatch}"` (e.g. version: `2.4.2` -> `2`, or version: `2.4.2-RC1` -> `2-RC1`)
+     - `"${versionNoMinorNorPatch}"` (e.g. version: `2.4.2` -> `2`, or version: `2.4.2-RC1` -> `2-RC1`)
 - else (tag is non-semantic or non-existent):
   - flag the build as `isRelease=false` and use `jib`'s regular `to` full image format with single tag:
      - `"${branch}-SNAPSHOT"` (branch = `CIRCLE_BRANCH`)
@@ -91,7 +91,7 @@ The prefix before `-SNAPSHOT` can be intuited as the branch name which produced 
 #### Inactive Branch Tags (purge):
 Purge any tags associated with a branch name that does not exist in the remote origin (e.g. - ["master", "123-featureA"])
 ```
-"456-featureB-SNAPSHOT" [PURGED] (branch does NOT exist on remote origin and not prefixed w/"LOCAL-")
+"456-featureB-SNAPSHOT" [PURGED] ("456-featureB" does NOT exist as branch on remote origin and not prefixed w/"LOCAL-")
 ```
 
 ### Local Tags (retain):

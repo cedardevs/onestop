@@ -2,11 +2,11 @@ tasks.getByName("clean") {
     dependsOn("npm_run_clean")
 }
 
-task<NpmTask>("formatCheck") {
+task<com.moowork.gradle.node.npm.NpmTask>("formatCheck") {
     setArgs(mutableListOf("run", "formatCheck"))
 }
 
-task<NpmTask>("retire") {
+task<com.moowork.gradle.node.npm.NpmTask>("retire") {
     setArgs(mutableListOf("run", "retire"))
 }
 
@@ -49,6 +49,7 @@ tasks.getByName("build") {
 
 // sync files to the client container jib staging directory
 task<Sync>("sync") {
+
     val publish: Publish by project.extra
     val jibExtraDir: String by project.extra
 

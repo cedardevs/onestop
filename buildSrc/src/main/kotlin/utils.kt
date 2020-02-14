@@ -1,13 +1,13 @@
+import org.gradle.api.Project
 import java.io.File
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAccessor
+import java.util.*
 
 // constants
 object License {
     const val MIT: String = "GPL-2.0"
-}
-
-object Registries {
-    const val DOCKER_HUB = "registry.hub.docker.com"
-    const val GITLAB = "registry.gitlab.com"
 }
 
 object Versions {
@@ -51,115 +51,14 @@ data class Author(
         val website: String
 )
 
-data class Publish(
-        val created: String,
-        val title: String,
-        val project: String,
-        val description: String,
-        val documentation: String,
-        val authors: String,
-        val url: String,
-        val source: String,
-        val revision: String,
-        val vendor: String,
-        val version: String,
-        val licenses: String,
-        val registryUrl: String,
-        val username: String,
-        val password: String
-)
-
 // utility functions
 fun environment(variable: String, default: String = ""): String {
     return (System.getenv(variable) ?: default).trim()
 }
 
-fun String.runShell(dir: File? = null, quiet: Boolean = true): String? {
-    val builder: ProcessBuilder = ProcessBuilder("/bin/sh", "-c", this)
-            .redirectErrorStream(true)
-            .directory(dir)
-    val process: Process = builder.start()
-    val exitCode: Int = process.waitFor()
-    var output: String? = process.inputStream.readBytes().toString(Charsets.UTF_8).trim()
-    if(exitCode != 0) {
-        // print stderr for visibility, since we return `null` on error
-        println("\nError running: `${this}`\n")
-        println("${output}\n")
-        output = null
-    }
-    if(!quiet && exitCode == 0) {
-        // print stdout when `quiet = false` to prevent excessive output by default
-        println("\nRunning: `${this}`\n")
-        println("${output}\n")
-    }
-    return output
-}
 
-fun isCI(): Boolean {
-    return (System.getenv("CI") ?: "").toBoolean()
-}
 
-fun branchCI(): String {
-    return System.getenv("CIRCLE_BRANCH") ?: ""
-}
 
-fun tagCI(): String {
-    return System.getenv("CIRCLE_TAG") ?: ""
-}
-
-fun isSnapshot(): Boolean {
-    val circleBuildNumber: String? = System.getenv("CIRCLE_BUILD_NUM")
-    val isCircleBuild: Boolean = circleBuildNumber.isNullOrBlank()
-    val circleTag: String? = System.getenv("CIRCLE_TAG")
-    var isTag = false
-    if(!circleTag.isNullOrBlank()) {
-        isTag = circleTag.startsWith("v")
-    }
-    return isCircleBuild && !isTag
-}
-
-//fun shouldPublish(): Boolean {
-//    return isCI() && branchCI() == "master" && !
-//}
-
-fun versionCICD(): String {
-    // if we are in continuous integration environment, building off master branch, then
-    return if(isCI() && branchCI() == "master") {
-        // if this is a
-        // determine if this is just a regular snapshot update or an official release tag
-        if(isSnapshot()) "-SNAPSHOT" else ""
-    } else {
-        // likely we are running in a local dev env, so use a different suffix here
-        // if we publish outside our CI environment, the `-SNAPSHOT` version won't be clobbered
-        // by local devs running jib, for example
-        "${branch()}-${whoAmI()}"
-    }
-}
-
-fun sourceUrl(): String {
-    return "git config --get remote.origin.url".runShell() ?: "unknown"
-}
-
-fun branch(): String {
-    return "git symbolic-ref --short HEAD".runShell() ?: "unknown"
-}
-
-fun activeBranches(): List<String> {
-    return "for branch in `git branch -r --no-merged | grep -v HEAD`; do printf  \"%s\\n\" \"\${branch#\"origin/\"}\"; done | sort -r"
-            .runShell()?.lines() ?: listOf()
-}
-
-fun remoteBranchExists(branch: String): Boolean {
-    return "git ls-remote --heads --exit-code origin $branch".runShell().isNullOrBlank().not()
-}
-
-fun revision(): String {
-    return "git rev-parse --short HEAD".runShell() ?: "unknown"
-}
-
-fun whoAmI(): String {
-    return "whoami".runShell() ?: "unknown"
-}
 
 fun formatAuthors(authors: Collection<Author>, pretty: Boolean = false): String {
     // Your Name <email@example.com> (http://example.com)
@@ -181,6 +80,13 @@ fun printMap(map: Map<String, String>) {
     for ((k, v) in map) {
         println(String.format("> %-" + n + "s = %s", k, v))
     }
+}
+
+// convert ISO 8601 string to a Date object
+fun parseDateISO(date: String): Date {
+    val timeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
+    val accessor: TemporalAccessor = timeFormatter.parse(date)
+    return Date.from(Instant.from(accessor))
 }
 
 // use publishing info to derive standardized container labels

@@ -1,17 +1,17 @@
 rootProject.name = "onestop"
 
 include(
-       // "client",
-        "cli",
-        "e2e-tests",
-        "elastic-common",
-        "geoportal-search",
-         "indexer",
-        "kafka-common",
-        "registry",
-        "search",
-        "stream-manager",
-        "user"
+    "client",
+    "cli",
+    "e2e-tests",
+    "elastic-common",
+    "geoportal-search",
+    "indexer",
+    "kafka-common",
+    "registry",
+    "search",
+    "stream-manager",
+    "user"
 )
 
 //plugins {
