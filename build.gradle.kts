@@ -7,6 +7,9 @@ import java.time.format.DateTimeFormatter
 plugins {
     `kotlin-dsl`
 
+    // JaCoCo plugin provides code coverage metrics for Java code via integration with JaCoCo.
+    jacoco
+
     // OWASP Dependency Check Gradle Plugin
     // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/index.html
     // - provides monitoring of the projects dependent libraries;
@@ -14,9 +17,6 @@ plugins {
     id("org.owasp.dependencycheck").version("5.3.0")
 
     // Note: The plugins below are not universally `apply(true)`because subprojects only need them conditionally.
-
-    // JaCoCo plugin provides code coverage metrics for Java code via integration with JaCoCo.
-    jacoco.apply(false)
 
     // Kotlin Plugin
     // - In case we ever want to use Kotlin on a project targeted on the JVM
@@ -166,7 +166,6 @@ subprojects {
         // TODO: apply(plugin =  "kotlin")?
 
         // Java test reports
-        apply(plugin = "org.gradle.jacoco")
         tasks.jacocoTestReport {
             executionData(fileTree(projectDir).include("build/jacoco/*.exec"))
             reports {
