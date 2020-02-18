@@ -4,46 +4,53 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.PunctuationType;
+import org.apache.kafka.streams.state.TimestampedKeyValueStore;
+import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
-import org.elasticsearch.action.DocWriteRequest;
-import org.elasticsearch.action.bulk.BulkItemResponse;
+import org.cedar.onestop.indexer.util.IndexingHelpers;
+import org.cedar.onestop.indexer.util.IndexingOutput;
+import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.support.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.Duration;
 
-public class BulkIndexingTransformer implements Transformer<String, DocWriteRequest, KeyValue<String, BulkItemResponse>> {
+public class BulkIndexingTransformer implements Transformer<String, ValueAndTimestamp<ParsedRecord>, KeyValue<String, IndexingOutput>> {
   private static final Logger log = LoggerFactory.getLogger(BulkIndexingTransformer.class);
 
   private final ElasticsearchService client;
-  private final Duration maxPublishInterval;
-  private final long maxPublishBytes;
+  private final BulkIndexingConfig config;
 
+  private TimestampedKeyValueStore<String, ParsedRecord> store;
   private ProcessorContext context;
   private BulkRequest request;
 
-  public BulkIndexingTransformer(ElasticsearchService client, Duration maxPublishInterval, long maxPublishBytes) {
+  public BulkIndexingTransformer(ElasticsearchService client, BulkIndexingConfig config) {
     this.client = client;
-    this.maxPublishInterval = maxPublishInterval;
-    this.maxPublishBytes = maxPublishBytes;
+    this.config = config;
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void init(ProcessorContext context) {
     this.context = context;
-    this.request = new BulkRequest();
-    this.context.schedule(maxPublishInterval, PunctuationType.WALL_CLOCK_TIME, timestamp -> flushRequest());
+    this.store = (TimestampedKeyValueStore<String, ParsedRecord>) this.context.getStateStore(config.getStoreName());
+    this.request = buildEmptyRequest();
+    this.context.schedule(config.getMaxPublishInterval(), PunctuationType.WALL_CLOCK_TIME, timestamp -> flushRequest());
   }
 
   @Override
-  public KeyValue<String, BulkItemResponse> transform(String key, DocWriteRequest value) {
-    request.add(value);
-    if (request.estimatedSizeInBytes() >= maxPublishBytes) {
+  public KeyValue<String, IndexingOutput> transform(String key, ValueAndTimestamp<ParsedRecord> record) {
+    store.put(key, record);
+    var requests = IndexingHelpers.mapRecordToRequests(context.topic(), key, record, config);
+    requests.forEach(request::add);
+    if (request.estimatedSizeInBytes() >= config.getMaxPublishBytes()) {
+      log.debug("flushing request due to size: {} >= {}", request.estimatedSizeInBytes(), config.getMaxPublishBytes());
       flushRequest();
     }
-    return null; // does not return new values directly, instead forwards results via context when a bulk request is flushed
+    return null; // outputs are forwarded later when bulk request is flushed
   }
 
   private void flushRequest() {
@@ -52,32 +59,39 @@ public class BulkIndexingTransformer implements Transformer<String, DocWriteRequ
       return;
     }
     try {
-      log.info("Submitting bulk request wth [" + numActions + "] actions and approximately [" + request.estimatedSizeInBytes() + "] bytes");
+      log.info("submitting bulk request with [" + numActions + "] actions and approximately [" + request.estimatedSizeInBytes() + "] bytes");
       var response = client.bulk(request);
-      log.info("Completed bulk request wth [" + numActions + "] actions in [" + response.getTook() + "]");
+      log.info("completed bulk request with [" + numActions + "] actions in [" + response.getTook() + "]");
       response.iterator().forEachRemaining(item -> {
         var id = item.getId();
-        context.forward(id, item);
         if (item.isFailed()) {
           log.warn(item.getOpType() + " record with key [" + id + "] and index [" + item.getIndex() + "] failed: "
               + item.getFailureMessage(), item.getFailure().getCause());
-        }
-        else {
+        } else {
           log.debug(item.getOpType() + " record with key [" + id + "] and index [" + item.getIndex() + "] succeeded");
         }
+        var record = store.get(id);
+        var result = new IndexingOutput(record, item);
+        context.forward(id, result);
+        store.delete(id);
       });
       this.context.commit();
+    } catch (IOException e) {
+      log.error("failed to execute bulk request wth [" + numActions + "] actions", e);
+      this.request.requests().forEach(docWriteRequest -> this.store.delete(docWriteRequest.id()));
+    } finally {
+      this.request = buildEmptyRequest();
     }
-    catch (IOException e) {
-      log.error("Failed to execute bulk request wth [" + numActions + "] actions", e);
-    }
-    finally {
-      this.request = new BulkRequest();
-    }
+  }
+
+  private BulkRequest buildEmptyRequest() {
+    // wait until indexed items are available to handle response
+    return new BulkRequest().setRefreshPolicy(WriteRequest.RefreshPolicy.WAIT_UNTIL);
   }
 
   @Override
   public void close() {
     // nothing to do here
   }
+
 }

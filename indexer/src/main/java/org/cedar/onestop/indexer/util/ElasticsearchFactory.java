@@ -47,11 +47,11 @@ public class ElasticsearchFactory {
         .map(Object::toString)
         .map(Integer::valueOf)
         .orElse(null);
-    var elasticSitemapScrollSize = Optional.ofNullable(config.get("etl.sitemap.scroll-size"))
+    var elasticSitemapScrollSize = Optional.ofNullable(config.get("sitemap.scroll-size"))
         .map(Object::toString)
         .map(Integer::valueOf)
         .orElse(null);
-    var elasticSitemapCollectionsPerSubmap = Optional.ofNullable(config.get("etl.sitemap.collections-per-submap"))
+    var elasticSitemapCollectionsPerSubmap = Optional.ofNullable(config.get("sitemap.collections-per-submap"))
         .map(Object::toString)
         .map(Integer::valueOf)
         .orElse(null);

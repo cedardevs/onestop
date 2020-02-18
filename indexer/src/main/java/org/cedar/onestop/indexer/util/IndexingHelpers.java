@@ -2,8 +2,15 @@ package org.cedar.onestop.indexer.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
+import org.apache.kafka.streams.state.ValueAndTimestamp;
+import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.schemas.avro.psi.*;
 import org.cedar.schemas.avro.util.AvroUtils;
+import org.elasticsearch.ElasticsearchGenerationException;
+import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,66 +22,138 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.cedar.schemas.avro.psi.ValidDescriptor.*;
+import static org.elasticsearch.action.DocWriteRequest.OpType.*;
+import static org.elasticsearch.action.DocWriteRequest.OpType.UPDATE;
 
 public class IndexingHelpers {
   static final private Logger log = LoggerFactory.getLogger(IndexingHelpers.class);
+  static final private String VALIDATION_ERROR_TITLE = "Invalid for search indexing";
 
-  public static Map validateMessage(String id, ParsedRecord messageMap) {
-    // FIXME Improve testability of failures by creating an Enum for invalid messages
-    List<String> errors = new ArrayList<>();
+  ////////////////////////////
+  // Validation             //
+  ////////////////////////////
+  public static ParsedRecord addValidationErrors(ParsedRecord record) {
+    if (record == null) {
+      return null;
+    }
+    List<ErrorEvent> errors = record.getErrors();
+    List<ErrorEvent> rootErrors = validateRootRecord(record);
+    errors.addAll(rootErrors);
+    if (rootErrors.isEmpty()) {
+      errors.addAll(validateIdentification(record));
+      errors.addAll(validateTitles(record));
+      errors.addAll(validateTemporalBounds(record));
+      errors.addAll(validateSpatialBounds(record));
+    }
+    return ParsedRecord.newBuilder(record).setErrors(errors).build();
+  }
 
-    var discovery = messageMap != null ? messageMap.getDiscovery() : null;
-    if (discovery == null || discovery == Discovery.newBuilder().build()) {
-      errors.add("Discovery metadata missing. No metadata to load into OneStop.");
+  private static List<ErrorEvent> validateRootRecord(ParsedRecord record) {
+    var result = new ArrayList<ErrorEvent>();
+    if (record.getDiscovery() == null || record.getDiscovery() == Discovery.newBuilder().build()) {
+      result.add(buildValidationError("Discovery metadata missing. No metadata to load into OneStop."));
     }
-    else {
-      var analysis = messageMap.getAnalysis();
-      if (analysis == null || analysis == Analysis.newBuilder().build()) {
-        errors.add("Analysis metadata missing. Cannot verify metadata quality for OneStop.");
-      }
-      else {
-        var titles = analysis.getTitles();
-        var identification = analysis.getIdentification();
-        var temporal = analysis.getTemporalBounding();
-        var spatial = analysis.getSpatialBounding();
+    if (record.getAnalysis() == null || record.getAnalysis() == Analysis.newBuilder().build()) {
+      result.add(buildValidationError("Analysis metadata missing. Cannot verify metadata quality for OneStop."));
+    }
+    return result;
+  }
 
-        if (identification != null && !identification.getFileIdentifierExists() && !identification.getDoiExists()) {
-          errors.add("Missing identifier - record contains neither a fileIdentifier nor a DOI");
-        }
-        if (messageMap.getType() == null || (identification != null && !identification.getMatchesIdentifiers())) {
-          errors.add("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided OR type unknown.");
-        }
-        if (!titles.getTitleExists()) {
-          errors.add("Missing title");
-        }
-        if (temporal.getBeginDescriptor() == INVALID) {
-          errors.add("Invalid beginDate");
-        }
-        if (temporal.getEndDescriptor() == INVALID) {
-          errors.add("Invalid endDate");
-        }
-        if (temporal.getBeginDescriptor() != UNDEFINED && temporal.getEndDescriptor() != UNDEFINED && temporal.getInstantDescriptor() == INVALID) {
-          errors.add("Invalid instant-only date");
-        }
-        if (spatial.getSpatialBoundingExists() && !spatial.getIsValid()) {
-          errors.add("Invalid geoJSON for spatial bounding");
-        }
-      }
+  private static List<ErrorEvent> validateIdentification(ParsedRecord record) {
+    var result = new ArrayList<ErrorEvent>();
+    var identification = record.getAnalysis().getIdentification();
+    if (identification != null && !identification.getFileIdentifierExists() && !identification.getDoiExists()) {
+      result.add(buildValidationError("Missing identifier - record contains neither a fileIdentifier nor a DOI"));
+    }
+    if (record.getType() == null || (identification != null && !identification.getMatchesIdentifiers())) {
+      result.add(buildValidationError("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided OR type unknown."));
+    }
+    return result;
+  }
+
+  private static List<ErrorEvent> validateTitles(ParsedRecord record) {
+    var result = new ArrayList<ErrorEvent>();
+    var titles = record.getAnalysis().getTitles();
+    if (!titles.getTitleExists()) {
+      result.add(buildValidationError("Missing title"));
+    }
+    return result;
+  }
+
+  private static List<ErrorEvent> validateTemporalBounds(ParsedRecord record) {
+    var result = new ArrayList<ErrorEvent>();
+    var temporal = record.getAnalysis().getTemporalBounding();
+    if (temporal.getBeginDescriptor() == INVALID) {
+      result.add(buildValidationError("Invalid beginDate"));
+    }
+    if (temporal.getEndDescriptor() == INVALID) {
+      result.add(buildValidationError("Invalid endDate"));
+    }
+    if (temporal.getBeginDescriptor() != UNDEFINED && temporal.getEndDescriptor() != UNDEFINED && temporal.getInstantDescriptor() == INVALID) {
+      result.add(buildValidationError("Invalid instant-only date"));
+    }
+    return result;
+  }
+
+  private static List<ErrorEvent> validateSpatialBounds(ParsedRecord record) {
+    var result = new ArrayList<ErrorEvent>();
+    var spatial = record.getAnalysis().getSpatialBounding();
+    if (spatial.getSpatialBoundingExists() && !spatial.getIsValid()) {
+      result.add(buildValidationError("Invalid geoJSON for spatial bounding"));
+    }
+    return result;
+  }
+
+  private static ErrorEvent buildValidationError(String details) {
+    return ErrorEvent.newBuilder()
+        .setTitle(VALIDATION_ERROR_TITLE)
+        .setDetail(details)
+        .build();
+  }
+
+  ////////////////////////////
+  // Transformation         //
+  ////////////////////////////
+  public static List<DocWriteRequest<?>> mapRecordToRequests(String topic, String id, ValueAndTimestamp<ParsedRecord> value, BulkIndexingConfig config) {
+    try {
+      var record = ValueAndTimestamp.getValueOrNull(value);
+      var operation = (isTombstone(record) || isPrivate(record)) ? DELETE : INDEX;
+      var indices = config.getTargetIndices(topic, operation);
+      return indices.stream()
+          .map(indexName -> buildWriteRequest(indexName, operation, id, value))
+          .collect(Collectors.toList());
+    } catch (ElasticsearchGenerationException e) {
+      log.error("failed to serialize record with key [" + id + "] to json", e);
+      return new ArrayList<>();
+    }
+  }
+
+  public static DocWriteRequest<?> buildWriteRequest(String indexName, DocWriteRequest.OpType opType, String id, ValueAndTimestamp<ParsedRecord> record) {
+    if (opType == DELETE) {
+      return new DeleteRequest(indexName).id(id);
     }
 
-    if (errors.size() > 0) {
-      log.info("INVALID RECORD [ " + id + " ]. VALIDATION FAILURES: " + errors);
-      var result = new HashMap<>();
-      result.put("title", "Invalid record");
-      result.put("detail", String.join(", ", errors));
-      result.put("valid", false);
-      return result;
+    var formattedRecord = reformatMessageForSearch(record.value());
+    formattedRecord.put("stagedDate", record.timestamp());
+
+    if (opType == INDEX || opType == CREATE) {
+      return new IndexRequest(indexName).opType(opType).id(id).source(formattedRecord);
     }
-    else {
-      var result = new HashMap<>();
-      result.put("valid", true);
-      return result;
+    if (opType == UPDATE) {
+      return new UpdateRequest(indexName, id).doc(formattedRecord);
     }
+    throw new UnsupportedOperationException("unsupported elasticsearch OpType: " + opType);
+  }
+
+  public static boolean isTombstone(ParsedRecord value) {
+    return value == null;
+  }
+
+  public static boolean isPrivate(ParsedRecord value) {
+    var optionalPublishing = Optional.of(value).map(ParsedRecord::getPublishing);
+    var isPrivate = optionalPublishing.map(Publishing::getIsPrivate).orElse(false);
+    var until = optionalPublishing.map(Publishing::getUntil).orElse(null);
+    return (until == null || until > System.currentTimeMillis()) ? isPrivate : !isPrivate;
   }
 
   public static Map<String, Object> reformatMessageForSearch(ParsedRecord record) {
@@ -181,7 +260,7 @@ public class IndexingHelpers {
   ////////////////////////////////
   // Identifiers, "Names"       //
   ////////////////////////////////
-  static String prepareInternalParentIdentifier(ParsedRecord record) {
+  private static String prepareInternalParentIdentifier(ParsedRecord record) {
     return Optional.ofNullable(record)
         .filter(r -> r.getType() == RecordType.granule)
         .map(ParsedRecord::getRelationships)
@@ -206,7 +285,7 @@ public class IndexingHelpers {
   ////////////////////////////////
   // Services, Links, Protocols //
   ////////////////////////////////
-  static List<Map> prepareServiceLinks(Discovery discovery) {
+  private static List<Map> prepareServiceLinks(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getServices)
         .orElse(Collections.emptyList())
@@ -223,7 +302,7 @@ public class IndexingHelpers {
   }
 
   // see: https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
-  static Set<String> prepareServiceLinkProtocols(Discovery discovery) {
+  private static Set<String> prepareServiceLinkProtocols(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getServices)
         .orElse(Collections.emptyList())
@@ -239,7 +318,7 @@ public class IndexingHelpers {
   }
 
   // see: https://github.com/OSGeo/Cat-Interop/blob/master/LinkPropertyLookupTable.csv
-  static Set<String> prepareLinkProtocols(Discovery discovery) {
+  private static Set<String> prepareLinkProtocols(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getLinks)
         .orElse(Collections.emptyList())
@@ -273,7 +352,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Data Formats           //
   ////////////////////////////
-  static Set<String> prepareDataFormats(Discovery discovery) {
+  private static Set<String> prepareDataFormats(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getDataFormats)
         .orElse(Collections.emptyList())
@@ -302,11 +381,9 @@ public class IndexingHelpers {
 
     if (name == null) {
       return null;
-    }
-    else if (version == null) {
+    } else if (version == null) {
       return name;
-    }
-    else {
+    } else {
       return name + " > " + version;
     }
   }
@@ -314,7 +391,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
-  static Map<String, Set<String>> prepareResponsibleParties(Discovery discovery) {
+  private static Map<String, Set<String>> prepareResponsibleParties(Discovery discovery) {
     Set<String> individualNames = new HashSet<>();
     Set<String> organizationNames = new HashSet<>();
     Optional.ofNullable(discovery)
@@ -351,7 +428,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Dates                  //
   ////////////////////////////
-  static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
+  private static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     String beginDate, endDate;
     Long year;
 
@@ -365,19 +442,16 @@ public class IndexingHelpers {
       if (precision.equals(ChronoUnit.DAYS.toString())) {
         // End of day
         endDate = bounding.getInstant() + "T23:59:59Z";
-      }
-      else if (precision.equals(ChronoUnit.YEARS.toString())) {
+      } else if (precision.equals(ChronoUnit.YEARS.toString())) {
         if (!analysis.getInstantIndexable()) {
           // Paleo date, so only return year value (null out dates)
           beginDate = null;
           endDate = null;
-        }
-        else {
+        } else {
           // Last day of year + end of day
           endDate = bounding.getInstant() + "-12-31T23:59:59Z";
         }
-      }
-      else {
+      } else {
         // Precision is NANOS so use instant value as-is
         endDate = beginDate;
       }
@@ -387,8 +461,7 @@ public class IndexingHelpers {
       result.put("endDate", endDate);
       result.put("endYear", year);
       return result;
-    }
-    else {
+    } else {
       // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
       // use value from analysis block where dates are UTC datetime normalized
       var result = new HashMap<String, Object>();
@@ -403,8 +476,7 @@ public class IndexingHelpers {
   private static Long parseYear(String utcDateTime) {
     if (StringUtils.isBlank(utcDateTime)) {
       return null;
-    }
-    else {
+    } else {
       // Watch out for BCE years
       return Long.parseLong(utcDateTime.substring(0, utcDateTime.indexOf('-', 1)));
     }
@@ -413,7 +485,7 @@ public class IndexingHelpers {
   ////////////////////////////
   // Keywords               //
   ////////////////////////////
-  static Map<String, Set<String>> prepareGcmdKeyword(Discovery discovery) {
+  private static Map<String, Set<String>> prepareGcmdKeyword(Discovery discovery) {
     var allKeywords = new HashSet<String>();
     var groupedKeywords = Optional.ofNullable(discovery)
         .map(Discovery::getKeywords)
@@ -477,40 +549,31 @@ public class IndexingHelpers {
       if (namespace.contains("science")) {
         if (value.startsWith("earth science services")) {
           return KeywordCategory.gcmdScienceServices;
-        }
-        else if (value.startsWith("earth science")) {
+        } else if (value.startsWith("earth science")) {
           return KeywordCategory.gcmdScience;
         }
-      }
-      else if (namespace.contains("location") || namespace.contains("place")) {
+      } else if (namespace.contains("location") || namespace.contains("place")) {
         return KeywordCategory.gcmdLocations;
-      }
-      else if (namespace.contains("platform")) {
+      } else if (namespace.contains("platform")) {
         return KeywordCategory.gcmdPlatforms;
-      }
-      else if (namespace.contains("instrument")) {
+      } else if (namespace.contains("instrument")) {
         return KeywordCategory.gcmdInstruments;
-      }
-      else if (namespace.contains("data center")) {
+      } else if (namespace.contains("data center")) {
         return KeywordCategory.gcmdDataCenters;
-      }
-      else if (namespace.contains("horizontal data resolution")) {
+      } else if (namespace.contains("horizontal data resolution")) {
         return KeywordCategory.gcmdHorizontalResolution;
-      }
-      else if (namespace.contains("vertical data resolution")) {
+      } else if (namespace.contains("vertical data resolution")) {
         return KeywordCategory.gcmdVerticalResolution;
-      }
-      else if (namespace.contains("temporal data resolution")) {
+      } else if (namespace.contains("temporal data resolution")) {
         return KeywordCategory.gcmdTemporalResolution;
-      }
-      else if (namespace.contains("project")) {
+      } else if (namespace.contains("project")) {
         return KeywordCategory.gcmdProjects;
       }
       return KeywordCategory.other;
     }
   }
 
-  static private SingleKeyword normalizeKeyword(SingleKeyword keyword) {
+  private static SingleKeyword normalizeKeyword(SingleKeyword keyword) {
     Function<String, String> normalizer = keyword.category.normalizer;
     return new SingleKeyword(keyword.namespace, normalizer.apply(keyword.value), keyword.category); // preserve input category
   }

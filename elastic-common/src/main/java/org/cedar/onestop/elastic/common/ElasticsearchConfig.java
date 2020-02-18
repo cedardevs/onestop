@@ -14,9 +14,7 @@ public class ElasticsearchConfig {
 
   // index aliases
   public String COLLECTION_SEARCH_INDEX_ALIAS = "search_collection";
-  public String COLLECTION_STAGING_INDEX_ALIAS = "staging_collection";
   public String GRANULE_SEARCH_INDEX_ALIAS = "search_granule";
-  public String GRANULE_STAGING_INDEX_ALIAS = "staging_granule";
   public String FLAT_GRANULE_SEARCH_INDEX_ALIAS = "search_flattened_granule";
   public String SITEMAP_INDEX_ALIAS = "sitemap";
 
@@ -61,9 +59,7 @@ public class ElasticsearchConfig {
 
     // tack on prefix to aliases so that later logic does not have to concern itself with prefixing at all
     this.COLLECTION_SEARCH_INDEX_ALIAS = PREFIX + this.COLLECTION_SEARCH_INDEX_ALIAS;
-    this.COLLECTION_STAGING_INDEX_ALIAS = PREFIX + this.COLLECTION_STAGING_INDEX_ALIAS;
     this.GRANULE_SEARCH_INDEX_ALIAS = PREFIX + this.GRANULE_SEARCH_INDEX_ALIAS;
-    this.GRANULE_STAGING_INDEX_ALIAS = PREFIX + this.GRANULE_STAGING_INDEX_ALIAS;
     this.FLAT_GRANULE_SEARCH_INDEX_ALIAS = PREFIX + this.FLAT_GRANULE_SEARCH_INDEX_ALIAS;
     this.SITEMAP_INDEX_ALIAS = PREFIX + this.SITEMAP_INDEX_ALIAS;
 
@@ -78,17 +74,13 @@ public class ElasticsearchConfig {
     // the alias names configured (including the prefix) and the JSON mappings
     // https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
     this.jsonMappings.put(COLLECTION_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_collectionIndex.json"));
-    this.jsonMappings.put(COLLECTION_STAGING_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/staging_collectionIndex.json"));
     this.jsonMappings.put(GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_granuleIndex.json"));
-    this.jsonMappings.put(GRANULE_STAGING_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/staging_granuleIndex.json"));
     this.jsonMappings.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_flattened_granuleIndex.json"));
     this.jsonMappings.put(SITEMAP_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/sitemapIndex.json"));
 
     // Associate index aliases directly to their type identifiers for consistency
     this.typesByAlias.put(COLLECTION_SEARCH_INDEX_ALIAS, TYPE_COLLECTION);
-    this.typesByAlias.put(COLLECTION_STAGING_INDEX_ALIAS, TYPE_COLLECTION);
     this.typesByAlias.put(GRANULE_SEARCH_INDEX_ALIAS, TYPE_GRANULE);
-    this.typesByAlias.put(GRANULE_STAGING_INDEX_ALIAS, TYPE_GRANULE);
     this.typesByAlias.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, TYPE_FLATTENED_GRANULE);
     this.typesByAlias.put(SITEMAP_INDEX_ALIAS, TYPE_SITEMAP);
   }

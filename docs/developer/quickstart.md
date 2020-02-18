@@ -90,7 +90,7 @@ http://localhost:<port>/onestop
   - our team enables Kubernetes with Docker Desktop (see: `Preferences...` > `Kubernetes`)
   - we highly recommend allocating >= 6.0 GiB to Docker (see: `Preferences...` > `Advanced`)
   - some of us get even better performance by allocating even more memory and swap memory
-- Helm
+- Helm 2 (until Skaffold supports Helm 3)
 - Skaffold
 
 ```
@@ -100,9 +100,14 @@ brew install skaffold
 # install tiller onto the cluster (one-time deal, unless upgrading helm)
 helm init
 
+# install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
+./k8s/installInfra.sh
+
 # run (requires having run a `./gradlew build` for the Docker images referenced in skaffold)
 skaffold dev -f skaffold.yaml
 ```
+
+**NOTE**: the `infraInstall.sh` could, theoretically, be accomplished by using the `kubectl` deploy method in Skaffold; however, Skaffold does not yet support multiple deploy types, and we are already leveraging the `jib` deploy method. See [this issue](https://github.com/GoogleContainerTools/skaffold/issues/2875#issuecomment-533737766) to track progress.
 
 **WARNING**: there's a good chance the `integrationTask` gradle task will fail with less powerful machines
 due to elasticsearch being a memory hog. This can often manifest in the build reporting (e.g. - `build/reports/integrationTests/index.html`) misleading errors like this:
@@ -123,6 +128,38 @@ skaffold dev --port-forward=false -f skaffold.yaml
 ```
 
 ### Verify Endpoints
+
+#### Elasticsearch & Kibana Status
+The ECK operator makes it easy to see the state of Elastic CRDs:
+```
+# a`HEALTH` status of "green" indicates it's ready
+kubectl get elasticsearch
+kubectl get kibana
+```
+
+#### Confirm Elasticsearch can be accessed securely within the cluster
+```
+# exec into the net-tools utility pod to try to hit elasticsearch within the cluster
+kubectl exec -it $(kubectl get pods -l app=net-tools --no-headers -o custom-columns=":metadata.name") -- /bin/bash
+
+# curl with the dev credentials (`-k` trusts the self-signed cert)
+curl --user "elastic:foamcat" -k https://onestop-es-http:9200/
+```
+
+#### Confirm Kibana can be accessed via LoadBalancer
+```
+$ kubectl get svc -l common.k8s.elastic.co/type=kibana
+NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+onestop-kb-http   LoadBalancer   10.99.61.173   localhost     5601:30863/TCP   64m
+```
+In the browser you should be able to go to `https://localhost:5601`. Because ECK defaults to using a self-signed cert, the browser will prompt you to trust it.
+
+You can then log in with the default development credentials (defined by a `Secret` in the `elastic.yaml`):
+```
+user: elastic
+pass: foamcat
+```
+
 ```
 # Elasticsearch
 http://localhost:30092/
@@ -139,10 +176,32 @@ http://localhost/onestop
 ```
 
 ### Upload Test Data
+
+We no longer store our test data next to our source code. The amount of data has grown significantly over time and is used a variety of contexts. Because of this we have created the `onesto-test-data` repo with a corresponding upload script to handle populating our system with data.
+
+#### Clone the test data repo (outside of onestop)
 ```
-# The default port is 30098 which is used for Kubernetes development
-./gradlew uploadTestData --apiAdminPort=8098
+git clone git@github.com:cedardevs/onestop-test-data.git
+cd onestop-test-data
 ```
+
+`Usage: ./upload.sh <application> <rootDir> <baseUrl> <username:password>`
+
+For example (upload *all* test data collections and granules): 
+`./upload.sh IM . http://localhost/registry`
+
+If the upload is pointing to an instance of the registry API which is secured, then it will be necessary to pass user credentials.
+
+In order for data to be published and flow all the way to the OneStop UI, the following dependencies need to be up and running:
+```
+                   Kafka
+|________________________________________|
+ registry/    \_manager_/   \_ indexer‾\   /‾search --> client
+                          |‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|       
+                                   Elasticsearch
+```
+
+At a bare minimum, Kafka and the registry should be running to successfully upload.
 
 ### Making Helm Chart Changes
 ```
@@ -167,7 +226,51 @@ cd client && rm -rf node_modules/
 ```
 
 ##### Resetting Kubernetes Tools
+
+###### Uninstall ECK Operator
+This step simply makes removing anything ECK related from your cluster easier, including the CRDs and operator itself.
+
 ```
+./k8s/infraUninstall.sh
+```
+
+###### Ensure Skaffold is not running and has no running resources
+```
+# CTRL-C out of any terminal using skafold and double check running processes with:
+ps aux | grep skaffold
+
+# remove all resources skaffold has deployed
+skaffold delete
+```
+
+###### Delete persistent volume claims (PVCs)
+If you've upgraded versions or are making big breaking changes, it is generally advised to wipe-out volumes and start fresh.
+**WARNING**: it is advised to only do this after ECK and stateful apps have been taken down.
+```
+kubectl delete pvc --all
+```
+
+###### Clean up space on disk from leftover docker containers
+```
+docker image prune -a --force
+```
+
+###### Helm cleanup
+```
+# list releases
+helm list
+
+# delete releases
+helm delete onestop-client --purge
+helm delete onestop-dev --purge
+helm delete onestop-indexer --purge
+helm delete onestop-manager --purge
+helm delete onestop-registry --purge
+helm delete onestop-search --purge
+
+# find and remove any requirements.lock files
+find helm/ -name "*.lock"
+
 # update chart repositories
 helm repo update
 
@@ -179,12 +282,6 @@ helm dependency list
 
 # update charts/ based on the contents of requirements.yaml
 helm dependency update
-
-helm delete elasticsearch --purge
-helm delete onestop-search --purge
-helm delete onestop-client --purge
-
-skaffold delete
 ```
 
 ## Feature Toggles

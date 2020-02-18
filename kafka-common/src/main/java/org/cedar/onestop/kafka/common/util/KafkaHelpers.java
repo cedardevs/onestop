@@ -14,10 +14,7 @@ import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -92,6 +89,12 @@ public class KafkaHelpers {
     streamsConfiguration.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
     streamsConfiguration.putAll(filteredConfigs);
     return streamsConfiguration;
+  }
+
+  public static Map<String, Object> buildAvroSerdeConfig(AppConfig config) {
+    // Filter to only valid config values -- avro/schema registry values
+    var kafkaConfigs = DataUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
+    return DataUtils.filterMapKeys(KafkaConfigNames.avro, kafkaConfigs);
   }
 
   public static class TopicDefinition {

@@ -38,6 +38,7 @@ const assembleFilters = filter => {
     assembleTemporalFilters(filter),
     assembleAdditionalFilters(filter),
     assembleSelectedCollectionsFilters(filter)
+      // assembleFIXME(filter) // FIXME
   )
 
   filters = _.flatten(_.compact(filters))
@@ -49,13 +50,20 @@ const assembleQueries = ({queryText, title}) => {
   if (trimmedText && trimmedText !== '*') {
     return [ {type: 'queryText', value: trimmedText} ]
   }
+
+  // FIXME As query...
   if (title) {
     let trimmedText = _.trim(title)
     if (trimmedText && trimmedText !== '*') {
-      return [ {type: 'queryText', value: `title:${trimmedText}`} ]
+      return [ {type: 'granuleName', value: `${trimmedText}`} ]
     }
   }
   return []
+}
+
+// FIXME as filter....
+const assembleFIXME = ({title})=> {
+  return [{type: 'granuleName', value: _.trim(title)}]
 }
 
 const assembleFacetFilters = ({selectedFacets}) => {
