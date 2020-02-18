@@ -48,6 +48,22 @@ or
 
 `export PATH=$PATH:~/go/bin` after which you can just call `onestop`
 
+## Configuration
+
+To use a semantic types (i.e.`--type`), the user can use a configuration to map type to UUID. For example-
+
+```
+scdr-types:
+  ABI-L1b-Rad : 5b58de08-afef-49fb-99a1-9c5d5c003bde
+  ABI-L2-CMIP : 22222222-2222-2222-2222-222222222222
+  GLM-L2-LCFA : 33333333-3333-3333-3333-333333333333
+  ABI-L2-FDC : 44444444-4444-4444-4444-444444444444
+```
+
+The CLI binary will look for a configuration named scdr-files-config.yml in  `/etc/scdr-files`, `$HOME/.scdr-files`, and in the current working directory.
+
+The docker image has a built in config containing the example config above.
+
 ## Usage
 
 **Note: the following example commands assume you installed the cli using `go get` mentioned above.**
