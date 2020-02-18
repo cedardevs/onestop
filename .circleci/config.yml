@@ -289,7 +289,7 @@ jobs:
            openapi-cli-generator generate ../search/src/main/resources/openapi.yaml &&
            mv openapi.go internal/app/generated/
       - persist_to_workspace:
-          root: ~/repo
+          root: ~/repo cc
           paths:
             - cli/internal/app/openapi.go
             - cli/.gogradle
@@ -298,7 +298,6 @@ jobs:
     <<: *defaults
     working_directory: ~/repo
     steps:
-      - <<: *attachWorkspace
       - run:
           name: Build image, publish
           command: |
