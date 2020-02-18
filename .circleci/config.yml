@@ -283,7 +283,8 @@ jobs:
       - run:
           name: go build
           command: |
-           echo "Generating CLI"
+           echo "Generating CLI" &&
+           chmod 664 cli/.gogradle &&
            cd cli &&
            go get -u github.com/danielgtaylor/openapi-cli-generator &&
            openapi-cli-generator generate ../search/src/main/resources/openapi.yaml &&
@@ -302,7 +303,8 @@ jobs:
       - run:
           name: Build image, publish
           command: |
-            echo "${CIRCLE_BRANCH}"
+            echo "${CIRCLE_BRANCH}" &&
+            chmod 664 cli/.gogradle &&
             if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
               ./gradlew cli:jib
             else
