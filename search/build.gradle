@@ -216,28 +216,28 @@ processResources {
 }
 
 jib {
-  def publish = project.publish
-  def repo = project.repo
-  def ociAnnotations = project.ociAnnotations
+  use(PublishingKt) {
+    def publish = project.publish
 
-  from {
-    // base image
-    image = 'tomcat:9.0.27-jdk11-openjdk'
-  }
-  to {
-    image = repo
-    auth {
-      username = publish.username
-      password = publish.password
+    from {
+      // base image
+      image = 'tomcat:9.0.27-jdk11-openjdk'
     }
-  }
-  container {
-    creationTime = publish.created.toString()
-    labels = ociAnnotations
-    ports = ['8080'.toString()]
-    // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin#war-projects
-    // The `onestop-admin` dir is where our WAR will be exploded. Tomcat uses this directory to assume a context-path
-    // that overrides the Spring one, so they should match up to keep our assumptions about client proxying consistent
-    appRoot = "/usr/local/tomcat/webapps/onestop-search".toString()
+    to {
+      image = publish.repository()
+      auth {
+        username = publish.username
+        password = publish.password
+      }
+    }
+    container {
+      creationTime = publish.created.toString()
+      labels = publish.ociAnnotations()
+      ports = ['8080'.toString()]
+      // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin#war-projects
+      // The `onestop-admin` dir is where our WAR will be exploded. Tomcat uses this directory to assume a context-path
+      // that overrides the Spring one, so they should match up to keep our assumptions about client proxying consistent
+      appRoot = "/usr/local/tomcat/webapps/onestop-search".toString()
+    }
   }
 }

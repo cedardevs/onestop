@@ -19,35 +19,35 @@ dependencies {
 }
 
 jib {
-  def publish = project.publish
-  def repo = project.repo
-  def ociAnnotations = project.ociAnnotations
+  use(PublishingKt) {
+    Publish publish = project.publish
 
-  extraDirectories {
-    paths = ["${projectDir}/.gogradle".toString()]
-    permissions = [
-        '/cli-linux-amd64': '755',
-        '/scdr-files.config.yaml' : '555'
-    ]
-  }
-
-  from {
-    // base image
-    image = 'golang'
-  }
-
-  to {
-    image = repo
-    auth {
-      username = publish.username
-      password = publish.password
+    extraDirectories {
+      paths = ["${projectDir}/.gogradle".toString()]
+      permissions = [
+          '/cli-linux-amd64'       : '755',
+          '/scdr-files.config.yaml': '555'
+      ]
     }
-  }
 
-  container {
-    creationTime = publish.created.toString()
-    labels = ociAnnotations
-    entrypoint = "/cli-linux-amd64"
+    from {
+      // base image
+      image = 'golang'
+    }
+
+    to {
+      image = publish.repository()
+      auth {
+        username = publish.username
+        password = publish.password
+      }
+    }
+
+    container {
+      creationTime = publish.created.toString()
+      labels = publish.ociAnnotations()
+      entrypoint = "/cli-linux-amd64"
+    }
   }
 }
 tasks.jib.dependsOn 'goBuild'

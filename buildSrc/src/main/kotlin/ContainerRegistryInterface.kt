@@ -99,6 +99,17 @@ interface ContainerRegistryInterface {
         return TagGroups(releases, snapshotsActive, snapshotsInactive, local, dangling)
     }
 
+    fun tagNamesFromResponseArray(jsonResponse: JSONArray, key: String): JSONArray {
+        val jsonTags = JSONArray()
+        jsonResponse.forEach { t ->
+            val tag: JSONObject = t as JSONObject
+            val name = tag.getString(key)
+            val refinedTag = JSONObject(mapOf(Pair("name", name)))
+            jsonTags.put(refinedTag)
+        }
+        return jsonTags
+    }
+
     fun tagNames(tags: JSONArray): List<String> {
         return tags.map { t ->
             val tag: JSONObject = t as JSONObject
@@ -107,7 +118,7 @@ interface ContainerRegistryInterface {
     }
 
     fun printTagNames(tags: JSONArray): String {
-        return this.tagNames(tags).joinToString(prefix = "\n-", separator = "\n- ", postfix = "\n")
+        return this.tagNames(tags).joinToString(prefix = "\n- ", separator = "\n- ", postfix = "\n")
     }
 
     // used to concatenate JSONArray objects in the recursive calls paging through Docker Hub tags

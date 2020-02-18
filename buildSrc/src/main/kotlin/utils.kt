@@ -7,7 +7,7 @@ import java.util.*
 
 // constants
 object License {
-    const val MIT: String = "GPL-2.0"
+    const val GPL20: String = "GPL-2.0"
 }
 
 object Versions {
@@ -87,49 +87,4 @@ fun parseDateISO(date: String): Date {
     val timeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
     val accessor: TemporalAccessor = timeFormatter.parse(date)
     return Date.from(Instant.from(accessor))
-}
-
-// use publishing info to derive standardized container labels
-
-// https://www.opencontainers.org/
-// https://github.com/opencontainers/image-spec/blob/master/annotations.md#annotations
-fun ociAnnotations(publish: Publish): MutableMap<String, String> {
-    val ociAnnotations: MutableMap<String, String> = mutableMapOf()
-    ociAnnotations["org.opencontainers.image.created"] = publish.created
-    ociAnnotations["org.opencontainers.image.title"] = publish.title
-    ociAnnotations["org.opencontainers.image.description"] = publish.description
-    ociAnnotations["org.opencontainers.image.url"] = publish.url
-    ociAnnotations["org.opencontainers.image.vendor"] = publish.vendor
-    ociAnnotations["org.opencontainers.image.version"] = publish.version
-    ociAnnotations["org.opencontainers.image.licenses"] = publish.licenses
-    // only apply them in our CI/CD environment because they aren't meaningful in local builds
-    if(isCI()) {
-        ociAnnotations["org.opencontainers.image.documentation"] = publish.documentation
-        ociAnnotations["org.opencontainers.image.authors"] = publish.authors
-        ociAnnotations["org.opencontainers.image.source"] = publish.source
-        ociAnnotations["org.opencontainers.image.revision"] = publish.revision
-    }
-    return ociAnnotations
-}
-
-// use publishing info to derive jib's `to.image` destination as ~ `registry/vendor/name:tag`
-fun repository(publish: Publish): String {
-    return if(publish.registryUrl == Registries.GITLAB) {
-        // GitLab Container Registry has additional pathway to project name
-        "${publish.registryUrl}/${publish.vendor}/${publish.project}/${publish.title}:${publish.version}"
-    } else {
-        // Docker Hub doesn't distinguish groups of containers by project
-        "${publish.registryUrl}/${publish.vendor}/${publish.title}:${publish.version}"
-    }
-}
-
-// use publishing info to derive simple image name without registry info `vendor/name:tag`
-fun image(publish: Publish): String {
-    return if(publish.registryUrl == Registries.GITLAB) {
-        // GitLab Container Registry has additional pathway to project name
-        "${publish.vendor}/${publish.project}/${publish.title}:${publish.version}"
-    } else {
-        // Docker Hub doesn't distinguish groups of containers by project
-        "${publish.vendor}/${publish.title}:${publish.version}"
-    }
 }

@@ -102,8 +102,6 @@ tasks.jibDockerBuild.dependsOn copyHttpConf
 jib {
 
   def publish = project.publish
-  def repo = project.repo
-  def ociAnnotations = project.ociAnnotations
 
   extraDirectories {
     // copy all files within the `${buildDir}/jib-dir`` folder to the image's root directory,
@@ -120,7 +118,7 @@ jib {
     image = 'httpd:latest'
   }
   to {
-    image = repo
+    image = publish.repository()
     auth {
       username = publish.username
       password = publish.password
@@ -128,7 +126,7 @@ jib {
   }
   container {
     creationTime = publish.created.toString()
-    labels = ociAnnotations
+    labels = publish.ociAnnotations()
     ports = ['80'.toString()]
     entrypoint = ["sh", "/usr/app/entrypoint.sh"]
   }

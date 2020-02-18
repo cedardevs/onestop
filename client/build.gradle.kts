@@ -84,7 +84,7 @@ jib {
         image = "httpd:latest"
     }
     to {
-        image = repository(publish)
+        image = publish.repository()
         auth {
             username = publish.username
             password = publish.password
@@ -92,7 +92,7 @@ jib {
     }
     container {
         creationTime = publish.created
-        labels = ociAnnotations(publish)
+        labels = publish.ociAnnotations()
         ports = listOf("80")
         entrypoint = listOf("sh", "/entrypoint.sh")
     }

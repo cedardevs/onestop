@@ -122,24 +122,24 @@ task PublishDockerImage {
 }
 
 jib {
-  def publish = project.publish
-  def repo = project.repo
-  def ociAnnotations = project.ociAnnotations
+  use(PublishingKt) {
+    def publish = project.publish
 
-  from {
-    //base image
-    image = 'gcr.io/distroless/java:11'
-  }
-  to {
-    image = repo
-    auth {
-      username = publish.username
-      password = publish.password
+    from {
+      //base image
+      image = 'gcr.io/distroless/java:11'
     }
-  }
-  container {
-    creationTime = publish.created.toString()
-    labels = ociAnnotations
-    ports = ['8080', '9090']
+    to {
+      image = publish.repository()
+      auth {
+        username = publish.username
+        password = publish.password
+      }
+    }
+    container {
+      creationTime = publish.created.toString()
+      labels = publish.ociAnnotations()
+      ports = ['8080', '9090']
+    }
   }
 }

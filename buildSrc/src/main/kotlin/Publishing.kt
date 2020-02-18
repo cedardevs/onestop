@@ -24,7 +24,7 @@ data class Publish(
         val vendor: String,
         val version: String,
         val licenses: String,
-        val registryUrl: String,
+        val registry: String,
         val username: String,
         val password: String
 )
@@ -154,10 +154,46 @@ fun whoAmI(): String {
 
 // Container Registry Utilities
 fun Publish.cleanContainerRegistry(): Boolean {
-    val containerRegistry: ContainerRegistryInterface = when(this.registryUrl) {
+    val containerRegistry: ContainerRegistryInterface = when(this.registry) {
         Registries.DOCKER_HUB -> DockerHubAPI()
         Registries.GITLAB -> GitLabAPI()
         else -> return false
     }
     return containerRegistry.clean(this)
+}
+
+// use publishing info to derive standardized container labels
+
+// https://www.opencontainers.org/
+// https://github.com/opencontainers/image-spec/blob/master/annotations.md#annotations
+fun Publish.ociAnnotations(): MutableMap<String, String> {
+    val ociAnnotations: MutableMap<String, String> = mutableMapOf()
+    ociAnnotations["org.opencontainers.image.created"] = this.created
+    ociAnnotations["org.opencontainers.image.title"] = this.title
+    ociAnnotations["org.opencontainers.image.description"] = this.description
+    ociAnnotations["org.opencontainers.image.url"] = this.url
+    ociAnnotations["org.opencontainers.image.vendor"] = this.vendor
+    ociAnnotations["org.opencontainers.image.version"] = this.version
+    ociAnnotations["org.opencontainers.image.licenses"] = this.licenses
+    // only apply them in our CI/CD environment because they aren't meaningful in local builds
+    if(isCI()) {
+        ociAnnotations["org.opencontainers.image.documentation"] = this.documentation
+        ociAnnotations["org.opencontainers.image.authors"] = this.authors
+        ociAnnotations["org.opencontainers.image.source"] = this.source
+        ociAnnotations["org.opencontainers.image.revision"] = this.revision
+    }
+    return ociAnnotations
+}
+
+// use publishing info to derive jib's `to.image` destination as ~ `registry/vendor/name:tag`
+fun Publish.repository(): String {
+    return when(this.registry) {
+        // Docker Hub doesn't distinguish groups of containers by project
+        Registries.DOCKER_HUB -> "${this.registry}/${this.vendor}/${this.title}:${this.version}"
+
+        // GitLab Container Registry has additional pathway to project name
+        Registries.GITLAB -> "${this.registry}/${this.vendor}/${this.project}/${this.title}:${this.version}"
+
+        else -> return ""
+    }
 }

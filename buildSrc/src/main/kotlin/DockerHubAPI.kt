@@ -36,12 +36,14 @@ class DockerHubAPI : ContainerRegistryInterface {
                     url = urlDelete,
                     headers = mapOf(Pair("Authorization", "JWT ${jwt ?: ""}"))
             )
-            println("DELETE STATUS CODE = " + response.statusCode)
-            if(response.statusCode == 202) successes.add(tagToDelete) else failures.add(tagToDelete)
-            return response.statusCode == 202
+            val successfulDelete = response.statusCode == 204
+            if(successfulDelete) successes.add(tagToDelete) else failures.add(tagToDelete)
         }
-        println("Cleaning DockerHub -> Successfully deleted tags:${successes.joinToString(prefix = "\n-", separator = "\n- ", postfix = "\n")}")
-        println("Cleaning DockerHub -> Failed to delete tags:${failures.joinToString(prefix = "\n-", separator = "\n- ", postfix = "\n")}")
+        // logout to prevent this token from being used again
+        this.logout(jwt)
+
+        println("Cleaning DockerHub -> Successfully deleted tags:${successes.joinToString(prefix = "\n- ", separator = "\n- ", postfix = "\n")}")
+        println("Cleaning DockerHub -> Failed to delete tags:${failures.joinToString(prefix = "\n- ", separator = "\n- ", postfix = "\n")}")
         return failures.size == 0
     }
 
@@ -57,18 +59,20 @@ class DockerHubAPI : ContainerRegistryInterface {
         } as String
 
         val jsonTags: JSONArray = jsonResponse.getJSONArray("results")
-        val jsonTagsRefined = JSONArray()
-        jsonTags.forEach { t ->
-            val tag: JSONObject = t as JSONObject
-
-            val name = tag.getString("name")
-            val lastUpdated = tag.getString("last_updated")
-            val refinedTag = JSONObject(mapOf(Pair("name", name), Pair("last_updated", lastUpdated)))
-            jsonTagsRefined.put(refinedTag)
-        }
+        val jsonTagsRefined = this.tagNamesFromResponseArray(jsonTags, "name")
 
         // recurse using the "next" page url of tags, concatenating tags as long as next page exists
         val combinedTags = this.concat(tags, jsonTagsRefined)
         return if (urlNext.isBlank()) combinedTags else this.requestPagedTags(publish, urlNext, combinedTags)
+    }
+
+    // invalidate the requested token obtained the user credentials in the `token` function, as good practice
+    private fun logout(jwt: String?) {
+        val urlLogout = "${this.url}/logout"
+        val response: Response = khttp.post(
+                url = urlLogout,
+                headers = mapOf(Pair("Authorization", "JWT ${jwt ?: ""}"))
+        )
+        println("${if (response.statusCode == 200) "Successful" else "Failed"} logout from DockerHub using JWT")
     }
 }
