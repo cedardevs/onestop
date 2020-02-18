@@ -298,6 +298,7 @@ jobs:
     <<: *defaults
     working_directory: ~/repo
     steps:
+      - <<: *attachWorkspace
       - run:
           name: Build image, publish
           command: |
