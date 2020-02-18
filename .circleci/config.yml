@@ -293,7 +293,6 @@ jobs:
           root: ~/repo
           paths:
             - cli/internal/app/openapi.go
-            - cli/.gogradle
 
   cli-publish:
     <<: *defaults
@@ -313,7 +312,6 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - cli/.gogradle
             - cli/vendor
   finalize:
     <<: *defaults
