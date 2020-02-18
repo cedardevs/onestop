@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from 'react'
-import FlexRow from '../common/ui/FlexRow'
 import FlexColumn from '../common/ui/FlexColumn'
 import {processUrl} from '../../utils/urlUtils'
 import {fontFamilySerif, consolidateStyles} from '../../utils/styleUtils'
@@ -31,16 +30,32 @@ const styleButtonCorners = (isReversed, screenClass) => {
   if ([ 'xs' ].includes(screenClass)) {
     return {
       borderRadius: '0.309em 0.309em 0 0', // top left and right rounded
+      borderTop: '1px solid black',
+      borderBottom: '1px solid black',
+      borderLeft: '1px solid black', // have to use the same properties as the bigger screen sizes, or unsetting borderLeft: 'none' is difficult
+      borderRight: '1px solid black',
     }
   }
   else {
     if (isReversed) {
       // title is on RH side - round right corners
-      return {borderRadius: '0 0.309em 0.309em 0'}
+      return {
+        borderRadius: '0 0.309em 0.309em 0',
+        borderTop: '1px solid black',
+        borderBottom: '1px solid black',
+        borderRight: '1px solid black',
+        borderLeft: 'none',
+      }
     }
     else {
       // round left corners
-      return {borderRadius: '0.309em 0 0 0.309em'}
+      return {
+        borderRadius: '0.309em 0 0 0.309em',
+        borderTop: '1px solid black',
+        borderBottom: '1px solid black',
+        borderLeft: '1px solid black',
+        borderRight: 'none',
+      }
     }
   }
   return {}
@@ -181,21 +196,37 @@ const FeaturedDatasetH3Button = ({styles, title, searchClick}) => {
   )
 }
 
-const FeaturedDatasetImage = ({styles, url, searchClick, imageRef}) => {
+const FeaturedDatasetImage = ({
+  styles,
+  url,
+  caption,
+  searchClick,
+  imageRef,
+}) => {
   const backgroundURL = processUrl(url)
 
   return (
     <div style={consolidateStyles(styleImageWrapper, styles)}>
-      <p style={{padding: '1.618em', margin: 0}}>
-        <img
-          ref={imageRef}
-          onClick={searchClick}
-          style={styleImage}
-          src={backgroundURL}
-          alt=""
-          aria-hidden="true"
-        />
-      </p>
+      <FlexColumn
+        style={{
+          justifyContent: 'center',
+          height: '100%',
+        }}
+        items={[
+          <p key="centerMe" style={{padding: '1.618em', margin: 0}}>
+            <figure ref={imageRef}>
+              <img
+                onClick={searchClick}
+                style={styleImage}
+                src={backgroundURL}
+                alt=""
+                aria-hidden="true"
+              />
+              <figcaption style={{textAlign: 'center'}}>{caption}</figcaption>
+            </figure>
+          </p>,
+        ]}
+      />
     </div>
   )
 }
@@ -271,6 +302,7 @@ const FeaturedDatasetRow = ({
   search,
   title,
   imageUrl,
+  caption,
   isReversed,
   screenClass,
 }) => {
@@ -367,6 +399,7 @@ const FeaturedDatasetRow = ({
       imageRef={imageRef}
       styles={styleImageCorners(isReversed, screenClass, isWithoutDescription)}
       url={imageUrl}
+      caption={caption}
       searchClick={searchClick}
     />
   )
@@ -426,6 +459,7 @@ const FeaturedDatasets = props => {
                   search={search}
                   title={f.title}
                   imageUrl={f.imageUrl}
+                  caption={f.caption}
                   isReversed={isReversed}
                 />
               )

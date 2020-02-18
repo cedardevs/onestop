@@ -21,6 +21,7 @@ class UiConfig {
     String description
     String searchTerm
     String imageUrl
+    String caption
   }
 
   List<String> features
