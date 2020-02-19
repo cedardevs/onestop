@@ -205,7 +205,7 @@ func ParseRegexFileName(params *viper.Viper) []string {
 	if len(regex) == 0 {
 		return []string{}
 	}
-	return []string{"{\"type\":\"queryText\", \"value\":\"title:/" + regex + "/\"}"}
+	return []string{"{\"type\":\"queryText\", \"value\":\"title:" + regex + "\"}"}
 }
 
 func ParseTextQuery(params *viper.Viper) []string {
