@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 import Meta from 'react-helmet'
 import ListView from '../common/ui/ListView'
 import {boxShadow} from '../../style/defaultStyles'
@@ -115,9 +116,18 @@ export default function Cart(props){
       Object.keys(subset)
         .length} of ${numberOfGranulesSelected.toLocaleString()} files for download`
   }
+  /**
+  NOTE: this uses LiveAnnouncer instead of the following span, because the message does not toggle to "loading" in between, causing it to read changes incorrectly.
+  <span role="alert" aria-live="polite">
+    {message}
+  </span>
+  */
   const listHeading = (
     <h2 key="Cart::listHeading" style={styleListHeading}>
-      {message}
+      <LiveAnnouncer>
+        <LiveMessage message={message} aria-live="polite" />
+      </LiveAnnouncer>
+      <span aria-hidden="true">{message}</span>
     </h2>
   )
 

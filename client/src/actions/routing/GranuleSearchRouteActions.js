@@ -27,6 +27,7 @@ import {
 /*
   Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
 */
+let controller // shared internal state to track controller, since only one request within this context is allowed to be inFlight
 
 const getTotalGranuleCountFromState = state => {
   // TODO we need a selectors section of the code
@@ -49,7 +50,16 @@ const isAlreadyInFlight = state => {
 }
 
 const isRequestInvalid = (id, state) => {
-  return isAlreadyInFlight(state) || _.isEmpty(id)
+  const inFlight = isAlreadyInFlight(state)
+  if (inFlight && controller) {
+    if (_.isEmpty(id)) {
+      return true
+    }
+    controller.abort()
+    controller = null
+    return false
+  }
+  return inFlight || _.isEmpty(id)
 }
 
 const isCartRequestAlreadyInFlight = state => {
@@ -75,6 +85,10 @@ export const granuleBodyBuilder = (filterState, requestFacets, pageSize) => {
 
 const newSearchSuccessHandler = dispatch => {
   return payload => {
+    if (controller && controller.signal.aborted) {
+      // do not process error handling for aborted requests, just in case it gets to this point
+      return
+    }
     const granules = payload.data
     const facets = payload.meta.facets
     const total = payload.meta.total
@@ -87,6 +101,10 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
   const cartGranules = stateSnapshot.cart.selectedGranules
 
   return payload => {
+    if (controller && controller.signal.aborted) {
+      // do not process error handling for aborted requests, just in case it gets to this point
+      return
+    }
     const granules = payload.data
     const total = payload.meta.total
 
@@ -139,6 +157,10 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
 
 const pageSuccessHandler = dispatch => {
   return payload => {
+    if (controller && controller.signal.aborted) {
+      // do not process error handling for aborted requests, just in case it gets to this point
+      return
+    }
     const granules = payload.data
     dispatch(granuleResultsPageReceived(granules, payload.meta.total))
   }
@@ -162,9 +184,21 @@ const granulePromise = (
     return
   }
   // return promise for search
-  return fetchGranuleSearch(body, successHandler(dispatch), e => {
-    dispatch(granuleSearchError(e.errors || e))
-  })
+  const [ promise, abort_controller ] = fetchGranuleSearch(
+    body,
+    successHandler(dispatch),
+    e => {
+      if (controller && controller.signal.aborted) {
+        // do not process error handling for aborted requests, just in case it gets to this point
+        return
+      }
+      dispatch(granuleSearchError(e.errors || e))
+    }
+  )
+
+  controller = abort_controller
+
+  return promise
 }
 
 const granulesForCartPromise = (
@@ -208,13 +242,19 @@ const granulesForCartPromise = (
     return
   }
   // return promise for search
-  return fetchGranuleSearch(
+  const [ promise, abort_controller ] = fetchGranuleSearch(
     body,
     successHandler(dispatch, getState, cartCapacity),
     e => {
+      if (controller && controller.signal.aborted) {
+        // do not process error handling for aborted requests, just in case it gets to this point
+        return
+      }
       dispatch(granulesForCartError(e.errors || e))
     }
   )
+  controller = abort_controller
+  return promise
 }
 
 export const submitGranuleSearchForCart = (
@@ -305,7 +345,13 @@ export const submitGranuleSearch = (history, collectionId) => {
 
 export const submitGranuleSearchWithPage = (offset, max) => {
   return async (dispatch, getState) => {
-    if (isAlreadyInFlight(getState())) {
+    let state = getState()
+    if (
+      isRequestInvalid(
+        state.search.granuleFilter.selectedCollectionIds[0],
+        state
+      )
+    ) {
       // short circuit silently if minimum request requirements are not met
       return
     }

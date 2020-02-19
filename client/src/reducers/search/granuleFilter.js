@@ -31,6 +31,7 @@ export const initialState = Immutable({
   selectedCollectionIds: [],
   excludeGlobal: null,
   pageOffset: 0,
+  pageSize: 20, //default
 })
 
 const newSearchFilters = (collectionId, filters) => {
@@ -40,6 +41,7 @@ const newSearchFilters = (collectionId, filters) => {
     filters,
     {
       pageOffset: initialState.pageOffset,
+      pageSize: initialState.pageSize,
       selectedCollectionIds: [ collectionId ],
     },
   ])

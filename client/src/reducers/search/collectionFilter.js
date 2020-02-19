@@ -29,6 +29,7 @@ export const initialState = Immutable({
   selectedFacets: {},
   excludeGlobal: null,
   pageOffset: 0,
+  pageSize: 20, // default
 })
 
 export const collectionFilter = (state = initialState, action) => {
@@ -84,12 +85,15 @@ export const collectionFilter = (state = initialState, action) => {
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
 
     case COLLECTION_NEW_SEARCH_REQUESTED:
-      return Immutable.merge(state, {pageOffset: initialState.pageOffset})
+      return Immutable.merge(state, {
+        pageOffset: initialState.pageOffset,
+        pageSize: initialState.pageSize,
+      })
 
     case COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED:
       return Immutable.merge(initialState, [
         action.filters,
-        {pageOffset: initialState.pageOffset},
+        {pageOffset: initialState.pageOffset, pageSize: initialState.pageSize},
       ])
 
     case COLLECTION_RESULTS_PAGE_REQUESTED:

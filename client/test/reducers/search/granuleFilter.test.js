@@ -28,6 +28,7 @@ const assertParam = (param, result, expected, fallback) => {
 
 const assertAllFilterParams = (results, values, defaults) => {
   assertParam('pageOffset', results, values, defaults)
+  assertParam('pageSize', results, values, defaults)
   assertParam('bbox', results, values, defaults)
   assertParam('geoRelationship', results, values, defaults)
   assertParam('timeRelationship', results, values, defaults)
@@ -45,6 +46,7 @@ describe('The granule filter reducer', function(){
   const nonInitialState = {
     // not a single default value
     pageOffset: 40,
+    pageSize: 13,
     title: 'demo',
     selectedCollectionIds: [ 'abc', '123' ],
     bbox: {
@@ -65,6 +67,7 @@ describe('The granule filter reducer', function(){
   const initialStateWithParentUuid = {
     title: '',
     pageOffset: 0,
+    pageSize: 20,
     selectedCollectionIds: [ 'parent-uuid' ],
     bbox: null,
     geoRelationship: 'intersects',
@@ -82,6 +85,7 @@ describe('The granule filter reducer', function(){
 
     expect(result).toEqual({
       pageOffset: 0,
+      pageSize: 20,
       selectedCollectionIds: [],
       bbox: null,
       geoRelationship: 'intersects',
@@ -108,13 +112,14 @@ describe('The granule filter reducer', function(){
           expectedChanges: {selectedCollectionIds: [ 'parent-uuid' ]},
         },
         {
-          name: 'resets only pageOffset and selectedCollectionIds',
+          name: 'resets only pageOffset, pageSize, and selectedCollectionIds',
           initialState: nonInitialState,
           function: granuleNewSearchRequested,
           params: [ 'parent-uuid' ],
           expectedChanges: {
             selectedCollectionIds: [ 'parent-uuid' ],
             pageOffset: 0,
+            pageSize: 20,
           },
         },
       ],
@@ -127,8 +132,8 @@ describe('The granule filter reducer', function(){
             'makes no changes to initial state except pagination (increments by 20)',
           initialState: initialState, // although this is a terrible request, with no filters
           function: granuleResultsPageRequested,
-          params: [ 20, 20 ],
-          expectedChanges: {pageOffset: 20, pageSize: 20},
+          params: [ 20, 20 ], // default page size means no change
+          expectedChanges: {pageOffset: 20},
         },
         {
           name: 'changes only pageOffset (increments by 20)',
@@ -136,6 +141,13 @@ describe('The granule filter reducer', function(){
           function: granuleResultsPageRequested,
           params: [ 60, 20 ],
           expectedChanges: {pageOffset: 60, pageSize: 20},
+        },
+        {
+          name: 'changes pageSize',
+          initialState,
+          function: granuleResultsPageRequested,
+          params: [ 0, 15 ],
+          expectedChanges: {pageSize: 15},
         },
       ],
     },
@@ -181,6 +193,7 @@ describe('The granule filter reducer', function(){
           expectedChanges: {
             title: '',
             pageOffset: 0,
+            pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
             bbox: null,
             geoRelationship: 'intersects',
@@ -202,6 +215,7 @@ describe('The granule filter reducer', function(){
           expectedChanges: {
             title: '',
             pageOffset: 0,
+            pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
             bbox: null,
             geoRelationship: 'intersects',
@@ -230,6 +244,7 @@ describe('The granule filter reducer', function(){
           expectedChanges: {
             title: '',
             pageOffset: 0,
+            pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
             bbox: null,
             geoRelationship: 'intersects',
@@ -293,6 +308,7 @@ describe('The granule filter reducer', function(){
           expectedChanges: {
             title: '',
             pageOffset: 0,
+            pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
             bbox: {
               west: 100.0,
@@ -483,6 +499,7 @@ describe('The granule filter reducer', function(){
         name: 'enable exclude global from false',
         initialState: {
           pageOffset: 0,
+          pageSize: 20,
           title: '',
           bbox: null,
           startDateTime: null,

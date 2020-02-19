@@ -15,17 +15,28 @@ import {
   collectionSearchError,
 } from './CollectionSearchStateActions'
 
+let controller // shared internal state to track controller, since only one request within this context is allowed to be inFlight
+
 const getFilterFromState = state => {
   return (state && state.search && state.search.collectionFilter) || {}
 }
 
 const isRequestInvalid = state => {
   const inFlight = state.search.collectionRequest.inFlight
+  if (inFlight && controller) {
+    controller.abort()
+    controller = null
+    return false
+  }
   return inFlight
 }
 
 const collectionBodyBuilder = (filterState, requestFacets) => {
-  const body = assembleSearchRequest(filterState, requestFacets)
+  const body = assembleSearchRequest(
+    filterState,
+    requestFacets,
+    filterState.pageSize
+  )
   const hasQueries = body && body.queries && body.queries.length > 0
   const hasFilters = body && body.filters && body.filters.length > 0
   if (!(hasQueries || hasFilters)) {
@@ -65,9 +76,20 @@ const collectionPromise = (
     return
   }
   // return promise for search
-  return fetchCollectionSearch(body, successHandler(dispatch), e => {
-    dispatch(collectionSearchError(e.errors || e))
+  const [
+    promise,
+    abort_controller,
+  ] = fetchCollectionSearch(body, successHandler(dispatch), e => {
+    if (controller && controller.signal.aborted) {
+      // do not process error handling for aborted requests, just in case it gets to this point
+      return
+    }
+    else {
+      dispatch(collectionSearchError(e.errors || e))
+    }
   })
+  controller = abort_controller
+  return promise
 }
 
 export const submitCollectionSearchWithQueryText = (history, queryText) => {
