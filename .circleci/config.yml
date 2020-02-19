@@ -390,13 +390,13 @@ workflows:
       - stream-manager:
           requires:
             - checkout
-      - cli-generation:
-          requires:
-            - checkout
+      # - cli-generation:
+      #     requires:
+      #       - checkout
       - cli-publish:
           requires:
             - checkout
-            - cli-generation
+            # - cli-generation
       - finalize:
           requires:
             - admin
@@ -404,7 +404,7 @@ workflows:
             - registry
             - search
             - stream-manager
-            - cli-generation
+            # - cli-generation
             - cli-publish
 
   nightly:
