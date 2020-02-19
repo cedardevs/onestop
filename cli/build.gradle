@@ -86,6 +86,8 @@ task copyConfigFile(type: Copy) {
   doLast{
     project.exec {
       commandLine 'chmod', '-R', '774', '.gogradle'
+      commandLine 'chmod', '-R', '774', '.gogradle/scdr-files-config.yaml'
+
     }
   }
 }
