@@ -269,30 +269,30 @@ jobs:
         paths:
         - stream-manager/build
 
-  cli-generation:
-    docker:
-      - image: circleci/golang
-    environment:
-      - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
-      - GOOS: 'linux'
-      - GOARCH: 'amd64'
-      - GCO_ENABLED: 0
-    working_directory: ~/repo
-    steps:
-      - <<: *attachWorkspace
-      - run:
-          name: go build
-          command: |
-           echo "Generating CLI" &&
-           chmod 664 cli/.gogradle &&
-           cd cli &&
-           go get -u github.com/danielgtaylor/openapi-cli-generator &&
-           openapi-cli-generator generate ../search/src/main/resources/openapi.yaml &&
-           mv openapi.go internal/app/generated/
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - cli/internal/app/generated/openapi.go
+  # cli-generation:
+  #   docker:
+  #     - image: circleci/golang
+  #   environment:
+  #     - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
+  #     - GOOS: 'linux'
+  #     - GOARCH: 'amd64'
+  #     - GCO_ENABLED: 0
+  #   working_directory: ~/repo
+  #   steps:
+  #     - <<: *attachWorkspace
+  #     - run:
+  #         name: go build
+  #         command: |
+  #          echo "Generating CLI" &&
+  #          chmod 664 cli/.gogradle &&
+  #          cd cli &&
+  #          go get -u github.com/danielgtaylor/openapi-cli-generator &&
+  #          openapi-cli-generator generate ../search/src/main/resources/openapi.yaml &&
+  #          mv openapi.go internal/app/generated/
+  #     - persist_to_workspace:
+  #         root: ~/repo
+  #         paths:
+  #           - cli/internal/app/generated/openapi.go
 
   cli-publish:
     <<: *defaults
