@@ -292,7 +292,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - cli/internal/app/openapi.go
+            - cli/internal/app/generated/openapi.go
 
   cli-publish:
     <<: *defaults
