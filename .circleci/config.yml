@@ -270,7 +270,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - <<: *attachWorkspace
-      - <<: *restoreCache
       - run:
           name: go build
           command: |
