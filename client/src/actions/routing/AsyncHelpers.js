@@ -46,20 +46,31 @@ export const fetchCollectionDetail = (id, successHandler, errorHandler) => {
 }
 
 const fetchIt = (endpoint, params, successHandler, errorHandler) => {
-  return fetch(endpoint, params)
-    .then(response => checkForErrors(response))
-    .then(response => {
-      return response.json()
-    })
-    .then(json => {
-      successHandler(json)
-    })
-    .catch(ajaxError => {
-      // TODO how to handle when ajaxError doesn't have response.json()...????
-      if (ajaxError.response) {
-        ajaxError.response.json().then(errorJson => errorHandler(errorJson))
-      }
-      errorHandler(ajaxError)
-    })
-    .catch(jsError => errorHandler(jsError))
+  var controller = new AbortController()
+  return [
+    fetch(endpoint, {...params, signal: controller.signal})
+      .then(response => checkForErrors(response))
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        if (controller.signal.aborted) {
+          // prevent setting results if this request has been aborted - they are no longer valid
+          return
+        }
+        successHandler(json)
+      })
+      .catch(ajaxError => {
+        if (controller.signal.aborted) {
+          // do not call error handler to complete in-flight for aborted calls - there is no error, and the request is still in flight
+          return
+        }
+        errorHandler(ajaxError)
+        // }
+      })
+      .catch(jsError => {
+        errorHandler(jsError)
+      }),
+    controller,
+  ]
 }
