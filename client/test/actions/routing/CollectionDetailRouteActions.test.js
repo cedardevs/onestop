@@ -169,7 +169,7 @@ describe('collection detail action', function(){
     })
   })
 
-  describe('interupt in flight request', () => {
+  describe('interrupt in flight request', () => {
     const collectionDetailError = jest.spyOn(
       spyableActions,
       'collectionDetailError'
@@ -261,7 +261,7 @@ describe('collection detail action', function(){
         .getOnce(`path:${BASE_URL}/collection/uuid-ABC`, {
           data: [
             {
-              id: 'INTERUPTED',
+              id: 'INTERRUPTED',
               mockedResponse: 'yes',
             },
           ],

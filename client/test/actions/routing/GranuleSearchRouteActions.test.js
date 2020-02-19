@@ -368,7 +368,7 @@ describe('granule search actions', function(){
     })
   })
 
-  describe('interupt in flight request', () => {
+  describe('interrupt in flight request', () => {
     const assembleSearchRequest = jest.spyOn(
       spyOnQueryUtils,
       'assembleSearchRequest'
@@ -400,13 +400,13 @@ describe('granule search actions', function(){
       granuleSearchError.mockRestore()
     })
 
-    test('new filter interupted by next page leaves the UI (redux store) in consistent state', async () => {
+    test('new filter interrupted by next page leaves the UI (redux store) in consistent state', async () => {
       fetchMock
         // mock the results of the first search request:
         .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, {
           data: [
             {
-              id: 'INTERUPTED',
+              id: 'INTERRUPTED',
             },
           ],
           meta: {
@@ -433,7 +433,7 @@ describe('granule search actions', function(){
         expect(granuleRequest.inFlight).toBeTruthy()
       }
 
-      // which is interupted by a Next Page query
+      // which is interrupted by a Next Page query
       await store.dispatch(
         submitNextPageCase.function(...submitNextPageCase.params)
       )
@@ -483,7 +483,7 @@ describe('granule search actions', function(){
       }) // create the request with both the recently applied filter (for the request that did not complete) PLUS the next page offset
       expect(granuleResultsPageReceived.mock.results[0].value.granules).toEqual(
         mockPayload.data
-      ) // and not "INTERUPTED" payload
+      ) // and not "INTERRUPTED" payload
     })
 
     test('new search request which errors', async () => {
@@ -533,7 +533,7 @@ describe('granule search actions', function(){
         .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, {
           data: [
             {
-              id: 'INTERUPTED',
+              id: 'INTERRUPTED',
             },
           ],
           meta: {
