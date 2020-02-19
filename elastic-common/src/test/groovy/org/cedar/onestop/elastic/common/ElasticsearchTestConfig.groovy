@@ -1,7 +1,7 @@
 package org.cedar.onestop.elastic.common
 
 import groovy.util.logging.Slf4j
-import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -27,9 +27,9 @@ class ElasticsearchTestConfig {
   }
 
   @Profile("!ci")
-  @Bean(name = 'restClient', destroyMethod = 'close')
+  @Bean(name = 'restHighLevelClient', destroyMethod = 'close')
   @DependsOn('elasticsearchTestContainer')
-  RestClient elasticsearchRestClient(ElasticsearchTestContainer elasticsearchTestContainer) {
-    return elasticsearchTestContainer.restClient
+  RestHighLevelClient elasticsearchRestClient(ElasticsearchTestContainer elasticsearchTestContainer) {
+    return elasticsearchTestContainer.restHighLevelClient
   }
 }

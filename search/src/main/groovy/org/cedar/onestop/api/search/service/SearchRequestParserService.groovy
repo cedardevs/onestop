@@ -232,6 +232,7 @@ class SearchRequestParserService {
         else if (x != null && y != null) {
           esFilters.add([
               bool: [
+                  minimum_should_match: 1,
                   should: [
                       [ bool: [
                           must: [
@@ -245,6 +246,7 @@ class SearchRequestParserService {
                           must: [
                               [ range: [ (endField): [ gte: y ] ] ]
                           ],
+                          minimum_should_match: 1,
                           should: [
                               [ range: [ (beginField): [ lte: x ]] ],
                               [ bool: [
@@ -290,6 +292,7 @@ class SearchRequestParserService {
         else if (x != null && y != null) {
           esFilters.add([
               bool: [
+                  minimum_should_match: 1,
                   should: [
                       [ range: [ (beginField): [ gt: y ] ] ],
                       [ range: [ (endField): [ lt: x ] ] ]
@@ -306,6 +309,7 @@ class SearchRequestParserService {
           // (otherwise we'll match ones without a time bounding)
           esFilters.add([
               bool: [
+                  minimum_should_match: 1,
                   should: [
                       [ range: [ (endField): [ gte: x ]] ],
                       [ bool: [
@@ -323,6 +327,7 @@ class SearchRequestParserService {
         else if (x == null && y != null) {
           esFilters.add([
               bool: [
+                  minimum_should_match: 1,
                   should: [
                       [ range: [ (beginField): [ lte: y ]] ],
                       [ bool: [
@@ -340,6 +345,7 @@ class SearchRequestParserService {
         else if (x != null && y != null){
           esFilters.add([
               bool: [
+                  minimum_should_match: 1,
                   should: [
                       [ bool: [
                           must: [

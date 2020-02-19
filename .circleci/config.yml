@@ -15,7 +15,7 @@ defaultsWithElasticsearch: &defaultsWithElasticsearch
     - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
   docker:
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
-    - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.4
+    - image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
       environment:
         - cluster.name: elasticsearch-test
         - xpack.security.enabled: false
@@ -40,7 +40,7 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
       # fallback to using the latest cache if no exact match is found
       - onestop-cache-v15-
 
@@ -50,7 +50,6 @@ saveCache: &saveCache
       - .gradle_home
       - .gradle
       - build
-      - admin/build
       - client/build
       - client/.gradle
       - client/node_modules
@@ -59,7 +58,7 @@ saveCache: &saveCache
       - stream-manager/build
       - cli/.gogradle
       - cli/vendor
-    key: onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "admin/build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+    key: onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -88,48 +87,6 @@ jobs:
           root: ~/repo
           paths:
             - .
-
-  admin:
-    <<: *defaultsWithElasticsearch
-    <<: *env
-    steps:
-      - <<: *attachWorkspace
-      - run:
-          name: Assemble, Check (sans integration tests)
-          command: ./gradlew --parallel admin:assemble admin:check -x integrationTest
-      - run:
-          name: Wait for Elasticsearch
-          command: dockerize -wait tcp://localhost:9200 -timeout 1m
-      - run:
-          name: Integration Tests
-          command: ./gradlew admin:integrationTest
-      - run:
-          name: Generate Coverage Reports
-          command: ./gradlew admin:jacocoTestReport -x test
-      - run:
-          name: Collect Test Results
-          command: |
-            mkdir -p ~/tests/junit/
-            find admin/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find admin/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-          when: always
-      - store_test_results:
-          path: ~/tests
-      - store_artifacts:
-          path: admin/build/reports
-      - deploy:
-          name: Publish Image(s)
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew admin:jib
-            else
-              echo "Skipping publishing"
-            fi
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - admin/build
 
   search:
     <<: *defaultsWithElasticsearch
@@ -202,6 +159,39 @@ jobs:
           paths:
             - client/build
             - client/node_modules
+
+  indexer:
+    <<: *defaultsWithElasticsearch
+    <<: *env
+    steps:
+    - <<: *attachWorkspace
+    - run:
+        name: Assemble, Check, Report
+        command: ./gradlew --parallel indexer:assemble indexer:check indexer:jacocoTestReport
+    - run:
+        name: Collect Test Results
+        command: |
+          mkdir -p ~/tests/junit/
+          find indexer/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+          find indexer/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+        when: always
+    - store_test_results:
+        path: ~/tests
+    - store_artifacts:
+        path: indexer/build/reports
+    - deploy:
+        name: Publish Image(s)
+        command: |
+          echo "${CIRCLE_BRANCH}"
+          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
+            ./gradlew indexer:jib
+          else
+            echo "Skipping publishing"
+          fi
+    - persist_to_workspace:
+        root: ~/repo
+        paths:
+        - indexer/build
 
   registry:
     <<: *defaults
@@ -284,12 +274,11 @@ jobs:
       - run:
           name: go build
           command: |
-           if test -f "~/repo/search/schema/openapi.yml"; then
+           if test -f "~/repo/search/src/main/resources/openapi.yaml"; then
              echo "Generating CLI"
-             cp search/schema/openapi.yml cli/openapi.yml ;
              cd cli ;
              go get -u github.com/danielgtaylor/openapi-cli-generator ;
-             openapi-cli-generator generate openapi.yml
+             openapi-cli-generator generate ../search/src/main/resources/openapi.yaml
            fi
       - persist_to_workspace:
           root: ~/repo
@@ -378,37 +367,36 @@ workflows:
   build:
     jobs:
       - checkout
-      - admin:
+      - cli-generation:
+          requires:
+          - checkout
+      - cli-publish:
+          requires:
+          - checkout
+          - cli-generation
+      - client:
           requires:
             - checkout
-      - client:
+      - indexer:
           requires:
             - checkout
       - registry:
           requires:
-            - checkout
+          - checkout
       - search:
           requires:
             - checkout
       - stream-manager:
           requires:
             - checkout
-      - cli-generation:
-          requires:
-            - checkout
-      - cli-publish:
-          requires:
-            - checkout
-            - cli-generation
       - finalize:
           requires:
-            - admin
             - client
+            - cli-generation
+            - cli-publish
             - registry
             - search
             - stream-manager
-            - cli-generation
-            - cli-publish
 
   nightly:
     triggers:

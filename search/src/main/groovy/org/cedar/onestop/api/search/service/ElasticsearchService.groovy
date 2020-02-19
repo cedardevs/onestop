@@ -6,10 +6,10 @@ import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.elasticsearch.Version
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -26,24 +26,18 @@ class ElasticsearchService {
 
   private RestClient restClient
   ElasticsearchConfig esConfig
-  Version version
+
+  boolean isES6
 
   @Autowired
-  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
-
-    this.version = elasticsearchConfig.version
-    log.info("Elasticsearch found with version: ${this.version.toString()}" )
-    boolean supported = version.onOrAfter(Version.V_5_6_0)
-    if(!supported) {
-      throw new RuntimeException("Search API does not support version ${version.toString()} of Elasticsearch")
-    }
-
+  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestHighLevelClient restHighLevelClient, RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
     this.searchRequestParserService = searchRequestParserService
     this.restClient = restClient
     this.esConfig = elasticsearchConfig
+    this.isES6 = esConfig.version.isMajorVersion(6)
   }
 
-  ////////////
+////////////
   // Counts //
   ////////////
   Map totalCollections() {
@@ -76,7 +70,7 @@ class ElasticsearchService {
             [
                 type : "count",
                 id   : esConfig.typeFromAlias(alias),
-                count: getHitsTotal(parsedResponse)
+                count: getHitsTotalValue(parsedResponse, isES6)
             ]
         ]
     ]
@@ -104,7 +98,7 @@ class ElasticsearchService {
       granuleRequest.entity = granuleRequestQuery
       Response granuleResponse = restClient.performRequest(granuleRequest)
       Map parsedGranuleResponse = parseSearchResponse(granuleResponse)
-      int totalGranulesForCollection = getHitsTotal(parsedGranuleResponse)
+      int totalGranulesForCollection = getHitsTotalValue(parsedGranuleResponse, isES6)
       getCollection.meta = [
           totalGranules: totalGranulesForCollection
       ]
@@ -126,7 +120,7 @@ class ElasticsearchService {
   }
 
   private Map getById(String alias, String id) {
-    String endpoint = "/${alias}/${esConfig.TYPE}/${id}"
+    String endpoint = "/${alias}/_doc/${id}"
     log.debug("Get by ID against endpoint: ${endpoint}")
     Request idRequest = new Request('GET', endpoint)
     Response idResponse = restClient.performRequest(idRequest)
@@ -229,7 +223,7 @@ class ElasticsearchService {
       },
       meta: [
           took : getTook(parsedSearchResponse),
-          total: getHitsTotal(parsedSearchResponse)
+          total: getHitsTotalValue(parsedSearchResponse, isES6)
       ]
     ]
     return result
@@ -245,7 +239,7 @@ class ElasticsearchService {
         },
         meta: [
             took : getTook(searchResponse),
-            total: getHitsTotal(searchResponse)
+            total: getHitsTotalValue(searchResponse, isES6)
         ]
     ]
 

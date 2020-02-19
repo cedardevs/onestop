@@ -1,0 +1,61 @@
+---
+# assumes you've installed the ECK CRDs in your cluster
+# [infraInstall.sh]
+# https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-quickstart.html
+
+# upgrading from previous versions:
+# https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-upgrading-eck.html
+
+# if you need to uninstall ECK:
+# [infraUninstall.sh]
+# https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-uninstalling-eck.html
+
+apiVersion: elasticsearch.k8s.elastic.co/v1beta1
+kind: Elasticsearch
+metadata:
+  name: onestop
+spec:
+  version: 7.5.2
+  nodeSets:
+    - name: default
+      count: 1
+      config:
+        node.master: true
+        node.data: true
+        node.ingest: true
+        node.store.allow_mmap: false
+
+---
+apiVersion: kibana.k8s.elastic.co/v1beta1
+kind: Kibana
+metadata:
+  name: onestop
+spec:
+  version: 7.5.2
+  count: 1
+  elasticsearchRef:
+    name: onestop
+  http:
+    service:
+      spec:
+        type: LoadBalancer # expose outside cluster on `https://localhost:5601
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: onestop-es-elastic-user # override the default secret used by ECK operator
+type: Opaque
+data:
+  elastic: Zm9hbWNhdA== # development user:pass => elastic:foamcat
+
+---
+#apiVersion: apm.k8s.elastic.co/v1beta1
+#kind: ApmServer
+#metadata:
+#  name: onestop
+#spec:
+#  version: 7.5.2
+#  count: 1
+#  elasticsearchRef:
+#    name: onestop

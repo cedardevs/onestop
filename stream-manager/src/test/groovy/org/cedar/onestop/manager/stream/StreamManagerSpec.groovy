@@ -6,6 +6,7 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
+import org.cedar.onestop.kafka.common.conf.AppConfig
 import org.cedar.onestop.kafka.common.constants.StreamsApps
 import org.cedar.onestop.kafka.common.constants.Topics
 import org.cedar.onestop.kafka.common.serde.JsonSerdes
@@ -20,7 +21,7 @@ class StreamManagerSpec extends Specification {
   def STRING_DESERIALIZER = Serdes.String().deserializer()
   def AVRO_DESERIALIZER = new MockSchemaRegistrySerde().deserializer()
 
-  def streamsConfig = StreamManager.streamsConfig(StreamsApps.MANAGER_ID, new org.cedar.onestop.manager.config.ManagerConfig()).with {
+  def streamsConfig = StreamManager.streamsConfig(StreamsApps.MANAGER_ID, new AppConfig()).with {
     it.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, MockSchemaRegistrySerde.class.name)
     it
   }
@@ -187,7 +188,7 @@ class StreamManagerSpec extends Specification {
   }
 
   def "streams app throws exception when transitioning to bad state #state"() {
-    def streamsApp = StreamManager.buildStreamsApp(new org.cedar.onestop.manager.config.ManagerConfig())
+    def streamsApp = StreamManager.buildStreamsApp(new AppConfig())
 
     when:
     streamsApp.setState(state)

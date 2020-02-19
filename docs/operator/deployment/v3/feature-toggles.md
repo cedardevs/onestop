@@ -17,15 +17,6 @@ Cas profile ensures that the OneStop publishing service only accept queries sent
 | --- | --- | --- |
 | cas |Enables a security filter to enable metadata publishing.| cas
 
-## Admin Service
-
-| Spring Profile | Feature Description | Default Value |
-| --- | --- | --- |
-| icam | Enables a Spring security filter to require ICAM CAC authentication and authorization to hit particular endpoints. Requires a configured ICAM keystore and credentials at runtime! We don’t expect this feature to be enabled in 2.1 production, and the production environment would need to create and configure its own keystore as well as register its public key and other Service Provider (SP) metadata to ICAM. | false |
-| manual-upload | Enables the UploadController which opens browser endpoints for manual metadata upload. This feature should always be set with the icam profile in production to ensure manual upload is CAC secured. | false |
-| kafka-ingest | Enables the KafkaConsumerService to upload metadata via PSI. This feature should never be enabled at the same time as the manual-upload feature as they are mutually exclusive approaches to metadata upload. | false |
-| sitemap | Enables the SitemapETLService to create the sitemap index and periodically refresh it. | false |
-
 ## Search Service
 
 | Spring Profile | Feature Description | Default Value |

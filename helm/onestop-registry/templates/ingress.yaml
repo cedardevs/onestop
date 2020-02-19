@@ -1,3 +1,4 @@
+
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "onestop-registry.fullname" . -}}
 {{- $ingressPaths := .Values.ingress.paths -}}

@@ -1,21 +1,19 @@
 package org.cedar.onestop.registry.service;
 
 import groovy.util.logging.Slf4j;
-import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.state.HostInfo;
+import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.util.DataUtils;
+import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.registry.stream.TopicInitializer;
 import org.cedar.onestop.registry.stream.TopologyBuilders;
 import org.cedar.schemas.avro.psi.Input;
@@ -25,12 +23,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
-import static org.apache.kafka.streams.KafkaStreams.State.ERROR;
-import static org.apache.kafka.streams.KafkaStreams.State.NOT_RUNNING;
 import static org.apache.kafka.streams.StreamsConfig.*;
 import static org.cedar.onestop.kafka.common.constants.StreamsApps.REGISTRY_ID;
 
@@ -58,10 +56,7 @@ public class KafkaBeanConfig {
 
   @Bean
   Properties streamsConfig(Map kafkaProps) {
-    var validConfigNames = new HashSet<>(StreamsConfig.configDef().names());
-    validConfigNames.addAll(ProducerConfig.configNames());
-    validConfigNames.addAll(ConsumerConfig.configNames());
-    var props = DataUtils.filterProperties(kafkaProps, validConfigNames);
+    var props = DataUtils.filterProperties(kafkaProps, KafkaConfigNames.streams);
     props.put(APPLICATION_ID_CONFIG, REGISTRY_ID);
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
@@ -81,26 +76,13 @@ public class KafkaBeanConfig {
   @Bean(initMethod = "start", destroyMethod = "close")
   KafkaStreams streamsApp(Properties streamsConfig, TopicInitializer topicInitializer) throws InterruptedException, ExecutionException {
     topicInitializer.initialize();
-
-    var killSwitch = new CompletableFuture<KafkaStreams.State>();
-    killSwitch.thenAcceptAsync((state) -> {
-      throw new IllegalStateException("KafkaStreams app entered bad state: " + state);
-    });
-    KafkaStreams.StateListener killSwitchListener = (newState, oldState) -> {
-      if (!killSwitch.isDone() && (newState == ERROR || newState == NOT_RUNNING)) {
-        killSwitch.complete(newState);
-      }
-    };
-
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
-    var app = new KafkaStreams(streamsTopology, streamsConfig);
-    app.setStateListener(killSwitchListener);
-    return app;
+    return KafkaHelpers.buildStreamsAppWithKillSwitch(streamsTopology, streamsConfig);
   }
 
   @Bean
   Properties adminConfig(Map kafkaProps) {
-    return DataUtils.filterProperties(kafkaProps, AdminClientConfig.configNames());
+    return DataUtils.filterProperties(kafkaProps, KafkaConfigNames.admin);
   }
 
   @Bean(destroyMethod = "close")
@@ -116,9 +98,7 @@ public class KafkaBeanConfig {
 
   @Bean
   Properties producerConfig(Map kafkaProps) {
-    var names = new HashSet<>(ProducerConfig.configNames());
-    names.add(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
-    return DataUtils.filterProperties(kafkaProps, names);
+    return DataUtils.filterProperties(kafkaProps, KafkaConfigNames.producer);
   }
 
   @Bean
