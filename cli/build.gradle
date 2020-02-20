@@ -84,6 +84,10 @@ clean {
 task copyConfigFile(type: Copy) {
   from file('scdr-files-config.yaml')
   into file('.gogradle/')
-  fileMode(0774)
+  doLast{
+    project.exec {
+      commandLine 'sudo', 'chmod', '-R', '774', '.gogradle'
+    }
+  }
 }
 tasks.jib.dependsOn copyConfigFile
