@@ -27,5 +27,5 @@ dependencies {
 }
 
 jar {
-  baseName = "${rootProject.name}-${project.name}"
+  archiveBaseName.set("${rootProject.name}-${project.name}")
 }
