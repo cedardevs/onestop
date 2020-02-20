@@ -17,39 +17,39 @@ dependencies {
   implementation(project(':elastic-common'))
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
 
-  implementation "org.codehaus.groovy:groovy:${Versions.GROOVY}"
-  implementation "org.codehaus.groovy:groovy-json:${Versions.GROOVY}"
-  implementation "org.codehaus.groovy:groovy-xml:${Versions.GROOVY}"
+  implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+  implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
+  implementation("org.codehaus.groovy:groovy-xml:${Versions.GROOVY}")
 
-  implementation "org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}"
-  implementation "org.elasticsearch.client:transport:${Versions.ELASTIC}"
-  implementation 'org.springframework.boot:spring-boot-starter-web'
-  implementation 'org.springframework.boot:spring-boot-starter-actuator'
-  implementation 'org.springframework.boot:spring-boot-devtools'
-  implementation 'org.springframework.boot:spring-boot-starter-security'
+  implementation("org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${Versions.ELASTIC}")
+  implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-actuator")
+  implementation("org.springframework.boot:spring-boot-devtools")
+  implementation("org.springframework.boot:spring-boot-starter-security")
 
-  implementation 'org.springframework.security:spring-security-core'
-  implementation 'org.springframework.security:spring-security-config'
-  implementation 'org.springframework.security:spring-security-oauth2-client'
-  implementation 'org.springframework.security:spring-security-oauth2-jose'
+  implementation("org.springframework.security:spring-security-core")
+  implementation("org.springframework.security:spring-security-config")
+  implementation("org.springframework.security:spring-security-oauth2-client")
+  implementation("org.springframework.security:spring-security-oauth2-jose")
 
-  implementation "com.auth0:java-jwt:${Versions.AUTH0_JAVA_JWT}"
+  implementation("com.auth0:java-jwt:${Versions.AUTH0_JAVA_JWT}")
 
-  implementation 'com.github.java-json-tools:json-schema-validator:2.2.8'
-  implementation 'org.apache.commons:commons-lang3:3.7'
-  implementation 'org.apache.lucene:lucene-expressions:7.2.1'
-  implementation 'javax.xml.bind:jaxb-api:2.3.1' // Java 9/10 deprecates, 11 removes javax.xml.bind.DatatypeConverter
+  implementation("com.github.java-json-tools:json-schema-validator:2.2.8")
+  implementation("org.apache.commons:commons-lang3:3.7")
+  implementation("org.apache.lucene:lucene-expressions:7.2.1")
+  implementation("javax.xml.bind:jaxb-api:2.3.1") // Java 9/10 deprecates, 11 removes javax.xml.bind.DatatypeConverter
 
-  runtime 'org.springframework.boot:spring-boot-devtools'
+  runtime("org.springframework.boot:spring-boot-devtools")
 
-  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+  providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 
-  testImplementation "org.spockframework:spock-spring:${Versions.SPOCK}"
-  testImplementation "org.spockframework:spock-core:${Versions.SPOCK}"
-  testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
-  testImplementation 'org.springframework.boot:spring-boot-starter-test'
-  testImplementation "org.testcontainers:testcontainers:${Versions.TEST_CONTAINERS}"
-  testImplementation "org.testcontainers:elasticsearch:${Versions.TEST_CONTAINERS}"
+  testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")
+  testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
+  testImplementation("org.codehaus.groovy.modules.http-builder:http-builder:0.7.1")
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.testcontainers:testcontainers:${Versions.TEST_CONTAINERS}")
+  testImplementation("org.testcontainers:elasticsearch:${Versions.TEST_CONTAINERS}")
 }
 
 ext {

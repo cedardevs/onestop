@@ -1,28 +1,21 @@
-plugins {
-    id 'groovy'
-    id 'org.springframework.boot' // version declared in top-level buildscript
-    id 'io.spring.dependency-management'
-}
-
 sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
     def Versions = project.Versions
 
-    implementation "org.codehaus.groovy:groovy:${Versions.GROOVY}"
-    implementation "org.codehaus.groovy:groovy-json:${Versions.GROOVY}"
-    implementation "org.codehaus.groovy:groovy-xml:${Versions.GROOVY}"
-    implementation "org.springframework:spring-context"
-    implementation("org.slf4j:slf4j-api:1.7.25")
-    implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation "org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}"
-    implementation "org.elasticsearch.client:transport:${Versions.ELASTIC}"
+    compileOnly("org.slf4j:slf4j-api:1.7.25")
 
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation "org.testcontainers:testcontainers:${Versions.TEST_CONTAINERS}"
-    testImplementation "org.testcontainers:elasticsearch:${Versions.TEST_CONTAINERS}"
+    implementation("org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}")
+    implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${Versions.ELASTIC}")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
+
+
+    testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+    testImplementation("junit:junit:4.12")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.testcontainers:testcontainers:${Versions.TEST_CONTAINERS}")
+    testImplementation("org.testcontainers:elasticsearch:${Versions.TEST_CONTAINERS}")
 }
 
 configurations {

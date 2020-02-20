@@ -28,8 +28,12 @@ logging:
 
 elasticsearch:
   version: ${esVersion}
-  host: localhost
+  host: onestop-es-http
   port: 9200
+  ssl:
+   enabled: true
+  ro:
+    user: elastic
 
 search:
   minimumShouldMatch: 75%

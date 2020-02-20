@@ -4,15 +4,16 @@ targetCompatibility = 11
 dependencies {
   def Versions = project.Versions
 
-  implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
-  implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
+  compileOnly("org.slf4j:slf4j-api:1.7.25")
+
   implementation("org.apache.kafka:kafka-streams:${Versions.KAFKA}")
+  implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
   implementation("org.apache.avro:avro:${Versions.AVRO}")
-  implementation("org.slf4j:slf4j-api:1.7.25")
-  implementation("ch.qos.logback:logback-classic:1.2.3")
   implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
+  implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
 
   testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
+  testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
   testImplementation("org.apache.kafka:kafka-streams-test-utils:${Versions.KAFKA}")
   testImplementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}")
   testImplementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}:test")

@@ -48,7 +48,7 @@ All of the following fields are indexed for every data type (collection and gran
 ## _All parsed fields are nullable unless otherwise stated._
 
 ### `stagedDate`
-* Unix timestamp of when ISO metadata record was ingested into a Staging index. This field exists entirely for internal management purposes. When the ETL job runs every 10 minutes, it updates the Search indices with any records from Staging that have a `stagedDate` value newer than the max value of what is in the respective Search index.
+* Unix timestamp of when ISO metadata record was ingested.
 
 ***
 

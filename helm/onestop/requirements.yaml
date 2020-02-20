@@ -8,10 +8,6 @@ dependencies:
     version: ~0.1.0
     repository: file://../elasticsearch
     condition: elasticsearch.enabled,global.elasticsearch.enabled
-  - name: onestop-admin
-    version: ~0.1.0
-    repository: file://../onestop-admin
-    conditions: onestop-admin.enabled,global.onestop-admin.enabled
   - name: onestop-client
     version: ~0.1.0
     repository: file://../onestop-client

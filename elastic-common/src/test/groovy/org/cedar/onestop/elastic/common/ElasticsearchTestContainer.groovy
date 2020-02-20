@@ -2,11 +2,15 @@ package org.cedar.onestop.elastic.common
 
 import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestClientBuilder
+import org.elasticsearch.client.RestHighLevelClient
 import org.testcontainers.elasticsearch.ElasticsearchContainer
 
 class ElasticsearchTestContainer extends ElasticsearchContainer {
 
     // Client that connects to an Elasticsearch cluster through HTTP
+    RestClientBuilder restClientBuilder
+    RestHighLevelClient restHighLevelClient
     RestClient restClient
 
     ElasticsearchTestContainer(String dockerImageName) {
@@ -22,7 +26,9 @@ class ElasticsearchTestContainer extends ElasticsearchContainer {
         super.start()
         // setup HTTP rest client
         HttpHost host = HttpHost.create(this.getHttpHostAddress())
-        restClient = RestClient.builder(host).build()
+        restClientBuilder = RestClient.builder(host)
+        restHighLevelClient = new RestHighLevelClient(restClientBuilder)
+        restClient = restHighLevelClient.getLowLevelClient()
     }
 
     @Override

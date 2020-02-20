@@ -37,8 +37,8 @@ subprojects {
 
   project.ext {
     schemasVersion = '0.5.3'
-    esVersion = '6.8.4'
-    spockVersion = '1.2-groovy-2.5'
+    esVersion = '7.5.2'
+    spockVersion = '1.3-groovy-2.5'
     testContainersVersion = '1.12.2'
     groovyVersion = '2.5.8'
     openSAMLVersion = '3.4.3'
@@ -50,6 +50,7 @@ subprojects {
     kafkaVersion = '2.4.0'
     springKafkaVersion = '2.4.1.RELEASE'
     avroVersion = '1.9.1'
+    snakeYamlVersion = '1.24'
   }
 
   // URL for the source code under version control from which this container image was built.

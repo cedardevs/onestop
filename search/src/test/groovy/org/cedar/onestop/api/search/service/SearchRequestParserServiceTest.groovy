@@ -190,6 +190,7 @@ class SearchRequestParserServiceTest extends Specification {
             must  : [:],
             filter: [
                 [[ bool: [
+                    minimum_should_match: 1,
                     should: [
                         [ bool: [
                             must: [

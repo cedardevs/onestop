@@ -1,12 +1,3 @@
-onestop-admin:
-  keystore:
-    file: "/etc/onestop-admin/sciapps-keystore.jks"
-  spring:
-    profiles:
-      active: "securityenabled,kafkadisabled"
-  logging.level: DEBUG
-  etl.sitemap.delay.initial: "60000"
-
 onestop-search:
   auth:
     clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:SciAppsOneStop"

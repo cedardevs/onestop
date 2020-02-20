@@ -1,6 +1,27 @@
 apiVersion: skaffold/v1beta7
 kind: Config
 
+.onestop-indexer: &onestop-indexer
+  name: onestop-indexer
+  chartPath: helm/onestop-indexer
+  values:
+    # skaffold may not build/deploy w/the latest if this is not set here
+    image: cedardevs/onestop-indexer
+  imageStrategy:
+    helm: {}
+  setValues:
+    config: |-
+      ---
+      kafka:
+        bootstrap:
+          servers: "PLAINTEXT://onestop-dev-cp-kafka:9092"
+        schema:
+          registry:
+            url: "http://onestop-dev-cp-schema-registry:8081"
+        commit:
+          interval:
+            ms: 1000
+
 .onestop-registry: &onestop-registry
   name: onestop-registry
   chartPath: helm/onestop-registry
@@ -10,7 +31,7 @@ kind: Config
     # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
     # all features default to "false" in base chart, unless otherwise overridden
     features.cas: false
-    replicaCount: 2
+    replicaCount: 1
     # if true, `kubectl port-forward onestop-registry-0 5005:5005` to expose JDWP for debugging
     # then, create a "Remote" Debug Configuration in intelliJ (Host: 127.0.0.1, Port: 5005)
     debug: false
@@ -75,7 +96,6 @@ kind: Config
     # all features default to "false" in base chart, unless otherwise overridden
     features.login-gov: false
     features.sitemap: true
-    # env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
     env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
     env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
 #        config: |-
@@ -95,15 +115,11 @@ kind: Config
     prefixPath: onestop
     apiSearch.endpoint: onestop-search:8080/onestop-search
 
-.elasticsearch: &elasticsearch
-  name: elasticsearch
-  chartPath: helm/elasticsearch
-  setValues:
-    service.type: NodePort
-    service.nodePort: 30092
-
 build:
   artifacts:
+  - image: cedardevs/onestop-indexer
+    jibGradle:
+      project: indexer
   - image: cedardevs/onestop-registry
     jibGradle:
       project: registry
@@ -120,11 +136,11 @@ build:
 deploy:
   helm:
     releases:
+    - *onestop-indexer # depends on both kafka and elasticsearch by default
     - *onestop-registry
     - *onestop-manager
     - *onestop-search
     - *onestop-client
-    - *elasticsearch
     # DEV DEPENDENCIES
     - name: onestop-dev
       chartPath: helm/onestop-dev
@@ -148,7 +164,6 @@ profiles:
         releases:
           - *onestop-search
           - *onestop-client
-          - *elasticsearch
           # DEV DEPENDENCIES
           - name: onestop-dev
             chartPath: helm/onestop-dev

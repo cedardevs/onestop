@@ -27,7 +27,6 @@ dependencies {
 
   implementation("org.slf4j:slf4j-api:1.7.25")
   implementation("ch.qos.logback:logback-classic:1.2.3")
-  implementation('org.yaml:snakeyaml:1.24')
 
   implementation("com.github.cedardevs.schemas:schemas-analyze:${Versions.ONESTOP_SCHEMAS}")
   implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
@@ -43,7 +42,6 @@ dependencies {
   testImplementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}:test")
   testImplementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}:sources")
   testImplementation("com.github.java-json-tools:json-schema-validator:2.2.10")
-  testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
 }
 
 jar {

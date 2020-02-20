@@ -1,0 +1,43 @@
+# Defaults for configurable values
+---
+kafka:
+  bootstrap:
+    servers: "localhost:9092"
+  schema:
+    registry:
+      url: "http://localhost:8081"
+  commit:
+    interval:
+      ms: 1000
+elasticsearch:
+  host: onestop-es-http
+  port: 9200
+  ssl:
+    enabled: true
+  rw:
+    user: elastic
+  index:
+    prefix: ""
+  max-tasks: 10
+#  requests-per-second:
+  bulk:
+    interval:
+      ms: 10000 # 10s
+    max:
+      bytes: 10000000 # 10MB
+flattening:
+  topic:
+    name: "collection-flattening-triggers"
+    partitions: 2
+    replication: 1
+  interval:
+    ms: 30000 # 30s
+sitemap:
+  enabled: true
+  scroll-size: 1000
+  topic:
+    name: "sitemap-triggers"
+    partitions: 1
+    replication: 1
+  interval:
+    ms: 86400000 # 24hr

@@ -40,6 +40,7 @@ object Versions {
     const val JUNIT = "4.12"
     const val AUTH0_JAVA_JWT = "3.4.1"
     const val PAC4J = "3.8.3"
+    const val SNAKE_YAML = "1.24"
 
     const val ONESTOP_SCHEMAS: String = "0.5.3"
 }

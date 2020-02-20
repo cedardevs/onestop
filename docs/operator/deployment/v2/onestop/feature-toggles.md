@@ -64,7 +64,6 @@ Unfortunately, we don’t currently have a way to dynamically determine where th
 
 ## Google Analytics and UI Cart Toggle
 
-
 There are two *new* sections to the search API UI config YML.
 
 1. If the cart feature is desired, simply add the `features` config section as seen below. Without it, the UI will default to not showing a cart feature.
