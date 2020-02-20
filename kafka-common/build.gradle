@@ -12,6 +12,7 @@ dependencies {
   implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
   implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
 
+  testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
   testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
   testImplementation("org.apache.kafka:kafka-streams-test-utils:${Versions.KAFKA}")
