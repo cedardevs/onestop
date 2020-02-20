@@ -82,11 +82,12 @@ clean {
 
 //move config into .gogradle so it is moved during extraDirectories step.
 task copyConfigFile(type: Copy) {
+  outputs.dir('.gogradle')
   from file('scdr-files-config.yaml')
   into file('.gogradle/')
   doLast{
     project.exec {
-      commandLine 'sudo', 'chmod', '-R', '774', '.gogradle'
+      commandLine 'chmod', '-R', '774', '.gogradle'
     }
   }
 }
