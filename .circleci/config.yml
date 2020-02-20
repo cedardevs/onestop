@@ -283,7 +283,6 @@ jobs:
           root: ~/repo
           paths:
             - cli/openapi.go
-            - cli/.gogradle
 
   cli-publish:
     <<: *defaults
