@@ -269,7 +269,7 @@ jobs:
       - GCO_ENABLED: 0
     working_directory: ~/repo
     steps:
-      # - <<: *attachWorkspace
+      - <<: *attachWorkspace
       - run:
           name: go build
           command: |
@@ -279,17 +279,17 @@ jobs:
              go get -u github.com/danielgtaylor/openapi-cli-generator ;
              openapi-cli-generator generate ../search/src/main/resources/openapi.yaml
            fi
-      # - persist_to_workspace:
-      #     root: ~/repo
-      #     paths:
-      #       - cli/openapi.go
-      #       - cli/.gogradle
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - cli/openapi.go
+            - cli/.gogradle
 
   cli-publish:
     <<: *defaults
     working_directory: ~/repo
     steps:
-      # - <<: *attachWorkspace
+      - <<: *attachWorkspace
       - run:
           name: Build image, publish
           command: |
@@ -299,11 +299,11 @@ jobs:
             else
               ./gradlew cli:jib --image=cedardevs/onestop-cli:2.4.0-$CIRCLE_BRANCH
             fi
-      # - persist_to_workspace:
-      #     root: ~/repo
-      #     paths:
-      #       - cli/.gogradle
-      #       - cli/vendor
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - cli/.gogradle
+            - cli/vendor
   finalize:
     <<: *defaults
     steps:
