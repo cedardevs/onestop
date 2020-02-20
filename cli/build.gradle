@@ -18,6 +18,12 @@ dependencies {
     }
 }
 
+jar {
+  // even though we use the `java` plugin because of the `jib` plugin,
+  // the Go project does not need to generate a jar file
+  enabled = false
+}
+
 jib {
   use(PublishingKt) {
     Publish publish = project.publish
