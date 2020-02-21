@@ -42,7 +42,7 @@ restoreCache: &restoreCache
     keys:
       - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v15-
+      # - onestop-cache-v15-
 
 saveCache: &saveCache
   save_cache:
