@@ -39,6 +39,7 @@ func SetScdrFlags() {
 	cli.AddFlag(ScdrFileCmd, flags.YearFlag, flags.YearShortFlag, flags.YearDescription, "")
 	cli.AddFlag(ScdrFileCmd, flags.KeywordFlag, flags.KeywordShortFlag, flags.KeywordDescription, "")
 	cli.AddFlag(ScdrFileCmd, flags.GapFlag, flags.GapShortFlag, flags.GapDescription, "")
+	cli.AddFlag(ScdrFileCmd, flags.SinceFlag, flags.SinceShortFlag, flags.SinceDescription, "")
 
 //not scdr-files specific
 	cli.AddFlag(ScdrFileCmd, flags.MaxFlag, flags.MaxShortFlag, flags.MaxDescription, "")
@@ -47,11 +48,9 @@ func SetScdrFlags() {
 	cli.AddFlag(ScdrFileCmd, flags.CloudServerFlag, flags.CloudServerShortFlag, flags.CloudServerDescription, false)
 	cli.AddFlag(ScdrFileCmd, flags.TestServerFlag, flags.TestServerShortFlag, flags.TestServerDescription, false)
 	cli.AddFlag(ScdrFileCmd, flags.SortFlag, flags.SortShortFlag, flags.SortDescription, "")
-
 }
 
 func InjectMiddleware(){
-	//ParseScdrRequestFlags in parsing-util.go
 	cli.RegisterBefore(ScdrFileCmd, middleware.ParseScdrRequestFlags)
 	cli.RegisterAfter(ScdrFileCmd, func(cmd string, params *viper.Viper, resp *gentleman.Response, data interface{}) interface{} {
 		scdrResp := middleware.MarshalScdrResponse(params, data)

@@ -124,6 +124,30 @@ func TestParseDateTime(t *testing.T) {
 	}
 }
 
+func TestParseSince(t *testing.T) {
+	params1 := viper.New()
+	params1.Set(flags.SinceFlag, "2019-01-01T13:14:15")
+	expectedResult1 := []string{"{\"type\":\"datetime\", \"after\":\"2019-01-01T13:14:15Z\"}"}
+
+	params2 := viper.New()
+	params2.Set(flags.SinceFlag, "1990-10-06")
+	expectedResult2 := []string{"{\"type\":\"datetime\", \"after\":\"1990-10-06T00:00:00Z\"}"}
+
+	paramList := []*viper.Viper{params1, params2}
+
+	expectedResults := [][]string{expectedResult1, expectedResult2}
+	for i := 1; i < len(expectedResults); i++ {
+		got := ParseSince(paramList[i])
+		if got[0] != expectedResults[i][0] {
+			log.Info().Msg("GOT")
+			log.Info().Msg(got[0])
+			log.Info().Msg("EXPECTED")
+			log.Info().Msg(expectedResults[i][0])
+			t.Error("TestParseSince Failed")
+		}
+	}
+}
+
 func TestParseYear(t *testing.T) {
 	params := viper.New()
 	params.Set(flags.YearFlag, "2018")

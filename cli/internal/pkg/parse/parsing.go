@@ -73,6 +73,18 @@ func ParseStartAndEndTime(params *viper.Viper) []string {
 	return filter
 }
 
+//support for stime and start-time, same same
+func ParseSince(params *viper.Viper) []string {
+	filter := []string{}
+	startTime := params.GetString(flags.SinceFlag)
+	beginDateTime, _ := formatBeginAndEnd(startTime, "")
+  beginDateTimeFilter, _ := formatDateRange(beginDateTime, "")
+	if len(beginDateTimeFilter) > 0 {
+		filter = []string{"{\"type\":\"datetime\", " + beginDateTimeFilter + "}"}
+	}
+	return filter
+}
+
 func parseTimeFlags(params *viper.Viper) (string, string) {
 	startTime := params.GetString(flags.StartTimeFlag)
 	if len(startTime) == 0 {
@@ -114,6 +126,7 @@ func ParseDateFormat(dateString string) string {
 		"2006-01-02 15:04",
 		"2006-01-02 15:04:05",
 		"2006-01-02 15:04:05 MST",
+		"2006-01-02T15:04:05",
 		"2006/01/02",
 		"2006/01/02 15:04",
 		"2006/01/02 15:04:05",
