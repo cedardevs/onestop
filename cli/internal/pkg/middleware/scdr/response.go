@@ -83,7 +83,7 @@ func FindGaps(typeArg string, gapInterval string, items []interface{}) []string{
         //add it to new output
         //track last begin date to prevent overlap
         if lastEndDate.Sub(startDate) > interval && lastBeginDate.Sub(endDate) > 0 {
-           gapString := startDate.Format("2006-01-02T15:04:05.000Z")+ " | " +  lastEndDate.Format("2006-01-02T15:04:05.000Z")  + " | " + lastEndDate.Sub(startDate).String()
+           gapString := startDate.Format(dateFormat)+ " | " +  lastEndDate.Format(dateFormat)  + " | " + lastEndDate.Sub(startDate).String()
           gapResponse = append(gapResponse, gapString)
         }
         lastBeginDate = startDate
