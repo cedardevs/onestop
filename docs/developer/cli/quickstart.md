@@ -4,6 +4,9 @@ The `onestop-cli` tool provides a convenient command line interface for the OneS
 
 The `onstop-cli/openapi.go` file was generated using [open-cli-generator](https://github.com/danielgtaylor/openapi-cli-generator).
 
+The  project structure following the conventions described here-
+https://github.com/golang-standards/project-layout
+
 ## Build and run using docker
 
 `./gradlew cli:jibDockerBuild`
@@ -61,7 +64,7 @@ scdr-types:
 
 The CLI binary will look for a configuration named scdr-files-config.yml in  `/etc/scdr-files`, `$HOME/.scdr-files`, and in the current working directory.
 
-The docker image has a built in config containing the example config above. To update the config that is in the docker image, update scdr-files-config.yml found in the root of the CLI project. 
+The docker image has a built in config containing the example config above. To update the config that is in the docker image, update scdr-files-config.yml found in the root of the CLI project.
 
 ## Changing openapi.yml
 
