@@ -294,9 +294,9 @@ jobs:
           command: |
             echo "${CIRCLE_BRANCH}"
             if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew cli:jib --info --debug
+              ./gradlew cli:jib
             else
-              ./gradlew cli:jib --image=cedardevs/onestop-cli:2.4.0-$CIRCLE_BRANCH --info --debug
+              ./gradlew cli:jib --image=cedardevs/onestop-cli:2.4.0-$CIRCLE_BRANCH 
             fi
       - persist_to_workspace:
           root: ~/repo
