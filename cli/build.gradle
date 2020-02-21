@@ -15,7 +15,7 @@ goBuild {
 
 dependencies {
     golang {
-        build(['name':'github.com/cedardevs/onestop/cli'])
+        build(['name':'github.com/cedardevs/onestop/cli', 'branch':'master'])
         build(['name':'github.com/danielgtaylor/openapi-cli-generator'])
         build(['name':'github.com/pkg/errors'])
         build(['name':'github.com/rs/zerolog'])
