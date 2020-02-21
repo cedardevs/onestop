@@ -39,6 +39,8 @@ func ParseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	keyWordFilter := parse.ParseKeyword(params)
 	queries = append(queries, keyWordFilter...)
 	requestMeta := parse.ParseRequestMeta(params)
+  stagedDateQuery := parse.ParseSince(params)
+  queries = append(queries, stagedDateQuery...)
 
 	sort := parse.ParseSort(params)
 

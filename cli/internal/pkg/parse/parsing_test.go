@@ -126,12 +126,12 @@ func TestParseDateTime(t *testing.T) {
 
 func TestParseSince(t *testing.T) {
 	params1 := viper.New()
-	params1.Set(flags.SinceFlag, "2019-01-01T13:14:15")
-	expectedResult1 := []string{"{\"type\":\"datetime\", \"after\":\"2019-01-01T13:14:15Z\"}"}
-
+	params1.Set(flags.SinceFlag, "2020-01-31T12:02:28")
+	expectedResult1 := []string{"{\"type\":\"queryText\", \"value\":\"stagedDate:>1580428948\"}"}
+// {"type":"queryText", "value":"stagedDate:>1580428948105"}
 	params2 := viper.New()
-	params2.Set(flags.SinceFlag, "1990-10-06")
-	expectedResult2 := []string{"{\"type\":\"datetime\", \"after\":\"1990-10-06T00:00:00Z\"}"}
+	params2.Set(flags.SinceFlag, "2020-02-21T10:55:12")
+	expectedResult2 := []string{"{\"type\":\"queryText\", \"value\":\"stagedDate:>1582282512\"}"}
 
 	paramList := []*viper.Viper{params1, params2}
 
