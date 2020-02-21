@@ -56,6 +56,7 @@ func FindGaps(typeArg string, gapInterval string, items []interface{}) []string{
 	if len(items) == 0 {
 		return  gapResponse
 	}
+  lastBeginDate := time.Time{}
   lastEndDate := time.Time{}
 	for _, v := range items{
 		 item := v.(map[string]interface{})
@@ -75,16 +76,18 @@ func FindGaps(typeArg string, gapInterval string, items []interface{}) []string{
      end, b2 := attrs["endDate"].(string)
 
      if b1 && b2 {
-       startTime, e1 := time.Parse(dateFormat, start)
-       endTime, e2 := time.Parse(dateFormat, end)
+       startDate, e1 := time.Parse(dateFormat, start)
+       endDate, e2 := time.Parse(dateFormat, end)
         if e1 == nil && e2 == nil {
          //if the temporal distance from this file and the last is greater than interval
         //add it to new output
-        if lastEndDate.Sub(startTime) > interval {
-           gapString := lastEndDate.Format("2006-01-02T15:04:05.000Z") + " | " + startTime.Format("2006-01-02T15:04:05.000Z") + " | " + lastEndDate.Sub(startTime).String()
+        //track last begin date to prevent overlap
+        if lastEndDate.Sub(startDate) > interval && lastBeginDate.Sub(endDate) > 0 {
+           gapString := startDate.Format("2006-01-02T15:04:05.000Z")+ " | " +  lastEndDate.Format("2006-01-02T15:04:05.000Z")  + " | " + lastEndDate.Sub(startDate).String()
           gapResponse = append(gapResponse, gapString)
         }
-        lastEndDate = endTime
+        lastBeginDate = startDate
+        lastEndDate = endDate
        }
      }
 	}
