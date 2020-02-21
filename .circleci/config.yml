@@ -40,9 +40,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v15-
+      # - onestop-cache-v15-
 
 saveCache: &saveCache
   save_cache:
@@ -283,7 +283,6 @@ jobs:
           root: ~/repo
           paths:
             - cli/openapi.go
-            - cli/.gogradle
 
   cli-publish:
     <<: *defaults
@@ -294,6 +293,7 @@ jobs:
           name: Build image, publish
           command: |
             echo "${CIRCLE_BRANCH}"
+            ./gradlew cli:clean
             if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
               ./gradlew cli:jib
             else
