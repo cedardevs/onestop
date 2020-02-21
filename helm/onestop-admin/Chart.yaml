@@ -1,5 +1,0 @@
-apiVersion: v1
-appVersion: "2.2.0"
-description: A Helm chart for OneStop admin API
-name: onestop-admin
-version: 0.1.0

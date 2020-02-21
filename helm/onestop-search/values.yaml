@@ -58,9 +58,6 @@ config: |-
 # SPRING ENV OVERRIDES
 ###############################################################################
 env:
-  # elastic search env vars
-  ELASTICSEARCH_HOST: elasticsearch
-  ELASTICSEARCH_PORT: 9200
   # sitemap env vars
   ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute
   # login gov env vars
@@ -110,6 +107,17 @@ secrets:
       - KEYSTORE_PASSWORD # [secret] login-gov-keystore-credentials.KEYSTORE_PASSWORD => [env] LOGIN_GOV_KEYSTORE_PASSWORD
       - KEYSTORE_ALIAS    # [secret] login-gov-keystore-credentials.KEYSTORE_ALIAS    => [env] LOGIN_GOV_KEYSTORE_ALIAS
       - KEY_PASSWORD      # [secret] login-gov-keystore-credentials.KEY_PASSWORD      => [env] LOGIN_GOV_KEY_PASSWORD
+
+elasticsearch:
+  host: onestop-es-http
+  port: "9200"
+  ssl:
+    enabled: true
+    cert:
+      path: "/etc/onestop-indexer/elastic"
+      tls: "tls.crt"
+  ro:
+    user: elastic
 
 keystoreFiles:
   jks:

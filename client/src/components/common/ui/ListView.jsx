@@ -9,6 +9,12 @@ import gridIcon from 'fa/th.svg'
 import listIcon from 'fa/th-list.svg'
 import expandIcon from 'fa/expand.svg'
 import collapseIcon from 'fa/compress.svg'
+import previousIcon from 'fa/arrow-left.svg'
+import nextIcon from 'fa/arrow-right.svg'
+
+import PageController, {usePaging} from './PageController'
+import {PAGE_SIZE} from '../../../utils/queryUtils'
+import Button from '../input/Button'
 
 const styleListView = {
   marginLeft: '1.618em',
@@ -141,6 +147,10 @@ export default function ListView(props){
     // ]
     customActions,
     customMessage,
+    totalRecords,
+    setOffset,
+    currentPage,
+    setCurrentPage,
   } = props
 
   const [ notification, setNotification ] = useState('')
@@ -192,6 +202,52 @@ export default function ListView(props){
       notification: 'Collapsing all results in list.',
     })
   }
+
+  // use paging effect to keep track of paging conditions
+  // - this result can be passed directly to the PageController component
+  //   but you can make use of the values within for other conditional rendering (see actions pushed below)
+  // paging = {
+  //     totalRecords,
+  //     totalPages,
+  //     currentPage,
+  //     handleSkipPrevious,
+  //     handleSkipNext,
+  //     numSkipPrevious,
+  //     numSkipNext,
+  // }
+  const paging = usePaging({
+    totalRecords,
+    pageLimit: PAGE_SIZE,
+    pageNeighbours: 2,
+    setOffset,
+    currentPage,
+    setCurrentPage,
+  })
+
+  // if there is a 'previous' page, allow user to control from list view controller at top
+  if (currentPage > 1) {
+    actions.push({
+      text: 'Previous Page',
+      title: 'Go to previous page',
+      icon: previousIcon,
+      showText: false,
+      handler: () => setCurrentPage(currentPage - 1),
+      notification: 'Navigating to the previous page.',
+    })
+  }
+
+  // if there is a 'next' page, allow user to control from list view controller at top
+  if (currentPage + 1 <= paging.totalPages) {
+    actions.push({
+      text: 'Next Page',
+      title: 'Go to next page',
+      icon: nextIcon,
+      showText: false,
+      handler: () => setCurrentPage(currentPage + 1),
+      notification: 'Navigating to the next page.',
+    })
+  }
+
   if (customActions) {
     customActions.forEach(action => {
       actions.push(action)
@@ -211,6 +267,49 @@ export default function ListView(props){
       showAsGrid={showAsGrid}
       notification={setNotification}
       actions={actions}
+    />
+  )
+
+  const pageController = (
+    <PageController
+      paging={paging}
+      ButtonComponent={({
+        page,
+        numSkip,
+        onClick,
+        style,
+        styleHover,
+        stylePress,
+        styleFocus,
+        styleDisable,
+        config,
+      }) => {
+        const {isFirst, isPrevious, isNext, isLast} = config
+        const previousText = `«`
+        const nextText = `»`
+        const title = isFirst
+          ? 'Go to first page'
+          : isPrevious
+            ? `Skip to page ${page}`
+            : isNext
+              ? `Skip to page ${page}`
+              : isLast ? `Go to last page - ${page}` : `Go to page ${page}`
+        return (
+          <Button
+            onClick={onClick}
+            title={title}
+            style={style}
+            styleHover={styleHover}
+            stylePress={stylePress}
+            styleFocus={styleFocus}
+            styleDisable={styleDisable}
+            config={config}
+            ariaCurrent={config.isActive}
+          >
+            {isPrevious ? previousText : isNext ? nextText : page}
+          </Button>
+        )
+      }}
     />
   )
 
@@ -267,11 +366,13 @@ export default function ListView(props){
   return (
     <div style={styleListView}>
       <FlexRow style={styleHeading} items={[ heading, controlElement ]} />
+
       <LiveAnnouncer>
         <LiveMessage message={notification} aria-live="polite" />
       </LiveAnnouncer>
       {customMessage}
       <div style={showAsGrid ? styleGrid : styleList}>{itemElements}</div>
+      {pageController}
     </div>
   )
 }
@@ -283,4 +384,8 @@ ListView.propTypes = {
   GridItemComponent: PropTypes.func,
   propsForItem: PropTypes.func,
   customActions: PropTypes.array,
+  totalHits: PropTypes.number,
+  setOffset: PropTypes.func,
+  currentPage: PropTypes.number,
+  setCurrentPage: PropTypes.func,
 }

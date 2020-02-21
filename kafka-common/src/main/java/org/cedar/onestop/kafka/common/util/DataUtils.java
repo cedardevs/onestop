@@ -9,6 +9,7 @@ import org.cedar.schemas.avro.util.AvroUtils;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class DataUtils {
@@ -183,6 +184,20 @@ public class DataUtils {
       trimmedKeysMap.put(trimmedKey, v);
     });
     return trimmedKeysMap;
+  }
+
+  /**
+   * Returns an map with all keys not contained in the given collection removed
+   * @param keysToKeep A collection of the keys to preserve in the filtered output; all others will be removed
+   * @return The filtered map
+   */
+  public static Map<String, Object> filterMapKeys(Collection<String> keysToKeep, Map<String, Object> originalMap) {
+    if (keysToKeep == null || keysToKeep.size() == 0) {
+      return new HashMap<>();
+    }
+    return originalMap.entrySet().stream()
+        .filter(e -> keysToKeep.contains(e.getKey()))
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   /**

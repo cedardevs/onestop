@@ -43,8 +43,8 @@ dependencies {
 ### Configuring CAS Server for Development
 The CAS overlay project's `etc/cas/config/cas.properties` is an important configuration built into the CAS server image. See the example additions to this file below which configure the JSON Registry, Tomcat behind a proxy (we leverage an [NGINX Kubernetes Ingress](https://github.com/kubernetes/ingress-nginx)), and additional endpoints used for development:
 
-```
 # psi-dev-cas is our k8s CAS service reference for internal traffic
+```
 cas.server.name=http://psi-dev-cas:8080
 cas.server.prefix=${cas.server.name}/cas
 
@@ -56,7 +56,9 @@ logging.config: file:/etc/cas/config/log4j2.xml
 cas.serviceRegistry.json.location=file:/etc/cas/services
 
 # Deploy Behind a Proxy
+```
 # https://apereo.github.io/2018/11/16/cas60-gettingstarted-overlay/#deploy-behind-a-proxy
+```
 server.port=8080
 server.ssl.enabled=false
 cas.server.tomcat.http.enabled=false
@@ -64,23 +66,7 @@ cas.server.tomcat.httpProxy.enabled=true
 cas.server.tomcat.httpProxy.protocol=HTTP/1.1
 cas.server.tomcat.httpProxy.secure=true
 cas.server.tomcat.httpProxy.scheme=http
-
-# admin endpoints
-management.endpoints.web.exposure.include=status,health,info
-
-management.endpoint.status.enabled=true
-management.endpoint.health.enabled=true
-management.endpoint.health.show-details=always
-management.endpoint.info.enabled=true
-
-cas.monitor.endpoints.endpoint.status.access=AUTHENTICATED
-
-# below represents the default CAS user credentials
-spring.security.user.name=casuser
-spring.security.user.password=Mellon
-...
 ```
-
 ### Registering Services
 If the JSON Registry is included and and configured properly, the `etc/cas/services/` directory is where you would include a JSON file to register your service. For example, you could add a `casSecuredApp-19991.json` file to this directory with the following contents:
 

@@ -48,7 +48,7 @@ config: |-
 ingress:
   enabled: true
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "3m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "5m"
   paths:
   - "/registry"
   hosts:

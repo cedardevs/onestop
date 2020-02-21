@@ -12,7 +12,7 @@ import {
   COLLECTION_TOGGLE_EXCLUDE_GLOBAL,
   COLLECTION_NEW_SEARCH_REQUESTED,
   COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED,
-  COLLECTION_MORE_RESULTS_REQUESTED,
+  COLLECTION_RESULTS_PAGE_REQUESTED,
 } from '../../actions/routing/CollectionSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
@@ -29,6 +29,7 @@ export const initialState = Immutable({
   selectedFacets: {},
   excludeGlobal: null,
   pageOffset: 0,
+  pageSize: 20, // default
 })
 
 export const collectionFilter = (state = initialState, action) => {
@@ -84,16 +85,20 @@ export const collectionFilter = (state = initialState, action) => {
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
 
     case COLLECTION_NEW_SEARCH_REQUESTED:
-      return Immutable.merge(state, {pageOffset: initialState.pageOffset})
+      return Immutable.merge(state, {
+        pageOffset: initialState.pageOffset,
+        pageSize: initialState.pageSize,
+      })
 
     case COLLECTION_NEW_SEARCH_RESET_FILTERS_REQUESTED:
       return Immutable.merge(initialState, [
         action.filters,
-        {pageOffset: initialState.pageOffset},
+        {pageOffset: initialState.pageOffset, pageSize: initialState.pageSize},
       ])
 
-    case COLLECTION_MORE_RESULTS_REQUESTED:
-      return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)
+    case COLLECTION_RESULTS_PAGE_REQUESTED:
+      let updateSize = Immutable.set(state, 'pageSize', action.max)
+      return Immutable.set(updateSize, 'pageOffset', action.offset)
 
     default:
       return state

@@ -1,18 +1,21 @@
 import store from '../../../src/store' // create Redux store with appropriate middleware
 import {RESET_STORE} from '../../../src/reducer'
 import fetchMock from 'fetch-mock'
+import * as spyableActions from '../../../src/actions/routing/CollectionSearchStateActions'
+import * as spyOnQueryUtils from '../../../src/utils/queryUtils'
 
 import {
   submitCollectionSearch,
   submitCollectionSearchWithFilter,
   submitCollectionSearchWithQueryText,
-  submitCollectionSearchNextPage,
+  submitCollectionSearchWithPage,
 } from '../../../src/actions/routing/CollectionSearchRouteActions'
 import {
   // used to set up pre-test conditions
   collectionNewSearchResetFiltersRequested,
-  collectionMoreResultsRequested,
+  collectionResultsPageRequested,
   collectionNewSearchResultsReceived,
+  collectionResultsPageReceived,
   collectionUpdateDateRange,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
@@ -101,8 +104,8 @@ describe('collection search actions', function(){
   }
   const submitNextPageCase = {
     name: 'submit next page',
-    function: submitCollectionSearchNextPage,
-    params: [],
+    function: submitCollectionSearchWithPage,
+    params: [ 2, 2 ],
   }
 
   const standardNewSearchTestCases = [
@@ -178,21 +181,31 @@ describe('collection search actions', function(){
       })
     })
 
-    describe('all submit options behave the same when a detail request is already in flight', function(){
+    describe('submit overwrites inFlight', function(){
       beforeEach(async () => {
         //setup send something into flight first
-        store.dispatch(collectionMoreResultsRequested())
+        store.dispatch(collectionResultsPageRequested(20, 20))
         const {collectionRequest, collectionFilter} = store.getState().search
         expect(collectionRequest.inFlight).toBeTruthy()
         expect(collectionFilter.pageOffset).toBe(20)
       })
 
-      allTestCases.forEach(function(testCase){
-        it(`${testCase.name} does not continue with a submit request`, function(){
+      it(`${submitNextPageCase.name} replaces in flight request`, function(){
+        store.dispatch(
+          submitNextPageCase.function(...submitNextPageCase.params)
+        )
+
+        expect(historyPushCallCount).toEqual(0) // all new searches push a new history request right now (although next page would not)
+        expect(store.getState().search.collectionFilter.pageOffset).toBe(2)
+        expect(store.getState().search.collectionFilter.pageSize).toBe(2) // but just in case, this definitely should always be reset to 0, or changed to 40
+      })
+
+      standardNewSearchTestCases.forEach(function(testCase){
+        it(`${testCase.name} replaces in flight request`, function(){
           store.dispatch(testCase.function(...testCase.params))
 
-          expect(historyPushCallCount).toEqual(0) // all new searches push a new history request right now (although next page would not)
-          expect(store.getState().search.collectionFilter.pageOffset).toBe(20) // but just in case, this definitely should always be reset to 0, or changed to 40
+          expect(historyPushCallCount).toEqual(1) // all new searches push a new history request right now (although next page would not)
+          expect(store.getState().search.collectionFilter.pageOffset).toBe(0) // but just in case, this definitely should always be reset to 0, or changed to 40
         })
       })
     })
@@ -200,11 +213,12 @@ describe('collection search actions', function(){
     describe('prefetch actions', function(){
       beforeEach(async () => {
         // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
-        store.dispatch(collectionMoreResultsRequested())
+        store.dispatch(collectionResultsPageRequested(20, 20))
         store.dispatch(collectionNewSearchResultsReceived(0, [], {}))
         const {collectionRequest, collectionFilter} = store.getState().search
         expect(collectionRequest.inFlight).toBeFalsy()
         expect(collectionFilter.pageOffset).toEqual(20)
+        expect(collectionFilter.pageSize).toEqual(20)
       })
 
       describe('all submit options update the state correctly', function(){
@@ -230,7 +244,7 @@ describe('collection search actions', function(){
           const {collectionRequest, collectionFilter} = store.getState().search
 
           expect(collectionRequest.inFlight).toBeTruthy()
-          expect(collectionFilter.pageOffset).toEqual(40)
+          expect(collectionFilter.pageOffset).toEqual(2)
         })
       })
 
@@ -269,6 +283,222 @@ describe('collection search actions', function(){
           )
 
           expect(historyPushCallCount).toEqual(0)
+        })
+      })
+    })
+
+    describe('interrupt in flight request', () => {
+      const assembleSearchRequest = jest.spyOn(
+        spyOnQueryUtils,
+        'assembleSearchRequest'
+      )
+      const collectionResultsPageReceived = jest.spyOn(
+        spyableActions,
+        'collectionResultsPageReceived'
+      )
+      const collectionNewSearchResultsReceived = jest.spyOn(
+        spyableActions,
+        'collectionNewSearchResultsReceived'
+      )
+      const collectionSearchError = jest.spyOn(
+        spyableActions,
+        'collectionSearchError'
+      )
+      beforeEach(async () => {
+        assembleSearchRequest.mockClear()
+        collectionNewSearchResultsReceived.mockClear()
+        collectionResultsPageReceived.mockClear()
+        collectionSearchError.mockClear()
+      })
+      afterAll(async () => {
+        assembleSearchRequest.mockClear()
+        collectionNewSearchResultsReceived.mockClear()
+        collectionResultsPageReceived.mockClear()
+        collectionSearchError.mockClear()
+        // restore the original (non-mocked) implementation:
+        assembleSearchRequest.mockRestore()
+        collectionNewSearchResultsReceived.mockRestore()
+        collectionResultsPageReceived.mockRestore()
+        collectionSearchError.mockRestore()
+      })
+
+      test('new filter interrupted by next page leaves the UI (redux store) in consistent state', async () => {
+        fetchMock
+          // mock the results of the first search request:
+          .postOnce((url, opts) => url == `${BASE_URL}/search/collection`, {
+            data: [
+              {
+                id: 'INTERRUPTED',
+              },
+            ],
+            meta: {
+              facets: {},
+              total: 2,
+            },
+          })
+          // mock the results of the second search request:
+          .postOnce(
+            (url, opts) => url == `${BASE_URL}/search/collection`,
+            mockPayload
+          )
+        //setup send something into flight first
+
+        // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+        // initially we trigger a query with a filter
+        const promise = submitSearchWithFilterCase.function(
+          ...submitSearchWithFilterCase.params
+        )(store.dispatch, store.getState)
+
+        {
+          // keep scoped
+          const {collectionRequest} = store.getState().search
+          expect(collectionRequest.inFlight).toBeTruthy()
+        }
+
+        // which is interrupted by a Next Page query
+        await store.dispatch(
+          submitNextPageCase.function(...submitNextPageCase.params)
+        )
+
+        // allow the initial request to resolve
+        await promise
+
+        const {collectionRequest, collectionResult} = store.getState().search
+
+        // we made 2 fetches
+        expect(fetchMock.calls().length).toEqual(2)
+        expect(assembleSearchRequest.mock.calls.length).toEqual(2)
+        expect(collectionNewSearchResultsReceived.mock.calls.length).toEqual(0) // first request never completed and called this!
+        expect(collectionResultsPageReceived.mock.calls.length).toEqual(1)
+
+        expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+        expect(collectionRequest.errorMessage).toEqual('')
+        expect(collectionResult.collections).toEqual({
+          'uuid-ABC': {title: 'ABC'},
+          'uuid-123': {title: '123'},
+        })
+
+        const finalStateToAssembleQueryFrom =
+          assembleSearchRequest.mock.calls[1][0]
+        expect(finalStateToAssembleQueryFrom.startDateTime).toEqual('1998') // has filter from the first request
+        expect(finalStateToAssembleQueryFrom.pageOffset).toEqual(2) // has page offset from the second request
+        expect(finalStateToAssembleQueryFrom.pageSize).toEqual(2)
+        expect(assembleSearchRequest.mock.results[1].value).toEqual({
+          // confirm result of assemble query has both filter and page pieces
+          facets: false,
+          filters: [
+            {
+              after: '1998',
+              relation: 'intersects',
+              type: 'datetime',
+            },
+          ],
+          page: {
+            max: 2,
+            offset: 2,
+          },
+          queries: [],
+        }) // create the request with both the recently applied filter (for the request that did not complete) PLUS the next page offset
+        expect(
+          collectionResultsPageReceived.mock.results[0].value.items
+        ).toEqual(mockPayload.data) // and not "INTERRUPTED" payload
+      })
+
+      test('new search request which errors', async () => {
+        fetchMock
+          // mock the results of the first search request:
+          .postOnce((url, opts) => url == `${BASE_URL}/search/collection`, 400)
+          // mock the results of the second search request:
+          .postOnce((url, opts) => url == `${BASE_URL}/search/collection`, 500)
+        //setup send something into flight first
+
+        // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+        const promise = submitSearchWithQueryTextCase.function(
+          ...submitSearchWithQueryTextCase.params
+        )(store.dispatch, store.getState)
+
+        {
+          // keep scoped
+          const {collectionRequest} = store.getState().search
+          expect(collectionRequest.inFlight).toBeTruthy()
+        }
+
+        await store.dispatch(
+          submitSearchWithFilterCase.function(
+            ...submitSearchWithFilterCase.params
+          )
+        )
+
+        // allow the initial request to resolve
+        await promise
+
+        const {collectionRequest, collectionResult} = store.getState().search
+
+        // we made 2 fetches
+        expect(fetchMock.calls().length).toEqual(2)
+        // but only one collectionSearchError via errorHandler
+        expect(collectionSearchError.mock.calls.length).toEqual(1)
+
+        expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+        expect(collectionRequest.errorMessage).toEqual(
+          new Error('Internal Server Error')
+        )
+        expect(collectionResult.collections).toEqual({})
+      })
+
+      test('new search request success', async () => {
+        fetchMock
+          // mock the results of the first search request:
+          .postOnce((url, opts) => url == `${BASE_URL}/search/collection`, {
+            data: [
+              {
+                id: 'INTERRUPTED',
+              },
+            ],
+            meta: {
+              facets: {},
+              total: 2,
+            },
+          })
+          // mock the results of the second search request:
+          .postOnce(
+            (url, opts) => url == `${BASE_URL}/search/collection`,
+            mockPayload
+          )
+        //setup send something into flight first
+
+        // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+        const promise = submitSearchWithQueryTextCase.function(
+          ...submitSearchWithQueryTextCase.params
+        )(store.dispatch, store.getState)
+
+        {
+          // keep scoped
+          const {collectionRequest} = store.getState().search
+          expect(collectionRequest.inFlight).toBeTruthy()
+        }
+
+        await store.dispatch(
+          submitSearchWithFilterCase.function(
+            ...submitSearchWithFilterCase.params
+          )
+        )
+
+        // allow the initial request to resolve (red-green testing: without the fetch checking the abort controller status, this would cause the number of calls to collectionNewSearchResultsReceived to be incorrect)
+        await promise
+
+        const {collectionRequest, collectionResult} = store.getState().search
+
+        // we made 2 fetches
+        expect(fetchMock.calls().length).toEqual(2)
+        // but only one collectionNewSearchResultsReceived via successHandler
+        expect(collectionNewSearchResultsReceived.mock.calls.length).toEqual(1)
+
+        expect(collectionRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+        expect(collectionRequest.errorMessage).toEqual('')
+        expect(collectionResult.collections).toEqual({
+          'uuid-ABC': {title: 'ABC'},
+          'uuid-123': {title: '123'},
         })
       })
     })
@@ -344,29 +574,39 @@ describe('collection search actions', function(){
           })
         })
       })
+    })
 
-      describe('next page updates the result state correctly', function(){
-        it(`${submitNextPageCase.name}`, async () => {
-          await store.dispatch(
-            submitNextPageCase.function(...submitNextPageCase.params)
-          )
+    describe('next page updates the result state correctly', function(){
+      afterEach(() => {
+        fetchMock.reset()
+      })
 
-          const {
-            collectionRequest,
-            collectionResult,
-            collectionFilter,
-          } = store.getState().search
+      beforeEach(async () => {
+        fetchMock.reset()
+        fetchMock.post(
+          (url, opts) => url == `${BASE_URL}/search/collection`,
+          mockPayload
+        )
+      })
 
-          expect(collectionResult.collections).toEqual({
-            'uuid-ABC': {title: 'ABC'},
-            'uuid-123': {title: '123'},
-            'uuid-XYZ': {title: 'XYZ'},
-            'uuid-987': {title: '987'},
-          })
-          expect(collectionResult.facets).toEqual(mockFacets)
-          expect(collectionResult.totalCollectionCount).toEqual(10)
-          expect(collectionResult.loadedCollectionCount).toEqual(4)
+      it(`${submitNextPageCase.name}`, async () => {
+        await store.dispatch(
+          submitNextPageCase.function(...submitNextPageCase.params)
+        )
+
+        const {
+          collectionRequest,
+          collectionResult,
+          collectionFilter,
+        } = store.getState().search
+
+        expect(collectionResult.collections).toEqual({
+          'uuid-123': {title: '123'},
+          'uuid-ABC': {title: 'ABC'},
         })
+        expect(collectionResult.totalCollectionCount).toEqual(10)
+
+        expect(collectionResult.loadedCollectionCount).toEqual(2)
       })
     })
 

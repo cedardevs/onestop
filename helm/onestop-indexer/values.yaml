@@ -1,0 +1,57 @@
+# Default values for onestop-admin.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: cedardevs/onestop-indexer
+  tag: 2.4.0
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+elasticsearch:
+  host: onestop-es-http
+  port: "9200"
+  ssl:
+    enabled: true
+    cert:
+      path: "/etc/onestop-indexer/elastic"
+      tls: "tls.crt"
+  rw:
+    user: elastic
+
+###############################################################################
+# APPLICATION.YML ADDITIONAL SPRING CONFIG
+###############################################################################
+config:
+
+###############################################################################
+# ENV OVERRIDES
+###############################################################################
+env:
+  ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute
+
+###############################################################################
+# OTHER CONFIGS
+###############################################################################
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

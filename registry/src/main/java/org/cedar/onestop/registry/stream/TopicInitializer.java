@@ -1,18 +1,16 @@
 package org.cedar.onestop.registry.stream;
 
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.CreateTopicsOptions;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
+import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.registry.service.TopicsConfigurationProps;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import static org.cedar.onestop.kafka.common.constants.Topics.*;
 
@@ -23,7 +21,7 @@ public class TopicInitializer {
   private short replicationFactor;
 
   // add custom config by topic name here
-  static Map<String, Map> topicConfigs = new LinkedHashMap<>();
+  static Map<String, String> topicConfigs = new LinkedHashMap<>();
 
   public TopicInitializer(AdminClient adminClient, TopicsConfigurationProps topicProps) {
     this(adminClient, topicProps.getNumPartitions(), topicProps.getReplicationFactor());
@@ -39,25 +37,15 @@ public class TopicInitializer {
     declareTopics(this.adminClient, topicConfigs, numPartitions, replicationFactor);
   }
 
-  private static void declareTopics(AdminClient adminClient, Map<String, Map> topicConfigs, int numPartitions, short replicationFactor) throws InterruptedException, ExecutionException {
-    var currentTopics = adminClient.listTopics().names().get();
-    var declaredTopics = new ArrayList<>();
+  private static void declareTopics(AdminClient adminClient, Map<String, String> topicConfigs, int numPartitions, short replicationFactor) throws InterruptedException, ExecutionException {
+    Set<String> declaredTopics = new HashSet<>();
     declaredTopics.addAll(inputTopics());
     declaredTopics.addAll(parsedTopics());
     declaredTopics.addAll(fromExtractorTopics());
     declaredTopics.addAll(toExtractorTopics());
     declaredTopics.addAll(publishedTopics());
 
-    List missingTopics = declaredTopics.stream().filter(t -> !currentTopics.contains(t)).collect(Collectors.toList());
-
-    List<NewTopic> newTopics = new ArrayList();
-    missingTopics.forEach(name -> {
-      var topic = new NewTopic((String) name, numPartitions, replicationFactor);
-      var topicConfig = topicConfigs.containsKey(name) ? topicConfigs.get(name) : new LinkedHashMap();
-      newTopics.add(topic.configs(topicConfig));
-    });
-
-    CreateTopicsResult result = adminClient.createTopics(newTopics, new CreateTopicsOptions().timeoutMs(30000));
+    CreateTopicsResult result = KafkaHelpers.ensureTopics(adminClient, declaredTopics, numPartitions, replicationFactor, topicConfigs);
     result.all().get();
   }
 

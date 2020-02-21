@@ -1,0 +1,20 @@
+# defaults
+---
+kafka:
+  bootstrap:
+    servers: "http://localhost:9092"
+  schema:
+    registry:
+      url: "http://localhost:8081"
+  compression:
+    type: "gzip"
+  cache:
+    max:
+      bytes:
+        buffering: 104857600
+  commit:
+    interval:
+      ms: 30000
+  auto:
+    offset:
+      reset: "earliest"
