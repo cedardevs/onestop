@@ -78,8 +78,8 @@ func ParseSince(params *viper.Viper) []string {
 	filter := []string{}
 	startTime := params.GetString(flags.SinceFlag)
 	beginDateTime, _ := time.Parse("2006-01-02T15:04:05Z", ParseDateFormat(startTime))
-	beginDateTimeEpoch := beginDateTime.Unix()
-  beginDateTimeFilter := "stagedDate:>" + strconv.FormatInt(beginDateTimeEpoch, 10)
+	beginDateTimeEpochMillis := beginDateTime.UnixNano() / 1000000
+  beginDateTimeFilter := "stagedDate:>" + strconv.FormatInt(beginDateTimeEpochMillis, 10)
 	if len(beginDateTimeFilter) > 0 {
 		filter = []string{"{\"type\":\"queryText\", \"value\":\"" + beginDateTimeFilter + "\"}"}
 	}
