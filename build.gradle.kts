@@ -68,7 +68,7 @@ repositories {
 
 group = "org.cedar.onestop"
 
-version = project.dynamicVersion()
+version = rootProject.dynamicVersion("cedardevs", CI.CIRCLE, Registry.DOCKER_HUB)
 
 val authors: List<Author> = listOf(
         Author(
@@ -141,22 +141,17 @@ allprojects {
 
 subprojects {
 
-    // capture build metadata for common naming conventions, publishing, etc.
-    val created: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-    val projectName: String = "${rootProject.name}-${name}"
+    // capture project-specific information for publishing and other tasks
+    val projectName = "${rootProject.name}-${name}"
     val projectVersion: String = rootProject.version as String
     val description: String = projectDescriptions.getOrDefault(name, defaultValue = "The ${rootProject.name}-${name} project.")
 
-    // version control
-    val sourceUrl: String = sourceUrl() // git remote repository url
-    val revision: String = revision()   // git commit hash
+    val gitUrl = "https://github.com/cedardevs/onestop.git"
+    val projectUrl = "https://github.com/cedardevs/onestop"
+    val issuesUrl = "https://github.com/cedardevs/onestop/issues"
 
-    val gitUrl: String = "https://github.com/cedardevs/onestop.git"
-    val projectUrl: String = "https://github.com/cedardevs/onestop"
-    val issuesUrl: String = "https://github.com/cedardevs/onestop/issues"
-
-    val url: String = "https://data.noaa.gov/onestop"
-    val docs: String = "https://cedardevs.github.io/onestop"
+    val url = "https://data.noaa.gov/onestop"
+    val docs = "https://cedardevs.github.io/onestop"
 
     // for each subproject, take the OpenAPI files, replace the `${version}` tokens in those files w/actual version,
     // and sync those files into each projects' `build/openapi` directory for proper artifact baking
@@ -205,37 +200,20 @@ subprojects {
         // apply jib gradle plugin to projects using jib
         apply(plugin = "com.google.cloud.tools.jib")
 
-        // apply a common publishing pattern to all projects using jib
-        val publish = Publish(
-                created = created,
-                title = projectName,
-                project = rootProject.name,
+        // apply subproject-specific information to publish object
+        // this will augment the information automatically determined by using:
+        // `version = rootProject.dynamicVersion(...)` in the root gradle script
+        // the final publish info for each project will be available via the "publish" extra property:
+        // Kotlin: `val publish: Publish by project.extra`
+        // Groovy: `use(PublishingKt) { def publish = project.publish; ... }`
+        project.setPublish(Publish(
                 description = description,
                 documentation = docs,
                 authors = formatAuthors(authors),
                 url = url,
-                source = sourceUrl,
-                revision = revision,
-                vendor = "cedardevs",
-                version = projectVersion,
                 licenses = License.GPL20,
-                registry = Registries.DOCKER_HUB,
-                username = environment("DOCKER_USER"),
-                password = environment("DOCKER_PASSWORD")
-        )
-
-        // before jib executes, if we are in a CI environment, attempt to clean the container registry
-        tasks.getByName("jib") {
-            doFirst {
-                if(isCI()) {
-                    publish.cleanContainerRegistry()
-                }
-            }
-        }
-
-        extra.apply {
-            set("publish", publish)
-        }
+                cleanBefore = "jib"
+        ))
     }
     if (springBootProjects.contains(name)) {
         // apply the spring dependency management plugin to projects using spring

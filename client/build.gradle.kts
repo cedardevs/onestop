@@ -22,7 +22,6 @@ tasks.getByName("test") {
 
 tasks.getByName("assemble") {
     dependsOn("npm_run_build")
-    finalizedBy("tar")
 }
 
 tasks.getByName("jar") {
@@ -33,6 +32,8 @@ tasks.getByName("jar") {
 
 task<Tar>("tar") {
     val publish: Publish by project.extra
+
+    dependsOn("assemble")
 
     from(file("${buildDir}/webpack"))
     compression = Compression.GZIP
