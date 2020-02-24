@@ -13,40 +13,56 @@ Either golang, or docker. Direct downloads of binaries will be available in the 
 
 ### Install and run using a docker container (golang not required)
 
-Pull the image from Docker Hub (version 2.4.0 and up available).
+Pull the image from Docker Hub (version 2.4.2 and up available).
 
-`docker run cedardevs/onestop-cli:2.4.0 <CMD>`
+`docker run cedardevs/onestop-cli:2.4.2 <CMD>`
 
 For example-
 
-`docker run cedardevs/onestop-cli:2.4.0 searchcollection --query="satellite"`
+`docker run cedardevs/onestop-cli:2.4.2 searchcollection --query="satellite"`
 
 For more commands and flags -
 
-`docker run cedardevs/onestop-cli:2.4.0 <CMD> --help`
+`docker run cedardevs/onestop-cli:2.4.2 <CMD> --help`
 
 
 ### Download and use as Go package
 
 Download the cli:
 
-`go get github.com/cedardevs/onestop/cli`
+`go get github.com/cedardevs/onestop/cli/cmd/onestop`
 
 or to get it from a specific branch:
 
-`GO111MODULE=on go get github.com/cedardevs/onestop/cli@[branchname]`
+`GO111MODULE=on go get github.com/cedardevs/onestop/cli/cmd/onestop@[branchname]`
 
 Run the cli:
 
-`~/go/bin/cli --help`
+`~/go/bin/onestop --help`
 
 or
 
-`PATH=$PATH:~/go/bin cli`
+`PATH=$PATH:~/go/bin onestop`
 
 or
 
-`export PATH=$PATH:~/go/bin` after which you can just call `cli`
+`export PATH=$PATH:~/go/bin` after which you can just call `onestop`
+
+## Configuration
+
+To use a semantic types (i.e.`--type`), the user can use a configuration to map type to UUID. For example-
+
+```
+scdr-types:
+  ABI-L1b-Rad : 5b58de08-afef-49fb-99a1-9c5d5c003bde
+  ABI-L2-CMIP : 22222222-2222-2222-2222-222222222222
+  GLM-L2-LCFA : 33333333-3333-3333-3333-333333333333
+  ABI-L2-FDC : 44444444-4444-4444-4444-444444444444
+```
+
+The CLI binary will look for a configuration named scdr-files-config.yml in  `/etc/scdr-files`, `$HOME/.scdr-files`, and in the current working directory.
+
+The docker image has a built in config containing the example config above.
 
 ## Usage
 
@@ -69,7 +85,7 @@ The `getcollectionbyid`, `getgranulebyid` and `getflattenedgranulebyid` work the
 
 Get collection by id:
 
-`cli getcollectionbyid ecb087a6-25cf-4bfa-8165-2d374c701646`
+`onestop getcollectionbyid ecb087a6-25cf-4bfa-8165-2d374c701646`
 
 ### Search
 
@@ -81,39 +97,39 @@ There are two ways to specify queries and filters. A shorthand version and a lon
 
 Find collection by file identifier:
 
-`cli searchcollection --query="fileIdentifier:/gov.noaa.nodc:NDBC-COOPS/"`
+`onestop searchcollection --query="fileIdentifier:/gov.noaa.nodc:NDBC-COOPS/"`
 
 which is equivalent to the longhand version:
 
-`cli searchcollection queries[]{type:queryText, value:fileIdentifier:\"gov.noaa.nodc:NDBC-COOPS\"}`
+`onestop searchcollection queries[]{type:queryText, value:fileIdentifier:\"gov.noaa.nodc:NDBC-COOPS\"}`
 
 #### by parent identifier
 
 Search granule with parent identifier:
 
-`cli searchgranule --query="parentIdentifier:\\"\"gov.noaa.nodc:NDBC-COOPS\\"\""`
+`onestop searchgranule --query="parentIdentifier:\\"\"gov.noaa.nodc:NDBC-COOPS\\"\""`
 
 which is equivalent to:
 
-`cli searchgranule queries[]{type:queryText, value:parentIdentifier:\"gov.noaa.nodc:NDBC-COOPS\"}`
+`onestop searchgranule queries[]{type:queryText, value:parentIdentifier:\"gov.noaa.nodc:NDBC-COOPS\"}`
 
 #### by date
 
 Search collections start date:
 
-`cli searchcollection  --start-time=2016/03/02`
+`onestop searchcollection  --start-time=2016/03/02`
 
 which is equivalent to:
 
-`cli searchcollection filters[]{ type:datetime, after:2016-03-02T00:00:00Z}`
+`onestop searchcollection filters[]{ type:datetime, after:2016-03-02T00:00:00Z}`
 
 Or search by both start and end date:
 
-`cli searchcollection  --start-time=2016/03/02 --end-time=2017/02/01`
+`onestop searchcollection  --start-time=2016/03/02 --end-time=2017/02/01`
 
 which is equivalent to:
 
-`cli searchcollection filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z}`
+`onestop searchcollection filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z}`
 
 #### by geometry
 
@@ -121,26 +137,26 @@ Shorthand geometries use WKT, as opposed to the longhand which is a polygon (suc
 
 Search collections with a geometry filter:
 
-`cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"`
+`onestop searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"`
 
 which is equivalent to:
 
-`cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522`
+`onestop searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522`
 
 #### combinations
 
 
 Collections search with a query and filters:
 
-`cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --query="satellite"`
+`onestop searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --query="satellite"`
 
 Longhand query, including the `--verbose` flag to provide more logging:
 
-`cli searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522,  queries[]{type:queryText, value:satellite}  --verbose`
+`onestop searchcollection filters[]{ type : geometry }, filters[0].geometry{type : Polygon}, .geometry.coordinates[][]: 22.686768, 34.051522, []: 30.606537, 34.051522, []: 30.606537, 41.280903, []: 22.686768, 41.280903, []: 22.686768, 34.051522,  queries[]{type:queryText, value:satellite}  --verbose`
 
 For complex query and filter structure, refer to the [short hand documentation](https://github.com/danielgtaylor/openapi-cli-generator/tree/master/shorthand).
 
-Note: As it is now, you cannot combine the flags with json shorthand. e.g. This will not work - `cli searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --query="satellite" filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} `
+Note: As it is now, you cannot combine the flags with json shorthand. e.g. This will not work - `onestop searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --query="satellite" filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} `
 
 <hr>
 <div align="center"><a href="/onestop/public-user">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/cli/scdr-files">Next</a></div>

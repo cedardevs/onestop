@@ -40,9 +40,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v19-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
+      - onestop-cache-v20-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      # - onestop-cache-v19-
+      # - onestop-cache-v20-
 
 saveCache: &saveCache
   save_cache:
@@ -56,9 +56,9 @@ saveCache: &saveCache
       - registry/build
       - search/build
       - stream-manager/build
-      - cli/.gogradle
+      # - cli/.gogradle
       - cli/vendor
-    key: onestop-cache-v19-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+    key: onestop-cache-v20-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -255,17 +255,17 @@ jobs:
       - run:
           name: go build
           command: |
-           if test -f "~/repo/search/src/main/resources/openapi.yaml"; then
-             echo "Generating CLI"
-             cp search/schema/openapi.yml cli/openapi.yml ;
-             cd cli ;
-             go get -u github.com/danielgtaylor/openapi-cli-generator ;
-             openapi-cli-generator generate ../search/src/main/resources/openapi.yaml
-           fi
+            echo "Generating CLI" &&
+            cd cli &&
+            go get -u github.com/danielgtaylor/openapi-cli-generator &&
+            openapi-cli-generator generate ../search/src/main/resources/openapi.yaml &&
+            sed -i 's/package main/package generated/g' openapi.go &&
+            sed -i 's/openapiRegister/OpenapiRegister/g' openapi.go &&
+            mv openapi.go internal/app/generated/
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - cli/openapi.go
+            - cli/internal/app/generated/openapi.go
 
   cli-publish:
     <<: *defaults
@@ -278,8 +278,8 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - cli/.gogradle
             - cli/vendor
+            - cli/.gopath
   finalize:
     <<: *defaults
     steps:
