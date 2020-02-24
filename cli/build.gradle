@@ -5,7 +5,7 @@ plugins {
 }
 
 golang {
-  packagePath = 'github.com/cedardevs/onestop/cli' // go import path of project to be built, NOT local file system path!
+  packagePath = 'github.com/cedardevs/onestop/cli/cmd/onestop' // go import path of project to be built, NOT local file system path!
 }
 
 goBuild {
