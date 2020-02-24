@@ -40,9 +40,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v18-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+      - onestop-cache-v19-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      - onestop-cache-v18-
+      # - onestop-cache-v19-
 
 saveCache: &saveCache
   save_cache:
@@ -58,7 +58,7 @@ saveCache: &saveCache
       - stream-manager/build
       - cli/.gogradle
       - cli/vendor
-    key: onestop-cache-v18-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+    key: onestop-cache-v19-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -266,7 +266,6 @@ jobs:
           root: ~/repo
           paths:
             - cli/openapi.go
-            - cli/.gogradle
 
   cli-publish:
     <<: *defaults
