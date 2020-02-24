@@ -40,9 +40,9 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
+      - onestop-cache-v20-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
       # fallback to using the latest cache if no exact match is found
-      # - onestop-cache-v15-
+      # - onestop-cache-v20-
 
 saveCache: &saveCache
   save_cache:
@@ -58,11 +58,16 @@ saveCache: &saveCache
       - stream-manager/build
       # - cli/.gogradle
       - cli/vendor
-    key: onestop-cache-v15-{{ checksum "build.gradle" }}-{{ checksum "client/build.gradle" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}-{{ checksum "cli/gogradle.lock" }}
+    key: onestop-cache-v20-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
       at: ~/repo
+
+jobFilters: &jobFilters
+  filters:
+    tags:
+      only: /(?<=^[Vv]|^)(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?<prerelease>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*)))*))?(?:[+](?<build>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+)))*))?)$/
 
 version: 2
 jobs:
@@ -118,13 +123,7 @@ jobs:
           path: search/build/reports
       - deploy:
           name: Publish Image(s)
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew search:jib
-            else
-              echo "Skipping publishing"
-            fi
+          command: ./gradlew search:jib
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -147,13 +146,7 @@ jobs:
           path: ~/tests
       - deploy:
           name: Publish Image(s)
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew client:jib
-            else
-              echo "Skipping publishing"
-            fi
+          command: ./gradlew client:jib
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -164,34 +157,28 @@ jobs:
     <<: *defaultsWithElasticsearch
     <<: *env
     steps:
-    - <<: *attachWorkspace
-    - run:
-        name: Assemble, Check, Report
-        command: ./gradlew --parallel indexer:assemble indexer:check indexer:jacocoTestReport
-    - run:
-        name: Collect Test Results
-        command: |
-          mkdir -p ~/tests/junit/
-          find indexer/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-          find indexer/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-        when: always
-    - store_test_results:
-        path: ~/tests
-    - store_artifacts:
-        path: indexer/build/reports
-    - deploy:
-        name: Publish Image(s)
-        command: |
-          echo "${CIRCLE_BRANCH}"
-          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-            ./gradlew indexer:jib
-          else
-            echo "Skipping publishing"
-          fi
-    - persist_to_workspace:
-        root: ~/repo
-        paths:
-        - indexer/build
+      - <<: *attachWorkspace
+      - run:
+          name: Assemble, Check, Report
+          command: ./gradlew --parallel indexer:assemble indexer:check indexer:jacocoTestReport
+      - run:
+          name: Collect Test Results
+          command: |
+            mkdir -p ~/tests/junit/
+            find indexer/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find indexer/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/tests
+      - store_artifacts:
+          path: indexer/build/reports
+      - deploy:
+          name: Publish Image(s)
+          command: ./gradlew indexer:jib
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - indexer/build
 
   registry:
     <<: *defaults
@@ -214,13 +201,7 @@ jobs:
         path: registry/build/reports
     - deploy:
         name: Publish Image(s)
-        command: |
-          echo "${CIRCLE_BRANCH}"
-          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-            ./gradlew registry:jib
-          else
-            echo "Skipping publishing"
-          fi
+        command: ./gradlew registry:jib
     - persist_to_workspace:
         root: ~/repo
         paths:
@@ -247,13 +228,7 @@ jobs:
         path: stream-manager/build/reports
     - deploy:
         name: Publish Image(s)
-        command: |
-          echo "${CIRCLE_BRANCH}"
-          if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-            ./gradlew stream-manager:jib
-          else
-            echo "Skipping publishing"
-          fi
+        command: ./gradlew stream-manager:jib
     - persist_to_workspace:
         root: ~/repo
         paths:
@@ -292,13 +267,7 @@ jobs:
       - <<: *attachWorkspace
       - run:
           name: Build image, publish
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew cli:jib
-            else
-              ./gradlew cli:jib --image=cedardevs/onestop-cli:$CIRCLE_BRANCH
-            fi
+          command: ./gradlew cli:jib
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -365,37 +334,33 @@ workflows:
   version: 2
   build:
     jobs:
-      - checkout
-      - cli-generation:
-          requires:
-          - checkout
-      - cli-publish:
-          requires:
-          - checkout
-          - cli-generation
+      - checkout:
+          <<: *jobFilters
       - client:
           requires:
             - checkout
-      - indexer:
-          requires:
-            - checkout
+          <<: *jobFilters
       - registry:
           requires:
-          - checkout
+            - checkout
+          <<: *jobFilters
       - search:
           requires:
             - checkout
+          <<: *jobFilters
       - stream-manager:
           requires:
             - checkout
+          <<: *jobFilters
       - cli-generation:
           requires:
             - checkout
+          <<: *jobFilters
       - cli-publish:
           requires:
             - checkout
             - cli-generation
-
+          <<: *jobFilters
       - finalize:
           requires:
             - client
@@ -404,6 +369,7 @@ workflows:
             - registry
             - search
             - stream-manager
+          <<: *jobFilters
 
   nightly:
     triggers:

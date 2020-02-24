@@ -10,35 +10,14 @@ usage(){
 
 # update the properties
 updateVersions() {
-  prevVersion=$(cat gradle.properties | grep 'version=' | sed -e 's/version=//g' )
-  sed -i -- "s/version=.*/version=$1/g" gradle.properties
-  sed -i -- "s/\"version\":.*/\"version\": \"$1\",/g" client/package.json
   sed -i -- "s/version: .*/version: $1/g" search/src/main/resources/openapi.yaml
-  sed -i -- "s/appVersion:.*/appVersion: \"$1\"/" helm/onestop/Chart.yaml
-  sed -i -- "s/  tag:.*/  tag: $1/" helm/onestop-search/values.yaml
-  sed -i -- "s/  tag:.*/  tag: $1/" helm/onestop-user/values.yaml
-  sed -i -- "s/  tag:.*/  tag: $1/" helm/onestop-client/values.yaml
   sed -i -- "s/version: .*/version: $1/g" registry/src/main/resources/openapi_base.yaml
-  sed -i -- "s/appVersion:.*/appVersion: \"$1\"/" helm/onestop-registry/Chart.yaml
-  sed -i -- "s/appVersion:.*/appVersion: \"$1\"/" helm/onestop-manager/Chart.yaml
-  sed -i -- "s/  tag:.*/  tag: $1/" helm/onestop-registry/values.yaml
-  sed -i -- "s/  tag:.*/  tag: $1/" helm/onestop-manager/values.yaml
 }
 
 
 getCurrentVersions(){
-  echo gradle.properties ; grep version gradle.properties
-  echo client/package.json ; grep version client/package.json
   echo search/src/main/resources/openapi.yaml ; grep version search/src/main/resources/openapi.yaml
-  echo helm/onestop/Chart.yaml ; grep appVersion helm/onestop/Chart.yaml
-  echo helm/onestop-search/values.yaml ; grep tag helm/onestop-search/values.yaml
-  echo helm/onestop-user/values.yaml ; grep tag helm/onestop-user/values.yaml
-  echo helm/onestop-client/values.yaml ; grep tag helm/onestop-client/values.yaml
   echo registry/src/main/resources/openapi_base.yaml ; grep version registry/src/main/resources/openapi_base.yaml
-  echo helm/onestop-registry/Chart.yaml ; grep appVersion helm/onestop-registry/Chart.yaml
-  echo helm/onestop-manager/Chart.yaml ; grep appVersion helm/onestop-manager/Chart.yaml
-  echo helm/onestop-registry/values.yaml ; grep tag helm/onestop-registry/values.yaml
-  echo helm/onestop-manager/values.yaml ; grep tag helm/onestop-manager/values.yaml
 }
 
 
