@@ -275,41 +275,45 @@ fun Project.setPublish(publish: Publish) {
     // we get the default publishing data that was set in the `dynamicVersion` at the root project level
     val publishShared: PublishShared by rootProject.extra
 
-    // attempt to clean the container registry before specified `cleanBefore` task name if in CI environment
-    val isCI = publish.isCI ?: publishShared.isCI
-    if(publish.cleanBefore != null) {
-        this.tasks.getByName(publish.cleanBefore) {
-            doFirst {
-                if(isCI) {
-                    publish.cleanContainerRegistry()
-                }
-            }
-        }
-    }
-
     // allow the user to override any defaults
     // default any subproject-specific gaps which weren't be known at the root project level
+    val publishMerged = Publish(
+            vendor = publish.vendor ?: publishShared.vendor,
+            project = publishShared.project,
+            title = publish.title ?: "${publishShared.project}-${name}",
+            version = publish.version ?: publishShared.version,
+            created = publish.created ?: publishShared.created,
+            description = publish.description ?: "The ${publishShared.project}-${name} project.",
+            documentation = publish.documentation,
+            authors = publish.authors,
+            url = publish.url,
+            source = publish.source ?: publishShared.source,
+            revision = publish.revision ?: publishShared.revision,
+            licenses = publish.licenses,
+            registry = publish.registry ?: publishShared.registry,
+            username = publish.username ?: publishShared.username,
+            password = publish.password ?: publishShared.password,
+            accessToken = publish.accessToken ?: publishShared.accessToken,
+            isCI = publish.isCI ?: publishShared.isCI,
+            cleanBefore = publish.cleanBefore
+    )
+
+    // place the merged publish object onto the extra properties of this project
     this.extra.apply {
-        set("publish", Publish(
-                vendor = publish.vendor ?: publishShared.vendor,
-                project = publishShared.project,
-                title = publish.title ?: "${publishShared.project}-${name}",
-                version = publish.version ?: publishShared.version,
-                created = publish.created ?: publishShared.created,
-                description = publish.description ?: "The ${publishShared.project}-${name} project.",
-                documentation = publish.documentation,
-                authors = publish.authors,
-                url = publish.url,
-                source = publish.source ?: publishShared.source,
-                revision = publish.revision ?: publishShared.revision,
-                licenses = publish.licenses,
-                registry = publish.registry ?: publishShared.registry,
-                username = publish.username ?: publishShared.username,
-                password = publish.password ?: publishShared.password,
-                accessToken = publish.accessToken ?: publishShared.accessToken,
-                isCI = isCI,
-                cleanBefore = publish.cleanBefore
-        ))
+        set("publish", publishMerged)
+    }
+
+    // attempt to clean the container registry before specified `cleanBefore` task name if in CI environment
+    if(publishMerged.cleanBefore != null) {
+        this.tasks.register("cleanContainerRegistry") {
+            // only attempt regular cleanup while building in the CI environment
+            if(publishMerged.isCI == true) {
+                publishMerged.cleanContainerRegistry()
+            }
+        }
+        this.tasks.getByName(publishMerged.cleanBefore) {
+            dependsOn("cleanContainerRegistry")
+        }
     }
 }
 
@@ -365,6 +369,7 @@ fun registryAccessToken(registry: Registry): String {
 }
 
 fun Publish.cleanContainerRegistry(): Boolean {
+    println("this.registry = ${this.registry}")
     val containerRegistry: ContainerRegistryInterface = when(this.registry) {
         Registry.DOCKER_HUB -> DockerHubAPI()
         Registry.GITLAB -> GitLabAPI()
