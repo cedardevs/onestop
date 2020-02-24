@@ -174,13 +174,7 @@ jobs:
           path: indexer/build/reports
       - deploy:
           name: Publish Image(s)
-          command: |
-            echo "${CIRCLE_BRANCH}"
-            if [[ "${CIRCLE_BRANCH}" == "master" ]] || [[ "${CIRCLE_BRANCH}" == release* ]]; then
-              ./gradlew indexer:jib
-            else
-              echo "Skipping publishing"
-            fi
+          command: ./gradlew indexer:jib
       - persist_to_workspace:
           root: ~/repo
           paths:
