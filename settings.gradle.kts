@@ -10,8 +10,8 @@ include(
     "kafka-common",
     "registry",
     "search",
-    "stream-manager",
-    "user"
+    "stream-manager"
+    //"user"
 )
 
 //plugins {

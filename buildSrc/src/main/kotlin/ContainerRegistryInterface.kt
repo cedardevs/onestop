@@ -40,9 +40,8 @@ interface ContainerRegistryInterface {
         // delete all the inactive snapshots and dangling tags
         val delete = this.concat(snapshotsInactive, dangling)
         println("\nDELETE      [${delete.length()}]:" + this.printTagNames(delete))
-        // TODO: careful! uncomment this when we are ready to really delete things!!!
-        //return this.deleteTags(publish, this.tagNames(delete))
-        return false
+
+        return this.deleteTags(publish, this.tagNames(delete))
     }
 
     // Retrieve active branches of the project git repo (private: shouldn't be impl differently between git repos)

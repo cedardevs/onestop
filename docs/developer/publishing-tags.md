@@ -136,20 +136,26 @@ If the above conditions are _NOT_ all met, then we assume we are in a "local" en
 The local user may not have a need for or regularly publish manually, so they may not have the `DOCKER_USER` and `DOCKER_PASSWORD` environment variables set at all times. These credentials are required by the Docker Hub container registry API to delete images. Because of this, non-CI environments, should never attempt to clean up old/obsolete images automatically.
 
 ## Gradle Task Considerations
-In order to pull out clunky logic from the CI configuration itself, we can create an extension function on the Gradle `Project` object and dynamically determine the version at runtime instead of hard-coding it into a `gradle.properties` file.
+Utilizing the publishing build logic is a matter of calling the `dynamicVersion` function on the root gradle project and assigning its return value to the root level project version.
 
-Then, you can attempt to clean in CI environments before the `jib` (publish) task runs by providing an `doFirst` closure on the task:
+The first parameter is the user, organization, or vendor (terminology depends on the container registry being used). The second parameter prepares the appropriate checks depending on which CI environment the build runs in. The last parameter is the container registry published to and cleaned from.
+
+The `dynamicVersion` call, alone, will set some defaults for publishing, but will miss some sub-project specific details that you will want to set on a per-project basis. 
+
+Below is an example of what you probably want to set at the subproject level. Any of the `Publish` object properties can be overwritten, but it is not recommended to set more than what's shown below, unless you are a power user and want specific subprojects to publish to different repositories, have different naming conventions, etc.
+
 ```
-# this version is calculated based on the environmental conditions described above
-version = project.dynamicVersion()
+version = rootProject.dynamicVersion("cedardevs", CI.CIRCLE, Registry.DOCKER_HUB)
 
-// before jib executes, if we are in a CI environment, attempt to clean the container registry
-tasks.getByName("jibDockerBuild") {
-    doFirst {
-        if(isCI()) {
-            publish.cleanContainerRegistry()
-        }
-    }
+subprojects {
+        project.setPublish(Publish(
+                description = description,
+                documentation = docs,
+                authors = formatAuthors(authors),
+                url = url,
+                licenses = License.GPL20,
+                cleanBefore = "jib"
+        ))
 }
 ```
 
@@ -159,79 +165,19 @@ We use the [Open Containers Spec](https://github.com/opencontainers/image-spec/b
 `docker inspect image ${imageID}`
 ```
 "Labels": {
-    "org.opencontainers.image.created": "2020-02-11T17:34:37.930Z",
-    "org.opencontainers.image.description": "A search API for the OneStop search software.",
-    "org.opencontainers.image.ref.name": "onestop-client",
-    "org.opencontainers.image.revision": "873be791", # Git Commit Hash 
-    "org.opencontainers.image.source": "https://github.com/cedardevs/onestop.git",
+    "org.opencontainers.image.authors": "Coalition for Earth Data Applications and Research <cedar.cires@colorado.edu> (https://github.com/cedardevs)",
+    "org.opencontainers.image.created": "2020-02-22T00:05:37.561983Z",
+    "org.opencontainers.image.description": "A browser UI for the OneStop system.",
+    "org.opencontainers.image.documentation": "https://cedardevs.github.io/onestop",
+    "org.opencontainers.image.licenses": "GPL-2.0",
+    "org.opencontainers.image.revision": "7606250a",
+    "org.opencontainers.image.title": "onestop-client",
+    "org.opencontainers.image.url": "https://data.noaa.gov/onestop",
     "org.opencontainers.image.vendor": "cedardevs",
-    "org.opencontainers.image.version": "2.4.2"
+    "org.opencontainers.image.version": "unknown-SNAPSHOT"
 }
 ```
 
 The same image annotations can be seen via Kubernetes, using the following command:
 
 `kubectl describe pod ${podName}`
-
-## Using Docker Hub API
-
-### Request all public tags (no credentials or token needed)
-```
-fun requestDockerHubTags(publish: Publish, url: String? = null, tags: JSONArray = JSONArray()): JSONArray {
-    val urlTags = url ?: "${RegistryAPI.DOCKER_HUB}/repositories/${publish.vendor}/${publish.title}/tags"
-    val response: Response = khttp.get(urlTags)
-    val jsonResponse: JSONObject = response.jsonObject
-    val urlNext: String = try {
-        jsonResponse.getString("next")
-    } catch (e: JSONException) {
-        ""
-    } as String
-
-    if (urlNext.isBlank()) return tags
-
-    val jsonTags: JSONArray = jsonResponse.getJSONArray("results")
-    val jsonTagsRefined = JSONArray()
-    jsonTags.forEach { t ->
-        val tag: JSONObject = t as JSONObject
-
-        val name = tag.getString("name")
-        val lastUpdated = tag.getString("last_updated")
-        val refinedTag = JSONObject(mapOf(Pair("name", name), Pair("last_updated", lastUpdated)))
-        jsonTagsRefined.put(refinedTag)
-    }
-    return requestDockerHubTags(publish, urlNext, concat(tags, jsonTagsRefined))
-}
-```
-
-### Retrieve token needed to call delete tag endpoint
-```
-# Retrieve Token needed to call delete tag endpoint
-fun requestDockerHubToken(publish: Publish): String? {
-    val urlToken = "${RegistryAPI.DOCKER_HUB}/users/login"
-    val payload = mapOf(Pair("username", publish.username), Pair("password", publish.password))
-    val response: Response = khttp.post(
-            url = urlToken,
-            headers = mapOf(Pair("Content-Type", "application/json")),
-            data = JSONObject(payload)
-    )
-    if (response.statusCode == 200) {
-        val jsonResponse: JSONObject = response.jsonObject
-        return jsonResponse.getString("token")
-    }
-    return null
-}
-```
-
-### Delete a tag
-```
-fun requestDockerHubRemoveTag(publish: Publish, tag: String): Boolean {
-    val jwt: String? = requestDockerHubToken(publish)
-    val urlDelete = "${RegistryAPI.DOCKER_HUB}/repositories/${publish.vendor}/${publish.title}/tags/${tag}"
-    val response: Response = khttp.delete(
-            url = urlDelete,
-            headers = mapOf(Pair("Authorization", "JWT ${jwt ?: ""}"))
-    )
-    println("DELETE STATUS CODE = " + response.statusCode)
-    return response.statusCode == 202
-}
-```
