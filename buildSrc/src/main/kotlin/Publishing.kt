@@ -177,10 +177,10 @@ fun logInfo(ci: CI, registry: Registry, version: String) {
 
     val logReleaseCI: String = """
 [Official Release]
-    ✓ in CI environment
+    ✓ in CI environment (${ci.info.label})
     ✓ tag has 'v' prefix before version
     ✓ version is semantic without '$SUFFIX_SNAPSHOT' suffix
-    ✓ building on release branch = '$BRANCH_MASTER'
+    ✓ ${ci.info.envBranch}='${branchCI}', as expected for tagged builds in ${ci.info.label}
 """.trimIndent()
 
     val logReleaseLocal: String = """

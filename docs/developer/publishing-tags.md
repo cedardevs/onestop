@@ -26,13 +26,13 @@ For Circle CI to [triggers builds from tags](https://circleci.com/docs/2.0/confi
 
 The `branches` filter is not used because we want all branches to trigger a Circle CI Build, and we rely on gradle to set the version/tag appropriately based on environment.
 
-The job `tags` filter is defined for every job to prevent -- as much as possible -- random tags from triggering a build/publish. The insanely long regex is a way to capture only tags that match the semantic versioning format; however, gradle still ensures other constraints are met before officially pushing to the container registry.
+The job `tags` filter is defined for every job, in accordance with the CircleCI reference above. For simplicity, any tag is allowed to trigger a build, but the publishing logic will prevent tags containing non-semantic versions from getting published as such.
  
 ```
 jobFilters: &jobFilters
   filters:
     tags:
-      only: /(?<=^[Vv]|^)(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?<prerelease>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*)))*))?(?:[+](?<build>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+)))*))?)$/
+      only: /.*/
 
 workflows:
   version: 2
@@ -55,7 +55,7 @@ workflows:
 ## Continuous Integration Automation
  
 Many CI environments, including Circle CI set an environment variable `CI` to facilitate detecting the environment of the build. In the case that we have detected `CI=true`:
-- if build is tagged `CIRCLE_TAG=v?` and `CIRCLE_BRANCH=master`
+- if build is tagged `CIRCLE_TAG=v?` and `CIRCLE_BRANCH=` (other CI environments may set the branch, but CircleCI does not on tagged builds)
   - set `jib`'s `to` image to:  
      - `"${version}"` (`CIRCLE_TAG` must be semantic version without the 'v' prefix) 
 - else (tag is non-semantic or non-existent):
