@@ -369,7 +369,6 @@ fun registryAccessToken(registry: Registry): String {
 }
 
 fun Publish.cleanContainerRegistry(): Boolean {
-    println("this.registry = ${this.registry}")
     val containerRegistry: ContainerRegistryInterface = when(this.registry) {
         Registry.DOCKER_HUB -> DockerHubAPI()
         Registry.GITLAB -> GitLabAPI()
