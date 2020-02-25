@@ -147,16 +147,23 @@ fun Project.versionProperty(): String? {
     return if (isSemanticNonSnapshot) version else null
 }
 
+fun isReleaseBranch(ci: CI): Boolean {
+    val branch: String = branchCI(ci) ?: ""
+    return when(ci) {
+        CI.CIRCLE -> branch.isNullOrBlank()  // CircleCI does not set the CIRCLE_BRANCH env var when building tags
+        CI.GITLAB -> branch == BRANCH_MASTER // TODO: determine if GitLab has an empty branch env var or sets == 'master' when tag env var is set
+        CI.TRAVIS -> branch == BRANCH_MASTER // TODO: determine if Travis has an empty branch env var or sets == 'master' when tag env var is set
+    }
+}
+
 fun isRelease(ci: CI): Boolean {
     // we're in the CI environment and checking conditions for for an official release
     // in order to treat publishing differently than a regular branch snapshot
     val tag: String = tagCI(ci) ?: ""
     val isReleaseTag = tag.startsWith("v")
     val version = tag.removePrefix("v")
-    val isSemanticNonSnapshot = isSemanticNonSnapshot(version)
-    val branch: String = branchCI(ci) ?: ""
-    val isMasterBranch = branch == BRANCH_MASTER
-    return isReleaseTag && isSemanticNonSnapshot && isMasterBranch
+
+    return isReleaseTag && isSemanticNonSnapshot(version) && isReleaseBranch(ci)
 }
 
 fun logInfo(ci: CI, registry: Registry, version: String) {
