@@ -162,14 +162,10 @@ fun isBuildTag(envBuildTag: String): Boolean {
     val buildVersion = buildTag.removePrefix("v")
     val isTagMatch = !tagDiff(buildTag)
     val isSemanticNonSnapshot = isSemanticNonSnapshot(buildVersion)
-    println("isBuildTagPrefixed = ${isBuildTagPrefixed}")
-    println("buildVersion = ${buildVersion}")
-    println("isTagMatch = ${isTagMatch}")
-    println("isSemanticSnapshot = ${isSemanticNonSnapshot}")
     // the build tag is specified in the environment and must:
-    // - exist in repo
-    // - not have any differences with the local checkout
-    // - be semantic, non-snapshot without the "v" prefix
+    // - exist in repo and match the `git diff` against the real tag
+    // - have the expected "v" prefix
+    // - be a semantic, non-snapshot
     return isTagMatch && isBuildTagPrefixed && isSemanticNonSnapshot
 }
 
@@ -298,12 +294,9 @@ fun Project.dynamicVersion(vendor: String, envBuildTag: String = ENV_BUILD_TAG, 
         }
         else {
             // env var has been set and is NOT valid for a tag-based build (exit before something bad happens)
-            println("buildTag = ${buildTag}")
-            println("isBuildTag = ${isBuildTag}")
             throw GradleException("The $envBuildTag='$buildTag' environment variable is set, but it is not a valid tag!")
         }
     }
-
 
     // create the default publishing information, prior to the user filling in the gaps/details
     this.extra.apply {
@@ -375,10 +368,6 @@ fun Project.setPublish(publish: Publish) {
 
         // the publish task tries to clean the container registry before publishing
         dependsOn("cleanContainerRegistry")
-
-        doLast {
-            println("${publishMerged.task} RAN!!!!")
-        }
     }
 }
 
