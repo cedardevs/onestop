@@ -168,7 +168,9 @@ fun isBuildTag(envBuildTag: String): Boolean {
     // - exist in repo
     // - not have any differences with the local checkout
     // - be semantic, non-snapshot without the "v" prefix
-    return !tagDiff(buildTag) && isBuildTagPrefixed && isSemanticNonSnapshot(buildVersion)
+    val tagMatch = !tagDiff(buildTag)
+    val isSemanticNonSnapshot = isSemanticNonSnapshot(buildVersion)
+    return tagMatch && isBuildTagPrefixed && isSemanticNonSnapshot
 }
 
 fun isReleaseBranch(ci: CI): Boolean {
@@ -411,7 +413,7 @@ fun tags(): Set<String> {
 }
 
 fun tagDiff(tag: String): Boolean {
-    val exitCode: Int = "git diff tags/${tag} --exit-code".runShellExitCode()
+    val exitCode: Int = "git diff tags/${tag} --quiet".runShellExitCode()
     return exitCode != 0
 }
 

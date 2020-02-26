@@ -337,6 +337,10 @@ workflows:
           requires:
             - checkout
           <<: *jobFilters
+      - indexer:
+          requires:
+            - checkout
+          <<: *jobFilters
       - search:
           requires:
             - checkout
