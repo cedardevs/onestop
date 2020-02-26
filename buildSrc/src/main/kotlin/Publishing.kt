@@ -12,58 +12,49 @@ const val PREFIX_LOCAL = "LOCAL-"
 const val BRANCH_MASTER = "master"
 const val ENV_BUILD_TAG = "BUILD_TAG"
 
-data class CIInfo (
-        val label: String,
-        val envBranch: String,
-        val envTag: String
-)
-enum class CI(val info: CIInfo) {
-    CIRCLE(CIInfo(
-            label = "Circle CI",
-            envBranch = "CIRCLE_BRANCH",
-            envTag = "CIRCLE_TAG"
-    )),
-    GITLAB(CIInfo(
-            label = "GitLab CI/CD",
-            envBranch = "CI_COMMIT_BRANCH",
-            envTag = "CI_COMMIT_TAG"
-    )),
-    TRAVIS(CIInfo(
-            label = "Travis CI",
-            envBranch = "TRAVIS_BRANCH",
-            envTag = "TRAVIS_TAG"
-    ))
+enum class CI(val label: String, val envBranch: String, val envTag: String) {
+    CIRCLE(
+        label = "Circle CI",
+        envBranch = "CIRCLE_BRANCH",
+        envTag = "CIRCLE_TAG"
+    ),
+    GITLAB(
+        label = "GitLab CI/CD",
+        envBranch = "CI_COMMIT_BRANCH",
+        envTag = "CI_COMMIT_TAG"
+    ),
+    TRAVIS(
+        label = "Travis CI",
+        envBranch = "TRAVIS_BRANCH",
+        envTag = "TRAVIS_TAG"
+    )
 }
 
-data class RegistryInfo (
+enum class Registry(
         val label: String,
         val host: String,
         val envUser: String,
         val envPassword: String,
-        val envAccessToken: String
-)
-enum class Registry(val info: RegistryInfo, val api: ContainerRegistryInterface) {
+        val envAccessToken: String,
+        val api: ContainerRegistryInterface
+) {
     // DockerHub can retrieve access token using username/password automatically
     DOCKER_HUB(
-        RegistryInfo(
-            label = "Docker Hub",
-            host = "registry.hub.docker.com",
-            envUser = "DOCKER_USER",
-            envPassword = "DOCKER_PASSWORD",
-            envAccessToken = ""
-        ),
-        DockerHubAPI()
+        label = "Docker Hub",
+        host = "registry.hub.docker.com",
+        envUser = "DOCKER_USER",
+        envPassword = "DOCKER_PASSWORD",
+        envAccessToken = "",
+        api = DockerHubAPI()
     ),
     // GitLab uses `accessToken` directly for secure API calls
     GITLAB(
-        RegistryInfo(
-            label = "GitLab Container Registry",
-            host = "registry.gitlab.com",
-            envUser = "",
-            envPassword = "",
-            envAccessToken = "GITLAB_ACCESS_TOKEN"
-        ),
-        GitLabAPI()
+        label = "GitLab Container Registry",
+        host = "registry.gitlab.com",
+        envUser = "",
+        envPassword = "",
+        envAccessToken = "GITLAB_ACCESS_TOKEN",
+        api = GitLabAPI()
     )
 }
 
@@ -195,18 +186,18 @@ fun logInfo(ci: CI, registry: Registry, version: String, envBuildTag: String) {
 
     val isCI = isCI(ci)
     val branchCI = branchCI(ci)
-    val logEnvironment: String = if(isBuildTag) "Tag-Based Build [$envBuildTag is defined]" else if(isCI) "${ci.info.label} [CI=true]" else "Local [CI=false|null]"
-    val logBranch: String = if(isBuildTag) "N/A" else if(isCI) "${ci.info.envBranch}=${branchCI}" else branch()
-    val logTag: String = if(isBuildTag) "$envBuildTag=$buildTag" else if(isCI) "${ci.info.envTag}=${tagCI(ci)}" else "N/A"
-    val logRegistry: String = if(isBuildTag) "publishing disabled in tag-based builds" else "${registry.info.label} (${registry.info.host})"
+    val logEnvironment: String = if(isBuildTag) "Tag-Based Build [$envBuildTag is defined]" else if(isCI) "${ci.label} [CI=true]" else "Local [CI=false|null]"
+    val logBranch: String = if(isBuildTag) "N/A" else if(isCI) "${ci.envBranch}=${branchCI}" else branch()
+    val logTag: String = if(isBuildTag) "$envBuildTag=$buildTag" else if(isCI) "${ci.envTag}=${tagCI(ci)}" else "N/A"
+    val logRegistry: String = if(isBuildTag) "publishing disabled in tag-based builds" else "${registry.label} (${registry.host})"
 
 
     val logReleaseCI: String = """
 [Official Release]
-    ✓ in CI environment (${ci.info.label})
+    ✓ in CI environment (${ci.label})
     ✓ tag has 'v' prefix before version
     ✓ version is semantic without '$SUFFIX_SNAPSHOT' suffix
-    ✓ ${ci.info.envBranch}='${branchCI}', as expected for tagged builds in ${ci.info.label}
+    ✓ ${ci.envBranch}='${branchCI}', as expected for tagged builds in ${ci.label}
 """.trimIndent()
 
     val logReleaseLocal: String = """
@@ -385,11 +376,11 @@ fun buildTag(envBuildTag: String): String? {
 }
 
 fun branchCI(ci: CI): String? {
-    return System.getenv(ci.info.envBranch)
+    return System.getenv(ci.envBranch)
 }
 
 fun tagCI(ci: CI): String? {
-    return System.getenv(ci.info.envTag)
+    return System.getenv(ci.envTag)
 }
 
 // Git Utilities
@@ -420,15 +411,15 @@ fun whoAmI(): String {
 
 // Container Registry Utilities
 fun registryUser(registry: Registry): String {
-    return System.getenv(registry.info.envUser) ?: ""
+    return System.getenv(registry.envUser) ?: ""
 }
 
 fun registryPassword(registry: Registry): String {
-    return System.getenv(registry.info.envPassword) ?: ""
+    return System.getenv(registry.envPassword) ?: ""
 }
 
 fun registryAccessToken(registry: Registry): String {
-    return System.getenv(registry.info.envAccessToken) ?: ""
+    return System.getenv(registry.envAccessToken) ?: ""
 }
 
 fun Publish.cleanContainerRegistry(): Boolean {
@@ -471,10 +462,10 @@ fun Publish.ociAnnotations(): MutableMap<String, String> {
 fun Publish.repository(): String {
     return when(this.registry) {
         // Docker Hub doesn't distinguish groups of containers by project
-        Registry.DOCKER_HUB -> "${this.registry.info.host}/${this.vendor}/${this.title}:${this.version}"
+        Registry.DOCKER_HUB -> "${this.registry.host}/${this.vendor}/${this.title}:${this.version}"
 
         // GitLab Container Registry has additional pathway to project name
-        Registry.GITLAB -> "${this.registry.info.host}/${this.vendor}/${this.project}/${this.title}:${this.version}"
+        Registry.GITLAB -> "${this.registry.host}/${this.vendor}/${this.project}/${this.title}:${this.version}"
 
         else -> return ""
     }
