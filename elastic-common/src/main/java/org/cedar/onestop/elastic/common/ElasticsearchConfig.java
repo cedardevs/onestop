@@ -1,14 +1,17 @@
 package org.cedar.onestop.elastic.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ElasticsearchConfig {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfig.class);
+  private static final ObjectMapper jsonMapper = new ObjectMapper();
 
   public ElasticsearchVersion version;
 
@@ -32,6 +35,7 @@ public class ElasticsearchConfig {
   public static final String TYPE_SITEMAP = "sitemap";
 
   private Map<String, String> jsonMappings = new HashMap<>();
+  private Map<String, Map<String, Map>> parsedMappings = new HashMap<>();
   private Map<String, String> typesByAlias = new HashMap<>();
 
   public ElasticsearchConfig(
@@ -78,6 +82,11 @@ public class ElasticsearchConfig {
     this.jsonMappings.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_flattened_granuleIndex.json"));
     this.jsonMappings.put(SITEMAP_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/sitemapIndex.json"));
 
+    this.parsedMappings.put(COLLECTION_SEARCH_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(COLLECTION_SEARCH_INDEX_ALIAS), Map.class));
+    this.parsedMappings.put(GRANULE_SEARCH_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(GRANULE_SEARCH_INDEX_ALIAS), Map.class));
+    this.parsedMappings.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(FLAT_GRANULE_SEARCH_INDEX_ALIAS), Map.class));
+    this.parsedMappings.put(SITEMAP_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(SITEMAP_INDEX_ALIAS), Map.class));
+
     // Associate index aliases directly to their type identifiers for consistency
     this.typesByAlias.put(COLLECTION_SEARCH_INDEX_ALIAS, TYPE_COLLECTION);
     this.typesByAlias.put(GRANULE_SEARCH_INDEX_ALIAS, TYPE_GRANULE);
@@ -87,7 +96,18 @@ public class ElasticsearchConfig {
 
   public String jsonMapping(String alias) {
     // retrieve JSON mapping for index alias
-    return this.jsonMappings.get(alias);
+    return this.jsonMappings.getOrDefault(alias, null);
+  }
+
+  public Map<String, ?> parsedMapping(String alias) {
+    // retrieve JSON mapping for index alias
+    return this.parsedMappings.getOrDefault(alias, Collections.emptyMap());
+  }
+
+  public Map<String, ?> indexedProperties(String alias) {
+    var parsed = (Map<String, Map>) parsedMapping(alias);
+    var mappings = (Map<String, Map>) parsed.getOrDefault("mappings", Collections.emptyMap());
+    return (Map<String, Map>) mappings.getOrDefault("properties", Collections.emptyMap());
   }
 
   public static String aliasFromIndex(String index) {

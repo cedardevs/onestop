@@ -1,49 +1,42 @@
-plugins {
-  id 'groovy'
-  id 'org.springframework.boot' // version declared in top-level buildscript
-  id 'io.spring.dependency-management'
-}
-
 sourceCompatibility = 11
 targetCompatibility = 11
 
-repositories {
-  mavenCentral()
-}
-
 dependencies {
-  compileOnly("org.slf4j:slf4j-api:1.7.25")
+    def Versions = project.Versions
 
-  implementation("org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}")
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${project.esVersion}")
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
+    compileOnly("org.slf4j:slf4j-api:1.7.25")
 
-  testImplementation("org.codehaus.groovy:groovy:${project.groovyVersion}")
-  testImplementation("junit:junit:4.12")
-  testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.testcontainers:testcontainers:${project.testContainersVersion}")
-  testImplementation("org.testcontainers:elasticsearch:${project.testContainersVersion}")
+    implementation("org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}")
+    implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${Versions.ELASTIC}")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
+
+
+    testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+    testImplementation("junit:junit:4.12")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.testcontainers:testcontainers:${Versions.TEST_CONTAINERS}")
+    testImplementation("org.testcontainers:elasticsearch:${Versions.TEST_CONTAINERS}")
 }
 
 configurations {
-  testElastic.extendsFrom testCompile
+    testElastic.extendsFrom testCompile
 }
 
 // needed to share as local project dependency
 // https://stackoverflow.com/questions/54486199/multi-module-gradle-project-migrate-from-spring-boot-1-5-to-2-1#answer-54618449
 jar {
-  enabled = true
+    enabled = true
 }
 
 task testJar(type: Jar) {
-  archiveClassifier.set('test')
-  from sourceSets.test.output
+    archiveClassifier.set('test')
+    from sourceSets.test.output
 }
 
 artifacts {
-  testElastic testJar
+    testElastic testJar
 }
 
 bootJar {
-  enabled = false
+    enabled = false
 }

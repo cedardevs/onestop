@@ -8,6 +8,7 @@ import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.indexer.util.IndexingHelpers;
+import org.cedar.onestop.indexer.util.IndexingInput;
 import org.cedar.onestop.indexer.util.IndexingOutput;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -20,15 +21,15 @@ import java.io.IOException;
 public class BulkIndexingTransformer implements Transformer<String, ValueAndTimestamp<ParsedRecord>, KeyValue<String, IndexingOutput>> {
   private static final Logger log = LoggerFactory.getLogger(BulkIndexingTransformer.class);
 
-  private final ElasticsearchService client;
+  private final ElasticsearchService elasticsearchService;
   private final BulkIndexingConfig config;
 
   private TimestampedKeyValueStore<String, ParsedRecord> store;
   private ProcessorContext context;
   private BulkRequest request;
 
-  public BulkIndexingTransformer(ElasticsearchService client, BulkIndexingConfig config) {
-    this.client = client;
+  public BulkIndexingTransformer(ElasticsearchService elasticsearchService, BulkIndexingConfig config) {
+    this.elasticsearchService = elasticsearchService;
     this.config = config;
   }
 
@@ -44,7 +45,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
   @Override
   public KeyValue<String, IndexingOutput> transform(String key, ValueAndTimestamp<ParsedRecord> record) {
     store.put(key, record);
-    var requests = IndexingHelpers.mapRecordToRequests(context.topic(), key, record, config);
+    var requests = IndexingHelpers.mapRecordToRequests(new IndexingInput(context.topic(), key, record, config, elasticsearchService.getConfig()));
     requests.forEach(request::add);
     if (request.estimatedSizeInBytes() >= config.getMaxPublishBytes()) {
       log.debug("flushing request due to size: {} >= {}", request.estimatedSizeInBytes(), config.getMaxPublishBytes());
@@ -60,7 +61,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
     }
     try {
       log.info("submitting bulk request with [" + numActions + "] actions and approximately [" + request.estimatedSizeInBytes() + "] bytes");
-      var response = client.bulk(request);
+      var response = elasticsearchService.bulk(request);
       log.info("completed bulk request with [" + numActions + "] actions in [" + response.getTook() + "]");
       response.iterator().forEachRemaining(item -> {
         var id = item.getId();

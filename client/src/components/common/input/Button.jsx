@@ -154,6 +154,7 @@ export default class Button extends React.Component {
       title,
       ariaExpanded,
       ariaSelected,
+      ariaCurrent,
       disabled,
       styleDisabled,
     } = this.props
@@ -190,6 +191,7 @@ export default class Button extends React.Component {
         title={title}
         aria-expanded={ariaExpanded}
         aria-selected={ariaSelected}
+        aria-current={ariaCurrent}
         aria-label={title || text}
         disabled={disabled}
       >

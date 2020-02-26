@@ -1,54 +1,13 @@
-package main
+package middleware
 
-import (
-	"github.com/danielgtaylor/openapi-cli-generator/cli"
-	"github.com/spf13/viper"
-	"gopkg.in/h2non/gentleman.v2"
-	"strconv"
+import(
+  "github.com/spf13/viper"
+  "strconv"
+  "time"
+  "github.com/cedardevs/onestop/cli/internal/pkg/flags"
 )
 
-const scdrFileCmd = "scdr-files"
-
-const scdrExampleCommands = `scdr-files --available -t ABI-L1b-Rad --cloud
-scdr-files --type 5b58de08-afef-49fb-99a1-9c5d5c003bde
-scdr-files --area "POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"
-scdr-files --date 10/01
-scdr-files --stime "March 31st 2003 at 17:30" --etime "2003-04-01 10:32:49"
-`
-
-func setScdrFlags() {
-	//flags are in flags.go
-	cli.AddFlag(scdrFileCmd, dateFilterFlag, dateFilterShortFlag, dateDescription, "")
-	cli.AddFlag(scdrFileCmd, typeFlag, typeShortFlag, typeDescription, "")
-	cli.AddFlag(scdrFileCmd, spatialFilterFlag, spatialFilterShortFlag, areaDescription, "")
-	cli.AddFlag(scdrFileCmd, startTimeFlag, startTimeShortFlag, startTimeDescription, "")
-	cli.AddFlag(scdrFileCmd, startTimeScdrFlag, "", startTimeScdrDescription, "")
-	cli.AddFlag(scdrFileCmd, endTimeFlag, endTimeShortFlag, endTimeDescription, "")
-	cli.AddFlag(scdrFileCmd, endTimeScdrFlag, "", endTimeScdrDescription, "")
-	cli.AddFlag(scdrFileCmd, availableFlag, availableShortFlag, availableDescription, false)
-	cli.AddFlag(scdrFileCmd, metadataFlag, metadataShortFlag, metadataDescription, "")
-	cli.AddFlag(scdrFileCmd, fileFlag, fileShortFlag, fileFlagDescription, "")
-	cli.AddFlag(scdrFileCmd, refileFlag, refileShortFlag, regexDescription, "")
-	cli.AddFlag(scdrFileCmd, satnameFlag, "", satnameDescription, "")
-	cli.AddFlag(scdrFileCmd, yearFlag, yearShortFlag, yearDescription, "")
-	cli.AddFlag(scdrFileCmd, keywordFlag, keywordShortFlag, keywordDescription, "")
-
-//not scdr-files specific
-	cli.AddFlag(scdrFileCmd, maxFlag, maxShortFlag, maxDescription, "")
-	cli.AddFlag(scdrFileCmd, offsetFlag, offsetShortFlag, offsetDescription, "")
-	cli.AddFlag(scdrFileCmd, textQueryFlag, textQueryShortFlag, queryDescription, "")
-	cli.AddFlag(scdrFileCmd, cloudServerFlag, cloudServerShortFlag, cloudServerDescription, false)
-	cli.AddFlag(scdrFileCmd, testServerFlag, testServerShortFlag, testServerDescription, false)
-
-	//parseScdrRequestFlags in parsing-util.go
-	cli.RegisterBefore(scdrFileCmd, parseScdrRequestFlags)
-	cli.RegisterAfter(scdrFileCmd, func(cmd string, params *viper.Viper, resp *gentleman.Response, data interface{}) interface{} {
-		scdrResp := marshalScdrResponse(params, data)
-		return scdrResp
-	})
-}
-
-func marshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
+func MarshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
 	responseMap := data.(map[string]interface{})
 	translatedResponseMap := transformResponse(params, responseMap)
 	return translatedResponseMap
@@ -59,14 +18,20 @@ func transformResponse(params *viper.Viper, responseMap map[string]interface{}) 
 	scdrOuput := []string{}
 
 	if items, ok := responseMap["data"].([]interface{}); ok && len(items) > 0 {
-		isSummary := params.GetString("available")
-		if isSummary == "true" {
+		isSummary := params.GetString(flags.AvailableFlag)
+		gapInterval := params.GetString(flags.GapFlag)
+    typeArg := params.GetString(flags.TypeFlag)
+
+    //gap is ignored if no type is passed or if --available is passed
+		if len(gapInterval) > 0 && len(typeArg) > 0 && isSummary ==  "false" {
+			scdrOuput = FindGaps(typeArg, gapInterval, items)
+		} else if isSummary == "true" {
 			count := getCount(responseMap)
 			scdrOuput = buildSummary(items, count)
 		} else {
 			scdrOuput = buildLinkResponse(items)
 		}
-		translatedResponseMap["scdr-ouput"] = scdrOuput
+		translatedResponseMap["scdr-output"] = scdrOuput
 	}
 	return translatedResponseMap
 }
@@ -78,6 +43,56 @@ func getCount(responseMap map[string]interface{}) string {
 		count = strconv.FormatFloat(totalGranules, 'f', 0, 64)
 	}
 	return count
+}
+
+func FindGaps(typeArg string, gapInterval string, items []interface{}) []string{
+  gapResponse := []string{
+    "Data collection: " + typeArg,
+		"Gap Start Time           | Gap End Time             | Gap Duration",
+		"-------------------------+--------------------------+-------------",
+	}
+	dateFormat := "2006-01-02T15:04:05.000Z"
+	interval, _  := time.ParseDuration(gapInterval)
+	if len(items) == 0 {
+		return  gapResponse
+	}
+  lastBeginDate := time.Time{}
+  lastEndDate := time.Time{}
+	for _, v := range items{
+		 item := v.(map[string]interface{})
+		 attrs := item["attributes"].(map[string]interface{})
+     if lastEndDate.IsZero() {
+       firstEndDateString, hasEndDate := attrs["endDate"].(string)
+       if hasEndDate {
+         firstEndDate, e := time.Parse(dateFormat, firstEndDateString)
+         if e != nil {
+           continue
+         }else{
+           lastEndDate = firstEndDate
+         }
+       }
+     }
+     start, b1 := attrs["beginDate"].(string)
+     end, b2 := attrs["endDate"].(string)
+
+     if b1 && b2 {
+       startDate, e1 := time.Parse(dateFormat, start)
+       endDate, e2 := time.Parse(dateFormat, end)
+        if e1 == nil && e2 == nil {
+         //if the temporal distance from this file and the last is greater than interval
+        //add it to new output
+        //track last begin date to prevent overlap
+        if lastEndDate.Sub(startDate) > interval && lastBeginDate.Sub(endDate) > 0 {
+           gapString := startDate.Format(dateFormat)+ " | " +  lastEndDate.Format(dateFormat)  + " | " + lastEndDate.Sub(startDate).String()
+          gapResponse = append(gapResponse, gapString)
+        }
+        lastBeginDate = startDate
+        lastEndDate = endDate
+       }
+     }
+	}
+
+	return gapResponse
 }
 
 func buildSummary(items []interface{}, count string) []string {
@@ -176,7 +191,6 @@ func buildDescriptionHeaders(items []interface{}) (string, string) {
 	if descriptionLength > 100 {
 		descriptionLength = 100
 	}
-	descriptionHeader, descriptionSubHeader = formatHeader(descriptionHeader, descriptionSubHeader, descriptionLength)
 	return descriptionHeader, descriptionSubHeader
 }
 

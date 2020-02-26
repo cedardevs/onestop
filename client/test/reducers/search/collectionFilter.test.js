@@ -16,7 +16,7 @@ import {
   collectionToggleFacet,
   collectionNewSearchRequested,
   collectionNewSearchResetFiltersRequested,
-  collectionMoreResultsRequested,
+  collectionResultsPageRequested,
 } from '../../../src/actions/routing/CollectionSearchStateActions'
 
 const assertParam = (param, result, expected, fallback) => {
@@ -28,6 +28,7 @@ const assertParam = (param, result, expected, fallback) => {
 
 const assertAllFilterParams = (results, values, defaults) => {
   assertParam('pageOffset', results, values, defaults)
+  assertParam('pageSize', results, values, defaults)
   assertParam('queryText', results, values, defaults)
   assertParam('bbox', results, values, defaults)
   assertParam('geoRelationship', results, values, defaults)
@@ -44,6 +45,7 @@ describe('The collection filter reducer', function(){
   const nonInitialState = {
     // not a single default value
     pageOffset: 40,
+    pageSize: 13,
     queryText: 'demo',
     bbox: {
       west: 123,
@@ -66,6 +68,7 @@ describe('The collection filter reducer', function(){
 
     expect(result).toEqual({
       pageOffset: 0,
+      pageSize: 20,
       queryText: '',
       bbox: null,
       geoRelationship: 'intersects',
@@ -87,13 +90,13 @@ describe('The collection filter reducer', function(){
           name: 'makes no changes to initial state',
           initialState: initialState,
           function: collectionNewSearchRequested,
-          expectedChanges: {pageOffset: 0},
+          expectedChanges: {pageOffset: 0, pageSize: 20},
         },
         {
           name: 'resets only pageOffset',
           initialState: nonInitialState,
           function: collectionNewSearchRequested,
-          expectedChanges: {pageOffset: 0},
+          expectedChanges: {pageOffset: 0, pageSize: 20},
         },
       ],
     },
@@ -104,14 +107,23 @@ describe('The collection filter reducer', function(){
           name:
             'makes no changes to initial state except pagination (increments by 20)',
           initialState: initialState,
-          function: collectionMoreResultsRequested,
+          function: collectionResultsPageRequested,
+          params: [ 20, 20 ], // default page size means no change
           expectedChanges: {pageOffset: 20},
         },
         {
           name: 'changes only pageOffset (increments by 20)',
           initialState: nonInitialState,
-          function: collectionMoreResultsRequested,
-          expectedChanges: {pageOffset: 60},
+          function: collectionResultsPageRequested,
+          params: [ 60, 20 ],
+          expectedChanges: {pageOffset: 60, pageSize: 20},
+        },
+        {
+          name: 'changes pageSize',
+          initialState,
+          function: collectionResultsPageRequested,
+          params: [ 0, 15 ],
+          expectedChanges: {pageSize: 15},
         },
       ],
     },
@@ -147,6 +159,7 @@ describe('The collection filter reducer', function(){
           params: [ {queryText: 'new'} ],
           expectedChanges: {
             pageOffset: 0,
+            pageSize: 20,
             queryText: 'new',
             bbox: null,
             geoRelationship: 'intersects',
@@ -173,6 +186,7 @@ describe('The collection filter reducer', function(){
           ],
           expectedChanges: {
             pageOffset: 0,
+            pageSize: 20,
             queryText: '',
             bbox: null,
             geoRelationship: 'intersects',
@@ -233,6 +247,7 @@ describe('The collection filter reducer', function(){
           ],
           expectedChanges: {
             pageOffset: 0,
+            pageSize: 20,
             queryText: 'new',
             bbox: {
               west: 100.0,

@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
 import PropTypes from 'prop-types'
-import Button from '../../common/input/Button'
 import ListView from '../../common/ui/ListView'
 import {SiteColors} from '../../../style/defaultStyles'
 import Meta from '../../helmet/Meta'
@@ -10,6 +9,8 @@ import GranuleListItem from './GranuleListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {Link} from 'react-router-dom'
 import {asterisk, SvgIcon} from '../../common/SvgIcon'
+import {PAGE_SIZE} from '../../../utils/queryUtils'
+import defaultStyles from '../../../style/defaultStyles'
 
 const styleCenterContent = {
   display: 'flex',
@@ -34,14 +35,6 @@ const styleLink = focusing => {
     outline: focusing ? '2px dashed white' : 'none',
     outlineOffset: focusing ? '0.309em' : 'initial',
   }
-}
-
-const styleShowMore = {
-  margin: '1em auto 1.618em auto',
-}
-const styleShowMoreFocus = {
-  outline: '2px dashed #5C87AC',
-  outlineOffset: '.118em',
 }
 
 const styleWarning = warning => {
@@ -70,7 +63,7 @@ export default function GranuleList(props){
     results,
     returnedHits,
     totalHits,
-    fetchMoreResults,
+    fetchResultPage,
     addFilteredGranulesToCart,
     addFilteredGranulesToCartWarning,
     collectionId,
@@ -83,6 +76,8 @@ export default function GranuleList(props){
   } = props
 
   const [ focusingCollectionLink, setFocusingCollectionLink ] = useState(false)
+  const [ offset, setOffset ] = useState(0)
+  const [ currentPage, setCurrentPage ] = useState(1)
 
   const isGranuleSelected = itemId => {
     const checkIt = Object.keys(selectedGranules).includes(itemId)
@@ -109,16 +104,6 @@ export default function GranuleList(props){
     }
   }
 
-  const showMoreButton =
-    returnedHits < totalHits ? (
-      <Button
-        text="Show More Results"
-        onClick={() => fetchMoreResults()}
-        style={styleShowMore}
-        styleFocus={styleShowMoreFocus}
-      />
-    ) : null
-
   let message = 'No file results'
   if (loading) {
     message = (
@@ -133,11 +118,29 @@ export default function GranuleList(props){
     )
   }
   else if (totalHits > 0) {
-    message = `Showing ${returnedHits.toLocaleString()} of ${totalHits.toLocaleString()} matching files`
+    var size = Object.keys(results).length
+    var thru = (
+      <span>
+        <span aria-hidden="true">-</span>
+        <span style={defaultStyles.hideOffscreen}>to</span>
+      </span>
+    )
+    message = (
+      <span>
+        <span>Showing {offset + 1} </span>
+        {thru}{' '}
+        <span>
+          {offset + size} of {totalHits.toLocaleString()} matching files
+        </span>
+      </span>
+    )
   }
   const listHeading = (
     <h2 key="GranuleList::listHeading" style={styleListHeading}>
-      {message} within&nbsp;
+      <span role="alert" aria-live="polite">
+        {message}
+      </span>{' '}
+      within&nbsp;
       <Link
         style={styleLink(focusingCollectionLink)}
         to={`/collections/details/${collectionId}`}
@@ -181,6 +184,7 @@ export default function GranuleList(props){
 
       <div style={styleGranuleListWrapper}>
         <ListView
+          totalRecords={totalHits}
           items={results}
           ListItemComponent={GranuleListItem}
           GridItemComponent={null}
@@ -188,8 +192,13 @@ export default function GranuleList(props){
           heading={listHeading}
           customActions={granuleListCustomActions}
           customMessage={customMessage}
+          setOffset={offset => {
+            setOffset(offset)
+            fetchResultPage(offset, PAGE_SIZE)
+          }}
+          currentPage={currentPage}
+          setCurrentPage={page => setCurrentPage(page)}
         />
-        {showMoreButton}
       </div>
     </div>
   )

@@ -1,77 +1,17 @@
-package main
+package parse
 
 import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
-	"gopkg.in/h2non/gentleman.v2"
 	"strconv"
 	"strings"
 	"time"
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 )
 
-//this function is pre-request RegisterBefore
-func parseOneStopRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
-	filters := []string{}
-	queries := []string{}
-
-	dateTimeFilter := parseDate(params)
-	filters = append(filters, dateTimeFilter...)
-	startEndTimeFilter := parseStartAndEndTime(params)
-	filters = append(filters, startEndTimeFilter...)
-	geoSpatialFilter := parsePolygon(params)
-	filters = append(filters, geoSpatialFilter...)
-	query := parseTextQuery(params)
-	queries = append(queries, query...)
-	requestMeta := parseRequestMeta(params)
-	if len(queries) > 0 || len(filters) > 0 {
-		req.AddHeader("content-type", "application/json")
-		req.BodyString("{\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
-	}
-}
-
-func parseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
-
-	//apply a default filter for STAR
-	filters := []string{"{\"type\":\"facet\",\"name\":\"dataCenters\",\"values\":[\"DOC/NOAA/NESDIS/STAR > Center for Satellite Applications and Research, NESDIS, NOAA, U.S. Department of Commerce\"]}"}
-	queries := []string{}
-
-	// isSummaryWithType := params.GetString(availableFlag) == "true" && len(params.GetString("type")) > 0
-
-	collectionIdFilter := parseTypeFlag(params)
-	filters = append(filters, collectionIdFilter...)
-	// datacenterFilter := parseAvailableFlag(params)
-	// filters = append(filters, datacenterFilter...)
-	dateTimeFilter := parseDate(params)
-	filters = append(filters, dateTimeFilter...)
-	yearFilter := parseYear(params)
-	filters = append(filters, yearFilter...)
-	startEndTimeFilter := parseStartAndEndTime(params)
-	filters = append(filters, startEndTimeFilter...)
-	geoSpatialFilter := parsePolygon(params)
-	filters = append(filters, geoSpatialFilter...)
-
-	satnameQuery := parseSatName(params)
-	queries = append(queries, satnameQuery...)
-	fileNameQuery := parseFileName(params)
-	queries = append(queries, fileNameQuery...)
-	refileNameQuery := parseRegexFileName(params)
-	queries = append(queries, refileNameQuery...)
-	query := parseTextQuery(params)
-	queries = append(queries, query...)
-	keyWordFilter := parseKeyword(params)
-	queries = append(queries, keyWordFilter...)
-	requestMeta := parseRequestMeta(params)
-
-	if len(queries) > 0 || len(filters) > 0 {
-		req.AddHeader("content-type", "application/json")
-		req.BodyString("{\"summary\":false, \"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
-	}
-
-}
-
-func parseTypeFlag(params *viper.Viper) []string {
+func ParseTypeFlag(params *viper.Viper) []string {
 	facetFilter := []string{}
-	typeArg := params.GetString(typeFlag)
+	typeArg := params.GetString(flags.TypeFlag)
 	if len(typeArg) > 0 {
 		// {"type":"collection","values":["88888888-8888-8888-8888-888888888888"]}
 		facetFilter = []string{"{\"type\":\"collection\", \"values\":[\"" + typeArg + "\"]}"}
@@ -79,17 +19,26 @@ func parseTypeFlag(params *viper.Viper) []string {
 	return facetFilter
 }
 
+func ParseSort(params *viper.Viper) string {
+	sortArg := params.GetString(flags.SortFlag)
+	sort := ""
+	if len(sortArg) > 0 {
+		sort = "\"sort\":[{\"" + sortArg + "\": \"desc\"}],"
+	}
+	return sort
+}
+
 // func parseAvailableFlag(params *viper.Viper) []string {
 // 	facetFilter := []string{}
-// 	if params.GetString(availableFlag) == "true" {
+// 	if params.GetString(AvailableFlag) == "true" {
 // 		facetFilter = []string{"{\"type\":\"facet\",\"name\":\"dataCenters\",\"values\":[\"DOC/NOAA/NESDIS/STAR > Center for Satellite Applications and Research, NESDIS, NOAA, U.S. Department of Commerce\"]}"}
 // 	}
 // 	return facetFilter
 // }
 
-func parseSatName(params *viper.Viper) []string {
+func ParseSatName(params *viper.Viper) []string {
 	// {"type":"queryText", "value":"gcmdPlatforms:/GOES-16.*/"}
-	satname := params.GetString(satnameFlag)
+	satname := params.GetString(flags.SatnameFlag)
 	querySatFilter := []string{}
 	if len(satname) > 0 {
 		querySatFilter = []string{"{\"type\":\"queryText\", \"value\":\"+gcmdPlatforms:/" + satname + ".*/\"}"}
@@ -97,9 +46,9 @@ func parseSatName(params *viper.Viper) []string {
 	return querySatFilter
 }
 
-func parseRequestMeta(params *viper.Viper) string {
-	max := params.GetString(maxFlag)
-	offset := params.GetString(offsetFlag)
+func ParseRequestMeta(params *viper.Viper) string {
+	max := params.GetString(flags.MaxFlag)
+	offset := params.GetString(flags.OffsetFlag)
 	if len(max) == 0 {
 		max = "100"
 	}
@@ -111,7 +60,7 @@ func parseRequestMeta(params *viper.Viper) string {
 }
 
 //support for stime and start-time, same same
-func parseStartAndEndTime(params *viper.Viper) []string {
+func ParseStartAndEndTime(params *viper.Viper) []string {
 	filter := []string{}
 	startTimeArg, endTimeArg := parseTimeFlags(params)
 	beginDateTime, endDateTime := formatBeginAndEnd(startTimeArg, endTimeArg)
@@ -124,21 +73,34 @@ func parseStartAndEndTime(params *viper.Viper) []string {
 	return filter
 }
 
-func parseTimeFlags(params *viper.Viper) (string, string) {
-	startTime := params.GetString(startTimeFlag)
-	if len(startTime) == 0 {
-		startTime = params.GetString(startTimeScdrFlag)
+//support for stime and start-time, same same
+func ParseSince(params *viper.Viper) []string {
+	filter := []string{}
+	startTime := params.GetString(flags.SinceFlag)
+	beginDateTime, _ := time.Parse("2006-01-02T15:04:05Z", ParseDateFormat(startTime))
+	beginDateTimeEpochMillis := beginDateTime.UnixNano() / 1000000
+  beginDateTimeFilter := "stagedDate:>" + strconv.FormatInt(beginDateTimeEpochMillis, 10)
+	if len(beginDateTimeFilter) > 0 {
+		filter = []string{"{\"type\":\"queryText\", \"value\":\"" + beginDateTimeFilter + "\"}"}
 	}
-	endTime := params.GetString(endTimeFlag)
+	return filter
+}
+
+func parseTimeFlags(params *viper.Viper) (string, string) {
+	startTime := params.GetString(flags.StartTimeFlag)
+	if len(startTime) == 0 {
+		startTime = params.GetString(flags.StartTimeScdrFlag)
+	}
+	endTime := params.GetString(flags.EndTimeFlag)
 	if len(endTime) == 0 {
-		endTime = params.GetString(endTimeScdrFlag)
+		endTime = params.GetString(flags.EndTimeScdrFlag)
 	}
 	return startTime, endTime
 }
 
 func formatBeginAndEnd(startTime string, endTime string) (string, string) {
-	beginDateTime := parseDateFormat(startTime)
-	endDateTime := parseDateFormat(endTime)
+	beginDateTime := ParseDateFormat(startTime)
+	endDateTime := ParseDateFormat(endTime)
 	return beginDateTime, endDateTime
 }
 
@@ -157,7 +119,7 @@ func formatDateRange(beginDateTime string, endDateTime string) (string, string) 
 	return beginDateTimeFilter, endDateTimeFilter
 }
 
-func parseDateFormat(dateString string) string {
+func ParseDateFormat(dateString string) string {
 
 	supportedLayouts := []string{
 		time.UnixDate,
@@ -165,6 +127,7 @@ func parseDateFormat(dateString string) string {
 		"2006-01-02 15:04",
 		"2006-01-02 15:04:05",
 		"2006-01-02 15:04:05 MST",
+		"2006-01-02T15:04:05",
 		"2006/01/02",
 		"2006/01/02 15:04",
 		"2006/01/02 15:04:05",
@@ -212,18 +175,18 @@ func parseDateFormat(dateString string) string {
 	return formattedDate
 }
 
-func parseDate(params *viper.Viper) []string {
+func ParseDate(params *viper.Viper) []string {
 	//parse date flags, add filter
-	date := params.GetString(dateFilterFlag)
+	date := params.GetString(flags.DateFilterFlag)
 	if len(date) == 0 {
 		return []string{}
 	}
-	beginDateTime := parseDateFormat(date)
+	beginDateTime := ParseDateFormat(date)
 	if len(beginDateTime) == 0 {
 		currentTime := time.Now() //support for current year default
-		beginDateTime = parseDateFormat(strconv.Itoa(currentTime.Year()) + "/" + date)
+		beginDateTime = ParseDateFormat(strconv.Itoa(currentTime.Year()) + "/" + date)
 		if len(beginDateTime) == 0 { //stupid way to check for format "/" or "-"
-			beginDateTime = parseDateFormat(strconv.Itoa(currentTime.Year()) + "-" + date)
+			beginDateTime = ParseDateFormat(strconv.Itoa(currentTime.Year()) + "-" + date)
 		}
 	}
 	t2, _ := time.Parse("2006-01-02T00:00:00Z", beginDateTime)
@@ -231,38 +194,38 @@ func parseDate(params *viper.Viper) []string {
 	return []string{"{\"type\":\"datetime\", \"after\":\"" + beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
-func parseFileName(params *viper.Viper) []string {
-	fileName := params.GetString(fileFlag)
+func ParseFileName(params *viper.Viper) []string {
+	fileName := params.GetString(flags.FileFlag)
 	if len(fileName) == 0 {
 		return []string{}
 	}
 	return []string{"{\"type\":\"queryText\", \"value\":\"title:\\\"" + fileName + "\\\"\"}"}
 }
 
-func parseYear(params *viper.Viper) []string {
-	year := params.GetString(yearFlag)
+func ParseYear(params *viper.Viper) []string {
+	year := params.GetString(flags.YearFlag)
 	if len(year) == 0 {
 		return []string{}
 	}
 	beginDate := year + "-01-01"
-	beginDateTime := parseDateFormat(beginDate)
+	beginDateTime := ParseDateFormat(beginDate)
 	t2, _ := time.Parse("2006-01-02T00:00:00Z", beginDateTime)
 	endDateTime := t2.AddDate(1, 0, 0).Format("2006-01-02T00:00:00Z")
 	return []string{"{\"type\":\"datetime\", \"after\":\"" + beginDateTime + "\", \"before\":\"" + endDateTime + "\"}"}
 }
 
-func parseRegexFileName(params *viper.Viper) []string {
-	regex := params.GetString(refileFlag)
+func ParseRegexFileName(params *viper.Viper) []string {
+	regex := params.GetString(flags.ReFileFlag)
 	if len(regex) == 0 {
 		return []string{}
 	}
-	return []string{"{\"type\":\"queryText\", \"value\":\"title:/" + regex + "/\"}"}
+	return []string{"{\"type\":\"queryText\", \"value\":\"title:" + regex + "\"}"}
 }
 
-func parseTextQuery(params *viper.Viper) []string {
-	query := params.GetString(textQueryFlag)
+func ParseTextQuery(params *viper.Viper) []string {
+	query := params.GetString(flags.TextQueryFlag)
 	if len(query) == 0 {
-		query = params.GetString(metadataFlag)
+		query = params.GetString(flags.MetadataFlag)
 	}
 	if len(query) == 0 {
 		return []string{}
@@ -270,8 +233,8 @@ func parseTextQuery(params *viper.Viper) []string {
 	return []string{"{\"type\":\"queryText\", \"value\":\"" + query + "\"}"}
 }
 
-func parsePolygon(params *viper.Viper) []string {
-	polygon := params.GetString(spatialFilterFlag)
+func ParsePolygon(params *viper.Viper) []string {
+	polygon := params.GetString(flags.SpatialFilterFlag)
 	if len(polygon) == 0 {
 		return []string{}
 	}
@@ -292,8 +255,8 @@ func parsePolygon(params *viper.Viper) []string {
 	return []string{"{\"geometry\": { \"coordinates\": [[" + strings.Join(geospatialFilter, "") + "]], \"type\": \"Polygon\"}, \"type\": \"geometry\"}"}
 }
 
-func parseKeyword(params *viper.Viper) []string {
-	keyword := params.GetString(keywordFlag)
+func ParseKeyword(params *viper.Viper) []string {
+	keyword := params.GetString(flags.KeywordFlag)
 	if len(keyword) == 0 {
 		return []string{}
 	}

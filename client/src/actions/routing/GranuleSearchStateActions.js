@@ -17,11 +17,6 @@ export const granuleNewSearchResetFiltersRequested = (
   filters: filters,
 })
 
-export const GRANULE_MORE_RESULTS_REQUESTED = 'GRANULE_MORE_RESULTS_REQUESTED'
-export const granuleMoreResultsRequested = () => ({
-  type: GRANULE_MORE_RESULTS_REQUESTED,
-})
-
 export const GRANULE_NEW_SEARCH_RESULTS_RECEIVED =
   'GRANULE_NEW_SEARCH_RESULTS_RECEIVED'
 export const granuleNewSearchResultsReceived = (granules, facets, total) => ({
@@ -31,10 +26,18 @@ export const granuleNewSearchResultsReceived = (granules, facets, total) => ({
   total: total,
 })
 
-export const GRANULE_MORE_RESULTS_RECEIVED = 'GRANULE_MORE_RESULTS_RECEIVED'
-export const granuleMoreResultsReceived = granules => ({
-  type: GRANULE_MORE_RESULTS_RECEIVED,
+export const GRANULE_RESULTS_PAGE_REQUESTED = 'GRANULE_RESULTS_PAGE_REQUESTED'
+export const granuleResultsPageRequested = (offset, max) => ({
+  offset: offset,
+  max: max,
+  type: GRANULE_RESULTS_PAGE_REQUESTED,
+})
+
+export const GRANULE_RESULTS_PAGE_RECEIVED = 'GRANULE_RESULTS_PAGE_RECEIVED'
+export const granuleResultsPageReceived = (granules, total) => ({
+  type: GRANULE_RESULTS_PAGE_RECEIVED,
   granules: granules,
+  total: total,
 })
 
 export const GRANULES_FOR_CART_REQUESTED = 'GRANULES_FOR_CART_REQUESTED'

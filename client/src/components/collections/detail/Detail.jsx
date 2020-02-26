@@ -105,61 +105,6 @@ class Detail extends React.Component {
   render() {
     const {id, item, loading} = this.props
 
-    if (loading) {
-      return (
-        <div style={styleCenterContent}>
-          <div style={styleDetailWrapper}>
-            <h1 style={styleLoadingMessage}>
-              <SvgIcon
-                style={{animation: 'rotation 2s infinite linear'}}
-                path={asterisk}
-                size=".9em"
-              />&nbsp; Loading...
-            </h1>
-          </div>
-        </div>
-      )
-    }
-
-    if (!item) {
-      // TODO error style? actually report an error in the flow if the collection is not found when search returns? - I can verify this now!!
-      return (
-        <div style={styleCenterContent}>
-          <div style={styleDetailWrapper}>
-            <h1 style={styleErrorMessage}>
-              There was a problem loading your collection.
-            </h1>
-          </div>
-        </div>
-      )
-    }
-
-    let tabData = [
-      {
-        title: 'Overview',
-        content: <OverviewView item={item} />,
-      },
-      {
-        title: 'Access',
-        content: <AccessView item={item} />,
-      },
-      // {
-      //   title: 'Keywords',
-      //   content: <KeywordsView item={item} />,
-      // },
-    ]
-
-    const videoLinks = item.links.filter(
-      link => identifyProtocol(link).label === 'Video'
-    )
-    const showVideoTab = videoLinks.length > 0
-    if (showVideoTab) {
-      tabData.push({
-        title: videoLinks.length === 1 ? 'Video' : 'Videos',
-        content: <VideoView links={videoLinks} />,
-      })
-    }
-
     const styleFocused = {
       ...(this.state.focusing ? styleFocusDefault : {}),
     }
@@ -167,6 +112,71 @@ class Detail extends React.Component {
     const styleHeadingSpanApplied = {
       ...styleHeadingSpan,
       ...styleFocused,
+    }
+
+    let headingMessage = null
+    let content = null
+    if (loading) {
+      headingMessage = (
+        <div style={styleLoadingMessage}>
+          <SvgIcon
+            style={{animation: 'rotation 2s infinite linear'}}
+            path={asterisk}
+            size=".9em"
+          />&nbsp;{' '}
+          <span role="alert" aria-live="polite">
+            Loading...
+          </span>
+        </div>
+      )
+    }
+    else if (item) {
+      headingMessage = item.title
+      let tabData = [
+        {
+          title: 'Overview',
+          content: <OverviewView item={item} />,
+        },
+        {
+          title: 'Access',
+          content: <AccessView item={item} />,
+        },
+        // {
+        //   title: 'Keywords',
+        //   content: <KeywordsView item={item} />,
+        // },
+      ]
+
+      const videoLinks = item.links.filter(
+        link => identifyProtocol(link).label === 'Video'
+      )
+      const showVideoTab = videoLinks.length > 0
+      if (showVideoTab) {
+        tabData.push({
+          title: videoLinks.length === 1 ? 'Video' : 'Videos',
+          content: <VideoView links={videoLinks} />,
+        })
+      }
+      content = (
+        <div>
+          <DescriptionView item={item} itemUuid={id} />
+          <Tabs
+            style={{display: 'flex'}}
+            styleContent={styleContent}
+            data={tabData}
+            activeIndex={0}
+          />
+        </div>
+      )
+    }
+    else {
+      //   // TODO error style? actually report an error in the flow if the collection is not found when search returns? - I can verify this now!!
+
+      headingMessage = (
+        <span style={styleErrorMessage}>
+          There was a problem loading your collection.
+        </span>
+      )
     }
 
     return (
@@ -182,15 +192,13 @@ class Detail extends React.Component {
             onBlur={this.handleBlur}
             style={styleTitle}
           >
-            <div style={styleHeadingSpanApplied}>{item.title}</div>
+            <div style={styleHeadingSpanApplied}>
+              <span role="alert" aria-live="polite">
+                {headingMessage}
+              </span>
+            </div>
           </h1>
-          <DescriptionView item={item} itemUuid={id} />
-          <Tabs
-            style={{display: 'flex'}}
-            styleContent={styleContent}
-            data={tabData}
-            activeIndex={0}
-          />
+          {content}
         </div>
       </div>
     )

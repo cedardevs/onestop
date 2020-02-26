@@ -97,7 +97,7 @@ class BulkIndexingTransformerSpec extends Specification {
 
   def "byte size triggers bulk request"() {
     def testValue = ValueAndTimestamp.make(inputCollectionRecord, publishingStartTime.toEpochMilli())
-    def sizeCheckItemRequests = IndexingHelpers.mapRecordToRequests(testTopic, 'dummy', testValue, testIndexingConfig)
+    def sizeCheckItemRequests = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, 'dummy', testValue, testIndexingConfig, testEsConfig))
     def sizeCheckBulkRequest = new BulkRequest()
     sizeCheckItemRequests.each { sizeCheckBulkRequest.add(it) }
     def testValueSize = sizeCheckBulkRequest.estimatedSizeInBytes()
