@@ -371,7 +371,7 @@ fun Project.setPublish(publish: Publish) {
 
     this.tasks.getByName(publishMerged.task) {
         // only run the publish task if it's not disabled
-        //onlyIf { !publishShared.isBuildTag }
+        onlyIf { !publishShared.isBuildTag }
 
         // the publish task tries to clean the container registry before publishing
         dependsOn("cleanContainerRegistry")
