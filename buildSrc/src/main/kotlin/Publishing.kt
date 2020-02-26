@@ -1,3 +1,4 @@
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.provideDelegate
@@ -9,6 +10,7 @@ val SEMANTIC_VERSION_REGEX: Regex = "[1-9]\\d*\\.\\d+\\.\\d+(?:-[a-zA-Z0-9]+)?".
 const val SUFFIX_SNAPSHOT = "-SNAPSHOT"
 const val PREFIX_LOCAL = "LOCAL-"
 const val BRANCH_MASTER = "master"
+const val ENV_BUILD_TAG = "BUILD_TAG"
 
 data class CIInfo (
         val label: String,
@@ -38,28 +40,31 @@ data class RegistryInfo (
         val host: String,
         val envUser: String,
         val envPassword: String,
-        val envAccessToken: String,
-        val api: ContainerRegistryInterface
+        val envAccessToken: String
 )
-enum class Registry(val info: RegistryInfo) {
+enum class Registry(val info: RegistryInfo, val api: ContainerRegistryInterface) {
     // DockerHub can retrieve access token using username/password automatically
-    DOCKER_HUB(RegistryInfo(
+    DOCKER_HUB(
+        RegistryInfo(
             label = "Docker Hub",
             host = "registry.hub.docker.com",
             envUser = "DOCKER_USER",
             envPassword = "DOCKER_PASSWORD",
-            envAccessToken = "",
-            api = DockerHubAPI()
-    )),
+            envAccessToken = ""
+        ),
+        DockerHubAPI()
+    ),
     // GitLab uses `accessToken` directly for secure API calls
-    GITLAB(RegistryInfo(
+    GITLAB(
+        RegistryInfo(
             label = "GitLab Container Registry",
             host = "registry.gitlab.com",
             envUser = "",
             envPassword = "",
-            envAccessToken = "GITLAB_ACCESS_TOKEN",
-            api = GitLabAPI()
-    ))
+            envAccessToken = "GITLAB_ACCESS_TOKEN"
+        ),
+        GitLabAPI()
+    )
 }
 
 data class PublishShared(
@@ -79,7 +84,10 @@ data class PublishShared(
         val accessToken: String,
 
         // continuous integration fields
-        val isCI: Boolean
+        val isCI: Boolean,
+
+        // allow publishing to registry to be disabled
+        val disabled: Boolean
 )
 
 data class Publish(
@@ -108,9 +116,14 @@ data class Publish(
         // continuous integration fields
         val isCI: Boolean? = null,
 
-        // an attempt will be made to clean the container registry before *this* task
-        // recommended: task that publishes to container registry (e.g. - "jib")
-        val cleanBefore: String? = null
+        // allow publishing to registry to be disabled
+        val disabled: Boolean? = false,
+
+        // REQUIRED:
+        // this is the task gradle uses to publish based on the info in this class (e.g. - "jib")
+        // this clean task for the container registry will run before this task in CI environments,
+        // and this task will be prevented from running if `disabled = true`
+        val task: String
 )
 
 fun Project.stringProperty(prop: String): String? {
@@ -147,10 +160,21 @@ fun Project.versionProperty(): String? {
     return if (isSemanticNonSnapshot) version else null
 }
 
+fun isBuildTag(envBuildTag: String): Boolean {
+    val buildTag: String = buildTag(envBuildTag) ?: ""
+    val isBuildTagPrefixed = buildTag.startsWith("v")
+    val buildVersion = buildTag.removePrefix("v")
+    // the build tag is specified in the environment and must:
+    // - exist in repo
+    // - not have any differences with the local checkout
+    // - be semantic, non-snapshot without the "v" prefix
+    return !tagDiff(buildTag) && isBuildTagPrefixed && isSemanticNonSnapshot(buildVersion)
+}
+
 fun isReleaseBranch(ci: CI): Boolean {
     val branch: String = branchCI(ci) ?: ""
     return when(ci) {
-        CI.CIRCLE -> branch.isNullOrBlank()  // CircleCI does not set the CIRCLE_BRANCH env var when building tags
+        CI.CIRCLE -> branch.isBlank()        // CircleCI does not set the CIRCLE_BRANCH env var when building tags
         CI.GITLAB -> branch == BRANCH_MASTER // TODO: determine if GitLab has an empty branch env var or sets == 'master' when tag env var is set
         CI.TRAVIS -> branch == BRANCH_MASTER // TODO: determine if Travis has an empty branch env var or sets == 'master' when tag env var is set
     }
@@ -166,14 +190,18 @@ fun isRelease(ci: CI): Boolean {
     return isReleaseTag && isSemanticNonSnapshot(version) && isReleaseBranch(ci)
 }
 
-fun logInfo(ci: CI, registry: Registry, version: String) {
+fun logInfo(ci: CI, registry: Registry, version: String, envBuildTag: String) {
+
+    val isBuildTag = isBuildTag(envBuildTag)
+    val buildTag = buildTag(envBuildTag)
+
     val isCI = isCI(ci)
     val branchCI = branchCI(ci)
-    val branchLocal = branch()
-    val tagCI = tagCI(ci)
-    val logEnvironment: String = if(isCI) "${ci.info.label} [CI=true]" else "Local [CI=false|null]"
-    val logBranch: String = if(isCI) "${ci.info.envBranch}=${branchCI}" else branchLocal
-    val logTag: String = if(isCI) "${ci.info.envTag}=${tagCI}" else "N/A"
+    val logEnvironment: String = if(isBuildTag) "Tag-Based Build [$envBuildTag is defined]" else if(isCI) "${ci.info.label} [CI=true]" else "Local [CI=false|null]"
+    val logBranch: String = if(isBuildTag) "N/A" else if(isCI) "${ci.info.envBranch}=${branchCI}" else branch()
+    val logTag: String = if(isBuildTag) "$envBuildTag=$buildTag" else if(isCI) "${ci.info.envTag}=${tagCI(ci)}" else "N/A"
+    val logRegistry: String = if(isBuildTag) "publishing disabled in tag-based builds" else "${registry.info.label} (${registry.info.host})"
+
 
     val logReleaseCI: String = """
 [Official Release]
@@ -191,6 +219,7 @@ fun logInfo(ci: CI, registry: Registry, version: String) {
     """.trimIndent()
 
     val logRelease = when {
+        isBuildTag -> "[Tag-Based Build]"
         isCI && isRelease(ci) -> logReleaseCI
         !isCI && !version.startsWith(PREFIX_LOCAL) -> logReleaseLocal
         else -> "[NOT a release]"
@@ -209,7 +238,7 @@ fun logInfo(ci: CI, registry: Registry, version: String) {
  Environment: $logEnvironment
       Branch: $logBranch
          Tag: $logTag
-    Registry: ${registry.info.label} (${registry.info.host})
+    Registry: $logRegistry
  
      Version: $version
 --------------------------------------
@@ -221,12 +250,14 @@ fun logInfo(ci: CI, registry: Registry, version: String) {
 }
 
 // ROOT PROJECT
-fun Project.dynamicVersion(vendor: String, ci: CI, registry: Registry): String {
+fun Project.dynamicVersion(vendor: String, envBuildTag: String = ENV_BUILD_TAG, ci: CI, registry: Registry): String {
+
+    var calculatedVersion: String
 
     val isCI: Boolean = isCI(ci)
     val isRelease: Boolean = isRelease(ci)
 
-    val dynamicVersion: String =  if(isCI) {
+    calculatedVersion = if(isCI) {
         // inside a CI environment
         if(isRelease) {
             // publish official release (derived from CIRCLE_TAG)
@@ -255,12 +286,27 @@ fun Project.dynamicVersion(vendor: String, ci: CI, registry: Registry): String {
         this.versionProperty() ?: "${PREFIX_LOCAL}${branch()}-${whoAmI()}"
     }
 
+    // the build env has set an build tag which overrides any calculated version and prevents publishing
+    val buildTag = buildTag(envBuildTag)
+    val isBuildTag = isBuildTag(envBuildTag)
+    if(buildTag != null) {
+        if (isBuildTag) {
+            // env var has been set and is valid for a tag-based build
+            calculatedVersion = buildTag.removePrefix("v")
+        }
+        else {
+            // env var has been set and is NOT valid for a tag-based build (exit before something bad happens)
+            throw GradleException("The $envBuildTag='$buildTag' environment variable is set, but it is not a valid tag!")
+        }
+    }
+
+
     // create the default publishing information, prior to the user filling in the gaps/details
     this.extra.apply {
         set("publishShared", PublishShared(
                 vendor = vendor,
                 project = rootProject.name,
-                version = dynamicVersion,
+                version = calculatedVersion,
                 created = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
                 source = sourceUrl(),
                 revision = revision(),
@@ -268,12 +314,13 @@ fun Project.dynamicVersion(vendor: String, ci: CI, registry: Registry): String {
                 username = registryUser(registry),
                 password = registryPassword(registry),
                 accessToken = registryAccessToken(registry),
-                isCI = isCI
+                isCI = isCI,
+                disabled = isBuildTag
         ))
     }
 
-    logInfo(ci, registry, dynamicVersion)
-    return dynamicVersion
+    logInfo(ci, registry, calculatedVersion, envBuildTag)
+    return calculatedVersion
 }
 
 // SUBPROJECT
@@ -302,7 +349,8 @@ fun Project.setPublish(publish: Publish) {
             password = publish.password ?: publishShared.password,
             accessToken = publish.accessToken ?: publishShared.accessToken,
             isCI = publish.isCI ?: publishShared.isCI,
-            cleanBefore = publish.cleanBefore
+            disabled = publish.disabled ?: publishShared.disabled,
+            task = publish.task
     )
 
     // place the merged publish object onto the extra properties of this project
@@ -310,17 +358,21 @@ fun Project.setPublish(publish: Publish) {
         set("publish", publishMerged)
     }
 
-    // attempt to clean the container registry before specified `cleanBefore` task name if in CI environment
-    if(publishMerged.cleanBefore != null) {
-        this.tasks.register("cleanContainerRegistry") {
-            // only attempt regular cleanup while building in the CI environment
-            if(publishMerged.isCI == true) {
-                publishMerged.cleanContainerRegistry()
-            }
+    // clean the container registry
+    this.tasks.register("cleanContainerRegistry") {
+        // only attempt regular cleanup while building in the CI environment
+        if(publishMerged.isCI == true) {
+            publishMerged.cleanContainerRegistry()
         }
-        this.tasks.getByName(publishMerged.cleanBefore) {
-            dependsOn("cleanContainerRegistry")
+    }
+
+    this.tasks.getByName(publishMerged.task) {
+        // only run the publish task if it's not disabled
+        if(publishMerged.disabled != null) {
+            onlyIf { publishMerged.disabled }
         }
+        // the publish task tries to clean the container registry before publishing
+        dependsOn("cleanContainerRegistry")
     }
 }
 
@@ -331,6 +383,10 @@ fun isCI(ci: CI): Boolean {
         CI.GITLAB -> (System.getenv("CI") ?: "").toBoolean()
         CI.TRAVIS -> (System.getenv("CI") ?: "").toBoolean()
     }
+}
+
+fun buildTag(envBuildTag: String): String? {
+    return System.getenv(envBuildTag)
 }
 
 fun branchCI(ci: CI): String? {
@@ -350,8 +406,13 @@ fun branch(): String {
     return "git symbolic-ref --short HEAD".runShell() ?: "unknown"
 }
 
-fun remoteBranchExists(branch: String): Boolean {
-    return "git ls-remote --heads --exit-code origin $branch".runShell().isNullOrBlank().not()
+fun tags(): Set<String> {
+    return "git tag | sort".runShell()?.lines()?.toSet() ?: setOf()
+}
+
+fun tagDiff(tag: String): Boolean {
+    val exitCode: Int = "git diff tags/${tag} --exit-code".runShellExitCode()
+    return exitCode != 0
 }
 
 fun revision(): String {
@@ -376,12 +437,11 @@ fun registryAccessToken(registry: Registry): String {
 }
 
 fun Publish.cleanContainerRegistry(): Boolean {
-    val containerRegistry: ContainerRegistryInterface = when(this.registry) {
-        Registry.DOCKER_HUB -> DockerHubAPI()
-        Registry.GITLAB -> GitLabAPI()
-        else -> return false
+    return if(this.registry != null) {
+        this.registry.api.clean(this)
+    } else {
+        false
     }
-    return containerRegistry.clean(this)
 }
 
 // use publishing info to derive standardized container labels
