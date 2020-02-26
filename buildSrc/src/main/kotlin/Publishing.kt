@@ -86,8 +86,7 @@ data class PublishShared(
         // continuous integration fields
         val isCI: Boolean,
 
-        // allow publishing to registry to be disabled
-        val enabled: Boolean
+        val isBuildTag: Boolean
 )
 
 data class Publish(
@@ -115,9 +114,6 @@ data class Publish(
 
         // continuous integration fields
         val isCI: Boolean? = null,
-
-        // allow publishing to registry to be disabled
-        val enabled: Boolean? = true,
 
         // REQUIRED:
         // this is the task gradle uses to publish based on the info in this class (e.g. - "jib")
@@ -323,7 +319,7 @@ fun Project.dynamicVersion(vendor: String, envBuildTag: String = ENV_BUILD_TAG, 
                 password = registryPassword(registry),
                 accessToken = registryAccessToken(registry),
                 isCI = isCI,
-                enabled = !isBuildTag
+                isBuildTag = isBuildTag
         ))
     }
 
@@ -357,7 +353,6 @@ fun Project.setPublish(publish: Publish) {
             password = publish.password ?: publishShared.password,
             accessToken = publish.accessToken ?: publishShared.accessToken,
             isCI = publish.isCI ?: publishShared.isCI,
-            enabled = publish.enabled ?: publishShared.enabled,
             task = publish.task
     )
 
@@ -376,7 +371,7 @@ fun Project.setPublish(publish: Publish) {
 
     this.tasks.getByName(publishMerged.task) {
         // only run the publish task if it's not disabled
-        onlyIf { publishMerged.enabled ?: true }
+        onlyIf { !publishShared.isBuildTag }
 
         // the publish task tries to clean the container registry before publishing
         dependsOn("cleanContainerRegistry")
