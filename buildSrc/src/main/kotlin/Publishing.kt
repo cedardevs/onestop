@@ -375,6 +375,10 @@ fun Project.setPublish(publish: Publish) {
 
         // the publish task tries to clean the container registry before publishing
         dependsOn("cleanContainerRegistry")
+
+        doLast {
+            println("${publishMerged.task} RAN!!!!")
+        }
     }
 }
 
