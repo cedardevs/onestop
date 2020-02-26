@@ -389,17 +389,17 @@ class IndexingHelpersSpec extends Specification {
     IndexingHelpers.prepareInternalParentIdentifier(record) == testId
   }
 
-//  def "produces extra 'name' fields for collection record correctly"() {
-//    // FIXME -- where does the type-checking logic live?
-//    expect:
-//    1 == 0 // TODO forced fail for unwritten test
-//  }
-//
-//  def "produces extra 'name' fields for granule record correctly"() {
-//    // FIXME -- where does the type-checking logic live?
-//    expect:
-//    1 == 0 // TODO forced fail for unwritten test
-//  }
+  def "produces extra 'name' fields for collection record correctly"() {
+    // FIXME -- where does the type-checking logic live?
+    expect:
+    1 == 0 // TODO forced fail for unwritten test
+  }
+
+  def "produces extra 'name' fields for granule record correctly"() {
+    // FIXME -- where does the type-checking logic live?
+    expect:
+    1 == 0 // TODO forced fail for unwritten test
+  }
 
   ////////////////////////////////
   // Services, Links, Protocols //
