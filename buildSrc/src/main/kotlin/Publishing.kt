@@ -87,7 +87,7 @@ data class PublishShared(
         val isCI: Boolean,
 
         // allow publishing to registry to be disabled
-        val disabled: Boolean
+        val enabled: Boolean
 )
 
 data class Publish(
@@ -117,12 +117,12 @@ data class Publish(
         val isCI: Boolean? = null,
 
         // allow publishing to registry to be disabled
-        val disabled: Boolean? = false,
+        val enabled: Boolean? = true,
 
         // REQUIRED:
         // this is the task gradle uses to publish based on the info in this class (e.g. - "jib")
         // this clean task for the container registry will run before this task in CI environments,
-        // and this task will be prevented from running if `disabled = true`
+        // and this task will be prevented from running if `enabled = false`
         val task: String
 )
 
@@ -164,13 +164,17 @@ fun isBuildTag(envBuildTag: String): Boolean {
     val buildTag: String = buildTag(envBuildTag) ?: ""
     val isBuildTagPrefixed = buildTag.startsWith("v")
     val buildVersion = buildTag.removePrefix("v")
+    val isTagMatch = !tagDiff(buildTag)
+    val isSemanticNonSnapshot = isSemanticNonSnapshot(buildVersion)
+    println("isBuildTagPrefixed = ${isBuildTagPrefixed}")
+    println("buildVersion = ${buildVersion}")
+    println("isTagMatch = ${isTagMatch}")
+    println("isSemanticSnapshot = ${isSemanticNonSnapshot}")
     // the build tag is specified in the environment and must:
     // - exist in repo
     // - not have any differences with the local checkout
     // - be semantic, non-snapshot without the "v" prefix
-    val tagMatch = !tagDiff(buildTag)
-    val isSemanticNonSnapshot = isSemanticNonSnapshot(buildVersion)
-    return tagMatch && isBuildTagPrefixed && isSemanticNonSnapshot
+    return isTagMatch && isBuildTagPrefixed && isSemanticNonSnapshot
 }
 
 fun isReleaseBranch(ci: CI): Boolean {
@@ -298,6 +302,8 @@ fun Project.dynamicVersion(vendor: String, envBuildTag: String = ENV_BUILD_TAG, 
         }
         else {
             // env var has been set and is NOT valid for a tag-based build (exit before something bad happens)
+            println("buildTag = ${buildTag}")
+            println("isBuildTag = ${isBuildTag}")
             throw GradleException("The $envBuildTag='$buildTag' environment variable is set, but it is not a valid tag!")
         }
     }
@@ -317,7 +323,7 @@ fun Project.dynamicVersion(vendor: String, envBuildTag: String = ENV_BUILD_TAG, 
                 password = registryPassword(registry),
                 accessToken = registryAccessToken(registry),
                 isCI = isCI,
-                disabled = isBuildTag
+                enabled = !isBuildTag
         ))
     }
 
@@ -351,7 +357,7 @@ fun Project.setPublish(publish: Publish) {
             password = publish.password ?: publishShared.password,
             accessToken = publish.accessToken ?: publishShared.accessToken,
             isCI = publish.isCI ?: publishShared.isCI,
-            disabled = publish.disabled ?: publishShared.disabled,
+            enabled = publish.enabled ?: publishShared.enabled,
             task = publish.task
     )
 
@@ -370,9 +376,8 @@ fun Project.setPublish(publish: Publish) {
 
     this.tasks.getByName(publishMerged.task) {
         // only run the publish task if it's not disabled
-        if(publishMerged.disabled != null) {
-            onlyIf { publishMerged.disabled }
-        }
+        onlyIf { publishMerged.enabled ?: true }
+
         // the publish task tries to clean the container registry before publishing
         dependsOn("cleanContainerRegistry")
     }
