@@ -940,7 +940,6 @@ components:
               - $ref: "#/components/schemas/geometryFilter"
               - $ref: "#/components/schemas/collectionFilter"
               - $ref: "#/components/schemas/excludeGlobalFilter"
-              - $ref: "#/components/schemas/granuleNameFilter"
           type: array
         page:
           $ref: "#/components/schemas/page"
@@ -1154,17 +1153,16 @@ components:
         - type
       title: "Year Filter"
       type: object
-    granuleNameFilter:
+    granuleNameQuery:
       additionalProperties: false
-      description: "Filter by granule \"name\" fields. Filter matches do not affect relevancy score rankings like the \"granuleNameQuery\" but can enable a more harsh match requirement, in effect filtering out far more records from appearing in your results."
+      description: "Query by granule \"name\" fields ONLY. Note that when combined with the textQuery, matches against the \"name\" fields will be given a double boost in relevance score (due to matching twice across both query objects). If providing multiple granuleName query objects in your search request, keep in mind that they will be combined with a logical AND."
       properties:
         type:
-          description: "Filter type."
+          description: "Query type."
           enum:
             - granuleName
         value:
-          description: "Text to search one or all of the granule name fields. Text is valid so long as it does not have a leading wildcard ('*' or '?')."
-          pattern: "^(?!\\s*[\\*\\?]+).*"
+          description: "Text to search one or all of the granule name fields. All text is treated literally, i.e., this query type does not interpret any special syntax like wildcards, operators, or regular expressions."
           type: string
         field:
           description: "The single \"name\" field to query against, or all of the possible fields."
@@ -1175,34 +1173,9 @@ components:
             - all
           default: all
         allTermsMustMatch:
-          description: "Controls the underlying behavior of the filter. True means that results are excluded if all terms in the given \"value\" are not found within the specified \"field\". False only excludes results if no terms match at all. Defaults to true."
+          description: "Controls the underlying behavior of the query. True means that results are excluded if all terms in the given \"value\" are not found within the specified \"field\". False only excludes results if no terms match at all. Defaults to false."
           type: boolean
-          default: true
-      required:
-        - type
-        - value
-      title: "Granule Name Filter"
-      type: object
-    granuleNameQuery:
-      additionalProperties: false
-      description: "Query by granule \"name\" fields ONLY. Does not allow regular expressions or other advanced syntax like the main textQuery. Note that when combined with the textQuery, matches against the \"name\" fields will be given a double boost in relevance score (due to matching twice across both query objects). Further, if providing multiple granuleNameQuery objects in your search request, keep in mind that they will be combined with a logical AND. Terms use Lucene Query Syntax."
-      properties:
-        type:
-          description: "Query type."
-          enum:
-            - granuleName
-        value:
-          description: "Text to search one or all of the granule name fields. Text is valid so long as it does not have a leading wildcard ('*' or '?')."
-          pattern: "^(?!\\s*[\\*\\?]+).*"
-          type: string
-        field:
-          description: "The single \"name\" field to query against, or all of the possible fields."
-          enum:
-            - title
-            - fileIdentifier
-            - filename
-            - all
-          default: all
+          default: false
       required:
         - type
         - value

@@ -220,10 +220,10 @@ class JsonValidatorSpec extends Specification {
         """{"type": "queryText", "value": "temperature", "cat": "meow"}"""
   }
 
-  def 'valid granule name filter: #desc'() {
+  def 'valid granule name query: #desc'() {
     given:
-    def schema = 'granuleNameFilter'
-    def singleQuery = """{ "filters": [ ${request} ] }"""
+    def schema = 'granuleNameQuery'
+    def singleQuery = """{ "queries": [ ${request} ] }"""
 
     when:
     def validSearch = validateSearchSchema(singleQuery)
@@ -237,12 +237,14 @@ class JsonValidatorSpec extends Specification {
         """{"type": "granuleName", "value": "abc123"}"""
     'with field specified' |
         """{"type": "granuleName", "value": "abc123", "field": "title"}"""
+    'with allTermsMustMatch specified' |
+        """{"type": "granuleName", "value": "abc 123", "field": "title", "allTermsMustMatch": true}"""
   }
 
-  def 'invalid granule name filter: #desc (reason: #reasoning)'() {
+  def 'invalid granule name query: #desc (reason: #reasoning)'() {
     given:
-    def schema = 'granuleNameFilter'
-    def singleQuery = """{ "filters": [ ${request} ] }"""
+    def schema = 'granuleNameQuery'
+    def singleQuery = """{ "queries": [ ${request} ] }"""
 
     when:
     validateSearchSchema(singleQuery)
@@ -253,14 +255,10 @@ class JsonValidatorSpec extends Specification {
 
     where:
     desc | reasoning | request
-    'begins with ?' | 'cripples services' |
-        """{"type": "granuleName", "value": "?abc123"}"""
-    'begins with *' | 'cripples services' |
-        """{"type": "granuleName", "value": "*abc123"}"""
-    'begins with * not circumvented by leading whitespace' | '' |
-        """{"type": "granuleName", "value": " *abc123"}"""
     'invalid field' | "'cat' is not a field on the query object" |
         """{"type": "granuleName", "value": "abc123", "cat": "meow"}"""
+    'invalid field' | "allFieldsMustMatch is boolean type not string" |
+        """{"type": "granuleName", "value": "abc 123", "field": "title", "allTermsMustMatch": "true"}"""
   }
 
   def 'valid filter: #component #desc'() {
