@@ -385,16 +385,29 @@ class IndexingHelpersSpec extends Specification {
     IndexingHelpers.prepareInternalParentIdentifier(record) == testId
   }
 
-  def "produces extra 'name' fields for collection record correctly"() {
-    // FIXME -- where does the type-checking logic live?
+  def "produces filename for collection record correctly"() {
     expect:
-    1 == 0 // TODO forced fail for unwritten test
+    IndexingHelpers.prepareFilename(inputRecord) == null
   }
 
-  def "produces extra 'name' fields for granule record correctly"() {
-    // FIXME -- where does the type-checking logic live?
+  def "produces filename for granule record correctly when record has data"() {
+    def filename = "ABC"
+    def record = ParsedRecord.newBuilder(inputRecord)
+        .setType(RecordType.granule)
+        .setFileInformation(FileInformation.newBuilder().setName(filename).build())
+        .build()
+
     expect:
-    1 == 0 // TODO forced fail for unwritten test
+    IndexingHelpers.prepareFilename(record) == filename
+  }
+
+  def "produces filename for granule record correctly when record does not have data"() {
+    def record = ParsedRecord.newBuilder(inputRecord)
+        .setType(RecordType.granule)
+        .build()
+
+    expect:
+    IndexingHelpers.prepareFilename(record) == null
   }
 
   ////////////////////////////////

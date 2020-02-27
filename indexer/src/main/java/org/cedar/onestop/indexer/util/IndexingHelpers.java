@@ -170,6 +170,7 @@ public class IndexingHelpers {
     discoveryMap.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
     discoveryMap.putAll(prepareResponsibleParties(record));
     discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    discoveryMap.put("filename", prepareFilename(record));
 
     // drop fields not present in target index
     var result = new LinkedHashMap<String, Object>(targetFields.size());
@@ -192,14 +193,12 @@ public class IndexingHelpers {
         .orElse(null);
   }
 
-  static Map <String, String> prepareGranuleNameFilterFields(ParsedRecord record) {
-    var fileInfo = record.getFileInformation();
-
-    var result = new HashMap<String, String>();
-    result.put("titleForFilter", record.getDiscovery().getTitle());
-    result.put("fileIdentifierForFilter", record.getDiscovery().getFileIdentifier());
-    result.put("filename", fileInfo != null ? fileInfo.getName() : null);
-    return result;
+  static String prepareFilename(ParsedRecord record) {
+    return Optional.ofNullable(record)
+        .filter(r -> r.getType() == RecordType.granule)
+        .map(ParsedRecord::getFileInformation)
+        .map(FileInformation::getName)
+        .orElse(null);
   }
 
   ////////////////////////////////
