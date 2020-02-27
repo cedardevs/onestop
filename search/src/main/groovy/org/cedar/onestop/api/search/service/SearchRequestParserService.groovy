@@ -399,13 +399,10 @@ class SearchRequestParserService {
     List<String> fields = new ArrayList<>()
     String fieldRequested = request.field
     if(fieldRequested == null || fieldRequested == 'all') {
-      fields.addAll(['titleForFilter', 'fileIdentifierForFilter', 'filename'])
-    }
-    else if(fieldRequested == 'filename') {
-      fields.add('filename')
+      fields.addAll(['title', 'fileIdentifier', 'filename'])
     }
     else {
-      fields.add(fieldRequested + 'ForFilter')
+      fields.add(fieldRequested)
     }
 
     String operator = request.allTermsMustMatch == null || request.allTermsMustMatch == false ? 'OR' : 'AND'
