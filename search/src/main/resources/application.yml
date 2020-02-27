@@ -41,15 +41,13 @@ search:
   phraseSlop: 0
   fields:
     title: 4
-    description: 2
+    filename: 4
     keywords: 3
+    individualNames: 3
+    description: 2
     fileIdentifier: 1
     parentIdentifier: 1
     doi: 1
-    beginDate: 1
-    endDate: 1
-    spatialBounding: 1
-    dsmmAverage: 1
 
 info.version: ${version}
 info.buildDate: ${buildDate}
