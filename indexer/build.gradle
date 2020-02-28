@@ -83,7 +83,7 @@ task integrationTest(type: Test) {
       systemProperty 'elasticsearch.ssl.enabled', false
     }
     else {
-      def elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:${ Versions.ELASTIC}")
+      def elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:${ Versions.ELASTIC }")
       elasticsearchContainer.start()
       systemProperty 'elasticsearch.host', 'localhost'
       systemProperty 'elasticsearch.port', elasticsearchContainer.getMappedPort(9200)
