@@ -13,6 +13,7 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
@@ -343,6 +344,10 @@ public class IndexingHelpers {
   private static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     String beginDate, endDate;
     Long year;
+    Long beginYear, endYear;
+    int beginDayOfYear, beginDayOfMonth, beginMonth;
+    int endDayOfYear, endDayOfMonth, endMonth;
+    var result = new HashMap<String, Object>();
 
     // If bounding is actually an instant, set search fields accordingly
     if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT) {
@@ -367,22 +372,43 @@ public class IndexingHelpers {
         // Precision is NANOS so use instant value as-is
         endDate = beginDate;
       }
-      var result = new HashMap<String, Object>();
-      result.put("beginDate", beginDate);
-      result.put("beginYear", year);
-      result.put("endDate", endDate);
-      result.put("endYear", year);
-      return result;
+      beginYear = year;
+      endYear = year;
     } else {
       // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
       // use value from analysis block where dates are UTC datetime normalized
-      var result = new HashMap<String, Object>();
-      result.put("beginDate", analysis.getBeginDescriptor() == VALID && analysis.getBeginIndexable() ? analysis.getBeginUtcDateTimeString() : null);
-      result.put("endDate", analysis.getEndDescriptor() == VALID && analysis.getEndIndexable() ? analysis.getEndUtcDateTimeString() : null);
-      result.put("beginYear", parseYear(analysis.getBeginUtcDateTimeString()));
-      result.put("endYear", parseYear(analysis.getEndUtcDateTimeString()));
-      return result;
+      beginDate = analysis.getBeginDescriptor() == VALID && analysis.getBeginIndexable() ? analysis.getBeginUtcDateTimeString() : null;
+      beginYear = parseYear(analysis.getBeginUtcDateTimeString());
+      endDate = analysis.getEndDescriptor() == VALID && analysis.getEndIndexable() ? analysis.getEndUtcDateTimeString() : null;
+      endYear = parseYear(analysis.getEndUtcDateTimeString());
     }
+
+    if (beginDate != null && endDate != null){
+      ZonedDateTime startDateTime = ZonedDateTime.parse(beginDate);
+      ZonedDateTime endDateTime = ZonedDateTime.parse(endDate);
+
+      beginDayOfYear = startDateTime.getDayOfYear();
+      beginDayOfMonth = startDateTime.getDayOfMonth();
+      beginMonth = startDateTime.getMonth().getValue();
+      result.put("beginDayOfYear", beginDayOfYear);
+      result.put("beginDayOfMonth", beginDayOfMonth);
+      result.put("beginMonth", beginMonth);
+
+      endDayOfYear = endDateTime.getDayOfYear();
+      endDayOfMonth = endDateTime.getDayOfMonth();
+      endMonth = endDateTime.getMonth().getValue();
+      result.put("endDayOfYear", endDayOfYear);
+      result.put("endDayOfMonth", endDayOfMonth);
+      result.put("endMonth", endMonth);
+    }
+
+    result.put("beginDate", beginDate);
+    result.put("beginYear", beginYear);
+
+    result.put("endDate", endDate);
+    result.put("endYear", endYear);
+
+    return result;
   }
 
   private static Long parseYear(String utcDateTime) {
