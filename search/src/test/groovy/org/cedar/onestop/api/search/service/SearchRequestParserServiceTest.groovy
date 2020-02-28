@@ -242,8 +242,11 @@ class SearchRequestParserServiceTest extends Specification {
 
     where:
     desc | request | expectedOperator | expectedFields
-    'defaults for field' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes" }]}' | 'OR' | ['titleForFilter', 'fileIdentifierForFilter', 'filename']
-    'declared field' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "field": "title" }]}' | 'OR' | ['titleForFilter']
+    'defaults for field and allTermsMustMatch' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes"}]}' | 'OR' | ['title', 'fileIdentifier', 'filename']
+    'declared single field value' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "field": "title" }]}' | 'OR' | ['title']
+    'declared "all" field value' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "field": "all" }]}' | 'OR' | ['title', 'fileIdentifier', 'filename']
+    'allTermsMustMatch is false' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": false }]}' | 'OR' | ['title', 'fileIdentifier', 'filename']
+    'allTermsMustMatch is true' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": true }]}' | 'AND' | ['title', 'fileIdentifier', 'filename']
   }
 
   def 'Multiple granuleName objects build right request'() {
@@ -272,7 +275,7 @@ class SearchRequestParserServiceTest extends Specification {
                                     [
                                         multi_match: [
                                             query   : "ghrsst",
-                                            fields  : ['titleForFilter'],
+                                            fields  : ['title'],
                                             operator: 'OR',
                                             type    : 'cross_fields'
                                         ]
@@ -324,7 +327,7 @@ class SearchRequestParserServiceTest extends Specification {
                                     [
                                         multi_match: [
                                             query   : "ghrsst goes",
-                                            fields  : ['titleForFilter', 'fileIdentifierForFilter', 'filename'],
+                                            fields  : ['title', 'fileIdentifier', 'filename'],
                                             operator: 'OR',
                                             type    : 'cross_fields'
                                         ]
@@ -753,36 +756,5 @@ class SearchRequestParserServiceTest extends Specification {
 
     then:
     aggsResult == expectedAggs
-  }
-
-  def 'Granule name filter generates expected elasticsearch query when #desc'() {
-    given:
-    def params = slurper.parseText(request)
-
-    when:
-    def queryResult = requestParser.parseSearchQuery(params)
-    def expectedQuery = [
-        bool: [
-            must  : [:],
-            filter: [
-                [multi_match: [
-                    query   : "ghrsst goes",
-                    fields  : expectedFields,
-                    operator: expectedOperator,
-                    type    : 'cross_fields'
-                ]]
-            ]]
-    ]
-
-    then:
-    queryResult == expectedQuery
-
-    where:
-    desc | request | expectedOperator | expectedFields
-    'defaults for field and allTermsMustMatch' | '{"filters":[{"type": "granuleName", "value": "ghrsst goes"}]}' | 'AND' | ['titleForFilter', 'fileIdentifierForFilter', 'filename']
-    'declared single field value' | '{"filters":[{"type": "granuleName", "value": "ghrsst goes", "field": "title" }]}' | 'AND' | ['titleForFilter']
-    'declared "all" field value' | '{"filters":[{"type": "granuleName", "value": "ghrsst goes", "field": "all" }]}' | 'AND' | ['titleForFilter', 'fileIdentifierForFilter', 'filename']
-    'allTermsMustMatch is false' | '{"filters":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": false }]}' | 'OR' | ['titleForFilter', 'fileIdentifierForFilter', 'filename']
-    'allTermsMustMatch is true' | '{"filters":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": true }]}' | 'AND' | ['titleForFilter', 'fileIdentifierForFilter', 'filename']
   }
 }
