@@ -42,12 +42,16 @@ search:
   fields:
     title: 4
     filename: 4
+    fileIdentifier: 4
+    parentIdentifier: 4
+    doi: 4
     keywords: 3
     individualNames: 3
     description: 2
-    fileIdentifier: 1
-    parentIdentifier: 1
-    doi: 1
+    organizationNames: 1
+    dataFormat: 1
+    linkProtocol: 1
+    serviceLinkProtocol: 1
 
 info.version: ${version}
 info.buildDate: ${buildDate}
