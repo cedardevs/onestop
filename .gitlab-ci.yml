@@ -1,8 +1,4 @@
-# This file is a template, and might need editing before it works on your project.
-# This is the Gradle build system for JVM applications
-# https://gradle.org/
-# https://github.com/gradle/gradle
-image: gradle:alpine
+image: openjdk:11-jdk-slim
 
 # Disable the Gradle daemon for Continuous Integration servers as correctness
 # is usually a priority over speed in CI environments. Using a fresh
@@ -25,13 +21,29 @@ build:
       - .gradle
       - buildSrc/build
       - buildSrc/.gradle
+      - client/build
+      - client/.gradle
+      - client/node_modules
+      - registry/build
+      - search/build
+      - stream-manager/build
+      - cli/vendor
 
 test:
   stage: test
-  script: gradle check
+  script: ./gradlew check
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
     paths:
       - build
       - .gradle
+      - buildSrc/build
+      - buildSrc/.gradle
+      - client/build
+      - client/.gradle
+      - client/node_modules
+      - registry/build
+      - search/build
+      - stream-manager/build
+      - cli/vendor
