@@ -45,6 +45,7 @@ dependencies {
   implementation("org.apache.commons:commons-text:1.2")
 
 
+  testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
   testImplementation("org.objenesis:objenesis:3.1")
   testImplementation("net.bytebuddy:byte-buddy:1.7.11")
@@ -82,7 +83,7 @@ task integrationTest(type: Test) {
       systemProperty 'elasticsearch.ssl.enabled', false
     }
     else {
-      def elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:${project.esVersion}")
+      def elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:${ Versions.ELASTIC}")
       elasticsearchContainer.start()
       systemProperty 'elasticsearch.host', 'localhost'
       systemProperty 'elasticsearch.port', elasticsearchContainer.getMappedPort(9200)
