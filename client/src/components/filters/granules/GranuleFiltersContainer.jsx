@@ -31,7 +31,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     toggleAllTermsMustMatch: () => {
       dispatch(granuleToggleAllTermsMustMatch())
-    }
+    },
   }
 }
 

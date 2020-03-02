@@ -15,7 +15,7 @@ import {
   GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED,
   GRANULE_RESULTS_PAGE_REQUESTED,
   GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH,
-  RESET_GRANULE_ALL_TERMS_MUST_MATCH
+  RESET_GRANULE_ALL_TERMS_MUST_MATCH,
 } from '../../actions/routing/GranuleSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
@@ -128,7 +128,11 @@ export const granuleFilter = (state = initialState, action) => {
       return Immutable.set(state, 'allTermsMustMatch', !state.allTermsMustMatch)
 
     case RESET_GRANULE_ALL_TERMS_MUST_MATCH:
-      return Immutable.set(state, 'allTermsMustMatch', initialState.allTermsMustMatch)
+      return Immutable.set(
+        state,
+        'allTermsMustMatch',
+        initialState.allTermsMustMatch
+      )
 
     default:
       return state

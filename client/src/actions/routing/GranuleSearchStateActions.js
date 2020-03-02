@@ -162,17 +162,18 @@ export const granuleToggleExcludeGlobal = () => {
   }
 }
 
-export const GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH = 'GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH'
+export const GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH =
+  'GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH'
 export const granuleToggleAllTermsMustMatch = () => {
   return {
-    type: GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH
+    type: GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH,
   }
 }
 
-export const RESET_GRANULE_ALL_TERMS_MUST_MATCH = 'RESET_GRANULE_ALL_TERMS_MUST_MATCH'
+export const RESET_GRANULE_ALL_TERMS_MUST_MATCH =
+  'RESET_GRANULE_ALL_TERMS_MUST_MATCH'
 export const resetGranuleAllTermsMustMatch = () => {
   return {
-    type: RESET_GRANULE_ALL_TERMS_MUST_MATCH
+    type: RESET_GRANULE_ALL_TERMS_MUST_MATCH,
   }
 }
-

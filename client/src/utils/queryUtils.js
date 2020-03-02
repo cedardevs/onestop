@@ -53,7 +53,13 @@ const assembleQueries = ({queryText, title, allTermsMustMatch}) => {
   if (title) {
     let trimmedText = _.trim(title)
     if (trimmedText) {
-      return [ {type: 'granuleName', value: `${trimmedText}`, allTermsMustMatch: allTermsMustMatch} ]
+      return [
+        {
+          type: 'granuleName',
+          value: `${trimmedText}`,
+          allTermsMustMatch: allTermsMustMatch,
+        },
+      ]
     }
   }
   return []
@@ -231,6 +237,13 @@ const codecs = [
     encode: text => encodeURIComponent(text),
     decode: text => decodeURIComponent(text),
     encodable: text => !_.isEmpty(text),
+  },
+  {
+    longKey: 'allTermsMustMatch',
+    shortKey: 'tm',
+    encode: bool => (bool ? '1' : '0'),
+    decode: text => text === '1',
+    encodable: bool => bool === false, // only include when changed from default
   },
   {
     longKey: 'bbox',

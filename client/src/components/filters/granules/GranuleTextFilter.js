@@ -86,8 +86,14 @@ const GranuleTextFilter = props => {
                       Contains
                     </label>,
                     input,
-                      <Checkbox checked={props.allTermsMustMatch} title="All terms must match" onChange={() => {props.toggleAllTermsMustMatch()}}/>
                   ]}
+                />
+                <Checkbox
+                  label="Match Any Terms"
+                  checked={!!!props.allTermsMustMatch}
+                  onChange={() => {
+                    props.toggleAllTermsMustMatch()
+                  }}
                 />
               </FilterFieldset>
             </form>
