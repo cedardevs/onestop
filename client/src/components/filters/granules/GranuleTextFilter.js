@@ -83,7 +83,7 @@ const GranuleTextFilter = props => {
                       htmlFor={id}
                       style={{width: '4em'}}
                     >
-                      Contains
+                      Matches
                     </label>,
                     input,
                   ]}

@@ -31,6 +31,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     toggleAllTermsMustMatch: () => {
       dispatch(granuleToggleAllTermsMustMatch())
+      dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
   }
 }
