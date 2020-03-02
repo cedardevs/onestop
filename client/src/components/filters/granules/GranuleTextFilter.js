@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
 
-import Button from '../../common/input/Button'
+import Checkbox from '../../common/input/Checkbox'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
 
@@ -86,6 +86,7 @@ const GranuleTextFilter = props => {
                       Contains
                     </label>,
                     input,
+                      <Checkbox checked={props.allTermsMustMatch} title="All terms must match" onChange={() => {props.toggleAllTermsMustMatch()}}/>
                   ]}
                 />
               </FilterFieldset>

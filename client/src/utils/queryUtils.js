@@ -38,32 +38,25 @@ const assembleFilters = filter => {
     assembleTemporalFilters(filter),
     assembleAdditionalFilters(filter),
     assembleSelectedCollectionsFilters(filter)
-      // assembleFIXME(filter) // FIXME
   )
 
   filters = _.flatten(_.compact(filters))
   return filters
 }
 
-const assembleQueries = ({queryText, title}) => {
+const assembleQueries = ({queryText, title, allTermsMustMatch}) => {
   let trimmedText = _.trim(queryText)
   if (trimmedText && trimmedText !== '*') {
     return [ {type: 'queryText', value: trimmedText} ]
   }
 
-  // FIXME As query...
   if (title) {
     let trimmedText = _.trim(title)
-    if (trimmedText && trimmedText !== '*') {
-      return [ {type: 'granuleName', value: `${trimmedText}`} ]
+    if (trimmedText) {
+      return [ {type: 'granuleName', value: `${trimmedText}`, allTermsMustMatch: allTermsMustMatch} ]
     }
   }
   return []
-}
-
-// FIXME as filter....
-const assembleFIXME = ({title})=> {
-  return [{type: 'granuleName', value: _.trim(title)}]
 }
 
 const assembleFacetFilters = ({selectedFacets}) => {

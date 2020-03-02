@@ -92,6 +92,8 @@ class GranuleFilters extends React.Component {
             clear={this.props.clear}
             submit={this.props.submit}
             query={this.props.queryString}
+            allTermsMustMatch={this.props.allTermsMustMatch}
+            toggleAllTermsMustMatch={this.props.toggleAllTermsMustMatch}
           />
         ),
       },

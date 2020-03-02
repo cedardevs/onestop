@@ -5,12 +5,15 @@ import {closeLeft} from '../../../actions/LayoutActions'
 import {
   clearGranuleQueryText,
   setGranuleQueryText,
+  granuleToggleAllTermsMustMatch,
+  resetGranuleAllTermsMustMatch,
 } from '../../../actions/routing/GranuleSearchStateActions'
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
 
 const mapStateToProps = state => {
   return {
     queryString: state.search.granuleFilter.title,
+    allTermsMustMatch: state.search.granuleFilter.allTermsMustMatch,
   }
 }
 
@@ -19,12 +22,16 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     closeLeft: () => dispatch(closeLeft()),
     clear: () => {
       dispatch(clearGranuleQueryText())
+      dispatch(resetGranuleAllTermsMustMatch())
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
     submit: text => {
       dispatch(setGranuleQueryText(text))
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
+    toggleAllTermsMustMatch: () => {
+      dispatch(granuleToggleAllTermsMustMatch())
+    }
   }
 }
 
