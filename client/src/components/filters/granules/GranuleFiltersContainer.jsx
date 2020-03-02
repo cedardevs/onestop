@@ -1,4 +1,4 @@
-import lodash!
+import _ from 'lodash'
 import {withRouter} from 'react-router'
 import {connect} from 'react-redux'
 import GranuleFilters from './GranuleFilters'
