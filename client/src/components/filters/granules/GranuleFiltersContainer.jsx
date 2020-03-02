@@ -1,3 +1,4 @@
+import lodash!
 import {withRouter} from 'react-router'
 import {connect} from 'react-redux'
 import GranuleFilters from './GranuleFilters'
@@ -29,9 +30,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(setGranuleQueryText(text))
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
-    toggleAllTermsMustMatch: () => {
+    toggleAllTermsMustMatch: (text) => {
       dispatch(granuleToggleAllTermsMustMatch())
-      dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
+      if (!_.isEmpty(text)) {
+        // this is just to keep it from reapplying the search when no query has been applied
+        dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
+      }
     },
   }
 }
