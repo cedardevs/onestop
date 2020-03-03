@@ -56,7 +56,7 @@ const videoPlayButton = (
 const GranuleAccessLink = props => {
   const {link, item, itemId} = props
   const {protocol, url, displayName, linkProtocol} = link
-  const linkText = displayName ? displayName : protocol.label
+  const linkText = displayName ? displayName : linkProtocol
   const accessibleProtocolText = displayName
     ? `protocol: ${protocol.label} for ${item.title}`
     : ` for ${item.title}` // prevent duplicate reading of protocol.label if that is also used as the linkText
