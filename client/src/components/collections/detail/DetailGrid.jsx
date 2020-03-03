@@ -29,7 +29,12 @@ export default class DetailGrid extends React.Component {
         )
       })
       return (
-        <Row key={rowIndex} nogutter style={styleRow(rowIndex === 0)}>
+        <Row
+          key={rowIndex}
+          nogutter
+          justify="end"
+          style={styleRow(rowIndex === 0)}
+        >
           {gridColumns}
         </Row>
       )
