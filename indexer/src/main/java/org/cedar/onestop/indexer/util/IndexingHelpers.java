@@ -383,31 +383,35 @@ public class IndexingHelpers {
       endYear = parseYear(analysis.getEndUtcDateTimeString());
     }
 
-    if (beginDate != null && endDate != null){
-      ZonedDateTime startDateTime = ZonedDateTime.parse(beginDate);
-      ZonedDateTime endDateTime = ZonedDateTime.parse(endDate);
-
-      beginDayOfYear = startDateTime.getDayOfYear();
-      beginDayOfMonth = startDateTime.getDayOfMonth();
-      beginMonth = startDateTime.getMonth().getValue();
-      result.put("beginDayOfYear", beginDayOfYear);
-      result.put("beginDayOfMonth", beginDayOfMonth);
-      result.put("beginMonth", beginMonth);
-
-      endDayOfYear = endDateTime.getDayOfYear();
-      endDayOfMonth = endDateTime.getDayOfMonth();
-      endMonth = endDateTime.getMonth().getValue();
-      result.put("endDayOfYear", endDayOfYear);
-      result.put("endDayOfMonth", endDayOfMonth);
-      result.put("endMonth", endMonth);
-    }
-
     result.put("beginDate", beginDate);
     result.put("beginYear", beginYear);
+    result.putAll(parseAdditionalTimeFields("begin", beginDate));
 
     result.put("endDate", endDate);
     result.put("endYear", endYear);
+    result.putAll(parseAdditionalTimeFields("end", endDate));
 
+    return result;
+  }
+
+  private static HashMap<String, Object> parseAdditionalTimeFields(String prefix, String time){
+    var result = new HashMap<String, Object>();
+    if (time != null) {
+      ZonedDateTime dateTime = ZonedDateTime.parse(time);
+      int dayOfYear, dayOfMonth, month;
+
+      dayOfYear = dateTime.getDayOfYear();
+      dayOfMonth = dateTime.getDayOfMonth();
+      month = dateTime.getMonth().getValue();
+
+      log.info(String.valueOf(dayOfYear));
+      log.info(String.valueOf(dayOfMonth));
+      log.info(String.valueOf(month));
+
+      result.put(prefix + "DayOfYear", dayOfYear);
+      result.put(prefix + "DayOfMonth", dayOfMonth);
+      result.put(prefix + "Month", month);
+    }
     return result;
   }
 
