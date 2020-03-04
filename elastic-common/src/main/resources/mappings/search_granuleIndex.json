@@ -74,12 +74,30 @@
       "beginYear": {
         "type": "long"
       },
+      "beginDayOfYear": {
+        "type": "integer"
+      },
+      "beginDayOfMonth": {
+        "type": "integer"
+      },
+      "beginMonth": {
+        "type": "integer"
+      },
       "endDate": {
         "type": "date",
         "format": "date_optional_time"
       },
       "endYear": {
         "type": "long"
+      },
+      "endDayOfYear": {
+        "type": "integer"
+      },
+      "endDayOfMonth": {
+        "type": "integer"
+      },
+      "endMonth": {
+        "type": "integer"
       },
       "spatialBounding": {
         "type": "geo_shape",
