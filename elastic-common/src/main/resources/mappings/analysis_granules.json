@@ -1,0 +1,223 @@
+{
+  "mappings": {
+    "properties": {
+      "dataAccess": {
+        "properties": {
+          "dataAccessExists": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": {
+        "properties": {
+          "descriptionCharacters": {
+            "type": "long"
+          },
+          "descriptionExists": {
+            "type": "boolean"
+          },
+          "descriptionFleschKincaidReadingGradeLevel": {
+            "type": "float"
+          },
+          "descriptionFleschReadingEaseScore": {
+            "type": "float"
+          }
+        }
+      },
+      "identification": {
+        "properties": {
+          "doiExists": {
+            "type": "boolean"
+          },
+          "fileIdentifierExists": {
+            "type": "boolean"
+          },
+          "fileIdentifierString": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "hierarchyLevelNameExists": {
+            "type": "boolean"
+          },
+          "matchesIdentifiers": {
+            "type": "boolean"
+          },
+          "parentIdentifierExists": {
+            "type": "boolean"
+          },
+          "parentIdentifierString": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          }
+        }
+      },
+      "spatialBounding": {
+        "properties": {
+          "isValid": {
+            "type": "boolean"
+          },
+          "spatialBoundingExists": {
+            "type": "boolean"
+          },
+          "validationError": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          }
+        }
+      },
+      "temporalBounding": {
+        "properties": {
+          "beginDescriptor": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "beginIndexable": {
+            "type": "boolean"
+          },
+          "beginPrecision": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "beginUtcDateTimeString": {
+            "type": "date"
+          },
+          "beginZoneSpecified": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "endDescriptor": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "endIndexable": {
+            "type": "boolean"
+          },
+          "endPrecision": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "endUtcDateTimeString": {
+            "type": "date"
+          },
+          "endZoneSpecified": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "instantDescriptor": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "instantIndexable": {
+            "type": "boolean"
+          },
+          "instantPrecision": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "instantUtcDateTimeString": {
+            "type": "date"
+          },
+          "rangeDescriptor": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          }
+        }
+      },
+      "thumbnail": {
+        "properties": {
+          "thumbnailExists": {
+            "type": "boolean"
+          }
+        }
+      },
+      "titles": {
+        "properties": {
+          "alternateTitleCharacters": {
+            "type": "long"
+          },
+          "alternateTitleExists": {
+            "type": "boolean"
+          },
+          "alternateTitleFleschKincaidReadingGradeLevel": {
+            "type": "float"
+          },
+          "alternateTitleFleschReadingEaseScore": {
+            "type": "float"
+          },
+          "titleCharacters": {
+            "type": "long"
+          },
+          "titleExists": {
+            "type": "boolean"
+          },
+          "titleFleschKincaidReadingGradeLevel": {
+            "type": "float"
+          },
+          "titleFleschReadingEaseScore": {
+            "type": "float"
+          }
+        }
+      }
+    }
+  }
+}
