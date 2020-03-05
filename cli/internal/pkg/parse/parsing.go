@@ -23,7 +23,7 @@ func ParseSort(params *viper.Viper) string {
 	sortArg := params.GetString(flags.SortFlag)
 	sort := ""
 	if len(sortArg) > 0 {
-		sort = "\"sort\":[{\"" + sortArg + "\": \"desc\"}],"
+		sort = "\"sort\":[{\"" + sortArg + "\": \"asc\"}],"
 	}
 	return sort
 }
