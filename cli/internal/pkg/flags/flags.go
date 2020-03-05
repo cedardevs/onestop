@@ -71,6 +71,18 @@ const RegexDescription = "Locate files whose names match the case-insensitive re
 const SatnameFlag = "satname"
 const SatnameDescription = "Select files from the SATNAME satellite."
 
+const MonthFlag = "month"
+const MonthShortFlag = ""
+const MonthDescription = "Specifies a month of a year. MONTH must be a positive integer, ranging between 1 and 12. Files with data start times from any day of that month for any year will be listed."
+
+const DoyFlag = "doy"
+const DoyShortFlag = ""
+const DoyDescription = "Specifies the day of the year. DOY must be an integer, ranging between 1 and 366. Files with data start times on that day of any year will be listed."
+
+const DayFlag = "day"
+const DayShortFlag = ""
+const DayDescription = "Specifies a day of a month. DAY must be a positive integer, ranging between 1 and 31. Files with data start times on that day of any month and year will be selected."
+
 const YearFlag = "year"
 const YearShortFlag = "y"
 const YearDescription = "Specifies a year. YEAR must be a positive integer, ranging between 1978 and current year. Files with data start times in that year will be listed."
