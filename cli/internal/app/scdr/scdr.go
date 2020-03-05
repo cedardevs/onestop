@@ -50,7 +50,7 @@ func SetScdrFlags() {
 	cli.AddFlag(ScdrFileCmd, flags.TextQueryFlag, flags.TextQueryShortFlag, flags.QueryDescription, "")
 	cli.AddFlag(ScdrFileCmd, flags.CloudServerFlag, flags.CloudServerShortFlag, flags.CloudServerDescription, false)
 	cli.AddFlag(ScdrFileCmd, flags.TestServerFlag, flags.TestServerShortFlag, flags.TestServerDescription, false)
-	cli.AddFlag(ScdrFileCmd, flags.SortFlag, flags.SortShortFlag, flags.SortDescription, "")
+	cli.AddFlag(ScdrFileCmd, flags.SortFlag, flags.SortShortFlag, flags.SortDescription, flags.SortDefault)
 }
 
 func InjectMiddleware(){

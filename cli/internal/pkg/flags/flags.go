@@ -93,6 +93,7 @@ const KeywordDescription = "Pick files tagged with a label whose value is LABEL.
 
 const SortFlag = "sort"
 const SortShortFlag = ""
+const SortDefault = "beginDate"
 const SortDescription = "Sort results by stagedDate, beginDate, or endDate."
 
 const CloudFlag = "cloud"
