@@ -77,11 +77,13 @@ func ParseStartAndEndTime(params *viper.Viper) []string {
 func ParseSince(params *viper.Viper) []string {
 	filter := []string{}
 	startTime := params.GetString(flags.SinceFlag)
-	beginDateTime, _ := time.Parse("2006-01-02T15:04:05Z", ParseDateFormat(startTime))
-	beginDateTimeEpochMillis := beginDateTime.UnixNano() / 1000000
-  beginDateTimeFilter := "stagedDate:>" + strconv.FormatInt(beginDateTimeEpochMillis, 10)
-	if len(beginDateTimeFilter) > 0 {
-		filter = []string{"{\"type\":\"queryText\", \"value\":\"" + beginDateTimeFilter + "\"}"}
+	if len(startTime) > 0 {
+        beginDateTime, _ := time.Parse("2006-01-02T15:04:05Z", ParseDateFormat(startTime))
+        beginDateTimeEpochMillis := beginDateTime.UnixNano() / 1000000
+        beginDateTimeFilter := "stagedDate:>" + strconv.FormatInt(beginDateTimeEpochMillis, 10)
+        if len(beginDateTimeFilter) > 0 {
+            filter = []string{"{\"type\":\"queryText\", \"value\":\"" + beginDateTimeFilter + "\"}"}
+        }
 	}
 	return filter
 }

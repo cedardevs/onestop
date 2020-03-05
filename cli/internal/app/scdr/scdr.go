@@ -40,6 +40,9 @@ func SetScdrFlags() {
 	cli.AddFlag(ScdrFileCmd, flags.KeywordFlag, flags.KeywordShortFlag, flags.KeywordDescription, "")
 	cli.AddFlag(ScdrFileCmd, flags.GapFlag, flags.GapShortFlag, flags.GapDescription, "")
 	cli.AddFlag(ScdrFileCmd, flags.SinceFlag, flags.SinceShortFlag, flags.SinceDescription, "")
+	cli.AddFlag(ScdrFileCmd, flags.MonthFlag, flags.MonthShortFlag, flags.MonthDescription, "")
+	cli.AddFlag(ScdrFileCmd, flags.DayFlag, flags.DayShortFlag, flags.DayDescription, "")
+	cli.AddFlag(ScdrFileCmd, flags.DoyFlag, flags.DoyShortFlag, flags.DoyDescription, "")
 
 //not scdr-files specific
 	cli.AddFlag(ScdrFileCmd, flags.MaxFlag, flags.MaxShortFlag, flags.MaxDescription, "")
