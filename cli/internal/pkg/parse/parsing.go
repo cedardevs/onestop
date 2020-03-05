@@ -202,6 +202,31 @@ func ParseFileName(params *viper.Viper) []string {
 	return []string{"{\"type\":\"queryText\", \"value\":\"title:\\\"" + fileName + "\\\"\"}"}
 }
 
+func ParseMonth(params *viper.Viper) []string {
+	month := params.GetString(flags.MonthFlag)
+	if len(month) == 0 {
+		return []string{}
+	}
+	return []string{"{\"type\":\"queryText\", \"value\":\"beginMonth:" + month + "\"}"}
+}
+
+
+func ParseDayOfMonth(params *viper.Viper) []string {
+	dom := params.GetString(flags.DayFlag)
+	if len(dom) == 0 {
+		return []string{}
+	}
+	return []string{"{\"type\":\"queryText\", \"value\":\"beginDayOfMonth:" + dom + "\"}"}
+}
+
+func ParseDayOfYear(params *viper.Viper) []string {
+	doy := params.GetString(flags.DoyFlag)
+	if len(doy) == 0 {
+		return []string{}
+	}
+	return []string{"{\"type\":\"queryText\", \"value\":\"beginDayOfYear:" + doy + "\"}"}
+}
+
 func ParseYear(params *viper.Viper) []string {
 	year := params.GetString(flags.YearFlag)
 	if len(year) == 0 {
