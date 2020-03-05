@@ -539,6 +539,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref: "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref: "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             crossReferences:
@@ -675,6 +681,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref : "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref : "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             crossReferences:
@@ -815,6 +827,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref: "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref: "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             dataFormat:
@@ -829,6 +847,12 @@ components:
               $ref: "#/components/schemas/endDate"
             endYear:
               $ref: "#/components/schemas/endYear"
+            endDayOfYear:
+              $ref: "#/components/schemas/endDayOfYear"
+            endDayOfMonth:
+              $ref: "#/components/schemas/endDayOfMonth"
+            endMonth:
+              $ref: "#/components/schemas/endMonth"
             fileIdentifier:
               $ref: "#/components/schemas/fileIdentifier"
             gcmdDataCenters:
@@ -1164,6 +1188,18 @@ components:
       description: Begin year of temporal bounding.
       format: int64
       type: integer
+    beginDayOfYear:
+      description: Begin day of year of temporal bounding.
+      format: int64
+      type: integer
+    beginDayOfMonth:
+      description: Begin day of month of temporal bounding, 1 to 31.
+      format: int64
+      type: integer
+    beginMonth:
+      description: Begin month of temporal bounding, 1 to 12.
+      format: int64
+      type: integer
     citeAsStatements:
       # description: TODO
       items:
@@ -1248,6 +1284,18 @@ components:
       type: string
     endYear:
       description: End year of temporal bounding.
+      format: int64
+      type: integer
+    endDayOfYear:
+      description: End day of year of temporal bounding.
+      format: int64
+      type: integer
+    endDayOfMonth:
+      description: End day of month of temporal bounding, 1 to 31.
+      format: int64
+      type: integer
+    endMonth:
+      description: End month of temporal bounding, 1 to 12.
       format: int64
       type: integer
     fileIdentifier:
