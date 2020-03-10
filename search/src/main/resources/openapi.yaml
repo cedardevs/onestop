@@ -697,6 +697,8 @@ components:
               $ref: "#/components/schemas/endYear"
             fileIdentifier:
               $ref: "#/components/schemas/fileIdentifier"
+            filename:
+              $ref: "#/components/schemas/filename"
             gcmdDataCenters:
               $ref: "#/components/schemas/gcmdDataCenters"
             gcmdHorizontalResolution:
@@ -831,6 +833,8 @@ components:
               $ref: "#/components/schemas/endYear"
             fileIdentifier:
               $ref: "#/components/schemas/fileIdentifier"
+            filename:
+              $ref: "#/components/schemas/filename"
             gcmdDataCenters:
               $ref: "#/components/schemas/gcmdDataCenters"
             gcmdHorizontalResolution:
@@ -1281,6 +1285,9 @@ components:
       type: integer
     fileIdentifier:
       description: Identifier for this record.
+      type: string
+    filename:
+      description: Filename associated with this record.
       type: string
     gcmdDataCenters:
       description: GCMD Data Center keywords. These keywords are normalized.
