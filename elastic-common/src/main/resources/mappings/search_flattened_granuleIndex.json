@@ -1,13 +1,30 @@
 {
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "filename_analyzer": {
+          "type": "pattern",
+          "pattern": "([^\\p{L}\\d]+)|(?<=[\\p{L}&&[^\\p{Lu}]])(?=\\p{Lu})|(?<=\\p{Lu})(?=\\p{Lu}[\\p{L}&&[^\\p{Lu}]])",
+          "lowercase": true
+        }
+      }
+    }
+  },
   "mappings": {
-    "dynamic": "strict",
+    "dynamic": "false",
     "properties": {
       "stagedDate": {
         "type": "date",
         "format": "epoch_millis"
       },
       "fileIdentifier": {
-        "type": "keyword"
+        "type": "text",
+        "analyzer": "filename_analyzer",
+        "fields": {
+          "aggs": {
+            "type": "keyword"
+          }
+        }
       },
       "parentIdentifier": {
         "type": "keyword"
@@ -19,7 +36,12 @@
         "type": "keyword"
       },
       "title": {
-        "type": "text"
+        "type": "text",
+        "analyzer": "filename_analyzer"
+      },
+      "filename": {
+        "type": "text",
+        "analyzer": "filename_analyzer"
       },
       "description": {
         "type": "text"

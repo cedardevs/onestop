@@ -949,6 +949,7 @@ components:
           items:
             oneOf:
               - $ref: "#/components/schemas/textQuery"
+              - $ref: "#/components/schemas/granuleNameQuery"
           type: array
         summary:
           default: true
@@ -1112,7 +1113,7 @@ components:
       description: "When providing multiple queryText objects in your search request, keep in mind that they will be combined with a logical AND. Terms use Lucene Query Syntax."
       properties:
         type:
-          description: "Filter type."
+          description: "Query type."
           enum:
             - queryText
         value:
@@ -1151,6 +1152,34 @@ components:
       required:
         - type
       title: "Year Filter"
+      type: object
+    granuleNameQuery:
+      additionalProperties: false
+      description: "Query by granule \"name\" fields ONLY. Note that when combined with the textQuery, matches against the \"name\" fields will be given a double boost in relevance score (due to matching twice across both query objects). If providing multiple granuleName query objects in your search request, keep in mind that they will be combined with a logical AND."
+      properties:
+        type:
+          description: "Query type."
+          enum:
+            - granuleName
+        value:
+          description: "Text to search one or all of the granule name fields. All text is treated literally, i.e., this query type does not interpret any special syntax like wildcards, operators, or regular expressions."
+          type: string
+        field:
+          description: "The single \"name\" field to query against, or all of the possible fields."
+          enum:
+            - title
+            - fileIdentifier
+            - filename
+            - all
+          default: all
+        allTermsMustMatch:
+          description: "Controls the underlying behavior of the query. True means that results are excluded if all terms in the given \"value\" are not found within the specified \"field\". False only excludes results if no terms match at all. Defaults to false."
+          type: boolean
+          default: false
+      required:
+        - type
+        - value
+      title: "Granule Name Query"
       type: object
 
     # Record field schemas

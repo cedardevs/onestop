@@ -17,6 +17,8 @@ import {
   granuleNewSearchRequested,
   granuleNewSearchResetFiltersRequested,
   granuleResultsPageRequested,
+  granuleToggleAllTermsMustMatch,
+  resetGranuleAllTermsMustMatch,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 
 const assertParam = (param, result, expected, fallback) => {
@@ -40,6 +42,7 @@ const assertAllFilterParams = (results, values, defaults) => {
   assertParam('excludeGlobal', results, values, defaults)
   assertParam('selectedCollectionIds', results, values, defaults)
   assertParam('title', results, values, defaults)
+  assertParam('allTermsMustMatch', results, values, defaults)
 }
 
 describe('The granule filter reducer', function(){
@@ -48,6 +51,7 @@ describe('The granule filter reducer', function(){
     pageOffset: 40,
     pageSize: 13,
     title: 'demo',
+    allTermsMustMatch: false,
     selectedCollectionIds: [ 'abc', '123' ],
     bbox: {
       west: 123,
@@ -66,6 +70,7 @@ describe('The granule filter reducer', function(){
   }
   const initialStateWithParentUuid = {
     title: '',
+    allTermsMustMatch: true,
     pageOffset: 0,
     pageSize: 20,
     selectedCollectionIds: [ 'parent-uuid' ],
@@ -97,6 +102,7 @@ describe('The granule filter reducer', function(){
       selectedFacets: {},
       excludeGlobal: null,
       title: '',
+      allTermsMustMatch: true,
     })
   })
 
@@ -192,6 +198,7 @@ describe('The granule filter reducer', function(){
           params: [ 'parent-uuid', {startDateTime: '2000-01-01T00:00:00Z'} ],
           expectedChanges: {
             title: '',
+            allTermsMustMatch: true,
             pageOffset: 0,
             pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
@@ -214,6 +221,7 @@ describe('The granule filter reducer', function(){
           params: [ 'parent-uuid', {startYear: -100000000} ],
           expectedChanges: {
             title: '',
+            allTermsMustMatch: true,
             pageOffset: 0,
             pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
@@ -243,6 +251,7 @@ describe('The granule filter reducer', function(){
           ],
           expectedChanges: {
             title: '',
+            allTermsMustMatch: true,
             pageOffset: 0,
             pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
@@ -307,6 +316,7 @@ describe('The granule filter reducer', function(){
           ],
           expectedChanges: {
             title: '',
+            allTermsMustMatch: true,
             pageOffset: 0,
             pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
@@ -477,6 +487,38 @@ describe('The granule filter reducer', function(){
         params: [ 'science', 'Oceans > Ocean Temperature', false ],
         expectedChanges: {
           selectedFacets: {science: [ 'Oceans' ]},
+        },
+      },
+      {
+        name: 'toggle all terms must match from default',
+        initialState: initialState,
+        function: granuleToggleAllTermsMustMatch,
+        expectedChanges: {
+          allTermsMustMatch: false,
+        },
+      },
+      {
+        name: 'toggle all terms must match from false',
+        initialState: nonInitialState,
+        function: granuleToggleAllTermsMustMatch,
+        expectedChanges: {
+          allTermsMustMatch: true,
+        },
+      },
+      {
+        name: 'reset all terms must match from default',
+        initialState: initialState,
+        function: resetGranuleAllTermsMustMatch,
+        expectedChanges: {
+          allTermsMustMatch: true,
+        },
+      },
+      {
+        name: 'reset all terms must match from false',
+        initialState: initialState,
+        function: resetGranuleAllTermsMustMatch,
+        expectedChanges: {
+          allTermsMustMatch: true,
         },
       },
       {

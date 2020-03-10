@@ -7,6 +7,8 @@ import {
   granuleUpdateYearRange,
   granuleRemoveGeometry,
   clearGranuleQueryText,
+  granuleUpdateTimeRelation,
+  granuleUpdateGeoRelation,
 } from '../../../actions/routing/GranuleSearchStateActions'
 
 import {submitGranuleSearch} from '../../../actions/routing/GranuleSearchRouteActions'
@@ -22,6 +24,9 @@ const mapStateToProps = state => {
     bbox,
     excludeGlobal,
     title,
+    allTermsMustMatch,
+    geoRelationship,
+    timeRelationship,
   } = state.search.granuleFilter
   return {
     selectedFacets,
@@ -31,6 +36,9 @@ const mapStateToProps = state => {
     endYear,
     bbox,
     excludeGlobal,
+    allTermsMustMatch,
+    geoRelationship,
+    timeRelationship,
     showAppliedFilters: state.layout.showAppliedFilterBubbles,
     textFilter: title,
   }
@@ -54,6 +62,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     updateYearRange: (startYear, endYear) =>
       dispatch(granuleUpdateYearRange(startYear, endYear)),
     removeGeometry: () => dispatch(granuleRemoveGeometry()),
+    // updateTimeRelation: relation =>
+    //   dispatch(granuleUpdateTimeRelation(relation)),
+    // updateGeoRelation: relation => dispatch(granuleUpdateGeoRelation(relation)),
   }
 }
 

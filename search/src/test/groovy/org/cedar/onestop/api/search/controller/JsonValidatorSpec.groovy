@@ -220,6 +220,47 @@ class JsonValidatorSpec extends Specification {
         """{"type": "queryText", "value": "temperature", "cat": "meow"}"""
   }
 
+  def 'valid granule name query: #desc'() {
+    given:
+    def schema = 'granuleNameQuery'
+    def singleQuery = """{ "queries": [ ${request} ] }"""
+
+    when:
+    def validSearch = validateSearchSchema(singleQuery)
+
+    then:
+    validSearch.success
+
+    where:
+    desc | request
+    'without field specified' |
+        """{"type": "granuleName", "value": "abc123"}"""
+    'with field specified' |
+        """{"type": "granuleName", "value": "abc123", "field": "title"}"""
+    'with allTermsMustMatch specified' |
+        """{"type": "granuleName", "value": "abc 123", "field": "title", "allTermsMustMatch": true}"""
+  }
+
+  def 'invalid granule name query: #desc (reason: #reasoning)'() {
+    given:
+    def schema = 'granuleNameQuery'
+    def singleQuery = """{ "queries": [ ${request} ] }"""
+
+    when:
+    validateSearchSchema(singleQuery)
+
+    then: "exception is thrown"
+    def searchException = thrown(Exception)
+    searchException.message.contains('not a valid request')
+
+    where:
+    desc | reasoning | request
+    'invalid field' | "'cat' is not a field on the query object" |
+        """{"type": "granuleName", "value": "abc123", "cat": "meow"}"""
+    'invalid field' | "allFieldsMustMatch is boolean type not string" |
+        """{"type": "granuleName", "value": "abc 123", "field": "title", "allTermsMustMatch": "true"}"""
+  }
+
   def 'valid filter: #component #desc'() {
     given:
     def singleQuery = """{ "filters": [ ${request} ] }"""
