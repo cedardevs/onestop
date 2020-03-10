@@ -30,11 +30,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(setGranuleQueryText(text))
       dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
     },
-    toggleAllTermsMustMatch: (text) => {
+    toggleAllTermsMustMatch: text => {
       dispatch(granuleToggleAllTermsMustMatch())
       if (!_.isEmpty(text)) {
         // this is just to keep it from reapplying the search when no query has been applied
-        dispatch(submitGranuleSearch(ownProps.history, ownProps.match.params.id))
+        dispatch(
+          submitGranuleSearch(ownProps.history, ownProps.match.params.id)
+        )
       }
     },
   }
