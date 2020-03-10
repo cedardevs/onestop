@@ -27,10 +27,17 @@ const AreaDescription = "Locate files which intersect with the specified polygon
 const MaxFlag = "max"
 const MaxShortFlag = "n"
 const MaxDescription = "Maximum number of results returned."
+const MaxDefault = 100
 
 const OffsetFlag = "offset"
 const OffsetShortFlag = "p" //as in page
 const OffsetDescription = "Page number starting at 0"
+const OffsetDefault = 0
+
+const SearchAfterFlag = "after"
+const SearchAfterShortFlag = ""
+const SearchAfterDescription = "Search after begin date."
+// const SearchAfterDefault = 0
 
 const StartTimeFlag = "start-time"
 const StartTimeShortFlag = "s"

@@ -1,10 +1,10 @@
 package middleware
 
-import(
-  "github.com/cedardevs/onestop/cli/internal/pkg/parse"
-  "gopkg.in/h2non/gentleman.v2"
-  "github.com/spf13/viper"
-  "strings"
+import (
+	"github.com/cedardevs/onestop/cli/internal/pkg/parse"
+	"github.com/spf13/viper"
+	"gopkg.in/h2non/gentleman.v2"
+	"strings"
 )
 
 //this function is pre-request RegisterBefore

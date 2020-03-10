@@ -1,12 +1,12 @@
 package parse
 
 import (
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"strconv"
 	"strings"
 	"time"
-	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 )
 
 func ParseTypeFlag(params *viper.Viper) []string {
@@ -23,7 +23,7 @@ func ParseSort(params *viper.Viper) string {
 	sortArg := params.GetString(flags.SortFlag)
 	sort := ""
 	if len(sortArg) > 0 {
-		sort = "\"sort\":[{\"" + sortArg + "\": \"asc\"}],"
+		sort = "\"sort\":[{\"" + sortArg + "\": \"desc\"}],"
 	}
 	return sort
 }
@@ -47,16 +47,17 @@ func ParseSatName(params *viper.Viper) []string {
 }
 
 func ParseRequestMeta(params *viper.Viper) string {
+    requestMeta := ""
 	max := params.GetString(flags.MaxFlag)
 	offset := params.GetString(flags.OffsetFlag)
-	if len(max) == 0 {
-		max = "100"
-	}
-	if len(offset) == 0 {
-		offset = "0"
-	}
 	page := "\"page\" : {\"max\": " + max + ", \"offset\": " + offset + "}"
-	return page
+    requestMeta = page
+    searchAfter := params.GetString(flags.SearchAfterFlag)
+
+    if len(searchAfter) > 0 {
+        requestMeta = requestMeta + ", \"search_after\": [\"" + searchAfter + "\"]"
+    }
+	return requestMeta
 }
 
 //support for stime and start-time, same same
@@ -78,12 +79,12 @@ func ParseSince(params *viper.Viper) []string {
 	filter := []string{}
 	startTime := params.GetString(flags.SinceFlag)
 	if len(startTime) > 0 {
-        beginDateTime, _ := time.Parse("2006-01-02T15:04:05Z", ParseDateFormat(startTime))
-        beginDateTimeEpochMillis := beginDateTime.UnixNano() / 1000000
-        beginDateTimeFilter := "stagedDate:>" + strconv.FormatInt(beginDateTimeEpochMillis, 10)
-        if len(beginDateTimeFilter) > 0 {
-            filter = []string{"{\"type\":\"queryText\", \"value\":\"" + beginDateTimeFilter + "\"}"}
-        }
+		beginDateTime, _ := time.Parse("2006-01-02T15:04:05Z", ParseDateFormat(startTime))
+		beginDateTimeEpochMillis := beginDateTime.UnixNano() / 1000000
+		beginDateTimeFilter := "stagedDate:>" + strconv.FormatInt(beginDateTimeEpochMillis, 10)
+		if len(beginDateTimeFilter) > 0 {
+			filter = []string{"{\"type\":\"queryText\", \"value\":\"" + beginDateTimeFilter + "\"}"}
+		}
 	}
 	return filter
 }
@@ -130,6 +131,7 @@ func ParseDateFormat(dateString string) string {
 		"2006-01-02 15:04:05",
 		"2006-01-02 15:04:05 MST",
 		"2006-01-02T15:04:05",
+		"2006-01-02T15:04:05Z",
 		"2006/01/02",
 		"2006/01/02 15:04",
 		"2006/01/02 15:04:05",
@@ -211,7 +213,6 @@ func ParseMonth(params *viper.Viper) []string {
 	}
 	return []string{"{\"type\":\"queryText\", \"value\":\"beginMonth:" + month + "\"}"}
 }
-
 
 func ParseDayOfMonth(params *viper.Viper) []string {
 	dom := params.GetString(flags.DayFlag)

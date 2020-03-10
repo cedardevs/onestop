@@ -1,12 +1,13 @@
 package middleware
 
 import (
-  "github.com/cedardevs/onestop/cli/internal/pkg/flags"
-  "github.com/cedardevs/onestop/cli/internal/pkg/parse"
-  "gopkg.in/h2non/gentleman.v2"
-  "github.com/spf13/viper"
-  "strings"
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
+	"github.com/cedardevs/onestop/cli/internal/pkg/parse"
+	"github.com/spf13/viper"
+	"gopkg.in/h2non/gentleman.v2"
+	"strings"
 )
+
 func ParseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Request) {
 
 	//apply a default filter for STAR
@@ -38,25 +39,24 @@ func ParseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	queries = append(queries, query...)
 	keyWordFilter := parse.ParseKeyword(params)
 	queries = append(queries, keyWordFilter...)
-	requestMeta := parse.ParseRequestMeta(params)
-    stagedDateQuery := parse.ParseSince(params)
-    queries = append(queries, stagedDateQuery...)
+	stagedDateQuery := parse.ParseSince(params)
+	queries = append(queries, stagedDateQuery...)
 
-    monthQuery := parse.ParseMonth(params)
-    queries = append(queries, monthQuery...)
-    dayQuery := parse.ParseDayOfMonth(params)
-    queries = append(queries, dayQuery...)
-    doyQuery := parse.ParseDayOfYear(params)
-    queries = append(queries, doyQuery...)
+	monthQuery := parse.ParseMonth(params)
+	queries = append(queries, monthQuery...)
+	dayQuery := parse.ParseDayOfMonth(params)
+	queries = append(queries, dayQuery...)
+	doyQuery := parse.ParseDayOfYear(params)
+	queries = append(queries, doyQuery...)
 
 	sort := parse.ParseSort(params)
+	requestMeta := parse.ParseRequestMeta(params)
 
 	if len(queries) > 0 || len(filters) > 0 {
 		req.AddHeader("content-type", "application/json")
 		req.BodyString("{\"summary\":false," + sort + "\"filters\":[" + strings.Join(filters, ", ") + "], \"queries\":[" + strings.Join(queries, ", ") + "]," + requestMeta + "}")
 	}
 }
-
 
 func TranslateArgs(params *viper.Viper) *viper.Viper {
 	typeArg := params.GetString(flags.TypeFlag)

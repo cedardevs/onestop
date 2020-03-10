@@ -1244,7 +1244,7 @@ func OpenapiRegister(subcommand bool) {
 
 		var examples string
 
-		examples += "  " + cli.Root.CommandPath() + " searchcollection facets: true, filters[]{name: science, type: facet, values: Agriculture, Atmosphere > Atmospheric Radiation > Incoming Solar Radiation}, page{max: 20, offset: 0}, queries[]{type: queryText, value: weather}\n"
+		examples += "  " + cli.Root.CommandPath() + " searchcollection facets: false, filters: , page{max: 20, offset: 20}, queries[]{type: queryText, value: weather}\n"
 
 		cmd := &cobra.Command{
 			Use:     "searchcollection",

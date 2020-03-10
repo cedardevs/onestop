@@ -2,6 +2,8 @@ package scdr
 
 import (
 	"fmt"
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
+	"github.com/cedardevs/onestop/cli/internal/pkg/middleware/scdr"
 	"github.com/danielgtaylor/openapi-cli-generator/cli"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -9,8 +11,8 @@ import (
 	"github.com/spf13/viper"
 	"gopkg.in/h2non/gentleman.v2"
 	"strings"
-	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
-	"github.com/cedardevs/onestop/cli/internal/pkg/middleware/scdr"
+	"strconv"
+	"time"
 )
 
 const ScdrFileCmd = "scdr-files"
@@ -43,17 +45,18 @@ func SetScdrFlags() {
 	cli.AddFlag(ScdrFileCmd, flags.MonthFlag, flags.MonthShortFlag, flags.MonthDescription, "")
 	cli.AddFlag(ScdrFileCmd, flags.DayFlag, flags.DayShortFlag, flags.DayDescription, "")
 	cli.AddFlag(ScdrFileCmd, flags.DoyFlag, flags.DoyShortFlag, flags.DoyDescription, "")
+	cli.AddFlag(ScdrFileCmd, flags.SearchAfterFlag, flags.SearchAfterShortFlag, flags.SearchAfterDescription, "")
 
-//not scdr-files specific
-	cli.AddFlag(ScdrFileCmd, flags.MaxFlag, flags.MaxShortFlag, flags.MaxDescription, "")
-	cli.AddFlag(ScdrFileCmd, flags.OffsetFlag, flags.OffsetShortFlag, flags.OffsetDescription, "")
+	//not scdr-files specific
+	cli.AddFlag(ScdrFileCmd, flags.MaxFlag, flags.MaxShortFlag, flags.MaxDescription, flags.MaxDefault)
+	cli.AddFlag(ScdrFileCmd, flags.OffsetFlag, flags.OffsetShortFlag, flags.OffsetDescription, flags.OffsetDefault)
 	cli.AddFlag(ScdrFileCmd, flags.TextQueryFlag, flags.TextQueryShortFlag, flags.QueryDescription, "")
 	cli.AddFlag(ScdrFileCmd, flags.CloudServerFlag, flags.CloudServerShortFlag, flags.CloudServerDescription, false)
 	cli.AddFlag(ScdrFileCmd, flags.TestServerFlag, flags.TestServerShortFlag, flags.TestServerDescription, false)
 	cli.AddFlag(ScdrFileCmd, flags.SortFlag, flags.SortShortFlag, flags.SortDescription, flags.SortDefault)
 }
 
-func InjectMiddleware(){
+func InjectMiddleware() {
 	cli.RegisterBefore(ScdrFileCmd, middleware.ParseScdrRequestFlags)
 	cli.RegisterAfter(ScdrFileCmd, func(cmd string, params *viper.Viper, resp *gentleman.Response, data interface{}) interface{} {
 		scdrResp := middleware.MarshalScdrResponse(params, data)
@@ -99,7 +102,7 @@ func ScdrRegister() {
 				if err != nil {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
-				scdrOutputFormatAndPrint(params, decoded)
+				scdrOutputFormatAndPrint(decoded)
 
 			},
 		}
@@ -114,33 +117,118 @@ func ScdrRegister() {
 	}()
 }
 
+
 func ScdrSearch(params *viper.Viper, body string) (*gentleman.Response, map[string]interface{}, error) {
 	handlerPath := "scdr-files"
 
 	params = middleware.TranslateArgs(params)
-	req := buildRequest(params)
 
-	if body != "" {
-		req = req.AddHeader("Content-Type", "application/json").BodyString(body)
-	}
+//start paging here by modifying params
+//means we parse everytime, but that is better than having to unmarshal
+//the request body to modify the page args
 
-	cli.HandleBefore(handlerPath, params, req)
+    maximumResults := 2000
+    max, _ := strconv.Atoi(params.GetString(flags.MaxFlag))
+    fmt.Println("max")
+    fmt.Println(max)
+//     offset := params.GetString(flags.OffsetFlag)
+//     searchAfter := params.GetString(flags.SearchAfterFlag)
+    pagesNeeded := maximumResults / max
+    var aggregateItems []interface{}
+    var decoded map[string]interface{}
+    var resp *gentleman.Response
 
-	resp, err := req.Do()
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "Request failed")
-	}
+    for i := 1; i <= pagesNeeded; i++ {
+        fmt.Println("PAGE ", i)
+      	req := buildRequest(params, body)
+        cli.HandleBefore(handlerPath, params, req)
+        var err error
+        resp, err = req.Do()
 
-	var decoded map[string]interface{}
+        if err != nil {
+            fmt.Println("Request failed")
+            return nil, nil, errors.Wrap(err, "Request failed")
+        }
 
-	if resp.StatusCode < 400 {
-		if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
-			return nil, nil, errors.Wrap(err, "Unmarshalling response failed")
-		}
-	} else {
-		return nil, nil, errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())
-	}
+        if resp.StatusCode < 400 {
+            if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
+                fmt.Println("Unmarshalling response failed")
+                return nil, nil, errors.Wrap(err, "Unmarshalling response failed")
+            }
+        } else {
+            fmt.Println("FAIL greater than 400")
+            return nil, nil, errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())
+        }
 
+        if meta, ok := decoded["meta"].(map[string]interface{}); ok {
+            resultCount := meta["total"].(float64)
+            pagesNeeded = int(resultCount / float64(max)) + 1
+            fmt.Println("resultCount")
+            fmt.Println(resultCount)
+            fmt.Println("max")
+            fmt.Println(max)
+            fmt.Println("pagesNeeded")
+            fmt.Println(pagesNeeded)
+        }
+
+        if items, ok := decoded["data"].([]interface{}); ok {
+            fmt.Println("result okay")
+            fmt.Println(len(aggregateItems))
+            fmt.Println(len(items))
+            aggregateItems = append(aggregateItems, items...)
+            fmt.Println(len(aggregateItems))
+
+            lastItem := items[len(items)-1].(map[string]interface{})
+            lastItemAttrs := lastItem["attributes"].(map[string]interface{})
+            lastItemBeginDate := lastItemAttrs["beginDate"].(string)
+
+            if len(lastItemBeginDate) > 0 {
+                fmt.Println("Found lastItemBeginDate")
+                nextAfterDate, err := time.Parse("2006-01-02T15:04:05Z", lastItemBeginDate)
+                if err != nil {
+                    fmt.Println("Cannot parse begin date")
+                }
+                nextAfterEpoch := nextAfterDate.UnixNano() / 1000000
+//                 params.Set(flags.SearchAfterFlag, searchAfterEpoch)
+                lastAfter := params.GetString(flags.SearchAfterFlag)
+                if len(lastAfter) > 0 {
+//                     nextAfterDate := time.Parse("2006-01-02T15:04:05Z", searchAfter)
+                    last, e := strconv.ParseInt(lastAfter, 0, 64)
+                    if e != nil {
+                        fmt.Println("Cannot parse int last SearchAfterFlag")
+                    }
+                    lastAfterEpoch := time.Unix(last, 0)
+                    if nextAfterDate != lastAfterEpoch {
+                        fmt.Println("nextAfterEpoch != lastAfterEpoch")
+                        fmt.Println("Setting ", nextAfterEpoch)
+//                         searchAfterEpoch := nextAfterDate.UnixNano() / 1000000
+                        params.Set(flags.SearchAfterFlag, nextAfterEpoch)
+                    }
+                }
+
+                offset, _ := strconv.Atoi(params.GetString(flags.OffsetFlag))
+                fmt.Println("OffsetFlag")
+                fmt.Println(offset)
+
+                if offset > 0  && offset/max > pagesNeeded {
+                    fmt.Println("offset/max > pagesNeeded")
+                    fmt.Println(offset/max > pagesNeeded)
+                    break
+                }
+                offset = offset + max
+                params.Set(flags.OffsetFlag, offset)
+            }
+        }else{
+            fmt.Println("Response missing data field")
+        }
+
+    }
+
+    //this is where we aggregate the results from each page
+    // and append them to set decoded["data"]
+    //we also need to set search_after based on the last result
+
+    decoded["data"] = aggregateItems
 	after := cli.HandleAfter(handlerPath, params, resp, decoded)
 	if after != nil {
 		decoded = after.(map[string]interface{})
@@ -149,11 +237,11 @@ func ScdrSearch(params *viper.Viper, body string) (*gentleman.Response, map[stri
 	return resp, decoded, nil
 }
 
-func buildRequest(params *viper.Viper) *gentleman.Request {
+func buildRequest(params *viper.Viper, body string) *gentleman.Request {
 	server := viper.GetString("server")
 	if params.GetString("test") == "true" {
 		viper.Set("server-index", 1)
-	}else if params.GetString(flags.CloudFlag) == "true" {
+	} else if params.GetString(flags.CloudFlag) == "true" {
 		viper.Set("server-index", 2)
 	}
 
@@ -161,11 +249,11 @@ func buildRequest(params *viper.Viper) *gentleman.Request {
 		server = scdrServers()[viper.GetInt("server-index")]["url"]
 	}
 
-  //the summary view with a type includes a count
+	//the summary view with a type includes a count
 	//without the type (parentId) we cannot get count
 	isSummaryWithType := params.GetString(flags.AvailableFlag) == "true" && len(params.GetString(flags.TypeFlag)) > 0
 
-  /// default endpoint: search/flattened-granule
+	/// default endpoint: search/flattened-granule
 	// /collection/{id} if we have type to get count
 	endpoint := middleware.DetermineEndpoint(params, isSummaryWithType)
 
@@ -178,6 +266,10 @@ func buildRequest(params *viper.Viper) *gentleman.Request {
 	} else {
 		req = cli.Client.Post().URL(url)
 	}
+
+	if body != "" {
+        req = req.AddHeader("Content-Type", "application/json").BodyString(body)
+    }
 
 	return req
 }
@@ -200,7 +292,8 @@ func scdrServers() []map[string]string {
 		},
 	}
 }
-func scdrOutputFormatAndPrint(params *viper.Viper, decoded map[string]interface{}) {
+
+func scdrOutputFormatAndPrint(decoded map[string]interface{}) {
 	if output, ok := decoded["scdr-output"].([]string); ok {
 		for _, row := range output {
 			fmt.Println(strings.TrimSpace(row))

@@ -1,10 +1,10 @@
 package middleware
 
-import(
-  "github.com/spf13/viper"
-  "strconv"
-  "time"
-  "github.com/cedardevs/onestop/cli/internal/pkg/flags"
+import (
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
+	"github.com/spf13/viper"
+	"strconv"
+	"time"
 )
 
 func MarshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
@@ -13,6 +13,7 @@ func MarshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
 	return translatedResponseMap
 }
 
+//this has to return a map[string]interface{} to be used as a HandleAfter
 func transformResponse(params *viper.Viper, responseMap map[string]interface{}) map[string]interface{} {
 	translatedResponseMap := make(map[string]interface{})
 	scdrOuput := []string{}
@@ -20,10 +21,10 @@ func transformResponse(params *viper.Viper, responseMap map[string]interface{}) 
 	if items, ok := responseMap["data"].([]interface{}); ok && len(items) > 0 {
 		isSummary := params.GetString(flags.AvailableFlag)
 		gapInterval := params.GetString(flags.GapFlag)
-    typeArg := params.GetString(flags.TypeFlag)
+		typeArg := params.GetString(flags.TypeFlag)
 
-    //gap is ignored if no type is passed or if --available is passed
-		if len(gapInterval) > 0 && len(typeArg) > 0 && isSummary ==  "false" {
+		//gap is ignored if no type is passed or if --available is passed
+		if len(gapInterval) > 0 && len(typeArg) > 0 && isSummary == "false" {
 			scdrOuput = FindGaps(typeArg, gapInterval, items)
 		} else if isSummary == "true" {
 			count := getCount(responseMap)
@@ -45,59 +46,70 @@ func getCount(responseMap map[string]interface{}) string {
 	return count
 }
 
-func FindGaps(typeArg string, gapInterval string, items []interface{}) []string{
-  gapResponse := []string{
-    "Data collection: " + typeArg,
+func FindGaps(typeArg string, gapInterval string, items []interface{}) []string {
+	gapResponseHeader := []string{
+		"Data collection: " + typeArg,
 		"Gap Start Time           | Gap End Time             | Gap Duration",
 		"-------------------------+--------------------------+-------------",
 	}
+	gapResponse := []string{}
 	dateFormat := "2006-01-02T15:04:05.000Z"
-	interval, _  := time.ParseDuration(gapInterval)
+	interval, _ := time.ParseDuration(gapInterval)
 	if len(items) == 0 {
-		return  gapResponse
+		return gapResponse
 	}
-  lastBeginDate := time.Time{}
-  lastEndDate := time.Time{}
-	for _, v := range items{
-		 item := v.(map[string]interface{})
-		 attrs := item["attributes"].(map[string]interface{})
-     if lastEndDate.IsZero() {
-       firstEndDateString, hasEndDate := attrs["endDate"].(string)
-       if hasEndDate {
-         firstEndDate, e := time.Parse(dateFormat, firstEndDateString)
-         if e != nil {
-           continue
-         }else{
-           lastEndDate = firstEndDate
-         }
-       }
-     }
-     start, b1 := attrs["beginDate"].(string)
-     end, b2 := attrs["endDate"].(string)
+	lastBeginDate := time.Time{}
+	lastEndDate := time.Time{}
+	for _, v := range items {
+		item := v.(map[string]interface{})
+		attrs := item["attributes"].(map[string]interface{})
+		if lastEndDate.IsZero() {
+			firstEndDateString, hasEndDate := attrs["endDate"].(string)
+			if hasEndDate {
+				firstEndDate, e := time.Parse(dateFormat, firstEndDateString)
+				if e != nil {
+					continue
+				} else {
+					lastEndDate = firstEndDate
+				}
+			}
+		}
+		start, b1 := attrs["beginDate"].(string)
+		end, b2 := attrs["endDate"].(string)
 
-     if b1 && b2 {
-       startDate, e1 := time.Parse(dateFormat, start)
-       endDate, e2 := time.Parse(dateFormat, end)
-        if e1 == nil && e2 == nil {
-         //if the temporal distance from this file and the last is greater than interval
-        //add it to new output
-        //track last begin date to prevent overlap
-        if lastEndDate.Sub(startDate) > interval && lastBeginDate.Sub(endDate) > 0 {
-           gapString := startDate.Format(dateFormat)+ " | " +  lastEndDate.Format(dateFormat)  + " | " + lastEndDate.Sub(startDate).String()
-          gapResponse = append(gapResponse, gapString)
-        }
-        lastBeginDate = startDate
-        lastEndDate = endDate
-       }
-     }
+		if b1 && b2 {
+			startDate, e1 := time.Parse(dateFormat, start)
+			endDate, e2 := time.Parse(dateFormat, end)
+			if e1 == nil && e2 == nil {
+				//if the temporal distance from this file and the last is greater than interval
+				//add it to new output
+				//track last begin date to prevent overlap
+				if lastEndDate.Sub(startDate) > interval && lastBeginDate.Sub(endDate) > 0 {
+					gapString := startDate.Format(dateFormat) + " | " + lastEndDate.Format(dateFormat) + " | " + lastEndDate.Sub(startDate).String()
+					gapResponse = append(gapResponse, gapString)
+				}
+				lastBeginDate = startDate
+				lastEndDate = endDate
+			}
+		}
 	}
-
+	gapResponse = flipResultOrder(gapResponse)
+    gapResponse = append(gapResponseHeader, gapResponse...)
 	return gapResponse
+}
+
+func flipResultOrder(descList []string) []string {
+    ascList := []string{}
+    for i := len(descList) - 1; i >= 0; i-- {
+        ascList = append(ascList, descList[i])
+    }
+    return ascList
 }
 
 func buildSummary(items []interface{}, count string) []string {
 
-	summaryResponse := buildSummaryHeaders(items, count)
+	summaryResponseHeader := buildSummaryHeaders(items, count)
+	summaryResponse := []string{}
 
 	if len(count) > 0 {
 		count = count + " | "
@@ -122,7 +134,8 @@ func buildSummary(items []interface{}, count string) []string {
 
 		summaryResponse = append(summaryResponse, row)
 	}
-
+	summaryResponse = flipResultOrder(summaryResponse)
+	summaryResponse = append(summaryResponseHeader, summaryResponse...)
 	return summaryResponse
 }
 
@@ -147,6 +160,7 @@ func buildLinkResponse(items []interface{}) []string {
 			links = append(links, url)
 		}
 	}
+	links = flipResultOrder(links)
 	return links
 }
 
@@ -165,8 +179,9 @@ func buildSummaryHeaders(items []interface{}, count string) []string {
 func buildIdHeaders(items []interface{}) (string, string) {
 	uuidHeader := "OneStop ID "
 	uuidSubHeader := "-----------"
-	//calculate subheader length based on the first IDs length
-	id := items[0].(map[string]interface{})["id"].(string)
+	//calculate subheader length based on the last IDs length
+	// get the last id because we are going to reverse this list
+	id := items[len(items) - 1].(map[string]interface{})["id"].(string)
 	err := viper.ReadInConfig()
 	if err == nil {
 		id = reverseLookup(id)
@@ -179,7 +194,7 @@ func buildIdHeaders(items []interface{}) (string, string) {
 func buildFileIdHeaders(items []interface{}) (string, string) {
 	fileIdentifierHeader := "FileIdentifier"
 	fileIdentifierSubHeader := "--------------"
-	fileIdentifierLength := len(items[0].(map[string]interface{})["attributes"].(map[string]interface{})["fileIdentifier"].(string))
+	fileIdentifierLength := len(items[len(items) - 1].(map[string]interface{})["attributes"].(map[string]interface{})["fileIdentifier"].(string))
 	fileIdentifierHeader, fileIdentifierSubHeader = formatHeader(fileIdentifierHeader, fileIdentifierSubHeader, fileIdentifierLength)
 	return fileIdentifierHeader, fileIdentifierSubHeader
 }
@@ -187,7 +202,7 @@ func buildFileIdHeaders(items []interface{}) (string, string) {
 func buildDescriptionHeaders(items []interface{}) (string, string) {
 	descriptionHeader := "Description"
 	descriptionSubHeader := "-----------"
-	descriptionLength := len(items[0].(map[string]interface{})["attributes"].(map[string]interface{})["title"].(string))
+	descriptionLength := len(items[len(items) - 1].(map[string]interface{})["attributes"].(map[string]interface{})["title"].(string))
 	if descriptionLength > 100 {
 		descriptionLength = 100
 	}

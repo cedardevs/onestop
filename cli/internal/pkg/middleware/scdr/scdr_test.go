@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"testing"
-	"reflect"
 	"github.com/rs/zerolog/log"
+	"reflect"
+	"testing"
 )
 
 func TestFindGaps(t *testing.T) {
@@ -35,8 +35,8 @@ func TestFindGaps(t *testing.T) {
 		"Data collection: " + mockType,
 		"Gap Start Time           | Gap End Time             | Gap Duration",
 		"-------------------------+--------------------------+-------------",
-		"2019-10-07T12:20:29.000Z | 2019-10-07T13:10:00.000Z | 49m31s",
 		"2019-10-07T09:10:29.000Z | 2019-10-07T12:30:00.000Z | 3h19m31s",
+		"2019-10-07T12:20:29.000Z | 2019-10-07T13:10:00.000Z | 49m31s",
 	}
 
 	result := FindGaps(mockType, intervalSeconds, mockItemList)
@@ -45,11 +45,11 @@ func TestFindGaps(t *testing.T) {
 
 	if !eq {
 		log.Info().Msg("GOT")
-		for _,  v := range result{
+		for _, v := range result {
 			log.Info().Msg(v)
 		}
 		log.Info().Msg("Exepected")
-		for _,  v := range expectedScdrResponse{
+		for _, v := range expectedScdrResponse {
 			log.Info().Msg(v)
 		}
 		t.Error("FindGaps FAILED")

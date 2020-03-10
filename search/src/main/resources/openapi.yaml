@@ -969,6 +969,8 @@ components:
           $ref: "#/components/schemas/page"
         sort:
           $ref: "#/components/schemas/sort"
+        search_after:
+          $ref: "#/components/schemas/searchAfter"
         queries:
           items:
             oneOf:
@@ -1117,6 +1119,8 @@ components:
           default: asc
         endDate:
           default: asc
+    searchAfter:
+      type: array
     page:
       description: "Result page"
       properties:
