@@ -1,46 +1,37 @@
+# TODO - when a 1.0.0 chart is released, remove the "for alpha development" blocks below
+onestop-client:
+  enabled: true
+  # for alpha development
+  image:
+    tag: master-SNAPSHOT
+    pullPolicy: Always
+onestop-indexer:
+  enabled: true
+  # for alpha development
+  image:
+    tag: master-SNAPSHOT
+    pullPolicy: Always
+onestop-manager:
+  enabled: true
+  # for alpha development
+  image:
+    tag: master-SNAPSHOT
+    pullPolicy: Always
+onestop-registry:
+  enabled: true
+  # for alpha development
+  image:
+    tag: master-SNAPSHOT
+    pullPolicy: Always
 onestop-search:
-  auth:
-    clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:SciAppsOneStop"
-    allowedOrigin: "https://sciapps.colorado.edu"
-    endpoints:
-      loginSuccessRedirect: "/"
-      loginFailureRedirect: "/"
-      logoutSuccessRedirect: "/"
-    keystoreFile: "/etc/onestop-search/logingov.jks"
-  # elasticsearch:
-  #   host: "elasticsearch"
-  #   port: "9200"
-
-# values used within cp-helm-charts
-cp-helm-charts:
-  cp-zookeeper:
-    servers: 1
-    jmx:
-      port:
-    prometheus:
-      jmx:
-        enabled:
-          false
-  cp-kafka:
-    brokers: 1
-    jmx:
-      port:
-    prometheus:
-      jmx:
-        enabled:
-          false
-  cp-schema-registry:
-    jmx:
-      port:
-    prometheus:
-      jmx:
-        enabled:
-          false
-
-# disables dependencies on unused subcharts from confluent platform
-cp-kafka-rest:
-  enabled: false
-cp-kafka-connect:
-  enabled: false
-cp-ksql-server:
-  enabled: false
+  enabled: true
+  # for alpha development
+  image:
+    tag: master-SNAPSHOT
+    pullPolicy: Always
+#onestop-user:
+#  enabled: true
+  # for alpha development
+#  image:
+#    tag: master-SNAPSHOT
+#    pullPolicy: Always

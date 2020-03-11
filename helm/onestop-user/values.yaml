@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: nginx
-  tag: master-SNAPSHOT
+  tag: "3.0.0-alpha"
   pullPolicy: IfNotPresent
 
 nameOverride: ""
