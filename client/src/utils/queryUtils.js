@@ -44,15 +44,22 @@ const assembleFilters = filter => {
   return filters
 }
 
-const assembleQueries = ({queryText, title}) => {
+const assembleQueries = ({queryText, title, allTermsMustMatch}) => {
   let trimmedText = _.trim(queryText)
   if (trimmedText && trimmedText !== '*') {
     return [ {type: 'queryText', value: trimmedText} ]
   }
+
   if (title) {
     let trimmedText = _.trim(title)
-    if (trimmedText && trimmedText !== '*') {
-      return [ {type: 'queryText', value: `title:${trimmedText}`} ]
+    if (trimmedText) {
+      return [
+        {
+          type: 'granuleName',
+          value: `${trimmedText}`,
+          allTermsMustMatch: allTermsMustMatch,
+        },
+      ]
     }
   }
   return []
@@ -230,6 +237,13 @@ const codecs = [
     encode: text => encodeURIComponent(text),
     decode: text => decodeURIComponent(text),
     encodable: text => !_.isEmpty(text),
+  },
+  {
+    longKey: 'allTermsMustMatch',
+    shortKey: 'tm',
+    encode: bool => (bool ? '1' : '0'),
+    decode: text => text === '1',
+    encodable: bool => bool === false, // only include when changed from default
   },
   {
     longKey: 'bbox',

@@ -68,7 +68,7 @@ repositories {
 
 group = "org.cedar.onestop"
 
-version = rootProject.dynamicVersion("cedardevs", CI.CIRCLE, Registry.DOCKER_HUB)
+version = rootProject.dynamicVersion(vendor ="cedardevs", envBuildTag = "ONESTOP_BUILD_TAG", ci = CI.CIRCLE, registry = Registry.DOCKER_HUB)
 
 val authors: List<Author> = listOf(
         Author(
@@ -212,7 +212,7 @@ subprojects {
                 authors = formatAuthors(authors),
                 url = url,
                 licenses = License.GPL20,
-                cleanBefore = "jib"
+                task = "jib"
         ))
     }
     if (springBootProjects.contains(name)) {

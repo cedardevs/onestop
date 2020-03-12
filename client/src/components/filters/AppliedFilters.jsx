@@ -71,15 +71,26 @@ export default class AppliedFilters extends React.Component {
     this.props.submit()
   }
 
+  // updateTimeRelation = relation => {
+  //   this.props.updateTimeRelation(relation)
+  //   this.props.submit()
+  // }
+  //
+  // updateGeoRelation = relation => {
+  //   this.props.updateGeoRelation(relation)
+  //   this.props.submit()
+  // }
+
   buildTextBubbles = () => {
-    const {textFilter} = this.props
+    const {textFilter, allTermsMustMatch} = this.props
     let bubbles = []
     if (textFilter) {
+      let qualifier = allTermsMustMatch ? 'All' : 'Any'
       bubbles.push(
         <AppliedFilterBubble
           backgroundColor={Theme.text.backgroundColor}
           borderColor={Theme.text.borderColor}
-          text={`Filename Contains: ${textFilter}`}
+          text={`Name Matches ${qualifier}: ${textFilter}`}
           key="appliedFilter::textFilter"
           onUnselect={() => this.unselectText()}
         />
@@ -115,7 +126,13 @@ export default class AppliedFilters extends React.Component {
   }
 
   buildTimeBubbles = () => {
-    const {startDateTime, endDateTime, startYear, endYear} = this.props
+    const {
+      startDateTime,
+      endDateTime,
+      startYear,
+      endYear,
+      timeRelationship,
+    } = this.props
     const removeZeroTime = dateTime => dateTime.replace('T00:00:00Z', '')
     let timeBubbles = []
     if (startDateTime) {
@@ -123,7 +140,10 @@ export default class AppliedFilters extends React.Component {
         <AppliedFilterBubble
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
-          text={`After: ${removeZeroTime(startDateTime)}`}
+          text={`${_.capitalize(timeRelationship)}${timeRelationship ==
+          'disjoint'
+            ? ' From'
+            : ''} Date After: ${removeZeroTime(startDateTime)}`}
           key="appliedFilter::start"
           onUnselect={() =>
             this.unselectDateTimeAndSubmitSearch(null, endDateTime)}
@@ -135,7 +155,10 @@ export default class AppliedFilters extends React.Component {
         <AppliedFilterBubble
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
-          text={`Before: ${removeZeroTime(endDateTime)}`}
+          text={`${_.capitalize(timeRelationship)}${timeRelationship ==
+          'disjoint'
+            ? ' From'
+            : ''} Date Before: ${removeZeroTime(endDateTime)}`}
           key="appliedFilter::end"
           onUnselect={() =>
             this.unselectDateTimeAndSubmitSearch(startDateTime, null)}
@@ -145,7 +168,9 @@ export default class AppliedFilters extends React.Component {
     if (startYear != null) {
       let startYearText = (
         <span>
-          After: {displayBigYears(startYear)} <abbr title="Common Era">CE</abbr>
+          {_.capitalize(timeRelationship)}
+          {timeRelationship == 'disjoint' ? ' From' : ''} Year After:{' '}
+          {displayBigYears(startYear)} <abbr title="Common Era">CE</abbr>
         </span>
       )
       timeBubbles.push(
@@ -162,7 +187,9 @@ export default class AppliedFilters extends React.Component {
     if (endYear != null) {
       let endYearText = (
         <span>
-          Before: {displayBigYears(endYear)} <abbr title="Common Era">CE</abbr>
+          {_.capitalize(timeRelationship)}
+          {timeRelationship == 'disjoint' ? ' From' : ''} Year Before:{' '}
+          {displayBigYears(endYear)} <abbr title="Common Era">CE</abbr>
         </span>
       )
       timeBubbles.push(
@@ -180,7 +207,7 @@ export default class AppliedFilters extends React.Component {
   }
 
   buildSpaceBubbles = () => {
-    const {bbox, excludeGlobal} = this.props
+    const {bbox, excludeGlobal, geoRelationship} = this.props
     let spaceBubbles = []
     if (bbox) {
       const {west, south, east, north} = bbox
@@ -188,12 +215,15 @@ export default class AppliedFilters extends React.Component {
         <AppliedFilterBubble
           backgroundColor={Theme.map.backgroundColor}
           borderColor={Theme.map.borderColor}
-          text={`West: ${west}°, South: ${south}°, East: ${east}°, North: ${north}°`}
+          text={`${_.capitalize(geoRelationship)}${geoRelationship == 'disjoint'
+            ? ' From'
+            : ''} West: ${west}°, South: ${south}°, East: ${east}°, North: ${north}°`}
           key="appliedFilter::boundingBox"
           onUnselect={() => this.unselectMapAndSubmitSearch()}
         />
       )
     }
+
     if (excludeGlobal) {
       spaceBubbles.push(
         <AppliedFilterBubble
@@ -205,6 +235,7 @@ export default class AppliedFilters extends React.Component {
         />
       )
     }
+
     return spaceBubbles
   }
 

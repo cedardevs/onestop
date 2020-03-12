@@ -365,7 +365,7 @@ class IndexingHelpersSpec extends Specification {
   }
 
   ////////////////////////////////
-  // Identifiers                //
+  // Identifiers, "Names"       //
   ////////////////////////////////
   def "produces internalParentIdentifier for collection record correctly"() {
     expect:
@@ -383,6 +383,31 @@ class IndexingHelpersSpec extends Specification {
 
     expect:
     IndexingHelpers.prepareInternalParentIdentifier(record) == testId
+  }
+
+  def "produces filename for collection record correctly"() {
+    expect:
+    IndexingHelpers.prepareFilename(inputRecord) == null
+  }
+
+  def "produces filename for granule record correctly when record has data"() {
+    def filename = "ABC"
+    def record = ParsedRecord.newBuilder(inputRecord)
+        .setType(RecordType.granule)
+        .setFileInformation(FileInformation.newBuilder().setName(filename).build())
+        .build()
+
+    expect:
+    IndexingHelpers.prepareFilename(record) == filename
+  }
+
+  def "produces filename for granule record correctly when record does not have data"() {
+    def record = ParsedRecord.newBuilder(inputRecord)
+        .setType(RecordType.granule)
+        .build()
+
+    expect:
+    IndexingHelpers.prepareFilename(record) == null
   }
 
   ////////////////////////////////

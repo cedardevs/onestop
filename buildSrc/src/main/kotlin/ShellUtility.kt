@@ -20,3 +20,11 @@ fun String.runShell(dir: File? = null, quiet: Boolean = true): String? {
     }
     return output
 }
+
+fun String.runShellExitCode(dir: File? = null): Int {
+    val builder: ProcessBuilder = ProcessBuilder("/bin/sh", "-c", this)
+            .redirectErrorStream(true)
+            .directory(dir)
+    val process: Process = builder.start()
+    return process.waitFor()
+}
