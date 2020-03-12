@@ -129,17 +129,19 @@ func ScdrSearch(params *viper.Viper, body string) (*gentleman.Response, map[stri
 
     maximumResults := 2000
     max, _ := strconv.Atoi(params.GetString(flags.MaxFlag))
-    fmt.Println("max")
-    fmt.Println(max)
+//     fmt.Println("max")
+//     fmt.Println(max)
 //     offset := params.GetString(flags.OffsetFlag)
 //     searchAfter := params.GetString(flags.SearchAfterFlag)
     pagesNeeded := maximumResults / max
     var aggregateItems []interface{}
     var decoded map[string]interface{}
     var resp *gentleman.Response
+//     var lastBeginDateEpoch int64
+//     var lastStagedDateEpoch int64
 
     for i := 1; i <= pagesNeeded; i++ {
-        fmt.Println("PAGE ", i)
+//         fmt.Println("PAGE ", i)
       	req := buildRequest(params, body)
         cli.HandleBefore(handlerPath, params, req)
         var err error
@@ -163,56 +165,71 @@ func ScdrSearch(params *viper.Viper, body string) (*gentleman.Response, map[stri
         if meta, ok := decoded["meta"].(map[string]interface{}); ok {
             resultCount := meta["total"].(float64)
             pagesNeeded = int(resultCount / float64(max)) + 1
-            fmt.Println("resultCount")
-            fmt.Println(resultCount)
-            fmt.Println("max")
-            fmt.Println(max)
-            fmt.Println("pagesNeeded")
-            fmt.Println(pagesNeeded)
+//             fmt.Println("resultCount")
+//             fmt.Println(resultCount)
+//             fmt.Println("max")
+//             fmt.Println(max)
+//             fmt.Println("pagesNeeded")
+//             fmt.Println(pagesNeeded)
         }
 
         if items, ok := decoded["data"].([]interface{}); ok {
-            fmt.Println("result okay")
-            fmt.Println(len(aggregateItems))
-            fmt.Println(len(items))
+//             fmt.Println("result okay")
+//             fmt.Println(len(aggregateItems))
+//             fmt.Println(len(items))
             aggregateItems = append(aggregateItems, items...)
-            fmt.Println(len(aggregateItems))
+//             fmt.Println(len(aggregateItems))
 
             lastItem := items[len(items)-1].(map[string]interface{})
             lastItemAttrs := lastItem["attributes"].(map[string]interface{})
             lastItemBeginDate := lastItemAttrs["beginDate"].(string)
+            lastItemStagedDate := lastItemAttrs["stagedDate"].(float64)
 
             if len(lastItemBeginDate) > 0 {
-                fmt.Println("Found lastItemBeginDate")
-                nextAfterDate, err := time.Parse("2006-01-02T15:04:05Z", lastItemBeginDate)
+//                 fmt.Println("Found lastItemBeginDate")
+                nextAfterBeginDate, err := time.Parse("2006-01-02T15:04:05Z", lastItemBeginDate)
                 if err != nil {
                     fmt.Println("Cannot parse begin date")
                 }
-                nextAfterEpoch := nextAfterDate.UnixNano() / 1000000
+                nextAfterBeginEpoch := nextAfterBeginDate.UnixNano() / 1000000
 //                 params.Set(flags.SearchAfterFlag, searchAfterEpoch)
-                lastAfter := params.GetString(flags.SearchAfterFlag)
-                if len(lastAfter) > 0 {
-//                     nextAfterDate := time.Parse("2006-01-02T15:04:05Z", searchAfter)
-                    last, e := strconv.ParseInt(lastAfter, 0, 64)
-                    if e != nil {
-                        fmt.Println("Cannot parse int last SearchAfterFlag")
-                    }
-                    lastAfterEpoch := time.Unix(last, 0)
-                    if nextAfterDate != lastAfterEpoch {
-                        fmt.Println("nextAfterEpoch != lastAfterEpoch")
-                        fmt.Println("Setting ", nextAfterEpoch)
-//                         searchAfterEpoch := nextAfterDate.UnixNano() / 1000000
-                        params.Set(flags.SearchAfterFlag, nextAfterEpoch)
-                    }
+//                 lastAfter := params.GetString(flags.SearchAfterFlag)
+//                 nextAfterStagedDate, err := time.Parse("2006-01-02T15:04:05Z", lastItemBeginDate)
+//                 nextAfterStagedEpoch := nextAfterStagedDate.UnixNano() / 1000000
+
+                if err != nil {
+                    fmt.Println("Cannot parse staged date")
                 }
+                searchAfterBeginDate := strconv.FormatInt(nextAfterBeginEpoch, 10)
+                searchAfterStagedDate := fmt.Sprintf("%f", lastItemStagedDate)
+                searchAfter := searchAfterBeginDate + ", " + searchAfterStagedDate
+                params.Set(flags.SearchAfterFlag, searchAfter)
+//                 lastBeginDateEpoch = nextAfterBeginEpoch
+//                 lastStagedDateEpoch = nextAfterStagedEpoch
+//                 if len(lastAfter) > 0 {
+// //                     nextAfterDate := time.Parse("2006-01-02T15:04:05Z", searchAfter)
+//                     last, e := strconv.ParseInt(lastAfter, 0, 64)
+//                     if e != nil {
+//                         fmt.Println("Cannot parse int last SearchAfterFlag")
+//                     }
+//                     lastAfterEpoch := time.Unix(last, 0)
+//                     if nextAfterDate != lastAfterEpoch {
+//                         fmt.Println("nextAfterEpoch != lastAfterEpoch")
+//                         fmt.Println("Setting ", nextAfterEpoch)
+// //                         searchAfterEpoch := nextAfterDate.UnixNano() / 1000000
+//                     }else{
+//                         fmt.Println(lastAfterEpoch)
+//                         fmt.Println(nextAfterDate)
+//                     }
+//                 }
 
                 offset, _ := strconv.Atoi(params.GetString(flags.OffsetFlag))
-                fmt.Println("OffsetFlag")
-                fmt.Println(offset)
+//                 fmt.Println("OffsetFlag")
+//                 fmt.Println(offset)
 
                 if offset > 0  && offset/max > pagesNeeded {
-                    fmt.Println("offset/max > pagesNeeded")
-                    fmt.Println(offset/max > pagesNeeded)
+//                     fmt.Println("offset/max > pagesNeeded")
+//                     fmt.Println(offset/max > pagesNeeded)
                     break
                 }
                 offset = offset + max
