@@ -55,6 +55,7 @@ class ElasticsearchService {
   private Map totalCounts(String alias) {
     String endpoint = "/${alias}/_search"
     HttpEntity requestQuery = new NStringEntity(JsonOutput.toJson([
+        track_total_hits: true,
         query: [
             match_all: [:]
         ],
@@ -86,14 +87,18 @@ class ElasticsearchService {
     if(getCollection.data) {
       // get the total number of granules for this collection id
       String granuleEndpoint = "/${esConfig.GRANULE_SEARCH_INDEX_ALIAS}/_search"
-      HttpEntity granuleRequestQuery = new NStringEntity(JsonOutput.toJson([
+      Map granuleRequestMap = [
           query: [
               term: [
                   internalParentIdentifier: id
               ]
           ],
           size : 0
-      ]), ContentType.APPLICATION_JSON)
+      ]
+      if (!isES6) {
+        granuleRequestMap.track_total_hits = true
+      }
+      HttpEntity granuleRequestQuery = new NStringEntity(JsonOutput.toJson(granuleRequestMap), ContentType.APPLICATION_JSON)
       Request granuleRequest = new Request('GET', granuleEndpoint)
       granuleRequest.entity = granuleRequestQuery
       Response granuleResponse = restClient.performRequest(granuleRequest)
@@ -269,6 +274,11 @@ class ElasticsearchService {
     def getFacets = params.facets as boolean
 
     Map requestBody = addAggregations(query, getFacets)
+
+    // If ES7, we need to include "track_total_hits" param, otherwise we won't display counts > 10,000
+    if (!isES6) {
+      requestBody.track_total_hits = true
+    }
 
     // default summary to true
     def summary = params.summary == null ? true : params.summary as boolean
