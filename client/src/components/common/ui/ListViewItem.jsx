@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect} from 'react'
 import Expandable from './ExpandableListViewItem'
 import FlexRow from './FlexRow'
 import {boxShadow} from '../../../style/defaultStyles'
@@ -50,20 +50,8 @@ export function useListViewItem(props){
   const [ expanded, setExpanded ] = useState(false)
 
   const [ focusing, setFocusing ] = useState(false)
-  const focusRef = useRef(null)
-  // if we have a `focusRef` and we've been instructed that we `shouldFocus`,
-  // that ref should be focused programmatically
-  useEffect(
-    () => {
-      if (focusRef && focusRef.current && props.shouldFocus) {
-        /* A small delay before triggering programitic focus allows screen readers to follow better after updating their buffer.
-        See https://webaim.org/discussion/mail_thread?thread=4561 and http://accessibleculture.org/articles/2010/03/accessible-tabs/
-        */
-        setTimeout(focusRef.current.focus(), 200)
-      }
-    },
-    [ focusRef.current ]
-  )
+  // TODO nuke shouldFocus prop
+  var focusRef = null
 
   const handleFocus = event => {
     // if (props.setFocusedKey) {
@@ -106,10 +94,11 @@ export function useListViewItem(props){
     },
     [ props.expanded ]
   )
+
   return {
     itemId,
     item,
-    focusRef,
+    focusRef, // TODO nuke anything that expects this
     focusing,
     handleFocus,
     handleBlur,
