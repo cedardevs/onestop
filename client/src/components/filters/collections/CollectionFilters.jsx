@@ -92,10 +92,7 @@ class CollectionFilters extends React.Component {
     const {closeLeft} = this.props
 
     const heading = (
-      <h2
-        key="filtersH1"
-        style={styleOverallHeading}
-      >
+      <h2 key="filtersH1" style={styleOverallHeading}>
         Collection Filters
       </h2>
     )

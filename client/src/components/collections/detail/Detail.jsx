@@ -56,7 +56,6 @@ const styleHeadingSpan = {
 
 //-- Component
 class Detail extends React.Component {
-
   render() {
     const {id, item, loading} = this.props
 
@@ -128,10 +127,7 @@ class Detail extends React.Component {
     return (
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
-          <h1
-            key="filtersH1"
-            style={styleTitle}
-          >
+          <h1 key="filtersH1" style={styleTitle}>
             <div style={styleHeadingSpan}>
               <span role="alert" aria-live="polite">
                 {headingMessage}

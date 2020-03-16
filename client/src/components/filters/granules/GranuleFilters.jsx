@@ -106,10 +106,7 @@ class GranuleFilters extends React.Component {
     const {closeLeft} = this.props
 
     const heading = (
-      <h2
-        key="granuleFiltersHeader"
-        style={styleOverallHeading}
-      >
+      <h2 key="granuleFiltersHeader" style={styleOverallHeading}>
         File Filters
       </h2>
     )
