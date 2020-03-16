@@ -75,9 +75,6 @@ function useItems(items){
   // keep track of previous items map
   const previousItemsMap = usePrevious(itemsMap, new Map())
 
-  const [ focusedKey, setFocusedKey ] = useState(undefined)
-  const [ lastItem, setLastItem ] = useState(undefined)
-
   // this effect tracks when the items supplied to ListView changes
   useEffect(
     () => {
@@ -89,24 +86,7 @@ function useItems(items){
     [ items ]
   )
 
-  // this effect tracks when the derived itemsMap changes
-  useEffect(
-    () => {
-      const keysAfter = [ ...itemsMap.keys() ]
-
-      const nextKey = keysAfter.indexOf(lastItem) + 1
-      setFocusedKey(keysAfter[nextKey])
-
-      const lastKey =
-        itemsMap.size > 0
-          ? Array.from(itemsMap)[itemsMap.size - 1][0]
-          : undefined
-      setLastItem(lastKey)
-    },
-    [ itemsMap ]
-  )
-
-  return [ itemsMap, previousItemsMap, focusedKey, setFocusedKey ]
+  return [ itemsMap, previousItemsMap ]
 }
 
 // TODO: eventually ListView won't take control over its own global expanded state, but will be stored
@@ -138,7 +118,6 @@ export default function ListView(props){
     //     handler: ({
     //       itemsMap,
     //       previousItemsMap,
-    //       focusedKey,
     //       ListItemComponent,
     //       GridItemComponent,
     //       showAsGrid
@@ -155,9 +134,9 @@ export default function ListView(props){
 
   const [ notification, setNotification ] = useState('')
 
-  const [ itemsMap, previousItemsMap, focusedKey, setFocusedKey ] = useItems(
+  const [ itemsMap, previousItemsMap ] = useItems(
     items
-  ) // TODO nuke focusedKey, setFocusedKey?
+  )
   const [ showAsGrid, setShowAsGrid ] = useState(
     !!props.showAsGrid && !!props.GridItemComponent
   )
@@ -261,7 +240,6 @@ export default function ListView(props){
       itemsMap={itemsMap}
       previousItemsMap={previousItemsMap}
       propsForItem={propsForItem}
-      focusedKey={focusedKey}
       ListItemComponent={ListItemComponent}
       GridItemComponent={GridItemComponent}
       showAsGrid={showAsGrid}
@@ -317,7 +295,6 @@ export default function ListView(props){
   itemsMap.forEach((item, key) => {
     let itemElement = null
 
-    // TODO I think this was the only source of shouldFocus?
     const itemProps = propsForItem
       ? propsForItem(item, key)
       : null

@@ -50,13 +50,8 @@ export function useListViewItem(props){
   const [ expanded, setExpanded ] = useState(false)
 
   const [ focusing, setFocusing ] = useState(false)
-  // TODO nuke shouldFocus prop
-
 
   const handleFocus = event => {
-    // if (props.setFocusedKey) {
-    //   props.setFocusedKey(props.itemId) // TODO untangle passing the setFocusedKey stuff around?
-    // }
     setFocusing(true)
   }
 
