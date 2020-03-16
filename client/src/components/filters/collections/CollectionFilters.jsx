@@ -47,13 +47,6 @@ const styleOverallHeading = {
   },
 }
 
-const styleFocusDefault = {
-  outline: 'none',
-  border: `.1em dashed ${SiteColors.HEADER}`, // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
-  padding: '.259em',
-  margin: '.259em',
-}
-
 class CollectionFilters extends React.Component {
   constructor(props) {
     super(props)
@@ -73,10 +66,6 @@ class CollectionFilters extends React.Component {
     this.setState({
       [toggledFilter]: event.open,
     })
-  }
-
-  componentDidMount() {
-    // ReactDOM.findDOMNode(this.headerRef).focus()
   }
 
   createFilters = () => {
@@ -99,44 +88,13 @@ class CollectionFilters extends React.Component {
     ]
   }
 
-  handleFocus = e => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: true,
-      }
-    })
-  }
-
-  handleBlur = e => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: false,
-      }
-    })
-  }
-
   render() {
     const {closeLeft} = this.props
-
-    const styleFocused = {
-      ...(this.state.focusing ? styleFocusDefault : {}),
-    }
-
-    const styleOverallHeadingApplied = {
-      ...styleOverallHeading,
-      ...styleFocused,
-    }
 
     const heading = (
       <h2
         key="filtersH1"
-        tabIndex={-1}
-        ref={header => (this.headerRef = header)}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        style={styleOverallHeadingApplied}
+        style={styleOverallHeading}
       >
         Collection Filters
       </h2>

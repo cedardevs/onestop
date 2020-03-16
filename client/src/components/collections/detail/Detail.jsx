@@ -54,65 +54,11 @@ const styleHeadingSpan = {
   padding: '0.309em',
 }
 
-const styleFocusDefault = {
-  outline: '2px dashed #5C87AC',
-}
-
 //-- Component
 class Detail extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      focusing: false,
-      shouldFocusHeader: true,
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        shouldFocusHeader: true,
-      }
-    })
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.headerRef && this.state.shouldFocusHeader) {
-      // ReactDOM.findDOMNode(this.headerRef).focus()
-    }
-  }
-
-  handleFocus = e => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: true,
-      }
-    })
-  }
-
-  handleBlur = e => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: false,
-        shouldFocusHeader: false,
-      }
-    })
-  }
 
   render() {
     const {id, item, loading} = this.props
-
-    const styleFocused = {
-      ...(this.state.focusing ? styleFocusDefault : {}),
-    }
-
-    const styleHeadingSpanApplied = {
-      ...styleHeadingSpan,
-      ...styleFocused,
-    }
 
     let headingMessage = null
     let content = null
@@ -184,15 +130,9 @@ class Detail extends React.Component {
         <div style={styleDetailWrapper}>
           <h1
             key="filtersH1"
-            tabIndex={-1}
-            ref={header => {
-              this.headerRef = header
-            }}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
             style={styleTitle}
           >
-            <div style={styleHeadingSpanApplied}>
+            <div style={styleHeadingSpan}>
               <span role="alert" aria-live="polite">
                 {headingMessage}
               </span>
