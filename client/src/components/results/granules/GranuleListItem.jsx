@@ -1,14 +1,8 @@
 import React from 'react'
 import FlexRow from '../../common/ui/FlexRow'
-import {fontFamilySerif, consolidateStyles} from '../../../utils/styleUtils'
+import {fontFamilySerif} from '../../../utils/styleUtils'
 import ListViewItem, {useListViewItem} from '../../common/ui/ListViewItem'
 import GranuleItemContainer from './GranuleItemContainer'
-
-const styleTitleFocusing = {
-  textDecoration: 'underline',
-  outline: '2px dashed black',
-  outlineOffset: '0.309em',
-}
 
 const styleTitle = {
   fontFamily: fontFamilySerif(),
@@ -27,9 +21,6 @@ export default function GranuleListItem(props){
   const {
     itemId,
     item,
-    focusing,
-    handleFocus,
-    handleBlur,
     expanded,
     setExpanded,
   } = useListViewItem(props)
@@ -38,13 +29,7 @@ export default function GranuleListItem(props){
   const title = (
     <h3
       key={'GranuleListItem::title'}
-      style={consolidateStyles(
-        styleTitle,
-        focusing ? styleTitleFocusing : null
-      )}
-      tabIndex={-1}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
+      style={styleTitle}
     >
       {item.title}
     </h3>

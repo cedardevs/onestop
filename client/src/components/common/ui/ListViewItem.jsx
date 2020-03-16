@@ -51,7 +51,6 @@ export function useListViewItem(props){
 
   const [ focusing, setFocusing ] = useState(false)
   // TODO nuke shouldFocus prop
-  var focusRef = null
 
   const handleFocus = event => {
     // if (props.setFocusedKey) {
@@ -98,7 +97,6 @@ export function useListViewItem(props){
   return {
     itemId,
     item,
-    // focusRef, // TODO nuke anything that expects this
     focusing,
     handleFocus,
     handleBlur,

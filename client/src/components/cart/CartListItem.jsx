@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import FlexRow from '../common/ui/FlexRow'
-import {fontFamilySerif, consolidateStyles} from '../../utils/styleUtils'
+import {fontFamilySerif} from '../../utils/styleUtils'
 import FlexColumn from '../common/ui/FlexColumn'
 import {SiteColors} from '../../style/defaultStyles'
 import ListViewItem from '../common/ui/ListViewItem'
@@ -11,12 +11,6 @@ import ResultAccessLinks from '../results/ResultAccessLinks'
 import {useListViewItem} from '../common/ui/ListViewItem'
 import CartListItemActions from './CartListItemActions'
 const pattern = require('../../../img/topography.png')
-
-const styleTitleFocusing = {
-  textDecoration: 'underline',
-  outline: '2px dashed black',
-  outlineOffset: '0.309em',
-}
 
 const styleTitle = {
   fontFamily: fontFamilySerif(),
@@ -70,23 +64,14 @@ export default function CartListItem(props){
   const {
     itemId,
     item,
-    focusing,
-    handleFocus,
-    handleBlur,
     expanded,
     setExpanded,
-  } = useListViewItem(props)  // none of these 3 should be needed either: focusing, handleFocus, handleBlur
+  } = useListViewItem(props)
 
   const title = (
     <h3
       key={'CartListItem::title'}
-      style={consolidateStyles(
-        styleTitle,
-        focusing ? styleTitleFocusing : null
-      )}
-      tabIndex={-1}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
+      style={styleTitle}
     >
       {item.title}
     </h3>

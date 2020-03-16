@@ -87,7 +87,6 @@ const CollectionListItem = props => {
       <a
         role="link"
         style={styleLink}
-        tabIndex={0}
         onFocus={handleFocus}
         onBlur={handleBlur}
         onClick={handleSelect}
