@@ -75,13 +75,13 @@
         "type": "long"
       },
       "beginDayOfYear": {
-        "type": "integer"
+        "type": "short"
       },
       "beginDayOfMonth": {
-        "type": "integer"
+        "type": "byte"
       },
       "beginMonth": {
-        "type": "integer"
+        "type": "byte"
       },
       "endDate": {
         "type": "date",
@@ -91,13 +91,13 @@
         "type": "long"
       },
       "endDayOfYear": {
-        "type": "integer"
+        "type": "short"
       },
       "endDayOfMonth": {
-        "type": "integer"
+        "type": "byte"
       },
       "endMonth": {
-        "type": "integer"
+        "type": "byte"
       },
       "spatialBounding": {
         "type": "geo_shape",
