@@ -4,7 +4,7 @@ import {Route, Switch} from 'react-router'
 import {ConnectedRouter} from 'connected-react-router'
 import RootContainer from './components/root/RootContainer'
 import GoogleAnalyticsContainer from './components/analytics/GoogleAnalyticsContainer'
-import {ROUTE} from './utils/urlUtils'
+import {ROUTE, shouldFocusMain} from './utils/urlUtils'
 import _ from 'lodash'
 
 // this higher-order component is kept separate from index.jsx
@@ -22,6 +22,7 @@ const App = (store, history) => {
       pathname: parts[0],
       search: parts[1] ? `?${parts[1]}` : '',
     }
+    shouldFocusMain(history.location, locationDescriptor)
     history.push(locationDescriptor)
   }
   return (

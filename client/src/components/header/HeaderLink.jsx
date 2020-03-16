@@ -1,6 +1,7 @@
 import React from 'react'
 import {Link, withRouter} from 'react-router-dom'
 import {Key} from '../../utils/keyboardUtils'
+import {shouldFocusMain} from '../../utils/urlUtils'
 
 export const HEADER_LINK_CLASS = 'headerLinkClass'
 
@@ -103,12 +104,14 @@ class HeaderLink extends React.Component {
       e.preventDefault() // prevent scrolling down on space press
       this.setKeying(false)
       if (location.pathname !== to) {
+        shouldFocusMain(history.location, {pathname: to})
         history.push(to)
       }
     }
     if (e.keyCode === Key.ENTER) {
       this.setKeying(false)
       if (location.pathname !== to) {
+        shouldFocusMain(history.location, {pathname: to})
         history.push(to)
       }
     }

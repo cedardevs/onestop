@@ -3,6 +3,7 @@ import {FEATURE_CART} from '../../utils/featureUtils'
 import {cart_arrow_down, SvgIcon} from '../common/SvgIcon'
 import HeaderLink from './HeaderLink'
 import {SiteColors} from '../../style/defaultStyles'
+import {shouldFocusMain} from '../../utils/urlUtils'
 
 import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 
@@ -44,6 +45,7 @@ export default class HeaderCartLink extends React.Component {
   handleRedirectToCart = () => {
     const {history, location} = this.props
     if (location.pathname !== '/cart') {
+      shouldFocusMain(history.location, {pathname: to})
       history.push('/cart')
     }
   }

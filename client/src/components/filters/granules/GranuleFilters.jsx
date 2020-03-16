@@ -79,7 +79,7 @@ class GranuleFilters extends React.Component {
   }
 
   componentDidMount() {
-    ReactDOM.findDOMNode(this.headerRef).focus()
+    // ReactDOM.findDOMNode(this.headerRef).focus()
   }
 
   createFilters = () => {

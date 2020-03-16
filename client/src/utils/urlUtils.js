@@ -191,3 +191,11 @@ export const isPathNew = (oldDescriptor, newDescriptor) => {
     oldDescriptor.search == newDescriptor.search
   )
 }
+
+export const shouldFocusMain = (oldDescriptor, newDescriptor) => {
+  console.log("checking", newDescriptor.pathname, newDescriptor)
+  if ( oldDescriptor.pathname != newDescriptor.pathname && !isHome(newDescriptor.pathname)) {
+    console.log("focusing on main now")
+    document.getElementById('mainBlock').focus()
+  }
+}

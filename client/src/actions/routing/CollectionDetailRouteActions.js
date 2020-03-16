@@ -2,7 +2,7 @@ import _ from 'lodash'
 import {fetchGranuleSearch, fetchCollectionDetail} from './AsyncHelpers'
 
 import {encodeLocationDescriptor} from '../../utils/queryUtils'
-import {ROUTE, isPathNew} from '../../utils/urlUtils'
+import {ROUTE, isPathNew, shouldFocusMain} from '../../utils/urlUtils'
 import {
   collectionDetailRequested,
   collectionDetailReceived,
@@ -150,6 +150,7 @@ const navigateToDetailUrl = (history, filterState) => {
   )
 
   if (isPathNew(history.location, locationDescriptor)) {
+    shouldFocusMain(history.location, locationDescriptor)
     history.push(locationDescriptor)
   }
 }

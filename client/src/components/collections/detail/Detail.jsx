@@ -79,7 +79,7 @@ class Detail extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.headerRef && this.state.shouldFocusHeader) {
-      ReactDOM.findDOMNode(this.headerRef).focus()
+      // ReactDOM.findDOMNode(this.headerRef).focus()
     }
   }
 
