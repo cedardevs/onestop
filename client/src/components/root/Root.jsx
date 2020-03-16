@@ -105,13 +105,6 @@ const Root = props => {
 
   let message = routeA11yAnnouncer(location.pathname)
 
-  // useEffect(
-  //   () => {
-  //     console.log("TO MAIN")
-  //     document.getElementById('mainBlock').focus()
-  //   }, [location.pathname]
-  // )
-
   const middle = (
     <div style={{width: '100%', zIndex: 4}}>
       <LiveAnnouncer>

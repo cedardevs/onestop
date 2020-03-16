@@ -4,7 +4,7 @@ import {
   assembleSearchRequest,
   encodeLocationDescriptor,
 } from '../../utils/queryUtils'
-import {isPathNew, ROUTE, shouldFocusMain} from '../../utils/urlUtils'
+import {isPathNew, ROUTE, goTo} from '../../utils/urlUtils'
 import {
   granuleResultsPageReceived,
   granuleNewSearchRequested,
@@ -378,15 +378,13 @@ const navigateToGranuleUrl = (history, collectionId, filterState) => {
     collectionId
   )
   if (isPathNew(history.location, locationDescriptor)) {
-    shouldFocusMain(history.location, locationDescriptor)
-    history.push(locationDescriptor)
+    goTo(history, locationDescriptor)
   }
 }
 
 const navigateToCart = history => {
   const locationDescriptor = encodeLocationDescriptor(ROUTE.cart, {})
   if (isPathNew(history.location, locationDescriptor)) {
-    shouldFocusMain(history.location, locationDescriptor)
-    history.push(locationDescriptor)
+    goTo(history, locationDescriptor)
   }
 }

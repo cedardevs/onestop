@@ -2,7 +2,7 @@ import React from 'react'
 import {withRouter} from 'react-router-dom'
 import {boxShadow} from '../../style/defaultStyles'
 import cart from 'fa/cart-arrow-down.svg'
-import {shouldFocusMain} from '../../utils/urlUtils'
+import {goTo} from '../../utils/urlUtils'
 
 import AnimateHeight from 'react-animate-height/lib/index'
 import Button from '../common/input/Button'
@@ -84,8 +84,7 @@ class HeaderDropdownMenu extends React.Component {
   handleRedirectToCart = () => {
     const {history, location, setOpen} = this.props
     if (location.pathname !== '/cart') {
-      shouldFocusMain(history.location, {pathname: to})
-      history.push('/cart')
+      goTo(history, {pathname: to})
       setOpen(false)
     }
   }
