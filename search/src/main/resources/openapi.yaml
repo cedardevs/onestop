@@ -539,6 +539,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref: "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref: "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             crossReferences:
@@ -559,6 +565,12 @@ components:
               $ref: "#/components/schemas/endDate"
             endYear:
               $ref: "#/components/schemas/endYear"
+            endDayOfYear:
+              $ref: "#/components/schemas/endDayOfYear"
+            endDayOfMonth:
+              $ref: "#/components/schemas/endDayOfMonth"
+            endMonth:
+              $ref: "#/components/schemas/endMonth"
             fileIdentifier:
               $ref: "#/components/schemas/fileIdentifier"
             gcmdDataCenters:
@@ -675,6 +687,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref: "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref: "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             crossReferences:
@@ -695,6 +713,12 @@ components:
               $ref: "#/components/schemas/endDate"
             endYear:
               $ref: "#/components/schemas/endYear"
+            endDayOfYear:
+              $ref: "#/components/schemas/endDayOfYear"
+            endDayOfMonth:
+              $ref: "#/components/schemas/endDayOfMonth"
+            endMonth:
+              $ref: "#/components/schemas/endMonth"
             fileIdentifier:
               $ref: "#/components/schemas/fileIdentifier"
             gcmdDataCenters:
@@ -815,6 +839,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref: "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref: "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             dataFormat:
@@ -829,6 +859,12 @@ components:
               $ref: "#/components/schemas/endDate"
             endYear:
               $ref: "#/components/schemas/endYear"
+            endDayOfYear:
+              $ref: "#/components/schemas/endDayOfYear"
+            endDayOfMonth:
+              $ref: "#/components/schemas/endDayOfMonth"
+            endMonth:
+              $ref: "#/components/schemas/endMonth"
             fileIdentifier:
               $ref: "#/components/schemas/fileIdentifier"
             gcmdDataCenters:
@@ -1160,10 +1196,19 @@ components:
       description: Begin date of temporal bounding. This will be null if the record has a year further back than -100,000,000.
       format: date
       type: string
+    beginDayOfMonth:
+      description: Day of month of begin date.
+      format: integer
+    beginDayOfYear:
+      description: Day of year (1 through 365 or 366 on leap years) of begin date.
+      format: integer
     beginYear:
       description: Begin year of temporal bounding.
       format: int64
       type: integer
+    beginMonth:
+      description: Month of begin date.
+      format: integer
     citeAsStatements:
       # description: TODO
       items:
@@ -1246,6 +1291,15 @@ components:
       description: End date of temporal bounding. This will be null if the record has a year further back than -100,000,000.
       format: date
       type: string
+    endDayOfMonth:
+      description: Day of month of end date.
+      format: integer
+    endDayOfYear:
+      description: Day of year (1 through 365 or 366 on leap years) of end date.
+      format: integer
+    endMonth:
+      description: Month of end date.
+      format: integer
     endYear:
       description: End year of temporal bounding.
       format: int64
