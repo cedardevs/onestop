@@ -157,7 +157,7 @@ export default function ListView(props){
 
   const [ itemsMap, previousItemsMap, focusedKey, setFocusedKey ] = useItems(
     items
-  )
+  ) // TODO nuke focusedKey, setFocusedKey?
   const [ showAsGrid, setShowAsGrid ] = useState(
     !!props.showAsGrid && !!props.GridItemComponent
   )
@@ -317,9 +317,9 @@ export default function ListView(props){
   itemsMap.forEach((item, key) => {
     let itemElement = null
 
-    const shouldFocus = key === focusedKey
+    // TODO I think this was the only source of shouldFocus?
     const itemProps = propsForItem
-      ? propsForItem(item, key, setFocusedKey)
+      ? propsForItem(item, key)
       : null
 
     // list item element
@@ -330,7 +330,6 @@ export default function ListView(props){
           itemId={key}
           item={item}
           expanded={expanded}
-          shouldFocus={shouldFocus}
           {...itemProps}
         />
       )
@@ -342,7 +341,6 @@ export default function ListView(props){
           key={key}
           itemId={key}
           item={item}
-          shouldFocus={shouldFocus}
           {...itemProps}
         />
       )
