@@ -1,26 +1,26 @@
 ---
 dependencies:
   - name: onestop-client
-    version: "1.0.0-alpha"
+    version: "3.0.0-alpha"
     repository: file://../onestop-client
     conditions: onestop-client.enabled,global.onestop-client.enabled
   - name: onestop-indexer
-    version: "1.0.0-alpha"
+    version: "3.0.0-alpha"
     repository: file://../onestop-indexer
     conditions: onestop-indexer.enabled,global.onestop-indexer.enabled
   - name: onestop-manager
-    version: "1.0.0-alpha"
+    version: "3.0.0-alpha"
     repository: file://../onestop-manager
     conditions: manager.enabled,global.manager.enabled
   - name: onestop-registry
-    version: "1.0.0-alpha"
+    version: "3.0.0-alpha"
     repository: file://../onestop-registry
     conditions: registry.enabled,global.registry.enabled
   - name: onestop-search
-    version: "1.0.0-alpha"
+    version: "3.0.0-alpha"
     repository: file://../onestop-search
     conditions: onestop-search.enabled,global.onestop-search.enabled
-  # - name: onestop-user
-  #   version: "1.0.0-alpha"
-  #   repository: file://../onestop-user
-  #   conditions: onestop-user.enabled,global.onestop-user.enabled
+  - name: onestop-user
+    version: "3.0.0-alpha"
+    repository: file://../onestop-user
+    conditions: onestop-user.enabled,global.onestop-user.enabled

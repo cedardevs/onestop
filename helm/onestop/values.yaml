@@ -1,37 +1,12 @@
-# TODO - when a 1.0.0 chart is released, remove the "for alpha development" blocks below
 onestop-client:
   enabled: true
-  # for alpha development
-  image:
-    tag: master-SNAPSHOT
-    pullPolicy: Always
 onestop-indexer:
   enabled: true
-  # for alpha development
-  image:
-    tag: master-SNAPSHOT
-    pullPolicy: Always
 onestop-manager:
   enabled: true
-  # for alpha development
-  image:
-    tag: master-SNAPSHOT
-    pullPolicy: Always
 onestop-registry:
   enabled: true
-  # for alpha development
-  image:
-    tag: master-SNAPSHOT
-    pullPolicy: Always
 onestop-search:
   enabled: true
-  # for alpha development
-  image:
-    tag: master-SNAPSHOT
-    pullPolicy: Always
-#onestop-user:
-#  enabled: true
-  # for alpha development
-#  image:
-#    tag: master-SNAPSHOT
-#    pullPolicy: Always
+onestop-user:
+  enabled: false # TODO - enable when implemented

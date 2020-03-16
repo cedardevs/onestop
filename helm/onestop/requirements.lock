@@ -1,18 +1,21 @@
 dependencies:
 - name: onestop-client
   repository: file://../onestop-client
-  version: 1.0.0-alpha
+  version: 3.0.0-alpha
 - name: onestop-indexer
   repository: file://../onestop-indexer
-  version: 1.0.0-alpha
+  version: 3.0.0-alpha
 - name: onestop-manager
   repository: file://../onestop-manager
-  version: 1.0.0-alpha
+  version: 3.0.0-alpha
 - name: onestop-registry
   repository: file://../onestop-registry
-  version: 1.0.0-alpha
+  version: 3.0.0-alpha
 - name: onestop-search
   repository: file://../onestop-search
-  version: 1.0.0-alpha
-digest: sha256:c75c2c1a57c042181b8b3a074a17bf7ef069f6041862008367ead2d985379eb8
-generated: "2020-03-10T17:47:11.499763-06:00"
+  version: 3.0.0-alpha
+- name: onestop-user
+  repository: file://../onestop-user
+  version: 3.0.0-alpha
+digest: sha256:11a455b34e4ce4b7041f9e69b5b6f596ccd13c525011a74eaf94d1485b80d823
+generated: "2020-03-16T17:39:35.808345-06:00"
