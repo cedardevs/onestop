@@ -98,7 +98,7 @@ export function useListViewItem(props){
   return {
     itemId,
     item,
-    focusRef, // TODO nuke anything that expects this
+    // focusRef, // TODO nuke anything that expects this
     focusing,
     handleFocus,
     handleBlur,

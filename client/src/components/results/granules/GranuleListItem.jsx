@@ -27,7 +27,6 @@ export default function GranuleListItem(props){
   const {
     itemId,
     item,
-    focusRef,
     focusing,
     handleFocus,
     handleBlur,
@@ -44,7 +43,6 @@ export default function GranuleListItem(props){
         focusing ? styleTitleFocusing : null
       )}
       tabIndex={-1}
-      ref={focusRef}
       onFocus={handleFocus}
       onBlur={handleBlur}
     >

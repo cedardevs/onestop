@@ -70,13 +70,12 @@ export default function CartListItem(props){
   const {
     itemId,
     item,
-    focusRef,
     focusing,
     handleFocus,
     handleBlur,
     expanded,
     setExpanded,
-  } = useListViewItem(props)
+  } = useListViewItem(props)  // none of these 3 should be needed either: focusing, handleFocus, handleBlur
 
   const title = (
     <h3
@@ -86,7 +85,6 @@ export default function CartListItem(props){
         focusing ? styleTitleFocusing : null
       )}
       tabIndex={-1}
-      ref={focusRef}
       onFocus={handleFocus}
       onBlur={handleBlur}
     >
