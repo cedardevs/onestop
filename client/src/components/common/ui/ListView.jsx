@@ -134,9 +134,7 @@ export default function ListView(props){
 
   const [ notification, setNotification ] = useState('')
 
-  const [ itemsMap, previousItemsMap ] = useItems(
-    items
-  )
+  const [ itemsMap, previousItemsMap ] = useItems(items)
   const [ showAsGrid, setShowAsGrid ] = useState(
     !!props.showAsGrid && !!props.GridItemComponent
   )
@@ -295,9 +293,7 @@ export default function ListView(props){
   itemsMap.forEach((item, key) => {
     let itemElement = null
 
-    const itemProps = propsForItem
-      ? propsForItem(item, key)
-      : null
+    const itemProps = propsForItem ? propsForItem(item, key) : null
 
     // list item element
     if (!showAsGrid && ListItemComponent) {
@@ -314,12 +310,7 @@ export default function ListView(props){
     else if (showAsGrid && GridItemComponent) {
       // grid item element
       itemElement = (
-        <GridItemComponent
-          key={key}
-          itemId={key}
-          item={item}
-          {...itemProps}
-        />
+        <GridItemComponent key={key} itemId={key} item={item} {...itemProps} />
       )
     }
     else {

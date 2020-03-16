@@ -18,19 +18,11 @@ const styleHeading = {
 }
 
 export default function GranuleListItem(props){
-  const {
-    itemId,
-    item,
-    expanded,
-    setExpanded,
-  } = useListViewItem(props)
+  const {itemId, item, expanded, setExpanded} = useListViewItem(props)
 
   // TODO: the show more focus is not working here like it does with the collections and cart, why?
   const title = (
-    <h3
-      key={'GranuleListItem::title'}
-      style={styleTitle}
-    >
+    <h3 key={'GranuleListItem::title'} style={styleTitle}>
       {item.title}
     </h3>
   )

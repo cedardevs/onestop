@@ -61,18 +61,10 @@ const styleContentHeadingTop = {
 }
 
 export default function CartListItem(props){
-  const {
-    itemId,
-    item,
-    expanded,
-    setExpanded,
-  } = useListViewItem(props)
+  const {itemId, item, expanded, setExpanded} = useListViewItem(props)
 
   const title = (
-    <h3
-      key={'CartListItem::title'}
-      style={styleTitle}
-    >
+    <h3 key={'CartListItem::title'} style={styleTitle}>
       {item.title}
     </h3>
   )
