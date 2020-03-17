@@ -53,7 +53,9 @@ func FindGaps(typeArg string, gapInterval string, items []interface{}) []string 
 		"-------------------------+--------------------------+-------------",
 	}
 	gapResponse := []string{}
-	dateFormat := "2006-01-02T15:04:05.000Z"
+	indexDateFormat := "2006-01-02T15:04:05Z"
+	outputDateFormat := "2006-01-02T15:04:05.000Z"
+
 	interval, _ := time.ParseDuration(gapInterval)
 	if len(items) == 0 {
 		return gapResponse
@@ -63,14 +65,12 @@ func FindGaps(typeArg string, gapInterval string, items []interface{}) []string 
 	for _, v := range items {
 		item := v.(map[string]interface{})
 		attrs := item["attributes"].(map[string]interface{})
-		if lastEndDate.IsZero() {
-			firstEndDateString, hasEndDate := attrs["endDate"].(string)
-			if hasEndDate {
-				firstEndDate, e := time.Parse(dateFormat, firstEndDateString)
-				if e != nil {
-					continue
-				} else {
-					lastEndDate = firstEndDate
+		if lastBeginDate.IsZero() {
+			firstBeginDateString, hasBeginDate := attrs["beginDate"].(string)
+			if hasBeginDate {
+				firstBeginDate, e := time.Parse(indexDateFormat, firstBeginDateString)
+				if e == nil {
+					lastBeginDate = firstBeginDate
 				}
 			}
 		}
@@ -78,20 +78,25 @@ func FindGaps(typeArg string, gapInterval string, items []interface{}) []string 
 		end, b2 := attrs["endDate"].(string)
 
 		if b1 && b2 {
-			startDate, e1 := time.Parse(dateFormat, start)
-			endDate, e2 := time.Parse(dateFormat, end)
+			startDate, e1 := time.Parse(indexDateFormat, start)
+			endDate, e2 := time.Parse(indexDateFormat, end)
+
 			if e1 == nil && e2 == nil {
+			    //assume sort beginDate desc
 				//if the temporal distance from this file and the last is greater than interval
 				//add it to new output
 				//track last begin date to prevent overlap
-				if lastEndDate.Sub(startDate) > interval && lastBeginDate.Sub(endDate) > 0 {
-					gapString := startDate.Format(dateFormat) + " | " + lastEndDate.Format(dateFormat) + " | " + lastEndDate.Sub(startDate).String()
+
+				if lastBeginDate.Sub(endDate) > interval && lastEndDate.Sub(startDate) > 0 {
+					gapString := endDate.Format(outputDateFormat) + " | " + lastBeginDate.Format(outputDateFormat) + " | " + lastBeginDate.Sub(endDate).String()
 					gapResponse = append(gapResponse, gapString)
 				}
 				lastBeginDate = startDate
 				lastEndDate = endDate
 			}
 		}
+
+
 	}
 	gapResponse = flipResultOrder(gapResponse)
     gapResponse = append(gapResponseHeader, gapResponse...)
