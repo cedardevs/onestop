@@ -49,9 +49,15 @@ func ParseSatName(params *viper.Viper) []string {
 
 func ParseRequestMeta(params *viper.Viper) string {
     requestMeta := ""
-	max := params.GetString(flags.MaxFlag)
+    maxPageSize := 1000
+    pageSize := maxPageSize
+    max, _ := strconv.Atoi(params.GetString(flags.MaxFlag))
+
+    if max < maxPageSize {
+        pageSize = max
+    }
     searchAfter := params.GetString(flags.SearchAfterFlag)
-	page := "\"page\" : {\"max\": " + max + "}"
+	page := "\"page\" : {\"max\": " + strconv.Itoa(pageSize) + "}"
     requestMeta = page
 
     if len(searchAfter) > 0 {

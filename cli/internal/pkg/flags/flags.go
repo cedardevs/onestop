@@ -27,7 +27,7 @@ const AreaDescription = "Locate files which intersect with the specified polygon
 const MaxFlag = "max"
 const MaxShortFlag = "n"
 const MaxDescription = "Maximum number of results returned."
-const MaxDefault = 100
+const MaxDefault = 10000
 
 const OffsetFlag = "offset"
 const OffsetShortFlag = "p" //as in page
