@@ -60,6 +60,7 @@ export const usePaging = props => {
     page => {
       const currentPage = Math.max(1, Math.min(page, state.totalPages))
       props.setCurrentPage(currentPage)
+      document.getElementById('mainBlock').focus()
     },
     [ state.totalPages, props.pageLimit ]
   )
