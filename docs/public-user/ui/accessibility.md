@@ -5,6 +5,11 @@
 **Estimated Reading Time:**
 
 # Site Accessibility
+TBD:
+ Explain how to navigate around the site via keyboard
+ Discuss what we've done for screen reader usage
+ Navigate folks to feedback repo if they have a problem
+ Create Accessibility template for issues in feedback repo
 
 coming .. 
 ## Table of Contents
