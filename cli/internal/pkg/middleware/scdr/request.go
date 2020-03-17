@@ -15,6 +15,7 @@ func ParseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	queries := []string{}
 
 	// isSummaryWithType := params.GetString(AvailableFlag) == "true" && len(params.GetString("type")) > 0
+    params = TranslateArgs(params)
 
 	collectionIdFilter := parse.ParseTypeFlag(params)
 	filters = append(filters, collectionIdFilter...)
@@ -66,11 +67,14 @@ func TranslateArgs(params *viper.Viper) *viper.Viper {
 	}
 	scdrTypeIds := viper.Get("scdr-types").(map[string]interface{})
 	uuid := scdrTypeIds[strings.ToLower(typeArg)]
-	params.Set("type", uuid)
+	if uuid != nil {
+    	params.Set("type", uuid)
+	}
 	return params
 }
 
 func DetermineEndpoint(params *viper.Viper, isSummaryWithType bool) string {
+    params = TranslateArgs(params)
 	endpoint := "/search/flattened-granule"
 
 	if isSummaryWithType {
