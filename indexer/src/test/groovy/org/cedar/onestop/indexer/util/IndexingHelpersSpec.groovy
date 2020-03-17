@@ -532,17 +532,16 @@ class IndexingHelpersSpec extends Specification {
     then:
     newTimeMetadata.sort() == expectedResult
 
-    // Only include data that will be checked to cut down on size of below tables
     where:
     situation               | expectedResult
     situations.instantDay   | [beginDate: '1999-12-31T00:00:00Z', beginYear: 1999, beginDayOfYear: 365, beginDayOfMonth: 31, beginMonth: 12, endDate: '1999-12-31T23:59:59Z', endYear: 1999, endDayOfYear:365, endDayOfMonth:31, endMonth:12].sort()
     situations.instantYear  | [beginDate: '1999-01-01T00:00:00Z', beginYear: 1999, beginDayOfYear: 1, beginDayOfMonth:1, beginMonth: 1, endDate: '1999-12-31T23:59:59Z', endYear: 1999, endDayOfMonth:31, endDayOfYear:365, endMonth:12].sort()
-    situations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000]
+    situations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000, beginDayOfYear: null, beginDayOfMonth:null, beginMonth: null, endDayOfYear: null, endDayOfMonth:null, endMonth:null].sort()
     situations.instantNano  | [beginDate: '2008-04-01T00:00:00Z', beginYear: 2008, beginDayOfYear: 92, beginDayOfMonth:1, beginMonth: 4, endDate: '2008-04-01T00:00:00Z', endYear: 2008,  endDayOfYear: 92, endDayOfMonth:1, endMonth:4].sort()
     situations.bounded      | [beginDate: '1900-01-01T00:00:00Z',  beginYear: 1900, beginDayOfYear: 1, beginDayOfMonth:1, beginMonth: 1, endDate: '2009-12-31T23:59:59Z', endYear: 2009, endDayOfYear:365, endDayOfMonth:31, endMonth:12].sort()
-    situations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000]
-    situations.ongoing      | [beginDate: "1975-06-15T12:30:00Z", beginDayOfMonth:15, beginDayOfYear:166, beginMonth:6, beginYear:1975, endDate:null, endYear:null]
-    situations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null]
+    situations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000, beginDayOfYear: null, beginDayOfMonth:null, beginMonth: null, endDayOfYear: null, endDayOfMonth:null, endMonth:null].sort()
+    situations.ongoing      | [beginDate: "1975-06-15T12:30:00Z", beginDayOfMonth:15, beginDayOfYear:166, beginMonth:6, beginYear:1975, endDate:null, endYear:null, endDayOfYear: null, endDayOfMonth: null, endMonth: null].sort()
+    situations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null, beginDayOfYear: null, beginDayOfMonth:null, beginMonth: null, endDayOfYear: null, endDayOfMonth:null, endMonth:null].sort()
   }
 
   def "temporal bounding with #testCase dates is prepared correctly"() {
