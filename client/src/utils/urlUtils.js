@@ -199,7 +199,10 @@ export const goTo = (history, newDescriptor) => {
     oldDescriptor.pathname != newDescriptor.pathname &&
     !isHome(newDescriptor.pathname)
   ) {
-    document.getElementById('mainBlock').focus()
+    var mainBlock = document.getElementById('mainBlock')
+    if (mainBlock) {
+      mainBlock.focus()
+    }
   }
   history.push(newDescriptor)
 }
