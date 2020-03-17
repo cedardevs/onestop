@@ -37,6 +37,7 @@ const OffsetDefault = 0
 const SearchAfterFlag = "after"
 const SearchAfterShortFlag = ""
 const SearchAfterDescription = "Search after begin date."
+
 // const SearchAfterDefault = 0
 
 const StartTimeFlag = "start-time"

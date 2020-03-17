@@ -20,12 +20,12 @@ func ParseTypeFlag(params *viper.Viper) []string {
 }
 
 func ParseSort(params *viper.Viper) string {
-// 	sortArg := params.GetString(flags.SortFlag)
-// 	sort := ""
-// 	if len(sortArg) > 0 {
-// 		sort = "\"sort\":[{\"" + sortArg + "\": \"desc\"}],"
-// 	}
-// 	return sort
+	// 	sortArg := params.GetString(flags.SortFlag)
+	// 	sort := ""
+	// 	if len(sortArg) > 0 {
+	// 		sort = "\"sort\":[{\"" + sortArg + "\": \"desc\"}],"
+	// 	}
+	// 	return sort
 	return "\"sort\":[{\"beginDate\": \"desc\", \"stagedDate\": \"desc\"}],"
 }
 
@@ -48,21 +48,21 @@ func ParseSatName(params *viper.Viper) []string {
 }
 
 func ParseRequestMeta(params *viper.Viper) string {
-    requestMeta := ""
-    maxPageSize := 1000
-    pageSize := maxPageSize
-    max, _ := strconv.Atoi(params.GetString(flags.MaxFlag))
+	requestMeta := ""
+	maxPageSize := 1000
+	pageSize := maxPageSize
+	max, _ := strconv.Atoi(params.GetString(flags.MaxFlag))
 
-    if max < maxPageSize {
-        pageSize = max
-    }
-    searchAfter := params.GetString(flags.SearchAfterFlag)
+	if max < maxPageSize {
+		pageSize = max
+	}
+	searchAfter := params.GetString(flags.SearchAfterFlag)
 	page := "\"page\" : {\"max\": " + strconv.Itoa(pageSize) + "}"
-    requestMeta = page
+	requestMeta = page
 
-    if len(searchAfter) > 0 {
-        requestMeta = requestMeta + ", \"search_after\": [" + searchAfter + "]"
-    }
+	if len(searchAfter) > 0 {
+		requestMeta = requestMeta + ", \"search_after\": [" + searchAfter + "]"
+	}
 	return requestMeta
 }
 

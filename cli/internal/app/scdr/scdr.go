@@ -10,10 +10,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/h2non/gentleman.v2"
-	"strings"
-	"strconv"
-	"time"
 	"math"
+	"strconv"
+	"strings"
+	"time"
 )
 
 const ScdrFileCmd = "scdr-files"
@@ -101,15 +101,13 @@ func ScdrRegister() {
 					log.Fatal().Err(err).Msg("Unable to get body")
 				}
 
-                resultList := makeRequests(params, body)
+				resultList := makeRequests(params, body)
 
-                if len(resultList) > 0 {
-                    for _, row := range resultList {
-                        fmt.Println(strings.TrimSpace(row))
-                    }
-                }
-
-
+				if len(resultList) > 0 {
+					for _, row := range resultList {
+						fmt.Println(strings.TrimSpace(row))
+					}
+				}
 
 			},
 		}
@@ -125,110 +123,110 @@ func ScdrRegister() {
 }
 
 func makeRequests(params *viper.Viper, body string) []string {
-    var results []string
-    var aggregateItems []interface{}
+	var results []string
+	var aggregateItems []interface{}
 	handlerPath := "scdr-files"
 	isSummary := params.GetString(flags.AvailableFlag)
 
-    // the maximum number of results to fetch
-    max, _ := strconv.Atoi(params.GetString(flags.MaxFlag))
-    maxPageSize := 1000 //search API limit
-    pageSize := maxPageSize //might as default to max
+	// the maximum number of results to fetch
+	max, _ := strconv.Atoi(params.GetString(flags.MaxFlag))
+	maxPageSize := 1000     //search API limit
+	pageSize := maxPageSize //might as default to max
 
-    //only get what they want if one request does it
-    if max < maxPageSize {
-        pageSize = max
-    }
-    //get ready to max out, updated in the loop depending on results
-    pagesNeeded := int(math.Round(float64(max) / float64(pageSize)))
+	//only get what they want if one request does it
+	if max < maxPageSize {
+		pageSize = max
+	}
+	//get ready to max out, updated in the loop depending on results
+	pagesNeeded := int(math.Round(float64(max) / float64(pageSize)))
 
-    //the map and resp that will pass to HandleAfter (middleware.MarshalScdrResponse) when all is done
-    var decoded map[string]interface{}
-    var resp *gentleman.Response
+	//the map and resp that will pass to HandleAfter (middleware.MarshalScdrResponse) when all is done
+	var decoded map[string]interface{}
+	var resp *gentleman.Response
 
-    for i := 1; i <= pagesNeeded; i++ {
-        //choose endpoint
-        req := buildRequest(params, body)
+	for i := 1; i <= pagesNeeded; i++ {
+		//choose endpoint
+		req := buildRequest(params, body)
 
-        //use params to update request body
-        cli.HandleBefore(handlerPath, params, req)
+		//use params to update request body
+		cli.HandleBefore(handlerPath, params, req)
 
-        //do the request
-        resp, err := req.Do()
+		//do the request
+		resp, err := req.Do()
 
-        if err != nil {
-            fmt.Println("Request failed")
-            log.Fatal().Err(errors.Wrap(err, "Request failed")).Msg("Error calling operation")
-        }
+		if err != nil {
+			fmt.Println("Request failed")
+			log.Fatal().Err(errors.Wrap(err, "Request failed")).Msg("Error calling operation")
+		}
 
-        if resp.StatusCode < 400 {
-            if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
-                fmt.Println("Unmarshalling response failed")
-                log.Fatal().Err(errors.Wrap(errors.Wrap(err, "Unmarshalling response failed"), "Request failed")).Msg("Error calling operation")
-            }
-        } else {
-            fmt.Println("FAIL greater than 400")
-            log.Fatal().Err(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())).Msg("Error calling operation")
-        }
+		if resp.StatusCode < 400 {
+			if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
+				fmt.Println("Unmarshalling response failed")
+				log.Fatal().Err(errors.Wrap(errors.Wrap(err, "Unmarshalling response failed"), "Request failed")).Msg("Error calling operation")
+			}
+		} else {
+			fmt.Println("FAIL greater than 400")
+			log.Fatal().Err(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())).Msg("Error calling operation")
+		}
 
-        //update the pages needed based on the number of results
-        if meta, ok := decoded["meta"].(map[string]interface{}); ok && isSummary == "false" {
-            resultCount := int(meta["total"].(float64))
-            remainder := 0
-            if resultCount < 0 {
-                log.Fatal().Msg("No results")
-                return results
-            }
-            if resultCount < max {
-                pagesNeeded = int(resultCount / pageSize) + 1
-                remainder = resultCount - (pageSize * i)
-            }else{
-                //default to max requests
-                //pagesNeeded = int(max / pageSize) + 1
-                remainder = max - (pageSize * i)
-            }
+		//update the pages needed based on the number of results
+		if meta, ok := decoded["meta"].(map[string]interface{}); ok && isSummary == "false" {
+			resultCount := int(meta["total"].(float64))
+			remainder := 0
+			if resultCount < 0 {
+				log.Fatal().Msg("No results")
+				return results
+			}
+			if resultCount < max {
+				pagesNeeded = int(resultCount/pageSize) + 1
+				remainder = resultCount - (pageSize * i)
+			} else {
+				//default to max requests
+				//pagesNeeded = int(max / pageSize) + 1
+				remainder = max - (pageSize * i)
+			}
 
-            if remainder > 0 && remainder < pageSize {
-                params.Set(flags.MaxFlag, remainder)
-            }
-        }
+			if remainder > 0 && remainder < pageSize {
+				params.Set(flags.MaxFlag, remainder)
+			}
+		}
 
-        if items, ok := decoded["data"].([]interface{}); ok {
-            aggregateItems = append(aggregateItems, items...)
+		if items, ok := decoded["data"].([]interface{}); ok {
+			aggregateItems = append(aggregateItems, items...)
 
-            if len(items) > 0 && isSummary == "false" {
-                lastItem := items[len(items)-1].(map[string]interface{})
-                lastItemAttrs := lastItem["attributes"].(map[string]interface{})
-                lastItemBeginDate := lastItemAttrs["beginDate"].(string)
-                lastItemStagedDate := lastItemAttrs["stagedDate"].(float64)
+			if len(items) > 0 && isSummary == "false" {
+				lastItem := items[len(items)-1].(map[string]interface{})
+				lastItemAttrs := lastItem["attributes"].(map[string]interface{})
+				lastItemBeginDate := lastItemAttrs["beginDate"].(string)
+				lastItemStagedDate := lastItemAttrs["stagedDate"].(float64)
 
-                if len(lastItemBeginDate) > 0 {
-                    nextAfterBeginDate, err := time.Parse("2006-01-02T15:04:05Z", lastItemBeginDate)
-                    if err != nil {
-                        fmt.Println("Cannot parse begin date")
-                    }
-                    nextAfterBeginEpoch := nextAfterBeginDate.UnixNano() / 1000000
+				if len(lastItemBeginDate) > 0 {
+					nextAfterBeginDate, err := time.Parse("2006-01-02T15:04:05Z", lastItemBeginDate)
+					if err != nil {
+						fmt.Println("Cannot parse begin date")
+					}
+					nextAfterBeginEpoch := nextAfterBeginDate.UnixNano() / 1000000
 
-                    if err != nil {
-                        fmt.Println("Cannot parse staged date")
-                    }
-                    searchAfterBeginDate := strconv.FormatInt(nextAfterBeginEpoch, 10)
-                    searchAfterStagedDate := strconv.FormatInt(int64(lastItemStagedDate), 10)
-                    searchAfter := searchAfterBeginDate + ", " + searchAfterStagedDate
-                    params.Set(flags.SearchAfterFlag, searchAfter)
-                }
-            }
-        }
-    }
-    decoded["data"] = aggregateItems
-    after := cli.HandleAfter(handlerPath, params, resp, decoded)
-    if after != nil {
-        decoded = after.(map[string]interface{})
-    }
-    if output, ok := decoded["scdr-output"].([]string); ok {
-        results = output
-    }
-    return results
+					if err != nil {
+						fmt.Println("Cannot parse staged date")
+					}
+					searchAfterBeginDate := strconv.FormatInt(nextAfterBeginEpoch, 10)
+					searchAfterStagedDate := strconv.FormatInt(int64(lastItemStagedDate), 10)
+					searchAfter := searchAfterBeginDate + ", " + searchAfterStagedDate
+					params.Set(flags.SearchAfterFlag, searchAfter)
+				}
+			}
+		}
+	}
+	decoded["data"] = aggregateItems
+	after := cli.HandleAfter(handlerPath, params, resp, decoded)
+	if after != nil {
+		decoded = after.(map[string]interface{})
+	}
+	if output, ok := decoded["scdr-output"].([]string); ok {
+		results = output
+	}
+	return results
 }
 
 func buildRequest(params *viper.Viper, body string) *gentleman.Request {
@@ -262,8 +260,8 @@ func buildRequest(params *viper.Viper, body string) *gentleman.Request {
 	}
 
 	if body != "" {
-        req = req.AddHeader("Content-Type", "application/json").BodyString(body)
-    }
+		req = req.AddHeader("Content-Type", "application/json").BodyString(body)
+	}
 
 	return req
 }
@@ -287,5 +285,3 @@ func scdrServers() []map[string]string {
 		},
 	}
 }
-
-

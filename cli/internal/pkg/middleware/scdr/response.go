@@ -82,7 +82,7 @@ func FindGaps(typeArg string, gapInterval string, items []interface{}) []string 
 			endDate, e2 := time.Parse(indexDateFormat, end)
 
 			if e1 == nil && e2 == nil {
-			    //assume sort beginDate desc
+				//assume sort beginDate desc
 				//if the temporal distance from this file and the last is greater than interval
 				//add it to new output
 				//track last begin date to prevent overlap
@@ -96,19 +96,18 @@ func FindGaps(typeArg string, gapInterval string, items []interface{}) []string 
 			}
 		}
 
-
 	}
 	gapResponse = flipResultOrder(gapResponse)
-    gapResponse = append(gapResponseHeader, gapResponse...)
+	gapResponse = append(gapResponseHeader, gapResponse...)
 	return gapResponse
 }
 
 func flipResultOrder(descList []string) []string {
-    ascList := []string{}
-    for i := len(descList) - 1; i >= 0; i-- {
-        ascList = append(ascList, descList[i])
-    }
-    return ascList
+	ascList := []string{}
+	for i := len(descList) - 1; i >= 0; i-- {
+		ascList = append(ascList, descList[i])
+	}
+	return ascList
 }
 
 func buildSummary(items []interface{}, count string) []string {
@@ -186,7 +185,7 @@ func buildIdHeaders(items []interface{}) (string, string) {
 	uuidSubHeader := "-----------"
 	//calculate subheader length based on the last IDs length
 	// get the last id because we are going to reverse this list
-	id := items[len(items) - 1].(map[string]interface{})["id"].(string)
+	id := items[len(items)-1].(map[string]interface{})["id"].(string)
 	err := viper.ReadInConfig()
 	if err == nil {
 		id = reverseLookup(id)
@@ -199,7 +198,7 @@ func buildIdHeaders(items []interface{}) (string, string) {
 func buildFileIdHeaders(items []interface{}) (string, string) {
 	fileIdentifierHeader := "FileIdentifier"
 	fileIdentifierSubHeader := "--------------"
-	fileIdentifierLength := len(items[len(items) - 1].(map[string]interface{})["attributes"].(map[string]interface{})["fileIdentifier"].(string))
+	fileIdentifierLength := len(items[len(items)-1].(map[string]interface{})["attributes"].(map[string]interface{})["fileIdentifier"].(string))
 	fileIdentifierHeader, fileIdentifierSubHeader = formatHeader(fileIdentifierHeader, fileIdentifierSubHeader, fileIdentifierLength)
 	return fileIdentifierHeader, fileIdentifierSubHeader
 }
@@ -207,7 +206,7 @@ func buildFileIdHeaders(items []interface{}) (string, string) {
 func buildDescriptionHeaders(items []interface{}) (string, string) {
 	descriptionHeader := "Description"
 	descriptionSubHeader := "-----------"
-	descriptionLength := len(items[len(items) - 1].(map[string]interface{})["attributes"].(map[string]interface{})["title"].(string))
+	descriptionLength := len(items[len(items)-1].(map[string]interface{})["attributes"].(map[string]interface{})["title"].(string))
 	if descriptionLength > 100 {
 		descriptionLength = 100
 	}
