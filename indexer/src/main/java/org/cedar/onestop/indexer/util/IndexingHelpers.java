@@ -172,6 +172,7 @@ public class IndexingHelpers {
     discoveryMap.putAll(prepareResponsibleParties(record));
     discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
     discoveryMap.put("filename", prepareFilename(record));
+    discoveryMap.put("checksums", prepareChecksums(record));
 
     // drop fields not present in target index
     var result = new LinkedHashMap<String, Object>(targetFields.size());
@@ -200,6 +201,22 @@ public class IndexingHelpers {
         .map(ParsedRecord::getFileInformation)
         .map(FileInformation::getName)
         .orElse(null);
+  }
+
+  static List prepareChecksums(ParsedRecord record) {
+    return Optional.ofNullable(record)
+            .filter(r -> r.getType() == RecordType.granule)
+            .map(ParsedRecord::getFileInformation)
+            .map(FileInformation::getChecksums)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(checksumObject -> {
+              var result = new HashMap<>();
+              result.put("algorithm", checksumObject.getAlgorithm());
+              result.put("value", checksumObject.getValue());
+              return result;
+            })
+            .collect(Collectors.toList());
   }
 
   ////////////////////////////////

@@ -26,6 +26,17 @@
           }
         }
       },
+      "checksums" : {
+        "type": "nested",
+        "properties": {
+          "algorithm":{
+            "type": "keyword"
+          },
+          "value":{
+            "type": "keyword"
+          }
+        }
+      },
       "parentIdentifier": {
         "type": "keyword"
       },
