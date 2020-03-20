@@ -28,8 +28,12 @@ logging:
 
 elasticsearch:
   version: ${esVersion}
-  host: localhost
+  host: onestop-es-http
   port: 9200
+  ssl:
+   enabled: true
+  ro:
+    user: elastic
 
 search:
   minimumShouldMatch: 75%
@@ -37,15 +41,17 @@ search:
   phraseSlop: 0
   fields:
     title: 4
-    description: 2
+    filename: 4
+    fileIdentifier: 4
+    parentIdentifier: 4
+    doi: 4
     keywords: 3
-    fileIdentifier: 1
-    parentIdentifier: 1
-    doi: 1
-    beginDate: 1
-    endDate: 1
-    spatialBounding: 1
-    dsmmAverage: 1
+    individualNames: 3
+    description: 2
+    organizationNames: 1
+    dataFormat: 1
+    linkProtocol: 1
+    serviceLinkProtocol: 1
 
 info.version: ${version}
 info.buildDate: ${buildDate}

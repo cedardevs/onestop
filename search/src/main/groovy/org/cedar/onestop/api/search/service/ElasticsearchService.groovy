@@ -6,10 +6,10 @@ import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.elasticsearch.Version
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -26,24 +26,18 @@ class ElasticsearchService {
 
   private RestClient restClient
   ElasticsearchConfig esConfig
-  Version version
+
+  boolean isES6
 
   @Autowired
-  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
-
-    this.version = elasticsearchConfig.version
-    log.info("Elasticsearch found with version: ${this.version.toString()}" )
-    boolean supported = version.onOrAfter(Version.V_5_6_0)
-    if(!supported) {
-      throw new RuntimeException("Search API does not support version ${version.toString()} of Elasticsearch")
-    }
-
+  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestHighLevelClient restHighLevelClient, RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
     this.searchRequestParserService = searchRequestParserService
     this.restClient = restClient
     this.esConfig = elasticsearchConfig
+    this.isES6 = esConfig.version.isMajorVersion(6)
   }
 
-  ////////////
+////////////
   // Counts //
   ////////////
   Map totalCollections() {
@@ -61,6 +55,7 @@ class ElasticsearchService {
   private Map totalCounts(String alias) {
     String endpoint = "/${alias}/_search"
     HttpEntity requestQuery = new NStringEntity(JsonOutput.toJson([
+        track_total_hits: true,
         query: [
             match_all: [:]
         ],
@@ -76,7 +71,7 @@ class ElasticsearchService {
             [
                 type : "count",
                 id   : esConfig.typeFromAlias(alias),
-                count: getHitsTotal(parsedResponse)
+                count: getHitsTotalValue(parsedResponse, isES6)
             ]
         ]
     ]
@@ -92,19 +87,23 @@ class ElasticsearchService {
     if(getCollection.data) {
       // get the total number of granules for this collection id
       String granuleEndpoint = "/${esConfig.GRANULE_SEARCH_INDEX_ALIAS}/_search"
-      HttpEntity granuleRequestQuery = new NStringEntity(JsonOutput.toJson([
+      Map granuleRequestMap = [
           query: [
               term: [
                   internalParentIdentifier: id
               ]
           ],
           size : 0
-      ]), ContentType.APPLICATION_JSON)
+      ]
+      if (!isES6) {
+        granuleRequestMap.track_total_hits = true
+      }
+      HttpEntity granuleRequestQuery = new NStringEntity(JsonOutput.toJson(granuleRequestMap), ContentType.APPLICATION_JSON)
       Request granuleRequest = new Request('GET', granuleEndpoint)
       granuleRequest.entity = granuleRequestQuery
       Response granuleResponse = restClient.performRequest(granuleRequest)
       Map parsedGranuleResponse = parseSearchResponse(granuleResponse)
-      int totalGranulesForCollection = getHitsTotal(parsedGranuleResponse)
+      int totalGranulesForCollection = getHitsTotalValue(parsedGranuleResponse, isES6)
       getCollection.meta = [
           totalGranules: totalGranulesForCollection
       ]
@@ -126,7 +125,7 @@ class ElasticsearchService {
   }
 
   private Map getById(String alias, String id) {
-    String endpoint = "/${alias}/${esConfig.TYPE}/${id}"
+    String endpoint = "/${alias}/_doc/${id}"
     log.debug("Get by ID against endpoint: ${endpoint}")
     Request idRequest = new Request('GET', endpoint)
     Response idResponse = restClient.performRequest(idRequest)
@@ -229,7 +228,7 @@ class ElasticsearchService {
       },
       meta: [
           took : getTook(parsedSearchResponse),
-          total: getHitsTotal(parsedSearchResponse)
+          total: getHitsTotalValue(parsedSearchResponse, isES6)
       ]
     ]
     return result
@@ -245,7 +244,7 @@ class ElasticsearchService {
         },
         meta: [
             took : getTook(searchResponse),
-            total: getHitsTotal(searchResponse)
+            total: getHitsTotalValue(searchResponse, isES6)
         ]
     ]
 
@@ -276,6 +275,11 @@ class ElasticsearchService {
 
     Map requestBody = addAggregations(query, getFacets)
 
+    // If ES7, we need to include "track_total_hits" param, otherwise we won't display counts > 10,000
+    if (!isES6) {
+      requestBody.track_total_hits = true
+    }
+
     // default summary to true
     def summary = params.summary == null ? true : params.summary as boolean
     if (summary) {
@@ -283,6 +287,9 @@ class ElasticsearchService {
     }
     if (params.containsKey('page')) {
       requestBody = addPagination(requestBody, params.page as Map)
+    }
+    if (params.containsKey('sort')) {
+      requestBody = addSort(requestBody, params.sort as List)
     }
     requestBody = pruneEmptyElements(requestBody)
     return requestBody
@@ -315,7 +322,7 @@ class ElasticsearchService {
         "links",
         "citeAsStatements",
         "serviceLinks"
-    ]
+  ]
     requestBody._source = sourceFilter
     return requestBody
   }
@@ -323,6 +330,11 @@ class ElasticsearchService {
   private static Map addPagination(Map requestBody, Map pageParams) {
     requestBody.size = pageParams?.max != null ? pageParams.max : 10
     requestBody.from = pageParams?.offset ?: 0
+    return requestBody
+  }
+
+  private static Map addSort(Map requestBody, List sortParams) {
+    requestBody.sort = sortParams ? sortParams + ["_doc": "desc"] : [["_score":"desc"], ["_doc": "desc"]]
     return requestBody
   }
 

@@ -1,0 +1,18 @@
+for (String f : params.defaults.keySet()) {
+  if (f == params.stagedDate) {
+    def collectionDate = params.defaults[f];
+    def granuleDate = ctx._source[f];
+    if (collectionDate > granuleDate) {
+      ctx._source[f] = collectionDate;
+    }
+    else {
+      ctx._source[f] = granuleDate;
+    }
+  }
+  else if (ctx._source[f] == null || ctx._source[f] == []) {
+    ctx._source[f] = params.defaults[f];
+  }
+  else {
+    ctx._source[f] = ctx._source[f];
+  }
+}

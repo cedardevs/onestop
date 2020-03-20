@@ -1,13 +1,3 @@
-plugins {
-  id 'groovy'
-  id "org.springframework.boot" // version declared in top-level buildscript
-  id "io.spring.dependency-management"
-  id 'com.google.cloud.tools.jib' version '1.6.1'
-  id "com.moowork.node"
-}
-
-apply from: "${rootDir}/gradle/publishing.gradle"
-
 sourceCompatibility = 11
 targetCompatibility = 11
 
@@ -22,14 +12,16 @@ configurations {
 }
 
 dependencies {
-  implementation("org.codehaus.groovy:groovy:${project.groovyVersion}")
-  implementation("org.codehaus.groovy:groovy-json:${project.groovyVersion}")
+  def Versions = project.Versions
+
+  implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+  implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
-  implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
-  implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
-  implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
-  implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
+  implementation("org.apache.kafka:kafka-streams:${Versions.KAFKA}")
+  implementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}")
+  implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
+  implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
   implementation(project(':kafka-common'))
   implementation("org.json:json:20190722")
   
@@ -38,26 +30,26 @@ dependencies {
   implementation "org.pac4j:pac4j-cas:3.8.3"
 
   //used to copy schema definitions to generate openAPI 
-  schemaDefinitions ("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
+  schemaDefinitions ("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
 
   compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
 
   runtime("org.springframework.boot:spring-boot-devtools")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.spockframework:spock-spring:${project.spockVersion}")
-  testImplementation("org.spockframework:spock-core:${project.spockVersion}")
+  testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")
+  testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
   testImplementation("org.codehaus.groovy.modules.http-builder:http-builder:0.7.1")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.springframework.kafka:spring-kafka-test:${project.springKafkaVersion}")
-  testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
-  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
-  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
-  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
-  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}")
-  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
+  testImplementation("org.springframework.kafka:spring-kafka-test:${Versions.SPRING_KAFKA}")
+  testImplementation("org.apache.kafka:kafka-streams-test-utils:${Versions.KAFKA}")
+  testImplementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}:test")
+  testImplementation("org.apache.kafka:kafka_2.12:${Versions.KAFKA}")
+  testImplementation("org.apache.kafka:kafka_2.12:${Versions.KAFKA}:test")
+  testImplementation("io.confluent:kafka-schema-registry:${Versions.CONFLUENT}")
+  testImplementation("io.confluent:kafka-schema-registry:${Versions.CONFLUENT}:tests")
   testImplementation("com.github.java-json-tools:json-schema-validator:2.2.10")
-  testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}:test")
 }
 
 sourceSets {
@@ -109,12 +101,6 @@ task extractSchemaDefinitions(type: Copy) {
   into "$buildDir/resources/main"
 }
 
-node {
-  version = '10.15.3'
-  npmVersion = '6.1.0'
-  download = true
-}
-
 // NOTE: The 'build' task defined in package.json pipes the output directly to the output file
 task generateOpenApi(type: NpmTask) {
   dependsOn { ['npmInstall', 'extractSchemaDefinitions', 'processResources'] }
@@ -125,6 +111,7 @@ task generateOpenApi(type: NpmTask) {
 assemble.dependsOn(sourceJar)
 assemble.dependsOn(bootJar)
 
+// Do something silly to ensure federal tasks that are called in Jenkins still effectively call jib
 task BuildDockerImage {
   group "jib"
   dependsOn jibDockerBuild
@@ -135,36 +122,24 @@ task PublishDockerImage {
 }
 
 jib {
-  // derive image repository
-  String imageRegistryURL = "registry.hub.docker.com"
-  String imageNamespace = "cedardevs"
-  String imageName = "${rootProject.name}-${project.name}".toString()
-  String imageTag = "${project.version}".toString()
-  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+  use(PublishingKt) {
+    def publish = project.publish
 
-  from {
-    //base image
-    image = 'gcr.io/distroless/java:11'
-  }
-  to {
-    image = imageRepository
-    auth {
-      username = System.getenv('DOCKER_USER').toString().trim()
-      password = System.getenv('DOCKER_PASSWORD').toString().trim()
+    from {
+      //base image
+      image = 'gcr.io/distroless/java:11'
     }
-  }
-  container {
-    creationTime = project.buildDate.toString()
-    // https://github.com/opencontainers/image-spec/blob/master/annotations.md
-    labels = [
-        'org.opencontainers.image.created': project.buildDate.toString(),
-        'org.opencontainers.image.ref.name': imageName,
-        'org.opencontainers.image.description': 'A registry API for PSI.',
-        'org.opencontainers.image.source': project.getVcsUrl().toString(),
-        'org.opencontainers.image.revision': project.getVcsRef().toString(),
-        'org.opencontainers.image.vendor': imageNamespace,
-        'org.opencontainers.image.version': imageTag,
-    ]
-    ports = ['8080', '9090']
+    to {
+      image = publish.repository()
+      auth {
+        username = publish.username
+        password = publish.password
+      }
+    }
+    container {
+      creationTime = publish.created.toString()
+      labels = publish.ociAnnotations()
+      ports = ['8080', '9090']
+    }
   }
 }

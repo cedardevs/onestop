@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: cedardevs/onestop-registry
-  tag: 2.4.2
+  tag: master-SNAPSHOT
   pullPolicy: IfNotPresent
   pullSecrets: []
 
@@ -48,7 +48,7 @@ config: |-
 ingress:
   enabled: true
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "3m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "5m"
   paths:
   - "/registry"
   hosts:

@@ -1,6 +1,7 @@
 import store from '../../../src/store' // create Redux store with appropriate middleware
 import {RESET_STORE} from '../../../src/reducer'
 import fetchMock from 'fetch-mock'
+import * as spyableActions from '../../../src/actions/routing/CollectionDetailStateActions'
 
 import {submitCollectionDetail} from '../../../src/actions/routing/CollectionDetailRouteActions'
 import {
@@ -165,6 +166,161 @@ describe('collection detail action', function(){
 
         expect(historyPushCallCount).toEqual(0)
       })
+    })
+  })
+
+  describe('interrupt in flight request', () => {
+    const collectionDetailError = jest.spyOn(
+      spyableActions,
+      'collectionDetailError'
+    )
+    const granuleMatchingCountError = jest.spyOn(
+      spyableActions,
+      'granuleMatchingCountError'
+    )
+    const collectionDetailReceived = jest.spyOn(
+      spyableActions,
+      'collectionDetailReceived'
+    )
+    const granuleMatchingCountReceived = jest.spyOn(
+      spyableActions,
+      'granuleMatchingCountReceived'
+    )
+    beforeEach(async () => {
+      collectionDetailError.mockClear()
+      granuleMatchingCountError.mockClear()
+      collectionDetailReceived.mockClear()
+      granuleMatchingCountReceived.mockClear()
+    })
+    afterAll(async () => {
+      collectionDetailError.mockClear()
+      granuleMatchingCountError.mockClear()
+      collectionDetailReceived.mockClear()
+      granuleMatchingCountReceived.mockClear()
+      // restore the original (non-mocked) implementation:
+      collectionDetailError.mockRestore()
+      granuleMatchingCountError.mockRestore()
+      collectionDetailReceived.mockRestore()
+      granuleMatchingCountReceived.mockRestore()
+    })
+
+    test('new search request which errors', async () => {
+      fetchMock
+        // mock the results of the first search request:
+        .getOnce(`path:${BASE_URL}/collection/uuid-ABC`, 400)
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, 400)
+        // mock the results of the second search request:
+        .getOnce(`path:${BASE_URL}/collection/uuid-ABC`, 500, {
+          overwriteRoutes: false,
+        })
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, 500)
+      //setup send something into flight first
+
+      // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+      const promise = submitCase.function(...submitCase.params)(
+        store.dispatch,
+        store.getState
+      )
+
+      {
+        // keep scoped
+        const {collectionDetailRequest} = store.getState().search
+        expect(collectionDetailRequest.inFlight).toBeTruthy()
+      }
+
+      await store.dispatch(submitCase.function(...submitCase.params))
+
+      // allow the initial request to resolve
+      await promise
+
+      const {
+        collectionDetailRequest,
+        collectionDetailResult,
+      } = store.getState().search
+
+      // we made 2 fetches
+      expect(fetchMock.calls().length).toEqual(4)
+      // but only one collectionDetailError via errorHandler
+      expect(collectionDetailError.mock.calls.length).toEqual(1)
+      expect(granuleMatchingCountError.mock.calls.length).toEqual(1)
+
+      expect(collectionDetailRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+      expect(collectionDetailRequest.errorMessage).toEqual(
+        new Error('Internal Server Error')
+      )
+      expect(collectionDetailResult.collection).toBeNull()
+      expect(collectionDetailRequest.backgroundInFlight).toBeFalsy()
+      expect(collectionDetailRequest.backgroundErrorMessage).toEqual(
+        new Error('Internal Server Error')
+      )
+    })
+
+    test('new search request success', async () => {
+      fetchMock
+        // mock the results of the first search request:
+        .getOnce(`path:${BASE_URL}/collection/uuid-ABC`, {
+          data: [
+            {
+              id: 'INTERRUPTED',
+              mockedResponse: 'yes',
+            },
+          ],
+          meta: {
+            totalGranules: 13,
+          },
+        })
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, {
+          meta: {
+            total: 1000,
+          },
+        })
+        // mock the results of the second search request:
+        .getOnce(`path:${BASE_URL}/collection/uuid-ABC`, mockPayload, {
+          overwriteRoutes: false,
+        })
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, {
+          meta: {
+            total: 10,
+          },
+        })
+      //setup send something into flight first
+
+      // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+      const promise = submitCase.function(...submitCase.params)(
+        store.dispatch,
+        store.getState
+      )
+
+      {
+        // keep scoped
+        const {collectionDetailRequest} = store.getState().search
+        expect(collectionDetailRequest.inFlight).toBeTruthy()
+      }
+
+      await store.dispatch(submitCase.function(...submitCase.params))
+
+      // allow the initial request to resolve (red-green testing: without the fetch checking the abort controller status, this would cause the number of calls to collectionDetailReceived to be incorrect)
+      await promise
+
+      const {
+        collectionDetailRequest,
+        collectionDetailResult,
+      } = store.getState().search
+
+      // we made 2 fetches
+      expect(fetchMock.calls().length).toEqual(4)
+
+      // but only one collectionDetailReceived via successHandler
+      expect(collectionDetailReceived.mock.calls.length).toEqual(1)
+      expect(granuleMatchingCountReceived.mock.calls.length).toEqual(1)
+
+      expect(collectionDetailRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+      expect(collectionDetailRequest.errorMessage).toEqual('')
+      expect(collectionDetailResult.collection).toEqual(mockCollection)
+      expect(collectionDetailResult.totalGranuleCount).toEqual(13)
+      expect(collectionDetailRequest.backgroundInFlight).toBeFalsy()
+      expect(collectionDetailRequest.backgroundErrorMessage).toEqual('')
+      expect(collectionDetailResult.filteredGranuleCount).toEqual(10)
     })
   })
 

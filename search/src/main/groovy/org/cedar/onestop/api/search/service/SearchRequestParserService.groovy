@@ -4,6 +4,8 @@ import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+import java.util.stream.Collectors
+
 @Slf4j
 @Service
 class SearchRequestParserService {
@@ -31,28 +33,6 @@ class SearchRequestParserService {
     return requestQuery
   }
 
-  static Map createCollectionsAggregation() {
-    return [
-        terms       : [
-            field: "internalParentIdentifier",
-            size : Integer.MAX_VALUE,
-            order: [
-                "score_agg.max": "desc"
-            ]
-        ],
-        aggregations: [
-            "score_agg": [
-                stats: [
-                    script: [
-                        source: "_score",
-                        lang  : "expression"
-                    ]
-                ]
-            ]
-        ]
-    ]
-  }
-
   Map createFacetAggregations() {
     def aggregations = [:]
     facetNameMappings.each { name, field ->
@@ -70,25 +50,6 @@ class SearchRequestParserService {
     return aggregations
   }
 
-  private List<Map> assembleTextFilterAsQuery(List<Map> filters) {
-    if (!filters) {
-      return null
-    }
-    def groupedFilters = filters.groupBy { it.type }
-    return groupedFilters.text.collect {
-      return [
-        query_string: [
-          query               : (it.value as String).trim(),
-          fields              : ["${(it.field as String).trim()}^1"],
-          phrase_slop         : config?.phraseSlop ?: 0,
-          tie_breaker         : config?.tieBreaker ?: 0,
-          minimum_should_match: config?.minimumShouldMatch ?: '75%',
-          lenient             : true
-        ]
-      ]
-    }
-  }
-
   private List<Map> assembleScoringContext(List<Map> queries) {
     if (!queries) {
       return null
@@ -98,19 +59,45 @@ class SearchRequestParserService {
 
     if(queries) {
       def groupedQueries = queries.groupBy { it.type }
-      allTextQueries.add(groupedQueries.queryText.collect {
-        return [
+
+      // Query Text Query (general one)
+      List<String> queryTextValues = []
+      groupedQueries.queryText.each {
+        it -> queryTextValues.add(it.value as String)
+      }
+      String queryTextQuery
+      if(queryTextValues.size() == 1) {
+        queryTextQuery = (queryTextValues.get(0) as String).trim()
+      }
+      else if(queryTextValues.size() > 1) {
+        queryTextQuery = queryTextValues.stream()
+            .map({s -> new String("(" + s.trim() + ")")})
+            .collect(Collectors.joining(" AND "))
+      }
+
+      if(queryTextQuery != null) {
+        def fields = config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: null
+
+        def queryStringMap = [
             query_string: [
-                query               : (it.value as String).trim(),
-                // FIXME: Test if default of _all is necessary; if so, we should control the fields in it. #190
-                fields              : config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: ['_all'],
+                query               : queryTextQuery,
                 phrase_slop         : config?.phraseSlop ?: 0,
                 tie_breaker         : config?.tieBreaker ?: 0,
                 minimum_should_match: config?.minimumShouldMatch ?: '75%',
                 lenient             : true
             ]
         ]
-      })
+
+        if(fields != null) { queryStringMap.query_string.put("fields", fields) }
+
+        allTextQueries.add(queryStringMap)
+      }
+
+      // Granule Name Query
+      groupedQueries.granuleName.each {
+        // Add as individual objects since each request can reference a different field
+        allTextQueries.add(constructGranuleNameComponent(it))
+      }
     }
 
     return [[
@@ -158,6 +145,15 @@ class SearchRequestParserService {
       allFilters.add(constructFacetFilter(it))
     }
 
+    // Granule name filters:
+    groupedFilters.granuleName.each {
+      /** Note -- For a collection-level search, these nonexistent fields are ignored by Elasticsearch */ // FIXME what happens when we change field names?
+      // Take care of default here since same function builds query which uses a different default operator ('AND' here vs 'OR' there)
+      Boolean allTermsMustMatch = it.allTermsMustMatch != null ? it.allTermsMustMatch : true
+      it.allTermsMustMatch = allTermsMustMatch
+      allFilters.add(constructGranuleNameComponent(it))
+    }
+
     // Exclude global results filter:
     if (groupedFilters.excludeGlobal) {
       // Handling filter & null awkwardness of 'isGlobal' property -- passing false through excludes all non-global
@@ -185,15 +181,15 @@ class SearchRequestParserService {
     return allFilters
   }
 
-  private List<Map> constructDateTimeFilter(Map filterRequest) {
+  private static List<Map> constructDateTimeFilter(Map filterRequest) {
     return constructTemporalFilter(filterRequest, 'beginDate', 'endDate')
   }
 
-  protected List<Map> constructYearFilter(Map filterRequest) {
+  private static List<Map> constructYearFilter(Map filterRequest) {
     return constructTemporalFilter(filterRequest, 'beginYear', 'endYear')
   }
 
-  private List<Map> constructTemporalFilter(Map filterRequest, String beginField, String endField) {
+  private static List<Map> constructTemporalFilter(Map filterRequest, String beginField, String endField) {
 
     def x = filterRequest.after
     def y = filterRequest.before
@@ -232,6 +228,7 @@ class SearchRequestParserService {
         else if (x != null && y != null) {
           esFilters.add([
               bool: [
+                  minimum_should_match: 1,
                   should: [
                       [ bool: [
                           must: [
@@ -245,6 +242,7 @@ class SearchRequestParserService {
                           must: [
                               [ range: [ (endField): [ gte: y ] ] ]
                           ],
+                          minimum_should_match: 1,
                           should: [
                               [ range: [ (beginField): [ lte: x ]] ],
                               [ bool: [
@@ -290,6 +288,7 @@ class SearchRequestParserService {
         else if (x != null && y != null) {
           esFilters.add([
               bool: [
+                  minimum_should_match: 1,
                   should: [
                       [ range: [ (beginField): [ gt: y ] ] ],
                       [ range: [ (endField): [ lt: x ] ] ]
@@ -306,6 +305,7 @@ class SearchRequestParserService {
           // (otherwise we'll match ones without a time bounding)
           esFilters.add([
               bool: [
+                  minimum_should_match: 1,
                   should: [
                       [ range: [ (endField): [ gte: x ]] ],
                       [ bool: [
@@ -323,6 +323,7 @@ class SearchRequestParserService {
         else if (x == null && y != null) {
           esFilters.add([
               bool: [
+                  minimum_should_match: 1,
                   should: [
                       [ range: [ (beginField): [ lte: y ]] ],
                       [ bool: [
@@ -340,6 +341,7 @@ class SearchRequestParserService {
         else if (x != null && y != null){
           esFilters.add([
               bool: [
+                  minimum_should_match: 1,
                   should: [
                       [ bool: [
                           must: [
@@ -373,7 +375,7 @@ class SearchRequestParserService {
     return esFilters
   }
 
-  static private Map constructSpatialFilter(Map filterRequest) {
+  private static Map constructSpatialFilter(Map filterRequest) {
     return [
         geo_shape: [
             spatialBounding: [
@@ -384,11 +386,33 @@ class SearchRequestParserService {
     ]
   }
 
-  static private Map constructFacetFilter(Map filterRequest) {
+  private static Map constructFacetFilter(Map filterRequest) {
     def fieldName = facetNameMappings[filterRequest.name] ?: filterRequest.name
     return [
         terms: [
             (fieldName): filterRequest.values
+        ]
+    ]
+  }
+
+  private static Map constructGranuleNameComponent(Map request) {
+    List<String> fields = new ArrayList<>()
+    String fieldRequested = request.field
+    if(fieldRequested == null || fieldRequested == 'all') {
+      fields.addAll(['title', 'fileIdentifier', 'filename'])
+    }
+    else {
+      fields.add(fieldRequested)
+    }
+
+    String operator = request.allTermsMustMatch == null || request.allTermsMustMatch == false ? 'OR' : 'AND'
+
+    return [
+        multi_match: [
+            query: request.value,
+            fields: fields,
+            operator: operator,
+            type: 'cross_fields'
         ]
     ]
   }

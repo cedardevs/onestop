@@ -12,7 +12,6 @@ const styleContent = {
   alignItems: 'stretch',
   width: '100%',
 }
-
 export default class Content extends React.Component {
   render() {
     const {

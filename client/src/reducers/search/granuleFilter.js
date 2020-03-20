@@ -13,13 +13,16 @@ import {
   GRANULE_TOGGLE_EXCLUDE_GLOBAL,
   GRANULE_NEW_SEARCH_REQUESTED,
   GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED,
-  GRANULE_MORE_RESULTS_REQUESTED,
+  GRANULE_RESULTS_PAGE_REQUESTED,
+  GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH,
+  RESET_GRANULE_ALL_TERMS_MUST_MATCH,
 } from '../../actions/routing/GranuleSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
-  title: '',
+  title: '', // TODO rename to something about granule name
+  allTermsMustMatch: true,
   bbox: null,
   geoRelationship: 'intersects',
   timeRelationship: 'intersects',
@@ -31,6 +34,7 @@ export const initialState = Immutable({
   selectedCollectionIds: [],
   excludeGlobal: null,
   pageOffset: 0,
+  pageSize: 20, //default
 })
 
 const newSearchFilters = (collectionId, filters) => {
@@ -40,6 +44,7 @@ const newSearchFilters = (collectionId, filters) => {
     filters,
     {
       pageOffset: initialState.pageOffset,
+      pageSize: initialState.pageSize,
       selectedCollectionIds: [ collectionId ],
     },
   ])
@@ -62,8 +67,9 @@ export const granuleFilter = (state = initialState, action) => {
     case GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED:
       return newSearchRequest(action.id, action.filters)
 
-    case GRANULE_MORE_RESULTS_REQUESTED:
-      return Immutable.set(state, 'pageOffset', state.pageOffset + PAGE_SIZE)
+    case GRANULE_RESULTS_PAGE_REQUESTED:
+      let updateSize = Immutable.set(state, 'pageSize', action.max)
+      return Immutable.set(updateSize, 'pageOffset', action.offset)
 
     case GRANULE_SET_QUERY_TEXT:
       return Immutable.set(state, 'title', action.text)
@@ -117,6 +123,16 @@ export const granuleFilter = (state = initialState, action) => {
 
     case GRANULE_TOGGLE_EXCLUDE_GLOBAL:
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
+
+    case GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH:
+      return Immutable.set(state, 'allTermsMustMatch', !state.allTermsMustMatch)
+
+    case RESET_GRANULE_ALL_TERMS_MUST_MATCH:
+      return Immutable.set(
+        state,
+        'allTermsMustMatch',
+        initialState.allTermsMustMatch
+      )
 
     default:
       return state

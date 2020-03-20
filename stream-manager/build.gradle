@@ -1,17 +1,10 @@
 plugins {
-  id 'groovy'
   id 'application'
-  id 'com.google.cloud.tools.jib' version '1.6.1'
-  id "com.github.johnrengelman.shadow" version "4.0.3"
 }
 
-apply from: "${rootDir}/gradle/publishing.gradle"
+apply plugin: "com.github.johnrengelman.shadow"
 
 mainClassName = 'org.cedar.onestop.manager.StreamManagerMain'
-
-repositories {
-  mavenCentral()
-}
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -22,31 +15,33 @@ configurations {
 }
 
 dependencies {
+  def Versions = project.Versions
+
   implementation(project(':kafka-common'))
+
+  implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+  implementation("org.apache.kafka:kafka-streams:${Versions.KAFKA}")
+  implementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}")
+  implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
   implementation("org.apache.commons:commons-text:1.2")
-  implementation("org.codehaus.groovy:groovy:${project.groovyVersion}")
-  implementation("org.apache.kafka:kafka-streams:${project.kafkaVersion}")
-  implementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}")
-  implementation("io.confluent:kafka-streams-avro-serde:${project.confluentVersion}")
+
   implementation("org.slf4j:slf4j-api:1.7.25")
   implementation("ch.qos.logback:logback-classic:1.2.3")
-  implementation('org.yaml:snakeyaml:1.24')
 
-  implementation("com.github.cedardevs.schemas:schemas-analyze:${project.schemasVersion}")
-  implementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}")
-  implementation("com.github.cedardevs.schemas:schemas-parse:${project.schemasVersion}")
+  implementation("com.github.cedardevs.schemas:schemas-analyze:${Versions.ONESTOP_SCHEMAS}")
+  implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
+  implementation("com.github.cedardevs.schemas:schemas-parse:${Versions.ONESTOP_SCHEMAS}")
 
-  testImplementation("org.spockframework:spock-core:${project.spockVersion}")
-  testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
-  testImplementation("org.apache.kafka:kafka-streams-test-utils:${project.kafkaVersion}")
-  testImplementation("org.apache.kafka:kafka-clients:${project.kafkaVersion}:test")
-  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}")
-  testImplementation("org.apache.kafka:kafka_2.12:${project.kafkaVersion}:test")
-  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}")
-  testImplementation("io.confluent:kafka-schema-registry:${project.confluentVersion}:tests")
+  testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
+  testImplementation("org.apache.kafka:kafka-streams-test-utils:${Versions.KAFKA}")
+  testImplementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}:test")
+  testImplementation("org.apache.kafka:kafka_2.12:${Versions.KAFKA}")
+  testImplementation("org.apache.kafka:kafka_2.12:${Versions.KAFKA}:test")
+  testImplementation("io.confluent:kafka-schema-registry:${Versions.CONFLUENT}")
+  testImplementation("io.confluent:kafka-schema-registry:${Versions.CONFLUENT}:tests")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}:test")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}:sources")
   testImplementation("com.github.java-json-tools:json-schema-validator:2.2.10")
-  testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:test")
-  testImplementation("com.github.cedardevs.schemas:schemas-core:${project.schemasVersion}:sources")
 }
 
 jar {
@@ -81,35 +76,23 @@ task PublishDockerImage {
 }
 
 jib {
-  // derive image repository
-  String imageRegistryURL = "registry.hub.docker.com"
-  String imageNamespace = "cedardevs"
-  String imageName = "${rootProject.name}-${project.name}".toString()
-  String imageTag = "${project.version}".toString()
-  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+  use(PublishingKt) {
+    def publish = project.publish
 
-  from {
-    //base image
-    image = 'gcr.io/distroless/java:11'
-  }
-  to {
-    image = imageRepository
-    auth {
-      username = System.getenv('DOCKER_USER').toString().trim()
-      password = System.getenv('DOCKER_PASSWORD').toString().trim()
+    from {
+      //base image
+      image = 'gcr.io/distroless/java:11'
     }
-  }
-  container {
-    creationTime = project.buildDate.toString()
-    // https://github.com/opencontainers/image-spec/blob/master/annotations.md
-    labels = [
-        'org.opencontainers.image.created': project.buildDate.toString(),
-        'org.opencontainers.image.ref.name': imageName,
-        'org.opencontainers.image.description': 'A stream manager API for PSI.',
-        'org.opencontainers.image.source': project.getVcsUrl().toString(),
-        'org.opencontainers.image.revision': project.getVcsRef().toString(),
-        'org.opencontainers.image.vendor': imageNamespace,
-        'org.opencontainers.image.version': imageTag,
-    ]
+    to {
+      image = publish.repository()
+      auth {
+        username = publish.username
+        password = publish.password
+      }
+    }
+    container {
+      creationTime = publish.created.toString()
+      labels = publish.ociAnnotations()
+    }
   }
 }

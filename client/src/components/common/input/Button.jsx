@@ -154,8 +154,10 @@ export default class Button extends React.Component {
       title,
       ariaExpanded,
       ariaSelected,
+      ariaCurrent,
       disabled,
       styleDisabled,
+      role,
     } = this.props
 
     const iconAndText = icon && text
@@ -179,6 +181,7 @@ export default class Button extends React.Component {
     return (
       <button
         id={id}
+        role={role}
         style={stylesMerged}
         onClick={onClick}
         onMouseOver={this.handleMouseOver}
@@ -190,6 +193,7 @@ export default class Button extends React.Component {
         title={title}
         aria-expanded={ariaExpanded}
         aria-selected={ariaSelected}
+        aria-current={ariaCurrent}
         aria-label={title || text}
         disabled={disabled}
       >

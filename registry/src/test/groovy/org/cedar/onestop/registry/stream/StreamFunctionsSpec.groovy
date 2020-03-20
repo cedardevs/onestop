@@ -2,7 +2,7 @@ package org.cedar.onestop.registry.stream
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.cedar.onestop.kafka.common.util.TimestampedValue
+import org.apache.kafka.streams.state.ValueAndTimestamp
 import org.cedar.schemas.avro.psi.*
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -52,7 +52,7 @@ class StreamFunctionsSpec extends Specification {
         .setOperation(null)
         .build()
     def uglifiedContent = JsonOutput.toJson(new JsonSlurper().parseText(testGranuleJson))
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
     def aggregate = StreamFunctions.aggregatedInputInitializer.apply()
 
     when:
@@ -78,7 +78,7 @@ class StreamFunctionsSpec extends Specification {
     result.events[0].source == input.source
     result.events[0].method == input.method
     result.events[0].operation == input.operation
-    result.events[0].timestamp == timestampedInput.timestampMs
+    result.events[0].timestamp == timestampedInput.timestamp()
     result.events[0].failedState == false
     result.errors instanceof List
     result.errors.size() == 0
@@ -90,7 +90,7 @@ class StreamFunctionsSpec extends Specification {
         .setType(RecordType.collection)
         .setMethod(Method.DELETE)
         .build()
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
     def aggregate = StreamFunctions.aggregatedInputInitializer.apply()
 
     when:
@@ -106,7 +106,7 @@ class StreamFunctionsSpec extends Specification {
         .setType(RecordType.collection)
         .setMethod(Method.GET)
         .build()
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
     def aggregate = StreamFunctions.aggregatedInputInitializer.apply()
 
     when:
@@ -126,7 +126,7 @@ class StreamFunctionsSpec extends Specification {
         source: 'test',
         operation: null
     ])
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
     def aggregate = AggregatedInput.newBuilder().build()
 
     when:
@@ -158,7 +158,7 @@ class StreamFunctionsSpec extends Specification {
         .setContentType('application/json')
         .setSource('test')
         .build()
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
     when:
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
@@ -186,7 +186,7 @@ class StreamFunctionsSpec extends Specification {
         .setSource('test')
         .setOperation(OperationType.ADD)
         .build()
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
     when:
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
@@ -214,7 +214,7 @@ class StreamFunctionsSpec extends Specification {
         .setSource('test')
         .setOperation(OperationType.REMOVE)
         .build()
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
     when:
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
@@ -241,7 +241,7 @@ class StreamFunctionsSpec extends Specification {
         contentType: 'application/json',
         source: 'test'
     ])
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
     when:
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
@@ -266,7 +266,7 @@ class StreamFunctionsSpec extends Specification {
     def input = new Input([
         method: Method.DELETE,
     ])
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
     when:
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
@@ -290,7 +290,7 @@ class StreamFunctionsSpec extends Specification {
     def input = new Input([
         method: Method.GET,
     ])
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
     when:
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
@@ -314,7 +314,7 @@ class StreamFunctionsSpec extends Specification {
     def input = new Input([
         method: Method.DELETE,
     ])
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
     when:
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
@@ -338,7 +338,7 @@ class StreamFunctionsSpec extends Specification {
     def input = new Input([
         method: Method.GET,
     ])
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
     when:
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
@@ -361,7 +361,7 @@ class StreamFunctionsSpec extends Specification {
         source: 'test',
         operation: null
     ])
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
     def aggregate = AggregatedInput.newBuilder().build()
 
     when:
@@ -387,7 +387,7 @@ class StreamFunctionsSpec extends Specification {
         source: 'test',
         operation: null
     ])
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
     def aggregate = AggregatedInput.newBuilder().build()
 
     when:
@@ -406,7 +406,7 @@ class StreamFunctionsSpec extends Specification {
   def 'null initial input received is ignored'() {
     def key = 'ABC'
     def input = null
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
     def aggregate = StreamFunctions.aggregatedInputInitializer.apply()
 
     when:
@@ -424,7 +424,7 @@ class StreamFunctionsSpec extends Specification {
         events: [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = null
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
     when:
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)
@@ -449,7 +449,7 @@ class StreamFunctionsSpec extends Specification {
         .setSource('test')
         .setOperation(OperationType.REMOVE)
         .build()
-    def timestampedInput = new TimestampedValue(System.currentTimeMillis(), input)
+    def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
     when:
     def result = StreamFunctions.inputAggregator.apply('ABC', timestampedInput, currentAggregate)

@@ -3,6 +3,7 @@ package org.cedar.onestop.api.search
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
 import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
@@ -16,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Unroll
+import groovy.json.JsonOutput
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -37,6 +39,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class SearchControllerIntegrationTests extends Specification {
 
   @Autowired
+  RestHighLevelClient restHighLevelClient
+
   RestClient restClient
 
   @Autowired
@@ -53,6 +57,7 @@ class SearchControllerIntegrationTests extends Specification {
   private String baseUri
 
   void setup() {
+    restClient = restHighLevelClient.lowLevelClient
     TestUtil.resetLoadAndRefreshSearchIndices(restClient, esConfig)
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
@@ -460,4 +465,60 @@ class SearchControllerIntegrationTests extends Specification {
     where:
     type << [ElasticsearchConfig.TYPE_COLLECTION, ElasticsearchConfig.TYPE_GRANULE, ElasticsearchConfig.TYPE_FLATTENED_GRANULE]
   }
+
+  def 'Sort a collection search'() {
+    setup:
+    URI endpointUri = "${baseUri}/search/collection".toURI()
+    // three collections do not have enddates
+    int NO_ENDDATE_COUNT = 3
+    //sort results later and compare
+    List orderedFields
+
+    String request = JsonOutput.toJson([
+      summary: false,
+      sort:[["${field}": order]]
+      ])
+
+    RequestEntity requestEntity = RequestEntity.post(endpointUri).contentType(contentType).body(request)
+
+    when:
+    ResponseEntity result = restTemplate.exchange(requestEntity, Map)
+    Map body = result.body
+    List<Map> data = body.data as List<Map>
+    List fieldsAsReceived = data.collect { it.attributes."${field}" }
+    Map meta = body.meta as Map
+
+    then: 'Request returns OK'
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "All the collections come back"
+    meta.total == 7
+
+    and: "Results are in the correct order"
+    //  elasticsearch  puts nulls at the end but does return them
+    if(field == "endDate"){
+      assert (fieldsAsReceived.findAll{it == null}).size == NO_ENDDATE_COUNT
+      assert fieldsAsReceived.subList(fieldsAsReceived.size - NO_ENDDATE_COUNT, fieldsAsReceived.size) == [null, null, null]
+      assert fieldsAsReceived.removeAll([null])
+    }
+
+    if(order == "asc"){
+      orderedFields = fieldsAsReceived.sort(false)
+    }else{
+      orderedFields = fieldsAsReceived.sort(false).reverse()
+    }
+
+    assert fieldsAsReceived == orderedFields
+
+    where:
+    field        | order
+    "stagedDate" | "asc"
+    "stagedDate" | "desc"
+    "beginDate"  | "asc"
+    "beginDate"  | "desc"
+    "endDate"    | "asc"
+    "endDate"    | "desc"
+  }
+
 }

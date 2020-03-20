@@ -2,6 +2,7 @@ import Immutable from 'seamless-immutable'
 import * as queryUtils from '../../src/utils/queryUtils'
 import {initialState} from '../../src/reducers/search/collectionFilter'
 import {ROUTE} from '../../src/utils/urlUtils'
+import {PAGE_SIZE} from '../../src/utils/queryUtils'
 
 describe('The queryUtils', function(){
   describe('assembles collection requests', function(){
@@ -99,7 +100,7 @@ function collectionTestCases(){
         filters: [],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -120,7 +121,7 @@ function collectionTestCases(){
         filters: [],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -143,7 +144,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -168,7 +169,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -191,7 +192,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -216,7 +217,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -253,7 +254,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -292,7 +293,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -331,7 +332,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -370,7 +371,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -409,7 +410,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -448,7 +449,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -472,7 +473,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -530,7 +531,7 @@ function collectionTestCases(){
         ],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -545,7 +546,7 @@ function collectionTestCases(){
         filters: [],
         facets: true,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 20,
         },
       },
@@ -571,7 +572,7 @@ function granuleTestCases(){
         ],
         facets: false,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -592,7 +593,7 @@ function granuleTestCases(){
         ],
         facets: false,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -619,7 +620,7 @@ function granuleTestCases(){
         ],
         facets: false,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 0,
         },
       },
@@ -635,7 +636,7 @@ function granuleTestCases(){
         filters: [],
         facets: false,
         page: {
-          max: 20,
+          max: PAGE_SIZE,
           offset: 20,
         },
       },
@@ -789,6 +790,21 @@ function queryTestCases(){
       string: 'q=ocean',
       state: Immutable.merge(initialState, {
         queryText: 'ocean',
+      }),
+    },
+    {
+      name: 'title filter',
+      string: 't=surveyid',
+      state: Immutable.merge(initialState, {
+        title: 'surveyid',
+      }),
+    },
+    {
+      name: 'title filter with all terms must match false',
+      string: 't=surveyid&tm=0',
+      state: Immutable.merge(initialState, {
+        title: 'surveyid',
+        allTermsMustMatch: false,
       }),
     },
     {

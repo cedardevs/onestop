@@ -16,7 +16,9 @@ import {
   granuleToggleFacet,
   granuleNewSearchRequested,
   granuleNewSearchResetFiltersRequested,
-  granuleMoreResultsRequested,
+  granuleResultsPageRequested,
+  granuleToggleAllTermsMustMatch,
+  resetGranuleAllTermsMustMatch,
 } from '../../../src/actions/routing/GranuleSearchStateActions'
 
 const assertParam = (param, result, expected, fallback) => {
@@ -28,6 +30,7 @@ const assertParam = (param, result, expected, fallback) => {
 
 const assertAllFilterParams = (results, values, defaults) => {
   assertParam('pageOffset', results, values, defaults)
+  assertParam('pageSize', results, values, defaults)
   assertParam('bbox', results, values, defaults)
   assertParam('geoRelationship', results, values, defaults)
   assertParam('timeRelationship', results, values, defaults)
@@ -39,13 +42,16 @@ const assertAllFilterParams = (results, values, defaults) => {
   assertParam('excludeGlobal', results, values, defaults)
   assertParam('selectedCollectionIds', results, values, defaults)
   assertParam('title', results, values, defaults)
+  assertParam('allTermsMustMatch', results, values, defaults)
 }
 
 describe('The granule filter reducer', function(){
   const nonInitialState = {
     // not a single default value
     pageOffset: 40,
+    pageSize: 13,
     title: 'demo',
+    allTermsMustMatch: false,
     selectedCollectionIds: [ 'abc', '123' ],
     bbox: {
       west: 123,
@@ -64,7 +70,9 @@ describe('The granule filter reducer', function(){
   }
   const initialStateWithParentUuid = {
     title: '',
+    allTermsMustMatch: true,
     pageOffset: 0,
+    pageSize: 20,
     selectedCollectionIds: [ 'parent-uuid' ],
     bbox: null,
     geoRelationship: 'intersects',
@@ -82,6 +90,7 @@ describe('The granule filter reducer', function(){
 
     expect(result).toEqual({
       pageOffset: 0,
+      pageSize: 20,
       selectedCollectionIds: [],
       bbox: null,
       geoRelationship: 'intersects',
@@ -93,6 +102,7 @@ describe('The granule filter reducer', function(){
       selectedFacets: {},
       excludeGlobal: null,
       title: '',
+      allTermsMustMatch: true,
     })
   })
 
@@ -108,13 +118,14 @@ describe('The granule filter reducer', function(){
           expectedChanges: {selectedCollectionIds: [ 'parent-uuid' ]},
         },
         {
-          name: 'resets only pageOffset and selectedCollectionIds',
+          name: 'resets only pageOffset, pageSize, and selectedCollectionIds',
           initialState: nonInitialState,
           function: granuleNewSearchRequested,
           params: [ 'parent-uuid' ],
           expectedChanges: {
             selectedCollectionIds: [ 'parent-uuid' ],
             pageOffset: 0,
+            pageSize: 20,
           },
         },
       ],
@@ -126,14 +137,23 @@ describe('The granule filter reducer', function(){
           name:
             'makes no changes to initial state except pagination (increments by 20)',
           initialState: initialState, // although this is a terrible request, with no filters
-          function: granuleMoreResultsRequested,
+          function: granuleResultsPageRequested,
+          params: [ 20, 20 ], // default page size means no change
           expectedChanges: {pageOffset: 20},
         },
         {
           name: 'changes only pageOffset (increments by 20)',
           initialState: nonInitialState,
-          function: granuleMoreResultsRequested,
-          expectedChanges: {pageOffset: 60},
+          function: granuleResultsPageRequested,
+          params: [ 60, 20 ],
+          expectedChanges: {pageOffset: 60, pageSize: 20},
+        },
+        {
+          name: 'changes pageSize',
+          initialState,
+          function: granuleResultsPageRequested,
+          params: [ 0, 15 ],
+          expectedChanges: {pageSize: 15},
         },
       ],
     },
@@ -178,7 +198,9 @@ describe('The granule filter reducer', function(){
           params: [ 'parent-uuid', {startDateTime: '2000-01-01T00:00:00Z'} ],
           expectedChanges: {
             title: '',
+            allTermsMustMatch: true,
             pageOffset: 0,
+            pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
             bbox: null,
             geoRelationship: 'intersects',
@@ -199,7 +221,9 @@ describe('The granule filter reducer', function(){
           params: [ 'parent-uuid', {startYear: -100000000} ],
           expectedChanges: {
             title: '',
+            allTermsMustMatch: true,
             pageOffset: 0,
+            pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
             bbox: null,
             geoRelationship: 'intersects',
@@ -227,7 +251,9 @@ describe('The granule filter reducer', function(){
           ],
           expectedChanges: {
             title: '',
+            allTermsMustMatch: true,
             pageOffset: 0,
+            pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
             bbox: null,
             geoRelationship: 'intersects',
@@ -290,7 +316,9 @@ describe('The granule filter reducer', function(){
           ],
           expectedChanges: {
             title: '',
+            allTermsMustMatch: true,
             pageOffset: 0,
+            pageSize: 20,
             selectedCollectionIds: [ 'parent-uuid' ],
             bbox: {
               west: 100.0,
@@ -462,6 +490,38 @@ describe('The granule filter reducer', function(){
         },
       },
       {
+        name: 'toggle all terms must match from default',
+        initialState: initialState,
+        function: granuleToggleAllTermsMustMatch,
+        expectedChanges: {
+          allTermsMustMatch: false,
+        },
+      },
+      {
+        name: 'toggle all terms must match from false',
+        initialState: nonInitialState,
+        function: granuleToggleAllTermsMustMatch,
+        expectedChanges: {
+          allTermsMustMatch: true,
+        },
+      },
+      {
+        name: 'reset all terms must match from default',
+        initialState: initialState,
+        function: resetGranuleAllTermsMustMatch,
+        expectedChanges: {
+          allTermsMustMatch: true,
+        },
+      },
+      {
+        name: 'reset all terms must match from false',
+        initialState: initialState,
+        function: resetGranuleAllTermsMustMatch,
+        expectedChanges: {
+          allTermsMustMatch: true,
+        },
+      },
+      {
         name: 'enable exclude global from default',
         initialState: initialState,
         function: granuleToggleExcludeGlobal,
@@ -481,6 +541,7 @@ describe('The granule filter reducer', function(){
         name: 'enable exclude global from false',
         initialState: {
           pageOffset: 0,
+          pageSize: 20,
           title: '',
           bbox: null,
           startDateTime: null,

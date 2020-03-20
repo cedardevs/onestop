@@ -2,18 +2,20 @@ import store from '../../../src/store' // create Redux store with appropriate mi
 import {RESET_STORE} from '../../../src/reducer'
 import fetchMock from 'fetch-mock'
 import Immutable from 'seamless-immutable'
+import * as spyableActions from '../../../src/actions/routing/GranuleSearchStateActions'
+import * as spyOnQueryUtils from '../../../src/utils/queryUtils'
 
 import {
   submitGranuleSearch,
   submitGranuleSearchWithFilter,
-  submitGranuleSearchNextPage,
+  submitGranuleSearchWithPage,
   submitGranuleSearchForCart,
 } from '../../../src/actions/routing/GranuleSearchRouteActions'
 import {
   // used to set up pre-test conditions
   granuleNewSearchRequested,
+  granuleResultsPageRequested,
   granuleNewSearchResultsReceived,
-  granuleMoreResultsRequested,
   granuleUpdateDateRange,
   granulesForCartRequested,
   granulesForCartResultsReceived,
@@ -157,8 +159,8 @@ describe('granule search actions', function(){
   }
   const submitNextPageCase = {
     name: 'submit next page',
-    function: submitGranuleSearchNextPage,
-    params: [],
+    function: submitGranuleSearchWithPage,
+    params: [ 2, 2 ],
   }
 
   const submitGranuleSearchForCartCase = {
@@ -265,21 +267,33 @@ describe('granule search actions', function(){
     })
   })
 
-  describe('all submit options behave the same when a detail request is already in flight', function(){
+  describe('submit overwrites inFlight', function(){
     beforeEach(async () => {
       //setup send something into flight first
-      store.dispatch(granuleMoreResultsRequested())
+      store.dispatch(submitGranuleSearchWithPage(20, 20))
       const {granuleRequest, granuleFilter} = store.getState().search
       expect(granuleRequest.inFlight).toBeTruthy()
       expect(granuleFilter.pageOffset).toBe(20)
+      expect(granuleFilter.pageSize).toEqual(20)
     })
 
-    allTestCases.forEach(function(testCase){
-      it(`${testCase.name} does not continue with a submit request`, function(){
+    it(`${submitNextPageCase.name} replaces in flight request`, function(){
+      store.dispatch(submitNextPageCase.function(...submitNextPageCase.params))
+
+      expect(historyPushCallCount).toEqual(0) // all new searches push a new history request right now (although next page would not)
+      expect(
+        store.getState().search.granuleFilter.selectedCollectionIds
+      ).toEqual([ 'original-uuid' ])
+      expect(store.getState().search.granuleFilter.pageOffset).toBe(2)
+      expect(store.getState().search.granuleFilter.pageSize).toBe(2) // but just in case, this definitely should always be reset to 0, or changed to 40
+    })
+
+    standardNewSearchTestCases.forEach(function(testCase){
+      it(`${testCase.name} replaces in flight request`, function(){
         store.dispatch(testCase.function(...testCase.params))
 
-        expect(historyPushCallCount).toEqual(0) // all new searches push a new history request right now (although next page would not)
-        expect(store.getState().search.granuleFilter.pageOffset).toBe(20) // but just in case, this definitely should always be reset to 0, or changed to 40
+        expect(historyPushCallCount).toEqual(1) // all new searches push a new history request right now (although next page would not)
+        expect(store.getState().search.granuleFilter.pageOffset).toBe(0) // but just in case, this definitely should always be reset to 0, or changed to 40
       })
     })
   })
@@ -287,11 +301,12 @@ describe('granule search actions', function(){
   describe('prefetch actions', function(){
     beforeEach(async () => {
       // pretend next page has been triggered and completed, so that pageOffset has been modified by a prior search
-      store.dispatch(granuleMoreResultsRequested())
+      store.dispatch(granuleResultsPageRequested(20, 20))
       store.dispatch(granuleNewSearchResultsReceived([], {}, 0))
       const {granuleRequest, granuleFilter} = store.getState().search
       expect(granuleRequest.inFlight).toBeFalsy()
       expect(granuleFilter.pageOffset).toEqual(20)
+      expect(granuleFilter.pageSize).toEqual(20)
     })
 
     describe('all submit options update the state correctly', function(){
@@ -316,7 +331,7 @@ describe('granule search actions', function(){
 
         expect(granuleFilter.selectedCollectionIds).toEqual([ 'original-uuid' ])
         expect(granuleRequest.inFlight).toBeTruthy()
-        expect(granuleFilter.pageOffset).toEqual(40)
+        expect(granuleFilter.pageOffset).toEqual(2)
       })
     })
 
@@ -353,8 +368,224 @@ describe('granule search actions', function(){
     })
   })
 
+  describe('interrupt in flight request', () => {
+    const assembleSearchRequest = jest.spyOn(
+      spyOnQueryUtils,
+      'assembleSearchRequest'
+    )
+    const granuleResultsPageReceived = jest.spyOn(
+      spyableActions,
+      'granuleResultsPageReceived'
+    )
+    const granuleNewSearchResultsReceived = jest.spyOn(
+      spyableActions,
+      'granuleNewSearchResultsReceived'
+    )
+    const granuleSearchError = jest.spyOn(spyableActions, 'granuleSearchError')
+    beforeEach(async () => {
+      assembleSearchRequest.mockClear()
+      granuleNewSearchResultsReceived.mockClear()
+      granuleResultsPageReceived.mockClear()
+      granuleSearchError.mockClear()
+    })
+    afterAll(async () => {
+      assembleSearchRequest.mockClear()
+      granuleNewSearchResultsReceived.mockClear()
+      granuleResultsPageReceived.mockClear()
+      granuleSearchError.mockClear()
+      // restore the original (non-mocked) implementation:
+      assembleSearchRequest.mockRestore()
+      granuleNewSearchResultsReceived.mockRestore()
+      granuleResultsPageReceived.mockRestore()
+      granuleSearchError.mockRestore()
+    })
+
+    test('new filter interrupted by next page leaves the UI (redux store) in consistent state', async () => {
+      fetchMock
+        // mock the results of the first search request:
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, {
+          data: [
+            {
+              id: 'INTERRUPTED',
+            },
+          ],
+          meta: {
+            facets: {},
+            total: 2,
+          },
+        })
+        // mock the results of the second search request:
+        .postOnce(
+          (url, opts) => url == `${BASE_URL}/search/granule`,
+          mockPayload
+        )
+      //setup send something into flight first
+
+      // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+      // initially we trigger a query with a filter
+      const promise = submitSearchWithFilterCase.function(
+        ...submitSearchWithFilterCase.params
+      )(store.dispatch, store.getState)
+
+      {
+        // keep scoped
+        const {granuleRequest} = store.getState().search
+        expect(granuleRequest.inFlight).toBeTruthy()
+      }
+
+      // which is interrupted by a Next Page query
+      await store.dispatch(
+        submitNextPageCase.function(...submitNextPageCase.params)
+      )
+
+      // allow the initial request to resolve
+      await promise
+
+      const {granuleRequest, granuleResult} = store.getState().search
+
+      // we made 2 fetches
+      expect(fetchMock.calls().length).toEqual(2)
+      expect(assembleSearchRequest.mock.calls.length).toEqual(2)
+      expect(granuleNewSearchResultsReceived.mock.calls.length).toEqual(0) // first request never completed and called this!
+      expect(granuleResultsPageReceived.mock.calls.length).toEqual(1)
+
+      expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+      expect(granuleRequest.errorMessage).toEqual('')
+      expect(granuleResult.granules).toEqual({
+        'uuid-ABC': {title: 'ABC'},
+        'uuid-123': {title: '123'},
+      })
+
+      const finalStateToAssembleQueryFrom =
+        assembleSearchRequest.mock.calls[1][0]
+      expect(finalStateToAssembleQueryFrom.startDateTime).toEqual('1998') // has filter from the first request
+      expect(finalStateToAssembleQueryFrom.pageOffset).toEqual(2) // has page offset from the second request
+      expect(finalStateToAssembleQueryFrom.pageSize).toEqual(2)
+      expect(assembleSearchRequest.mock.results[1].value).toEqual({
+        // confirm result of assemble query has both filter and page pieces
+        facets: false,
+        filters: [
+          {
+            after: '1998',
+            relation: 'intersects',
+            type: 'datetime',
+          },
+          {
+            type: 'collection',
+            values: [ 'parent-uuid' ],
+          },
+        ],
+        page: {
+          max: 2,
+          offset: 2,
+        },
+        queries: [],
+      }) // create the request with both the recently applied filter (for the request that did not complete) PLUS the next page offset
+      expect(granuleResultsPageReceived.mock.results[0].value.granules).toEqual(
+        mockPayload.data
+      ) // and not "INTERRUPTED" payload
+    })
+
+    test('new search request which errors', async () => {
+      fetchMock
+        // mock the results of the first search request:
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, 400)
+        // mock the results of the second search request:
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, 500)
+      //setup send something into flight first
+
+      // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+      const promise = submitSearchCase.function(...submitSearchCase.params)(
+        store.dispatch,
+        store.getState
+      )
+
+      {
+        // keep scoped
+        const {granuleRequest} = store.getState().search
+        expect(granuleRequest.inFlight).toBeTruthy()
+      }
+
+      await store.dispatch(
+        submitSearchCase.function(...submitSearchCase.params)
+      )
+
+      // allow the initial request to resolve
+      await promise
+
+      const {granuleRequest, granuleResult} = store.getState().search
+
+      // we made 2 fetches
+      expect(fetchMock.calls().length).toEqual(2)
+      // but only one granuleSearchError via errorHandler
+      expect(granuleSearchError.mock.calls.length).toEqual(1)
+
+      expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+      expect(granuleRequest.errorMessage).toEqual(
+        new Error('Internal Server Error')
+      )
+      expect(granuleResult.granules).toEqual({})
+    })
+
+    test('new search request success', async () => {
+      fetchMock
+        // mock the results of the first search request:
+        .postOnce((url, opts) => url == `${BASE_URL}/search/granule`, {
+          data: [
+            {
+              id: 'INTERRUPTED',
+            },
+          ],
+          meta: {
+            facets: {},
+            total: 2,
+          },
+        })
+        // mock the results of the second search request:
+        .postOnce(
+          (url, opts) => url == `${BASE_URL}/search/granule`,
+          mockPayload
+        )
+      //setup send something into flight first
+
+      // manually trigger the first layer of the dispatch (preflight actions), while storing the promise to resolve later. This mimics a long-running initial query that will be interrupted by a subsequent query
+      const promise = submitSearchCase.function(...submitSearchCase.params)(
+        store.dispatch,
+        store.getState
+      )
+
+      {
+        // keep scoped
+        const {granuleRequest} = store.getState().search
+        expect(granuleRequest.inFlight).toBeTruthy()
+      }
+
+      await store.dispatch(
+        submitSearchCase.function(...submitSearchCase.params)
+      )
+
+      // allow the initial request to resolve (red-green testing: without the fetch checking the abort controller status, this would cause the number of calls to granuleNewSearchResultsReceived to be incorrect)
+      await promise
+
+      const {granuleRequest, granuleResult} = store.getState().search
+
+      // we made 2 fetches
+      expect(fetchMock.calls().length).toEqual(2)
+      // but only one granuleNewSearchResultsReceived via successHandler
+      expect(granuleNewSearchResultsReceived.mock.calls.length).toEqual(1)
+
+      expect(granuleRequest.inFlight).toBeFalsy() // after completing the request, inFlight is reset
+      expect(granuleRequest.errorMessage).toEqual('')
+      expect(granuleResult.granules).toEqual({
+        'uuid-ABC': {title: 'ABC'},
+        'uuid-123': {title: '123'},
+      })
+    })
+  })
+
   describe('success path', function(){
     beforeEach(async () => {
+      fetchMock.reset()
       fetchMock.post(
         (url, opts) => url == `${BASE_URL}/search/granule`,
         mockPayload
@@ -418,32 +649,35 @@ describe('granule search actions', function(){
         })
       })
     })
-
-    describe('next page updates the result state correctly', function(){
-      it(`${submitNextPageCase.name}`, async () => {
-        await store.dispatch(
-          submitNextPageCase.function(...submitNextPageCase.params)
-        )
-
-        const {
-          granuleRequest,
-          granuleResult,
-          collectionFilter,
-        } = store.getState().search
-
-        expect(granuleResult.granules).toEqual({
-          'uuid-ABC': {title: 'ABC'},
-          'uuid-123': {title: '123'},
-          'uuid-XYZ': {title: 'XYZ'},
-          'uuid-987': {title: '987'},
-        })
-        expect(granuleResult.facets).toEqual(mockFacets)
-        expect(granuleResult.totalGranuleCount).toEqual(10)
-        expect(granuleResult.loadedGranuleCount).toEqual(4)
-      })
-    })
   })
 
+  describe('next page updates the result state correctly', function(){
+    beforeEach(async () => {
+      fetchMock.reset()
+      fetchMock.post(
+        (url, opts) => url == `${BASE_URL}/search/granule`,
+        mockPayload
+      )
+    })
+    it(`${submitNextPageCase.name}`, async () => {
+      await store.dispatch(
+        submitNextPageCase.function(...submitNextPageCase.params)
+      )
+
+      const {
+        granuleRequest,
+        granuleResult,
+        collectionFilter,
+      } = store.getState().search
+
+      expect(granuleResult.granules).toEqual({
+        'uuid-ABC': {title: 'ABC'},
+        'uuid-123': {title: '123'},
+      })
+      expect(granuleResult.totalGranuleCount).toEqual(10)
+      expect(granuleResult.loadedGranuleCount).toEqual(2)
+    })
+  })
   describe('Add Filtered Granules to Cart Actions', function(){
     let mockMaxCartAdditions = 3
     let mockCartCapacity = 5

@@ -158,7 +158,7 @@ export default class AccessView extends React.Component {
       'No formats in metadata.'
     )
 
-    if (item.serviceLinks !== [] && item.serviceLinks[0]) {
+    if (item.serviceLinks && item.serviceLinks !== [] && item.serviceLinks[0]) {
       const serviceLinks = [
         this.renderAccessHeading('Services'),
         item.serviceLinks.map((service, index) =>

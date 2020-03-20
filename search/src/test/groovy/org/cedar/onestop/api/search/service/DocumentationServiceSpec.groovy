@@ -179,4 +179,32 @@ class DocumentationServiceSpec extends Specification {
         ]
     ]
   }
+
+  def 'generateAttributesInfo correctly ignores alternative "fields" mappings'() {
+    given:
+    def input = [
+        properties: [
+            fileIdentifier: [
+                type: 'text',
+                fields: [
+                    aggs: [
+                        type: 'keyword'
+                    ]
+                ]
+            ]
+        ]
+    ]
+
+    when:
+    Map result = DocumentationService.generateAttributesInfo(input)
+
+    then:
+    result == [
+        fileIdentifier: [
+            queryable: true,
+            exactMatchRequired: false,
+            applicableFilter: 'None'
+        ]
+    ]
+  }
 }

@@ -6,8 +6,7 @@ import {
 } from '../../utils/queryUtils'
 import {isPathNew, ROUTE} from '../../utils/urlUtils'
 import {
-  granuleMoreResultsReceived,
-  granuleMoreResultsRequested,
+  granuleResultsPageReceived,
   granuleNewSearchRequested,
   granuleNewSearchResetFiltersRequested,
   granuleNewSearchResultsReceived,
@@ -16,6 +15,7 @@ import {
   granulesForCartError,
   granulesForCartRequested,
   granulesForCartResultsReceived,
+  granuleResultsPageRequested,
 } from './GranuleSearchStateActions'
 import {
   warningExceedsMaxAddition,
@@ -27,6 +27,7 @@ import {
 /*
   Since granule results always use the same section of the redux store (because this is all tied to the same Route), a 'new' search and a 'more results' search use the same inFlight check so they can't clobber each other, among other things.
 */
+let controller // shared internal state to track controller, since only one request within this context is allowed to be inFlight
 
 const getTotalGranuleCountFromState = state => {
   // TODO we need a selectors section of the code
@@ -49,7 +50,16 @@ const isAlreadyInFlight = state => {
 }
 
 const isRequestInvalid = (id, state) => {
-  return isAlreadyInFlight(state) || _.isEmpty(id)
+  const inFlight = isAlreadyInFlight(state)
+  if (inFlight && controller) {
+    if (_.isEmpty(id)) {
+      return true
+    }
+    controller.abort()
+    controller = null
+    return false
+  }
+  return inFlight || _.isEmpty(id)
 }
 
 const isCartRequestAlreadyInFlight = state => {
@@ -75,6 +85,10 @@ export const granuleBodyBuilder = (filterState, requestFacets, pageSize) => {
 
 const newSearchSuccessHandler = dispatch => {
   return payload => {
+    if (controller && controller.signal.aborted) {
+      // do not process error handling for aborted requests, just in case it gets to this point
+      return
+    }
     const granules = payload.data
     const facets = payload.meta.facets
     const total = payload.meta.total
@@ -87,6 +101,10 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
   const cartGranules = stateSnapshot.cart.selectedGranules
 
   return payload => {
+    if (controller && controller.signal.aborted) {
+      // do not process error handling for aborted requests, just in case it gets to this point
+      return
+    }
     const granules = payload.data
     const total = payload.meta.total
 
@@ -139,8 +157,12 @@ const granulesForCartSuccessHandler = (dispatch, getState, cartCapacity) => {
 
 const pageSuccessHandler = dispatch => {
   return payload => {
+    if (controller && controller.signal.aborted) {
+      // do not process error handling for aborted requests, just in case it gets to this point
+      return
+    }
     const granules = payload.data
-    dispatch(granuleMoreResultsReceived(granules))
+    dispatch(granuleResultsPageReceived(granules, payload.meta.total))
   }
 }
 
@@ -151,16 +173,32 @@ const granulePromise = (
   successHandler
 ) => {
   // generate the request body based on filters, and if we need facets or not
-  const body = granuleBodyBuilder(filterState, requestFacets)
+  const body = granuleBodyBuilder(
+    filterState,
+    requestFacets,
+    filterState.pageSize
+  )
   if (!body) {
     // not covered by tests, since this should never actually occur due to the collectionId being provided, but included to prevent accidentally sending off really unreasonable requests
     dispatch(granuleSearchError('Invalid Request'))
     return
   }
   // return promise for search
-  return fetchGranuleSearch(body, successHandler(dispatch), e => {
-    dispatch(granuleSearchError(e.errors || e))
-  })
+  const [ promise, abort_controller ] = fetchGranuleSearch(
+    body,
+    successHandler(dispatch),
+    e => {
+      if (controller && controller.signal.aborted) {
+        // do not process error handling for aborted requests, just in case it gets to this point
+        return
+      }
+      dispatch(granuleSearchError(e.errors || e))
+    }
+  )
+
+  controller = abort_controller
+
+  return promise
 }
 
 const granulesForCartPromise = (
@@ -204,13 +242,19 @@ const granulesForCartPromise = (
     return
   }
   // return promise for search
-  return fetchGranuleSearch(
+  const [ promise, abort_controller ] = fetchGranuleSearch(
     body,
     successHandler(dispatch, getState, cartCapacity),
     e => {
+      if (controller && controller.signal.aborted) {
+        // do not process error handling for aborted requests, just in case it gets to this point
+        return
+      }
       dispatch(granulesForCartError(e.errors || e))
     }
   )
+  controller = abort_controller
+  return promise
 }
 
 export const submitGranuleSearchForCart = (
@@ -299,18 +343,20 @@ export const submitGranuleSearch = (history, collectionId) => {
   }
 }
 
-export const submitGranuleSearchNextPage = () => {
-  // note that this function does *not* make any changes to the URL - including push the user to the granule view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
-  // fetch the next page of granules granule search *for granules within a single collection*
-
-  // use middleware to dispatch an async function
+export const submitGranuleSearchWithPage = (offset, max) => {
   return async (dispatch, getState) => {
-    if (isAlreadyInFlight(getState())) {
+    let state = getState()
+    if (
+      isRequestInvalid(
+        state.search.granuleFilter.selectedCollectionIds[0],
+        state
+      )
+    ) {
       // short circuit silently if minimum request requirements are not met
       return
     }
     // send notifications that request has begun
-    dispatch(granuleMoreResultsRequested())
+    dispatch(granuleResultsPageRequested(offset, max))
     const updatedFilterState = getFilterFromState(getState())
     // start async request
     return granulePromise(

@@ -9,11 +9,13 @@ import {ROUTE, isPathNew} from '../../utils/urlUtils'
 import {
   collectionNewSearchRequested,
   collectionNewSearchResetFiltersRequested,
-  collectionMoreResultsRequested,
+  collectionResultsPageRequested,
   collectionNewSearchResultsReceived,
-  collectionMoreResultsReceived,
+  collectionResultsPageReceived,
   collectionSearchError,
 } from './CollectionSearchStateActions'
+
+let controller // shared internal state to track controller, since only one request within this context is allowed to be inFlight
 
 const getFilterFromState = state => {
   return (state && state.search && state.search.collectionFilter) || {}
@@ -21,11 +23,20 @@ const getFilterFromState = state => {
 
 const isRequestInvalid = state => {
   const inFlight = state.search.collectionRequest.inFlight
+  if (inFlight && controller) {
+    controller.abort()
+    controller = null
+    return false
+  }
   return inFlight
 }
 
 const collectionBodyBuilder = (filterState, requestFacets) => {
-  const body = assembleSearchRequest(filterState, requestFacets)
+  const body = assembleSearchRequest(
+    filterState,
+    requestFacets,
+    filterState.pageSize
+  )
   const hasQueries = body && body.queries && body.queries.length > 0
   const hasFilters = body && body.filters && body.filters.length > 0
   if (!(hasQueries || hasFilters)) {
@@ -48,7 +59,7 @@ const newSearchSuccessHandler = dispatch => {
 
 const pageSuccessHandler = dispatch => {
   return payload => {
-    dispatch(collectionMoreResultsReceived(payload.data))
+    dispatch(collectionResultsPageReceived(payload.meta.total, payload.data))
   }
 }
 
@@ -65,9 +76,20 @@ const collectionPromise = (
     return
   }
   // return promise for search
-  return fetchCollectionSearch(body, successHandler(dispatch), e => {
-    dispatch(collectionSearchError(e.errors || e))
+  const [
+    promise,
+    abort_controller,
+  ] = fetchCollectionSearch(body, successHandler(dispatch), e => {
+    if (controller && controller.signal.aborted) {
+      // do not process error handling for aborted requests, just in case it gets to this point
+      return
+    }
+    else {
+      dispatch(collectionSearchError(e.errors || e))
+    }
   })
+  controller = abort_controller
+  return promise
 }
 
 export const submitCollectionSearchWithQueryText = (history, queryText) => {
@@ -120,16 +142,14 @@ export const submitCollectionSearch = history => {
   }
 }
 
-export const submitCollectionSearchNextPage = () => {
-  // note that this function does *not* make any changes to the URL - including push the user to the collection view. it assumes that they are already there, and furthermore, that no changes to any filters that would update the URL have been made, since that implies a new search anyway
-  // use middleware to dispatch an async function
+export const submitCollectionSearchWithPage = (offset, max) => {
   return async (dispatch, getState) => {
     if (isRequestInvalid(getState())) {
       // short circuit silently if minimum request requirements are not met
       return
     }
     // send notifications that request has begun
-    dispatch(collectionMoreResultsRequested())
+    dispatch(collectionResultsPageRequested(offset, max))
     const updatedFilterState = getFilterFromState(getState())
     // start async request
     return collectionPromise(
