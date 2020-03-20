@@ -73,7 +73,7 @@ class SaveSearchControllerSpec extends Specification {
     retrieveEntity.statusCode == HttpStatus.OK
 
     and:
-    def data = retrieveResponse.body
+    def data = retrieveEntity.body
     data.id == savedSearchId
     data.userId == "userOne"
     data.name == "entryName1"
