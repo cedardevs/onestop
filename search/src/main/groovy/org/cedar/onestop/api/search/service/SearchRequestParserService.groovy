@@ -146,8 +146,9 @@ class SearchRequestParserService {
     }
 
     // checksum filters:
-    groupedFilters.checksum.each {
-      allFilters.add(constructChecksumFilter(it))
+    List checksumFilters = constructChecksumFilters(groupedFilters?.checksum ?: [])
+    checksumFilters.each{
+      allFilters.add(it)
     }
 
     // Granule name filters:
@@ -400,20 +401,28 @@ class SearchRequestParserService {
     ]
   }
 
-  private static Map constructChecksumFilter(Map filterRequest) {
-    return [
-        nested:[
-          path:"checksums",
-          query:[
-            bool : [
-              must : [
-                  [ match : ["checksums.algorithm" : filterRequest.algorithm] ],
-                  [ match : ["checksums.value" : filterRequest.value] ]
+  private static List constructChecksumFilters(List checksumFilters) {
+    //fool proof them, aggregate by algorithm
+    Map checksumAlgFilters = checksumFilters.groupBy { it.algorithm as String }
+    return checksumAlgFilters.collect { alg, filterList ->
+      Set values = filterList.collect{filter ->
+        return filter.values
+      } as Set
+      Map nestedFilter = [
+          nested:[
+              path:"checksums",
+              query:[
+                  bool : [
+                      must : [
+                          [ terms : ["checksums.algorithm" : [alg]  ] ],
+                          [ terms : ["checksums.value" : values.flatten() as List] ]
+                      ]
+                  ]
               ]
-            ]
           ]
-        ]
-    ]
+      ]
+      return nestedFilter
+    }
   }
 
   private static Map constructGranuleNameComponent(Map request) {

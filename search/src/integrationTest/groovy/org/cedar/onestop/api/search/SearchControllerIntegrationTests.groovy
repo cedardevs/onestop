@@ -249,6 +249,41 @@ class SearchControllerIntegrationTests extends Specification {
     }
   }
 
+  def 'valid granule search with checksum filter'() {
+    given:
+    URI endpointUri = "${baseUri}/search/granule".toURI()
+    String request = """\
+        {
+          "filters":
+            [
+              {"type": "checksum", "values": ["8faff4759f5ea069bb6e97134861bcea5bc4bcac"], "algorithm": "SHA1"}
+            ]
+        }""".stripIndent()
+    RequestEntity requestEntity = RequestEntity.post(endpointUri).contentType(contentType).body(request)
+
+    when:
+    ResponseEntity result = restTemplate.exchange(requestEntity, Map)
+    Map body = result.body
+    List<Map> data = body.data as List<Map>
+
+    then: 'Search returns OK'
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: 'Expected results are returned'
+    data.size() == 1
+
+    and: "Expected results are returned"
+    def thumbnails = data.collect {
+      Map attributes = it.attributes as Map
+      attributes.thumbnail
+    }
+    def expectedThumbnails = [
+        'http://maps.googleapis.com/maps/api/staticmap?center=36.977,-76.315&zoom=14&scale=false&size=600x600&maptype=terrain&format=png&visual_refresh=true&markers=color:red%7C36.977,-76.315&stream=true&stream_ID=plot_image'
+    ]
+    thumbnails.sort() == expectedThumbnails.sort()
+  }
+
   def 'Valid #type search request returns OK with expected results'() {
     given:
     // Summary fields for granule types contain internalParentIdentifier field unlike collections

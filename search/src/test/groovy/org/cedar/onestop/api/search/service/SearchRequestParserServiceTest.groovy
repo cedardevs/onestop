@@ -556,6 +556,81 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
+  def 'Filter request correctly parses nested checksum queries'() {
+    given:
+    def request = '{"filters":[{"type": "checksum", "values": ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"], "algorithm": "SHA1"}, {"type": "checksum", "values": ["970cfb0cffbe6ec4547b7df61af8987126a9cae8"], "algorithm": "MD5"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [:],
+            filter: [
+                [
+                  "nested":[
+                    "path":"checksums",
+                    "query":[
+                      "bool" : [
+                        "must" : [
+                            [ "terms" : ["checksums.algorithm" : ["SHA1"]] ],
+                            [ "terms" : ["checksums.value" : ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"]] ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                    "nested":[
+                        "path":"checksums",
+                        "query":[
+                            "bool" : [
+                                "must" : [
+                                    [ "terms" : ["checksums.algorithm" : ["MD5"]] ],
+                                    [ "terms" : ["checksums.value" : ["970cfb0cffbe6ec4547b7df61af8987126a9cae8"]] ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Fool proof checksum filter'() {
+    given:
+    def request = '{"filters":[{"type": "checksum", "values": ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"], "algorithm": "SHA1"}, {"type": "checksum", "values": ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"], "algorithm": "SHA1"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [:],
+            filter: [
+                [
+                    "nested":[
+                        "path":"checksums",
+                        "query":[
+                            "bool" : [
+                                "must" : [
+                                    [ "terms" : ["checksums.algorithm" : ["SHA1"]] ],
+                                    [ "terms" : ["checksums.value" : ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"]] ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
   def 'Default GCMD aggregations are built for granules'() {
     when:
     def aggsResult = requestParser.createFacetAggregations()
