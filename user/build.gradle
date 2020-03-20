@@ -8,29 +8,30 @@ configurations {
 }
 
 dependencies {
-//    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+  implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+  implementation 'org.springframework.boot:spring-boot-starter-web'
 //    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 //    runtimeOnly 'io.r2dbc:r2dbc-postgresql'
-    runtimeOnly 'org.postgresql:postgresql'
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
+  runtimeOnly 'org.postgresql:postgresql'
+  implementation("io.springfox:springfox-swagger2:2.9.2")
+  implementation("io.springfox:springfox-swagger-ui:2.9.2")
+//  implementation("com.vladmihalcea:hibernate-types-52:2.9.5")
 
-    testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")
-    testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
+
+  testImplementation('org.springframework.boot:spring-boot-starter-test')
+  testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")
+  testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
+  testImplementation("com.h2database:h2")
+  testImplementation("org.testcontainers:postgresql:1.13.0")
 //    testImplementation 'org.springframework.boot.experimental:spring-boot-test-autoconfigure-r2dbc'
 //    testImplementation 'io.projectreactor:reactor-test'
 }
 
-//dependencyManagement {
-//    imports {
-//        mavenBom 'org.springframework.boot.experimental:spring-boot-bom-r2dbc:0.1.0.M3'
-//    }
-//}
-
-//test {
-//    useJUnitPlatform()
-//}
+test {
+    useJUnitPlatform()
+}
 sourceSets {
   integrationTest {
     compileClasspath += sourceSets.main.output + sourceSets.test.output
@@ -49,7 +50,7 @@ task integrationTest(type: Test) {
   shouldRunAfter test
 
   reports.junitXml.destination = file("${buildDir}/integration-test-results")
-  reports.html.destination =  file("${buildDir}/reports/integrationTests")
+  reports.html.destination = file("${buildDir}/reports/integrationTests")
 }
 
 check.dependsOn integrationTest

@@ -1,8 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.moowork.gradle.node.npm.NpmTask
 import com.moowork.gradle.node.task.NodeTask
-import java.time.Instant
-import java.time.format.DateTimeFormatter
 
 plugins {
     `kotlin-dsl`
@@ -52,7 +50,7 @@ plugins {
     // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
     // - A Gradle plugin that allows you to package executable jar or war archives,
     //   run Spring Boot applications, and use the dependency management provided by spring-boot-dependencies
-    id("org.springframework.boot").version("2.2.4.RELEASE").apply(false)
+    id("org.springframework.boot").version("2.2.5.RELEASE").apply(false)
 
     // Gogradle plugin
     // https://github.com/gogradle/gogradle
@@ -406,6 +404,4 @@ subprojects {
         }
 
     }
-
-
 }

@@ -1,23 +1,14 @@
-server:
-  port: 9090
-
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/test
-    username: ""
-    password: ""
+    url: jdbc:tc:postgresql://localhost/test
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    username: test
+    password: test
   jpa:
-#    database: POSTGRESQL
-    show-sql: true
-  ## Hibernate Properties
-  # The SQL dialect makes Hibernate generate better SQL for the chosen database
+    hibernate:
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  # Hibernate ddl auto (create, create-drop, validate, update)
-    hibernate:
-      ddl-auto: create-drop
-
-#  jpa.generate-ddl=true
-#  jpa.hibernate.ddl-auto=create-drop
-#  jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+        naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    show-sql: true

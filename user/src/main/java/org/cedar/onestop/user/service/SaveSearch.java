@@ -5,23 +5,39 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+/**
+ * Domain model class that maps the data stored into save_search table
+ * inside database.
+ */
+
 @Entity
-@Table(name = "savesearch") // table name need to be in external config
+@Table(name = "savesearch")
 public class SaveSearch {
+  @Id
+  @GeneratedValue(generator = "uuid")
+  @GenericGenerator(name = "uuid", strategy = "uuid2")
   public String id;
+
+  @NotNull
+  @Column(name = "userId", updatable = false )
   public String userId;
+
+  @Column(name = "name", nullable = false)
   public String name;
+
+  @Column(name = "value", nullable = false)
   public String value;
 
-  @Column(name = "creation_date", updatable = false)
+  @Column(name = "createdOn", updatable = false)
   @CreationTimestamp
-  protected Date createdOn; //TODO get it as a query or generate it in user
+  public Date createdOn; //TODO do we also accept part of the query
 
-  @Column(name = "last_updated")
+  @Column(name = "lastUpdatedOn")
   @UpdateTimestamp
-  protected Date lastUpdatedOn; //TODO get it as a query or generate it in user
+  public Date lastUpdatedOn; ///TODO do we also accept part of the query
 
   public SaveSearch(String id, String userId, String name, String value, Date createdOn, Date lastUpdatedOn) {
     this.id = id;
@@ -32,13 +48,26 @@ public class SaveSearch {
     this.lastUpdatedOn = lastUpdatedOn;
   }
 
+  public SaveSearch(String id, String userId, String name, String value) {
+    this.id = id;
+    this.userId = userId;
+    this.name = name;
+    this.value = value;
+  }
+
+  @PrePersist
+  protected void onCreate() {
+    createdOn = new Date();
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    lastUpdatedOn = new Date();
+  }
+
   public SaveSearch() {
   }
 
-  @Id
-  @GeneratedValue(generator = "uuid")
-  @GenericGenerator(name = "uuid", strategy = "uuid2")
-  @Column(name = "PR_KEY")
   public String getId() {
     return id;
   }
@@ -98,6 +127,4 @@ public class SaveSearch {
         ", lastLogin='" + lastUpdatedOn + '\'' +
         '}';
   }
-
-
 }

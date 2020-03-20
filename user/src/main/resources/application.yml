@@ -4,20 +4,27 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/testdb
-    username:
-    password:
+    username: semere
+    password: se12mere
+    initialization-mode: always
+    continue-on-error: false
+    driver-class-name: org.postgresql.Driver
   jpa:
-#    database: POSTGRESQL
+    database: POSTGRESQL
     show-sql: true
-  ## Hibernate Properties
-  # The SQL dialect makes Hibernate generate better SQL for the chosen database
-    properties:
+    properties: # Hibernate Properties The SQL dialect makes Hibernate generate better SQL for the chosen database
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  # Hibernate ddl auto (create, create-drop, validate, update)
-    hibernate:
-      ddl-auto: update
+    hibernate: # Hibernate ddl auto (create, create-drop, validate, update)
+      ddl-auto: none
+    generate-ddl: false
 
-#  jpa.generate-ddl=true
-#  jpa.hibernate.ddl-auto=create-drop
-#  jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+logging:
+  level:
+    org:
+      springframework:
+        jdbc: DEBUG
+
+#  spring.datasource.initialize=true
+#  spring.datasource.schema=classpath:/schema.sql
+#  spring.datasource.continue-on-error=true
