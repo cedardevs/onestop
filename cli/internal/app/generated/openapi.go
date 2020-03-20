@@ -363,48 +363,6 @@ func OpenapiHeadFlattenedGranule(params *viper.Viper) (*gentleman.Response, inte
 	return resp, decoded, nil
 }
 
-// OpenapiGetFlattenedGranuleById Flattened Granule by ID
-func OpenapiGetFlattenedGranuleById(paramId string, params *viper.Viper) (*gentleman.Response, map[string]interface{}, error) {
-	handlerPath := "getflattenedgranulebyid"
-	if openapiSubcommand {
-		handlerPath = "openapi " + handlerPath
-	}
-
-	server := viper.GetString("server")
-	if server == "" {
-		server = openapiServers()[viper.GetInt("server-index")]["url"]
-	}
-
-	url := server + "/flattened-granule/{id}"
-	url = strings.Replace(url, "{id}", paramId, 1)
-
-	req := cli.Client.Get().URL(url)
-
-	cli.HandleBefore(handlerPath, params, req)
-
-	resp, err := req.Do()
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "Request failed")
-	}
-
-	var decoded map[string]interface{}
-
-	if resp.StatusCode < 400 {
-		if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
-			return nil, nil, errors.Wrap(err, "Unmarshalling response failed")
-		}
-	} else {
-		return nil, nil, errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())
-	}
-
-	after := cli.HandleAfter(handlerPath, params, resp, decoded)
-	if after != nil {
-		decoded = after.(map[string]interface{})
-	}
-
-	return resp, decoded, nil
-}
-
 // OpenapiHeadFlattenedGranuleById Flattened Granule by ID
 func OpenapiHeadFlattenedGranuleById(paramId string, params *viper.Viper) (*gentleman.Response, interface{}, error) {
 	handlerPath := "headflattenedgranulebyid"
@@ -442,6 +400,48 @@ func OpenapiHeadFlattenedGranuleById(paramId string, params *viper.Viper) (*gent
 	after := cli.HandleAfter(handlerPath, params, resp, decoded)
 	if after != nil {
 		decoded = after
+	}
+
+	return resp, decoded, nil
+}
+
+// OpenapiGetFlattenedGranuleById Flattened Granule by ID
+func OpenapiGetFlattenedGranuleById(paramId string, params *viper.Viper) (*gentleman.Response, map[string]interface{}, error) {
+	handlerPath := "getflattenedgranulebyid"
+	if openapiSubcommand {
+		handlerPath = "openapi " + handlerPath
+	}
+
+	server := viper.GetString("server")
+	if server == "" {
+		server = openapiServers()[viper.GetInt("server-index")]["url"]
+	}
+
+	url := server + "/flattened-granule/{id}"
+	url = strings.Replace(url, "{id}", paramId, 1)
+
+	req := cli.Client.Get().URL(url)
+
+	cli.HandleBefore(handlerPath, params, req)
+
+	resp, err := req.Do()
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "Request failed")
+	}
+
+	var decoded map[string]interface{}
+
+	if resp.StatusCode < 400 {
+		if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
+			return nil, nil, errors.Wrap(err, "Unmarshalling response failed")
+		}
+	} else {
+		return nil, nil, errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String())
+	}
+
+	after := cli.HandleAfter(handlerPath, params, resp, decoded)
+	if after != nil {
+		decoded = after.(map[string]interface{})
 	}
 
 	return resp, decoded, nil
@@ -1041,14 +1041,14 @@ func OpenapiRegister(subcommand bool) {
 		var examples string
 
 		cmd := &cobra.Command{
-			Use:     "getflattenedgranulebyid id",
+			Use:     "headflattenedgranulebyid id",
 			Short:   "Flattened Granule by ID",
 			Long:    cli.Markdown(""),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(1),
 			Run: func(cmd *cobra.Command, args []string) {
 
-				_, decoded, err := OpenapiGetFlattenedGranuleById(args[0], params)
+				_, decoded, err := OpenapiHeadFlattenedGranuleById(args[0], params)
 				if err != nil {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
@@ -1075,14 +1075,14 @@ func OpenapiRegister(subcommand bool) {
 		var examples string
 
 		cmd := &cobra.Command{
-			Use:     "headflattenedgranulebyid id",
+			Use:     "getflattenedgranulebyid id",
 			Short:   "Flattened Granule by ID",
 			Long:    cli.Markdown(""),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(1),
 			Run: func(cmd *cobra.Command, args []string) {
 
-				_, decoded, err := OpenapiHeadFlattenedGranuleById(args[0], params)
+				_, decoded, err := OpenapiGetFlattenedGranuleById(args[0], params)
 				if err != nil {
 					log.Fatal().Err(err).Msg("Error calling operation")
 				}
@@ -1244,12 +1244,12 @@ func OpenapiRegister(subcommand bool) {
 
 		var examples string
 
-		examples += "  " + cli.Root.CommandPath() + " searchcollection facets: false, filters: , page{max: 20, offset: 20}, queries[]{type: queryText, value: weather}\n"
+		examples += "  " + cli.Root.CommandPath() + " searchcollection facets: true, filters[]{name: science, type: facet, values: Agriculture, Atmosphere > Atmospheric Radiation > Incoming Solar Radiation}, page{max: 20, offset: 0}, queries[]{type: queryText, value: weather}\n"
 
 		cmd := &cobra.Command{
 			Use:     "searchcollection",
 			Short:   "Retrieve collection metadata",
-			Long:    cli.Markdown("Retrieve collection metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      anyOf:\n      - $ref: '#/components/schemas/dateTimeFilter'\n      - $ref: '#/components/schemas/yearFilter'\n      - $ref: '#/components/schemas/facetFilter'\n      - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n  queries:\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/textQuery'\n    type: array\n  sort:\n    $ref: '#/components/schemas/sort'\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
+			Long:    cli.Markdown("Retrieve collection metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      anyOf:\n      - $ref: '#/components/schemas/dateTimeFilter'\n      - $ref: '#/components/schemas/yearFilter'\n      - $ref: '#/components/schemas/facetFilter'\n      - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n      - $ref: '#/components/schemas/checksumFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n  queries:\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/textQuery'\n      - $ref: '#/components/schemas/granuleNameQuery'\n    type: array\n  search_after:\n    $ref: '#/components/schemas/searchAfter'\n  sort:\n    $ref: '#/components/schemas/sort'\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(0),
 			Run: func(cmd *cobra.Command, args []string) {
@@ -1287,7 +1287,7 @@ func OpenapiRegister(subcommand bool) {
 		cmd := &cobra.Command{
 			Use:     "searchflattenedgranule",
 			Short:   "Retrieve flattened granule metadata",
-			Long:    cli.Markdown("Retrieve flattened granule metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      anyOf:\n      - $ref: '#/components/schemas/dateTimeFilter'\n      - $ref: '#/components/schemas/yearFilter'\n      - $ref: '#/components/schemas/facetFilter'\n      - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n  queries:\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/textQuery'\n    type: array\n  sort:\n    $ref: '#/components/schemas/sort'\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
+			Long:    cli.Markdown("Retrieve flattened granule metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      anyOf:\n      - $ref: '#/components/schemas/dateTimeFilter'\n      - $ref: '#/components/schemas/yearFilter'\n      - $ref: '#/components/schemas/facetFilter'\n      - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n      - $ref: '#/components/schemas/checksumFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n  queries:\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/textQuery'\n      - $ref: '#/components/schemas/granuleNameQuery'\n    type: array\n  search_after:\n    $ref: '#/components/schemas/searchAfter'\n  sort:\n    $ref: '#/components/schemas/sort'\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(0),
 			Run: func(cmd *cobra.Command, args []string) {
@@ -1325,7 +1325,7 @@ func OpenapiRegister(subcommand bool) {
 		cmd := &cobra.Command{
 			Use:     "searchgranule",
 			Short:   "Retrieve granule metadata",
-			Long:    cli.Markdown("Retrieve granule metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      anyOf:\n      - $ref: '#/components/schemas/dateTimeFilter'\n      - $ref: '#/components/schemas/yearFilter'\n      - $ref: '#/components/schemas/facetFilter'\n      - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n  queries:\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/textQuery'\n    type: array\n  sort:\n    $ref: '#/components/schemas/sort'\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
+			Long:    cli.Markdown("Retrieve granule metadata records matching the text query string, spatial, and/or temporal filter.\n## Request Schema (application/json)\n\nadditionalProperties: false\ndescription: The shape of a search request body that can be sent to the OneStop API\n  to execute a search against available metadata. Collections are returned by default\n  unless a collection filter is included, resulting in granules being returned.\nproperties:\n  facets:\n    default: false\n    description: Flag to request counts of results by GCMD keywords in addition to\n      results.\n    type: boolean\n  filters:\n    items:\n      anyOf:\n      - $ref: '#/components/schemas/dateTimeFilter'\n      - $ref: '#/components/schemas/yearFilter'\n      - $ref: '#/components/schemas/facetFilter'\n      - $ref: '#/components/schemas/geometryFilter'\n      - $ref: '#/components/schemas/collectionFilter'\n      - $ref: '#/components/schemas/excludeGlobalFilter'\n      - $ref: '#/components/schemas/checksumFilter'\n    type: array\n  page:\n    $ref: '#/components/schemas/page'\n  queries:\n    items:\n      oneOf:\n      - $ref: '#/components/schemas/textQuery'\n      - $ref: '#/components/schemas/granuleNameQuery'\n    type: array\n  search_after:\n    $ref: '#/components/schemas/searchAfter'\n  sort:\n    $ref: '#/components/schemas/sort'\n  summary:\n    default: true\n    description: Flag to request summary of search results instead of full set of\n      attributes.\n    type: boolean\ntitle: Search Request\ntype: object\n"),
 			Example: examples,
 			Args:    cobra.MinimumNArgs(0),
 			Run: func(cmd *cobra.Command, args []string) {
