@@ -29,6 +29,8 @@ func ParseScdrRequestFlags(cmd string, params *viper.Viper, req *gentleman.Reque
 	filters = append(filters, startEndTimeFilter...)
 	geoSpatialFilter := parse.ParsePolygon(params)
 	filters = append(filters, geoSpatialFilter...)
+	checksumFilter := parse.ParseChecksum(params)
+	filters = append(filters, checksumFilter...)
 
 	satnameQuery := parse.ParseSatName(params)
 	queries = append(queries, satnameQuery...)

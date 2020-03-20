@@ -29,6 +29,15 @@ func ParseSort(params *viper.Viper) string {
 	return "\"sort\":[{\"beginDate\": \"desc\", \"stagedDate\": \"desc\"}],"
 }
 
+func ParseChecksum(params *viper.Viper) []string {
+	checksumFilter := []string{}
+	checksumFlag := params.GetString(flags.ChecksumFlag)
+	if len(checksumFlag) > 0 {
+		checksumFilter = []string{"{\"type\":\"checksum\", \"algorithm\":\"SHA1\", \"values\":[\"" + checksumFlag + "\"]}"}
+	}
+	return checksumFilter
+}
+
 // func parseAvailableFlag(params *viper.Viper) []string {
 // 	facetFilter := []string{}
 // 	if params.GetString(AvailableFlag) == "true" {

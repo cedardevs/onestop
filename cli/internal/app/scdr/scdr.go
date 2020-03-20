@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/h2non/gentleman.v2"
-	"math"
+	_ "math"
 	"strconv"
 	"strings"
 	"time"
@@ -53,7 +53,9 @@ func SetScdrFlags() {
 	cli.AddFlag(ScdrFileCmd, flags.TextQueryFlag, flags.TextQueryShortFlag, flags.QueryDescription, "")
 	cli.AddFlag(ScdrFileCmd, flags.CloudServerFlag, flags.CloudServerShortFlag, flags.CloudServerDescription, false)
 	cli.AddFlag(ScdrFileCmd, flags.TestServerFlag, flags.TestServerShortFlag, flags.TestServerDescription, false)
-	cli.AddFlag(ScdrFileCmd, flags.SortFlag, flags.SortShortFlag, flags.SortDescription, flags.SortDefault)
+	// 	cli.AddFlag(ScdrFileCmd, flags.SortFlag, flags.SortShortFlag, flags.SortDescription, flags.SortDefault)
+	cli.AddFlag(ScdrFileCmd, flags.ChecksumFlag, flags.ChecksumShortFlag, flags.ChecksumDescription, "")
+
 }
 
 func InjectMiddleware() {
@@ -138,7 +140,8 @@ func makeRequests(params *viper.Viper, body string) []string {
 		pageSize = max
 	}
 	//get ready to max out, updated in the loop depending on results
-	pagesNeeded := int(math.Round(float64(max) / float64(pageSize)))
+	// 	pagesNeeded := int(math.Round(float64(max) / float64(pageSize)))
+	pagesNeeded := 1
 
 	//the map and resp that will pass to HandleAfter (middleware.MarshalScdrResponse) when all is done
 	var decoded map[string]interface{}
@@ -173,7 +176,7 @@ func makeRequests(params *viper.Viper, body string) []string {
 		if meta, ok := decoded["meta"].(map[string]interface{}); ok && isSummary == "false" {
 			resultCount := int(meta["total"].(float64))
 			remainder := 0
-			if resultCount < 0 {
+			if resultCount <= 0 {
 				log.Fatal().Msg("No results")
 				return results
 			}
@@ -182,7 +185,7 @@ func makeRequests(params *viper.Viper, body string) []string {
 				remainder = resultCount - (pageSize * i)
 			} else {
 				//default to max requests
-				//pagesNeeded = int(max / pageSize) + 1
+				pagesNeeded = int(max / pageSize)
 				remainder = max - (pageSize * i)
 			}
 

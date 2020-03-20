@@ -99,18 +99,23 @@ const KeywordFlag = "label"
 const KeywordShortFlag = "l"
 const KeywordDescription = "Pick files tagged with a label whose value is LABEL. Files can be tagged with more than one label. Satellite names (see option --satname) are just one type of labels."
 
-const SortFlag = "sort"
-const SortShortFlag = ""
-const SortDefault = "beginDate"
-const SortDescription = "Sort results by stagedDate, beginDate, or endDate."
+//not used
+// const SortFlag = "sort"
+// const SortShortFlag = ""
+// const SortDefault = "beginDate"
+// const SortDescription = "Sort results by stagedDate, beginDate, or endDate."
 
 const CloudFlag = "cloud"
 const CloudUrl = "http://acf3425c8d41b11e9a12912cf37a7528-1694331899.us-east-1.elb.amazonaws.com/onestop-search"
 
 const GapFlag = "gap"
 const GapShortFlag = "i"
-const GapDescription = "Defines the time interval for reporting data gaps. Any data time gap larger than a specified interval will be reported. Valid time units are  \"h\", \"m\", \"s\", \"ms\", \"ns\", \"us\" (or \"µs\"), e.g. 1h30m0.5s This option is only meaningful when combined with the --type option. It is silently ignored if --available is passed or no --type is provided."
+const GapDescription = "Defines the time interval for reporting data gaps. Any data time gap larger than a specified interval will be reported. Valid time units are  \"h\", \"m\", \"s\", \"ms\", \"ns\", \"us\" (or \"µs\"), e.g. 1h30m0.5s This option is only meaningful when combined with the --type option. It is silently ignored if --available is passed or no --type is provided. --gap INTERVAL"
 
 const SinceFlag = "since"
 const SinceShortFlag = ""
-const SinceDescription = "Select files who are added to the repository since DATETIME. DATETIME is a string specifying both a date and a time. Current year is assumed if the year cannot be inferred from the DATETIME string. If the time part is missing, the time \"00:00:00\" is assumed. ISO 8601 time format with time zone is strongly recommended for DATETIME values."
+const SinceDescription = "Select files who are added to the repository since DATETIME. DATETIME is a string specifying both a date and a time. Current year is assumed if the year cannot be inferred from the DATETIME string. If the time part is missing, the time \"00:00:00\" is assumed. ISO 8601 time format with time zone is strongly recommended for DATETIME values. --since DATETIME"
+
+const ChecksumFlag = "sha1"
+const ChecksumShortFlag = ""
+const ChecksumDescription = "Locate files whose content’s SHA-1 value is CHECKSUM, --sha1 CHECKSUM"
