@@ -60,7 +60,10 @@ export default class AccessView extends React.Component {
 
   renderAccessLink = (link, index) => {
     const {linkUrl, linkName, linkProtocol, linkDescription} = link
-    const linkTitle = linkName ? linkName : linkProtocol
+    var linkTitle = linkName ? linkName : linkProtocol
+    if (linkProtocol == null && linkName == null) {
+      linkTitle = 'Unlabeled'
+    }
     return (
       <li key={index} aria-label={linkTitle}>
         <div>
