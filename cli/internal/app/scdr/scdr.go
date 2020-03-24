@@ -139,8 +139,8 @@ func makeRequests(params *viper.Viper, body string) []string {
 	if max < maxPageSize {
 		pageSize = max
 	}
-	//get ready to max out, updated in the loop depending on results
-	// 	pagesNeeded := int(math.Round(float64(max) / float64(pageSize)))
+	
+	//only get one page in the event this is a summary view
 	pagesNeeded := 1
 
 	//the map and resp that will pass to HandleAfter (middleware.MarshalScdrResponse) when all is done
@@ -151,7 +151,7 @@ func makeRequests(params *viper.Viper, body string) []string {
 		//choose endpoint
 		req := buildRequest(params, body)
 
-		//use params to update request body
+		//trigger middleware - uses params to update request body
 		cli.HandleBefore(handlerPath, params, req)
 
 		//do the request
@@ -194,9 +194,10 @@ func makeRequests(params *viper.Viper, body string) []string {
 			}
 		}
 
+        //aggregate items from each call
 		if items, ok := decoded["data"].([]interface{}); ok {
 			aggregateItems = append(aggregateItems, items...)
-
+			//we dont want many pages if we are getting a summary
 			if len(items) > 0 && isSummary == "false" {
 				lastItem := items[len(items)-1].(map[string]interface{})
 				lastItemAttrs := lastItem["attributes"].(map[string]interface{})
@@ -221,7 +222,9 @@ func makeRequests(params *viper.Viper, body string) []string {
 			}
 		}
 	}
+	//make it like on big response so response middleware knows how to parse it
 	decoded["data"] = aggregateItems
+	//trigger middleware response - build scdr-files style output
 	after := cli.HandleAfter(handlerPath, params, resp, decoded)
 	if after != nil {
 		decoded = after.(map[string]interface{})
