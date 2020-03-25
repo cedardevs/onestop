@@ -29,7 +29,6 @@ Table of Contents
 - **Java 8+** [JDK8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [JDK11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html) needed by Gradle 5 wrapper and... everything
 - **Docker** [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) eneeded to run test containers in integration tests
 - **Kubectl** [Install](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and configure to point to any...
-- **Kubernetes cluster** (e.g. [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/))
 - **Skaffold** Install [here](https://skaffold.dev/docs/install/)or via homebrew
 - **Elasticsearch 6** 
   - `brew install elasticsearch@<version>`
@@ -86,22 +85,23 @@ http://localhost:<port>/onestop
 ### System Requirements
 - [Basic System Requirements](#basic-system-requirements) listed above
   - *excluding* local Elasticsearch installation
-- Kubernetes
-  - our team enables Kubernetes with Docker Desktop (see: `Preferences...` > `Kubernetes`)
+- Kubernetes (Docker Desktop Settings)
+  - we recommend enable Kubernetes within Docker Desktop (see: `Preferences...` > `Kubernetes`)
   - we highly recommend allocating >= 6.0 GiB to Docker (see: `Preferences...` > `Advanced`)
   - some of us get even better performance by allocating even more memory and swap memory
 - Helm 2 (until Skaffold supports Helm 3)
 - Skaffold
 
 ```
-brew install kubernetes-helm
+brew install helm@2
+brew link --force helm@2
 brew install skaffold
 
 # install tiller onto the cluster (one-time deal, unless upgrading helm)
 helm init
 
 # install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
-./k8s/installInfra.sh
+./k8s/infraInstall.sh
 
 # run (requires having run a `./gradlew build` for the Docker images referenced in skaffold)
 skaffold dev -f skaffold.yaml
