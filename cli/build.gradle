@@ -63,7 +63,12 @@ build {
     dependsOn 'goBuild'
 }
 
-clean.dependsOn goClean
+task customClean(type: Delete) {
+  delete file('.gogradle/cli-darwin-amd64')
+  delete file('.gogradle/cli-linux-amd64')
+}
+
+clean.dependsOn customClean
 
 //move config into .gogradle so it is moved during extraDirectories step.
 task copyConfigFile(type: Copy) {
