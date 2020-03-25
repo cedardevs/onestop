@@ -26,16 +26,16 @@ Table of Contents
 
 ## Quick Start
 ### Basic System Requirements
-- **Java >= 8** [JDK8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [JDK11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
-  - needed by Gradle 5 wrapper and... everything
-- **Docker** [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
-  - needed to run test containers in integration tests
-- **Elasticsearch 5.6.14**
-  - running on port 9200
-  - `brew install elasticsearch@5.6`
-  - `brew services start elasticsearch@5.6`
-- **Node**
-  - needed to hot-reload client via `npm` / `webpack-dev-server`
+- **Java 8+** [JDK8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [JDK11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html) needed by Gradle 5 wrapper and... everything
+- **Docker** [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) eneeded to run test containers in integration tests
+- **Kubectl** [Install](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and configure to point to any...
+- **Kubernetes cluster** (e.g. [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/))
+- **Skaffold** Install [here](https://skaffold.dev/docs/install/)or via homebrew
+- **Elasticsearch 6** 
+  - `brew install elasticsearch@<version>`
+  - `brew services start elasticsearch@<version>`
+  - runs on port 9200 by default
+- **Node** needed to hot-reload client via `npm` / `webpack-dev-server`
   - `brew install node`
 
 ### Clone
@@ -115,6 +115,38 @@ due to elasticsearch being a memory hog. This can often manifest in the build re
 `java.lang.NullPointerException: Cannot get property 'took' on null object`
 
 If this resource issue is getting in your way, you can always skip tasks in gradle using the `-x integrationTest` option. Of course, this is only a quick fix, and is not acceptable for validating the success of our continuous integration builds.
+
+### Local Development 
+The system uses Skaffold and Jib as a Gradle plugin to help with continuous development and deployment of Kubernetes 
+applications.
+
+How it works:
+
+1. Creates Kubernetes configuration files for the apps
+1. Deploys applications to local cluster
+1. Monitors source code and automatically re-deploys when needed
+1. Steams logs from your deployed pods to your local terminal
+
+### Recommended Development Cycle using Jib for gradle and skaffold
+This means that Jib will monitors and catchs any changes made to the source code and trigger a build. 
+This saves a separate docker image and redeploy the application. 
+```bash
+skaffold dev
+```
+Which will:
+1. Locally build docker images for each subproject
+1. Deploy the k8s objects based on those images, as well as dependencies like zookeeper and kafka, to your k8s cluster
+1. Set up a watch on the docker image source files which will rebuild and redeploy their corresponding images when they change
+
+At this point, modifying a source file in a subproject will:
+1. Assemble its jars
+1. Build its docker image
+1. Deploy its objects to the cluster
+
+#### One-off Variant
+
+If you would rather not have gradle and skaffold watching for every change, you can skip the `-t` option and use
+`skaffold run` to deploy the system compiled outputs in the cluster once.
 
 ### If running client via Node
 ```
