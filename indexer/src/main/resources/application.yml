@@ -26,6 +26,7 @@ elasticsearch:
     max:
       bytes: 10000000 # 10MB
 flattening:
+  enabled: true
   topic:
     name: "collection-flattening-triggers"
     partitions: 2
