@@ -88,8 +88,6 @@ public class ElasticsearchService {
     if (aliasExists) {
       var mapping = getMappingByAlias(alias);
       putMapping(alias, mapping);
-      var settings = getIndexSettingsByAlias(alias);
-      putSettings(alias, settings);
     }
     else {
       createIndex(alias, true);
@@ -107,6 +105,9 @@ public class ElasticsearchService {
   }
 
   private boolean putSettings(String indexOrAlias, String settings) throws IOException {
+    if (settings == null || settings.isBlank() || settings.equals("null")) {
+      return true;
+    }
     var request = new UpdateSettingsRequest(indexOrAlias).settings(settings, XContentType.JSON);
     var result = client.indices().putSettings(request, RequestOptions.DEFAULT);
     return result.isAcknowledged();
