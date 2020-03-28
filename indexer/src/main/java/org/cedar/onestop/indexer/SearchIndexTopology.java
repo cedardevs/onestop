@@ -125,11 +125,13 @@ public class SearchIndexTopology {
     var granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule);
     long bulkIntervalMillis = Long.parseLong(appConfig.get("elasticsearch.bulk.interval.ms").toString());
     long bulkMaxBytes = Long.parseLong(appConfig.get("elasticsearch.bulk.max.bytes").toString());
+    int bulkMaxActions = Integer.parseInt(appConfig.get("elasticsearch.bulk.max.actions").toString());
 
     return BulkIndexingConfig.newBuilder()
         .withStoreName(INDEXER_STORE_NAME)
         .withMaxPublishBytes(bulkMaxBytes)
         .withMaxPublishInterval(Duration.ofMillis(bulkIntervalMillis))
+        .withMaxPublishActions(bulkMaxActions)
         .addIndexMapping(collectionTopic, DocWriteRequest.OpType.INDEX, collectionIndex)
         .addIndexMapping(collectionTopic, DocWriteRequest.OpType.DELETE, collectionIndex)
         .addIndexMapping(granuleTopic, DocWriteRequest.OpType.INDEX, granuleIndex)
