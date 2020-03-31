@@ -139,7 +139,7 @@ func makeRequests(params *viper.Viper, body string) []string {
 	if max < maxPageSize {
 		pageSize = max
 	}
-	
+
 	//only get one page in the event this is a summary view
 	pagesNeeded := 1
 
@@ -194,7 +194,7 @@ func makeRequests(params *viper.Viper, body string) []string {
 			}
 		}
 
-        //aggregate items from each call
+		//aggregate items from each call
 		if items, ok := decoded["data"].([]interface{}); ok {
 			aggregateItems = append(aggregateItems, items...)
 			//we dont want many pages if we are getting a summary
