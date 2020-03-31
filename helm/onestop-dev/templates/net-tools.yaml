@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
+  serviceName: net-tools
   replicas: 1
   selector:
     matchLabels:
