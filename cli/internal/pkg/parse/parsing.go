@@ -26,7 +26,7 @@ func ParseSort(params *viper.Viper) string {
 	// 		sort = "\"sort\":[{\"" + sortArg + "\": \"desc\"}],"
 	// 	}
 	// 	return sort
-	return "\"sort\":[{\"beginDate\": \"desc\", \"stagedDate\": \"desc\"}],"
+	return "\"sort\":[{\"beginDate\": \"asc\", \"stagedDate\": \"asc\"}],"
 }
 
 func ParseChecksum(params *viper.Viper) []string {

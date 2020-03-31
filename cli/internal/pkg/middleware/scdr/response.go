@@ -60,17 +60,17 @@ func FindGaps(typeArg string, gapInterval string, items []interface{}) []string 
 	if len(items) == 0 {
 		return gapResponse
 	}
-	lastBeginDate := time.Time{}
+	//lastBeginDate := time.Time{}
 	lastEndDate := time.Time{}
 	for _, v := range items {
 		item := v.(map[string]interface{})
 		attrs := item["attributes"].(map[string]interface{})
-		if lastBeginDate.IsZero() {
-			firstBeginDateString, hasBeginDate := attrs["beginDate"].(string)
-			if hasBeginDate {
-				firstBeginDate, e := time.Parse(indexDateFormat, firstBeginDateString)
+		if lastEndDate.IsZero() {
+			firstEndDateString, hasEndDate := attrs["endDate"].(string)
+			if hasEndDate {
+				firstEndDate, e := time.Parse(indexDateFormat, firstEndDateString)
 				if e == nil {
-					lastBeginDate = firstBeginDate
+					lastEndDate = firstEndDate
 				}
 			}
 		}
@@ -87,27 +87,18 @@ func FindGaps(typeArg string, gapInterval string, items []interface{}) []string 
 				//add it to new output
 				//track last begin date to prevent overlap
 
-				if lastBeginDate.Sub(endDate) > interval && lastEndDate.Sub(startDate) > 0 {
-					gapString := endDate.Format(outputDateFormat) + " | " + lastBeginDate.Format(outputDateFormat) + " | " + lastBeginDate.Sub(endDate).String()
+				if startDate.Sub(lastEndDate) > interval && startDate.Sub(lastEndDate) > 0  {
+					gapString := lastEndDate.Format(outputDateFormat) + " | " + startDate.Format(outputDateFormat) + " | " + startDate.Sub(lastEndDate).String()
 					gapResponse = append(gapResponse, gapString)
 				}
-				lastBeginDate = startDate
+				//lastBeginDate = startDate
 				lastEndDate = endDate
 			}
 		}
 
 	}
-	gapResponse = flipResultOrder(gapResponse)
 	gapResponse = append(gapResponseHeader, gapResponse...)
 	return gapResponse
-}
-
-func flipResultOrder(descList []string) []string {
-	ascList := []string{}
-	for i := len(descList) - 1; i >= 0; i-- {
-		ascList = append(ascList, descList[i])
-	}
-	return ascList
 }
 
 func buildSummary(items []interface{}, count string) []string {
@@ -138,7 +129,6 @@ func buildSummary(items []interface{}, count string) []string {
 
 		summaryResponse = append(summaryResponse, row)
 	}
-	summaryResponse = flipResultOrder(summaryResponse)
 	summaryResponse = append(summaryResponseHeader, summaryResponse...)
 	return summaryResponse
 }
@@ -164,7 +154,7 @@ func buildLinkResponse(items []interface{}) []string {
 			links = append(links, url)
 		}
 	}
-	links = flipResultOrder(links)
+
 	return links
 }
 
