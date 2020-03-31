@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
 
-import Button from '../../common/input/Button'
+import Checkbox from '../../common/input/Checkbox'
 import FlexColumn from '../../common/ui/FlexColumn'
 import FlexRow from '../../common/ui/FlexRow'
 
@@ -10,6 +10,13 @@ import {FilterColors} from '../../../style/defaultStyles'
 
 import {styleFilterPanel, styleFieldsetBorder} from '../common/styleFilters'
 import ApplyClearRow from '../common/ApplyClearRow'
+
+const styleOptionsFilter = {
+  ...styleFilterPanel,
+  ...{
+    position: 'relative',
+  },
+}
 
 const styleField = {
   display: 'flex',
@@ -83,7 +90,7 @@ const GranuleTextFilter = props => {
                       htmlFor={id}
                       style={{width: '4em'}}
                     >
-                      Contains
+                      Matches
                     </label>,
                     input,
                   ]}
@@ -91,13 +98,25 @@ const GranuleTextFilter = props => {
               </FilterFieldset>
             </form>
           </div>,
-
           <ApplyClearRow
             key="TextFilter::InputColumn::Buttons"
             ariaActionDescription="text filter"
             applyAction={submit}
             clearAction={clear}
           />,
+
+          <div style={styleOptionsFilter}>
+            <h4 style={{margin: '0.618em 0 0.618em 0.309em'}}>
+              Additional Filtering Options:
+            </h4>
+            <Checkbox
+              label="Match Any Terms"
+              checked={!!!props.allTermsMustMatch}
+              onChange={() => {
+                props.toggleAllTermsMustMatch(props.query)
+              }}
+            />
+          </div>,
         ]}
       />
     </div>

@@ -793,6 +793,21 @@ function queryTestCases(){
       }),
     },
     {
+      name: 'title filter',
+      string: 't=surveyid',
+      state: Immutable.merge(initialState, {
+        title: 'surveyid',
+      }),
+    },
+    {
+      name: 'title filter with all terms must match false',
+      string: 't=surveyid&tm=0',
+      state: Immutable.merge(initialState, {
+        title: 'surveyid',
+        allTermsMustMatch: false,
+      }),
+    },
+    {
       name: 'time relationship (intersects)',
       string: 'tr=i&s=2010-01-01T00%3A00%3A00Z',
       state: Immutable.merge(initialState, {
