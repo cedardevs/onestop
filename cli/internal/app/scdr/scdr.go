@@ -287,7 +287,7 @@ func scdrServers() []map[string]string {
 
 		map[string]string{
 			"description": "Development cloud server (uses test data)",
-			"url":         "http://acf3425c8d41b11e9a12912cf37a7528-1694331899.us-east-1.elb.amazonaws.com/onestop-search",
+			"url":         "http://9bcc428b-default-osclient-d008-199379672.us-east-1.elb.amazonaws.com/onestop-search",
 		},
 	}
 }
