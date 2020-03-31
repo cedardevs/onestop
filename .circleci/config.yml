@@ -260,7 +260,7 @@ jobs:
       - <<: *attachWorkspace
       - run:
           name: Build image, publish
-          command: ./gradlew cli:jib
+          command: ./gradlew cli:jib ;
       - persist_to_workspace:
           root: ~/repo
           paths:
