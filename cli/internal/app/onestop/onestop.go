@@ -1,9 +1,9 @@
 package onestop
 
 import (
-	"github.com/danielgtaylor/openapi-cli-generator/cli"
 	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 	"github.com/cedardevs/onestop/cli/internal/pkg/middleware/onestop"
+	"github.com/danielgtaylor/openapi-cli-generator/cli"
 )
 
 const SearchCollectionCmd = "searchcollection"
@@ -42,7 +42,7 @@ func SetOneStopFlags() {
 	cli.AddFlag(SearchFlattenedGranuleCmd, flags.StartTimeFlag, flags.StartTimeShortFlag, flags.StartTimeScdrDescription, "")
 }
 
-func InjectMiddleware(){
+func InjectMiddleware() {
 	cli.RegisterBefore(SearchCollectionCmd, middleware.ParseOneStopRequestFlags)
 	cli.RegisterBefore(SearchGranuleCmd, middleware.ParseOneStopRequestFlags)
 	cli.RegisterBefore(SearchFlattenedGranuleCmd, middleware.ParseOneStopRequestFlags)

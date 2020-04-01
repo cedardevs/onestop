@@ -539,6 +539,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref: "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref: "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             crossReferences:
@@ -675,6 +681,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref : "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref : "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             crossReferences:
@@ -817,6 +829,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref: "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref: "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             dataFormat:
@@ -831,6 +849,12 @@ components:
               $ref: "#/components/schemas/endDate"
             endYear:
               $ref: "#/components/schemas/endYear"
+            endDayOfYear:
+              $ref: "#/components/schemas/endDayOfYear"
+            endDayOfMonth:
+              $ref: "#/components/schemas/endDayOfMonth"
+            endMonth:
+              $ref: "#/components/schemas/endMonth"
             fileIdentifier:
               $ref: "#/components/schemas/fileIdentifier"
             filename:
@@ -944,11 +968,14 @@ components:
               - $ref: "#/components/schemas/geometryFilter"
               - $ref: "#/components/schemas/collectionFilter"
               - $ref: "#/components/schemas/excludeGlobalFilter"
+              - $ref: "#/components/schemas/checksumFilter"
           type: array
         page:
           $ref: "#/components/schemas/page"
         sort:
           $ref: "#/components/schemas/sort"
+        search_after:
+          $ref: "#/components/schemas/searchAfter"
         queries:
           items:
             oneOf:
@@ -1024,6 +1051,32 @@ components:
         - value
       title: "Exclude Global Filter"
       type: object
+    checksumFilter:
+      additionalProperties: false
+      description: "Filter granules by specific checksum(s)."
+      properties:
+        type:
+          description: "Filter type."
+          enum:
+            - checksum
+        algorithm:
+          description: "The checksum algorithm to match"
+          enum:
+            - MD5
+            - SHA1
+            - SHA256
+            - SHA512
+        values:
+          description: "List of checksums"
+          items:
+            description: "Checksum"
+            type: string
+          type: array
+      required:
+        - type
+        - values
+      title: "Collection Filter"
+      type: object
     facetFilter:
       additionalProperties: false
       description: "Filters results based on given terms (data formats, link protocols, service link protocols, GCMD keywords) where returned results MUST have the specified term values. Multiple facetFilter objects will be combined with logical AND; multiple values in a single facetFilter object will be combined with the logical OR."
@@ -1098,6 +1151,8 @@ components:
           default: asc
         endDate:
           default: asc
+    searchAfter:
+      type: array
     page:
       description: "Result page"
       properties:
@@ -1197,6 +1252,18 @@ components:
       description: Begin year of temporal bounding.
       format: int64
       type: integer
+    beginDayOfYear:
+      description: Begin day of year of temporal bounding.
+      format: int64
+      type: integer
+    beginDayOfMonth:
+      description: Begin day of month of temporal bounding, 1 to 31.
+      format: int64
+      type: integer
+    beginMonth:
+      description: Begin month of temporal bounding, 1 to 12.
+      format: int64
+      type: integer
     citeAsStatements:
       # description: TODO
       items:
@@ -1281,6 +1348,18 @@ components:
       type: string
     endYear:
       description: End year of temporal bounding.
+      format: int64
+      type: integer
+    endDayOfYear:
+      description: End day of year of temporal bounding.
+      format: int64
+      type: integer
+    endDayOfMonth:
+      description: End day of month of temporal bounding, 1 to 31.
+      format: int64
+      type: integer
+    endMonth:
+      description: End month of temporal bounding, 1 to 12.
       format: int64
       type: integer
     fileIdentifier:
