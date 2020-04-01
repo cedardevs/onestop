@@ -69,46 +69,50 @@ public class SearchIndexTopology {
 
     //----- Flattening Setup --------
     var flatteningConfig = flatteningConfig(appConfig);
-    var flatteningStoreBuilder = flatteningStoreBuilder(flatteningConfig);
-    streamsBuilder.addStateStore(flatteningStoreBuilder);
-    var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
+    if (flatteningConfig.getEnabled()) {
+      var flatteningStoreBuilder = flatteningStoreBuilder(flatteningConfig);
+      streamsBuilder.addStateStore(flatteningStoreBuilder);
+      var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
 
-    //----- Flattening Stream --------
-    var flatteningTriggersFromGranules = successfulBulkResults
-        .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(granuleIndex))
-        .flatMap((k, v) ->
-            getParentIds(v.getRecord())
-                .map(parentId -> new KeyValue<>(parentId, v.getTimestamp()))
-                .collect(Collectors.toList())); // stream of collectionId => timestamp of granule to flatten from
-    var flatteningTriggersFromCollections = successfulBulkResults
-        .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
-        .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
+      //----- Flattening Stream --------
+      var flatteningTriggersFromGranules = successfulBulkResults
+          .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(granuleIndex))
+          .flatMap((k, v) ->
+              getParentIds(v.getRecord())
+                  .map(parentId -> new KeyValue<>(parentId, v.getTimestamp()))
+                  .collect(Collectors.toList())); // stream of collectionId => timestamp of granule to flatten from
+      var flatteningTriggersFromCollections = successfulBulkResults
+          .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
+          .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
 
-    flatteningTriggersFromCollections.merge(flatteningTriggersFromGranules)
-        .peek((k, v) -> log.debug("producing flattening trigger [{} => {}]", k, v))
-        // re-partition so all triggers for a given collection go to the same consumer
-        .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()))
-        .peek((k, v) -> log.debug("consuming flattening trigger [{} => {}]", k, v))
-        .transform(() -> esService.buildFlatteningTransformer(flatteningConfig), flatteningConfig.getStoreName())
-        // cycle failed flattening requests back into the queue so nothing is lost
-        .filter((k, v) -> !v.successful)
-        .mapValues(v -> v.timestamp)
-        .to(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()));
+      flatteningTriggersFromCollections.merge(flatteningTriggersFromGranules)
+          .peek((k, v) -> log.debug("producing flattening trigger [{} => {}]", k, v))
+          // re-partition so all triggers for a given collection go to the same consumer
+          .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()))
+          .peek((k, v) -> log.debug("consuming flattening trigger [{} => {}]", k, v))
+          .transform(() -> esService.buildFlatteningTransformer(flatteningConfig), flatteningConfig.getStoreName())
+          // cycle failed flattening requests back into the queue so nothing is lost
+          .filter((k, v) -> !v.successful)
+          .mapValues(v -> v.timestamp)
+          .to(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()));
+    }
 
     //----- Sitemap Setup --------
     var sitemapConfig = sitemapConfig(appConfig);
-    var sitemapStoreBuilder = sitemapStoreBuilder(sitemapConfig);
-    streamsBuilder.addStateStore(sitemapStoreBuilder);
-    var sitemapTopicName = appConfig.get("sitemap.topic.name").toString();
+    if (sitemapConfig.getEnabled()) {
+      var sitemapStoreBuilder = sitemapStoreBuilder(sitemapConfig);
+      streamsBuilder.addStateStore(sitemapStoreBuilder);
+      var sitemapTopicName = appConfig.get("sitemap.topic.name").toString();
 
-    //----- Sitemap Stream --------
-    successfulBulkResults
-        .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
-        // group all collection changes under one key/partition so sitemap is generated once per window at most
-        .map((k, v) -> new KeyValue<>("ALL", v == null ? null : v.getTimestamp()))
-        // re-partition so all sitemap triggers go to the same consumer
-        .through(sitemapTopicName, Produced.with(Serdes.String(), Serdes.Long()))
-        .process(() -> new SitemapProcessor(esService, sitemapConfig), sitemapConfig.getStoreName());
+      //----- Sitemap Stream --------
+      successfulBulkResults
+          .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
+          // group all collection changes under one key/partition so sitemap is generated once per window at most
+          .map((k, v) -> new KeyValue<>("ALL", v == null ? null : v.getTimestamp()))
+          // re-partition so all sitemap triggers go to the same consumer
+          .through(sitemapTopicName, Produced.with(Serdes.String(), Serdes.Long()))
+          .process(() -> new SitemapProcessor(esService, sitemapConfig), sitemapConfig.getStoreName());
+    }
 
     return streamsBuilder.build();
   }
@@ -121,11 +125,13 @@ public class SearchIndexTopology {
     var granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule);
     long bulkIntervalMillis = Long.parseLong(appConfig.get("elasticsearch.bulk.interval.ms").toString());
     long bulkMaxBytes = Long.parseLong(appConfig.get("elasticsearch.bulk.max.bytes").toString());
+    int bulkMaxActions = Integer.parseInt(appConfig.get("elasticsearch.bulk.max.actions").toString());
 
     return BulkIndexingConfig.newBuilder()
         .withStoreName(INDEXER_STORE_NAME)
         .withMaxPublishBytes(bulkMaxBytes)
         .withMaxPublishInterval(Duration.ofMillis(bulkIntervalMillis))
+        .withMaxPublishActions(bulkMaxActions)
         .addIndexMapping(collectionTopic, DocWriteRequest.OpType.INDEX, collectionIndex)
         .addIndexMapping(collectionTopic, DocWriteRequest.OpType.DELETE, collectionIndex)
         .addIndexMapping(granuleTopic, DocWriteRequest.OpType.INDEX, granuleIndex)
@@ -142,9 +148,11 @@ public class SearchIndexTopology {
   }
 
   private static FlatteningConfig flatteningConfig(AppConfig appConfig) {
+    Boolean flatteningEnabled = Boolean.parseBoolean(appConfig.get("flattening.enabled").toString());
     long flatteningIntervalMillis = Long.parseLong(appConfig.get("flattening.interval.ms").toString());
     var flatteningInterval = Duration.ofMillis(flatteningIntervalMillis);
     return FlatteningConfig.newBuilder()
+        .withEnabled(flatteningEnabled)
         .withStoreName(FLATTENING_STORE_NAME)
         .withScriptPath(FLATTEN_SCRIPT_PATH)
         .withInterval(flatteningInterval)
@@ -157,9 +165,11 @@ public class SearchIndexTopology {
   }
 
   private static SitemapConfig sitemapConfig(AppConfig appConfig) {
+    Boolean sitemapEnabled = Boolean.parseBoolean(appConfig.get("sitemap.enabled").toString());
     long sitemapIntervalMillis = Long.parseLong(appConfig.get("sitemap.interval.ms").toString());
     var sitemapInterval = Duration.ofMillis(sitemapIntervalMillis);
     return SitemapConfig.newBuilder()
+        .withEnabled(sitemapEnabled)
         .withStoreName(SITEMAP_STORE_NAME)
         .withInterval(sitemapInterval)
         .build();
