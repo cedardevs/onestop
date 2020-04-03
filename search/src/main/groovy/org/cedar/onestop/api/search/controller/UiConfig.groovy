@@ -18,8 +18,10 @@ class UiConfig {
 
   static class FeaturedConfig { // featured datasets
     String title
+    String description
     String searchTerm
     String imageUrl
+    String caption
   }
 
   List<String> features

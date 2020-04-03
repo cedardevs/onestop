@@ -10,22 +10,6 @@ class SearchRequestParserServiceTest extends Specification {
   private slurper = new JsonSlurper()
   private requestParser = new SearchRequestParserService(null)
 
-  def "Request with text filter"() {
-    given:
-    def json = """{
-      "filters": [{"type":"text", "field": "title", "value":"foo"}]
-      }"""
-    def params = slurper.parseText(json)
-
-    when:
-    def queryResult = requestParser.assembleTextFilterAsQuery(params.filters)
-    def expectedQuery = [[query_string:[query:'foo', fields:['title^1'], phrase_slop:0, tie_breaker:0, minimum_should_match:'75%', lenient:true]]]
-
-    then:
-    queryResult == expectedQuery
-
-  }
-
   def "Request with zeros in #type filter #relative (#relation) creates valid elasticsearch request"() {
     // confirms a bug fix - 0s were causing no filter to be created
     given: 'datetime or year filters before/after 0'
@@ -104,15 +88,14 @@ class SearchRequestParserServiceTest extends Specification {
                     function_score: [
                         query             : [
                             bool: [
-                                must: [[[
+                                must: [[
                                            query_string: [
                                                query               : "winter",
-                                               fields              : ["_all"],
                                                phrase_slop         : 0,
                                                tie_breaker         : 0,
                                                minimum_should_match: '75%',
                                                lenient             : true
-                                           ]]]]]
+                                           ]]]]
                         ],
                         field_value_factor: [
                             field   : 'dsmmAverage',
@@ -150,7 +133,7 @@ class SearchRequestParserServiceTest extends Specification {
                     function_score: [
                         query             : [
                             bool: [
-                                must: [[[
+                                must: [[
                                            query_string: [
                                                query               : "winter",
                                                fields              : ["title^4.0"],
@@ -158,7 +141,198 @@ class SearchRequestParserServiceTest extends Specification {
                                                tie_breaker         : 0,
                                                minimum_should_match: '75%',
                                                lenient             : true
-                                           ]]]]]
+                                           ]]]]
+                        ],
+                        field_value_factor: [
+                            field   : 'dsmmAverage',
+                            modifier: 'log1p',
+                            factor  : 1.0,
+                            missing : 0
+                        ],
+                        boost_mode        : 'sum'
+                    ]
+                ]
+            ],
+            filter: [:]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Multiple queryText objects build right request'() {
+    given:
+    def request = '{"queries":[{"type":"queryText","value":"winter"},{"type":"queryText","value":"is"},{"type":"queryText","value":"coming"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [
+                [
+                    function_score: [
+                        query             : [
+                            bool: [
+                                must: [[
+                                           query_string: [
+                                               query               : "(winter) AND (is) AND (coming)",
+                                               phrase_slop         : 0,
+                                               tie_breaker         : 0,
+                                               minimum_should_match: '75%',
+                                               lenient             : true
+                                           ]]]]
+                        ],
+                        field_value_factor: [
+                            field   : 'dsmmAverage',
+                            modifier: 'log1p',
+                            factor  : 1.0,
+                            missing : 0
+                        ],
+                        boost_mode        : 'sum'
+                    ]
+                ]
+            ],
+            filter: [:]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Granule name query generates expected elasticsearch query when #desc'() {
+    given:
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [
+                [
+                    function_score: [
+                        query             : [
+                            bool: [
+                                must: [[
+                                           multi_match: [
+                                               query: "ghrsst goes",
+                                               fields: expectedFields,
+                                               operator: expectedOperator,
+                                               type: 'cross_fields'
+                                           ]]]]
+                        ],
+                        field_value_factor: [
+                            field   : 'dsmmAverage',
+                            modifier: 'log1p',
+                            factor  : 1.0,
+                            missing : 0
+                        ],
+                        boost_mode        : 'sum'
+                    ]
+                ]
+            ],
+            filter: [:]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+
+    where:
+    desc | request | expectedOperator | expectedFields
+    'defaults for field and allTermsMustMatch' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes"}]}' | 'OR' | ['title', 'fileIdentifier', 'filename']
+    'declared single field value' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "field": "title" }]}' | 'OR' | ['title']
+    'declared "all" field value' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "field": "all" }]}' | 'OR' | ['title', 'fileIdentifier', 'filename']
+    'allTermsMustMatch is false' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": false }]}' | 'OR' | ['title', 'fileIdentifier', 'filename']
+    'allTermsMustMatch is true' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": true }]}' | 'AND' | ['title', 'fileIdentifier', 'filename']
+  }
+
+  def 'Multiple granuleName objects build right request'() {
+    given:
+    def request = '{"queries":[{"type":"granuleName","value":"goes","field":"filename"},{"type":"granuleName","value":"ghrsst","field":"title"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [
+                [
+                    function_score: [
+                        query             : [
+                            bool: [
+                                must: [
+                                    [
+                                        multi_match: [
+                                            query   : "goes",
+                                            fields  : ['filename'],
+                                            operator: 'OR',
+                                            type    : 'cross_fields'
+                                        ]
+                                    ],
+                                    [
+                                        multi_match: [
+                                            query   : "ghrsst",
+                                            fields  : ['title'],
+                                            operator: 'OR',
+                                            type    : 'cross_fields'
+                                        ]
+                                    ]
+                                ]]
+                        ],
+                        field_value_factor: [
+                            field   : 'dsmmAverage',
+                            modifier: 'log1p',
+                            factor  : 1.0,
+                            missing : 0
+                        ],
+                        boost_mode        : 'sum'
+                    ]
+                ]
+            ],
+            filter: [:]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Granule name and query text queries in request build expected request'() {
+    given:
+    def request = '{"queries":[{"type":"queryText","value":"winter"},{"type":"granuleName","value":"ghrsst goes"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [
+                [
+                    function_score: [
+                        query             : [
+                            bool: [
+                                must: [
+                                    [
+                                        query_string: [
+                                            query               : "winter",
+                                            phrase_slop         : 0,
+                                            tie_breaker         : 0,
+                                            minimum_should_match: '75%',
+                                            lenient             : true
+                                        ]
+                                    ],
+                                    [
+                                        multi_match: [
+                                            query   : "ghrsst goes",
+                                            fields  : ['title', 'fileIdentifier', 'filename'],
+                                            operator: 'OR',
+                                            type    : 'cross_fields'
+                                        ]
+                                    ]
+                                ]]
                         ],
                         field_value_factor: [
                             field   : 'dsmmAverage',
@@ -343,7 +517,7 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
-  def 'Facet filter request includes exclude global filter in query when true'() {
+  def 'Filter request includes exclude global filter in query when true'() {
     given:
     def request = '{"filters":[{"type": "excludeGlobal", "value": true}]}'
     def params = slurper.parseText(request)
@@ -364,7 +538,7 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
-  def 'Facet filter request doesn\'t include exclude global filter in query when false'() {
+  def 'Filter request doesn\'t include exclude global filter in query when false'() {
     given:
     def request = '{"filters":[{"type": "excludeGlobal", "value": false}]}'
     def params = slurper.parseText(request)
@@ -376,6 +550,81 @@ class SearchRequestParserServiceTest extends Specification {
             must  : [:],
             filter: [:]
         ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Filter request correctly parses nested checksum queries'() {
+    given:
+    def request = '{"filters":[{"type": "checksum", "values": ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"], "algorithm": "SHA1"}, {"type": "checksum", "values": ["970cfb0cffbe6ec4547b7df61af8987126a9cae8"], "algorithm": "MD5"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [:],
+            filter: [
+                [
+                  "nested":[
+                    "path":"checksums",
+                    "query":[
+                      "bool" : [
+                        "must" : [
+                            [ "terms" : ["checksums.algorithm" : ["SHA1"]] ],
+                            [ "terms" : ["checksums.value" : ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"]] ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                    "nested":[
+                        "path":"checksums",
+                        "query":[
+                            "bool" : [
+                                "must" : [
+                                    [ "terms" : ["checksums.algorithm" : ["MD5"]] ],
+                                    [ "terms" : ["checksums.value" : ["970cfb0cffbe6ec4547b7df61af8987126a9cae8"]] ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Fool proof checksum filter'() {
+    given:
+    def request = '{"filters":[{"type": "checksum", "values": ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"], "algorithm": "SHA1"}, {"type": "checksum", "values": ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"], "algorithm": "SHA1"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [:],
+            filter: [
+                [
+                    "nested":[
+                        "path":"checksums",
+                        "query":[
+                            "bool" : [
+                                "must" : [
+                                    [ "terms" : ["checksums.algorithm" : ["SHA1"]] ],
+                                    [ "terms" : ["checksums.value" : ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"]] ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]]
     ]
 
     then:

@@ -13,6 +13,7 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
@@ -170,6 +171,8 @@ public class IndexingHelpers {
     discoveryMap.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
     discoveryMap.putAll(prepareResponsibleParties(record));
     discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    discoveryMap.put("filename", prepareFilename(record));
+    discoveryMap.put("checksums", prepareChecksums(record));
 
     // drop fields not present in target index
     var result = new LinkedHashMap<String, Object>(targetFields.size());
@@ -178,7 +181,7 @@ public class IndexingHelpers {
   }
 
   ////////////////////////////////
-  // Identifiers                //
+  // Identifiers, "Names"       //
   ////////////////////////////////
   private static String prepareInternalParentIdentifier(ParsedRecord record) {
     return Optional.ofNullable(record)
@@ -190,6 +193,30 @@ public class IndexingHelpers {
         .findFirst()
         .map(Relationship::getId)
         .orElse(null);
+  }
+
+  static String prepareFilename(ParsedRecord record) {
+    return Optional.ofNullable(record)
+        .filter(r -> r.getType() == RecordType.granule)
+        .map(ParsedRecord::getFileInformation)
+        .map(FileInformation::getName)
+        .orElse(null);
+  }
+
+  static List prepareChecksums(ParsedRecord record) {
+    return Optional.ofNullable(record)
+            .filter(r -> r.getType() == RecordType.granule)
+            .map(ParsedRecord::getFileInformation)
+            .map(FileInformation::getChecksums)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(checksumObject -> {
+              var result = new HashMap<>();
+              result.put("algorithm", checksumObject.getAlgorithm());
+              result.put("value", checksumObject.getValue());
+              return result;
+            })
+            .collect(Collectors.toList());
   }
 
   ////////////////////////////////
@@ -343,6 +370,10 @@ public class IndexingHelpers {
   private static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     String beginDate, endDate;
     Long year;
+    Long beginYear, endYear;
+    int beginDayOfYear, beginDayOfMonth, beginMonth;
+    int endDayOfYear, endDayOfMonth, endMonth;
+    var result = new HashMap<String, Object>();
 
     // If bounding is actually an instant, set search fields accordingly
     if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT) {
@@ -367,22 +398,48 @@ public class IndexingHelpers {
         // Precision is NANOS so use instant value as-is
         endDate = beginDate;
       }
-      var result = new HashMap<String, Object>();
-      result.put("beginDate", beginDate);
-      result.put("beginYear", year);
-      result.put("endDate", endDate);
-      result.put("endYear", year);
-      return result;
+      beginYear = year;
+      endYear = year;
     } else {
       // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
       // use value from analysis block where dates are UTC datetime normalized
-      var result = new HashMap<String, Object>();
-      result.put("beginDate", analysis.getBeginDescriptor() == VALID && analysis.getBeginIndexable() ? analysis.getBeginUtcDateTimeString() : null);
-      result.put("endDate", analysis.getEndDescriptor() == VALID && analysis.getEndIndexable() ? analysis.getEndUtcDateTimeString() : null);
-      result.put("beginYear", parseYear(analysis.getBeginUtcDateTimeString()));
-      result.put("endYear", parseYear(analysis.getEndUtcDateTimeString()));
-      return result;
+      beginDate = analysis.getBeginDescriptor() == VALID && analysis.getBeginIndexable() ? analysis.getBeginUtcDateTimeString() : null;
+      beginYear = parseYear(analysis.getBeginUtcDateTimeString());
+      endDate = analysis.getEndDescriptor() == VALID && analysis.getEndIndexable() ? analysis.getEndUtcDateTimeString() : null;
+      endYear = parseYear(analysis.getEndUtcDateTimeString());
     }
+
+    result.put("beginDate", beginDate);
+    result.put("beginYear", beginYear);
+    result.putAll(parseAdditionalTimeFields("begin", beginDate));
+
+    result.put("endDate", endDate);
+    result.put("endYear", endYear);
+    result.putAll(parseAdditionalTimeFields("end", endDate));
+
+    return result;
+  }
+
+  private static HashMap<String, Object> parseAdditionalTimeFields(String prefix, String time){
+    var result = new HashMap<String, Object>();
+    Integer dayOfYear, dayOfMonth, month;
+    if (time != null) {
+      ZonedDateTime dateTime = ZonedDateTime.parse(time);
+
+      dayOfYear = dateTime.getDayOfYear();
+      dayOfMonth = dateTime.getDayOfMonth();
+      month = dateTime.getMonthValue();
+    }
+    else {
+      dayOfYear = null;
+      dayOfMonth = null;
+      month = null;
+    }
+
+    result.put(prefix + "DayOfYear", dayOfYear);
+    result.put(prefix + "DayOfMonth", dayOfMonth);
+    result.put(prefix + "Month", month);
+    return result;
   }
 
   private static Long parseYear(String utcDateTime) {

@@ -42,7 +42,9 @@ public class DocumentUtil {
     return (Map) parsedResponse.get("hits");
   }
 
-  static Map getHitsTotal(Map parsedResponse) { return (Map) getHits(parsedResponse).get("total"); }
+  static Map getHitsTotal(Map parsedResponse) {
+    return (Map) getHits(parsedResponse).get("total");
+  }
 
   static int getHitsTotalValue(Map parsedResponse, boolean isES6) {
     // the structure of the hits in response is different between ES6/ES7

@@ -5,12 +5,18 @@ import java.util.Objects;
 
 public class SitemapConfig {
 
+  private final Boolean enabled;
   private final String storeName;
   private final Duration interval;
 
-  public SitemapConfig(String storeName, Duration duration) {
+  public SitemapConfig(Boolean enabled, String storeName, Duration duration) {
+    this.enabled = enabled != null ? enabled : true; // enabled by default
     this.storeName = storeName;
     this.interval = duration;
+  }
+
+  public Boolean getEnabled() {
+    return enabled;
   }
 
   public String getStoreName() {
@@ -26,10 +32,16 @@ public class SitemapConfig {
   }
 
   public static class SitemapConfigBuilder {
+    private Boolean enabled;
     private String storeName;
     private Duration interval;
 
     public SitemapConfigBuilder() {}
+
+    public SitemapConfigBuilder withEnabled(Boolean bool) {
+      enabled = bool;
+      return this;
+    }
 
     public SitemapConfigBuilder withStoreName(String name) {
       storeName = name;
@@ -44,7 +56,7 @@ public class SitemapConfig {
     public SitemapConfig build() {
       Objects.requireNonNull(storeName, "storeName is required");
       Objects.requireNonNull(interval, "interval is required");
-      return new SitemapConfig(storeName, interval);
+      return new SitemapConfig(enabled, storeName, interval);
     }
   }
 

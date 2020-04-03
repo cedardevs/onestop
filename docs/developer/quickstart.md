@@ -101,7 +101,7 @@ brew install skaffold
 helm init
 
 # install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
-./k8s/infraInstall.sh
+./k8s/installInfra.sh
 
 # run (requires having run a `./gradlew build` for the Docker images referenced in skaffold)
 skaffold dev -f skaffold.yaml

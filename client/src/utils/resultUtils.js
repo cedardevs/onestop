@@ -111,7 +111,7 @@ export const protocols = Immutable([
   },
   {
     id: 'T',
-    names: [ 'thredds', 'unidata:thredds' ],
+    names: [ 'thredds', 'unidata:thredds', 'unidata:ncss', 'unidata:ncml' ],
     color: '#616161',
     label: 'THREDDS',
   },

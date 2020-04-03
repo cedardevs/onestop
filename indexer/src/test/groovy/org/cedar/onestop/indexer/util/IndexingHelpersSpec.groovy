@@ -43,6 +43,7 @@ class IndexingHelpersSpec extends Specification {
       .withStoreName('teststore')
       .withMaxPublishInterval(Duration.ofSeconds(10))
       .withMaxPublishBytes(10000)
+      .withMaxPublishActions(1000)
       .addIndexMapping(testTopic, INDEX, testIndex)
       .addIndexMapping(testTopic, DELETE, testIndex)
       .build()
@@ -261,6 +262,7 @@ class IndexingHelpersSpec extends Specification {
         .withStoreName('teststore')
         .withMaxPublishInterval(Duration.ofSeconds(10))
         .withMaxPublishBytes(10000)
+        .withMaxPublishActions(1000)
         .addIndexMapping(testTopic, DELETE, 'a')
         .addIndexMapping(testTopic, DELETE, 'b')
         .build()
@@ -287,6 +289,7 @@ class IndexingHelpersSpec extends Specification {
         .withStoreName('teststore')
         .withMaxPublishInterval(Duration.ofSeconds(10))
         .withMaxPublishBytes(10000)
+        .withMaxPublishActions(1000)
         .addIndexMapping(testTopic, INDEX, 'a')
         .addIndexMapping(testTopic, INDEX, 'b')
         .build()
@@ -365,7 +368,7 @@ class IndexingHelpersSpec extends Specification {
   }
 
   ////////////////////////////////
-  // Identifiers                //
+  // Identifiers, "Names"       //
   ////////////////////////////////
   def "produces internalParentIdentifier for collection record correctly"() {
     expect:
@@ -383,6 +386,31 @@ class IndexingHelpersSpec extends Specification {
 
     expect:
     IndexingHelpers.prepareInternalParentIdentifier(record) == testId
+  }
+
+  def "produces filename for collection record correctly"() {
+    expect:
+    IndexingHelpers.prepareFilename(inputRecord) == null
+  }
+
+  def "produces filename for granule record correctly when record has data"() {
+    def filename = "ABC"
+    def record = ParsedRecord.newBuilder(inputRecord)
+        .setType(RecordType.granule)
+        .setFileInformation(FileInformation.newBuilder().setName(filename).build())
+        .build()
+
+    expect:
+    IndexingHelpers.prepareFilename(record) == filename
+  }
+
+  def "produces filename for granule record correctly when record does not have data"() {
+    def record = ParsedRecord.newBuilder(inputRecord)
+        .setType(RecordType.granule)
+        .build()
+
+    expect:
+    IndexingHelpers.prepareFilename(record) == null
   }
 
   ////////////////////////////////
@@ -505,19 +533,18 @@ class IndexingHelpersSpec extends Specification {
     def newTimeMetadata = IndexingHelpers.prepareDates(situation.bounding, situation.analysis)
 
     then:
-    newTimeMetadata == expectedResult
+    newTimeMetadata.sort() == expectedResult
 
-    // Only include data that will be checked to cut down on size of below tables
     where:
     situation               | expectedResult
-    situations.instantDay   | [beginDate: '1999-12-31T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
-    situations.instantYear  | [beginDate: '1999-01-01T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
-    situations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000]
-    situations.instantNano  | [beginDate: '2008-04-01T00:00:00Z', endDate: '2008-04-01T00:00:00Z', beginYear: 2008, endYear: 2008]
-    situations.bounded      | [beginDate: '1900-01-01T00:00:00Z', endDate: '2009-12-31T23:59:59Z', beginYear: 1900, endYear: 2009]
-    situations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000]
-    situations.ongoing      | [beginDate: '1975-06-15T12:30:00Z', endDate: null, beginYear: 1975, endYear: null]
-    situations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null]
+    situations.instantDay   | [beginDate: '1999-12-31T00:00:00Z', beginYear: 1999, beginDayOfYear: 365, beginDayOfMonth: 31, beginMonth: 12, endDate: '1999-12-31T23:59:59Z', endYear: 1999, endDayOfYear:365, endDayOfMonth:31, endMonth:12].sort()
+    situations.instantYear  | [beginDate: '1999-01-01T00:00:00Z', beginYear: 1999, beginDayOfYear: 1, beginDayOfMonth:1, beginMonth: 1, endDate: '1999-12-31T23:59:59Z', endYear: 1999, endDayOfMonth:31, endDayOfYear:365, endMonth:12].sort()
+    situations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000, beginDayOfYear: null, beginDayOfMonth:null, beginMonth: null, endDayOfYear: null, endDayOfMonth:null, endMonth:null].sort()
+    situations.instantNano  | [beginDate: '2008-04-01T00:00:00Z', beginYear: 2008, beginDayOfYear: 92, beginDayOfMonth:1, beginMonth: 4, endDate: '2008-04-01T00:00:00Z', endYear: 2008,  endDayOfYear: 92, endDayOfMonth:1, endMonth:4].sort()
+    situations.bounded      | [beginDate: '1900-01-01T00:00:00Z',  beginYear: 1900, beginDayOfYear: 1, beginDayOfMonth:1, beginMonth: 1, endDate: '2009-12-31T23:59:59Z', endYear: 2009, endDayOfYear:365, endDayOfMonth:31, endMonth:12].sort()
+    situations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000, beginDayOfYear: null, beginDayOfMonth:null, beginMonth: null, endDayOfYear: null, endDayOfMonth:null, endMonth:null].sort()
+    situations.ongoing      | [beginDate: "1975-06-15T12:30:00Z", beginDayOfMonth:15, beginDayOfYear:166, beginMonth:6, beginYear:1975, endDate:null, endYear:null, endDayOfYear: null, endDayOfMonth: null, endMonth: null].sort()
+    situations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null, beginDayOfYear: null, beginDayOfMonth:null, beginMonth: null, endDayOfYear: null, endDayOfMonth:null, endMonth:null].sort()
   }
 
   def "temporal bounding with #testCase dates is prepared correctly"() {
@@ -535,9 +562,9 @@ class IndexingHelpersSpec extends Specification {
 
     where:
     testCase      | begin                  | end                     | expected
-    'typical'     | '2005-05-09T00:00:00Z' | '2010-10-01'            | [beginDate: '2005-05-09T00:00:00Z', endDate: '2010-10-01T23:59:59Z', beginYear: 2005, endYear: 2010]
+    'typical'     | '2005-05-09T00:00:00Z' | '2010-10-01'            | [beginDate: '2005-05-09T00:00:00Z', endDate: '2010-10-01T23:59:59.999Z', beginYear: 2005, endYear: 2010]
     'no timezone' | '2005-05-09T00:00:00'  | '2010-10-01T00:00:00'   | [beginDate: '2005-05-09T00:00:00Z', endDate: '2010-10-01T00:00:00Z', beginYear: 2005, endYear: 2010]
-    'paleo'       | '-100000001'           | '-1601050'              | [beginDate: null, endDate: '-1601050-12-31T23:59:59Z', beginYear: -100000001, endYear: -1601050]
+    'paleo'       | '-100000001'           | '-1601050'              | [beginDate: null, endDate: '-1601050-12-31T23:59:59.999Z', beginYear: -100000001, endYear: -1601050]
     'invalid'     | '1984-04-31'           | '1985-505-09T00:00:00Z' | [beginDate: null, endDate: null, beginYear: null, endYear: null]
   }
 

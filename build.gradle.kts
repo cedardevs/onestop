@@ -52,7 +52,7 @@ plugins {
     // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
     // - A Gradle plugin that allows you to package executable jar or war archives,
     //   run Spring Boot applications, and use the dependency management provided by spring-boot-dependencies
-    id("org.springframework.boot").version("2.2.4.RELEASE").apply(false)
+    id("org.springframework.boot").version("2.2.5.RELEASE").apply(false)
 
     // Gogradle plugin
     // https://github.com/gogradle/gogradle
@@ -68,7 +68,7 @@ repositories {
 
 group = "org.cedar.onestop"
 
-version = rootProject.dynamicVersion("cedardevs", CI.CIRCLE, Registry.DOCKER_HUB)
+version = rootProject.dynamicVersion(vendor ="cedardevs", envBuildTag = "ONESTOP_BUILD_TAG", ci = CI.CIRCLE, registry = Registry.DOCKER_HUB)
 
 val authors: List<Author> = listOf(
         Author(
@@ -212,7 +212,7 @@ subprojects {
                 authors = formatAuthors(authors),
                 url = url,
                 licenses = License.GPL20,
-                cleanBefore = "jib"
+                task = "jib"
         ))
     }
     if (springBootProjects.contains(name)) {

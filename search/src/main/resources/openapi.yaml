@@ -539,6 +539,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref: "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref: "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             crossReferences:
@@ -675,6 +681,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref : "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref : "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             crossReferences:
@@ -697,6 +709,8 @@ components:
               $ref: "#/components/schemas/endYear"
             fileIdentifier:
               $ref: "#/components/schemas/fileIdentifier"
+            filename:
+              $ref: "#/components/schemas/filename"
             gcmdDataCenters:
               $ref: "#/components/schemas/gcmdDataCenters"
             gcmdHorizontalResolution:
@@ -815,6 +829,12 @@ components:
               $ref : "#/components/schemas/beginDate"
             beginYear:
               $ref : "#/components/schemas/beginYear"
+            beginDayOfYear:
+              $ref: "#/components/schemas/beginDayOfYear"
+            beginDayOfMonth:
+              $ref: "#/components/schemas/beginDayOfMonth"
+            beginMonth:
+              $ref: "#/components/schemas/beginMonth"
             citeAsStatements:
               $ref: "#/components/schemas/citeAsStatements"
             dataFormat:
@@ -829,8 +849,16 @@ components:
               $ref: "#/components/schemas/endDate"
             endYear:
               $ref: "#/components/schemas/endYear"
+            endDayOfYear:
+              $ref: "#/components/schemas/endDayOfYear"
+            endDayOfMonth:
+              $ref: "#/components/schemas/endDayOfMonth"
+            endMonth:
+              $ref: "#/components/schemas/endMonth"
             fileIdentifier:
               $ref: "#/components/schemas/fileIdentifier"
+            filename:
+              $ref: "#/components/schemas/filename"
             gcmdDataCenters:
               $ref: "#/components/schemas/gcmdDataCenters"
             gcmdHorizontalResolution:
@@ -940,15 +968,19 @@ components:
               - $ref: "#/components/schemas/geometryFilter"
               - $ref: "#/components/schemas/collectionFilter"
               - $ref: "#/components/schemas/excludeGlobalFilter"
+              - $ref: "#/components/schemas/checksumFilter"
           type: array
         page:
           $ref: "#/components/schemas/page"
         sort:
           $ref: "#/components/schemas/sort"
+        search_after:
+          $ref: "#/components/schemas/searchAfter"
         queries:
           items:
             oneOf:
               - $ref: "#/components/schemas/textQuery"
+              - $ref: "#/components/schemas/granuleNameQuery"
           type: array
         summary:
           default: true
@@ -1018,6 +1050,32 @@ components:
         - type
         - value
       title: "Exclude Global Filter"
+      type: object
+    checksumFilter:
+      additionalProperties: false
+      description: "Filter granules by specific checksum(s)."
+      properties:
+        type:
+          description: "Filter type."
+          enum:
+            - checksum
+        algorithm:
+          description: "The checksum algorithm to match"
+          enum:
+            - MD5
+            - SHA1
+            - SHA256
+            - SHA512
+        values:
+          description: "List of checksums"
+          items:
+            description: "Checksum"
+            type: string
+          type: array
+      required:
+        - type
+        - values
+      title: "Collection Filter"
       type: object
     facetFilter:
       additionalProperties: false
@@ -1093,6 +1151,8 @@ components:
           default: asc
         endDate:
           default: asc
+    searchAfter:
+      type: array
     page:
       description: "Result page"
       properties:
@@ -1112,7 +1172,7 @@ components:
       description: "When providing multiple queryText objects in your search request, keep in mind that they will be combined with a logical AND. Terms use Lucene Query Syntax."
       properties:
         type:
-          description: "Filter type."
+          description: "Query type."
           enum:
             - queryText
         value:
@@ -1152,6 +1212,34 @@ components:
         - type
       title: "Year Filter"
       type: object
+    granuleNameQuery:
+      additionalProperties: false
+      description: "Query by granule \"name\" fields ONLY. Note that when combined with the textQuery, matches against the \"name\" fields will be given a double boost in relevance score (due to matching twice across both query objects). If providing multiple granuleName query objects in your search request, keep in mind that they will be combined with a logical AND."
+      properties:
+        type:
+          description: "Query type."
+          enum:
+            - granuleName
+        value:
+          description: "Text to search one or all of the granule name fields. All text is treated literally, i.e., this query type does not interpret any special syntax like wildcards, operators, or regular expressions."
+          type: string
+        field:
+          description: "The single \"name\" field to query against, or all of the possible fields."
+          enum:
+            - title
+            - fileIdentifier
+            - filename
+            - all
+          default: all
+        allTermsMustMatch:
+          description: "Controls the underlying behavior of the query. True means that results are excluded if all terms in the given \"value\" are not found within the specified \"field\". False only excludes results if no terms match at all. Defaults to false."
+          type: boolean
+          default: false
+      required:
+        - type
+        - value
+      title: "Granule Name Query"
+      type: object
 
     # Record field schemas
     accessFeeStatement: # TODO is this an array? # TODO description
@@ -1162,6 +1250,18 @@ components:
       type: string
     beginYear:
       description: Begin year of temporal bounding.
+      format: int64
+      type: integer
+    beginDayOfYear:
+      description: Begin day of year of temporal bounding.
+      format: int64
+      type: integer
+    beginDayOfMonth:
+      description: Begin day of month of temporal bounding, 1 to 31.
+      format: int64
+      type: integer
+    beginMonth:
+      description: Begin month of temporal bounding, 1 to 12.
       format: int64
       type: integer
     citeAsStatements:
@@ -1250,8 +1350,23 @@ components:
       description: End year of temporal bounding.
       format: int64
       type: integer
+    endDayOfYear:
+      description: End day of year of temporal bounding.
+      format: int64
+      type: integer
+    endDayOfMonth:
+      description: End day of month of temporal bounding, 1 to 31.
+      format: int64
+      type: integer
+    endMonth:
+      description: End month of temporal bounding, 1 to 12.
+      format: int64
+      type: integer
     fileIdentifier:
       description: Identifier for this record.
+      type: string
+    filename:
+      description: Filename associated with this record.
       type: string
     gcmdDataCenters:
       description: GCMD Data Center keywords. These keywords are normalized.

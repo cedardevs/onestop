@@ -3,9 +3,9 @@
 [![Build Status](https://circleci.com/gh/cedardevs/onestop.svg?style=svg)](https://circleci.com/gh/cedardevs/onestop)
 [![Code Coverage](https://codecov.io/gh/cedardevs/onestop/branch/master/graph/badge.svg)](https://codecov.io/gh/cedardevs/onestop)
 
-OneStop is a distributed, scalable, event-driven database and search engine for environmental data. 
+OneStop is a distributed, scalable, event-driven database and search engine for environmental data.
 It is designed to receive metadata both from automated systems and manual uploads of ISO-19115 XML metadata.
-It implements generic parsing and analysis of that metadata while also enabling arbitrary processing flows 
+It implements generic parsing and analysis of that metadata while also enabling arbitrary processing flows
 on it. All metadata entities are retrievable via REST API, exposed as streaming events via Kafka, and
 indexed to support a wide range of search and discovery capabilities via Elasticsearch.
 
@@ -18,10 +18,10 @@ For Overview, Usage, Deployment, and Development information about this project,
 ## Legal
 
 This software was developed under the OneStop project: 1553647 and MSN project: 1555839,
-NOAA award numbers NA12OAR4320137 and NA17OAR4320101 respectively to the Cooperative Institute 
+NOAA award numbers NA12OAR4320137 and NA17OAR4320101 respectively to the Cooperative Institute
 for Research in Environmental Sciences at the University of Colorado.
 This code is licensed under GPL version 2.
-© 2016 The Regents of the University of Colorado.
+© 2020 The Regents of the University of Colorado.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

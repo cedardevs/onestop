@@ -60,7 +60,10 @@ export default class AccessView extends React.Component {
 
   renderAccessLink = (link, index) => {
     const {linkUrl, linkName, linkProtocol, linkDescription} = link
-    const linkTitle = linkName ? linkName : linkProtocol
+    var linkTitle = linkName ? linkName : linkProtocol
+    if (linkProtocol == null && linkName == null) {
+      linkTitle = 'Unlabeled'
+    }
     return (
       <li key={index} aria-label={linkTitle}>
         <div>
@@ -158,7 +161,7 @@ export default class AccessView extends React.Component {
       'No formats in metadata.'
     )
 
-    if (item.serviceLinks !== [] && item.serviceLinks[0]) {
+    if (item.serviceLinks && item.serviceLinks !== [] && item.serviceLinks[0]) {
       const serviceLinks = [
         this.renderAccessHeading('Services'),
         item.serviceLinks.map((service, index) =>

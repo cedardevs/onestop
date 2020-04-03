@@ -14,12 +14,15 @@ import {
   GRANULE_NEW_SEARCH_REQUESTED,
   GRANULE_NEW_SEARCH_RESET_FILTERS_REQUESTED,
   GRANULE_RESULTS_PAGE_REQUESTED,
+  GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH,
+  RESET_GRANULE_ALL_TERMS_MUST_MATCH,
 } from '../../actions/routing/GranuleSearchStateActions'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 import {updateSelectedFacets} from '../../utils/filterUtils'
 
 export const initialState = Immutable({
-  title: '',
+  title: '', // TODO rename to something about granule name
+  allTermsMustMatch: true,
   bbox: null,
   geoRelationship: 'intersects',
   timeRelationship: 'intersects',
@@ -120,6 +123,16 @@ export const granuleFilter = (state = initialState, action) => {
 
     case GRANULE_TOGGLE_EXCLUDE_GLOBAL:
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
+
+    case GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH:
+      return Immutable.set(state, 'allTermsMustMatch', !state.allTermsMustMatch)
+
+    case RESET_GRANULE_ALL_TERMS_MUST_MATCH:
+      return Immutable.set(
+        state,
+        'allTermsMustMatch',
+        initialState.allTermsMustMatch
+      )
 
     default:
       return state
