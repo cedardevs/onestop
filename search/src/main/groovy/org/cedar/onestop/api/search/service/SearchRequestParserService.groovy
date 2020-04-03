@@ -145,6 +145,12 @@ class SearchRequestParserService {
       allFilters.add(constructFacetFilter(it))
     }
 
+    // checksum filters:
+    List checksumFilters = constructChecksumFilters(groupedFilters?.checksum ?: [])
+    checksumFilters.each{
+      allFilters.add(it)
+    }
+
     // Granule name filters:
     groupedFilters.granuleName.each {
       /** Note -- For a collection-level search, these nonexistent fields are ignored by Elasticsearch */ // FIXME what happens when we change field names?
@@ -393,6 +399,30 @@ class SearchRequestParserService {
             (fieldName): filterRequest.values
         ]
     ]
+  }
+
+  private static List constructChecksumFilters(List checksumFilters) {
+    //fool proof them, aggregate by algorithm
+    Map checksumAlgFilters = checksumFilters.groupBy { it.algorithm as String }
+    return checksumAlgFilters.collect { alg, filterList ->
+      Set values = filterList.collect{filter ->
+        return filter.values
+      } as Set
+      Map nestedFilter = [
+          nested:[
+              path:"checksums",
+              query:[
+                  bool : [
+                      must : [
+                          [ terms : ["checksums.algorithm" : [alg]  ] ],
+                          [ terms : ["checksums.value" : values.flatten() as List] ]
+                      ]
+                  ]
+              ]
+          ]
+      ]
+      return nestedFilter
+    }
   }
 
   private static Map constructGranuleNameComponent(Map request) {

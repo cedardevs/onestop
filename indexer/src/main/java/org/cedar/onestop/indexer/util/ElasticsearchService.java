@@ -13,6 +13,7 @@ import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.AliasActions;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -100,6 +101,15 @@ public class ElasticsearchService {
   private boolean putMapping(String indexOrAlias, String mapping) throws IOException {
     var request = new PutMappingRequest(indexOrAlias).source(mapping, XContentType.JSON);
     var result = client.indices().putMapping(request, RequestOptions.DEFAULT);
+    return result.isAcknowledged();
+  }
+
+  private boolean putSettings(String indexOrAlias, String settings) throws IOException {
+    if (settings == null || settings.isBlank() || settings.equals("null")) {
+      return true;
+    }
+    var request = new UpdateSettingsRequest(indexOrAlias).settings(settings, XContentType.JSON);
+    var result = client.indices().putSettings(request, RequestOptions.DEFAULT);
     return result.isAcknowledged();
   }
 

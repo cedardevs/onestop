@@ -10,16 +10,19 @@ public class BulkIndexingConfig {
   private final String storeName;
   private final Duration maxPublishInterval;
   private final long maxPublishBytes;
+  private final int maxPublishActions;
   private final Map<String, Map<OpType, List<String>>> indexMappings;
 
   private BulkIndexingConfig(
       String storeName,
       Duration maxPublishInterval,
       long maxPublishBytes,
+      int maxPublishActions,
       Map<String, Map<OpType, List<String>>> indexMappings) {
     this.storeName = storeName;
     this.maxPublishInterval = maxPublishInterval;
     this.maxPublishBytes = maxPublishBytes;
+    this.maxPublishActions = maxPublishActions;
     this.indexMappings = indexMappings;
   }
 
@@ -42,6 +45,10 @@ public class BulkIndexingConfig {
     return maxPublishBytes;
   }
 
+  public int getMaxPublishActions() {
+    return maxPublishActions;
+  }
+
   public static BulkIndexingConfigBuilder newBuilder() {
     return new BulkIndexingConfigBuilder();
   }
@@ -50,6 +57,7 @@ public class BulkIndexingConfig {
     private String storeName;
     private Duration maxPublishInterval;
     private Long maxPublishBytes;
+    private Integer maxPublishActions;
     private Map<String, Map<OpType, List<String>>> topicMappings;
 
     public BulkIndexingConfigBuilder() {
@@ -70,8 +78,13 @@ public class BulkIndexingConfig {
       return this;
     }
 
-    public synchronized BulkIndexingConfigBuilder withMaxPublishBytes(long bytes) {
+    public synchronized BulkIndexingConfigBuilder withMaxPublishBytes(Long bytes) {
       maxPublishBytes = bytes;
+      return this;
+    }
+
+    public synchronized BulkIndexingConfigBuilder withMaxPublishActions(Integer actions) {
+      maxPublishActions = actions;
       return this;
     }
 
@@ -85,16 +98,19 @@ public class BulkIndexingConfig {
         throw new IllegalArgumentException("storeName is required");
       }
       if (maxPublishBytes == null) {
-        throw new IllegalArgumentException("maxPublishingBytes is required");
+        throw new IllegalArgumentException("maxPublishBytes is required");
       }
       if (maxPublishInterval == null) {
-        throw new IllegalArgumentException("maxPublishingInterval is required");
+        throw new IllegalArgumentException("maxPublishInterval is required");
+      }
+      if (maxPublishActions == null) {
+        throw new IllegalArgumentException("maxPublishActions is required");
       }
       if (topicMappings.size() == 0) {
         throw new IllegalArgumentException("at least one mapping of (topic, opType) -> index is required");
       }
       var unmodifiableMappings = Collections.unmodifiableMap(topicMappings);
-      return new BulkIndexingConfig(storeName, maxPublishInterval, maxPublishBytes, unmodifiableMappings);
+      return new BulkIndexingConfig(storeName, maxPublishInterval, maxPublishBytes, maxPublishActions, unmodifiableMappings);
     }
 
   }

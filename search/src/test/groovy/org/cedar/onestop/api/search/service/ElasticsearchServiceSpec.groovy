@@ -52,7 +52,7 @@ class ElasticsearchServiceSpec extends Specification {
     given:
     ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestHighLevelClient, mockRestClient, esConfig)
     Map params = [sort:[[stagedDate: "desc"]]]
-    List resultingSort = params.sort + [_doc: "desc"]
+    List resultingSort = params.sort
     // post processing on the request was altering the results after addPagination
     when:
     def queryResult = elasticsearchService.buildRequestBody(params)
@@ -158,7 +158,8 @@ class ElasticsearchServiceSpec extends Specification {
     where:
     params                 | expected
     []                     | [["_score" : "desc"], ["_doc": "desc"]]
-    [["beginDate":"desc"]] | [["beginDate":"desc"], ["_doc": "desc"]]
+    [["beginDate":"desc"]] | [["beginDate":"desc"]]
+//    [["beginDate":"desc"]] | [["beginDate":"desc"], ["_doc": "desc"]]
   }
 
   private Response buildMockElasticResponse(int status, Map body) {

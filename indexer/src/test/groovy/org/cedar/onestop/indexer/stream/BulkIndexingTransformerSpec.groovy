@@ -42,7 +42,9 @@ class BulkIndexingTransformerSpec extends Specification {
   static testIndex = 'testIndex'
 
   Duration testBulkInterval = Duration.ofSeconds(1)
-  Long testMaxBytes = 1_000_000
+  Long testMaxBytes = 100_000
+  Integer testMaxPublishActions = 1_000
+
   ElasticsearchService mockEsService
   MockProcessorContext mockProcessorContext
   TimestampedKeyValueStore<String, ParsedRecord> testStore
@@ -62,6 +64,7 @@ class BulkIndexingTransformerSpec extends Specification {
     testIndexingConfig = BulkIndexingConfig.newBuilder()
         .withStoreName(storeName)
         .withMaxPublishBytes(testMaxBytes)
+        .withMaxPublishActions(testMaxPublishActions)
         .withMaxPublishInterval(testBulkInterval)
         .addIndexMapping(testTopic, OpType.INDEX, testIndex)
         .build()

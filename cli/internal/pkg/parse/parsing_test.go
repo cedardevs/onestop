@@ -1,12 +1,12 @@
 package parse
 
 import (
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+	"strconv"
 	"testing"
 	"time"
-	"strconv"
-	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 )
 
 func TestParseStartAndEndTime(t *testing.T) {
@@ -18,7 +18,7 @@ func TestParseStartAndEndTime(t *testing.T) {
 
 	params2 := viper.New()
 	params2.Set(flags.StartTimeScdrFlag, "2018-01-01")
-	expectedResult2 :=  []string{"{\"type\":\"datetime\", \"after\":\"2018-01-01T00:00:00Z\"}"}
+	expectedResult2 := []string{"{\"type\":\"datetime\", \"after\":\"2018-01-01T00:00:00Z\"}"}
 
 	params3 := viper.New()
 	params3.Set(flags.EndTimeScdrFlag, "2019-01-01")
@@ -128,7 +128,7 @@ func TestParseSince(t *testing.T) {
 	params1 := viper.New()
 	params1.Set(flags.SinceFlag, "2020-01-31T12:02:28")
 	expectedResult1 := []string{"{\"type\":\"queryText\", \"value\":\"stagedDate:>1582282512000\"}"}
-// {"type":"queryText", "value":"stagedDate:>1580428948105"}
+	// {"type":"queryText", "value":"stagedDate:>1580428948105"}
 	params2 := viper.New()
 	params2.Set(flags.SinceFlag, "2020-02-21T10:55:12")
 	expectedResult2 := []string{"{\"type\":\"queryText\", \"value\":\"stagedDate:>1582282512000\"}"}
@@ -145,6 +145,42 @@ func TestParseSince(t *testing.T) {
 			log.Info().Msg(expectedResults[i][0])
 			t.Error("TestParseSince Failed")
 		}
+	}
+}
+
+func TestParseMonth(t *testing.T) {
+	params := viper.New()
+	params.Set(flags.MonthFlag, "12")
+	expectedResult := []string{"{\"type\":\"queryText\", \"value\":\"beginMonth:12\"}"}
+	got := ParseMonth(params)
+	if got[0] != expectedResult[0] {
+		log.Info().Msg(got[0])
+		log.Info().Msg(expectedResult[0])
+		t.Error("TestParseMonth Failed")
+	}
+}
+
+func TestParseDayOfMonth(t *testing.T) {
+	params := viper.New()
+	params.Set(flags.DayFlag, "15")
+	expectedResult := []string{"{\"type\":\"queryText\", \"value\":\"beginDayOfMonth:15\"}"}
+	got := ParseDayOfMonth(params)
+	if got[0] != expectedResult[0] {
+		log.Info().Msg(got[0])
+		log.Info().Msg(expectedResult[0])
+		t.Error("TestParseDayOfMonth Failed")
+	}
+}
+
+func TestParseDayOfYear(t *testing.T) {
+	params := viper.New()
+	params.Set(flags.DoyFlag, "300")
+	expectedResult := []string{"{\"type\":\"queryText\", \"value\":\"beginDayOfYear:300\"}"}
+	got := ParseDayOfYear(params)
+	if got[0] != expectedResult[0] {
+		log.Info().Msg(got[0])
+		log.Info().Msg(expectedResult[0])
+		t.Error("TestParseDayOfYear Failed")
 	}
 }
 

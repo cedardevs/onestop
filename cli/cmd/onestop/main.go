@@ -2,10 +2,10 @@ package main
 
 import (
 	"crypto/tls"
-	"github.com/danielgtaylor/openapi-cli-generator/cli"
+	"github.com/cedardevs/onestop/cli/internal/app/generated"
 	"github.com/cedardevs/onestop/cli/internal/app/onestop"
 	"github.com/cedardevs/onestop/cli/internal/app/scdr"
-	"github.com/cedardevs/onestop/cli/internal/app/generated"
+	"github.com/danielgtaylor/openapi-cli-generator/cli"
 	gtls "gopkg.in/h2non/gentleman.v2/plugins/tls"
 )
 

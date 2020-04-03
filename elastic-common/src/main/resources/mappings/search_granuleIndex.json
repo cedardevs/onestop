@@ -26,6 +26,17 @@
           }
         }
       },
+      "checksums" : {
+        "type": "nested",
+        "properties": {
+          "algorithm":{
+            "type": "keyword"
+          },
+          "value":{
+            "type": "keyword"
+          }
+        }
+      },
       "parentIdentifier": {
         "type": "keyword"
       },
@@ -96,12 +107,30 @@
       "beginYear": {
         "type": "long"
       },
+      "beginDayOfYear": {
+        "type": "short"
+      },
+      "beginDayOfMonth": {
+        "type": "byte"
+      },
+      "beginMonth": {
+        "type": "byte"
+      },
       "endDate": {
         "type": "date",
         "format": "date_optional_time"
       },
       "endYear": {
         "type": "long"
+      },
+      "endDayOfYear": {
+        "type": "short"
+      },
+      "endDayOfMonth": {
+        "type": "byte"
+      },
+      "endMonth": {
+        "type": "byte"
       },
       "spatialBounding": {
         "type": "geo_shape",
