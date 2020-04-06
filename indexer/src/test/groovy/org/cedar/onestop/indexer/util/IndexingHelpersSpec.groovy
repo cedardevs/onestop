@@ -365,7 +365,7 @@ class IndexingHelpersSpec extends Specification {
   }
 
   ////////////////////////////////
-  // Identifiers                //
+  // Identifiers, "Names"       //
   ////////////////////////////////
   def "produces internalParentIdentifier for collection record correctly"() {
     expect:
@@ -383,6 +383,31 @@ class IndexingHelpersSpec extends Specification {
 
     expect:
     IndexingHelpers.prepareInternalParentIdentifier(record) == testId
+  }
+
+  def "produces filename for collection record correctly"() {
+    expect:
+    IndexingHelpers.prepareFilename(inputRecord) == null
+  }
+
+  def "produces filename for granule record correctly when record has data"() {
+    def filename = "ABC"
+    def record = ParsedRecord.newBuilder(inputRecord)
+        .setType(RecordType.granule)
+        .setFileInformation(FileInformation.newBuilder().setName(filename).build())
+        .build()
+
+    expect:
+    IndexingHelpers.prepareFilename(record) == filename
+  }
+
+  def "produces filename for granule record correctly when record does not have data"() {
+    def record = ParsedRecord.newBuilder(inputRecord)
+        .setType(RecordType.granule)
+        .build()
+
+    expect:
+    IndexingHelpers.prepareFilename(record) == null
   }
 
   ////////////////////////////////
@@ -535,9 +560,9 @@ class IndexingHelpersSpec extends Specification {
 
     where:
     testCase      | begin                  | end                     | expected
-    'typical'     | '2005-05-09T00:00:00Z' | '2010-10-01'            | [beginDate: '2005-05-09T00:00:00Z', endDate: '2010-10-01T23:59:59Z', beginYear: 2005, endYear: 2010]
+    'typical'     | '2005-05-09T00:00:00Z' | '2010-10-01'            | [beginDate: '2005-05-09T00:00:00Z', endDate: '2010-10-01T23:59:59.999Z', beginYear: 2005, endYear: 2010]
     'no timezone' | '2005-05-09T00:00:00'  | '2010-10-01T00:00:00'   | [beginDate: '2005-05-09T00:00:00Z', endDate: '2010-10-01T00:00:00Z', beginYear: 2005, endYear: 2010]
-    'paleo'       | '-100000001'           | '-1601050'              | [beginDate: null, endDate: '-1601050-12-31T23:59:59Z', beginYear: -100000001, endYear: -1601050]
+    'paleo'       | '-100000001'           | '-1601050'              | [beginDate: null, endDate: '-1601050-12-31T23:59:59.999Z', beginYear: -100000001, endYear: -1601050]
     'invalid'     | '1984-04-31'           | '1985-505-09T00:00:00Z' | [beginDate: null, endDate: null, beginYear: null, endYear: null]
   }
 

@@ -1,14 +1,11 @@
-apiVersion: skaffold/v1beta7
+apiVersion: skaffold/v2beta1
 kind: Config
 
 .onestop-indexer: &onestop-indexer
   name: onestop-indexer
   chartPath: helm/onestop-indexer
   values:
-    # skaffold may not build/deploy w/the latest if this is not set here
     image: cedardevs/onestop-indexer
-  imageStrategy:
-    helm: {}
   setValues:
     config: |-
       ---
@@ -21,6 +18,8 @@ kind: Config
         commit:
           interval:
             ms: 1000
+  imageStrategy:
+    helm: {}
 
 .onestop-registry: &onestop-registry
   name: onestop-registry
@@ -28,13 +27,6 @@ kind: Config
   values:
     image: cedardevs/onestop-registry
   setValues:
-    # features are directly tied to `export SPRING_PROFILES_ACTIVE='cas,...'
-    # all features default to "false" in base chart, unless otherwise overridden
-    features.cas: false
-    replicaCount: 1
-    # if true, `kubectl port-forward onestop-registry-0 5005:5005` to expose JDWP for debugging
-    # then, create a "Remote" Debug Configuration in intelliJ (Host: 127.0.0.1, Port: 5005)
-    debug: false
     config: |-
       ---
       logging:
@@ -52,12 +44,11 @@ kind: Config
         roles:
           ROLE_ADMIN:
             - casuser
-    # env values
-    kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
+    debug: "false"
+    features.cas: "false"
     kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
-  #        autoscaler.enabled: true
-  #        autoscaler.maxReplicas: 2
-  #        autoscaler.cpu.averageValue: 150m
+    kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
+    replicaCount: "1"
   imageStrategy:
     helm: {}
 
@@ -74,9 +65,8 @@ kind: Config
           org.cedar: DEBUG
           org.cedar.schemas.avro.util: INFO
       kafka.commit.interval: 1000
-    # Env values
-    kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
     kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
+    kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
   imageStrategy:
     helm: {}
 
@@ -84,36 +74,27 @@ kind: Config
   name: onestop-search
   chartPath: helm/onestop-search
   values:
-    # skaffold may not build/deploy w/the latest if this is not set here
     image: cedardevs/onestop-search
+  setValues:
+    env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
+    env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
+    features.login-gov: "false"
+    features.sitemap: "true"
+    service.nodePort: "30097"
+    service.type: NodePort
   imageStrategy:
     helm: {}
-  setValues:
-    service.type: NodePort
-    service.nodePort: 30097
-    # allows onestop-search to be exposed outside the cluster in dev
-    # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
-    # all features default to "false" in base chart, unless otherwise overridden
-    features.login-gov: false
-    features.sitemap: true
-    env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
-    env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
-#        config: |-
-#          ---
-#          logging.level.org.cedar.onestop.api.search: DEBUG
 
 .onestop-client: &onestop-client
   name: onestop-client
   chartPath: helm/onestop-client
   values:
-    # skaffold may not build/deploy w/the latest if this is not set here
     image: cedardevs/onestop-client
+  setValues:
+    apiSearch.endpoint: onestop-search:8080/onestop-search
+    prefixPath: onestop
   imageStrategy:
     helm: {}
-  setValues:
-    # allows onestop-search to be exposed outside the cluster in dev
-    prefixPath: onestop
-    apiSearch.endpoint: onestop-search:8080/onestop-search
 
 .onestop-user: &onestop-user
   name: onestop-user
@@ -142,63 +123,64 @@ kind: Config
 
 build:
   artifacts:
-  - image: cedardevs/onestop-indexer
-    jibGradle:
-      project: indexer
-  - image: cedardevs/onestop-registry
-    jibGradle:
-      project: registry
-  - image: cedardevs/onestop-stream-manager
-    jibGradle:
-      project: stream-manager
-  - image: cedardevs/onestop-search
-    jibGradle:
-      project: search
-  - image: cedardevs/onestop-client
-    jibGradle:
-      project: client
-  - image: cedardevs/onestop-user
-    jibGradle:
-      project: user
-
+    - image: cedardevs/onestop-indexer
+      jib:
+        project: indexer
+        type: gradle
+    - image: cedardevs/onestop-registry
+      jib:
+        project: registry
+        type: gradle
+    - image: cedardevs/onestop-stream-manager
+      jib:
+        project: stream-manager
+        type: gradle
+    - image: cedardevs/onestop-search
+      jib:
+        project: search
+        type: gradle
+    - image: cedardevs/onestop-client
+      jib:
+        project: client
+        type: gradle
+    - image: cedardevs/onestop-user
+      jib:
+        project: user
+        type: gradle
 deploy:
+  kubectl:
+
   helm:
     releases:
-    - *onestop-indexer # depends on both kafka and elasticsearch by default
-    - *onestop-registry
-    - *onestop-manager
-    - *onestop-search
-    - *onestop-client
-    # DEV DEPENDENCIES
-    - name: onestop-dev
-      chartPath: helm/onestop-dev
+      - *onestop-indexer
+      - *onestop-registry
+      - *onestop-manager
+      - *onestop-search
+      - *onestop-client
+      - name: onestop-dev
+        chartPath: helm/onestop-dev
 
 profiles:
   - name: psi
-    # things that depend only on kafka
     deploy:
       helm:
         releases:
           - *onestop-manager
           - *onestop-registry
-          # DEV DEPENDENCIES
           - name: onestop-dev
             chartPath: helm/onestop-dev
-
   - name: os
-    # things that depend only on elasticsearch
     deploy:
       helm:
         releases:
           - *onestop-search
           - *onestop-client
-          # DEV DEPENDENCIES
           - name: onestop-dev
             chartPath: helm/onestop-dev
             setValues:
-              cp-kafka.enabled: false
-              cp-schema-registry.enabled: false
-              cp-zookeeper.enabled: false
+              cp-kafka.enabled: "false"
+              cp-schema-registry.enabled: "false"
+              cp-zookeeper.enabled: "false"
   - name: user
     deploy:
       helm:
