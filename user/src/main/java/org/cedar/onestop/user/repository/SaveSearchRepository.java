@@ -1,9 +1,10 @@
-package org.cedar.onestop.user.service;
+package org.cedar.onestop.user.repository;
 
+import org.cedar.onestop.user.service.SaveSearch;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
 
 /**
  * SaveSearchRepository extends the CrudRepository interface.
@@ -18,6 +19,7 @@ import java.util.List;
  * saving, deleting, and finding save search entities.
  *
  */
+@Repository
 public interface SaveSearchRepository extends JpaRepository<SaveSearch, String> {
   List<SaveSearch> findAllByUserId(String userId);
   long count();

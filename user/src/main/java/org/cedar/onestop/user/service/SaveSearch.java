@@ -39,6 +39,11 @@ public class SaveSearch {
   @UpdateTimestamp
   public Date lastUpdatedOn; ///TODO do we also accept part of the query
 
+  //constructor will be used by Spring JPA
+  protected SaveSearch() {
+  }
+
+  //constructor is for creating instances.
   public SaveSearch(String id, String userId, String name, String value, Date createdOn, Date lastUpdatedOn) {
     this.id = id;
     this.userId = userId;
@@ -48,6 +53,7 @@ public class SaveSearch {
     this.lastUpdatedOn = lastUpdatedOn;
   }
 
+  //constructor is for creating instances.
   public SaveSearch(String id, String userId, String name, String value) {
     this.id = id;
     this.userId = userId;
@@ -63,9 +69,6 @@ public class SaveSearch {
   @PreUpdate
   protected void onUpdate() {
     lastUpdatedOn = new Date();
-  }
-
-  public SaveSearch() {
   }
 
   public String getId() {

@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.cedar.onestop.user.service.ResourceNotFoundException;
 import org.cedar.onestop.user.service.SaveSearch;
-import org.cedar.onestop.user.service.SaveSearchRepository;
+import org.cedar.onestop.user.repository.SaveSearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +19,12 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 public class SaveSearchController {
 
+  private SaveSearchRepository saveSearchRepository;
+
   @Autowired
-  SaveSearchRepository saveSearchRepository;
+  public SaveSearchController(SaveSearchRepository saveSearchRepository) {
+    this.saveSearchRepository = saveSearchRepository;
+  }
 
   @ApiOperation(value = "View all available save searches (ADMIN)", response = Iterable.class)
   @ApiResponses(value = {
