@@ -49,7 +49,7 @@ spec:
                         {{- end -}}
                       {{- end -}}
                       {{- join "," $active.profiles }}'
-          # generic env overrides, for spring properities, etc
+          # generic env overrides, for spring properties, etc
           {{- if .Values.env }}
             {{- range $envName,$envVal := .Values.env }}
             - name: {{ $envName }}

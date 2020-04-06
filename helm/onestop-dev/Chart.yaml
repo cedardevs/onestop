@@ -23,3 +23,6 @@ dependencies:
     version: ~0.1.0
     repository: file://../cas
     condition: cas.enabled
+  - name: postgresql
+    version: ~8.6.8
+    repository: https://charts.bitnami.com/bitnami

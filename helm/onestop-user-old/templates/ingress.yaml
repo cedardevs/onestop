@@ -1,16 +1,15 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "onestop-user.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
+{{- $ingressPaths := .Values.ingress.paths -}}
 apiVersion: extensions/v1beta1
-{{- end }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "onestop-user.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "onestop-user.name" . }}
+    helm.sh/chart: {{ include "onestop-user.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -28,14 +27,14 @@ spec:
 {{- end }}
   rules:
   {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ . | quote }}
       http:
         paths:
-        {{- range .paths }}
+	{{- range $ingressPaths }}
           - path: {{ . }}
             backend:
               serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-        {{- end }}
+              servicePort: http
+	{{- end }}
   {{- end }}
 {{- end }}

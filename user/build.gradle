@@ -29,6 +29,10 @@ dependencies {
   // reactive test dependencies
 //    testImplementation 'org.springframework.boot.experimental:spring-boot-test-autoconfigure-r2dbc'
 //    testImplementation 'io.projectreactor:reactor-test'
+
+  // -- CAS Authentication --
+  implementation "org.pac4j:spring-webmvc-pac4j:3.2.0"
+  implementation "org.pac4j:pac4j-oidc:3.8.3"
 }
 
 test {
@@ -100,7 +104,7 @@ jib {
     container {
       creationTime = publish.created.toString()
       labels = publish.ociAnnotations()
-      ports = ['8080', '9090']
+      ports = ['8080']
     }
   }
 }

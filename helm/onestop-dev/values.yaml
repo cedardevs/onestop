@@ -145,3 +145,10 @@ grafana:
 metrics-server:
   args:
     - --kubelet-insecure-tls
+###############################################################################
+# POSTGRES (for user api)
+###############################################################################
+postgresql:
+  postgresqlDatabase: user
+  postgresqlUsername: onestop
+  postgresqlPassword: foamcat

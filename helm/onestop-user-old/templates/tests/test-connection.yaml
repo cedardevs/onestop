@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "onestop-user.fullname" . }}-test-connection"
+  labels:
+    app.kubernetes.io/name: {{ include "onestop-user.name" . }}
+    helm.sh/chart: {{ include "onestop-user.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args:  ['{{ include "onestop-user.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

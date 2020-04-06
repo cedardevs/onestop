@@ -3,10 +3,7 @@ kind: Service
 metadata:
   name: {{ include "onestop-user.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "onestop-user.name" . }}
-    helm.sh/chart: {{ include "onestop-user.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "onestop-user.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -15,5 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "onestop-user.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "onestop-user.selectorLabels" . | nindent 4 }}

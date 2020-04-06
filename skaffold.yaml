@@ -105,13 +105,15 @@ kind: Config
   imageStrategy:
     helm: {}
   setValues:
+    features.logingov: "true"
     config: |-
       ---
+      server.servlet.context-path: /user
       spring:
         datasource:
-          url: jdbc:postgresql://localhost:5432/testdb
-          username: semere
-          password: se12mere
+          url: jdbc:postgresql://onestop-dev-postgresql:5432/user
+          username: onestop
+          password: foamcat
         jpa:
           database: POSTGRESQL
           show-sql: true
@@ -157,6 +159,7 @@ deploy:
       - *onestop-manager
       - *onestop-search
       - *onestop-client
+      - *onestop-user
       - name: onestop-dev
         chartPath: helm/onestop-dev
 

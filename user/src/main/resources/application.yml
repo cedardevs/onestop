@@ -1,11 +1,11 @@
 server:
-  port: 9090
+  port: 8080
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/testdb
-    username: semere
-    password: se12mere
+    url: jdbc:postgresql://onestop-dev-postgresql:5432/user
+    username: onestop
+    password: foamcat
     initialization-mode: always
     continue-on-error: false
     driver-class-name: org.postgresql.Driver
