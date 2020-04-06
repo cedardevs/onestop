@@ -1,4 +1,4 @@
-package org.cedar.onestop.user.service;
+package org.cedar.onestop.user.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

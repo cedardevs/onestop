@@ -1,7 +1,7 @@
 package org.cedar.onestop.user
 
 import org.cedar.onestop.user.service.SaveSearch
-import org.cedar.onestop.user.service.SaveSearchRepository
+import org.cedar.onestop.user.repository.SaveSearchRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -50,7 +50,7 @@ class SaveSearchControllerSpec extends Specification {
     postgres.stop()
   }
 
-  def "Create and get all save searches"() {
+  def "Create and get all saved searches"() {
     given:
     saveSearch = new SaveSearch("1", "userOne", "entryName1", "value 1")
     saveSearchRepository.save(saveSearch)

@@ -12,19 +12,21 @@ dependencies {
   implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation 'org.springframework.boot:spring-boot-starter-web'
-//    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-//    runtimeOnly 'io.r2dbc:r2dbc-postgresql'
   runtimeOnly 'org.postgresql:postgresql'
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")
-//  implementation("com.vladmihalcea:hibernate-types-52:2.9.5")
 
+  // reactive async dependencies
+//  implementation 'org.springframework.boot:spring-boot-starter-webflux'
+//  runtimeOnly 'io.r2dbc:r2dbc-postgresql'
+//  compile group: 'org.springframework.data', name: 'spring-data-r2dbc', version: '1.0.0.RELEASE'
 
   testImplementation('org.springframework.boot:spring-boot-starter-test')
   testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")
   testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
-  testImplementation("com.h2database:h2")
   testImplementation("org.testcontainers:postgresql:1.13.0")
+
+  // reactive test dependencies
 //    testImplementation 'org.springframework.boot.experimental:spring-boot-test-autoconfigure-r2dbc'
 //    testImplementation 'io.projectreactor:reactor-test'
 }

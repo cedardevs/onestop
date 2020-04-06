@@ -1,14 +1,13 @@
-package org.cedar.onestop.user;
+package org.cedar.onestop.user
 
-
-import org.cedar.onestop.user.service.SaveSearch;
-import org.cedar.onestop.user.service.SaveSearchRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.PostgreSQLContainer;
-import spock.lang.Specification;
+import org.cedar.onestop.user.service.SaveSearch
+import org.cedar.onestop.user.repository.SaveSearchRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.test.context.ActiveProfiles
+import org.testcontainers.containers.PostgreSQLContainer
+import spock.lang.Specification
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
