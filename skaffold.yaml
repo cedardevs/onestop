@@ -105,7 +105,7 @@ kind: Config
   imageStrategy:
     helm: {}
   setValues:
-    features.logingov: "true"
+    features.logingov: "false"
     config: |-
       ---
       server.servlet.context-path: /user
