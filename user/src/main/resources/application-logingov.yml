@@ -3,9 +3,9 @@
 ######
 
 # -- allows for better security logs for debugging --
-#logging.level.org.pac4j.springframework.web: DEBUG
-#logging.level.org.pac4j.core.engine: DEBUG
-#logging.level.org.pac4j.cas: DEBUG
+logging.level.org.pac4j.springframework.web: DEBUG
+logging.level.org.pac4j.core.engine: DEBUG
+logging.level.org.pac4j.cas: DEBUG
 
 # -- The prefix URL of the CAS server --
 # -- note: will require actually registering service in the future...

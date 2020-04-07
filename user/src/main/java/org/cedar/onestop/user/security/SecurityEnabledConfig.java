@@ -6,7 +6,8 @@ import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.HttpConstants;
-import org.pac4j.core.matching.HttpMethodMatcher;
+import org.pac4j.core.matching.matcher.HttpMethodMatcher;
+import org.pac4j.core.profile.UserProfile;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.oidc.config.OidcConfiguration;
 import org.pac4j.oidc.profile.OidcProfile;
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Profile("logingov")
 @Configuration
@@ -33,7 +35,7 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
 
   static final String ROLE_PUBLIC = "ROLE_PUBLIC";
 
-  class Authorization {
+  static class Authorization {
     private Map<String, List<String>> roles;
 
     Map<String, List<String>> getRoles() {
@@ -52,7 +54,7 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
   }
 
   // Pac4J Configuration
-  class LoginGovConfiguration {
+  static class LoginGovConfiguration {
     public String clientId;
     public String discoveryUri;
     public String scopes;
@@ -70,7 +72,7 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
   static final String AUTHORIZER_PUBLIC = "public";
   static final String MATCHER_HTTP_METHOD_SECURE = "http-methods-secure";
 
-  OidcClient<OidcProfile, OidcConfiguration> loginGovClient() {
+  OidcClient<OidcConfiguration> loginGovClient() {
 
 //    login-gov:
 //    authorization-uri: https://idp.int.identitysandbox.gov/openid_connect/authorize
@@ -103,15 +105,18 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
     oidcConfiguration.setDiscoveryURI(loginGov.discoveryUri);
     oidcConfiguration.setScope(loginGov.scopes);
     oidcConfiguration.setUseNonce(loginGov.useNonce);
-    oidcConfiguration.setCustomParams(Map.of("acr_values", loginGov.acrValues));
 
-    AuthorizationGenerator<OidcProfile> authGen = (context, profile) -> {
+    oidcConfiguration.setCustomParams(Map.of("acr_values", "http://idmanagement.gov/ns/assurance/loa/1"));
+    //oidcConfiguration.setCustomParams(Map.of("acr_values", loginGov.acrValues));
+
+    AuthorizationGenerator authGen = (context, profile) -> {
       // all users coming in through `login.gov` are given `ROLE_PUBLIC`
       profile.addRole(ROLE_PUBLIC);
-      return profile;
+      return Optional.of(profile);
     };
 
-    OidcClient<OidcProfile, OidcConfiguration> oidcClient = new OidcClient<>(oidcConfiguration);
+    final OidcClient<OidcConfiguration> oidcClient = new OidcClient<>(oidcConfiguration);
+
     oidcClient.addAuthorizationGenerator(authGen);
     return oidcClient;
   }
@@ -120,7 +125,7 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
   Config config() {
     log.info("\n===configUI===\n");
 
-    OidcClient<OidcProfile, OidcConfiguration> loginGovClient = loginGovClient();
+    OidcClient<OidcConfiguration> loginGovClient = loginGovClient();
     Clients uiClients = new Clients(loginGovClient);
 
     final Config config = new Config(uiClients);
@@ -147,7 +152,7 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
     //SecurityInterceptor interceptorResurrection = new SecurityInterceptor(config(), LOGIN_GOV_REST_CLIENT, AUTHORIZER_PUBLIC);
 
     // this will intercept and secure all POST/PUT/PATCH/DELETE requests
-    registry.addInterceptor(interceptorHttpMethodsSecure).addPathPatterns("/test/closed");
+    registry.addInterceptor(interceptorHttpMethodsSecure).addPathPatterns("/test/**");
 
     // because the above interceptor will not catch the GET `/metadata/**/resurrection` endpoints
     //registry.addInterceptor(interceptorResurrection).addPathPatterns("/metadata/**/resurrection");

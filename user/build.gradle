@@ -31,8 +31,8 @@ dependencies {
 //    testImplementation 'io.projectreactor:reactor-test'
 
   // -- CAS Authentication --
-  implementation "org.pac4j:spring-webmvc-pac4j:3.2.0"
-  implementation "org.pac4j:pac4j-oidc:3.8.3"
+  implementation "org.pac4j:spring-webmvc-pac4j:4.0.0"
+  implementation "org.pac4j:pac4j-oidc:4.0.0"
 }
 
 test {
