@@ -105,9 +105,20 @@ kind: Config
   imageStrategy:
     helm: {}
   setValues:
+    debug: "true"
     features.logingov: "false"
     config: |-
       ---
+      logging.level.org.pac4j.springframework.web: DEBUG
+      logging.level.org.pac4j.core.engine: DEBUG
+      logging.level.org.pac4j.cas: DEBUG
+      cas:
+        prefixUrl: 'http://onestop-dev-cas:8080/cas'
+      authorization:
+        roles:
+          ROLE_ADMIN:
+            - casuser
+
       server.servlet.context-path: /user
       spring:
         datasource:
