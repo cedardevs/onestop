@@ -37,7 +37,7 @@ class SearchController {
   // Get Collection Info
   @CrossOrigin(origins = "*")
   @RequestMapping(path = ["/collection", "/v1/collection"], method = [GET, HEAD], produces = 'application/json')
-  Map getCollectionInfo(HttpServletResponse response) {
+  Map getCollectionInfo(HttpServletRequest request, HttpServletResponse response) {
     log.info("Request URI: ${request.getRequestURI()}")
     return elasticsearchService.totalCollections()
   }
@@ -77,7 +77,7 @@ class SearchController {
   // Get Granule Info
   @CrossOrigin(origins = "*")
   @RequestMapping(path = ["/granule", "/v1/granule"], method = [GET, HEAD], produces = 'application/json')
-  Map getGranuleInfo(HttpServletResponse response) {
+  Map getGranuleInfo(HttpServletRequest request, HttpServletResponse response) {
     log.info("Request URI: ${request.getRequestURI()}")
     return elasticsearchService.totalGranules()
   }
@@ -117,7 +117,7 @@ class SearchController {
   // Get Flattened Granule Info
   @CrossOrigin(origins = "*")
   @RequestMapping(path = ["/flattened-granule", "/v1/flattened-granule"], method = [GET, HEAD], produces = 'application/json')
-  Map getFlattenedGranuleInfo(HttpServletResponse response) {
+  Map getFlattenedGranuleInfo(HttpServletRequest request, HttpServletResponse response) {
     log.info("Request URI: ${request.getRequestURI()}")
     return elasticsearchService.totalFlattenedGranules()
   }
