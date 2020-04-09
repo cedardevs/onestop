@@ -171,7 +171,7 @@ describe('The BoundingBoxEffect hook', () => {
         const bounds = getBounds(hook)
         bounds.clear()
       })
-1
+
       let bounds = getBounds(hook)
       expect(bounds.west.value).toEqual('')
       expect(bounds.east.value).toEqual('')
