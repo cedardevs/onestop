@@ -1,5 +1,6 @@
 {
   "mappings": {
+    "dynamic": "strict",
     "properties": {
       "dataAccess": {
         "properties": {
@@ -11,16 +12,16 @@
       "description": {
         "properties": {
           "descriptionCharacters": {
-            "type": "long"
+            "type": "short"
           },
           "descriptionExists": {
             "type": "boolean"
           },
           "descriptionFleschKincaidReadingGradeLevel": {
-            "type": "float"
+            "type": "half_float"
           },
           "descriptionFleschReadingEaseScore": {
-            "type": "float"
+            "type": "half_float"
           }
         }
       },
@@ -70,107 +71,53 @@
             "type": "boolean"
           },
           "validationError": {
-            "type": "text",
-            "fields": {
-              "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-              }
-            }
+            "type": "keyword"
           }
         }
       },
       "temporalBounding": {
         "properties": {
           "beginDescriptor": {
-            "type": "text",
-            "fields": {
-              "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-              }
-            }
+            "type": "keyword"
           },
           "beginIndexable": {
             "type": "boolean"
           },
           "beginPrecision": {
-            "type": "text",
-            "fields": {
-              "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-              }
-            }
+            "type": "keyword"
           },
           "beginUtcDateTimeString": {
-            "type": "date"
+            "type": "keyword"
           },
           "beginZoneSpecified": {
-            "type": "text",
-            "fields": {
-              "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-              }
-            }
+            "type": "keyword"
           },
           "endDescriptor": {
-            "type": "text",
-            "fields": {
-              "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-              }
-            }
+            "type": "keyword"
           },
           "endIndexable": {
             "type": "boolean"
           },
           "endPrecision": {
-            "type": "text",
-            "fields": {
-              "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-              }
-            }
+            "type": "keyword"
           },
           "endUtcDateTimeString": {
-            "type": "date"
+            "type": "keyword"
           },
           "instantDescriptor": {
-            "type": "text",
-            "fields": {
-              "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-              }
-            }
+            "type": "keyword"
           },
           "instantIndexable": {
             "type": "boolean"
           },
           "instantPrecision": {
-            "type": "text",
-            "fields": {
-              "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-              }
-            }
+            "type": "keyword"
           },
           "instantUtcDateTimeString": {
-            "type": "date"
+            "type": "keyword"
           },
           "rangeDescriptor": {
-            "type": "text",
-            "fields": {
-              "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-              }
-            }
+            "type": "keyword"
           }
         }
       },
@@ -184,28 +131,42 @@
       "titles": {
         "properties": {
           "alternateTitleCharacters": {
-            "type": "long"
+            "type": "short"
           },
           "alternateTitleExists": {
             "type": "boolean"
           },
           "alternateTitleFleschKincaidReadingGradeLevel": {
-            "type": "float"
+            "type": "half_float"
           },
           "alternateTitleFleschReadingEaseScore": {
-            "type": "float"
+            "type": "half_float"
           },
           "titleCharacters": {
-            "type": "long"
+            "type": "short"
           },
           "titleExists": {
             "type": "boolean"
           },
           "titleFleschKincaidReadingGradeLevel": {
-            "type": "float"
+            "type": "half_float"
           },
           "titleFleschReadingEaseScore": {
-            "type": "float"
+            "type": "half_float"
+          }
+        }
+      },
+      "errors": {
+        "type": "nested",
+        "properties": {
+          "applicationSource": {
+            "type": "keyword"
+          },
+          "title": {
+            "type": "keyword"
+          },
+          "detail": {
+            "type": "text"
           }
         }
       }
