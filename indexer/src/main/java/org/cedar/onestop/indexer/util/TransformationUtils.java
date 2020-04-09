@@ -2,14 +2,8 @@ package org.cedar.onestop.indexer.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
-import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.schemas.avro.psi.*;
 import org.cedar.schemas.avro.util.AvroUtils;
-import org.elasticsearch.ElasticsearchGenerationException;
-import org.elasticsearch.action.DocWriteRequest;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,142 +15,39 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.cedar.schemas.avro.psi.ValidDescriptor.*;
-import static org.elasticsearch.action.DocWriteRequest.OpType.*;
+import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID;
 
-public class IndexingHelpers {
-  static final private Logger log = LoggerFactory.getLogger(IndexingHelpers.class);
-  static final private String VALIDATION_ERROR_TITLE = "Invalid for search indexing";
+/**
+ * This class contains utilities for transforming the contents of the Avro (schemas) records into the appropriate
+ * corresponding Elasticsearch mapping format.
+ */
+public class TransformationUtils {
+  static final private Logger log = LoggerFactory.getLogger(TransformationUtils.class);
 
-  ////////////////////////////
-  // Validation             //
-  ////////////////////////////
-  public static ParsedRecord addValidationErrors(ParsedRecord record) {
-    if (record == null) {
-      return null;
-    }
-    List<ErrorEvent> errors = record.getErrors();
-    List<ErrorEvent> rootErrors = validateRootRecord(record);
-    errors.addAll(rootErrors);
-    if (rootErrors.isEmpty()) {
-      errors.addAll(validateIdentification(record));
-      errors.addAll(validateTitles(record));
-      errors.addAll(validateTemporalBounds(record));
-      errors.addAll(validateSpatialBounds(record));
-    }
-    return ParsedRecord.newBuilder(record).setErrors(errors).build();
-  }
+  ///////////////////////////////////////////////////////////////////////////////
+  //                     Indexing For Analysis & Errors                        //
+  ///////////////////////////////////////////////////////////////////////////////
+  public static Map<String, Object> reformatMessageForAnalysisAndErrors(ParsedRecord record, Set<String> targetFields) {
+    var analysis = record.getAnalysis();
+    var errors = record.getErrors();
 
-  private static List<ErrorEvent> validateRootRecord(ParsedRecord record) {
-    var result = new ArrayList<ErrorEvent>();
-    if (record.getDiscovery() == null || record.getDiscovery() == Discovery.newBuilder().build()) {
-      result.add(buildValidationError("Discovery metadata missing. No metadata to load into OneStop."));
-    }
-    if (record.getAnalysis() == null || record.getAnalysis() == Analysis.newBuilder().build()) {
-      result.add(buildValidationError("Analysis metadata missing. Cannot verify metadata quality for OneStop."));
-    }
+    var analysisMap = AvroUtils.avroToMap(analysis, true);
+    var errorsList = errors.stream()
+        .map(e -> AvroUtils.avroToMap(e))
+        .collect(Collectors.toList());
+
+    analysisMap.put("errors", errorsList);
+
+    // drop fields not present in target index
+    var result = new LinkedHashMap<String, Object>(targetFields.size());
+    targetFields.forEach(f -> result.put(f, analysisMap.get(f)));
     return result;
   }
 
-  private static List<ErrorEvent> validateIdentification(ParsedRecord record) {
-    var result = new ArrayList<ErrorEvent>();
-    var identification = record.getAnalysis().getIdentification();
-    if (identification != null && !identification.getFileIdentifierExists() && !identification.getDoiExists()) {
-      result.add(buildValidationError("Missing identifier - record contains neither a fileIdentifier nor a DOI"));
-    }
-    if (record.getType() == null || (identification != null && !identification.getMatchesIdentifiers())) {
-      result.add(buildValidationError("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided OR type unknown."));
-    }
-    return result;
-  }
 
-  private static List<ErrorEvent> validateTitles(ParsedRecord record) {
-    var result = new ArrayList<ErrorEvent>();
-    var titles = record.getAnalysis().getTitles();
-    if (!titles.getTitleExists()) {
-      result.add(buildValidationError("Missing title"));
-    }
-    return result;
-  }
-
-  private static List<ErrorEvent> validateTemporalBounds(ParsedRecord record) {
-    var result = new ArrayList<ErrorEvent>();
-    var temporal = record.getAnalysis().getTemporalBounding();
-    if (temporal.getBeginDescriptor() == INVALID) {
-      result.add(buildValidationError("Invalid beginDate"));
-    }
-    if (temporal.getEndDescriptor() == INVALID) {
-      result.add(buildValidationError("Invalid endDate"));
-    }
-    if (temporal.getBeginDescriptor() != UNDEFINED && temporal.getEndDescriptor() != UNDEFINED && temporal.getInstantDescriptor() == INVALID) {
-      result.add(buildValidationError("Invalid instant-only date"));
-    }
-    return result;
-  }
-
-  private static List<ErrorEvent> validateSpatialBounds(ParsedRecord record) {
-    var result = new ArrayList<ErrorEvent>();
-    var spatial = record.getAnalysis().getSpatialBounding();
-    if (spatial.getSpatialBoundingExists() && !spatial.getIsValid()) {
-      result.add(buildValidationError("Invalid geoJSON for spatial bounding"));
-    }
-    return result;
-  }
-
-  private static ErrorEvent buildValidationError(String details) {
-    return ErrorEvent.newBuilder()
-        .setTitle(VALIDATION_ERROR_TITLE)
-        .setDetail(details)
-        .build();
-  }
-
-  ////////////////////////////
-  // Transformation         //
-  ////////////////////////////
-  public static List<DocWriteRequest<?>> mapRecordToRequests(IndexingInput input) {
-    if (input == null) { return null; }
-    try {
-      var record = ValueAndTimestamp.getValueOrNull(input.getValue());
-      var operation = (isTombstone(record) || isPrivate(record)) ? DELETE : INDEX;
-      var indices = input.getIndexingConfig().getTargetIndices(input.getTopic(), operation);
-      return indices.stream()
-          .map(indexName -> buildWriteRequest(indexName, operation, input))
-          .collect(Collectors.toList());
-    } catch (ElasticsearchGenerationException e) {
-      log.error("failed to serialize record with key [" + input.getKey() + "] to json", e);
-      return new ArrayList<>();
-    }
-  }
-
-  public static DocWriteRequest<?> buildWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input) {
-    if (opType == DELETE) {
-      return new DeleteRequest(indexName).id(input.getKey());
-    }
-
-    var targetFields = input.getEsConfig().indexedProperties(indexName).keySet();
-    var formattedRecord = reformatMessageForSearch(input.getValue().value(), targetFields);
-    formattedRecord.put("stagedDate", input.getValue().timestamp());
-
-    if (opType == INDEX || opType == CREATE) {
-      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
-    }
-    if (opType == UPDATE) {
-      return new UpdateRequest(indexName, input.getKey()).doc(formattedRecord);
-    }
-    throw new UnsupportedOperationException("unsupported elasticsearch OpType: " + opType);
-  }
-
-  public static boolean isTombstone(ParsedRecord value) {
-    return value == null;
-  }
-
-  public static boolean isPrivate(ParsedRecord value) {
-    var optionalPublishing = Optional.of(value).map(ParsedRecord::getPublishing);
-    var isPrivate = optionalPublishing.map(Publishing::getIsPrivate).orElse(false);
-    var until = optionalPublishing.map(Publishing::getUntil).orElse(null);
-    return (until == null || until > System.currentTimeMillis()) ? isPrivate : !isPrivate;
-  }
-
+  ///////////////////////////////////////////////////////////////////////////////
+  //                          Indexing For Search                              //
+  ///////////////////////////////////////////////////////////////////////////////
   public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> targetFields) {
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
@@ -205,18 +96,18 @@ public class IndexingHelpers {
 
   static List prepareChecksums(ParsedRecord record) {
     return Optional.ofNullable(record)
-            .filter(r -> r.getType() == RecordType.granule)
-            .map(ParsedRecord::getFileInformation)
-            .map(FileInformation::getChecksums)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(checksumObject -> {
-              var result = new HashMap<>();
-              result.put("algorithm", checksumObject.getAlgorithm());
-              result.put("value", checksumObject.getValue());
-              return result;
-            })
-            .collect(Collectors.toList());
+        .filter(r -> r.getType() == RecordType.granule)
+        .map(ParsedRecord::getFileInformation)
+        .map(FileInformation::getChecksums)
+        .orElse(Collections.emptyList())
+        .stream()
+        .map(checksumObject -> {
+          var result = new HashMap<>();
+          result.put("algorithm", checksumObject.getAlgorithm());
+          result.put("value", checksumObject.getValue());
+          return result;
+        })
+        .collect(Collectors.toList());
   }
 
   ////////////////////////////////
@@ -463,8 +354,8 @@ public class IndexingHelpers {
         .filter(g -> !g.getNamespace().equals("NCEI ACCESSION NUMBER"))
         .flatMap(g -> g.getValues().stream().map(value -> new SingleKeyword(g.getNamespace(), value)))
         .peek(k -> allKeywords.add(k.value))
-        .map(IndexingHelpers::normalizeKeyword)
-        .flatMap(IndexingHelpers::tokenizeKeyword)
+        .map(TransformationUtils::normalizeKeyword)
+        .flatMap(TransformationUtils::tokenizeKeyword)
         .filter(k -> k.category != KeywordCategory.other)
         .collect(Collectors.groupingBy(
             keyword -> keyword.category.name(), // group by the category label
@@ -474,17 +365,17 @@ public class IndexingHelpers {
   }
 
   private enum KeywordCategory {
-    gcmdScience(IndexingHelpers::normalizeHierarchyKeyword, IndexingHelpers::tokenizeHierarchyKeyword),
-    gcmdScienceServices(IndexingHelpers::normalizeHierarchyKeyword, IndexingHelpers::tokenizeHierarchyKeyword),
-    gcmdLocations(IndexingHelpers::normalizeHierarchyKeyword, IndexingHelpers::tokenizeHierarchyKeyword),
-    gcmdPlatforms(IndexingHelpers::normalizeNonHierarchicalKeyword, Stream::of),
-    gcmdInstruments(IndexingHelpers::normalizeNonHierarchicalKeyword, Stream::of),
-    gcmdProjects(IndexingHelpers::normalizeNonHierarchicalKeyword, Stream::of),
-    gcmdHorizontalResolution(IndexingHelpers::normalizePlainKeyword, Stream::of),
-    gcmdVerticalResolution(IndexingHelpers::normalizePlainKeyword, Stream::of),
-    gcmdTemporalResolution(IndexingHelpers::normalizePlainKeyword, Stream::of),
-    gcmdDataCenters(IndexingHelpers::normalizeNonHierarchicalKeyword, Stream::of),
-    other(IndexingHelpers::normalizePlainKeyword, Stream::of);
+    gcmdScience(TransformationUtils::normalizeHierarchyKeyword, TransformationUtils::tokenizeHierarchyKeyword),
+    gcmdScienceServices(TransformationUtils::normalizeHierarchyKeyword, TransformationUtils::tokenizeHierarchyKeyword),
+    gcmdLocations(TransformationUtils::normalizeHierarchyKeyword, TransformationUtils::tokenizeHierarchyKeyword),
+    gcmdPlatforms(TransformationUtils::normalizeNonHierarchicalKeyword, Stream::of),
+    gcmdInstruments(TransformationUtils::normalizeNonHierarchicalKeyword, Stream::of),
+    gcmdProjects(TransformationUtils::normalizeNonHierarchicalKeyword, Stream::of),
+    gcmdHorizontalResolution(TransformationUtils::normalizePlainKeyword, Stream::of),
+    gcmdVerticalResolution(TransformationUtils::normalizePlainKeyword, Stream::of),
+    gcmdTemporalResolution(TransformationUtils::normalizePlainKeyword, Stream::of),
+    gcmdDataCenters(TransformationUtils::normalizeNonHierarchicalKeyword, Stream::of),
+    other(TransformationUtils::normalizePlainKeyword, Stream::of);
 
     final Function<String, String> normalizer;
     final Function<String, Stream<String>> tokenizer;
