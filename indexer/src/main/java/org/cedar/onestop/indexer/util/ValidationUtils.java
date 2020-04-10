@@ -13,6 +13,10 @@ import java.util.List;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.INVALID;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
 
+/**
+ * This class contains utilities for validating the contents of the Avro (schemas) records prior to indexing
+ * into Elasticsearch,
+ */
 public class ValidationUtils {
   static final private Logger log = LoggerFactory.getLogger(ValidationUtils.class);
 
@@ -51,8 +55,11 @@ public class ValidationUtils {
     if (identification != null && !identification.getFileIdentifierExists() && !identification.getDoiExists()) {
       result.add(buildValidationError("Missing identifier - record contains neither a fileIdentifier nor a DOI"));
     }
-    if (record.getType() == null || (identification != null && !identification.getMatchesIdentifiers())) {
-      result.add(buildValidationError("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided OR type unknown."));
+    if (record.getType() == null ) {
+      result.add(buildValidationError("Metadata type error -- type unknown."));
+    }
+    if (identification != null && !identification.getMatchesIdentifiers()) {
+      result.add(buildValidationError("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided."));
     }
     return result;
   }
@@ -85,7 +92,7 @@ public class ValidationUtils {
     var result = new ArrayList<ErrorEvent>();
     var spatial = record.getAnalysis().getSpatialBounding();
     if (spatial.getSpatialBoundingExists() && !spatial.getIsValid()) {
-      result.add(buildValidationError("Invalid geoJSON for spatial bounding"));
+      result.add(buildValidationError("Invalid GeoJSON for spatial bounding"));
     }
     return result;
   }
