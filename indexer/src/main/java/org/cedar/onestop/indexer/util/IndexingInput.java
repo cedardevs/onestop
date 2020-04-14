@@ -2,27 +2,27 @@ package org.cedar.onestop.indexer.util;
 
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
-import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.schemas.avro.psi.ParsedRecord;
+import org.cedar.schemas.avro.psi.RecordType;
+import org.elasticsearch.action.DocWriteRequest;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class IndexingInput {
 
-  private final String topic;
   private final String key;
   private final ValueAndTimestamp<ParsedRecord> value;
-  private final BulkIndexingConfig indexingConfig;
   private final ElasticsearchConfig esConfig;
+  private final RecordType recordType;
 
-  public IndexingInput(String topic, String key, ValueAndTimestamp<ParsedRecord> value, BulkIndexingConfig indexingConfig, ElasticsearchConfig esConfig) {
-    this.topic = topic;
+  public IndexingInput(String key, ValueAndTimestamp<ParsedRecord> value, ElasticsearchConfig esConfig) {
     this.key = key;
     this.value = value;
-    this.indexingConfig = indexingConfig;
     this.esConfig = esConfig;
-  }
-
-  public String getTopic() {
-    return topic;
+    this.recordType = value.value().getType();
   }
 
   public String getKey() {
@@ -33,19 +33,46 @@ public class IndexingInput {
     return value;
   }
 
-  public BulkIndexingConfig getIndexingConfig() {
-    return indexingConfig;
+  public List<String> getTargetSearchIndices(DocWriteRequest.OpType opType) {
+    var indices = new ArrayList<String>();
+    indices.add(esConfig.searchAliasFromType(recordType.toString()));
+
+    if(opType == DocWriteRequest.OpType.DELETE && recordType == RecordType.granule) {
+      indices.add(esConfig.searchAliasFromType(ElasticsearchConfig.TYPE_FLATTENED_GRANULE));
+    }
+
+    return indices;
   }
 
-  public ElasticsearchConfig getEsConfig() {
-    return esConfig;
+  public String getTargetAnalysisAndErrorsIndex() {
+    return esConfig.analysisAndErrorsAliasFromType(recordType.toString());
+  }
+
+  public Set<String> getTargetSearchIndexFields() {
+    var searchAlias = esConfig.searchAliasFromType(recordType.toString());
+    if(searchAlias != null) {
+      return esConfig.indexedProperties(searchAlias).keySet();
+    }
+    else {
+      return new HashSet<>();
+    }
+  }
+
+  public Set<String> getTargetAnalysisAndErrorsIndexFields() {
+    var aeAlias = esConfig.analysisAndErrorsAliasFromType(recordType.toString());
+    if(aeAlias != null) {
+      return esConfig.indexedProperties(aeAlias).keySet();
+    }
+    else {
+      return new HashSet<>();
+    }
   }
 
   @Override
   public String toString() {
-    return "IndexingInput{" +
-        "topic='" + topic + '\'' +
-        ", key='" + key + '\'' +
+    return "IndexingInput {" +
+        ", recordType='" + recordType + "'" +
+        ", key='" + key + "'" +
         ", value=" + value +
         '}';
   }
