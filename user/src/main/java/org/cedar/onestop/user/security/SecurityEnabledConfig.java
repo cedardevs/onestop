@@ -1,5 +1,5 @@
 package org.cedar.onestop.user.security;
-//
+
 //import org.pac4j.core.authorization.authorizer.Authorizer;
 //import org.pac4j.core.authorization.authorizer.RequireAnyRoleAuthorizer;
 //import org.pac4j.core.authorization.generator.AuthorizationGenerator;
@@ -25,6 +25,7 @@ package org.cedar.onestop.user.security;
 //import java.util.Optional;
 
 class SecurityEnabledConfig {
+
 }
 
 //@Profile("logingov")
@@ -32,7 +33,7 @@ class SecurityEnabledConfig {
 //@Import({ComponentConfig.class, AnnotationConfig.class})
 //@ComponentScan(basePackages = "org.pac4j.springframework.web")
 //class SecurityEnabledConfig implements WebMvcConfigurer {
-//
+
 //  private static final Logger log = LoggerFactory.getLogger(SecurityEnabledConfig.class);
 //
 //  static final String ROLE_PUBLIC = "ROLE_PUBLIC";

@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://onestop-dev-postgresql:5432/user
+    url: jdbc:postgresql://onestop-postgresql:5432/user
     username: onestop
     password: foamcat
     initialization-mode: always

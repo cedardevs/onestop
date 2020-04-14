@@ -25,11 +25,11 @@ logging.level.org.pac4j.cas: DEBUG
 
 
 logingov:
-  client-id: "urn:gov:gsa:openidconnect.profiles:sp:sso:noaa:onestop_user_8080"
-  discovery-uri: "https://idp.int.identitysandbox.gov/.well-known/openid-configuration"
+  clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:noaa:onestop_user_8080"
+  discoveryUri: "https://idp.int.identitysandbox.gov/.well-known/openid-configuration"
   scopes: "openid email"
-  use-nonce: true
-  acr-values: "http://idmanagement.gov/ns/assurance/loa/1"
+  useNonce: true
+  acrValues: "http://idmanagement.gov/ns/assurance/ial/1"
 
 authorization:
   roles:

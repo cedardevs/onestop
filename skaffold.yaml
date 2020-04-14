@@ -106,23 +106,29 @@ kind: Config
     helm: {}
   setValues:
     debug: "true"
-    features.logingov: "false"
+    features.logingov: "true"
     config: |-
       ---
       logging.level.org.pac4j.springframework.web: DEBUG
       logging.level.org.pac4j.core.engine: DEBUG
       logging.level.org.pac4j.cas: DEBUG
-      cas:
-        prefixUrl: 'http://onestop-dev-cas:8080/cas'
+
+      logingov:
+        clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:noaa:onestop_user_8080"
+        discoveryUri: "https://idp.int.identitysandbox.gov/.well-known/openid-configuration"
+        scopes: "openid email"
+        useNonce: true
+        acrValues: "http://idmanagement.gov/ns/assurance/loa/1"
+
       authorization:
         roles:
-          ROLE_ADMIN:
-            - casuser
+          ROLE_PUBLIC:
+            - elliott.richerson@noaa.gov
 
       server.servlet.context-path: /user
       spring:
         datasource:
-          url: jdbc:postgresql://onestop-dev-postgresql:5432/user
+          url: jdbc:postgresql://onestop-postgresql:5432/user
           username: onestop
           password: foamcat
         jpa:
@@ -133,6 +139,22 @@ kind: Config
               dialect: org.hibernate.dialect.PostgreSQLDialect
           hibernate:
             ddl-auto: update
+
+.onestop-postgresql: &onestop-postgresql
+  name: onestop-postgresql
+  chartPath: helm/onestop-postgresql
+
+.onestop-keycloak: &onestop-keycloak
+  name: onestop-keycloak
+  chartPath: helm/onestop-keycloak
+
+.onestop-net-tools: &onestop-net-tools
+  name: onestop-net-tools
+  chartPath: helm/onestop-net-tools
+
+.onestop-ingress: &onestop-ingress
+  name: onestop-ingress
+  chartPath: helm/onestop-ingress
 
 build:
   artifacts:
@@ -199,4 +221,7 @@ profiles:
     deploy:
       helm:
         releases:
-          - *onestop-user
+#          - *onestop-user
+#          - *onestop-postgresql
+          - *onestop-keycloak
+          - *onestop-net-tools
