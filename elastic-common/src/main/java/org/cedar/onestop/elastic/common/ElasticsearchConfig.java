@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ElasticsearchConfig {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfig.class);
@@ -39,7 +37,9 @@ public class ElasticsearchConfig {
 
   private Map<String, String> jsonMappings = new HashMap<>();
   private Map<String, Map<String, Map>> parsedMappings = new HashMap<>();
-  private Map<String, String> typesByAlias = new HashMap<>();
+  private Map<String, String> typeByAlias = new HashMap<>();
+  private Map<String, String> searchAliasByType = new HashMap<>();
+  private Map<String, String> aeAliasByType = new HashMap<>();
 
   public ElasticsearchConfig(
       ElasticsearchVersion version,
@@ -98,10 +98,20 @@ public class ElasticsearchConfig {
     this.parsedMappings.put(GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS), Map.class));
 
     // Associate index aliases directly to their type identifiers for consistency
-    this.typesByAlias.put(COLLECTION_SEARCH_INDEX_ALIAS, TYPE_COLLECTION);
-    this.typesByAlias.put(GRANULE_SEARCH_INDEX_ALIAS, TYPE_GRANULE);
-    this.typesByAlias.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, TYPE_FLATTENED_GRANULE);
-    this.typesByAlias.put(SITEMAP_INDEX_ALIAS, TYPE_SITEMAP);
+    this.typeByAlias.put(COLLECTION_SEARCH_INDEX_ALIAS, TYPE_COLLECTION);
+    this.typeByAlias.put(COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS, TYPE_COLLECTION);
+    this.typeByAlias.put(GRANULE_SEARCH_INDEX_ALIAS, TYPE_GRANULE);
+    this.typeByAlias.put(GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS, TYPE_GRANULE);
+    this.typeByAlias.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, TYPE_FLATTENED_GRANULE);
+    this.typeByAlias.put(SITEMAP_INDEX_ALIAS, TYPE_SITEMAP);
+
+    // Conversely, associate types directly to their index aliases (search & analysis and errors)
+    this.searchAliasByType.put(TYPE_COLLECTION, COLLECTION_SEARCH_INDEX_ALIAS);
+    this.searchAliasByType.put(TYPE_GRANULE, GRANULE_SEARCH_INDEX_ALIAS);
+    this.searchAliasByType.put(TYPE_FLATTENED_GRANULE, FLAT_GRANULE_SEARCH_INDEX_ALIAS);
+
+    this.aeAliasByType.put(TYPE_COLLECTION, COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS);
+    this.aeAliasByType.put(TYPE_GRANULE, GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS);
   }
 
   public String jsonMapping(String alias) {
@@ -143,7 +153,15 @@ public class ElasticsearchConfig {
 
   public String typeFromAlias(String alias) {
     // retrieve type for index alias
-    return this.typesByAlias.get(alias);
+    return this.typeByAlias.get(alias);
+  }
+
+  public String searchAliasFromType(String type) {
+    return this.searchAliasByType.get(type);
+  }
+
+  public String analysisAndErrorsAliasFromType(String type) {
+    return this.aeAliasByType.get(type);
   }
 
   public Boolean sitemapEnabled() {
