@@ -7,7 +7,6 @@ import org.elasticsearch.ElasticsearchGenerationException;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,58 +14,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.elasticsearch.action.DocWriteRequest.OpType.*;
-import static org.elasticsearch.action.DocWriteRequest.OpType.UPDATE;
 
 public class IndexingUtils {
   static final private Logger log = LoggerFactory.getLogger(IndexingUtils.class);
 
   public static List<DocWriteRequest<?>> mapRecordToRequests(IndexingInput input) {
-    if (input == null) { return null; }
-    try {
+    List<DocWriteRequest<?>> requests = new ArrayList<>();
+
+    if (input != null) {
       var record = ValueAndTimestamp.getValueOrNull(input.getValue());
       var operation = (isTombstone(record) || isPrivate(record)) ? DELETE : INDEX;
-      var indices = input.getIndexingConfig().getTargetIndices(input.getTopic(), operation);
-      return indices.stream()
-          .map(indexName -> buildWriteRequest(indexName, operation, input))
-          .collect(Collectors.toList());
-    } catch (ElasticsearchGenerationException e) {
-      log.error("failed to serialize record with key [" + input.getKey() + "] to json", e);
-      return new ArrayList<>();
-    }
-  }
 
-  public static DocWriteRequest<?> buildWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input) {
-    if (opType == DELETE) {
-      return new DeleteRequest(indexName).id(input.getKey());
-    }
+      var searchIndices = input.getTargetSearchIndices(operation);
+      var aeIndex = input.getTargetAnalysisAndErrorsIndex();
 
-    var esConfig = input.getEsConfig();
-    var targetFields = esConfig.indexedProperties(indexName).keySet();
+      try {
+        searchIndices.forEach(i -> requests.add(buildSearchWriteRequest(i, operation, input)));
+        requests.add(buildAnalysisAndErrorWriteRequest(aeIndex, operation, input));
 
-    var formattedRecord = new HashMap<String, Object>();
-
-    var indexNameSansPrefix = indexName.substring(esConfig.PREFIX.length() > 0 ? esConfig.PREFIX.length() - 1 : 0);
-    if (indexNameSansPrefix.equals("search")) {
-      formattedRecord.putAll(TransformationUtils.reformatMessageForSearch(input.getValue().value(), targetFields));
-      formattedRecord.put("stagedDate", input.getValue().timestamp());
+      } catch (ElasticsearchGenerationException e) {
+        log.error("Failed to serialize record with key [" + input.getKey() + "] to json", e);
+        // FIXME should we return whatever managed to be added to requests or actually an empty list?
+        return new ArrayList<>();
+      }
     }
-    else if (indexNameSansPrefix.contains("analysis")) {
-      formattedRecord.putAll(TransformationUtils.reformatMessageForAnalysisAndErrors(input.getValue().value(), targetFields));
-    }
-    else {
-      // FIXME should have some cleaner error handling between here and the unsupported opType below
-    }
-
-    if (opType == INDEX || opType == CREATE) {
-      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
-    }
-    if (opType == UPDATE) {
-      return new UpdateRequest(indexName, input.getKey()).doc(formattedRecord);
-    }
-    throw new UnsupportedOperationException("unsupported elasticsearch OpType: " + opType);
+    return requests;
   }
 
   public static boolean isTombstone(ParsedRecord value) {
@@ -78,5 +52,28 @@ public class IndexingUtils {
     var isPrivate = optionalPublishing.map(Publishing::getIsPrivate).orElse(false);
     var until = optionalPublishing.map(Publishing::getUntil).orElse(null);
     return (until == null || until > System.currentTimeMillis()) ? isPrivate : !isPrivate;
+  }
+
+  public static DocWriteRequest<?> buildSearchWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input) {
+    if (opType == DELETE) {
+      return new DeleteRequest(indexName).id(input.getKey());
+    }
+    else {
+      var formattedRecord = new HashMap<String, Object>();
+      formattedRecord.putAll(TransformationUtils.reformatMessageForSearch(input.getValue().value(), input.getTargetSearchIndexFields()));
+      formattedRecord.put("stagedDate", input.getValue().timestamp());
+      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
+    }
+  }
+
+  public static DocWriteRequest<?> buildAnalysisAndErrorWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input) {
+    if (opType == DELETE) {
+      return new DeleteRequest(indexName).id(input.getKey());
+    }
+    else {
+      var formattedRecord = new HashMap<String, Object>();
+      formattedRecord.putAll(TransformationUtils.reformatMessageForAnalysisAndErrors(input.getValue().value(), input.getTargetAnalysisAndErrorsIndexFields()));
+      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
+    }
   }
 }
