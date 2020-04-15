@@ -129,10 +129,7 @@ export function useBoundingBox(bbox){
     if (!_.isEmpty(reasonIndividual)) {
       return false
     }
-    if (
-      (north.isSet() || south.isSet() || east.isSet() || west.isSet()) &&
-      !(north.isSet() && south.isSet() && east.isSet() && west.isSet())
-    ) {
+    if (!(north.isSet() && south.isSet() && east.isSet() && west.isSet())) {
       setReasonCumulative(
         'Incomplete coordinates entered. Ensure all four fields are populated.'
       )
