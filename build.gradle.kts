@@ -153,21 +153,6 @@ subprojects {
     val url = "https://data.noaa.gov/onestop"
     val docs = "https://cedardevs.github.io/onestop"
 
-    // for each subproject, take the OpenAPI files, replace the `${version}` tokens in those files w/actual version,
-    // and sync those files into each projects' `build/openapi` directory for proper artifact baking
-    task<Sync>("versioning") {
-        into(file("${buildDir}/openapi"))
-        from(files(
-                "${rootDir}/openapi/openapi.yaml",      // search api
-                "${rootDir}/openapi/openapi_base.yaml"  // registry api
-        )) {
-            // replace the version token in each file with the actual calculated version
-            filter {line ->
-                line.replace("\${version}", rootProject.version as String)
-            }
-        }
-    }
-
     if (javaProjects.contains(name)) {
         // apply java gradle plugin to projects using java
         apply(plugin = "java")
