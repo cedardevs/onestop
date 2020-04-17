@@ -75,12 +75,14 @@ class GranuleFilters extends React.Component {
     return [
       {
         name: 'text',
-        heading: <FilterHeading icon={fileIcon} text="Filename" />,
+        heading: <FilterHeading icon={fileIcon} text="Name" />,
         content: (
           <GranuleTextFilter
             clear={this.props.clear}
             submit={this.props.submit}
             query={this.props.queryString}
+            allTermsMustMatch={this.props.allTermsMustMatch}
+            toggleAllTermsMustMatch={this.props.toggleAllTermsMustMatch}
           />
         ),
       },

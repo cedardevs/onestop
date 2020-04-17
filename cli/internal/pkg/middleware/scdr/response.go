@@ -1,72 +1,38 @@
-package main
+package middleware
 
 import (
-	"github.com/danielgtaylor/openapi-cli-generator/cli"
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 	"github.com/spf13/viper"
-	"gopkg.in/h2non/gentleman.v2"
 	"strconv"
+	"time"
 )
 
-const scdrFileCmd = "scdr-files"
-
-const scdrExampleCommands = `scdr-files --available -t ABI-L1b-Rad --cloud
-scdr-files --type 5b58de08-afef-49fb-99a1-9c5d5c003bde
-scdr-files --area "POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))"
-scdr-files --date 10/01
-scdr-files --stime "March 31st 2003 at 17:30" --etime "2003-04-01 10:32:49"
-`
-
-func setScdrFlags() {
-	//flags are in flags.go
-	cli.AddFlag(scdrFileCmd, dateFilterFlag, dateFilterShortFlag, dateDescription, "")
-	cli.AddFlag(scdrFileCmd, typeFlag, typeShortFlag, typeDescription, "")
-	cli.AddFlag(scdrFileCmd, spatialFilterFlag, spatialFilterShortFlag, areaDescription, "")
-	cli.AddFlag(scdrFileCmd, startTimeFlag, startTimeShortFlag, startTimeDescription, "")
-	cli.AddFlag(scdrFileCmd, startTimeScdrFlag, "", startTimeScdrDescription, "")
-	cli.AddFlag(scdrFileCmd, endTimeFlag, endTimeShortFlag, endTimeDescription, "")
-	cli.AddFlag(scdrFileCmd, endTimeScdrFlag, "", endTimeScdrDescription, "")
-	cli.AddFlag(scdrFileCmd, availableFlag, availableShortFlag, availableDescription, false)
-	cli.AddFlag(scdrFileCmd, metadataFlag, metadataShortFlag, metadataDescription, "")
-	cli.AddFlag(scdrFileCmd, fileFlag, fileShortFlag, fileFlagDescription, "")
-	cli.AddFlag(scdrFileCmd, refileFlag, refileShortFlag, regexDescription, "")
-	cli.AddFlag(scdrFileCmd, satnameFlag, "", satnameDescription, "")
-	cli.AddFlag(scdrFileCmd, yearFlag, yearShortFlag, yearDescription, "")
-	cli.AddFlag(scdrFileCmd, keywordFlag, keywordShortFlag, keywordDescription, "")
-
-//not scdr-files specific
-	cli.AddFlag(scdrFileCmd, maxFlag, maxShortFlag, maxDescription, "")
-	cli.AddFlag(scdrFileCmd, offsetFlag, offsetShortFlag, offsetDescription, "")
-	cli.AddFlag(scdrFileCmd, textQueryFlag, textQueryShortFlag, queryDescription, "")
-	cli.AddFlag(scdrFileCmd, cloudServerFlag, cloudServerShortFlag, cloudServerDescription, false)
-	cli.AddFlag(scdrFileCmd, testServerFlag, testServerShortFlag, testServerDescription, false)
-
-	//parseScdrRequestFlags in parsing-util.go
-	cli.RegisterBefore(scdrFileCmd, parseScdrRequestFlags)
-	cli.RegisterAfter(scdrFileCmd, func(cmd string, params *viper.Viper, resp *gentleman.Response, data interface{}) interface{} {
-		scdrResp := marshalScdrResponse(params, data)
-		return scdrResp
-	})
-}
-
-func marshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
+func MarshalScdrResponse(params *viper.Viper, data interface{}) interface{} {
 	responseMap := data.(map[string]interface{})
 	translatedResponseMap := transformResponse(params, responseMap)
 	return translatedResponseMap
 }
 
+//this has to return a map[string]interface{} to be used as a HandleAfter
 func transformResponse(params *viper.Viper, responseMap map[string]interface{}) map[string]interface{} {
 	translatedResponseMap := make(map[string]interface{})
 	scdrOuput := []string{}
 
 	if items, ok := responseMap["data"].([]interface{}); ok && len(items) > 0 {
-		isSummary := params.GetString("available")
-		if isSummary == "true" {
+		isSummary := params.GetString(flags.AvailableFlag)
+		gapInterval := params.GetString(flags.GapFlag)
+		typeArg := params.GetString(flags.TypeFlag)
+
+		//gap is ignored if no type is passed or if --available is passed
+		if len(gapInterval) > 0 && len(typeArg) > 0 && isSummary == "false" {
+			scdrOuput = FindGaps(typeArg, gapInterval, items)
+		} else if isSummary == "true" {
 			count := getCount(responseMap)
 			scdrOuput = buildSummary(items, count)
 		} else {
 			scdrOuput = buildLinkResponse(items)
 		}
-		translatedResponseMap["scdr-ouput"] = scdrOuput
+		translatedResponseMap["scdr-output"] = scdrOuput
 	}
 	return translatedResponseMap
 }
@@ -80,9 +46,65 @@ func getCount(responseMap map[string]interface{}) string {
 	return count
 }
 
+func FindGaps(typeArg string, gapInterval string, items []interface{}) []string {
+	gapResponseHeader := []string{
+		"Data collection: " + typeArg,
+		"Gap Start Time           | Gap End Time             | Gap Duration",
+		"-------------------------+--------------------------+-------------",
+	}
+	gapResponse := []string{}
+	indexDateFormat := "2006-01-02T15:04:05Z"
+	outputDateFormat := "2006-01-02T15:04:05.000Z"
+
+	interval, _ := time.ParseDuration(gapInterval)
+	if len(items) == 0 {
+		return gapResponse
+	}
+	//lastBeginDate := time.Time{}
+	lastEndDate := time.Time{}
+	for _, v := range items {
+		item := v.(map[string]interface{})
+		attrs := item["attributes"].(map[string]interface{})
+		if lastEndDate.IsZero() {
+			firstEndDateString, hasEndDate := attrs["endDate"].(string)
+			if hasEndDate {
+				firstEndDate, e := time.Parse(indexDateFormat, firstEndDateString)
+				if e == nil {
+					lastEndDate = firstEndDate
+				}
+			}
+		}
+		start, b1 := attrs["beginDate"].(string)
+		end, b2 := attrs["endDate"].(string)
+
+		if b1 && b2 {
+			startDate, e1 := time.Parse(indexDateFormat, start)
+			endDate, e2 := time.Parse(indexDateFormat, end)
+
+			if e1 == nil && e2 == nil {
+				//assume sort beginDate desc
+				//if the temporal distance from this file and the last is greater than interval
+				//add it to new output
+				//track last begin date to prevent overlap
+
+				if startDate.Sub(lastEndDate) > interval && startDate.Sub(lastEndDate) > 0 {
+					gapString := lastEndDate.Format(outputDateFormat) + " | " + startDate.Format(outputDateFormat) + " | " + startDate.Sub(lastEndDate).String()
+					gapResponse = append(gapResponse, gapString)
+				}
+				//lastBeginDate = startDate
+				lastEndDate = endDate
+			}
+		}
+
+	}
+	gapResponse = append(gapResponseHeader, gapResponse...)
+	return gapResponse
+}
+
 func buildSummary(items []interface{}, count string) []string {
 
-	summaryResponse := buildSummaryHeaders(items, count)
+	summaryResponseHeader := buildSummaryHeaders(items, count)
+	summaryResponse := []string{}
 
 	if len(count) > 0 {
 		count = count + " | "
@@ -107,7 +129,7 @@ func buildSummary(items []interface{}, count string) []string {
 
 		summaryResponse = append(summaryResponse, row)
 	}
-
+	summaryResponse = append(summaryResponseHeader, summaryResponse...)
 	return summaryResponse
 }
 
@@ -132,6 +154,7 @@ func buildLinkResponse(items []interface{}) []string {
 			links = append(links, url)
 		}
 	}
+
 	return links
 }
 
@@ -150,8 +173,9 @@ func buildSummaryHeaders(items []interface{}, count string) []string {
 func buildIdHeaders(items []interface{}) (string, string) {
 	uuidHeader := "OneStop ID "
 	uuidSubHeader := "-----------"
-	//calculate subheader length based on the first IDs length
-	id := items[0].(map[string]interface{})["id"].(string)
+	//calculate subheader length based on the last IDs length
+	// get the last id because we are going to reverse this list
+	id := items[len(items)-1].(map[string]interface{})["id"].(string)
 	err := viper.ReadInConfig()
 	if err == nil {
 		id = reverseLookup(id)
@@ -164,7 +188,7 @@ func buildIdHeaders(items []interface{}) (string, string) {
 func buildFileIdHeaders(items []interface{}) (string, string) {
 	fileIdentifierHeader := "FileIdentifier"
 	fileIdentifierSubHeader := "--------------"
-	fileIdentifierLength := len(items[0].(map[string]interface{})["attributes"].(map[string]interface{})["fileIdentifier"].(string))
+	fileIdentifierLength := len(items[len(items)-1].(map[string]interface{})["attributes"].(map[string]interface{})["fileIdentifier"].(string))
 	fileIdentifierHeader, fileIdentifierSubHeader = formatHeader(fileIdentifierHeader, fileIdentifierSubHeader, fileIdentifierLength)
 	return fileIdentifierHeader, fileIdentifierSubHeader
 }
@@ -172,11 +196,10 @@ func buildFileIdHeaders(items []interface{}) (string, string) {
 func buildDescriptionHeaders(items []interface{}) (string, string) {
 	descriptionHeader := "Description"
 	descriptionSubHeader := "-----------"
-	descriptionLength := len(items[0].(map[string]interface{})["attributes"].(map[string]interface{})["title"].(string))
+	descriptionLength := len(items[len(items)-1].(map[string]interface{})["attributes"].(map[string]interface{})["title"].(string))
 	if descriptionLength > 100 {
 		descriptionLength = 100
 	}
-	descriptionHeader, descriptionSubHeader = formatHeader(descriptionHeader, descriptionSubHeader, descriptionLength)
 	return descriptionHeader, descriptionSubHeader
 }
 

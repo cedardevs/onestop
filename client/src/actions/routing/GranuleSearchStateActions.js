@@ -161,3 +161,19 @@ export const granuleToggleExcludeGlobal = () => {
     type: GRANULE_TOGGLE_EXCLUDE_GLOBAL,
   }
 }
+
+export const GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH =
+  'GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH'
+export const granuleToggleAllTermsMustMatch = () => {
+  return {
+    type: GRANULE_TOGGLE_ALL_TERMS_MUST_MATCH,
+  }
+}
+
+export const RESET_GRANULE_ALL_TERMS_MUST_MATCH =
+  'RESET_GRANULE_ALL_TERMS_MUST_MATCH'
+export const resetGranuleAllTermsMustMatch = () => {
+  return {
+    type: RESET_GRANULE_ALL_TERMS_MUST_MATCH,
+  }
+}

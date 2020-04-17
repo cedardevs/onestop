@@ -1,11 +1,5 @@
-plugins {
-  id 'com.github.blindpirate.gogradle' version '0.11.4'
-  id 'com.google.cloud.tools.jib' version '1.6.1'
-  id 'java'
-}
-
 golang {
-  packagePath = 'github.com/cedardevs/onestop/cli' // go import path of project to be built, NOT local file system path!
+  packagePath = 'github.com/cedardevs/onestop/cli/cmd/onestop' // go import path of project to be built, NOT local file system path!
 }
 
 goBuild {
@@ -24,49 +18,42 @@ dependencies {
     }
 }
 
+jar {
+  // even though we use the `java` plugin because of the `jib` plugin,
+  // the Go project does not need to generate a jar file
+  enabled = false
+}
+
 jib {
-  // derive image repository
-  String imageRegistryURL = "registry.hub.docker.com"
-  String imageNamespace = "cedardevs"
-  String imageName = "${rootProject.name}-${project.name}".toString()
-  String imageTag = "${project.version}".toString()
-  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+  use(PublishingKt) {
+    Publish publish = project.publish
 
-  from {
-    // base image
-    image = 'golang'
-  }
-
-  to {
-    image = imageRepository
-    auth {
-      username = System.getenv('DOCKER_USER').toString().trim()
-      password = System.getenv('DOCKER_PASSWORD').toString().trim()
-    }
-  }
-
-  extraDirectories {
-    paths = ["${projectDir}/.gogradle".toString()]
-    permissions = [
-      '/cli-linux-amd64': '755',
-      '/scdr-files.config.yaml' : '555'
+    extraDirectories {
+      paths = ["${projectDir}/.gogradle".toString()]
+      permissions = [
+          '/cli-linux-amd64'       : '755',
+          '/scdr-files.config.yaml': '555'
       ]
-  }
+    }
 
-  container {
-    labels = [
-        'org.label-schema.build-date': project.buildDate.toString(),
-        'org.label-schema.name': imageName,
-        'org.label-schema.description': 'A CLI for the OneStop API.',
-        'org.label-schema.vcs-url': project.getVcsUrl().toString(),
-        'org.label-schema.vcs-ref': project.getVcsRef().toString(),
-        'org.label-schema.vendor': imageNamespace,
-        'org.label-schema.version': imageTag,
-        'org.label-schema.schema-version': '1.0',
-    ]
-    // mainClass = 'main.go'
-    entrypoint = '/cli-linux-amd64'
-    creationTime = project.buildDate.toString()
+    from {
+      // base image
+      image = 'golang'
+    }
+
+    to {
+      image = publish.repository()
+      auth {
+        username = publish.username
+        password = publish.password
+      }
+    }
+
+    container {
+      creationTime = publish.created.toString()
+      labels = publish.ociAnnotations()
+      entrypoint = "/cli-linux-amd64"
+    }
   }
 }
 tasks.jib.dependsOn 'goBuild'
@@ -76,13 +63,21 @@ build {
     dependsOn 'goBuild'
 }
 
-clean {
-    delete "${projectDir}/.gogradle"
+task customClean(type: Delete) {
+  delete file('.gogradle/cli-darwin-amd64')
+  delete file('.gogradle/cli-linux-amd64')
 }
+
+clean.dependsOn customClean
 
 //move config into .gogradle so it is moved during extraDirectories step.
 task copyConfigFile(type: Copy) {
   from file('scdr-files-config.yaml')
   into file('.gogradle/')
+  doLast{
+    project.exec {
+      commandLine 'chmod', '-R', '774', '.gogradle'
+    }
+  }
 }
 tasks.jib.dependsOn copyConfigFile

@@ -2,62 +2,54 @@ plugins {
   // https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
   id "io.forgo.keystoreplugin" version "1.1"
   id 'war'
-  id 'groovy'
-  id 'org.springframework.boot' // version declared in top-level buildscript
-  id 'io.spring.dependency-management'
-  id 'com.google.cloud.tools.jib' version '1.6.1'
 }
-
-apply from: "${rootDir}/gradle/publishing.gradle"
 
 sourceCompatibility = 11
 targetCompatibility = 11
-
-repositories {
-  mavenCentral()
-}
 
 configurations {
   compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
 }
 
 dependencies {
+  def Versions = project.Versions
+
   implementation(project(':elastic-common'))
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
 
-  implementation "org.codehaus.groovy:groovy:${project.groovyVersion}"
-  implementation "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
-  implementation "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
+  implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+  implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
+  implementation("org.codehaus.groovy:groovy-xml:${Versions.GROOVY}")
 
-  implementation "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${project.esVersion}")
-  implementation 'org.springframework.boot:spring-boot-starter-web'
-  implementation 'org.springframework.boot:spring-boot-starter-actuator'
-  implementation 'org.springframework.boot:spring-boot-devtools'
-  implementation 'org.springframework.boot:spring-boot-starter-security'
+  implementation("org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${Versions.ELASTIC}")
+  implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-actuator")
+  implementation("org.springframework.boot:spring-boot-devtools")
+  implementation("org.springframework.boot:spring-boot-starter-security")
 
-  implementation 'org.springframework.security:spring-security-core'
-  implementation 'org.springframework.security:spring-security-config'
-  implementation 'org.springframework.security:spring-security-oauth2-client'
-  implementation 'org.springframework.security:spring-security-oauth2-jose'
+  implementation("org.springframework.security:spring-security-core")
+  implementation("org.springframework.security:spring-security-config")
+  implementation("org.springframework.security:spring-security-oauth2-client")
+  implementation("org.springframework.security:spring-security-oauth2-jose")
 
-  implementation "com.auth0:java-jwt:${project.auth0JavaJWT}"
+  implementation("com.auth0:java-jwt:${Versions.AUTH0_JAVA_JWT}")
 
-  implementation 'com.github.java-json-tools:json-schema-validator:2.2.8'
-  implementation 'org.apache.commons:commons-lang3:3.7'
-  implementation 'org.apache.lucene:lucene-expressions:7.2.1'
-  implementation 'javax.xml.bind:jaxb-api:2.3.1' // Java 9/10 deprecates, 11 removes javax.xml.bind.DatatypeConverter
+  implementation("com.github.java-json-tools:json-schema-validator:2.2.8")
+  implementation("org.apache.commons:commons-lang3:3.7")
+  implementation("org.apache.lucene:lucene-expressions:7.2.1")
+  implementation("javax.xml.bind:jaxb-api:2.3.1") // Java 9/10 deprecates, 11 removes javax.xml.bind.DatatypeConverter
 
-  runtime 'org.springframework.boot:spring-boot-devtools'
+  runtime("org.springframework.boot:spring-boot-devtools")
 
-  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+  providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 
-  testImplementation "org.spockframework:spock-spring:${project.spockVersion}"
-  testImplementation "org.spockframework:spock-core:${project.spockVersion}"
-  testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
-  testImplementation 'org.springframework.boot:spring-boot-starter-test'
-  testImplementation "org.testcontainers:testcontainers:${project.testContainersVersion}"
-  testImplementation "org.testcontainers:elasticsearch:${project.testContainersVersion}"
+  testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")
+  testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
+  testImplementation("org.codehaus.groovy.modules.http-builder:http-builder:0.7.1")
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.testcontainers:testcontainers:${Versions.TEST_CONTAINERS}")
+  testImplementation("org.testcontainers:elasticsearch:${Versions.TEST_CONTAINERS}")
 }
 
 ext {
@@ -176,7 +168,6 @@ task integrationTest(type: Test) {
 check.dependsOn integrationTest
 
 bootWar {
-
   from("${buildDir}/resources/main") {
     include "onestop-request-schema.json"
     into "WEB-INF/classes"
@@ -198,65 +189,43 @@ test {
   environment project.envVars as Map<String, ?>
 }
 
-// copy schema dir to tmp
-task setupOpenapiGenPart1(type: Copy) {
-  from "schema"
-  into "${buildDir}/tmp/schema"
-}
-
-// task ensureRequestSchemaPath(type: Task) {
-//   File requestSchemaPath = new File("${buildDir}/resources/main")
-//   requestSchemaPath.mkdirs()
-// }
-
 processResources {
+  def Versions = project.Versions
+  def publish = project.publish
+
   outputs.upToDateWhen { false }
   filesMatching("**/application*.yml") {
     expand([
-        esVersion: project.esVersion,
-        version  : project.version,
-        buildDate: project.buildDate,
+        esVersion: Versions.ELASTIC,
+        version  : publish.version.toString(),
+        buildDate: publish.created.toString(),
     ])
   }
 }
 
 jib {
-  // derive image repository
-  String imageRegistryURL = "registry.hub.docker.com"
-  String imageNamespace = "cedardevs"
-  String imageName = "${rootProject.name}-${project.name}".toString()
-  String imageTag = "${project.version}".toString()
-  String imageRepository = "${imageRegistryURL}/${imageNamespace}/${imageName}:${imageTag}".toString()
+  use(PublishingKt) {
+    def publish = project.publish
 
-  from {
-    // base image
-    image = 'tomcat:9.0.27-jdk11-openjdk'
-  }
-  to {
-    image = imageRepository
-    auth {
-      username = System.getenv('DOCKER_USER').toString().trim()
-      password = System.getenv('DOCKER_PASSWORD').toString().trim()
+    from {
+      // base image
+      image = 'tomcat:9.0.27-jdk11-openjdk'
     }
-  }
-  container {
-    // https://github.com/opencontainers/image-spec/blob/master/annotations.md
-    labels = [
-        'org.opencontainers.image.created': project.buildDate.toString(),
-        'org.opencontainers.image.ref.name': imageName,
-        'org.opencontainers.image.description': 'A search API for the OneStop search software.',
-        'org.opencontainers.image.source': project.getVcsUrl().toString(),
-        'org.opencontainers.image.revision': project.getVcsRef().toString(),
-        'org.opencontainers.image.vendor': imageNamespace,
-        'org.opencontainers.image.version': imageTag,
-    ]
-    ports = ['8080'.toString()]
-
-    // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin#war-projects
-    // The `onestop-admin` dir is where our WAR will be exploded. Tomcat uses this directory to assume a context-path
-    // that overrides the Spring one, so they should match up to keep our assumptions about client proxying consistent
-    appRoot = "/usr/local/tomcat/webapps/onestop-search".toString()
-
-    creationTime = project.buildDate.toString()
+    to {
+      image = publish.repository()
+      auth {
+        username = publish.username
+        password = publish.password
+      }
+    }
+    container {
+      creationTime = publish.created.toString()
+      labels = publish.ociAnnotations()
+      ports = ['8080'.toString()]
+      // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin#war-projects
+      // The `onestop-admin` dir is where our WAR will be exploded. Tomcat uses this directory to assume a context-path
+      // that overrides the Spring one, so they should match up to keep our assumptions about client proxying consistent
+      appRoot = "/usr/local/tomcat/webapps/onestop-search".toString()
+    }
   }
 }

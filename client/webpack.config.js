@@ -63,7 +63,7 @@ module.exports = env => {
     entry: isProd ? prodEntryPoints : devEntryPoints,
     output:
         {
-          path: path.resolve(__dirname, 'build/dist'),
+          path: path.resolve(__dirname, 'build/webpack'),
           publicPath: `/${rootPath}/`,
           filename: '[name]-[hash].bundle.js',
         }

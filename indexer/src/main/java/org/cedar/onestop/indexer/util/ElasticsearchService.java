@@ -13,6 +13,7 @@ import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest.AliasActions;
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -103,6 +104,15 @@ public class ElasticsearchService {
     return result.isAcknowledged();
   }
 
+  private boolean putSettings(String indexOrAlias, String settings) throws IOException {
+    if (settings == null || settings.isBlank() || settings.equals("null")) {
+      return true;
+    }
+    var request = new UpdateSettingsRequest(indexOrAlias).settings(settings, XContentType.JSON);
+    var result = client.indices().putSettings(request, RequestOptions.DEFAULT);
+    return result.isAcknowledged();
+  }
+
   public String createIndex(String aliasName) throws IOException {
     return createIndex(aliasName, false);
   }
@@ -110,10 +120,14 @@ public class ElasticsearchService {
   public String createIndex(String aliasName, boolean applyAlias) throws IOException {
     String indexName = newIndexName(aliasName);
     var jsonIndexMapping = getMappingByAlias(aliasName);
+    var jsonIndexSettings = getIndexSettingsByAlias(aliasName);
     var request = new CreateIndexRequest(indexName)
         .mapping(jsonIndexMapping, XContentType.JSON);
     if (applyAlias) {
       request.alias(new Alias(aliasName));
+    }
+    if (!jsonIndexSettings.equals("null")) { // ObjectMapper returns an actual string that says null
+      request.settings(jsonIndexSettings, XContentType.JSON);
     }
     var result = client.indices().create(request, RequestOptions.DEFAULT);
     log.debug("Created new index [" + indexName + "] with alias [" + aliasName + "]");
@@ -155,6 +169,12 @@ public class ElasticsearchService {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     return mapper.writeValueAsString((Map) parsedDefinition.get("mappings"));
+  }
+
+  private String getIndexSettingsByAlias(String alias) throws IOException {
+    var indexDefinition = config.jsonMapping(alias);
+    Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
+    return mapper.writeValueAsString((Map) parsedDefinition.get("settings"));
   }
 
   private String newIndexName(String alias) {
