@@ -107,7 +107,7 @@ task generateOpenApi(type: NpmTask) {
   outputs.file("$buildDir/resources/main/static/openapi.yaml")
 }
 
-processResources.dependsOn(generateOpenApi)
+processResources.finalizedBy(generateOpenApi)
 assemble.dependsOn(sourceJar)
 assemble.dependsOn(bootJar)
 
