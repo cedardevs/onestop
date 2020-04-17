@@ -140,7 +140,6 @@ const styleTitle = {
 const CollectionGridItem = props => {
   const {
     item,
-    focusRef,
     focusing,
     handleFocus,
     handleBlur,
@@ -180,7 +179,6 @@ const CollectionGridItem = props => {
         <button
           role="link"
           style={styleOverlayMerged}
-          ref={focusRef}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onClick={handleSelect}
