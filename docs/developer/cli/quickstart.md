@@ -69,7 +69,9 @@ The docker image has a built in config containing the example config above. To u
 ## Changing openapi.yml
 
 First: `go get -u github.com/danielgtaylor/openapi-cli-generator`
-Then: ```
+
+Then:
+```
 cd cli
 ~/go/bin/openapi-cli-generator generate ../search/src/main/resources/openapi.yaml
 mv openapi.go ./internal/app/generated/
