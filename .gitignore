@@ -20,6 +20,8 @@ upload/testData/curl.output
 
 ### General editor/IDE files
 .vscode/
+**/.settings/
+**/bin/
 
 ### Node template
 # Logs

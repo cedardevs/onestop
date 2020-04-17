@@ -6,11 +6,11 @@ const SearchFlattenedGranuleCmd = "searchflattenedgranule"
 
 const CloudServerFlag = "cloud"
 const CloudServerShortFlag = "c"
-const CloudServerDescription = "Use cloud intance."
+const CloudServerDescription = "Use cloud intance. Warning: --cloud will be replace with --server on next release"
 
 const TestServerFlag = "test"
 const TestServerShortFlag = "u"
-const TestServerDescription = "Use test intance."
+const TestServerDescription = "Use sciapps intance. Warning: --test will be replace with --server on next release"
 
 const TextQueryFlag = "query"
 const TextQueryShortFlag = "q"
@@ -104,7 +104,6 @@ const KeywordDescription = "Pick files tagged with a label whose value is LABEL.
 // const SortShortFlag = ""
 // const SortDefault = "beginDate"
 // const SortDescription = "Sort results by stagedDate, beginDate, or endDate."
-
 const CloudFlag = "cloud"
 const CloudUrl = "http://acf3425c8d41b11e9a12912cf37a7528-1694331899.us-east-1.elb.amazonaws.com/onestop-search"
 
