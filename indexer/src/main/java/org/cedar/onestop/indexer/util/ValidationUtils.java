@@ -1,5 +1,6 @@
 package org.cedar.onestop.indexer.util;
 
+import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.schemas.avro.psi.Analysis;
 import org.cedar.schemas.avro.psi.Discovery;
 import org.cedar.schemas.avro.psi.ErrorEvent;
@@ -101,6 +102,7 @@ public class ValidationUtils {
     return ErrorEvent.newBuilder()
         .setTitle(VALIDATION_ERROR_TITLE)
         .setDetail(details)
+        .setSource(StreamsApps.INDEXER_ID)
         .build();
   }
 }
