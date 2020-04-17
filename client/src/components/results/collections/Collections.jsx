@@ -89,12 +89,11 @@ export default function Collections(props){
     </h2>
   )
 
-  const propsForItem = (item, itemId, setFocusedKey) => {
+  const propsForItem = (item, itemId) => {
     return {
       onSelect: key => {
         selectCollection(key, collectionDetailFilter)
       },
-      setFocusedKey,
     }
   }
 

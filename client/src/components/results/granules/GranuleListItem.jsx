@@ -1,14 +1,8 @@
 import React from 'react'
 import FlexRow from '../../common/ui/FlexRow'
-import {fontFamilySerif, consolidateStyles} from '../../../utils/styleUtils'
+import {fontFamilySerif} from '../../../utils/styleUtils'
 import ListViewItem, {useListViewItem} from '../../common/ui/ListViewItem'
 import GranuleItemContainer from './GranuleItemContainer'
-
-const styleTitleFocusing = {
-  textDecoration: 'underline',
-  outline: '2px dashed black',
-  outlineOffset: '0.309em',
-}
 
 const styleTitle = {
   fontFamily: fontFamilySerif(),
@@ -24,30 +18,11 @@ const styleHeading = {
 }
 
 export default function GranuleListItem(props){
-  const {
-    itemId,
-    item,
-    focusRef,
-    focusing,
-    handleFocus,
-    handleBlur,
-    expanded,
-    setExpanded,
-  } = useListViewItem(props)
+  const {itemId, item, expanded, setExpanded} = useListViewItem(props)
 
   // TODO: the show more focus is not working here like it does with the collections and cart, why?
   const title = (
-    <h3
-      key={'GranuleListItem::title'}
-      style={consolidateStyles(
-        styleTitle,
-        focusing ? styleTitleFocusing : null
-      )}
-      tabIndex={-1}
-      ref={focusRef}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-    >
+    <h3 key={'GranuleListItem::title'} style={styleTitle}>
       {item.title}
     </h3>
   )

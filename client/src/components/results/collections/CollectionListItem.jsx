@@ -73,7 +73,6 @@ const CollectionListItem = props => {
   const {
     itemId,
     item,
-    focusRef,
     focusing,
     handleFocus,
     handleBlur,
@@ -88,8 +87,6 @@ const CollectionListItem = props => {
       <a
         role="link"
         style={styleLink}
-        tabIndex={0}
-        ref={focusRef}
         onFocus={handleFocus}
         onBlur={handleBlur}
         onClick={handleSelect}
