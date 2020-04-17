@@ -26,7 +26,12 @@ class DocumentationController {
     this.elasticsearchService = elasticsearchService
   }
 
-  @RequestMapping(path = ["/docs/attributes/collection", "/v1/docs/attributes/collection"], method = [GET, HEAD], produces = 'application/json')
+  @RequestMapping(path = "/", method = [GET, HEAD])
+  Map getApiRoot(HttpServletResponse response) {
+    return response.sendRedirect("openapi.yaml")
+  }
+
+  @RequestMapping(path = "/docs/attributes/collection", method = [GET, HEAD], produces = 'application/json')
   Map getCollectionAttributes(HttpServletResponse response) {
     log.info("Request URI: ${request.getRequestURI()}")
     return getAttributesResponse(response, elasticsearchService.getCollectionMapping())
