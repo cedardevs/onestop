@@ -194,7 +194,6 @@ export const isPathNew = (oldDescriptor, newDescriptor) => {
 
 export const goTo = (history, newDescriptor) => {
   var oldDescriptor = history.location
-  console.log('checking', newDescriptor.pathname, newDescriptor)
   if (
     oldDescriptor.pathname != newDescriptor.pathname &&
     !isHome(newDescriptor.pathname)
