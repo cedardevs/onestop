@@ -52,7 +52,7 @@ plugins {
     // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
     // - A Gradle plugin that allows you to package executable jar or war archives,
     //   run Spring Boot applications, and use the dependency management provided by spring-boot-dependencies
-    id("org.springframework.boot").version("2.2.4.RELEASE").apply(false)
+    id("org.springframework.boot").version("2.2.5.RELEASE").apply(false)
 
     // Gogradle plugin
     // https://github.com/gogradle/gogradle
@@ -152,21 +152,6 @@ subprojects {
 
     val url = "https://data.noaa.gov/onestop"
     val docs = "https://cedardevs.github.io/onestop"
-
-    // for each subproject, take the OpenAPI files, replace the `${version}` tokens in those files w/actual version,
-    // and sync those files into each projects' `build/openapi` directory for proper artifact baking
-    task<Sync>("versioning") {
-        into(file("${buildDir}/openapi"))
-        from(files(
-                "${rootDir}/openapi/openapi.yaml",      // search api
-                "${rootDir}/openapi/openapi_base.yaml"  // registry api
-        )) {
-            // replace the version token in each file with the actual calculated version
-            filter {line ->
-                line.replace("\${version}", rootProject.version as String)
-            }
-        }
-    }
 
     if (javaProjects.contains(name)) {
         // apply java gradle plugin to projects using java

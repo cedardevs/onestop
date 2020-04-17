@@ -1,12 +1,12 @@
 package parse
 
 import (
+	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"strconv"
 	"strings"
 	"time"
-	"github.com/cedardevs/onestop/cli/internal/pkg/flags"
 )
 
 func ParseTypeFlag(params *viper.Viper) []string {
@@ -20,12 +20,22 @@ func ParseTypeFlag(params *viper.Viper) []string {
 }
 
 func ParseSort(params *viper.Viper) string {
-	sortArg := params.GetString(flags.SortFlag)
-	sort := ""
-	if len(sortArg) > 0 {
-		sort = "\"sort\":[{\"" + sortArg + "\": \"desc\"}],"
+	// 	sortArg := params.GetString(flags.SortFlag)
+	// 	sort := ""
+	// 	if len(sortArg) > 0 {
+	// 		sort = "\"sort\":[{\"" + sortArg + "\": \"desc\"}],"
+	// 	}
+	// 	return sort
+	return "\"sort\":[{\"beginDate\": \"asc\", \"stagedDate\": \"asc\"}],"
+}
+
+func ParseChecksum(params *viper.Viper) []string {
+	checksumFilter := []string{}
+	checksumFlag := params.GetString(flags.ChecksumFlag)
+	if len(checksumFlag) > 0 {
+		checksumFilter = []string{"{\"type\":\"checksum\", \"algorithm\":\"SHA1\", \"values\":[\"" + checksumFlag + "\"]}"}
 	}
-	return sort
+	return checksumFilter
 }
 
 // func parseAvailableFlag(params *viper.Viper) []string {
@@ -47,16 +57,22 @@ func ParseSatName(params *viper.Viper) []string {
 }
 
 func ParseRequestMeta(params *viper.Viper) string {
-	max := params.GetString(flags.MaxFlag)
-	offset := params.GetString(flags.OffsetFlag)
-	if len(max) == 0 {
-		max = "100"
+	requestMeta := ""
+	maxPageSize := 1000
+	pageSize := maxPageSize
+	max, _ := strconv.Atoi(params.GetString(flags.MaxFlag))
+
+	if max < maxPageSize {
+		pageSize = max
 	}
-	if len(offset) == 0 {
-		offset = "0"
+	searchAfter := params.GetString(flags.SearchAfterFlag)
+	page := "\"page\" : {\"max\": " + strconv.Itoa(pageSize) + "}"
+	requestMeta = page
+
+	if len(searchAfter) > 0 {
+		requestMeta = requestMeta + ", \"search_after\": [" + searchAfter + "]"
 	}
-	page := "\"page\" : {\"max\": " + max + ", \"offset\": " + offset + "}"
-	return page
+	return requestMeta
 }
 
 //support for stime and start-time, same same
@@ -77,11 +93,13 @@ func ParseStartAndEndTime(params *viper.Viper) []string {
 func ParseSince(params *viper.Viper) []string {
 	filter := []string{}
 	startTime := params.GetString(flags.SinceFlag)
-	beginDateTime, _ := time.Parse("2006-01-02T15:04:05Z", ParseDateFormat(startTime))
-	beginDateTimeEpochMillis := beginDateTime.UnixNano() / 1000000
-  beginDateTimeFilter := "stagedDate:>" + strconv.FormatInt(beginDateTimeEpochMillis, 10)
-	if len(beginDateTimeFilter) > 0 {
-		filter = []string{"{\"type\":\"queryText\", \"value\":\"" + beginDateTimeFilter + "\"}"}
+	if len(startTime) > 0 {
+		beginDateTime, _ := time.Parse("2006-01-02T15:04:05Z", ParseDateFormat(startTime))
+		beginDateTimeEpochMillis := beginDateTime.UnixNano() / 1000000
+		beginDateTimeFilter := "stagedDate:>" + strconv.FormatInt(beginDateTimeEpochMillis, 10)
+		if len(beginDateTimeFilter) > 0 {
+			filter = []string{"{\"type\":\"queryText\", \"value\":\"" + beginDateTimeFilter + "\"}"}
+		}
 	}
 	return filter
 }
@@ -128,6 +146,7 @@ func ParseDateFormat(dateString string) string {
 		"2006-01-02 15:04:05",
 		"2006-01-02 15:04:05 MST",
 		"2006-01-02T15:04:05",
+		"2006-01-02T15:04:05Z",
 		"2006/01/02",
 		"2006/01/02 15:04",
 		"2006/01/02 15:04:05",
@@ -200,6 +219,30 @@ func ParseFileName(params *viper.Viper) []string {
 		return []string{}
 	}
 	return []string{"{\"type\":\"queryText\", \"value\":\"title:\\\"" + fileName + "\\\"\"}"}
+}
+
+func ParseMonth(params *viper.Viper) []string {
+	month := params.GetString(flags.MonthFlag)
+	if len(month) == 0 {
+		return []string{}
+	}
+	return []string{"{\"type\":\"queryText\", \"value\":\"beginMonth:" + month + "\"}"}
+}
+
+func ParseDayOfMonth(params *viper.Viper) []string {
+	dom := params.GetString(flags.DayFlag)
+	if len(dom) == 0 {
+		return []string{}
+	}
+	return []string{"{\"type\":\"queryText\", \"value\":\"beginDayOfMonth:" + dom + "\"}"}
+}
+
+func ParseDayOfYear(params *viper.Viper) []string {
+	doy := params.GetString(flags.DoyFlag)
+	if len(doy) == 0 {
+		return []string{}
+	}
+	return []string{"{\"type\":\"queryText\", \"value\":\"beginDayOfYear:" + doy + "\"}"}
 }
 
 func ParseYear(params *viper.Viper) []string {

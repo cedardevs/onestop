@@ -291,6 +291,9 @@ class ElasticsearchService {
     if (params.containsKey('sort')) {
       requestBody = addSort(requestBody, params.sort as List)
     }
+    if (params.containsKey('search_after')) {
+      requestBody = addSearchAfter(requestBody, params.search_after as List)
+    }
     requestBody = pruneEmptyElements(requestBody)
     return requestBody
   }
@@ -334,7 +337,13 @@ class ElasticsearchService {
   }
 
   private static Map addSort(Map requestBody, List sortParams) {
-    requestBody.sort = sortParams ? sortParams + ["_doc": "desc"] : [["_score":"desc"], ["_doc": "desc"]]
+//    requestBody.sort = sortParams ? sortParams + ["_doc": "desc"] : [["_score":"desc"], ["_doc": "desc"]]
+    requestBody.sort = sortParams ? sortParams : [["_score":"desc"], ["_doc": "desc"]]
+    return requestBody
+  }
+
+  private static Map addSearchAfter(Map requestBody, List searchAfterParams) {
+    requestBody.search_after = searchAfterParams //just pass through
     return requestBody
   }
 
