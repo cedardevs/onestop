@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: cedardevs/onestop-stream-manager
-  tag: "3.0.0-alpha"
+  tag: "3.0.0-alpha3"
   pullPolicy: IfNotPresent
   pullSecrets: []
 
