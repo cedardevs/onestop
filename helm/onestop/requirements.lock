@@ -17,5 +17,5 @@ dependencies:
 - name: onestop-user
   repository: file://../onestop-user
   version: 3.0.0-alpha
-digest: sha256:11a455b34e4ce4b7041f9e69b5b6f596ccd13c525011a74eaf94d1485b80d823
-generated: "2020-03-16T17:39:35.808345-06:00"
+digest: sha256:cee9d96992aa6c05cc100d844a4862f9380d9901730769824486c70e487d6550
+generated: "2020-04-17T18:01:34.492588-06:00"
