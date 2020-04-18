@@ -21,8 +21,20 @@ data:
     #      node: ${NODE_NAME}
     #      hints.enabled: true
 
-    processors:
-      - add_cloud_metadata:
+    # processors:
+    #   - add_cloud_metadata:
+
+    setup:
+      kibana:
+        host: ${KIBANA_HOST}
+        protocol: https
+        username: ${ELASTICSEARCH_USERNAME}
+        password: ${ELASTICSEARCH_PASSWORD}
+        ssl:
+          certificate_authorities:
+          - /mnt/kibana/tls.crt
+      dashboards:
+        enabled: true
 
     output.elasticsearch:
       hosts: ['https://${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
@@ -119,6 +131,8 @@ spec:
             "-system.hostfs=/hostfs",
           ]
           env:
+            - name: KIBANA_HOST
+              value: onestop-kb-http
             - name: ELASTICSEARCH_HOST
               value: onestop-es-http
             - name: ELASTICSEARCH_PORT
@@ -162,6 +176,10 @@ spec:
               mountPath: /mnt/elastic/tls.crt
               readOnly: true
               subPath: tls.crt
+            - name: kb-certs
+              mountPath: /mnt/kibana/tls.crt
+              readOnly: true
+              subPath: tls.crt
       volumes:
         - name: proc
           hostPath:
@@ -187,6 +205,9 @@ spec:
         - name: es-certs
           secret:
             secretName: onestop-es-http-certs-public
+        - name: kb-certs
+          secret:
+            secretName: onestop-kb-http-certs-public
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -202,8 +223,20 @@ data:
       # Reload module configs as they change:
       reload.enabled: false
 
-    processors:
-      - add_cloud_metadata:
+    # processors:
+    #   - add_cloud_metadata:
+    
+    setup:
+      kibana:
+        host: ${KIBANA_HOST}
+        protocol: https
+        username: ${ELASTICSEARCH_USERNAME}
+        password: ${ELASTICSEARCH_PASSWORD}
+        ssl:
+          certificate_authorities:
+          - /mnt/kibana/tls.crt
+      dashboards:
+        enabled: true
 
     output.elasticsearch:
       hosts: ['https://${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
@@ -264,6 +297,8 @@ spec:
             "-e",
           ]
           env:
+            - name: KIBANA_HOST
+              value: onestop-kb-http
             - name: ELASTICSEARCH_HOST
               value: onestop-es-http
             - name: ELASTICSEARCH_PORT
@@ -299,6 +334,10 @@ spec:
               mountPath: /mnt/elastic/tls.crt
               readOnly: true
               subPath: tls.crt
+            - name: kb-certs
+              mountPath: /mnt/kibana/tls.crt
+              readOnly: true
+              subPath: tls.crt
       volumes:
         - name: config
           configMap:
@@ -311,6 +350,9 @@ spec:
         - name: es-certs
           secret:
             secretName: onestop-es-http-certs-public
+        - name: kb-certs
+          secret:
+            secretName: onestop-kb-http-certs-public
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
