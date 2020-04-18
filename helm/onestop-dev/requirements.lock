@@ -1,0 +1,15 @@
+dependencies:
+- name: nginx-ingress
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 1.1.5
+- name: cp-helm-charts
+  repository: https://confluentinc.github.io/cp-helm-charts/
+  version: 0.1.0
+- name: kube-state-metrics
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 2.8.2
+- name: cas
+  repository: file://../cas
+  version: 0.1.0
+digest: sha256:7ac0fd81627b845ffdcb3c119fdcf7c39a2330f7f5f75882d67fc3dc769a4f49
+generated: "2020-04-17T17:30:41.952179-06:00"
