@@ -168,7 +168,6 @@ task integrationTest(type: Test) {
 check.dependsOn integrationTest
 
 bootWar {
-
   from("${buildDir}/resources/main") {
     include "onestop-request-schema.json"
     into "WEB-INF/classes"
@@ -189,17 +188,6 @@ bootRun {
 test {
   environment project.envVars as Map<String, ?>
 }
-
-// copy schema dir to tmp
-task setupOpenapiGenPart1(type: Copy) {
-  from "schema"
-  into "${buildDir}/tmp/schema"
-}
-
-// task ensureRequestSchemaPath(type: Task) {
-//   File requestSchemaPath = new File("${buildDir}/resources/main")
-//   requestSchemaPath.mkdirs()
-// }
 
 processResources {
   def Versions = project.Versions

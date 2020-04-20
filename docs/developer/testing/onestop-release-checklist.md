@@ -255,7 +255,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
 - [ ] https://sciapps.colorado.edu/onestop/sitemap.xml
 - [ ] At least one submap URL is listed. Paste it into the address bar.
 - [ ] All the collections loaded are listed. Paste one into the address bar to load the details page, to ensure the sitemap links are formatted correctly.
-- [ ] https://sciapps.colorado.edu/onestop-search/docs/openapi.yaml (should auto-download or display the yaml file, depending on browser)
+- [ ] https://sciapps.colorado.edu/onestop-search/openapi.yaml (should auto-download or display the yaml file, depending on browser)
 
 ### TBD
 
