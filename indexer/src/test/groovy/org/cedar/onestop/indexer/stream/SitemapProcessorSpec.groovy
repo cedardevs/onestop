@@ -5,9 +5,8 @@ import org.apache.kafka.streams.processor.MockProcessorContext
 import org.apache.kafka.streams.processor.PunctuationType
 import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
-import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.indexer.util.ElasticsearchService
+import org.cedar.onestop.indexer.util.TestUtils
 import spock.lang.Specification
 
 import java.time.Duration
@@ -15,15 +14,6 @@ import java.time.Instant
 
 class SitemapProcessorSpec extends Specification {
 
-  static testEsConfig = new ElasticsearchConfig(
-      new ElasticsearchVersion("7.5.1"),
-      "BulkIndexingTransformerSpec-",
-      1,
-      1,
-      1,
-      1,
-      false
-  )
   static storeName = "SitemapTriggerProcessorSpecStore"
   static startTime = Instant.parse("2020-01-01T00:00:00Z")
   static testInterval = Duration.ofSeconds(1)
@@ -37,7 +27,7 @@ class SitemapProcessorSpec extends Specification {
 
   def setup() {
     mockEsService = Mock(ElasticsearchService)
-    mockEsService.getConfig() >> testEsConfig
+    mockEsService.getConfig() >> TestUtils.esConfig
     mockProcessorContext = new MockProcessorContext()
     mockProcessorContext.setTimestamp(startTime.toEpochMilli())
     testStore = Stores.keyValueStoreBuilder(Stores.inMemoryKeyValueStore(storeName), Serdes.String(), Serdes.Long())
