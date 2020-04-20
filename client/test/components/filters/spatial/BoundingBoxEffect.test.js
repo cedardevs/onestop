@@ -196,7 +196,9 @@ describe('The BoundingBoxEffect hook', () => {
       let validationResult = simulateValidationRequest(hook)
       bounds = getBounds(hook)
 
-      expect(bounds.reason.cumulative).toEqual('Incomplete coordinates entered. Ensure all four fields are populated.')
+      expect(bounds.reason.cumulative).toEqual(
+        'Incomplete coordinates entered. Ensure all four fields are populated.'
+      )
 
       expect(bounds.west.valid).toBeFalsy()
       expect(bounds.east.valid).toBeFalsy()

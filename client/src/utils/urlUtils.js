@@ -191,3 +191,17 @@ export const isPathNew = (oldDescriptor, newDescriptor) => {
     oldDescriptor.search == newDescriptor.search
   )
 }
+
+export const goTo = (history, newDescriptor) => {
+  var oldDescriptor = history.location
+  if (
+    oldDescriptor.pathname != newDescriptor.pathname &&
+    !isHome(newDescriptor.pathname)
+  ) {
+    var mainBlock = document.getElementById('mainBlock')
+    if (mainBlock) {
+      mainBlock.focus()
+    }
+  }
+  history.push(newDescriptor)
+}
