@@ -15,19 +15,20 @@ class TestUtils {
 
   static final inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml').text
   static inputCollectionRecord = buildRecordFromXML(inputCollectionXml)
+  static inputCollectionDiscovery = ISOParser.parseXMLMetadataToDiscovery(inputCollectionXml)
+  static inputCollectionAnalysis = Analyzers.analyze(inputCollectionDiscovery)
 
-  // FIXME...
+  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-granule.xml').text
+
   public static final esConfig = new ElasticsearchConfig(
       new ElasticsearchVersion("7.5.1"),
-      "SearchIndexTopologySpec-",
+      "Test-",
       1,
       1,
       1,
       1,
       false
   )
-
-//  static ElasticsearchConfig
 
   static ParsedRecord buildRecordFromXML(String xml) {
     def discovery = ISOParser.parseXMLMetadataToDiscovery(xml)
