@@ -15,7 +15,7 @@ import org.cedar.onestop.indexer.stream.SitemapConfig;
 import org.cedar.onestop.indexer.stream.SitemapProcessor;
 import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
-import org.cedar.onestop.indexer.util.IndexingHelpers;
+import org.cedar.onestop.indexer.util.ValidationUtils;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.constants.Topics;
@@ -23,11 +23,9 @@ import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.kafka.common.util.Timestamper;
 import org.cedar.schemas.analyze.Analyzers;
 import org.cedar.schemas.avro.psi.ParsedRecord;
-import org.cedar.schemas.avro.psi.RecordType;
 import org.cedar.schemas.avro.psi.Relationship;
 import org.cedar.schemas.avro.psi.RelationshipType;
 import org.cedar.schemas.parse.DefaultParser;
-import org.elasticsearch.action.DocWriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +49,7 @@ public class SearchIndexTopology {
     var streamsBuilder = new StreamsBuilder();
 
     //----- Indexing Setup --------
-    var bulkConfig = indexingConfig(esService, appConfig);
+    var bulkConfig = indexingConfig(appConfig);
     var indexerStoreBuilder = indexerStoreBuilder(appConfig, bulkConfig);
     streamsBuilder.addStateStore(indexerStoreBuilder);
 
@@ -59,9 +57,9 @@ public class SearchIndexTopology {
     var inputRecords = streamsBuilder.<String, ParsedRecord>stream(Topics.parsedChangelogTopics(StreamsApps.REGISTRY_ID));
     var filledInRecords = inputRecords.mapValues(DefaultParser::fillInDefaults);
     var analyzedRecords = filledInRecords.mapValues(Analyzers::addAnalysis);
-    var validatedRecords = analyzedRecords.mapValues(IndexingHelpers::addValidationErrors);
-    var validRecords = validatedRecords.filter((k, v) -> v == null || v.getErrors().isEmpty());
-    var bulkResults = validRecords
+    var validatedRecords = analyzedRecords.mapValues(ValidationUtils::addValidationErrors);
+
+    var bulkResults = validatedRecords
         .peek((k, v) -> log.debug("submitting [{} => {}] to bulk indexer", k, v))
         .transformValues(Timestamper<ParsedRecord>::new)
         .transform(() -> esService.buildBulkIndexingTransformer(bulkConfig), bulkConfig.getStoreName());
@@ -117,12 +115,7 @@ public class SearchIndexTopology {
     return streamsBuilder.build();
   }
 
-  private static BulkIndexingConfig indexingConfig(ElasticsearchService esService, AppConfig appConfig) {
-    var collectionIndex = esService.getConfig().COLLECTION_SEARCH_INDEX_ALIAS;
-    var collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection);
-    var granuleIndex = esService.getConfig().GRANULE_SEARCH_INDEX_ALIAS;
-    var flattenedIndex = esService.getConfig().FLAT_GRANULE_SEARCH_INDEX_ALIAS;
-    var granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule);
+  private static BulkIndexingConfig indexingConfig(AppConfig appConfig) {
     long bulkIntervalMillis = Long.parseLong(appConfig.get("elasticsearch.bulk.interval.ms").toString());
     long bulkMaxBytes = Long.parseLong(appConfig.get("elasticsearch.bulk.max.bytes").toString());
     int bulkMaxActions = Integer.parseInt(appConfig.get("elasticsearch.bulk.max.actions").toString());
@@ -132,11 +125,6 @@ public class SearchIndexTopology {
         .withMaxPublishBytes(bulkMaxBytes)
         .withMaxPublishInterval(Duration.ofMillis(bulkIntervalMillis))
         .withMaxPublishActions(bulkMaxActions)
-        .addIndexMapping(collectionTopic, DocWriteRequest.OpType.INDEX, collectionIndex)
-        .addIndexMapping(collectionTopic, DocWriteRequest.OpType.DELETE, collectionIndex)
-        .addIndexMapping(granuleTopic, DocWriteRequest.OpType.INDEX, granuleIndex)
-        .addIndexMapping(granuleTopic, DocWriteRequest.OpType.DELETE, granuleIndex)
-        .addIndexMapping(granuleTopic, DocWriteRequest.OpType.DELETE, flattenedIndex)
         .build();
   }
 
