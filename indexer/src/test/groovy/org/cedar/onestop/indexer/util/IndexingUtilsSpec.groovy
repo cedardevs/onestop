@@ -1,14 +1,10 @@
 package org.cedar.onestop.indexer.util
 
 import org.apache.kafka.streams.state.ValueAndTimestamp
-import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.indexer.stream.BulkIndexingConfig
-import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.Publishing
 import org.cedar.schemas.avro.psi.RecordType
-import org.cedar.schemas.parse.ISOParser
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.index.IndexRequest
 import spock.lang.Specification
@@ -16,35 +12,10 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static org.elasticsearch.action.DocWriteRequest.OpType.DELETE
-import static org.elasticsearch.action.DocWriteRequest.OpType.INDEX
-
 @Unroll
 class IndexingUtilsSpec extends Specification {
 
-
-  static inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml').text
-  static inputCollectionDiscovery = ISOParser.parseXMLMetadataToDiscovery(inputCollectionXml)
-  static inputCollectionAnalysis = Analyzers.analyze(inputCollectionDiscovery)
-  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-granule.xml').text
-
-  static testTopic = 'testtopic'
   static testIndex = 'testindex'
-  static indexingConfig = BulkIndexingConfig.newBuilder()
-      .withStoreName('teststore')
-      .withMaxPublishInterval(Duration.ofSeconds(10))
-      .withMaxPublishBytes(10000)
-      .withMaxPublishActions(1000)
-      .build()
-  static esConfig = new ElasticsearchConfig(
-      new ElasticsearchVersion("7.5.1"),
-      "SearchIndexTopologySpec-",
-      1,
-      1,
-      1,
-      1,
-      false
-  )
 
 
   ////////////////////////////
@@ -54,7 +25,7 @@ class IndexingUtilsSpec extends Specification {
     def testKey = "ABC"
 
     when:
-    def results = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, testKey, null, indexingConfig, esConfig))
+    def results = IndexingUtils.mapRecordToRequests(new IndexingInput(testKey, null, TestUtils.esConfig))
 
     then:
     results.size() == 1
@@ -70,12 +41,10 @@ class IndexingUtilsSpec extends Specification {
         .withMaxPublishInterval(Duration.ofSeconds(10))
         .withMaxPublishBytes(10000)
         .withMaxPublishActions(1000)
-        .addIndexMapping(testTopic, DELETE, 'a')
-        .addIndexMapping(testTopic, DELETE, 'b')
         .build()
 
     when:
-    def results = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, testKey, null, multipleDeleteConfig, esConfig))
+    def results = IndexingUtils.mapRecordToRequests(new IndexingInput(testKey, null, TestUtils.esConfig))
 
     then:
     results.size() == 2
@@ -88,8 +57,8 @@ class IndexingUtilsSpec extends Specification {
     def testKey = 'ABC'
     def testRecord = ParsedRecord.newBuilder()
         .setType(RecordType.collection)
-        .setAnalysis(inputCollectionAnalysis)
-        .setDiscovery(inputCollectionDiscovery)
+        .setAnalysis(TestUtils.inputCollectionAnalysis)
+        .setDiscovery(TestUtils.inputCollectionDiscovery)
         .setPublishing(Publishing.newBuilder().build()).build()
     def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
     def multipleIndexConfig = BulkIndexingConfig.newBuilder()
@@ -97,12 +66,10 @@ class IndexingUtilsSpec extends Specification {
         .withMaxPublishInterval(Duration.ofSeconds(10))
         .withMaxPublishBytes(10000)
         .withMaxPublishActions(1000)
-        .addIndexMapping(testTopic, INDEX, 'a')
-        .addIndexMapping(testTopic, INDEX, 'b')
         .build()
 
     when:
-    def results = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, testKey, testValue, multipleIndexConfig, esConfig))
+    def results = IndexingUtils.mapRecordToRequests(new IndexingInput(testKey, testValue, TestUtils.esConfig))
 
     then:
     results.size() == 2
@@ -117,7 +84,7 @@ class IndexingUtilsSpec extends Specification {
     def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
 
     when:
-    def results = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, testKey, testValue, indexingConfig, esConfig))
+    def results = IndexingUtils.mapRecordToRequests(new IndexingInput(testKey, testValue, TestUtils.esConfig))
 
     then:
     results.size() == 1
@@ -136,13 +103,13 @@ class IndexingUtilsSpec extends Specification {
     def testKey = "ABC"
     def testRecord = ParsedRecord.newBuilder()
         .setType(RecordType.collection)
-        .setAnalysis(inputCollectionAnalysis)
-        .setDiscovery(inputCollectionDiscovery)
+        .setAnalysis(TestUtils.inputCollectionAnalysis)
+        .setDiscovery(TestUtils.inputCollectionDiscovery)
         .setPublishing(publishingObject).build()
     def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
 
     when:
-    def result = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, testKey, testValue, indexingConfig, esConfig))
+    def result = IndexingUtils.mapRecordToRequests(new IndexingInput(testKey, testValue, TestUtils.esConfig))
 
     then:
     result[0].id() == testKey
