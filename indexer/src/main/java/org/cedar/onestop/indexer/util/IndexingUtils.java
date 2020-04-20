@@ -25,9 +25,10 @@ public class IndexingUtils {
 
     if (input != null) {
       var record = ValueAndTimestamp.getValueOrNull(input.getValue());
+      var isValid = isValid(record);
       var operation = (isTombstone(record) || isPrivate(record)) ? DELETE : INDEX;
 
-      var searchIndices = input.getTargetSearchIndices(operation);
+      var searchIndices = input.getTargetSearchIndices(operation, isValid);
       var aeIndex = input.getTargetAnalysisAndErrorsIndex();
 
       try {
@@ -36,7 +37,6 @@ public class IndexingUtils {
 
       } catch (ElasticsearchGenerationException e) {
         log.error("Failed to serialize record with key [" + input.getKey() + "] to json", e);
-        // FIXME should we return whatever managed to be added to requests or actually an empty list?
         return new ArrayList<>();
       }
     }
@@ -52,6 +52,10 @@ public class IndexingUtils {
     var isPrivate = optionalPublishing.map(Publishing::getIsPrivate).orElse(false);
     var until = optionalPublishing.map(Publishing::getUntil).orElse(null);
     return (until == null || until > System.currentTimeMillis()) ? isPrivate : !isPrivate;
+  }
+
+  public static boolean isValid(ParsedRecord value) {
+    return value == null || value.getErrors().isEmpty();
   }
 
   public static DocWriteRequest<?> buildSearchWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input) {

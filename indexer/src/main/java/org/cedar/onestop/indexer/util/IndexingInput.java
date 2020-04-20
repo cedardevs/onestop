@@ -33,12 +33,15 @@ public class IndexingInput {
     return value;
   }
 
-  public List<String> getTargetSearchIndices(DocWriteRequest.OpType opType) {
+  public List<String> getTargetSearchIndices(DocWriteRequest.OpType opType, boolean recordIsValid) {
     var indices = new ArrayList<String>();
-    indices.add(esConfig.searchAliasFromType(recordType.toString()));
 
-    if(opType == DocWriteRequest.OpType.DELETE && recordType == RecordType.granule) {
-      indices.add(esConfig.searchAliasFromType(ElasticsearchConfig.TYPE_FLATTENED_GRANULE));
+    if(recordIsValid) {
+      indices.add(esConfig.searchAliasFromType(recordType.toString()));
+
+      if(opType == DocWriteRequest.OpType.DELETE && recordType == RecordType.granule) {
+        indices.add(esConfig.searchAliasFromType(ElasticsearchConfig.TYPE_FLATTENED_GRANULE));
+      }
     }
 
     return indices;
