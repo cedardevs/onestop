@@ -6,12 +6,9 @@ import org.apache.kafka.streams.processor.PunctuationType
 import org.apache.kafka.streams.state.Stores
 import org.apache.kafka.streams.state.TimestampedKeyValueStore
 import org.apache.kafka.streams.state.ValueAndTimestamp
-import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.indexer.util.*
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
-import org.elasticsearch.action.DocWriteRequest
 import org.elasticsearch.action.DocWriteRequest.OpType
 import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.bulk.BulkRequest
@@ -25,17 +22,6 @@ import java.time.Instant
 
 class BulkIndexingTransformerSpec extends Specification {
 
-  static inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml').text
-  static inputCollectionRecord = TestUtils.buildRecordFromXML(inputCollectionXml)
-  static testEsConfig = new ElasticsearchConfig(
-      new ElasticsearchVersion("7.5.1"),
-      "BulkIndexingTransformerSpec-",
-      1,
-      1,
-      1,
-      1,
-      false
-  )
   static publishingStartTime = Instant.parse("2020-01-01T00:00:00Z")
   static storeName = "BulkIndexingTransformerSpecStore"
   static testTopic = 'testTopic'
@@ -53,7 +39,7 @@ class BulkIndexingTransformerSpec extends Specification {
 
   def setup() {
     mockEsService = Mock(ElasticsearchService)
-    mockEsService.getConfig() >> testEsConfig
+    mockEsService.getConfig() >> TestUtils.esConfig
     mockProcessorContext = new MockProcessorContext()
     mockProcessorContext.setTimestamp(publishingStartTime.toEpochMilli())
     mockProcessorContext.setTopic(testTopic)
@@ -66,7 +52,6 @@ class BulkIndexingTransformerSpec extends Specification {
         .withMaxPublishBytes(testMaxBytes)
         .withMaxPublishActions(testMaxPublishActions)
         .withMaxPublishInterval(testBulkInterval)
-        .addIndexMapping(testTopic, OpType.INDEX, testIndex)
         .build()
     testIndexingTransformer = new BulkIndexingTransformer(mockEsService, testIndexingConfig)
     testIndexingTransformer.init(mockProcessorContext)
@@ -75,9 +60,9 @@ class BulkIndexingTransformerSpec extends Specification {
 
   def "wall clock time triggers bulk request"() {
     def testKeyA = 'a'
-    def testValueA = ValueAndTimestamp.make(inputCollectionRecord, publishingStartTime.toEpochMilli())
+    def testValueA = ValueAndTimestamp.make(TestUtils.inputCollectionRecord, publishingStartTime.toEpochMilli())
     def testKeyB = 'b'
-    def testValueB = ValueAndTimestamp.make(inputCollectionRecord, publishingStartTime.toEpochMilli())
+    def testValueB = ValueAndTimestamp.make(TestUtils.inputCollectionRecord, publishingStartTime.toEpochMilli())
     def punctuator = mockProcessorContext.scheduledPunctuators().get(0)
 
     when:
@@ -99,8 +84,8 @@ class BulkIndexingTransformerSpec extends Specification {
   }
 
   def "byte size triggers bulk request"() {
-    def testValue = ValueAndTimestamp.make(inputCollectionRecord, publishingStartTime.toEpochMilli())
-    def sizeCheckItemRequests = IndexingHelpers.mapRecordToRequests(new IndexingInput(testTopic, 'dummy', testValue, testIndexingConfig, testEsConfig))
+    def testValue = ValueAndTimestamp.make(TestUtils.inputCollectionRecord, publishingStartTime.toEpochMilli())
+    def sizeCheckItemRequests = IndexingUtils.mapRecordToRequests(new IndexingInput('dummy', testValue, TestUtils.esConfig))
     def sizeCheckBulkRequest = new BulkRequest()
     sizeCheckItemRequests.each { sizeCheckBulkRequest.add(it) }
     def testValueSize = sizeCheckBulkRequest.estimatedSizeInBytes()
@@ -118,7 +103,7 @@ class BulkIndexingTransformerSpec extends Specification {
 
   def "forwarded outputs contain the input parsed record and the indexing result"() {
     def testKey = 'a'
-    def testValue = ValueAndTimestamp.make(inputCollectionRecord, publishingStartTime.toEpochMilli())
+    def testValue = ValueAndTimestamp.make(TestUtils.inputCollectionRecord, publishingStartTime.toEpochMilli())
     def punctuator = mockProcessorContext.scheduledPunctuators().get(0)
 
     when:
@@ -142,7 +127,7 @@ class BulkIndexingTransformerSpec extends Specification {
     outputValue.operation == OpType.INDEX
     outputValue.timestamp == publishingStartTime.toEpochMilli()
     outputValue.record instanceof ParsedRecord
-    outputValue.record.discovery.fileIdentifier == inputCollectionRecord.discovery.fileIdentifier
+    outputValue.record.discovery.fileIdentifier == TestUtils.inputCollectionRecord.discovery.fileIdentifier
   }
 
   private static buildBulkResponse(OpType opType, List<String> ids) {
