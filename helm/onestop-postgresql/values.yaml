@@ -1,0 +1,26 @@
+###############################################################################
+# POSTGRES (for user api)
+###############################################################################
+postgresql:
+  postgresqlDatabase: user
+  postgresqlUsername: onestop
+  postgresqlPassword: foamcat
+###############################################################################
+# PGADMIN (for user api postgres)
+###############################################################################
+pgadmin4:
+  env:
+    email: onestop
+    password: foamcat
+  serverDefinitions:
+    enabled: true
+    servers: |-
+      "1": {
+        "Name": "User API Database",
+        "Group": "Servers",
+        "Port": 5432,
+        "Username": "onestop",
+        "Host": "onestop-postgresql",
+        "SSLMode": "prefer",
+        "MaintenanceDB": "user"
+      }

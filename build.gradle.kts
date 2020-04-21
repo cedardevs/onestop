@@ -108,9 +108,9 @@ val projectDescriptions: Map<String, String> = mapOf(
 )
 
 // only apply plugins, configuration, tasks, etc. to projects that need it
-val javaProjects: List<String> = listOf("client", "cli", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "stream-manager", "user")
+val javaProjects: List<String> = listOf("client", "cli", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "stream-manager", "user", "gateway")
 val jibProjects: List<String> = listOf("client", "cli", "indexer", "registry", "search", "stream-manager", "user")
-val springBootProjects: List<String> = listOf("elastic-common", "search", "registry", "user")
+val springBootProjects: List<String> = listOf("elastic-common", "search", "registry", "user", "gateway")
 val nodeProjects: List<String> = listOf("client", "registry")
 val micronautProjects: List<String> = listOf()
 val goProjects: List<String> = listOf("cli")

@@ -1,0 +1,3 @@
+---
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri: https://idp.int.identitysandbox.gov/api/openid_connect/certs
+

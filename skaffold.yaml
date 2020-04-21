@@ -1,5 +1,32 @@
-apiVersion: skaffold/v2beta1
+apiVersion: skaffold/v2beta2
 kind: Config
+
+build:
+  artifacts:
+    #    - image: cedardevs/onestop-indexer
+    #      jib:
+    #        project: indexer
+    #        type: gradle
+    #    - image: cedardevs/onestop-registry
+    #      jib:
+    #        project: registry
+    #        type: gradle
+    #    - image: cedardevs/onestop-stream-manager
+    #      jib:
+    #        project: stream-manager
+    #        type: gradle
+    #    - image: cedardevs/onestop-search
+    #      jib:
+    #        project: search
+    #        type: gradle
+    #    - image: cedardevs/onestop-client
+    #      jib:
+    #        project: client
+    #        type: gradle
+    - image: cedardevs/onestop-user
+      jib:
+        project: user
+        type: gradle
 
 .onestop-indexer: &onestop-indexer
   name: onestop-indexer
@@ -106,7 +133,7 @@ kind: Config
     helm: {}
   setValues:
     debug: "true"
-    features.logingov: "true"
+    features.security: "false"
     config: |-
       ---
       logging.level.org.pac4j.springframework.web: DEBUG
@@ -144,10 +171,6 @@ kind: Config
   name: onestop-postgresql
   chartPath: helm/onestop-postgresql
 
-.onestop-keycloak: &onestop-keycloak
-  name: onestop-keycloak
-  chartPath: helm/onestop-keycloak
-
 .onestop-net-tools: &onestop-net-tools
   name: onestop-net-tools
   chartPath: helm/onestop-net-tools
@@ -156,42 +179,16 @@ kind: Config
   name: onestop-ingress
   chartPath: helm/onestop-ingress
 
-build:
-  artifacts:
-#    - image: cedardevs/onestop-indexer
-#      jib:
-#        project: indexer
-#        type: gradle
-#    - image: cedardevs/onestop-registry
-#      jib:
-#        project: registry
-#        type: gradle
-#    - image: cedardevs/onestop-stream-manager
-#      jib:
-#        project: stream-manager
-#        type: gradle
-#    - image: cedardevs/onestop-search
-#      jib:
-#        project: search
-#        type: gradle
-#    - image: cedardevs/onestop-client
-#      jib:
-#        project: client
-#        type: gradle
-    - image: cedardevs/onestop-user
-      jib:
-        project: user
-        type: gradle
 deploy:
   kubectl:
 
   helm:
     releases:
-#      - *onestop-indexer
-#      - *onestop-registry
-#      - *onestop-manager
-#      - *onestop-search
-#      - *onestop-client
+      #      - *onestop-indexer
+      #      - *onestop-registry
+      #      - *onestop-manager
+      #      - *onestop-search
+      #      - *onestop-client
       - *onestop-user
       - name: onestop-dev
         chartPath: helm/onestop-dev
@@ -221,7 +218,7 @@ profiles:
     deploy:
       helm:
         releases:
-#          - *onestop-user
-#          - *onestop-postgresql
-          - *onestop-keycloak
+          - *onestop-user
+          - *onestop-ingress
+          - *onestop-postgresql
           - *onestop-net-tools

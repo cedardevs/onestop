@@ -11,7 +11,8 @@ include(
     "registry",
     "search",
     "stream-manager",
-    "user"
+    "user",
+    "gateway"
 )
 
 //plugins {

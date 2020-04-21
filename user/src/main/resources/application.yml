@@ -19,11 +19,10 @@ spring:
       ddl-auto: none
     generate-ddl: false
 
-logging:
-  level:
-    org:
-      springframework:
-        jdbc: DEBUG
+
+logging.level.org.springframework.security: DEBUG
+logging.level.org.springframework.web: DEBUG
+logging.level.org.springframework.jdbc: DEBUG
 
 #  spring.datasource.initialize=true
 #  spring.datasource.schema=classpath:/schema.sql

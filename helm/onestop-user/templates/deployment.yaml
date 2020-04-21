@@ -31,6 +31,13 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+            {{- if .Values.debug }}
+            - name: jdwp
+              containerPort: 5005
+            {{- end }}
           env:
           # EXPORT ADDITIONAL CONFIG LOCATION (if config provided)
           {{- if .Values.config }}

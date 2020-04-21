@@ -12,5 +12,9 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: {{ .Values.service.securePort }}
+      targetPort: https
+      protocol: TCP
+      name: https
   selector:
     {{- include "onestop-user.selectorLabels" . | nindent 4 }}
