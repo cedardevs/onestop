@@ -40,7 +40,7 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v21-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
+      - onestop-cache-v21-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
       # fallback to using the latest cache if no exact match is found
       # - onestop-cache-v21-
 
@@ -58,9 +58,7 @@ saveCache: &saveCache
       - registry/build
       - search/build
       - stream-manager/build
-      # - cli/.gogradle
-      - cli/vendor
-    key: onestop-cache-v21-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}-{{ checksum "cli/build.gradle" }}
+    key: onestop-cache-v21-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -227,45 +225,6 @@ jobs:
         paths:
         - stream-manager/build
 
-  cli-generation:
-    docker:
-      - image: circleci/golang
-    environment:
-      - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
-      - GOOS: 'linux'
-      - GOARCH: 'amd64'
-      - GCO_ENABLED: 0
-    working_directory: ~/repo
-    steps:
-      - <<: *attachWorkspace
-      - run:
-          name: go build
-          command: |
-            echo "Generating CLI" &&
-            cd cli &&
-            go get -u github.com/danielgtaylor/openapi-cli-generator &&
-            openapi-cli-generator generate ../search/src/main/resources/openapi.yaml &&
-            sed -i 's/package main/package generated/g' openapi.go &&
-            sed -i 's/openapiRegister/OpenapiRegister/g' openapi.go &&
-            mv openapi.go internal/app/generated/
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - cli/internal/app/generated/openapi.go
-
-  cli-publish:
-    <<: *defaults
-    working_directory: ~/repo
-    steps:
-      - <<: *attachWorkspace
-      - run:
-          name: Build image, publish
-          command: ./gradlew cli:jib
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - cli/vendor
-            - cli/.gopath
   finalize:
     <<: *defaults
     steps:
@@ -349,20 +308,9 @@ workflows:
           requires:
             - checkout
           <<: *jobFilters
-      - cli-generation:
-          requires:
-            - checkout
-          <<: *jobFilters
-      - cli-publish:
-          requires:
-            - checkout
-            - cli-generation
-          <<: *jobFilters
       - finalize:
           requires:
             - client
-            - cli-generation
-            - cli-publish
             - registry
             - search
             - stream-manager

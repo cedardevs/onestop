@@ -28,7 +28,7 @@ class BulkIndexingTransformerSpec extends Specification {
   static testIndex = 'testIndex'
 
   Duration testBulkInterval = Duration.ofSeconds(1)
-  Long testMaxBytes = 1_000_000
+  Long testMaxBytes = 100_000
   Integer testMaxPublishActions = 1_000
 
   ElasticsearchService mockEsService

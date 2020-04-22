@@ -51,6 +51,10 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
       log.debug("flushing request due to size: {} >= {}", request.estimatedSizeInBytes(), config.getMaxPublishBytes());
       flushRequest();
     }
+    if (request.numberOfActions() >= config.getMaxPublishActions()) {
+      log.debug("flushing request due to number of actions: {} >= {}", request.numberOfActions(), config.getMaxPublishActions());
+      flushRequest();
+    }
     return null; // outputs are forwarded later when bulk request is flushed
   }
 

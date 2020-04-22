@@ -76,7 +76,6 @@ task integrationTest(type: Test) {
 check.dependsOn integrationTest
 
 bootJar {
-  dependsOn { 'generateOpenApi' }
   classifier = 'all' // add a classifier to distinguish the executable jar
   baseName = "${rootProject.name}-${project.name}"
   launchScript()
@@ -103,11 +102,12 @@ task extractSchemaDefinitions(type: Copy) {
 
 // NOTE: The 'build' task defined in package.json pipes the output directly to the output file
 task generateOpenApi(type: NpmTask) {
-  dependsOn { ['npmInstall', 'extractSchemaDefinitions', 'processResources'] }
+  dependsOn { ['npmInstall', 'extractSchemaDefinitions'] }
   args = ['run', 'build']
   outputs.file("$buildDir/resources/main/static/openapi.yaml")
 }
 
+processResources.finalizedBy(generateOpenApi)
 assemble.dependsOn(sourceJar)
 assemble.dependsOn(bootJar)
 

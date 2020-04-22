@@ -19,7 +19,7 @@ class SchemaParser {
 
   void loadSpec() {
     ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory())
-    JsonNode apiSpec = yamlMapper.readTree(this.getClass().classLoader.getResource('openapi.yaml').text)
+    JsonNode apiSpec = yamlMapper.readTree(this.getClass().classLoader.getResource('static/openapi.yaml').text)
     JsonNode schemaJson = apiSpec.get('components').get('schemas').get(this.name)
     ObjectNode schemaJsonObj = (ObjectNode)schemaJson
 

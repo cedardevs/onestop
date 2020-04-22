@@ -27,7 +27,6 @@ export default function ListViewController(props){
     itemsMap,
     previousItemsMap,
     propsForItem,
-    focusedKey,
     ListItemComponent,
     GridItemComponent,
     showAsGrid,
@@ -55,7 +54,6 @@ export default function ListViewController(props){
             action.handler({
               itemsMap,
               previousItemsMap,
-              focusedKey,
               propsForItem,
               ListItemComponent,
               GridItemComponent,

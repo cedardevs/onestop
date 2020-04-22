@@ -5,7 +5,7 @@ import {
   assembleSearchRequest,
   encodeLocationDescriptor,
 } from '../../utils/queryUtils'
-import {ROUTE, isPathNew} from '../../utils/urlUtils'
+import {ROUTE, isPathNew, goTo} from '../../utils/urlUtils'
 import {
   collectionNewSearchRequested,
   collectionNewSearchResetFiltersRequested,
@@ -170,6 +170,6 @@ const navigateToCollectionUrl = (history, filterState) => {
     !_.isEmpty(locationDescriptor.search) &&
     isPathNew(history.location, locationDescriptor)
   ) {
-    history.push(locationDescriptor)
+    goTo(history, locationDescriptor)
   }
 }
