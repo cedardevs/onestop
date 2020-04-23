@@ -146,18 +146,6 @@ class SearchIndexTopologySpec extends Specification {
     1 * mockIndexingTransformer.transform(testKey, null)
   }
 
-  // FIXME if keeping test at all should differentiate between generated requests (invalid no search)
-//  def "invalid records are not indexed"() {
-//    def collectionKey = 'a'
-//    def collectionValue = buildTestRecord(invalidCollectionPath)
-//
-//    when:
-//    collectionInput.pipeInput(collectionKey, collectionValue)
-//
-//    then:
-//    0 * mockIndexingTransformer.transform(_, _)
-//  }
-
   def "collection triggers flattening from beginning of time"() {
     def testKey1 = 'a'
     def testValue1 = buildTestRecord(validCollectionPath)
