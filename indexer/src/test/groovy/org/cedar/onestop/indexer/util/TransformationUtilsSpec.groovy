@@ -73,17 +73,15 @@ class TransformationUtilsSpec extends Specification {
   ///////////////////////////////
   def "only mapped #type fields are indexed"() {
     when:
-    def xml = ClassLoader.systemClassLoader.getResourceAsStream(dataSource).text
-    def record = TestUtils.buildRecordFromXML(xml)
     def result = TransformationUtils.reformatMessageForSearch(record, fields)
 
     then:
     result.keySet().each({ assert fields.contains(it) })
 
     where:
-    type          | fields            | dataSource
-    'collection'  | collectionFields  | 'test-iso-collection.xml'
-    'granule'     | granuleFields     | 'test-iso-granule.xml'
+    type          | fields            | record
+    'collection'  | collectionFields  | TestUtils.inputCollectionRecord
+    'granule'     | granuleFields     | TestUtils.inputGranuleRecord
   }
 
   ////////////////////////////////
@@ -91,12 +89,12 @@ class TransformationUtilsSpec extends Specification {
   ////////////////////////////////
   def "produces internalParentIdentifier for collection record correctly"() {
     expect:
-    TransformationUtils.prepareInternalParentIdentifier(TestUtils.inputRecord) == null
+    TransformationUtils.prepareInternalParentIdentifier(TestUtils.inputAvroRecord) == null
   }
 
   def "produces internalParentIdentifier for granule record correctly"() {
     def testId = "ABC"
-    def record = ParsedRecord.newBuilder(TestUtils.inputRecord)
+    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
         .setType(RecordType.granule)
         .setRelationships([
             Relationship.newBuilder().setType(RelationshipType.COLLECTION).setId(testId).build()
@@ -109,12 +107,12 @@ class TransformationUtilsSpec extends Specification {
 
   def "produces filename for collection record correctly"() {
     expect:
-    TransformationUtils.prepareFilename(TestUtils.inputRecord) == null
+    TransformationUtils.prepareFilename(TestUtils.inputAvroRecord) == null
   }
 
   def "produces filename for granule record correctly when record has data"() {
     def filename = "ABC"
-    def record = ParsedRecord.newBuilder(TestUtils.inputRecord)
+    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
         .setType(RecordType.granule)
         .setFileInformation(FileInformation.newBuilder().setName(filename).build())
         .build()
@@ -124,7 +122,7 @@ class TransformationUtilsSpec extends Specification {
   }
 
   def "produces filename for granule record correctly when record does not have data"() {
-    def record = ParsedRecord.newBuilder(TestUtils.inputRecord)
+    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
         .setType(RecordType.granule)
         .build()
 
@@ -137,7 +135,7 @@ class TransformationUtilsSpec extends Specification {
   ////////////////////////////////
   def "prepares service links"() {
     when:
-    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.inputGranuleRecord.discovery
     def result = TransformationUtils.prepareServiceLinks(discovery)
 
     then:
@@ -165,7 +163,7 @@ class TransformationUtilsSpec extends Specification {
 
   def "prepares service link protocols"() {
     Set protocols = ['HTTP']
-    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.inputGranuleRecord.discovery
 
     expect:
     TransformationUtils.prepareServiceLinkProtocols(discovery) == protocols
@@ -173,7 +171,7 @@ class TransformationUtilsSpec extends Specification {
 
   def "prepares link protocols"() {
     Set protocols = ['HTTP']
-    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.inputGranuleRecord.discovery
 
     expect:
     TransformationUtils.prepareLinkProtocols(discovery) == protocols
@@ -183,7 +181,7 @@ class TransformationUtilsSpec extends Specification {
   // Data Formats           //
   ////////////////////////////
   def "prepares data formats"() {
-    def discovery = TestUtils.buildRecordFromXML(inputGranuleXml).discovery
+    def discovery = TestUtils.inputGranuleRecord.discovery
 
     expect:
     TransformationUtils.prepareDataFormats(discovery) == [
@@ -200,7 +198,7 @@ class TransformationUtilsSpec extends Specification {
   ////////////////////////////
   def "prepares responsible party names"() {
     when:
-    def record = TestUtils.buildRecordFromXML(inputCollectionXml)
+    def record = TestUtils.inputCollectionRecord
     def result = TransformationUtils.prepareResponsibleParties(record)
 
     then:
@@ -226,7 +224,7 @@ class TransformationUtilsSpec extends Specification {
 
   def "does not prepare responsible party names for granules"() {
     when:
-    def record = TestUtils.buildRecordFromXML(inputGranuleXml)
+    def record = TestUtils.inputGranuleRecord
     def result = TransformationUtils.prepareResponsibleParties(record)
 
     then:
@@ -236,7 +234,7 @@ class TransformationUtilsSpec extends Specification {
 
   def "party names are not included in granule search info"() {
     when:
-    def record = TestUtils.buildRecordFromXML(TestUtils.inputGranuleXml) // <-- granule!
+    def record = TestUtils.inputGranuleRecord // <-- granule!
     def result = TransformationUtils.reformatMessageForSearch(record, collectionFields) // <-- top level reformat method!
 
     then:
@@ -292,7 +290,7 @@ class TransformationUtilsSpec extends Specification {
   ////////////////////////////
   def "Create GCMD keyword lists"() {
     when:
-    Map parsedKeywords = TransformationUtils.prepareGcmdKeyword(TestUtils.inputRecord.discovery)
+    Map parsedKeywords = TransformationUtils.prepareGcmdKeyword(TestUtils.inputAvroRecord.discovery)
 
     then:
     parsedKeywords.gcmdScienceServices == expectedGcmdKeywords.gcmdScienceServices
@@ -344,8 +342,8 @@ class TransformationUtilsSpec extends Specification {
     ]
 
     when:
-    Discovery discovery = ISOParser.parseXMLMetadataToDiscovery(TestUtils.inputCollectionXml)
-    Map parsedKeywords = TransformationUtils.prepareGcmdKeyword(discovery)
+    def discovery = TestUtils.inputCollectionRecord.discovery
+    def parsedKeywords = TransformationUtils.prepareGcmdKeyword(discovery)
 
     then:
     parsedKeywords.gcmdScience == expectedKeywordsFromIso.science
@@ -354,7 +352,7 @@ class TransformationUtilsSpec extends Specification {
 
   def "accession values are not included"() {
     when:
-    def result = TransformationUtils.reformatMessageForSearch(TestUtils.inputRecord, TestUtils.esConfig.parsedMapping(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet())
+    def result = TransformationUtils.reformatMessageForSearch(TestUtils.inputAvroRecord, TestUtils.esConfig.parsedMapping(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet())
 
     then:
     result.accessionValues == null

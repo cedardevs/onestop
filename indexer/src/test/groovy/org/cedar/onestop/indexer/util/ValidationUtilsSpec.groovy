@@ -18,7 +18,7 @@ class ValidationUtilsSpec extends Specification {
 
   def "valid message passes validation check"() {
     expect:
-    ValidationUtils.addValidationErrors(TestUtils.inputRecord).errors.isEmpty()
+    ValidationUtils.addValidationErrors(TestUtils.inputAvroRecord).errors.isEmpty()
   }
 
   def "validation passes tombstones through"() {
@@ -28,14 +28,14 @@ class ValidationUtilsSpec extends Specification {
 
   def "invalid records have errors added"() {
     given:
-    def titleAnalysis = TitleAnalysis.newBuilder(TestUtils.inputRecord.analysis.titles)
+    def titleAnalysis = TitleAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.titles)
         .setTitleExists(false)
         .build()
-    def idAnalysis = IdentificationAnalysis.newBuilder(TestUtils.inputRecord.analysis.identification)
+    def idAnalysis = IdentificationAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.identification)
         .setFileIdentifierExists(false)
         .setParentIdentifierExists(false)
         .build()
-    def timeAnalysis = TemporalBoundingAnalysis.newBuilder(TestUtils.inputRecord.analysis.temporalBounding)
+    def timeAnalysis = TemporalBoundingAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.temporalBounding)
         .setBeginDescriptor(INVALID)
         .setBeginUtcDateTimeString(null)
         .setEndDescriptor(INVALID)
@@ -43,12 +43,12 @@ class ValidationUtilsSpec extends Specification {
         .setInstantDescriptor(ValidDescriptor.UNDEFINED)
         .setInstantUtcDateTimeString(null)
         .build()
-    def analysis = Analysis.newBuilder(TestUtils.inputRecord.analysis)
+    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis)
         .setTitles(titleAnalysis)
         .setIdentification(idAnalysis)
         .setTemporalBounding(timeAnalysis)
         .build()
-    def record = ParsedRecord.newBuilder(TestUtils.inputRecord)
+    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
         .setAnalysis(analysis)
         .build()
 
@@ -60,9 +60,9 @@ class ValidationUtilsSpec extends Specification {
   }
 
   def "validates titles when #testCase"() {
-    def titleAnalysis = TitleAnalysis.newBuilder(TestUtils.inputRecord.analysis.titles).setTitleExists(titleExists).build()
-    def analysis = Analysis.newBuilder(TestUtils.inputRecord.analysis).setTitles(titleAnalysis).build()
-    def record = ParsedRecord.newBuilder(TestUtils.inputRecord).setAnalysis(analysis).build()
+    def titleAnalysis = TitleAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.titles).setTitleExists(titleExists).build()
+    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).setTitles(titleAnalysis).build()
+    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord).setAnalysis(analysis).build()
 
     when:
     def validated = ValidationUtils.addValidationErrors(record)
@@ -77,13 +77,13 @@ class ValidationUtilsSpec extends Specification {
   }
 
   def "validates identification when #testCase"() {
-    def identificationAnalysis = IdentificationAnalysis.newBuilder(TestUtils.inputRecord.analysis.identification)
+    def identificationAnalysis = IdentificationAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.identification)
         .setFileIdentifierExists(hasFileId)
         .setDoiExists(hasDoi)
         .setMatchesIdentifiers(matches)
         .build()
-    def analysis = Analysis.newBuilder(TestUtils.inputRecord.analysis).setIdentification(identificationAnalysis).build()
-    def record = ParsedRecord.newBuilder(TestUtils.inputRecord).setAnalysis(analysis).build()
+    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).setIdentification(identificationAnalysis).build()
+    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord).setAnalysis(analysis).build()
 
     when:
     def validated = ValidationUtils.addValidationErrors(record)
@@ -101,13 +101,13 @@ class ValidationUtilsSpec extends Specification {
   }
 
   def "validates temporal bounds when #testCase"() {
-    def temporalAnalysis = TemporalBoundingAnalysis.newBuilder(TestUtils.inputRecord.analysis.temporalBounding)
+    def temporalAnalysis = TemporalBoundingAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.temporalBounding)
         .setBeginDescriptor(beginValid ? VALID : INVALID)
         .setEndDescriptor(endValid ? VALID : INVALID)
         .setInstantDescriptor(instantValid ? VALID : INVALID)
         .build()
-    def analysis = Analysis.newBuilder(TestUtils.inputRecord.analysis).setTemporalBounding(temporalAnalysis).build()
-    def record = ParsedRecord.newBuilder(TestUtils.inputRecord).setAnalysis(analysis).build()
+    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).setTemporalBounding(temporalAnalysis).build()
+    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord).setAnalysis(analysis).build()
 
     when:
     def validated = ValidationUtils.addValidationErrors(record)
@@ -126,12 +126,12 @@ class ValidationUtilsSpec extends Specification {
   }
 
   def "validates spatial bounds when #testCase"() {
-    def spatialAnalysis = SpatialBoundingAnalysis.newBuilder(TestUtils.inputRecord.analysis.spatialBounding)
+    def spatialAnalysis = SpatialBoundingAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.spatialBounding)
         .setSpatialBoundingExists(exists)
         .setIsValid(valid)
         .build()
-    def analysis = Analysis.newBuilder(TestUtils.inputRecord.analysis).setSpatialBounding(spatialAnalysis).build()
-    def record = ParsedRecord.newBuilder(TestUtils.inputRecord).setAnalysis(analysis).build()
+    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).setSpatialBounding(spatialAnalysis).build()
+    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord).setAnalysis(analysis).build()
 
     when:
     def validated = ValidationUtils.addValidationErrors(record)
