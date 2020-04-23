@@ -1,8 +1,11 @@
 package org.cedar.onestop.indexer.util;
 
 import org.apache.kafka.streams.state.ValueAndTimestamp;
+import org.cedar.onestop.kafka.common.constants.StreamsApps;
+import org.cedar.onestop.kafka.common.constants.Topics;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.Publishing;
+import org.cedar.schemas.avro.psi.RecordType;
 import org.elasticsearch.ElasticsearchGenerationException;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -10,10 +13,7 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.elasticsearch.action.DocWriteRequest.OpType.*;
 
@@ -79,5 +79,17 @@ public class IndexingUtils {
       formattedRecord.putAll(TransformationUtils.reformatMessageForAnalysisAndErrors(input.getValue().value(), input.getTargetAnalysisAndErrorsIndexFields()));
       return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
     }
+  }
+
+  public static RecordType determineTypeFromTopic(String topic) {
+    if (topic == null) {
+      return null;
+    }
+    for(RecordType record : RecordType.values()) {
+      if(topic.equals(Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, record))) {
+        return record;
+      }
+    }
+    return null;
   }
 }

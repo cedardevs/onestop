@@ -45,7 +45,7 @@ public class BulkIndexingTransformer implements Transformer<String, ValueAndTime
   @Override
   public KeyValue<String, IndexingOutput> transform(String key, ValueAndTimestamp<ParsedRecord> record) {
     store.put(key, record);
-    var requests = IndexingUtils.mapRecordToRequests(new IndexingInput(key, record, elasticsearchService.getConfig()));
+    var requests = IndexingUtils.mapRecordToRequests(new IndexingInput(key, record, context.topic(), elasticsearchService.getConfig()));
     requests.forEach(request::add);
     if (request.estimatedSizeInBytes() >= config.getMaxPublishBytes()) {
       log.debug("flushing request due to size: {} >= {}", request.estimatedSizeInBytes(), config.getMaxPublishBytes());

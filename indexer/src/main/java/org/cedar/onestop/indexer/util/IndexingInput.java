@@ -6,10 +6,7 @@ import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
 import org.elasticsearch.action.DocWriteRequest;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class IndexingInput {
 
@@ -18,11 +15,11 @@ public class IndexingInput {
   private final ElasticsearchConfig esConfig;
   private final RecordType recordType;
 
-  public IndexingInput(String key, ValueAndTimestamp<ParsedRecord> value, ElasticsearchConfig esConfig) {
+  public IndexingInput(String key, ValueAndTimestamp<ParsedRecord> value, String topic, ElasticsearchConfig esConfig) {
     this.key = key;
     this.value = value;
     this.esConfig = esConfig;
-    this.recordType = value.value().getType();
+    this.recordType = IndexingUtils.determineTypeFromTopic(topic);
   }
 
   public String getKey() {
