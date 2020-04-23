@@ -9,6 +9,8 @@ dependencies {
 	implementation("org.springframework.security:spring-security-config")
   	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
+	implementation("com.auth0:java-jwt:${Versions.AUTH0_JAVA_JWT}")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude("org.junit.vintage", "junit-vintage-engine")
 	}

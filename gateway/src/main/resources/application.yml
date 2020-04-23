@@ -17,7 +17,7 @@ spring:
       client:
         registration:
           login-gov:
-            client-id: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8080"
+            client-id: "urn:gov:gsa:openidconnect.profiles:sp:sso:noaa:onestop_user_8080"
 #            client-id: \${LOGIN_GOV_CLIENT_ID}
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
@@ -33,17 +33,17 @@ spring:
             user-name-attribute: sub
 
 
-#login-gov:
-#  allowed-origin: \${LOGIN_GOV_ALLOWED_ORIGIN}
-#  login-success-redirect: \${LOGIN_GOV_LOGIN_SUCCESS_REDIRECT}
-#  login-failure-redirect: \${LOGIN_GOV_LOGIN_FAILURE_REDIRECT}
-#  logout-success-redirect: \${LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT}
-#  keystore:
-#    alias: \${LOGIN_GOV_KEYSTORE_ALIAS}
-#    file: \${LOGIN_GOV_KEYSTORE_FILE}
-#    password: \${LOGIN_GOV_KEYSTORE_PASSWORD}
-#    #keyPassword: \${LOGIN_GOV_KEY_PASSWORD}
-#    type: JKS
+login-gov:
+  allowed-origin: \${LOGIN_GOV_ALLOWED_ORIGIN}
+  login-success-redirect: \${LOGIN_GOV_LOGIN_SUCCESS_REDIRECT}
+  login-failure-redirect: \${LOGIN_GOV_LOGIN_FAILURE_REDIRECT}
+  logout-success-redirect: \${LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT}
+  keystore:
+    alias: logingov
+    file: /Users/elliott/Documents/GitHub/onestop/gateway/src/main/resources/logingov.jks
+    password: password
+    #keyPassword: \${LOGIN_GOV_KEY_PASSWORD}
+    type: JKS
 
 # this section allows the client login features to activate
 #ui:

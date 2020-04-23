@@ -10,6 +10,10 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+
 import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
 @EnableWebFluxSecurity
@@ -23,9 +27,31 @@ public class SecurityConfig {
 
   public static final String API_MATCHER_PATH = "/api/**";
 
+  private KeystoreUtil keystoreUtil;
+  private String allowedOrigin;
+  private String loginSuccessRedirect;
+  private String logoutSuccessRedirect;
+
+  @Autowired
+  SecurityConfig(LoginGovConfiguration loginGovConfiguration) throws UnrecoverableEntryException, NoSuchAlgorithmException, KeyStoreException {
+
+    LoginGovConfiguration.Keystore keystore = loginGovConfiguration.keystore;
+
+    keystoreUtil = new KeystoreUtil(
+        keystore.file,
+        keystore.password,
+        keystore.alias,
+        null,
+        keystore.type
+    );
+    allowedOrigin = loginGovConfiguration.allowedOrigin;
+    loginSuccessRedirect = loginGovConfiguration.loginSuccessRedirect;
+    logoutSuccessRedirect = loginGovConfiguration.logoutSuccessRedirect;
+  }
+
   @Bean
   LoginGovReactiveAuthorizationCodeTokenResponseClient tokenResponseClient(WebClient webClient) {
-    return new LoginGovReactiveAuthorizationCodeTokenResponseClient(webClient);
+    return new LoginGovReactiveAuthorizationCodeTokenResponseClient(webClient, keystoreUtil);
   }
 
   @Bean
