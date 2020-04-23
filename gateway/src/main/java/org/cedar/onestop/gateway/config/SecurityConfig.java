@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
@@ -22,6 +23,10 @@ public class SecurityConfig {
 
   public static final String API_MATCHER_PATH = "/api/**";
 
+  @Bean
+  LoginGovReactiveAuthorizationCodeTokenResponseClient tokenResponseClient(WebClient webClient) {
+    return new LoginGovReactiveAuthorizationCodeTokenResponseClient(webClient);
+  }
 
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(final ServerHttpSecurity http) {
@@ -37,14 +42,7 @@ public class SecurityConfig {
         .and()
         .oauth2Login()
         .authorizationRequestResolver(new LoginGovServerAuthorizationRequestResolver(clientRegistrations))
-//        .authenticationManager()
-//        .authenticationConverter(new LoginGovAuthenticationConverter())
-
         .and()
-//        .oauth2Login(oauth2 ->
-//            oauth2
-//                .authorizationRequestResolver(new LoginGovServerAuthorizationRequestResolver(clientRegistrations)
-//        )
         .build();
   }
 }
