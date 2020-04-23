@@ -25,10 +25,10 @@ class IndexingUtilsSpec extends Specification {
     results.size() == 2
     results.each { r -> r instanceof DeleteRequest }
     results.each { r -> r.id() == testKey }
-    results*.index() == [
+    results*.index().containsAll([
         TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS,
         TestUtils.esConfig.COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS
-    ]
+    ])
   }
 
   def "tombstones create delete requests for granules"() {
@@ -41,11 +41,11 @@ class IndexingUtilsSpec extends Specification {
     results.size() == 3
     results.each { r -> r instanceof DeleteRequest }
     results.each { r -> r.id() == testKey }
-    results*.index() == [
+    results*.index().containsAll([
         TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS,
         TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS,
         TestUtils.esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS
-    ]
+    ])
   }
 
   def "creates index requests for collections"() {
@@ -61,10 +61,10 @@ class IndexingUtilsSpec extends Specification {
     results.size() == 2
     results.every { it instanceof IndexRequest }
     results.every { it.id() == testKey }
-    results*.index() == [
+    results*.index().containsAll([
         TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS,
         TestUtils.esConfig.COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS
-    ]
+    ])
   }
 
   def "creates index requests for granules"() {
@@ -80,10 +80,10 @@ class IndexingUtilsSpec extends Specification {
     results.size() == 2
     results.every { it instanceof IndexRequest }
     results.every { it.id() == testKey }
-    results*.index() == [
+    results*.index().containsAll([
         TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS,
         TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS,
-    ]
+    ])
   }
 
   def "record that is #testCase creates delete request"() {
@@ -99,10 +99,10 @@ class IndexingUtilsSpec extends Specification {
     results.size() == 2
     results.every { it instanceof DeleteRequest }
     results.every { it.id() == testKey }
-    results*.index() == [
+    results*.index().containsAll([
         TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS,
         TestUtils.esConfig.COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS
-    ]
+    ])
 
     where:
     testCase               | publishingObject
@@ -124,10 +124,10 @@ class IndexingUtilsSpec extends Specification {
     results.size() == 2
     results.every { it instanceof IndexRequest }
     results.every { it.id() == testKey }
-    results*.index() == [
+    results*.index().containsAll([
         TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS,
         TestUtils.esConfig.COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS
-    ]
+    ])
 
     where:
     testCase              | publishingObject
