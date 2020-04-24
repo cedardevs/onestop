@@ -27,7 +27,7 @@ prefixPath: onestop
 # SERVICE ENDPOINTS (tells client how to access in cluster)
 ###############################################################################
 apiSearch:
-  endpoint: onestop-search:8080/onestop-search
+  endpoint: onestop-search:8080
 
 ingress:
   enabled: true

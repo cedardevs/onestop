@@ -110,7 +110,6 @@ deploy:
         values:
           image: cedardevs/onestop-client
         setValues:
-          apiSearch.endpoint: onestop-search:8080/onestop-search
           prefixPath: onestop
           service.clusterIP: 10.100.100.3
         imageStrategy:
@@ -191,7 +190,6 @@ profiles:
             values:
               image: cedardevs/onestop-client
             setValues:
-              apiSearch.endpoint: onestop-search:8080/onestop-search
               prefixPath: onestop
             imageStrategy:
               helm: {}
