@@ -23,7 +23,7 @@ public class IndexingUtils {
   public static List<DocWriteRequest<?>> mapRecordToRequests(IndexingInput input) {
     List<DocWriteRequest<?>> requests = new ArrayList<>();
 
-    if (input != null) {
+    if (input != null && input.isIndexable()) {
       var record = ValueAndTimestamp.getValueOrNull(input.getValue());
       var isValid = isValid(record);
       var operation = (isTombstone(record) || isPrivate(record)) ? DELETE : INDEX;

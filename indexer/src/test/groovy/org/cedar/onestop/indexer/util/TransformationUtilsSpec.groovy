@@ -8,7 +8,6 @@ import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
 import org.cedar.schemas.avro.psi.TemporalBounding
-import org.cedar.schemas.parse.ISOParser
 import spock.lang.Specification
 import spock.lang.Unroll
 

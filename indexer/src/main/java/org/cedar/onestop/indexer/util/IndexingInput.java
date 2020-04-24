@@ -30,6 +30,10 @@ public class IndexingInput {
     return value;
   }
 
+  public boolean isIndexable() {
+    return recordType != null;
+  }
+
   public List<String> getTargetSearchIndices(DocWriteRequest.OpType opType, boolean recordIsValid) {
     var indices = new ArrayList<String>();
 

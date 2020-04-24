@@ -24,8 +24,8 @@ class BulkIndexingTransformerSpec extends Specification {
 
   static publishingStartTime = Instant.parse("2020-01-01T00:00:00Z")
   static storeName = "BulkIndexingTransformerSpecStore"
-  static testTopic = 'testTopic'
-  static testIndex = 'testIndex'
+  static testTopic = TestUtils.collectionTopic
+  static testSearchIndex = TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS
 
   Duration testBulkInterval = Duration.ofSeconds(1)
   Long testMaxBytes = 100_000
@@ -85,7 +85,7 @@ class BulkIndexingTransformerSpec extends Specification {
 
   def "byte size triggers bulk request"() {
     def testValue = ValueAndTimestamp.make(TestUtils.inputCollectionRecord, publishingStartTime.toEpochMilli())
-    def sizeCheckItemRequests = IndexingUtils.mapRecordToRequests(new IndexingInput('dummy', testValue, TestUtils.esConfig))
+    def sizeCheckItemRequests = IndexingUtils.mapRecordToRequests(new IndexingInput('dummy', testValue, TestUtils.collectionTopic, TestUtils.esConfig))
     def sizeCheckBulkRequest = new BulkRequest()
     sizeCheckItemRequests.each { sizeCheckBulkRequest.add(it) }
     def testValueSize = sizeCheckBulkRequest.estimatedSizeInBytes()
@@ -123,7 +123,7 @@ class BulkIndexingTransformerSpec extends Specification {
     outputValue instanceof IndexingOutput
     outputValue.isSuccessful()
     outputValue.id == testKey
-    outputValue.index == testIndex
+    outputValue.index == testSearchIndex
     outputValue.operation == OpType.INDEX
     outputValue.timestamp == publishingStartTime.toEpochMilli()
     outputValue.record instanceof ParsedRecord
@@ -132,7 +132,7 @@ class BulkIndexingTransformerSpec extends Specification {
 
   private static buildBulkResponse(OpType opType, List<String> ids) {
     def itemResponses = ids.collect {
-      def shard = new ShardId(testIndex, "uuid", 0)
+      def shard = new ShardId(testSearchIndex, "uuid", 0)
       def itemResponse = new IndexResponse(shard, '_doc', it, 0, 0, 0, true)
       return new BulkItemResponse(0, opType, itemResponse)
     }
