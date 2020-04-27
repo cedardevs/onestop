@@ -1,10 +1,8 @@
 package org.cedar.onestop.indexer.util;
 
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
-import org.cedar.schemas.avro.psi.Analysis;
-import org.cedar.schemas.avro.psi.Discovery;
-import org.cedar.schemas.avro.psi.ErrorEvent;
-import org.cedar.schemas.avro.psi.ParsedRecord;
+import org.cedar.onestop.kafka.common.util.ValueWithTopic;
+import org.cedar.schemas.avro.psi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +21,8 @@ public class ValidationUtils {
 
   static final private String VALIDATION_ERROR_TITLE = "Invalid for search indexing";
 
-  public static ParsedRecord addValidationErrors(ParsedRecord record) {
+  public static ParsedRecord addValidationErrors(ValueWithTopic<ParsedRecord> value) {
+    ParsedRecord record = value == null ? null : value.getValue();
     if (record == null) {
       return null;
     }
@@ -32,6 +31,7 @@ public class ValidationUtils {
     errors.addAll(rootErrors);
     if (rootErrors.isEmpty()) {
       errors.addAll(validateIdentification(record));
+      errors.addAll(validateTopicPlacement(record, value.getTopic()));
       errors.addAll(validateTitles(record));
       errors.addAll(validateTemporalBounds(record));
       errors.addAll(validateSpatialBounds(record));
@@ -62,6 +62,30 @@ public class ValidationUtils {
     if (identification != null && !identification.getMatchesIdentifiers()) {
       result.add(buildValidationError("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided."));
     }
+    return result;
+  }
+
+  private static List<ErrorEvent> validateTopicPlacement(ParsedRecord record, String topic) {
+    var result = new ArrayList<ErrorEvent>();
+    var declaredRecordType = record.getType();
+    var recordTypeForTopic = IndexingUtils.determineTypeFromTopic(topic);
+
+    if(declaredRecordType != recordTypeForTopic) {
+      result.add(buildValidationError("Declared record type [ " + declaredRecordType.toString() +
+          " ] does not match expected type [ " + recordTypeForTopic.toString() +
+          " ]. Metadata was ingested downstream into wrong topic."));
+    }
+
+    var identification = record.getAnalysis().getIdentification();
+    var isGranule = identification.getParentIdentifierExists() && record.getDiscovery().getHierarchyLevelName() != null
+        && record.getDiscovery().getHierarchyLevelName().toLowerCase() == "granule";
+    if(isGranule && recordTypeForTopic != RecordType.granule) {
+      result.add(buildValidationError("Metadata indicates granule type but record is not on granule topic."));
+    }
+    if(!isGranule && recordTypeForTopic == RecordType.granule) {
+      result.add(buildValidationError("Metadata indicates non-granule type but record is on granule topic."));
+    }
+
     return result;
   }
 

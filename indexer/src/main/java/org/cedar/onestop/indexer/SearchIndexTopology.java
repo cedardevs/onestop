@@ -21,6 +21,7 @@ import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.constants.Topics;
 import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.kafka.common.util.Timestamper;
+import org.cedar.onestop.kafka.common.util.TopicIdentifier;
 import org.cedar.schemas.analyze.Analyzers;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.Relationship;
@@ -57,7 +58,8 @@ public class SearchIndexTopology {
     var inputRecords = streamsBuilder.<String, ParsedRecord>stream(Topics.parsedChangelogTopics(StreamsApps.REGISTRY_ID));
     var filledInRecords = inputRecords.mapValues(DefaultParser::fillInDefaults);
     var analyzedRecords = filledInRecords.mapValues(Analyzers::addAnalysis);
-    var validatedRecords = analyzedRecords.mapValues(ValidationUtils::addValidationErrors);
+    var recordsWithTopic = analyzedRecords.transformValues(TopicIdentifier<ParsedRecord>::new);
+    var validatedRecords = recordsWithTopic.mapValues(ValidationUtils::addValidationErrors);
 
     var bulkResults = validatedRecords
         .peek((k, v) -> log.debug("submitting [{} => {}] to bulk indexer", k, v))
