@@ -77,8 +77,8 @@ public class ValidationUtils {
     }
 
     var identification = record.getAnalysis().getIdentification();
-    var isGranule = identification.getParentIdentifierExists() && record.getDiscovery().getHierarchyLevelName() != null
-        && record.getDiscovery().getHierarchyLevelName().toLowerCase() == "granule";
+    var isGranule = identification.getParentIdentifierExists() && identification.getHierarchyLevelNameExists()
+        && record.getDiscovery().getHierarchyLevelName().toLowerCase().equals("granule");
     if(isGranule && recordTypeForTopic != RecordType.granule) {
       result.add(buildValidationError("Metadata indicates granule type but record is not on granule topic."));
     }

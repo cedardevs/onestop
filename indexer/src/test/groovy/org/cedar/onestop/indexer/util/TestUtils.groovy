@@ -18,10 +18,10 @@ class TestUtils {
   static collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection)
   static granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule)
 
-  static final inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml').text
+  static final inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/C1.xml').text
   static inputCollectionRecord = buildRecordFromXML(inputCollectionXml)
 
-  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-granule.xml').text
+  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/G1.xml').text
   static inputGranuleRecord = buildRecordFromXML(inputGranuleXml)
 
   public static final esConfig = new ElasticsearchConfig(
@@ -40,13 +40,14 @@ class TestUtils {
     def builder = ParsedRecord.newBuilder().setDiscovery(discovery).setAnalysis(analysis)
 
     // Determine RecordType (aka granule or collection) from Discovery & Analysis info
-    String parentIdentifier = discovery.parentIdentifier
+    boolean parentIdentifier = analysis.identification.parentIdentifierExists
+    boolean hlmExists = analysis.identification.hierarchyLevelNameExists
     String hierarchyLevelName = discovery.hierarchyLevelName
-    if (hierarchyLevelName == null || hierarchyLevelName != 'granule' || !parentIdentifier) {
-      builder.setType(RecordType.collection)
+    if(hlmExists && hierarchyLevelName.toLowerCase() == 'granule' && parentIdentifier) {
+      builder.setType(RecordType.granule)
     }
     else {
-      builder.setType(RecordType.granule)
+      builder.setType(RecordType.collection)
     }
 
     return builder.build()

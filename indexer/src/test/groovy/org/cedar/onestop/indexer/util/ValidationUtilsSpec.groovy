@@ -140,6 +140,7 @@ class ValidationUtilsSpec extends Specification {
   def "validates topic placement when #testCase"() {
     def identification = IdentificationAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.identification)
         .setParentIdentifierExists(hasParentId)
+        .setHierarchyLevelNameExists(hlm != null)
         .build()
     def discovery = Discovery.newBuilder(TestUtils.inputAvroRecord.getDiscovery()).setHierarchyLevelName(hlm).build()
     def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).setIdentification(identification).build()
