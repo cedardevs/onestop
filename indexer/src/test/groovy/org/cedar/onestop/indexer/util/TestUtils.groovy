@@ -18,10 +18,10 @@ class TestUtils {
   static collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection)
   static granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule)
 
-  static final inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/C1.xml').text
+  static final inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-collection.xml').text
   static inputCollectionRecord = buildRecordFromXML(inputCollectionXml)
 
-  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/G1.xml').text
+  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-granule.xml').text
   static inputGranuleRecord = buildRecordFromXML(inputGranuleXml)
 
   public static final esConfig = new ElasticsearchConfig(

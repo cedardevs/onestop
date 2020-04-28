@@ -38,6 +38,12 @@ class IndexerIntegrationSpec extends Specification {
   static EmbeddedKafkaBroker kafka
   static RestApp schemaRegistry
 
+  static final inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/C1.xml').text
+  static inputCollectionRecord = TestUtils.buildRecordFromXML(inputCollectionXml)
+
+  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/G1.xml').text
+  static inputGranuleRecord = TestUtils.buildRecordFromXML(inputGranuleXml)
+
   def setupSpec() {
     kafka = new EmbeddedKafkaBroker(1, false)
         .brokerListProperty('kafka.bootstrap.servers')
@@ -93,11 +99,11 @@ class IndexerIntegrationSpec extends Specification {
 
   def "indexes then deletes a granule and a collection"() {
     def collectionId = "C"
-    def collection = TestUtils.inputCollectionRecord
+    def collection = inputCollectionRecord
     def collectionTopic = TestUtils.collectionTopic
     def collectionRecord = new ProducerRecord<>(collectionTopic, collectionId, collection)
     def granuleId = "G"
-    def granule = ParsedRecord.newBuilder(TestUtils.inputGranuleRecord)
+    def granule = ParsedRecord.newBuilder(inputGranuleRecord)
         .setRelationships([Relationship.newBuilder().setId(collectionId).setType(RelationshipType.COLLECTION).build()])
         .build()
     def granuleTopic = TestUtils.granuleTopic
