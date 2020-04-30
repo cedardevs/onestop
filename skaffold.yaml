@@ -37,7 +37,6 @@ build:
   chartPath: helm/onestop-indexer
   values:
     image: cedardevs/onestop-indexer
-    pullPolicy: Never
   setValues:
     config: |-
       ---
@@ -58,7 +57,6 @@ build:
   chartPath: helm/onestop-registry
   values:
     image: cedardevs/onestop-registry
-    pullPolicy: Never
   setValues:
     config: |-
       ---
@@ -90,7 +88,6 @@ build:
   chartPath: helm/onestop-manager
   values:
     image: cedardevs/onestop-stream-manager
-    pullPolicy: Never
   setValues:
     config: |-
       ---
@@ -109,7 +106,6 @@ build:
   chartPath: helm/onestop-search
   values:
     image: cedardevs/onestop-search
-    pullPolicy: Never
   setValues:
     env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
     env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
@@ -125,7 +121,6 @@ build:
   chartPath: helm/onestop-client
   values:
     image: cedardevs/onestop-client
-    pullPolicy: Never
   setValues:
     apiSearch.endpoint: onestop-search:8080/onestop-search
     prefixPath: onestop
@@ -137,7 +132,6 @@ build:
   chartPath: helm/onestop-user
   values:
     image: cedardevs/onestop-user
-    pullPolicy: Never
   imageStrategy:
     helm: {}
   setValues:
@@ -181,7 +175,6 @@ build:
   chartPath: helm/onestop-gateway
   values:
     image: cedardevs/onestop-gateway
-    pullPolicy: Never
   imageStrategy:
     helm: {}
   setValues:
