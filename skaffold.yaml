@@ -27,6 +27,10 @@ build:
       jib:
         project: user
         type: gradle
+    - image: cedardevs/onestop-gateway
+      jib:
+        project: gateway
+        type: gradle
 
 .onestop-indexer: &onestop-indexer
   name: onestop-indexer
@@ -132,7 +136,6 @@ build:
   name: onestop-user
   chartPath: helm/onestop-user
   values:
-    # skaffold may not build/deploy w/the latest if this is not set here
     image: cedardevs/onestop-user
     pullPolicy: Never
   imageStrategy:
