@@ -21,3 +21,24 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+jib {
+	val publish: Publish by project.extra
+
+	from {
+		// base image
+		image = "gcr.io/distroless/java:11"
+	}
+	to {
+		image = publish.repository()
+		auth {
+			username = publish.username
+			password = publish.password
+		}
+	}
+	container {
+		creationTime = publish.created
+		labels = publish.ociAnnotations()
+		ports = listOf("8080", "8443")
+	}
+}

@@ -1,24 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "onestop-user.fullname" . }}
+  name: {{ include "onestop-gateway.fullname" . }}
   labels:
-    {{- include "onestop-user.labels" . | nindent 4 }}
+    {{- include "onestop-gateway.labels" . | nindent 4 }}
 spec:
+{{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+{{- end }}
   selector:
     matchLabels:
-      {{- include "onestop-user.selectorLabels" . | nindent 6 }}
+      {{- include "onestop-gateway.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      labels:
-        {{- include "onestop-user.selectorLabels" . | nindent 8 }}
-    spec:
-    {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
+    {{- with .Values.podAnnotations }}
+      annotations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ include "onestop-user.serviceAccountName" . }}
+      labels:
+        {{- include "onestop-gateway.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "onestop-gateway.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -38,7 +44,14 @@ spec:
             - name: jdwp
               containerPort: 5005
             {{- end }}
+          # Configure all key-value pairs in a Secret as container environment variables
+          envFrom:
+            - secretRef:
+                # PRIVATE_KEY_JWT_KEYSTORE_TYPE, PRIVATE_KEY_JWT_KEYSTORE_PASSWORD, PRIVATE_KEY_JWT_KEYSTORE_ALIAS
+                name: onestop-gateway-private-key-jwt-jks-credentials
           env:
+            - name: PRIVATE_KEY_JWT_KEYSTORE_FILE
+              value: /etc/onestop-gateway/logingov.jks
             # EXPORT ADDITIONAL CONFIG LOCATION (if config provided)
             {{- if .Values.config }}
             # if Helm values have a config section, it will be mounted as a YML file
@@ -56,8 +69,8 @@ spec:
                           {{- end -}}
                         {{- end -}}
                         {{- join "," $active.profiles }}'
-            # generic env overrides, for spring properties, etc
             {{- if .Values.env }}
+              # generic env overrides, for spring properties, etc
               {{- range $envName,$envVal := .Values.env }}
               - name: {{ $envName }}
                 value: {{ $envVal | quote }}
@@ -67,40 +80,39 @@ spec:
             - name: JAVA_TOOL_OPTIONS
               value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
             {{- end }}
-#          livenessProbe:
-#            httpGet:
-#              path: /
-#              port: http
-#          readinessProbe:
-#            httpGet:
-#              path: /
-#              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
+            - name: onestop-gateway-private-key-jwt-jks-volume
+              mountPath: /etc/onestop-gateway/
+              readOnly: true
           # MOUNT ADDITIONAL CONFIG IN THIS CONTAINER (if config provided)
           # done via ConfigMap and associated volume
-          {{- if .Values.config }}
+            {{- if .Values.config }}
             - name: config-volume
               mountPath: /etc/conf/
-          {{- end }}
+            {{- end }}
       volumes:
+        - name: onestop-gateway-private-key-jwt-jks-volume
+          secret:
+            # filename is based on key in secret `logingov.jks` which we be placed in the volume mount path
+            secretName: onestop-gateway-private-key-jwt-jks
+        {{- if .Values.config }}
         # CREATE VOLUME FOR ADDITIONAL CONFIG (if config provided)
         # additional location for Spring config allows overriding defaults
-        {{- if .Values.config }}
-          - name: config-volume
-            configMap:
-              name: {{ include "onestop-user.configname" . }}
+        - name: config-volume
+          configMap:
+            name: {{ include "onestop-gateway.configname" . }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.affinity }}
+      {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
+      {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
-    {{- end }}
+      {{- end }}

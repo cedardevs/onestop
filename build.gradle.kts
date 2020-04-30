@@ -25,7 +25,7 @@ plugins {
     // Jib plugin
     // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin
     // - Jib is a Gradle plugin for building Docker and OCI images for your Java applications.
-    id("com.google.cloud.tools.jib").version("2.0.0").apply(false)
+    id("com.google.cloud.tools.jib").version("2.2.0").apply(false)
 
     // Node plugin
     // https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
@@ -109,7 +109,7 @@ val projectDescriptions: Map<String, String> = mapOf(
 
 // only apply plugins, configuration, tasks, etc. to projects that need it
 val javaProjects: List<String> = listOf("client", "cli", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "stream-manager", "user", "gateway")
-val jibProjects: List<String> = listOf("client", "cli", "indexer", "registry", "search", "stream-manager", "user")
+val jibProjects: List<String> = listOf("client", "cli", "indexer", "registry", "search", "stream-manager", "user", "gateway")
 val springBootProjects: List<String> = listOf("elastic-common", "search", "registry", "user", "gateway")
 val nodeProjects: List<String> = listOf("client", "registry")
 val micronautProjects: List<String> = listOf()
