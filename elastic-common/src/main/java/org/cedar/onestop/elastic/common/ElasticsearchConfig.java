@@ -39,7 +39,7 @@ public class ElasticsearchConfig {
   private Map<String, Map<String, Map>> parsedMappings = new HashMap<>();
   private Map<String, String> typeByAlias = new HashMap<>();
   private Map<String, String> searchAliasByType = new HashMap<>();
-  private Map<String, String> aeAliasByType = new HashMap<>();
+  private Map<String, String> analysisAndErrorAliasByType = new HashMap<>();
 
   public ElasticsearchConfig(
       ElasticsearchVersion version,
@@ -110,8 +110,8 @@ public class ElasticsearchConfig {
     this.searchAliasByType.put(TYPE_GRANULE, GRANULE_SEARCH_INDEX_ALIAS);
     this.searchAliasByType.put(TYPE_FLATTENED_GRANULE, FLAT_GRANULE_SEARCH_INDEX_ALIAS);
 
-    this.aeAliasByType.put(TYPE_COLLECTION, COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS);
-    this.aeAliasByType.put(TYPE_GRANULE, GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS);
+    this.analysisAndErrorAliasByType.put(TYPE_COLLECTION, COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS);
+    this.analysisAndErrorAliasByType.put(TYPE_GRANULE, GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS);
   }
 
   public String jsonMapping(String alias) {
@@ -161,7 +161,7 @@ public class ElasticsearchConfig {
   }
 
   public String analysisAndErrorsAliasFromType(String type) {
-    return this.aeAliasByType.get(type);
+    return this.analysisAndErrorAliasByType.get(type);
   }
 
   public Boolean sitemapEnabled() {
