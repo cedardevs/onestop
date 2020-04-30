@@ -5,9 +5,8 @@ import org.apache.kafka.streams.processor.MockProcessorContext
 import org.apache.kafka.streams.processor.PunctuationType
 import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
-import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.indexer.util.ElasticsearchService
+import org.cedar.onestop.indexer.util.TestUtils
 import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.common.bytes.BytesArray
@@ -26,15 +25,6 @@ import java.time.Instant
 
 class FlatteningTransformerSpec extends Specification {
 
-  static testEsConfig = new ElasticsearchConfig(
-      new ElasticsearchVersion("7.5.1"),
-      "BulkIndexingTransformerSpec-",
-      1,
-      1,
-      1,
-      1,
-      false
-  )
   static storeName = "FlatteningTriggerTransformerSpecStore"
   static testScript = "scripts/flattenGranules.painless"
   static startTime = Instant.parse("2020-01-01T00:00:00Z")
@@ -51,7 +41,7 @@ class FlatteningTransformerSpec extends Specification {
   def setup() {
     mockEsService = Mock(ElasticsearchService)
     mockBulkByScrollResponse = Mock(BulkByScrollResponse)
-    mockEsService.getConfig() >> testEsConfig
+    mockEsService.getConfig() >> TestUtils.esConfig
     mockProcessorContext = new MockProcessorContext()
     mockProcessorContext.setTimestamp(startTime.toEpochMilli())
     testStore = Stores.keyValueStoreBuilder(
