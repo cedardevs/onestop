@@ -77,6 +77,7 @@ public class IndexingUtils {
     else {
       var formattedRecord = new HashMap<String, Object>();
       formattedRecord.putAll(TransformationUtils.reformatMessageForAnalysisAndErrors(input.getValue().value(), input.getTargetAnalysisAndErrorsIndexFields()));
+      formattedRecord.put("stagedDate", input.getValue().timestamp());
       return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
     }
   }

@@ -2,6 +2,10 @@
   "mappings": {
     "dynamic": "strict",
     "properties": {
+      "stagedDate": {
+        "type": "date",
+        "format": "epoch_millis"
+      },
       "dataAccess": {
         "properties": {
           "dataAccessExists": {
