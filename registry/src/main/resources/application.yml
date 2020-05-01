@@ -25,7 +25,22 @@ kafka:
 
 server:
   port: 8080
-management.endpoints.enabled-by-default: false
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    info:
+      enabled: true
+    health:
+      enabled: true
+      show-details: "always"
+      group:
+        liveness:
+          include: "ping,kafkaStreamsLiveness"
+        readiness:
+          include: "diskSpace,kafkaStreamsReadiness"
+    metrics:
+      enabled: true
 
 publishing:
   interval:
