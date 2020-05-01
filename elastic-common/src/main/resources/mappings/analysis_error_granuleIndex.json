@@ -6,6 +6,9 @@
         "type": "date",
         "format": "epoch_millis"
       },
+      "internalParentIdentifier": {
+        "type": "keyword"
+      },
       "dataAccess": {
         "properties": {
           "dataAccessExists": {

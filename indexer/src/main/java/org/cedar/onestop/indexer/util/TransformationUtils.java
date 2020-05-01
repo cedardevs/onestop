@@ -32,6 +32,7 @@ public class TransformationUtils {
     var errors = record.getErrors();
 
     var analysisMap = AvroUtils.avroToMap(analysis, true);
+    analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
     var errorsList = errors.stream()
         .map(e -> AvroUtils.avroToMap(e))
         .collect(Collectors.toList());
