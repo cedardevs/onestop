@@ -28,10 +28,26 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.debug }}
+      shareProcessNamespace: true
+      {{- end }}
       containers:
+      {{- if .Values.debug }}
+      - name: debug
+        image: centos
+        command: ["tail", "-f", "/dev/null"]
+      {{- end }}
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        {{- if .Values.debug }}
+        - name: jdwp
+          containerPort: 5005
+        {{- end }}
         env:
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: "{{ include "onestop-manager.kafka.bootstrap.servers" . }}"
@@ -40,6 +56,10 @@ spec:
         {{- if .Values.config }}
         - name: spring.config.additional-location
           value: /etc/conf/application.yaml
+        {{- end }}
+        {{- if .Values.debug }}
+        - name: JAVA_TOOL_OPTIONS
+          value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
         {{- end }}
         volumeMounts:
         {{- if .Values.config }}

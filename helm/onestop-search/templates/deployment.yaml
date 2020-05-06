@@ -23,7 +23,15 @@ spec:
         app.kubernetes.io/name: {{ include "onestop-search.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      {{- if .Values.debug }}
+      shareProcessNamespace: true
+      {{- end }}
       containers:
+        {{- if .Values.debug }}
+        - name: debug
+          image: centos
+          command: ["tail", "-f", "/dev/null"]
+        {{- end }}
         - name: {{ .Chart.Name }}
           image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -31,6 +39,10 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+            {{- if .Values.debug }}
+            - name: jdwp
+              containerPort: 5005
+            {{- end }}
           env:
           # EXPORT ADDITIONAL CONFIG LOCATION (if config provided)
           {{- if .Values.config }}
@@ -55,6 +67,10 @@ spec:
             - name: {{ $envName }}
               value: {{ $envVal | quote }}
             {{- end }}
+          {{- end }}
+          {{- if .Values.debug }}
+            - name: JAVA_TOOL_OPTIONS
+              value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
           {{- end }}
           # EXPORT PATHS KEYSTORES (if security feature enabled)
           {{- if (index .Values "features" "login-gov") }}
