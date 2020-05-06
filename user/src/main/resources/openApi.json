@@ -24,7 +24,7 @@
     }
   ],
   "paths": {
-    "/api/v1/savesearches": {
+    "/v1/saved-search": {
       "get": {
         "tags": [
           "save-search-controller"
@@ -99,7 +99,7 @@
         "deprecated": false
       }
     },
-    "/api/v1/savesearches/user/{userId}": {
+    "/v1/saved-search/user/{userId}": {
       "get": {
         "tags": [
           "save-search-controller"
@@ -138,7 +138,7 @@
         "deprecated": false
       }
     },
-    "/api/v1/savesearches/{id}": {
+    "/v1/saved-search/{id}": {
       "get": {
         "tags": [
           "save-search-controller"

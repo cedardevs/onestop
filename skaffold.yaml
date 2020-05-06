@@ -27,10 +27,10 @@ build:
       jib:
         project: user
         type: gradle
-    - image: cedardevs/onestop-gateway
-      jib:
-        project: gateway
-        type: gradle
+#    - image: cedardevs/onestop-gateway
+#      jib:
+#        project: gateway
+#        type: gradle
 
 .onestop-indexer: &onestop-indexer
   name: onestop-indexer
@@ -139,23 +139,10 @@ build:
     features.security: "true"
     config: |-
       ---
-      logging.level.org.pac4j.springframework.web: DEBUG
-      logging.level.org.pac4j.core.engine: DEBUG
-      logging.level.org.pac4j.cas: DEBUG
-
-      logingov:
-        clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:noaa:onestop_user_8080"
-        discoveryUri: "https://idp.int.identitysandbox.gov/.well-known/openid-configuration"
-        scopes: "openid email"
-        useNonce: true
-        acrValues: "http://idmanagement.gov/ns/assurance/loa/1"
-
-      authorization:
-        roles:
-          ROLE_PUBLIC:
-            - elliott.richerson@noaa.gov
-
       server.servlet.context-path: /user
+
+      logging.level.org.springframework.security: DEBUG
+      logging.level.org.springframework.web: DEBUG
       spring:
         datasource:
           url: jdbc:postgresql://onestop-postgresql:5432/user
@@ -181,10 +168,14 @@ build:
     debug: "false"
     config: |-
       ---
+      logging.level.org.springframework.security: DEBUG
+      logging.level.org.springframework.web: DEBUG
+
       server.servlet.context-path: /api
+
       gateway:
         routes:
-          user: http://localhost/user
+          user: http://onestop-user:8080
       login-gov:
         keystore:
           alias: ${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
@@ -244,7 +235,7 @@ profiles:
     deploy:
       helm:
         releases:
-          - *onestop-gateway
+#          - *onestop-gateway
           - *onestop-user
           - *onestop-ingress
           - *onestop-postgresql

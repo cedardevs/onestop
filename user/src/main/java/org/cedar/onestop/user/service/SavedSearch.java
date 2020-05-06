@@ -15,7 +15,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "savesearch")
-public class SaveSearch {
+public class SavedSearch {
   @Id
   @GeneratedValue(generator = "uuid")
   @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -40,11 +40,11 @@ public class SaveSearch {
   public Date lastUpdatedOn; ///TODO do we also accept part of the query
 
   //constructor will be used by Spring JPA
-  protected SaveSearch() {
+  protected SavedSearch() {
   }
 
   //constructor is for creating instances.
-  public SaveSearch(String id, String userId, String name, String value, Date createdOn, Date lastUpdatedOn) {
+  public SavedSearch(String id, String userId, String name, String value, Date createdOn, Date lastUpdatedOn) {
     this.id = id;
     this.userId = userId;
     this.name = name;
@@ -54,7 +54,7 @@ public class SaveSearch {
   }
 
   //constructor is for creating instances.
-  public SaveSearch(String id, String userId, String name, String value) {
+  public SavedSearch(String id, String userId, String name, String value) {
     this.id = id;
     this.userId = userId;
     this.name = name;

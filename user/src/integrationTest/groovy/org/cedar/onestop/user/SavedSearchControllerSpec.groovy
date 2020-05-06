@@ -1,7 +1,7 @@
 package org.cedar.onestop.user
 
-import org.cedar.onestop.user.service.SaveSearch
-import org.cedar.onestop.user.repository.SaveSearchRepository
+import org.cedar.onestop.user.service.SavedSearch
+import org.cedar.onestop.user.repository.SavedSearchRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -15,7 +15,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @ActiveProfiles('integration')
 @SpringBootTest(classes = [UserApplication.class], webEnvironment = RANDOM_PORT)
-class SaveSearchControllerSpec extends Specification {
+class SavedSearchControllerSpec extends Specification {
   private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
 
   @LocalServerPort
@@ -26,15 +26,15 @@ class SaveSearchControllerSpec extends Specification {
   }
 
   @Autowired
-  SaveSearch saveSearch
+  SavedSearch saveSearch
 
   private TestRestTemplate restTemplate
   String baseUrl
 
   @Autowired
-  SaveSearchRepository saveSearchRepository
+  SavedSearchRepository saveSearchRepository
 
-  private SaveSearch saveSearch
+  private SavedSearch saveSearch
 
   def setup() {
     restTemplate = new TestRestTemplate()
@@ -52,12 +52,12 @@ class SaveSearchControllerSpec extends Specification {
 
   def "Create and get all saved searches"() {
     given:
-    saveSearch = new SaveSearch("1", "userOne", "entryName1", "value 1")
+    saveSearch = new SavedSearch("1", "userOne", "entryName1", "value 1")
     saveSearchRepository.save(saveSearch)
 
     when:
     def postResponse = restTemplate
-        .postForEntity(getBaseUrl() + "/api/v1/savesearches", saveSearch, SaveSearch.class)
+        .postForEntity(getBaseUrl() + "/v1/saved-search", saveSearch, SavedSearch.class)
     def savedSearchId = postResponse.body.id
 
     then:
@@ -67,7 +67,7 @@ class SaveSearchControllerSpec extends Specification {
     when:
     sleep(200)
     def retrieveEntity = restTemplate
-        .getForEntity(getBaseUrl()+ "/api/v1/savesearches/${savedSearchId}", SaveSearch.class)
+        .getForEntity(getBaseUrl()+ "/v1/saved-search/${savedSearchId}", SavedSearch.class)
 
     then:
     retrieveEntity.statusCode == HttpStatus.OK
@@ -82,16 +82,16 @@ class SaveSearchControllerSpec extends Specification {
 
   def "Create and Get all save searches by user id"() {
     given:
-    SaveSearch saveSearch1 = new SaveSearch("2", "userIdTwo", "entryName2", "value 2")
-    SaveSearch saveSearch2 = new SaveSearch("3", "userIdTwo", "entryName3", "value 3")
+    SavedSearch saveSearch1 = new SavedSearch("2", "userIdTwo", "entryName2", "value 2")
+    SavedSearch saveSearch2 = new SavedSearch("3", "userIdTwo", "entryName3", "value 3")
     saveSearchRepository.save(saveSearch1)
 
     when:
     def postResponse = restTemplate
-        .postForEntity(getBaseUrl() + "/api/v1/savesearches", saveSearch1, SaveSearch.class)
+        .postForEntity(getBaseUrl() + "/v1/saved-search", saveSearch1, SavedSearch.class)
 
     def postResponseTwo = restTemplate
-        .postForEntity(getBaseUrl() + "/api/v1/savesearches", saveSearch2, SaveSearch.class)
+        .postForEntity(getBaseUrl() + "/v1/saved-search", saveSearch2, SavedSearch.class)
 
     def savedSearchId = postResponse.body.id
 
@@ -100,7 +100,7 @@ class SaveSearchControllerSpec extends Specification {
 
     when:
     sleep(200)
-    def retrieveEntity = restTemplate.getForEntity(getBaseUrl()+ "/api/v1/savesearches/${savedSearchId}", SaveSearch.class)
+    def retrieveEntity = restTemplate.getForEntity(getBaseUrl()+ "/v1/saved-search/${savedSearchId}", SavedSearch.class)
 
     then:
     retrieveEntity.statusCode == HttpStatus.OK

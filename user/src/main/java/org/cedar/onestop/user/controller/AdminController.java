@@ -1,5 +1,6 @@
 package org.cedar.onestop.user.controller;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,15 +15,15 @@ import java.util.Map;
 public class AdminController {
 
   @GetMapping("/hello")
-  public Map<String, String> hello(final @AuthenticationPrincipal Jwt jwt) {
-    if(jwt != null) {
-      System.out.println("headers:\n" + jwt.getHeaders());
-      System.out.println("\nclaims:\n" + jwt.getClaims());
-      return Collections.singletonMap("message", "Hello " + jwt.getClaimAsString("name"));
+  public Map<String, String> hello(final @AuthenticationPrincipal Authentication authentication) {
+    if(authentication != null) {
+      System.out.println("details:\n" + authentication.getDetails().toString());
+      System.out.println("\nauthorities:\n" + authentication.getAuthorities().toString());
+      return Collections.singletonMap("message", "Hello " + authentication.getName());
     }
     else {
-      System.out.println("JWT is null");
-      return Collections.singletonMap("message", "no jwt");
+      System.out.println("authentication is null");
+      return Collections.singletonMap("message", "no authentication");
     }
   }
 

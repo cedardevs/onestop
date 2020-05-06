@@ -1,7 +1,7 @@
 package org.cedar.onestop.user
 
-import org.cedar.onestop.user.service.SaveSearch
-import org.cedar.onestop.user.repository.SaveSearchRepository
+import org.cedar.onestop.user.service.SavedSearch
+import org.cedar.onestop.user.repository.SavedSearchRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -12,16 +12,16 @@ import spock.lang.Specification
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("integrationTest")
-class SaveSearchRepositorySpec extends Specification {
+class SavedSearchRepositorySpec extends Specification {
   private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
 
   @Autowired
-  SaveSearchRepository saveSearchRepository
+  SavedSearchRepository saveSearchRepository
 
-  private SaveSearch saveSearch
+  private SavedSearch saveSearch
 
   def setup(){
-    saveSearch = new SaveSearch("1", "UserId1", "entryName1", "value 1")
+    saveSearch = new SavedSearch("1", "UserId1", "entryName1", "value 1")
   }
 
   // Run before all the tests:
@@ -36,7 +36,7 @@ class SaveSearchRepositorySpec extends Specification {
 
   def "should Store Each SaveSearch"() {
     given:
-    SaveSearch saveSearch1 = new SaveSearch("2", "UserId2", "entryName2", "value 1")
+    SavedSearch saveSearch1 = new SavedSearch("2", "UserId2", "entryName2", "value 1")
     saveSearchRepository.save(saveSearch)
     saveSearchRepository.save(saveSearch1)
 
@@ -63,7 +63,7 @@ class SaveSearchRepositorySpec extends Specification {
     def id = saveSearchRepository.save(saveSearch)
 
     when:
-    List<SaveSearch> getByUserId = saveSearchRepository.findAllByUserId(id.getUserId())
+    List<SavedSearch> getByUserId = saveSearchRepository.findAllByUserId(id.getUserId())
 
     then:
     getByUserId[0].id != null
@@ -73,14 +73,14 @@ class SaveSearchRepositorySpec extends Specification {
 
   def "should have multiple entries for a userId"() {
     given:
-    SaveSearch saveSearch1 = new SaveSearch("2", "UserId2", "entryName2", "value 2")
-    SaveSearch saveSearch2 = new SaveSearch("3", "UserId2", "entryName3", "value 3")
+    SavedSearch saveSearch1 = new SavedSearch("2", "UserId2", "entryName2", "value 2")
+    SavedSearch saveSearch2 = new SavedSearch("3", "UserId2", "entryName3", "value 3")
     iterator()
     saveSearchRepository.save(saveSearch1)
     saveSearchRepository.save(saveSearch2)
 
     when:
-    List<SaveSearch> getByUserId = saveSearchRepository.findAllByUserId("UserId2")
+    List<SavedSearch> getByUserId = saveSearchRepository.findAllByUserId("UserId2")
 
     then:
     getByUserId.size() == 2

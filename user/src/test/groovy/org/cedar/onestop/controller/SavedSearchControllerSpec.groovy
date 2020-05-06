@@ -1,7 +1,7 @@
 package org.cedar.onestop.controller
 
-import org.cedar.onestop.user.controller.SaveSearchController
-import org.cedar.onestop.user.repository.SaveSearchRepository
+import org.cedar.onestop.user.controller.SavedSearchController
+import org.cedar.onestop.user.repository.SavedSearchRepository
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -9,11 +9,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import spock.lang.Specification
 
-class SaveSearchControllerSpec extends Specification {
+class SavedSearchControllerSpec extends Specification {
 
   private MockMvc mockMvc
-  SaveSearchRepository mockSaveSearchRepository = Mock(SaveSearchRepository)
-  SaveSearchController controller = new SaveSearchController(mockSaveSearchRepository)
+  SavedSearchRepository mockSaveSearchRepository = Mock(SavedSearchRepository)
+  SavedSearchController controller = new SavedSearchController(mockSaveSearchRepository)
 
   def setup() {
     mockMvc = MockMvcBuilders.standaloneSetup(controller).build()
@@ -22,7 +22,7 @@ class SaveSearchControllerSpec extends Specification {
   def "save search items "() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders
-        .post("/api/v1/savesearches")
+        .post("/v1/saved-search")
         .contentType("application/json")
         .content(('{ "userId": "u1", "name": "test", "value": "value" }'))
         .accept(MediaType.APPLICATION_JSON))
@@ -34,7 +34,7 @@ class SaveSearchControllerSpec extends Specification {
   def "get save searches by id"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/api/v1/savesearches")
+        .get("/v1/saved-search")
         .accept(MediaType.APPLICATION_JSON))
 
     then:
@@ -44,7 +44,7 @@ class SaveSearchControllerSpec extends Specification {
   def "bad request"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders
-        .post("/api/v1/savesearches")
+        .post("/v1/saved-search")
         .contentType("application/json")
         .content(('{"name": "test", "value": "value" }'))
         .accept(MediaType.APPLICATION_JSON))
@@ -57,7 +57,7 @@ class SaveSearchControllerSpec extends Specification {
   def "get save searches by user id"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/api/v1/savesearches/user/{userId}", "u1")
+        .get("/v1/saved-search/user/{userId}", "u1")
         .accept(MediaType.APPLICATION_JSON))
 
     then:

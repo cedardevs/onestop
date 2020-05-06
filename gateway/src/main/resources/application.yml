@@ -1,13 +1,13 @@
 ---
-#logging.level.org.springframework.security: DEBUG
-#logging.level.org.springframework.web: DEBUG
+logging.level.org.springframework.security: DEBUG
+logging.level.org.springframework.web: DEBUG
 
 server:
   port: 8080
 
-#gateway:
-#  routes:
-#    user: http://localhost/user
+gateway:
+  routes:
+    user: http://localhost/user
 
 spring:
   application:
@@ -32,9 +32,15 @@ spring:
             jwk-set-uri: https://idp.int.identitysandbox.gov/api/openid_connect/certs
             user-name-attribute: sub
 
+#login-gov:
+#  keystore:
+#    alias: \${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
+#    file: \${PRIVATE_KEY_JWT_KEYSTORE_FILE}
+#    password: \${PRIVATE_KEY_JWT_KEYSTORE_PASSWORD}
+#    type: \${PRIVATE_KEY_JWT_KEYSTORE_TYPE}
 login-gov:
   keystore:
-    alias: \${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
-    file: \${PRIVATE_KEY_JWT_KEYSTORE_FILE}
-    password: \${PRIVATE_KEY_JWT_KEYSTORE_PASSWORD}
-    type: \${PRIVATE_KEY_JWT_KEYSTORE_TYPE}
+    alias: logingov
+    file: /Users/elliott/Documents/GitHub/onestop/gateway/src/main/resources/logingov.jks
+    password: password
+    type: JKS
