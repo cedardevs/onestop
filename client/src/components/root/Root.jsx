@@ -56,7 +56,7 @@ const styleBrowserWarningParagraph = {
 
 const BrowserUnsupportedWarning = () => {
   const wikiUrl =
-    'https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers'
+    'https://cedardevs.github.io/onestop/public-user/ui/quickstart.html'
   return (
     <aside role="alert" style={styleBrowserWarning}>
       <p style={styleBrowserWarningParagraph}>
