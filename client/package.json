@@ -6,7 +6,7 @@
   "license": "GPL-2.0",
   "scripts": {
     "dev": "webpack-dev-server --hot --mode development --env.URL_API_SEARCH=http://localhost:8097/ --progress --config webpack.config.js --colors",
-    "kub": "webpack-dev-server --hot --mode development --env.URL_API_SEARCH=http://localhost:30097/ --progress --config webpack.config.js --colors",
+    "kub": "webpack-dev-server --host 0.0.0.0 --hot --mode development --env.URL_API_SEARCH=http://localhost:30097/ --progress --config webpack.config.js --colors",
     "format": "find -f src test -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --config .prettierrc.json --write",
     "formatCheck": "find -f src test -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --config .prettierrc.json --list-different",
     "test": "jest --maxWorkers=2 --config jest.config.js",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "connected-react-router": "^6.5.2",
+    "detect-browser": "^5.1.0",
     "esri-leaflet": "^2.2.3",
     "esri-loader": "^2.6.0",
     "file-saver": "^2.0.0",
