@@ -170,7 +170,7 @@ build:
     helm: {}
   setValues:
     debug: "false"
-    service.clusterIP: 10.100.100.5
+    service.clusterIP: 10.100.100.0
     config: |-
       ---
       logging.level.org.springframework.security: DEBUG
