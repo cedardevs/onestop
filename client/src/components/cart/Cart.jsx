@@ -76,14 +76,13 @@ export default function Cart(props){
       return obj
     }, {})
 
-  const propsForItem = (item, itemId, setFocusedKey) => {
+  const propsForItem = (item, itemId) => {
     const {collectionDetailFilter, selectCollection, deselectGranule} = props
     const collectionId = item.internalParentIdentifier
     return {
       onSelect: key => {
         selectCollection(collectionId, collectionDetailFilter)
       },
-      setFocusedKey,
       deselectGranule,
     }
   }

@@ -1,6 +1,5 @@
 package org.cedar.onestop.indexer
 
-
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.TestInputTopic
@@ -9,8 +8,6 @@ import org.apache.kafka.streams.TestOutputTopic
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.state.ValueAndTimestamp
-import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.elastic.common.FileUtil
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer
 import org.cedar.onestop.indexer.stream.FlatteningConfig
@@ -53,17 +50,8 @@ class SearchIndexTopologySpec extends Specification {
       (DEFAULT_VALUE_SERDE_CLASS_CONFIG): MockSchemaRegistrySerde.class.name,
       (AUTO_OFFSET_RESET_CONFIG)        : 'earliest'
   ]
-  static testEsConfig = new ElasticsearchConfig(
-      new ElasticsearchVersion("7.5.1"),
-      "SearchIndexTopologySpec-",
-      1,
-      1,
-      1,
-      1,
-      false
-  )
-  static collectionIndex = testEsConfig.COLLECTION_SEARCH_INDEX_ALIAS
-  static granuleIndex = testEsConfig.GRANULE_SEARCH_INDEX_ALIAS
+  static collectionIndex = TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS
+  static granuleIndex = TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS
   static invalidCollectionPath = 'test-iso-collection.xml'
   static validCollectionPath = 'test/data/xml/COOPS/C1.xml'
   static validGranulePath = 'test/data/xml/COOPS/G1.xml'
@@ -85,7 +73,7 @@ class SearchIndexTopologySpec extends Specification {
   def setup() {
     def testAppConfig = new AppConfig()
     mockEsService = Mock(ElasticsearchService)
-    mockEsService.getConfig() >> testEsConfig
+    mockEsService.getConfig() >> TestUtils.esConfig
     mockIndexingTransformer = Mock(BulkIndexingTransformer)
     mockEsService.buildBulkIndexingTransformer(_ as BulkIndexingConfig) >> mockIndexingTransformer
     mockFlatteningTransformer = Mock(FlatteningTransformer)
@@ -158,17 +146,6 @@ class SearchIndexTopologySpec extends Specification {
     1 * mockIndexingTransformer.transform(testKey, null)
   }
 
-  def "invalid records are not indexed"() {
-    def collectionKey = 'a'
-    def collectionValue = buildTestRecord(invalidCollectionPath)
-
-    when:
-    collectionInput.pipeInput(collectionKey, collectionValue)
-
-    then:
-    0 * mockIndexingTransformer.transform(_, _)
-  }
-
   def "collection triggers flattening from beginning of time"() {
     def testKey1 = 'a'
     def testValue1 = buildTestRecord(validCollectionPath)
@@ -205,6 +182,7 @@ class SearchIndexTopologySpec extends Specification {
   }
 
   def "granule with multiple parents produces multiple flattening triggers"() {
+    // FIXME questionable behavior -- wouldn't this create two flattened granules with the same ID?
     def testGranId = 'a'
     def testCollId1 = 'c1'
     def testCollId2 = 'c2'

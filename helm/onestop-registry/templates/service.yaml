@@ -13,7 +13,9 @@ metadata:
 {{ toYaml .Values.service.annotations | indent 4 }}
 {{- end }}
 spec:
-  clusterIP: None
+  {{- with .Values.service.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
   type: {{ .Values.service.type }}
   ports:
   - port: {{ .Values.service.port }}

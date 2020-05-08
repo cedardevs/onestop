@@ -5,7 +5,8 @@ import static ch.qos.logback.classic.Level.*
 
 appender("STDOUT", ConsoleAppender) {
   filter(ThresholdFilter) {
-    level = DEBUG
+    def threshold = System.getenv("LOGGING_THRESHOLD") ?: System.getProperty("logging.threshold")
+    level = toLevel(threshold, DEBUG)
   }
   encoder(PatternLayoutEncoder) {
     pattern = "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p - [%t] %-40.40logger{39} : %m%n%ex"

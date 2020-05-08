@@ -5,6 +5,7 @@ import org.apache.kafka.streams.kstream.Aggregator;
 import org.apache.kafka.streams.kstream.Initializer;
 import org.apache.kafka.streams.kstream.Reducer;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
+import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.cedar.schemas.avro.psi.*;
 import org.slf4j.Logger;
@@ -137,6 +138,7 @@ public class StreamFunctions {
       var error = ErrorEvent.newBuilder()
           .setTitle("Unable to parse json")
           .setDetail("Failed to parsed json: " + e.getMessage())
+          .setSource(StreamsApps.REGISTRY_ID)
           .build();
       builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error));
       return null;

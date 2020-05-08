@@ -171,7 +171,7 @@ describe('The BoundingBoxEffect hook', () => {
         const bounds = getBounds(hook)
         bounds.clear()
       })
-      simulateValidationRequest(hook)
+
       let bounds = getBounds(hook)
       expect(bounds.west.value).toEqual('')
       expect(bounds.east.value).toEqual('')
@@ -183,6 +183,32 @@ describe('The BoundingBoxEffect hook', () => {
       expect(bounds.south.valid).toBeTruthy()
       expect(bounds.reason.individual).toEqual('')
       expect(bounds.reason.cumulative).toEqual('')
+    })
+
+    test('no user input fails validate', () => {
+      const hook = init(null)
+      let bounds = getBounds(hook)
+      expect(bounds.east.value).toEqual('')
+      expect(bounds.north.value).toEqual('')
+      expect(bounds.south.value).toEqual('')
+      expect(bounds.west.value).toEqual('')
+
+      let validationResult = simulateValidationRequest(hook)
+      bounds = getBounds(hook)
+
+      expect(bounds.reason.cumulative).toEqual(
+        'Incomplete coordinates entered. Ensure all four fields are populated.'
+      )
+
+      expect(bounds.west.valid).toBeFalsy()
+      expect(bounds.east.valid).toBeFalsy()
+      expect(bounds.north.valid).toBeFalsy()
+      expect(bounds.south.valid).toBeFalsy()
+
+      expect(bounds.west.value).toEqual('')
+      expect(bounds.east.value).toEqual('')
+      expect(bounds.north.value).toEqual('')
+      expect(bounds.south.value).toEqual('')
     })
   })
 

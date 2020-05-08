@@ -80,6 +80,7 @@ build:
     kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
     kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
     replicaCount: "1"
+    service.clusterIP: 10.100.100.1
   imageStrategy:
     helm: {}
 
@@ -112,6 +113,7 @@ build:
     features.login-gov: "false"
     features.sitemap: "true"
     service.nodePort: "30097"
+    service.clusterIP: 10.100.100.2
     service.type: NodePort
   imageStrategy:
     helm: {}
@@ -124,6 +126,7 @@ build:
   setValues:
     apiSearch.endpoint: onestop-search:8080/onestop-search
     prefixPath: onestop
+    service.clusterIP: 10.100.100.3
   imageStrategy:
     helm: {}
 
@@ -137,6 +140,7 @@ build:
   setValues:
     debug: "true"
     features.security: "true"
+    service.clusterIP: 10.100.100.4
     config: |-
       ---
       server.servlet.context-path: /user
@@ -166,6 +170,7 @@ build:
     helm: {}
   setValues:
     debug: "false"
+    service.clusterIP: 10.100.100.5
     config: |-
       ---
       logging.level.org.springframework.security: DEBUG

@@ -29,6 +29,7 @@ OneStop's underlying query is an Elasticsearch [query string query](https://www.
 - [Proximity Searches](#proximity-searches)
 - [Boosting Search Clause Relevance](#boosting-search-clause-relevance)
 - [Search By Field Name](#search-by-field-name)
+- [Reserved characters](#reserved-characters)
 - [Wildcards](#wildcards)
 - [Regular Expressions](#regular-expressions)
 
@@ -112,6 +113,15 @@ For OneStop specifically, there are three different types of fields in the index
 Information on all fields for a running version of OneStop can be acquired by sending a `GET` request to the OneStop Search API endpoint `{host}/docs/attributes/{type}`, for example:
 
 `$ curl https://data.noaa.gov/onestop-search/docs/attributes/collection`
+
+### Reserved characters
+Since we pass the query straight through to elasticsearch, there are some special characters that elasticsearch treats differently. 
+If you wish for elasticsearch query to ignore these characters then surround your query in double quotes.
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+
+Example:
+- `title:"AFSC/RACE/GAP/McConnaughey:USBL"`
 
 ### Wildcards
 A wildcard can be placed in individual terms for one character -- `?` -- or zero or more characters -- `*`. OneStop has disabled the use of a wildcard at the start of your query, and will respond with an error if you attempt to do so via either the UI or API. Wildcard queries can be particularly memory intensive and thus perform poorly if written in such a way that causes every record to be analyzed. As such, it is very much encouraged that they are used judiciously. Oftentimes you can have greater success in both response time and result quality by using [fuzziness](#fuzziness-matching) or [proximity](#proximity-searches) operators instead, or at the very least ensuring you've filtered down your results to a reasonable quantity (low thousands or less) before including a wildcard in your query.

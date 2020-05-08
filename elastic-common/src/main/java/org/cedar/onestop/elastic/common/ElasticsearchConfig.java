@@ -3,11 +3,8 @@ package org.cedar.onestop.elastic.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ElasticsearchConfig {
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfig.class);
@@ -16,10 +13,14 @@ public class ElasticsearchConfig {
   public ElasticsearchVersion version;
 
   // index aliases
-  public String COLLECTION_SEARCH_INDEX_ALIAS = "search_collection";
-  public String GRANULE_SEARCH_INDEX_ALIAS = "search_granule";
-  public String FLAT_GRANULE_SEARCH_INDEX_ALIAS = "search_flattened_granule";
-  public String SITEMAP_INDEX_ALIAS = "sitemap";
+  public final String COLLECTION_SEARCH_INDEX_ALIAS;
+  public final String GRANULE_SEARCH_INDEX_ALIAS;
+  public final String FLAT_GRANULE_SEARCH_INDEX_ALIAS;
+  public final String SITEMAP_INDEX_ALIAS;
+  public final String COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS;
+  public final String GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS;
+
+  public final String PREFIX;
 
   public final Integer MAX_TASKS;
   public final Integer REQUESTS_PER_SECOND;
@@ -36,7 +37,9 @@ public class ElasticsearchConfig {
 
   private Map<String, String> jsonMappings = new HashMap<>();
   private Map<String, Map<String, Map>> parsedMappings = new HashMap<>();
-  private Map<String, String> typesByAlias = new HashMap<>();
+  private Map<String, String> typeByAlias = new HashMap<>();
+  private Map<String, String> searchAliasByType = new HashMap<>();
+  private Map<String, String> analysisAndErrorAliasByType = new HashMap<>();
 
   public ElasticsearchConfig(
       ElasticsearchVersion version,
@@ -55,6 +58,7 @@ public class ElasticsearchConfig {
   ) throws IOException {
 
     this.version = version;
+    this.PREFIX = PREFIX;
 
     // log prefix if it's not null
     if (PREFIX != null && !PREFIX.isBlank()) {
@@ -62,10 +66,12 @@ public class ElasticsearchConfig {
     }
 
     // tack on prefix to aliases so that later logic does not have to concern itself with prefixing at all
-    this.COLLECTION_SEARCH_INDEX_ALIAS = PREFIX + this.COLLECTION_SEARCH_INDEX_ALIAS;
-    this.GRANULE_SEARCH_INDEX_ALIAS = PREFIX + this.GRANULE_SEARCH_INDEX_ALIAS;
-    this.FLAT_GRANULE_SEARCH_INDEX_ALIAS = PREFIX + this.FLAT_GRANULE_SEARCH_INDEX_ALIAS;
-    this.SITEMAP_INDEX_ALIAS = PREFIX + this.SITEMAP_INDEX_ALIAS;
+    this.COLLECTION_SEARCH_INDEX_ALIAS = PREFIX + "search_collection";
+    this.GRANULE_SEARCH_INDEX_ALIAS = PREFIX + "search_granule";
+    this.FLAT_GRANULE_SEARCH_INDEX_ALIAS = PREFIX + "search_flattened_granule";
+    this.SITEMAP_INDEX_ALIAS = PREFIX + "sitemap";
+    this.COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS = PREFIX + "analysis_error_collection";
+    this.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS = PREFIX + "analysis_error_granule";
 
     // use _doc if it's supported to avoid using an explicit type, which is deprecated
     this.MAX_TASKS = MAX_TASKS;
@@ -81,17 +87,31 @@ public class ElasticsearchConfig {
     this.jsonMappings.put(GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_granuleIndex.json"));
     this.jsonMappings.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_flattened_granuleIndex.json"));
     this.jsonMappings.put(SITEMAP_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/sitemapIndex.json"));
+    this.jsonMappings.put(COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/analysis_error_collectionIndex.json"));
+    this.jsonMappings.put(GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/analysis_error_granuleIndex.json"));
 
     this.parsedMappings.put(COLLECTION_SEARCH_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(COLLECTION_SEARCH_INDEX_ALIAS), Map.class));
     this.parsedMappings.put(GRANULE_SEARCH_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(GRANULE_SEARCH_INDEX_ALIAS), Map.class));
     this.parsedMappings.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(FLAT_GRANULE_SEARCH_INDEX_ALIAS), Map.class));
     this.parsedMappings.put(SITEMAP_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(SITEMAP_INDEX_ALIAS), Map.class));
+    this.parsedMappings.put(COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS), Map.class));
+    this.parsedMappings.put(GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS), Map.class));
 
     // Associate index aliases directly to their type identifiers for consistency
-    this.typesByAlias.put(COLLECTION_SEARCH_INDEX_ALIAS, TYPE_COLLECTION);
-    this.typesByAlias.put(GRANULE_SEARCH_INDEX_ALIAS, TYPE_GRANULE);
-    this.typesByAlias.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, TYPE_FLATTENED_GRANULE);
-    this.typesByAlias.put(SITEMAP_INDEX_ALIAS, TYPE_SITEMAP);
+    this.typeByAlias.put(COLLECTION_SEARCH_INDEX_ALIAS, TYPE_COLLECTION);
+    this.typeByAlias.put(COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS, TYPE_COLLECTION);
+    this.typeByAlias.put(GRANULE_SEARCH_INDEX_ALIAS, TYPE_GRANULE);
+    this.typeByAlias.put(GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS, TYPE_GRANULE);
+    this.typeByAlias.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, TYPE_FLATTENED_GRANULE);
+    this.typeByAlias.put(SITEMAP_INDEX_ALIAS, TYPE_SITEMAP);
+
+    // Conversely, associate types directly to their index aliases (search & analysis and errors)
+    this.searchAliasByType.put(TYPE_COLLECTION, COLLECTION_SEARCH_INDEX_ALIAS);
+    this.searchAliasByType.put(TYPE_GRANULE, GRANULE_SEARCH_INDEX_ALIAS);
+    this.searchAliasByType.put(TYPE_FLATTENED_GRANULE, FLAT_GRANULE_SEARCH_INDEX_ALIAS);
+
+    this.analysisAndErrorAliasByType.put(TYPE_COLLECTION, COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS);
+    this.analysisAndErrorAliasByType.put(TYPE_GRANULE, GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS);
   }
 
   public String jsonMapping(String alias) {
@@ -119,7 +139,6 @@ public class ElasticsearchConfig {
     //        System.currentTimeMillis() is generally 13 digits in modern day,
     //        but in theory could be less (past) or rollover (future) to >13 digits
     // $ -> Indicates the end of the string (there should be nothing after the timestamp in the index name)
-
     // This allows us to accommodate a test which used to use this function equivalent elsewhere by assuming
     // it could be passed either an index or an alias, but in reality now, there's no reason why this function
     // in the code would be called using an alias or prefixed alias alone.
@@ -134,7 +153,15 @@ public class ElasticsearchConfig {
 
   public String typeFromAlias(String alias) {
     // retrieve type for index alias
-    return this.typesByAlias.get(alias);
+    return this.typeByAlias.get(alias);
+  }
+
+  public String searchAliasFromType(String type) {
+    return this.searchAliasByType.get(type);
+  }
+
+  public String analysisAndErrorsAliasFromType(String type) {
+    return this.analysisAndErrorAliasByType.get(type);
   }
 
   public Boolean sitemapEnabled() {

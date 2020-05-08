@@ -1,33 +1,23 @@
 package org.cedar.onestop.indexer.stream;
 
 import java.time.Duration;
-import java.util.*;
-
-import static org.elasticsearch.action.DocWriteRequest.OpType;
 
 public class BulkIndexingConfig {
 
   private final String storeName;
   private final Duration maxPublishInterval;
   private final long maxPublishBytes;
-  private final Map<String, Map<OpType, List<String>>> indexMappings;
+  private final int maxPublishActions;
 
   private BulkIndexingConfig(
       String storeName,
       Duration maxPublishInterval,
       long maxPublishBytes,
-      Map<String, Map<OpType, List<String>>> indexMappings) {
+      int maxPublishActions) {
     this.storeName = storeName;
     this.maxPublishInterval = maxPublishInterval;
     this.maxPublishBytes = maxPublishBytes;
-    this.indexMappings = indexMappings;
-  }
-
-  public List<String> getTargetIndices(String topic, OpType opType) {
-    return Optional.ofNullable(topic)
-        .map(t -> indexMappings.getOrDefault(t, null))
-        .map(m -> m.getOrDefault(opType, null))
-        .orElse(new ArrayList<>());
+    this.maxPublishActions = maxPublishActions;
   }
 
   public String getStoreName() {
@@ -42,6 +32,10 @@ public class BulkIndexingConfig {
     return maxPublishBytes;
   }
 
+  public int getMaxPublishActions() {
+    return maxPublishActions;
+  }
+
   public static BulkIndexingConfigBuilder newBuilder() {
     return new BulkIndexingConfigBuilder();
   }
@@ -50,28 +44,22 @@ public class BulkIndexingConfig {
     private String storeName;
     private Duration maxPublishInterval;
     private Long maxPublishBytes;
-    private Map<String, Map<OpType, List<String>>> topicMappings;
+    private Integer maxPublishActions;
 
-    public BulkIndexingConfigBuilder() {
-      topicMappings = new HashMap<>();
-    }
-
-    public synchronized BulkIndexingConfigBuilder addIndexMapping(String topic, OpType opType, String index) {
-      var mapping = topicMappings.getOrDefault(topic, new HashMap<>());
-      var indicesForOp = mapping.getOrDefault(opType, new ArrayList<>());
-      indicesForOp.add(index);
-      mapping.put(opType, indicesForOp);
-      topicMappings.put(topic, mapping);
-      return this;
-    }
+    // No constructor defined here because everything is set with individual setters below
 
     public synchronized BulkIndexingConfigBuilder withMaxPublishInterval(Duration duration) {
       maxPublishInterval = duration;
       return this;
     }
 
-    public synchronized BulkIndexingConfigBuilder withMaxPublishBytes(long bytes) {
+    public synchronized BulkIndexingConfigBuilder withMaxPublishBytes(Long bytes) {
       maxPublishBytes = bytes;
+      return this;
+    }
+
+    public synchronized BulkIndexingConfigBuilder withMaxPublishActions(Integer actions) {
+      maxPublishActions = actions;
       return this;
     }
 
@@ -85,16 +73,15 @@ public class BulkIndexingConfig {
         throw new IllegalArgumentException("storeName is required");
       }
       if (maxPublishBytes == null) {
-        throw new IllegalArgumentException("maxPublishingBytes is required");
+        throw new IllegalArgumentException("maxPublishBytes is required");
       }
       if (maxPublishInterval == null) {
-        throw new IllegalArgumentException("maxPublishingInterval is required");
+        throw new IllegalArgumentException("maxPublishInterval is required");
       }
-      if (topicMappings.size() == 0) {
-        throw new IllegalArgumentException("at least one mapping of (topic, opType) -> index is required");
+      if (maxPublishActions == null) {
+        throw new IllegalArgumentException("maxPublishActions is required");
       }
-      var unmodifiableMappings = Collections.unmodifiableMap(topicMappings);
-      return new BulkIndexingConfig(storeName, maxPublishInterval, maxPublishBytes, unmodifiableMappings);
+      return new BulkIndexingConfig(storeName, maxPublishInterval, maxPublishBytes, maxPublishActions);
     }
 
   }
