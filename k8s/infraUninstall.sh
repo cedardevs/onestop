@@ -9,3 +9,4 @@ kubectl get namespaces --no-headers -o custom-columns=:metadata.name \
 #Then, you can uninstall the operator:
 
 kubectl delete -f https://download.elastic.co/downloads/eck/1.0.0/all-in-one.yaml
+kubectl delete -f https://download.elastic.co/downloads/eck/1.1.0/all-in-one.yaml
