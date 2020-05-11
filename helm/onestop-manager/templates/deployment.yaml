@@ -66,6 +66,22 @@ spec:
         - name: config
           mountPath: /etc/conf
         {{- end }}
+        readinessProbe:
+          httpGet:
+            path: /health/readiness
+            port: 8080
+          initialDelaySeconds: 20
+          timeoutSeconds: 2
+          periodSeconds: 3
+          failureThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 8080
+          initialDelaySeconds: 60
+          timeoutSeconds: 2
+          periodSeconds: 8
+          failureThreshold: 1
         {{/* TODO: liveness, readiness */}}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}

@@ -8,6 +8,7 @@ import org.cedar.onestop.indexer.util.ElasticsearchFactory;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.util.KafkaHelpers;
+import org.cedar.onestop.kafka.common.util.KafkaHealthProbeServer;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,8 +114,11 @@ public class IndexerApp {
     try {
       var config = new AppConfig();
       var app = new IndexerApp(config);
+      var probeServer = new KafkaHealthProbeServer(app.getStreamsApp());
       Runtime.getRuntime().addShutdownHook(new Thread(app::stop));
+      Runtime.getRuntime().addShutdownHook(new Thread(probeServer::stop));
       app.start();
+      probeServer.start();
     }
     catch (Error | Exception e) {
       log.error("Application failed", e);
