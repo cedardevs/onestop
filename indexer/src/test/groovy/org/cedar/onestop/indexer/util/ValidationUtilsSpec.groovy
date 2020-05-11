@@ -20,17 +20,13 @@ import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID
 @Unroll
 class ValidationUtilsSpec extends Specification {
 
-  MockProcessorContext mockProcessorContext
-  TopicIdentifier<ParsedRecord> ti
-
-  def setup() {
-    mockProcessorContext = new MockProcessorContext()
-    mockProcessorContext.setTopic(TestUtils.collectionTopic)
-    ti = new TopicIdentifier<>()
-    ti.init(mockProcessorContext)
-  }
-
   def "valid message passes validation check"() {
+    given:
+    MockProcessorContext mockProcessorContext = new MockProcessorContext()
+    mockProcessorContext.setTopic(TestUtils.collectionTopic)
+    TopicIdentifier<ParsedRecord> ti = new TopicIdentifier<>()
+    ti.init(mockProcessorContext)
+
     when:
     ValueWithTopic<ParsedRecord> testInput = ti.transform(TestUtils.inputAvroRecord)
 
@@ -39,6 +35,12 @@ class ValidationUtilsSpec extends Specification {
   }
 
   def "validation passes tombstones through"() {
+    given:
+    MockProcessorContext mockProcessorContext = new MockProcessorContext()
+    mockProcessorContext.setTopic(TestUtils.collectionTopic)
+    TopicIdentifier<ParsedRecord> ti = new TopicIdentifier<>()
+    ti.init(mockProcessorContext)
+
     when:
     ValueWithTopic<ParsedRecord> testInput = ti.transform(null)
 
@@ -47,16 +49,15 @@ class ValidationUtilsSpec extends Specification {
   }
 
   def "validates titles when #testCase"() {
-    def titleAnalysis = TitleAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.titles).setTitleExists(titleExists).build()
-    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).setTitles(titleAnalysis).build()
-    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord).setAnalysis(analysis).build()
+    def titleAnalysis = TitleAnalysis.newBuilder().setTitleExists(titleExists).build()
+    def analysis = Analysis.newBuilder().setTitles(titleAnalysis).build()
+    def record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
     when:
-    ValueWithTopic<ParsedRecord> testInput = ti.transform(record)
-    def validated = ValidationUtils.addValidationErrors(testInput)
+    def errors = ValidationUtils.validateTitles(record)
 
     then:
-    validated.errors.isEmpty() == isValid
+    errors.isEmpty() == isValid
 
     where:
     testCase                | isValid | titleExists
@@ -65,106 +66,100 @@ class ValidationUtilsSpec extends Specification {
   }
 
   def "validates identification when #testCase"() {
-    def identificationAnalysis = IdentificationAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.identification)
+    def identificationAnalysis = IdentificationAnalysis.newBuilder()
         .setFileIdentifierExists(hasFileId)
         .setDoiExists(hasDoi)
-        .setMatchesIdentifiers(matches)
         .build()
-    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).setIdentification(identificationAnalysis).build()
-    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord).setAnalysis(analysis).build()
+    def analysis = Analysis.newBuilder().setIdentification(identificationAnalysis).build()
+    def record = ParsedRecord.newBuilder().setType(type).setAnalysis(analysis)build()
 
     when:
-    ValueWithTopic<ParsedRecord> testInput = ti.transform(record)
-    def validated = ValidationUtils.addValidationErrors(testInput)
+    def errors = ValidationUtils.validateIdentification(record)
 
     then:
-    validated.errors.size() == errors
+    errors.size() == errorCount
 
     where:
-    testCase                | errors  | hasFileId | hasDoi  | matches
-    "has only fileId"       | 0       | true      | false   | true
-    "has only doi"          | 0       | false     | true    | true
-    "has no fileId nor doi" | 1       | false     | false   | true
-    "has mismatched type"   | 1       | true      | true    | false
-    "no id and mismatched"  | 2       | false     | false   | false
+    testCase                      | errorCount  | hasFileId | hasDoi  | type
+    "has only fileId"             | 0           | true      | false   | RecordType.collection
+    "has only doi"                | 0           | false     | true    | RecordType.granule
+    "has fileId and doi"          | 0           | true      | true    | RecordType.collection
+    "has no ids"                  | 1           | false     | false   | RecordType.granule
+    "has unknown type"            | 1           | true      | true    | null
+    "has no ids and unknown type" | 2           | false     | false   | null
   }
 
   def "validates temporal bounds when #testCase"() {
-    def temporalAnalysis = TemporalBoundingAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.temporalBounding)
+    def temporalAnalysis = TemporalBoundingAnalysis.newBuilder()
         .setBeginDescriptor(beginValid ? VALID : INVALID)
         .setEndDescriptor(endValid ? VALID : INVALID)
         .setInstantDescriptor(instantValid ? VALID : INVALID)
         .build()
-    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).setTemporalBounding(temporalAnalysis).build()
-    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord).setAnalysis(analysis).build()
+    def analysis = Analysis.newBuilder().setTemporalBounding(temporalAnalysis).build()
+    def record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
     when:
-    ValueWithTopic<ParsedRecord> testInput = ti.transform(record)
-    def validated = ValidationUtils.addValidationErrors(testInput)
+    def errors = ValidationUtils.validateTemporalBounds(record)
 
     then:
-    validated.errors.size() == errors
+    errors.size() == errorCount
 
     where:
-    testCase                    | errors  | beginValid| endValid| instantValid
-    "has valid bounds"          | 0       | true      | true    | true
-    "has invalid start"         | 1       | false     | true    | true
-    "has invalid end"           | 1       | true      | false   | true
-    "has invalid start and end" | 2       | false     | false   | true
-    "is invalid instant"        | 1       | true      | true    | false
-    "is completely invalid"     | 3       | false     | false   | false
+    testCase                    | errorCount  | beginValid| endValid| instantValid
+    "has valid bounds"          | 0           | true      | true    | true
+    "has invalid start"         | 1           | false     | true    | true
+    "has invalid end"           | 1           | true      | false   | true
+    "has invalid start and end" | 2           | false     | false   | true
+    "is invalid instant"        | 1           | true      | true    | false
+    "is completely invalid"     | 3           | false     | false   | false
   }
 
   def "validates spatial bounds when #testCase"() {
-    def spatialAnalysis = SpatialBoundingAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.spatialBounding)
+    def spatialAnalysis = SpatialBoundingAnalysis.newBuilder()
         .setSpatialBoundingExists(exists)
         .setIsValid(valid)
         .build()
-    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).setSpatialBounding(spatialAnalysis).build()
-    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord).setAnalysis(analysis).build()
+    def analysis = Analysis.newBuilder().setSpatialBounding(spatialAnalysis).build()
+    def record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
     when:
-    ValueWithTopic<ParsedRecord> testInput = ti.transform(record)
-    def validated = ValidationUtils.addValidationErrors(testInput)
+    def errors = ValidationUtils.validateSpatialBounds(record)
 
     then:
-    validated.errors.size() == errors
+    errors.size() == errorCount
 
     where:
-    testCase                | errors  | exists  | valid
-    "bounds are valid"      | 0       | true    | true
-    "bounds are invalid"    | 1       | true    | false
-    "bounds not not exist"  | 0       | false   | false
+    testCase                       | errorCount  | exists  | valid
+    "bounds exist and are valid"   | 0           | true    | true
+    "bounds exist and are invalid" | 1           | true    | false
+    "bounds do not exist"          | 0           | false   | true
   }
 
   def "validates topic placement when #testCase"() {
-    def identification = IdentificationAnalysis.newBuilder(TestUtils.inputAvroRecord.analysis.identification)
+    given:
+    def identification = IdentificationAnalysis.newBuilder()
         .setParentIdentifierExists(hasParentId)
         .setHierarchyLevelNameExists(hlm != null)
+        .setIsGranule(hasParentId && hlm != null && hlm.equals("granule"))
         .build()
-    def discovery = Discovery.newBuilder(TestUtils.inputAvroRecord.getDiscovery()).setHierarchyLevelName(hlm).build()
-    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).setIdentification(identification).build()
-    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord).setType(type).setAnalysis(analysis).setDiscovery(discovery).build()
-
-    // Setup places record on the collection topic, so we overwrite setup here
-    mockProcessorContext.setTopic(topic)
-    ti = new TopicIdentifier<>()
-    ti.init(mockProcessorContext)
+    def analysis = Analysis.newBuilder().setIdentification(identification).build()
+    def discovery = Discovery.newBuilder().setHierarchyLevelName(hlm).build()
+    def record = ParsedRecord.newBuilder().setType(type).setAnalysis(analysis).setDiscovery(discovery).build()
 
     when:
-    ValueWithTopic<ParsedRecord> testInput = ti.transform(record)
-    def validated = ValidationUtils.addValidationErrors(testInput)
+    def errors = ValidationUtils.validateTopicPlacement(record, topic)
 
     then:
-    validated.errors.size() == errors
+    errors.size() == errorCount
 
     where:
-    testCase                                        | errors | hasParentId | hlm          | type                  | topic
-    "it's valid"                                    | 0      | false       | null         | RecordType.collection | TestUtils.collectionTopic
-    "RecordType only doesn't match"                 | 1      | false       | "collection" | RecordType.granule    | TestUtils.collectionTopic
-    "granule on collection topic (metadata check)"  | 1      | true        | "granule"    | RecordType.collection | TestUtils.collectionTopic
-    "non-granule on granule topic (metadata check)" | 1      | false       | null         | RecordType.granule    | TestUtils.granuleTopic
-    "metadata check and RecordType check fail"      | 2      | false       | "collection" | RecordType.collection | TestUtils.granuleTopic
-
+    testCase                                        | errorCount | hasParentId | hlm          | type                  | topic
+    "it's valid"                                    | 0          | false       | null         | RecordType.collection | TestUtils.collectionTopic
+    "RecordType only doesn't match"                 | 1          | false       | "collection" | RecordType.granule    | TestUtils.collectionTopic
+    "granule on collection topic (metadata check)"  | 1          | true        | "granule"    | RecordType.collection | TestUtils.collectionTopic
+    "non-granule on granule topic (no pid)"         | 2          | false       | "granule"    | RecordType.granule    | TestUtils.granuleTopic
+    "non-granule on granule topic (no hlm)"         | 2          | true        | null         | RecordType.granule    | TestUtils.granuleTopic
+    "non-granule on granule topic (no pid or hlm)"  | 3          | false       | null         | RecordType.granule    | TestUtils.granuleTopic
+    "metadata check and RecordType check fail"      | 4          | false       | "collection" | RecordType.collection | TestUtils.granuleTopic
   }
 }

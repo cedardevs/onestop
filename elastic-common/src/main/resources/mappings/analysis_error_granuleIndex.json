@@ -61,7 +61,7 @@
           "hierarchyLevelNameExists": {
             "type": "boolean"
           },
-          "matchesIdentifiers": {
+          "isGranule": {
             "type": "boolean"
           },
           "parentIdentifierExists": {

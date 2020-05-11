@@ -39,7 +39,7 @@ public class ValidationUtils {
     return ParsedRecord.newBuilder(record).setErrors(errors).build();
   }
 
-  private static List<ErrorEvent> validateRootRecord(ParsedRecord record) {
+  public static List<ErrorEvent> validateRootRecord(ParsedRecord record) {
     var result = new ArrayList<ErrorEvent>();
     if (record.getDiscovery() == null || record.getDiscovery() == Discovery.newBuilder().build()) {
       result.add(buildValidationError("Discovery metadata missing. No metadata to load into OneStop."));
@@ -50,7 +50,7 @@ public class ValidationUtils {
     return result;
   }
 
-  private static List<ErrorEvent> validateIdentification(ParsedRecord record) {
+  public static List<ErrorEvent> validateIdentification(ParsedRecord record) {
     var result = new ArrayList<ErrorEvent>();
     var identification = record.getAnalysis().getIdentification();
     if (identification != null && !identification.getFileIdentifierExists() && !identification.getDoiExists()) {
@@ -59,13 +59,10 @@ public class ValidationUtils {
     if (record.getType() == null ) {
       result.add(buildValidationError("Metadata type error -- type unknown."));
     }
-    if (identification != null && !identification.getMatchesIdentifiers()) {
-      result.add(buildValidationError("Metadata type error -- hierarchyLevelName is 'granule' but no parentIdentifier provided."));
-    }
     return result;
   }
 
-  private static List<ErrorEvent> validateTopicPlacement(ParsedRecord record, String topic) {
+  public static List<ErrorEvent> validateTopicPlacement(ParsedRecord record, String topic) {
     var result = new ArrayList<ErrorEvent>();
     var declaredRecordType = record.getType();
     var recordTypeForTopic = IndexingUtils.determineTypeFromTopic(topic);
@@ -77,19 +74,28 @@ public class ValidationUtils {
     }
 
     var identification = record.getAnalysis().getIdentification();
-    var isGranule = identification.getParentIdentifierExists() && identification.getHierarchyLevelNameExists()
-        && record.getDiscovery().getHierarchyLevelName().toLowerCase().equals("granule");
-    if(isGranule && recordTypeForTopic != RecordType.granule) {
+    var hlm = record.getDiscovery().getHierarchyLevelName();
+    // Granule on collection topic
+    if(identification != null && identification.getIsGranule() && recordTypeForTopic != RecordType.granule) {
       result.add(buildValidationError("Metadata indicates granule type but record is not on granule topic."));
     }
-    if(!isGranule && recordTypeForTopic == RecordType.granule) {
+    // Non-granule on granule topic
+    if(identification != null && !identification.getIsGranule() && recordTypeForTopic == RecordType.granule) {
       result.add(buildValidationError("Metadata indicates non-granule type but record is on granule topic."));
+      if(!identification.getParentIdentifierExists()) {
+        result.add(buildValidationError("Expected granule record but missing parentIdentifier."));
+      }
+      if(!identification.getHierarchyLevelNameExists()) {
+        result.add(buildValidationError("Expected granule record but missing hierarchyLevelName. This must be present and equal to case-insensitive 'granule'."));
+      }
+      if(identification.getHierarchyLevelNameExists() && !hlm.toLowerCase().equals("granule")) {
+        result.add(buildValidationError("Expected granule record but hierarchyLevelName is [ " + hlm + " ] and should be case-insensitive 'granule'."));
+      }
     }
-
     return result;
   }
 
-  private static List<ErrorEvent> validateTitles(ParsedRecord record) {
+  public static List<ErrorEvent> validateTitles(ParsedRecord record) {
     var result = new ArrayList<ErrorEvent>();
     var titles = record.getAnalysis().getTitles();
     if (!titles.getTitleExists()) {
@@ -98,7 +104,7 @@ public class ValidationUtils {
     return result;
   }
 
-  private static List<ErrorEvent> validateTemporalBounds(ParsedRecord record) {
+  public static List<ErrorEvent> validateTemporalBounds(ParsedRecord record) {
     var result = new ArrayList<ErrorEvent>();
     var temporal = record.getAnalysis().getTemporalBounding();
     if (temporal.getBeginDescriptor() == INVALID) {
@@ -113,7 +119,7 @@ public class ValidationUtils {
     return result;
   }
 
-  private static List<ErrorEvent> validateSpatialBounds(ParsedRecord record) {
+  public static List<ErrorEvent> validateSpatialBounds(ParsedRecord record) {
     var result = new ArrayList<ErrorEvent>();
     var spatial = record.getAnalysis().getSpatialBounding();
     if (spatial.getSpatialBoundingExists() && !spatial.getIsValid()) {
