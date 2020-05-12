@@ -58,19 +58,20 @@ public class IndexerApp {
 
   public void start() throws InterruptedException, ExecutionException, IOException {
     init();
-    KafkaHelpers.onError(streamsApp).thenAcceptAsync(o -> stop(Duration.ofSeconds(5)));
+    KafkaHelpers.onError(streamsApp).thenAcceptAsync(o -> stop());
     streamsApp.start();
     probeServer.start();
   }
 
   public void stop() {
-    streamsApp.close();
-    probeServer.stop();
+    stop(Duration.ofSeconds(5));
   }
 
   public void stop(Duration duration) {
-    streamsApp.close(duration);
-    probeServer.stop(duration);
+    if (initialized) {
+      streamsApp.close(duration);
+      probeServer.stop(duration);
+    }
   }
 
   private void initTopics() throws ExecutionException, InterruptedException {

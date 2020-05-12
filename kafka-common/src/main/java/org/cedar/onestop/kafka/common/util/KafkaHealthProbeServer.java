@@ -32,11 +32,13 @@ public class KafkaHealthProbeServer {
   }
 
   public void stop() throws IllegalStateException {
-    this.server.disposeNow();
+    stop(Duration.ofSeconds(5));
   }
 
   public void stop(Duration duration) throws IllegalStateException {
-    this.server.disposeNow(duration);
+    if (this.server != null) {
+      this.server.disposeNow(duration);
+    }
   }
 
   private DisposableServer buildServer() {
