@@ -72,6 +72,7 @@ public class ElasticsearchService {
 
   private void ensureIndices() throws IOException {
     ensureSearchIndices();
+    ensureAnalysisAndErrorsIndices();
   }
 
   private void ensureSearchIndices() throws IOException {
@@ -81,6 +82,11 @@ public class ElasticsearchService {
     if (config.sitemapEnabled()) {
       ensureAliasWithIndex(config.SITEMAP_INDEX_ALIAS);
     }
+  }
+
+  private void ensureAnalysisAndErrorsIndices() throws IOException {
+    ensureAliasWithIndex(config.COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS);
+    ensureAliasWithIndex(config.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS);
   }
 
   private void ensureAliasWithIndex(String alias) throws IOException {
