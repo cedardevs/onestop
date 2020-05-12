@@ -4,6 +4,8 @@ import org.apache.kafka.streams.KafkaStreams;
 import reactor.netty.DisposableServer;
 import reactor.netty.http.server.HttpServer;
 
+import java.time.Duration;
+
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpResponseStatus.SERVICE_UNAVAILABLE;
 import static org.cedar.onestop.kafka.common.util.KafkaHealthUtils.isStreamsAppAlive;
@@ -31,6 +33,10 @@ public class KafkaHealthProbeServer {
 
   public void stop() throws IllegalStateException {
     this.server.disposeNow();
+  }
+
+  public void stop(Duration duration) throws IllegalStateException {
+    this.server.disposeNow(duration);
   }
 
   private DisposableServer buildServer() {

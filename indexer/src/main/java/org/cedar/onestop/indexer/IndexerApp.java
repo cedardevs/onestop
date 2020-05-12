@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -31,6 +32,7 @@ public class IndexerApp {
   private final Topology streamsTopology;
   private final Properties streamsProps;
   private final KafkaStreams streamsApp;
+  private final KafkaHealthProbeServer probeServer;
 
   private boolean initialized;
 
@@ -42,7 +44,8 @@ public class IndexerApp {
     adminClient = AdminClient.create(KafkaHelpers.buildAdminConfig(appConfig));
     streamsTopology = buildSearchIndexTopology(elasticService, appConfig);
     streamsProps = KafkaHelpers.buildStreamsConfig(appConfig);
-    streamsApp = KafkaHelpers.buildStreamsAppWithKillSwitch(streamsTopology, streamsProps);
+    streamsApp = new KafkaStreams(streamsTopology, streamsProps);
+    probeServer = new KafkaHealthProbeServer(streamsApp);
   }
 
   public synchronized void init() throws IOException, ExecutionException, InterruptedException {
@@ -55,11 +58,19 @@ public class IndexerApp {
 
   public void start() throws InterruptedException, ExecutionException, IOException {
     init();
+    KafkaHelpers.onError(streamsApp).thenAcceptAsync(o -> stop(Duration.ofSeconds(5)));
     streamsApp.start();
+    probeServer.start();
   }
 
   public void stop() {
     streamsApp.close();
+    probeServer.stop();
+  }
+
+  public void stop(Duration duration) {
+    streamsApp.close(duration);
+    probeServer.stop(duration);
   }
 
   private void initTopics() throws ExecutionException, InterruptedException {
@@ -114,11 +125,8 @@ public class IndexerApp {
     try {
       var config = new AppConfig();
       var app = new IndexerApp(config);
-      var probeServer = new KafkaHealthProbeServer(app.getStreamsApp());
       Runtime.getRuntime().addShutdownHook(new Thread(app::stop));
-      Runtime.getRuntime().addShutdownHook(new Thread(probeServer::stop));
       app.start();
-      probeServer.start();
     }
     catch (Error | Exception e) {
       log.error("Application failed", e);
