@@ -312,6 +312,7 @@ workflows:
           requires:
             - client
             - registry
+            - indexer
             - search
             - stream-manager
           <<: *jobFilters
