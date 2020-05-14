@@ -19,10 +19,10 @@ build:
     #      jib:
     #        project: search
     #        type: gradle
-    #    - image: cedardevs/onestop-client
-    #      jib:
-    #        project: client
-    #        type: gradle
+    - image: cedardevs/onestop-client
+      jib:
+        project: client
+        type: gradle
     - image: cedardevs/onestop-user
       jib:
         project: user
@@ -245,3 +245,4 @@ profiles:
           - *onestop-ingress
           - *onestop-postgresql
           - *onestop-net-tools
+          - *onestop-client
