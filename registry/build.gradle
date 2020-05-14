@@ -18,6 +18,7 @@ dependencies {
   implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
+  implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("org.apache.kafka:kafka-streams:${Versions.KAFKA}")
   implementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}")
   implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
