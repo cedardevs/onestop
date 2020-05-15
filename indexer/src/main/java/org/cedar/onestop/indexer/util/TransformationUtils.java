@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID;
 
 /**
@@ -268,7 +269,7 @@ public class TransformationUtils {
     var result = new HashMap<String, Object>();
 
     // If bounding is actually an instant, set search fields accordingly
-    if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT) {
+    if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT && analysis.getBeginDescriptor() == UNDEFINED) {
       beginDate = analysis.getInstantUtcDateTimeString();
       year = parseYear(beginDate);
 
@@ -293,8 +294,8 @@ public class TransformationUtils {
       beginYear = year;
       endYear = year;
     } else {
-      // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
-      // use value from analysis block where dates are UTC datetime normalized
+      // If dates exist (thus VALID) and are indexable use value from analysis block where dates are UTC datetime normalized,
+      // else only set the year values as this is indicative of a paleo date
       beginDate = analysis.getBeginDescriptor() == VALID && analysis.getBeginIndexable() ? analysis.getBeginUtcDateTimeString() : null;
       beginYear = parseYear(analysis.getBeginUtcDateTimeString());
       endDate = analysis.getEndDescriptor() == VALID && analysis.getEndIndexable() ? analysis.getEndUtcDateTimeString() : null;
