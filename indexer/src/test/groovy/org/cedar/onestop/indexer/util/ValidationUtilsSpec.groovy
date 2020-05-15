@@ -9,13 +9,18 @@ import org.cedar.schemas.avro.psi.IdentificationAnalysis
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.avro.psi.SpatialBoundingAnalysis
+import org.cedar.schemas.avro.psi.TemporalBounding
 import org.cedar.schemas.avro.psi.TemporalBoundingAnalysis
+import org.cedar.schemas.avro.psi.TimeRangeDescriptor
 import org.cedar.schemas.avro.psi.TitleAnalysis
+import org.cedar.schemas.avro.psi.ValidDescriptor
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static org.cedar.schemas.avro.psi.ValidDescriptor.INVALID
-import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID
+import static org.cedar.schemas.avro.psi.ValidDescriptor.*;
+import static org.cedar.schemas.avro.psi.TimeRangeDescriptor.*;
+
+import static org.cedar.onestop.indexer.util.ValidationUtils.ValidationError.*;
 
 @Unroll
 class ValidationUtilsSpec extends Specification {
@@ -48,6 +53,58 @@ class ValidationUtilsSpec extends Specification {
     ValidationUtils.addValidationErrors(testInput) == null
   }
 
+  def "null Discovery fails root validation"() {
+    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).build()
+    def record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
+
+    when:
+    def errors = ValidationUtils.validateRootRecord(record)
+
+    then:
+    record.discovery == null
+    errors.size() == 1
+    errors[0].title.equals(ROOT.title)
+  }
+
+  def "empty Discovery fails root validation"() {
+    def analysis = Analysis.newBuilder(TestUtils.inputAvroRecord.analysis).build()
+    def record = ParsedRecord.newBuilder().setDiscovery(Discovery.newBuilder().build()).setAnalysis(analysis).build()
+
+    when:
+    def errors = ValidationUtils.validateRootRecord(record)
+
+    then:
+    record.discovery == Discovery.newBuilder().build()
+    errors.size() == 1
+    errors[0].title.equals(ROOT.title)
+  }
+
+  def "null Analysis fails root validation"() {
+    def discovery = Discovery.newBuilder(TestUtils.inputAvroRecord.discovery).build()
+    def record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
+
+    when:
+    def errors = ValidationUtils.validateRootRecord(record)
+
+    then:
+    record.analysis == null
+    errors.size() == 1
+    errors[0].title.equals(ROOT.title)
+  }
+
+  def "empty Analysis fails root validation"() {
+    def discovery = Discovery.newBuilder(TestUtils.inputAvroRecord.discovery).build()
+    def record = ParsedRecord.newBuilder().setDiscovery(discovery).setAnalysis(Analysis.newBuilder().build()).build()
+
+    when:
+    def errors = ValidationUtils.validateRootRecord(record)
+
+    then:
+    record.analysis == Analysis.newBuilder().build()
+    errors.size() == 1
+    errors[0].title.equals(ROOT.title)
+  }
+
   def "validates titles when #testCase"() {
     def titleAnalysis = TitleAnalysis.newBuilder().setTitleExists(titleExists).build()
     def analysis = Analysis.newBuilder().setTitles(titleAnalysis).build()
@@ -58,6 +115,11 @@ class ValidationUtilsSpec extends Specification {
 
     then:
     errors.isEmpty() == isValid
+
+    and:
+    if(!isValid) {
+      errors.each({ e -> e.title.equals(TITLE.title) })
+    }
 
     where:
     testCase                | isValid | titleExists
@@ -79,6 +141,11 @@ class ValidationUtilsSpec extends Specification {
     then:
     errors.size() == errorCount
 
+    and:
+    if(errorCount > 0) {
+      errors.each({ e -> e.title.equals(IDENTIFICATION.title) })
+    }
+
     where:
     testCase                      | errorCount  | hasFileId | hasDoi  | type
     "has only fileId"             | 0           | true      | false   | RecordType.collection
@@ -89,11 +156,42 @@ class ValidationUtilsSpec extends Specification {
     "has no ids and unknown type" | 2           | false     | false   | null
   }
 
-  def "validates temporal bounds when #testCase"() {
+  def "validates temporal bounds by field when #testCase"() {
     def temporalAnalysis = TemporalBoundingAnalysis.newBuilder()
-        .setBeginDescriptor(beginValid ? VALID : INVALID)
-        .setEndDescriptor(endValid ? VALID : INVALID)
-        .setInstantDescriptor(instantValid ? VALID : INVALID)
+        .setBeginDescriptor(begin)
+        .setEndDescriptor(end)
+        .setInstantDescriptor(instant)
+        .setRangeDescriptor(NOT_APPLICABLE) // Forces traversal through field checks for all test cases
+        .build()
+    def analysis = Analysis.newBuilder().setTemporalBounding(temporalAnalysis).build()
+    // Need to supply content for Discovery here to avoid NPEs
+    def temporalBounding = TemporalBounding.newBuilder().setBeginDate("begin").setEndDate("end").setInstant("instant").build()
+    def discovery = Discovery.newBuilder().setTemporalBounding(temporalBounding).build()
+    def record = ParsedRecord.newBuilder().setAnalysis(analysis).setDiscovery(discovery).build()
+
+    when:
+    def errors = ValidationUtils.validateTemporalBounds(record)
+
+    then:
+    errors.size() == errorCount
+
+    and:
+    if(errorCount > 0) {
+      errors.each({ e -> e.title.equals(TEMPORAL_FIELD.title) })
+    }
+
+    where:
+    testCase                    | errorCount  | begin                     | end                       | instant
+    "all dates undefined"       | 0           | ValidDescriptor.UNDEFINED | ValidDescriptor.UNDEFINED | ValidDescriptor.UNDEFINED
+    "all dates valid"           | 0           | VALID                     | VALID                     | VALID
+    "has invalid begin"         | 1           | INVALID                   | VALID                     | VALID
+    "has invalid end"           | 1           | VALID                     | INVALID                   | VALID
+    "has invalid instant"       | 1           | VALID                     | VALID                     | INVALID
+  }
+
+  def "validates temporal bounds by range when #testCase"() {
+    def temporalAnalysis = TemporalBoundingAnalysis.newBuilder()
+        .setRangeDescriptor(range)
         .build()
     def analysis = Analysis.newBuilder().setTemporalBounding(temporalAnalysis).build()
     def record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
@@ -104,14 +202,21 @@ class ValidationUtilsSpec extends Specification {
     then:
     errors.size() == errorCount
 
+    and:
+    if(errorCount > 0) {
+      errors.each({ e -> e.title.equals(TEMPORAL_RANGE.title) })
+    }
+
     where:
-    testCase                    | errorCount  | beginValid| endValid| instantValid
-    "has valid bounds"          | 0           | true      | true    | true
-    "has invalid start"         | 1           | false     | true    | true
-    "has invalid end"           | 1           | true      | false   | true
-    "has invalid start and end" | 2           | false     | false   | true
-    "is invalid instant"        | 1           | true      | true    | false
-    "is completely invalid"     | 3           | false     | false   | false
+    testCase              | errorCount | range
+    "has BOUNDED range"   | 0          | BOUNDED
+    "has INSTANT range"   | 0          | INSTANT
+    "has ONGOING range"   | 0          | ONGOING
+    "has UNDEFINED range" | 0          | TimeRangeDescriptor.UNDEFINED
+    "has AMBIGUOUS range" | 1          | AMBIGUOUS
+    "has BACKWARDS range" | 1          | BACKWARDS
+    "has INVALID range"   | 1          | TimeRangeDescriptor.INVALID
+    // NOT_APPLICABLE range does not generate TEMPORAL_RANGE error and is tested in validation by fields test
   }
 
   def "validates spatial bounds when #testCase"() {
@@ -127,6 +232,11 @@ class ValidationUtilsSpec extends Specification {
 
     then:
     errors.size() == errorCount
+
+    and:
+    if(errorCount > 0) {
+      errors.each({ e -> e.title.equals(SPATIAL.title) })
+    }
 
     where:
     testCase                       | errorCount  | exists  | valid
@@ -151,6 +261,11 @@ class ValidationUtilsSpec extends Specification {
 
     then:
     errors.size() == errorCount
+
+    and:
+    if(errorCount > 0) {
+      errors.each({ e -> e.title.equals(TYPE.title) })
+    }
 
     where:
     testCase                                        | errorCount | hasParentId | hlm          | type                  | topic
