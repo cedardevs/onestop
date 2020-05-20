@@ -4,7 +4,6 @@ import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.cedar.onestop.kafka.common.constants.Topics
 import org.cedar.schemas.avro.psi.Method
-import org.cedar.schemas.avro.psi.OperationType
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
@@ -252,8 +251,21 @@ class PublisherSpec extends Specification {
     collection | testId | 'aDd'    | ADD    | '{"trackingId":"ABC"}'
   }
 
-  def 'handle path request when invalid operation type received'() {
-    // FIXME
+  def 'handle patch request when invalid operation type received'() {
+    setup:
+    RecordType type = RecordType.granule
+    String data = '{"path":"/test/file.txt"}'
+    String requestUri = "/metadata/$type/$testId"
+    String method = 'PATCH'
+    def request = new MockHttpServletRequest(method, requestUri)
+    request.contentType = 'application/json'
+
+    when:
+    Map result = publisher.publishMetadata(request, type, data, Topics.DEFAULT_SOURCE, "bad")
+
+    then:
+    result.status == 400
+    result.content.errors.size() == 1
   }
 
 }
