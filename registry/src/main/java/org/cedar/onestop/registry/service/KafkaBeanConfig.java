@@ -13,6 +13,7 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.state.HostInfo;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.util.DataUtils;
+import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.registry.stream.TopicInitializer;
 import org.cedar.onestop.registry.stream.TopologyBuilders;
 import org.cedar.schemas.avro.psi.Input;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.apache.kafka.streams.StreamsConfig.*;
@@ -73,10 +75,16 @@ public class KafkaBeanConfig {
   }
 
   @Bean(initMethod = "start", destroyMethod = "close")
-  KafkaStreams streamsApp(Properties streamsConfig, TopicInitializer topicInitializer) throws InterruptedException, ExecutionException {
-    topicInitializer.initialize();
+  KafkaStreams streamsApp(Properties streamsConfig, CompletableFuture<Object> streamsErrorFuture) throws InterruptedException, ExecutionException {
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
-    return new KafkaStreams(streamsTopology, streamsConfig);
+    var app = new KafkaStreams(streamsTopology, streamsConfig);
+    KafkaHelpers.onError(app).thenAcceptAsync(o -> streamsErrorFuture.complete(0));
+    return app;
+  }
+
+  @Bean
+  CompletableFuture<Object> streamsErrorFuture() {
+    return new CompletableFuture<>();
   }
 
   @Bean
