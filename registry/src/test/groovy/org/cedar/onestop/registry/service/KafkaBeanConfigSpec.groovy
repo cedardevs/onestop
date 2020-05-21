@@ -1,5 +1,6 @@
 package org.cedar.onestop.registry.service
 
+import org.cedar.onestop.registry.stream.TopicInitializer
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -17,8 +18,9 @@ class KafkaBeanConfigSpec extends Specification {
         'bootstrap.servers': 'http://localhost:9092',
         'schema.registry.url': 'http://localhost:8081'
     ])
+    def mockInitializer = Mock(TopicInitializer)
     def testFuture = new CompletableFuture()
-    def streamsApp = beanConfig.streamsApp(streamsConfig, testFuture)
+    def streamsApp = beanConfig.streamsApp(streamsConfig, mockInitializer, testFuture)
     // valid transitions to running state
     streamsApp.setState(REBALANCING)
     streamsApp.setState(RUNNING)

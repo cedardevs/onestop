@@ -75,7 +75,8 @@ public class KafkaBeanConfig {
   }
 
   @Bean(initMethod = "start", destroyMethod = "close")
-  KafkaStreams streamsApp(Properties streamsConfig, CompletableFuture<Object> streamsErrorFuture) throws InterruptedException, ExecutionException {
+  KafkaStreams streamsApp(Properties streamsConfig, TopicInitializer topicInitializer, CompletableFuture<Object> streamsErrorFuture) throws InterruptedException, ExecutionException {
+    topicInitializer.initialize();
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
     var app = new KafkaStreams(streamsTopology, streamsConfig);
     KafkaHelpers.onError(app).thenAcceptAsync(o -> streamsErrorFuture.complete(0));
@@ -98,7 +99,7 @@ public class KafkaBeanConfig {
   }
 
   @Profile("!integration")
-  @Bean(initMethod = "initialize")
+  @Bean
   TopicInitializer topicInitializer(AdminClient adminClient) {
     return new TopicInitializer(adminClient, topicsConfigurationProps());
   }
