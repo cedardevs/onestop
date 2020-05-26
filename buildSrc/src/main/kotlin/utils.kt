@@ -40,7 +40,7 @@ object Versions {
     const val PAC4J = "3.8.3"
     const val SNAKE_YAML = "1.24"
 
-    const val ONESTOP_SCHEMAS: String = "analysis-updates-SNAPSHOT"
+    const val ONESTOP_SCHEMAS: String = "1250-date-parsing-exception-SNAPSHOT"
 }
 
 // data classes

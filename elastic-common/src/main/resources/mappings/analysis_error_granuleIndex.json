@@ -46,9 +46,6 @@
               }
             }
           },
-          "fileIdentifierExists": {
-            "type": "boolean"
-          },
           "fileIdentifierString": {
             "type": "text",
             "fields": {

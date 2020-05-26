@@ -1,6 +1,10 @@
 package org.cedar.onestop.indexer.util
 
 import org.cedar.schemas.analyze.Analyzers
+import org.cedar.schemas.analyze.Temporal
+import org.cedar.schemas.avro.psi.Analysis
+import org.cedar.schemas.avro.psi.TemporalBoundingAnalysis
+import org.cedar.schemas.avro.psi.ValidDescriptor
 import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.FileInformation
 import org.cedar.schemas.avro.psi.ParsedRecord
@@ -8,8 +12,11 @@ import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
 import org.cedar.schemas.avro.psi.TemporalBounding
+import java.time.temporal.ChronoUnit
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import groovy.json.JsonOutput
 
 import static org.cedar.schemas.avro.util.TemporalTestData.getSituations
 
@@ -18,6 +25,7 @@ class TransformationUtilsSpec extends Specification {
 
   static collectionFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet()
   static granuleFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS).keySet()
+  static granuleAnalysisErrorFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS).keySet()
 
   static expectedKeywords = [
       "SIO > Super Important Organization",
@@ -81,6 +89,47 @@ class TransformationUtilsSpec extends Specification {
     type          | fields            | record
     'collection'  | collectionFields  | TestUtils.inputCollectionRecord
     'granule'     | granuleFields     | TestUtils.inputGranuleRecord
+  }
+
+  def "only mapped nested fields are indexed"() {
+    when:
+    def result = TransformationUtils.reformatMessageForAnalysisAndErrors(TestUtils.inputGranuleRecord, granuleAnalysisErrorFields)
+
+
+    def asdf = TransformationUtils.stuffToRemove(TransformationUtils.unfilteredAEMessage(TestUtils.inputGranuleRecord), TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
+
+    println("ZEB")
+    println(result)
+    println(JsonOutput.toJson(asdf))
+
+    then:
+    result.keySet().each({ assert granuleAnalysisErrorFields.contains(it) })
+  }
+
+  def "can i construct a record"() {
+    when:
+    ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
+        .setAnalysis(
+          Analysis.newBuilder().setTemporalBounding(
+          TemporalBoundingAnalysis.newBuilder()
+              .setBeginDescriptor(ValidDescriptor.VALID)
+              .setBeginIndexable(true)
+              .setBeginPrecision(ChronoUnit.DAYS.toString())
+              .setBeginZoneSpecified(null)
+              .setBeginUtcDateTimeString("2000-02-01")
+              .setBeginYear(2000)
+              .setBeginMonth(2)
+              .setBeginDayOfYear(32)
+              .setBeginDayOfMonth(1)
+              .build()
+              ).build()).build()
+        def asdf = TransformationUtils.stuffToRemove(TransformationUtils.unfilteredAEMessage(record), TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
+
+            println("ZEB")
+            println(JsonOutput.toJson(asdf))
+
+            then:
+            asdf.keySet().each({ assert granuleAnalysisErrorFields.contains(it) })
   }
 
   ////////////////////////////////
@@ -266,7 +315,7 @@ class TransformationUtilsSpec extends Specification {
   def "temporal bounding with #testCase dates is prepared correctly"() {
     given:
     def bounding = TemporalBounding.newBuilder().setBeginDate(begin).setEndDate(end).build()
-    def analysis = Analyzers.analyzeTemporalBounding(Discovery.newBuilder().setTemporalBounding(bounding).build())
+    def analysis = Temporal.analyzeBounding(Discovery.newBuilder().setTemporalBounding(bounding).build())
 
     when:
     def result = TransformationUtils.prepareDates(bounding, analysis)

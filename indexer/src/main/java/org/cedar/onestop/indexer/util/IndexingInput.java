@@ -72,6 +72,24 @@ public class IndexingInput {
     }
   }
 
+  // public Map<String, Object> getTargetAnalysisAndErrorsIndexMapping() {
+  //   var aeAlias = esConfig.analysisAndErrorsAliasFromType(recordType.toString());
+  //   if(aeAlias != null) {
+  //     return esConfig.indexedProperties(aeAlias);
+  //   }
+  //   else {
+  //     return new HashMap<>();
+  //   }
+  // }
+
+  // public static Map<String, Object> getNestedKeys(Map<String, Object> originalMap) {
+  //   if (keysToKeep == null || keysToKeep.size() == 0) {
+  //     return new HashMap<>();
+  //   }
+  //   return originalMap.entrySet().stream()
+  //       .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+  // }
+
   @Override
   public String toString() {
     return "IndexingInput {" +
