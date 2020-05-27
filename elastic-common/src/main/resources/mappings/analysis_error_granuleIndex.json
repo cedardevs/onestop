@@ -114,6 +114,9 @@
           "endUtcDateTimeString": {
             "type": "keyword"
           },
+          "endZoneSpecified": {
+            "type": "keyword"
+          },
           "instantDescriptor": {
             "type": "keyword"
           },
@@ -124,6 +127,9 @@
             "type": "keyword"
           },
           "instantUtcDateTimeString": {
+            "type": "keyword"
+          },
+          "instantZoneSpecified": {
             "type": "keyword"
           },
           "rangeDescriptor": {

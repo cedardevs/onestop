@@ -108,21 +108,55 @@ class TransformationUtilsSpec extends Specification {
     result.keySet().each({ assert granuleAnalysisErrorFields.contains(it) })
   }
 
-  def "can i construct a record"() {
+  def "clean up nested map before indexing strictly mapped fields"() {
     when:
-    def parsed = [identification:null, titles:null, description:null, dataAccess:null, thumbnail:null, temporalBounding:[
-    beginDescriptor:ValidDescriptor.VALID, beginPrecision:ChronoUnit.DAYS.toString(), beginIndexable:true, beginZoneSpecified:null, beginUtcDateTimeString:2000-02-01, beginYear:2000, beginDayOfYear:32, beginDayOfMonth:1, beginMonth:2,
-    endDescriptor:null, endPrecision:null, endIndexable:null, endZoneSpecified:null, endUtcDateTimeString:null, endYear:null, endDayOfYear:null, endDayOfMonth:null, endMonth:null,
-    instantDescriptor:null, instantPrecision:null, instantIndexable:null, instantZoneSpecified:null, instantUtcDateTimeString:null, instantYear:null, instantDayOfYear:null, instantDayOfMonth:null, instantMonth:null,
-    rangeDescriptor:null],
-    spatialBounding:null, internalParentIdentifier:null, errors:[[nonsense:"horrible", source:"valid field"]], garbage:"nuke meeee"]
-    // println(
-    //     DataUtils.wipMapKeys('type', DataUtils.wipMapKeys('properties', DataUtils.consolidateNestedKeysInMap(null, ".", TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))))
-    // )
-
-
-    // def esmapping = DataUtils.wipMapKeys('type', DataUtils.wipMapKeys('properties', DataUtils.consolidateNestedKeysInMap(null, ".", TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))))
-    // println("esmapping: "+JsonOutput.toJson(esmapping))
+    def parsed = [
+      identification: null,
+      titles: null,
+      description: null,
+      dataAccess: null,
+      thumbnail: null,
+      temporalBounding: [
+        beginDescriptor: ValidDescriptor.VALID,
+        beginPrecision: ChronoUnit.DAYS.toString(),
+        beginIndexable: true,
+        beginZoneSpecified: null,
+        beginUtcDateTimeString: "2000-02-01",
+        beginYear: 2000,
+        beginDayOfYear: 32,
+        beginDayOfMonth: 1,
+        beginMonth: 2,
+        endDescriptor: null,
+        endPrecision: null,
+        endIndexable: null,
+        endZoneSpecified: null,
+        endUtcDateTimeString: null,
+        endYear: null,
+        endDayOfYear: null,
+        endDayOfMonth: null,
+        endMonth: null,
+        instantDescriptor: null,
+        instantPrecision: null,
+        instantIndexable: null,
+        instantZoneSpecified: null,
+        instantUtcDateTimeString: null,
+        instantYear: null,
+        instantDayOfYear: null,
+        instantDayOfMonth: null,
+        instantMonth: null,
+        rangeDescriptor: null,
+        fakeField: 123
+      ],
+      spatialBounding: null,
+      internalParentIdentifier: null,
+      errors: [
+        [
+          nonsense: "horrible",
+          source: "valid field"
+        ]
+      ],
+      garbage:"nuke meeee"
+    ]
 
 
 
@@ -158,30 +192,121 @@ class TransformationUtilsSpec extends Specification {
     //           .build()
     //           ).build()).build()
 
-              // def parsed = TransformationUtils.unfilteredAEMessage(record)
-        // def asdf = TransformationUtils.identifyUnmappedFields(parsed, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
+            // def parsed = TransformationUtils.unfilteredAEMessage(record)
 
-        println("parsed "+JsonOutput.toJson(parsed))
-        // println("???"+parsed)
-        // println("in groov"+ [identification:null, titles:null, description:null, dataAccess:null, thumbnail:null, temporalBounding:[
-        // beginDescriptor:ValidDescriptor.VALID, beginPrecision:ChronoUnit.DAYS.toString(), beginIndexable:true, beginZoneSpecified:null, beginUtcDateTimeString:2000-02-01, beginYear:2000, beginDayOfYear:32, beginDayOfMonth:1, beginMonth:2,
-        // endDescriptor:null, endPrecision:null, endIndexable:null, endZoneSpecified:null, endUtcDateTimeString:null, endYear:null, endDayOfYear:null, endDayOfMonth:null, endMonth:null,
-        // instantDescriptor:null, instantPrecision:null, instantIndexable:null, instantZoneSpecified:null, instantUtcDateTimeString:null, instantYear:null, instantDayOfYear:null, instantDayOfMonth:null, instantMonth:null,
-        // rangeDescriptor:null],
-        // spatialBounding:null, internalParentIdentifier:null, errors:[[nonsense:"horrible", source:"valid field"]], garbage:"nuke meeee"]
-// )
-            def pruned = TransformationUtils.pruneKnownUnmappedFields(parsed, knownUnmappedFields)
-            println("pruned unampped? "+JsonOutput.toJson(pruned))
-            def minus = TransformationUtils.identifyUnmappedFields(pruned, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
-            println("creates minus: "+JsonOutput.toJson(minus))
-            println("which results in indexing: "+ JsonOutput.toJson(DataUtils.removeFromMap(pruned, minus)))
+    println("parsed "+JsonOutput.toJson(parsed))
+    def pruned = TransformationUtils.pruneKnownUnmappedFields(parsed, knownUnmappedFields)
+    println("pruned unampped? "+JsonOutput.toJson(pruned))
+    def minus = TransformationUtils.identifyUnmappedFields(pruned, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
+    println("creates minus: "+JsonOutput.toJson(minus))
+    def indexedRecord = DataUtils.removeFromMap(pruned, minus)
+    println("which results in indexing: "+ JsonOutput.toJson(indexedRecord))
 
-            then:
-            // asdf.keySet().each({ assert granuleAnalysisErrorFields.contains(it) })
-            // trimmed == [ "foo" : "bar"]
-            minus == [temporalBounding:[
-            instantIndexable:null],
-            errors:[[nonsense:"horrible"]], garbage:"nuke meeee"]
+    then:
+    minus == [
+      temporalBounding: [
+        fakeField: 123
+      ],
+      errors: [
+        [
+          nonsense: "horrible",
+        ]
+      ],
+      garbage:"nuke meeee"
+    ]
+
+    // println("wtf"+JsonOutput.toJson(indexedRecord))
+    //     println("wtf"+JsonOutput.toJson([
+    //       identification: null,
+    //       titles: null,
+    //       description: null,
+    //       dataAccess: null,
+    //       thumbnail: null,
+    //       temporalBounding: [
+    //         beginDescriptor: ValidDescriptor.VALID,
+    //         beginPrecision: ChronoUnit.DAYS.toString(),
+    //         beginIndexable: true,
+    //         beginZoneSpecified: null,
+    //         beginUtcDateTimeString: "2000-02-01",
+    //         endDescriptor: null,
+    //         endPrecision: null,
+    //         endIndexable: null,
+    //         endZoneSpecified: null,
+    //         endUtcDateTimeString: null,
+    //         instantDescriptor: null,
+    //         instantPrecision: null,
+    //         instantIndexable: null,
+    //         instantZoneSpecified: null,
+    //         instantUtcDateTimeString: null,
+    //         rangeDescriptor: null
+    //       ],
+    //       spatialBounding: null,
+    //       internalParentIdentifier: null,
+    //       errors: [
+    //         [nonsense:"horrible",
+    //           source: "valid field"
+    //         ]
+    //       ]
+    //     ]))
+    // assert indexedRecord == [
+    //   identification: null,
+    //   titles: null,
+    //   description: null,
+    //   dataAccess: null,
+    //   thumbnail: null,
+    //   temporalBounding: [
+    //     beginDescriptor: ValidDescriptor.VALID,
+    //     beginPrecision: ChronoUnit.DAYS.toString(),
+    //     beginIndexable: true,
+    //     beginZoneSpecified: null,
+    //     beginUtcDateTimeString: "2000-02-01",
+    //     endDescriptor: null,
+    //     endPrecision: null,
+    //     endIndexable: null,
+    //     endZoneSpecified: null,
+    //     endUtcDateTimeString: null,
+    //     instantDescriptor: null,
+    //     instantPrecision: null,
+    //     instantIndexable: null,
+    //     instantZoneSpecified: null,
+    //     instantUtcDateTimeString: null,
+    //     rangeDescriptor: null
+    //   ],
+    //   spatialBounding: null,
+    //   internalParentIdentifier: null,
+    //   errors: [
+    //     [nonsense:"horrible", // FIXME this is not actually desired
+    //       source: "valid field"
+    //     ]
+    //   ]
+    // ]
+    def expectedKeyset = ["identification", "titles", "description", "dataAccess", "thumbnail", "temporalBounding", "spatialBounding", "internalParentIdentifier", "errors" ]
+    indexedRecord.keySet().size() == expectedKeyset.size()
+    indexedRecord.keySet().each({ assert expectedKeyset.contains(it) })
+
+    indexedRecord.temporalBounding == [
+        beginDescriptor: ValidDescriptor.VALID,
+        beginPrecision: ChronoUnit.DAYS.toString(),
+        beginIndexable: true,
+        beginZoneSpecified: null,
+        beginUtcDateTimeString: "2000-02-01",
+        endDescriptor: null,
+        endPrecision: null,
+        endIndexable: null,
+        endZoneSpecified: null,
+        endUtcDateTimeString: null,
+        instantDescriptor: null,
+        instantPrecision: null,
+        instantIndexable: null,
+        instantZoneSpecified: null,
+        instantUtcDateTimeString: null,
+        rangeDescriptor: null
+      ]
+
+    indexedRecord.errors.size() == 1
+    indexedRecord.errors[0] == [nonsense:"horrible", // FIXME this is not actually desired
+          source: "valid field"
+        ]
   }
 
   ////////////////////////////////
