@@ -6,6 +6,8 @@ dependencies {
 
     compileOnly("org.slf4j:slf4j-api:1.7.25")
 
+    implementation(project(':data-utils'))
+
     implementation("org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}")
     implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${Versions.ELASTIC}")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
