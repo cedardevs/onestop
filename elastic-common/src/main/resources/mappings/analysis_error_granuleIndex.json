@@ -66,6 +66,9 @@
           },
           "parentIdentifierExists": {
             "type": "boolean"
+          },
+          "parentIdentifierString": {
+            "type": "text"
           }
         }
       },
@@ -166,7 +169,7 @@
       "errors": {
         "type": "nested",
         "properties": {
-          "applicationSource": {
+          "source": {
             "type": "keyword"
           },
           "title": {
