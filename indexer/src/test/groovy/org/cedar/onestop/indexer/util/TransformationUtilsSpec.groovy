@@ -20,6 +20,8 @@ import groovy.json.JsonOutput
 
 import static org.cedar.schemas.avro.util.TemporalTestData.getSituations
 
+import org.cedar.onestop.kafka.common.util.DataUtils;
+
 @Unroll
 class TransformationUtilsSpec extends Specification {
 
@@ -96,7 +98,7 @@ class TransformationUtilsSpec extends Specification {
     def result = TransformationUtils.reformatMessageForAnalysisAndErrors(TestUtils.inputGranuleRecord, granuleAnalysisErrorFields)
 
 
-    def asdf = TransformationUtils.stuffToRemove(TransformationUtils.unfilteredAEMessage(TestUtils.inputGranuleRecord), TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
+    def asdf = TransformationUtils.identifyUnmappedFields(TransformationUtils.unfilteredAEMessage(TestUtils.inputGranuleRecord), TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
 
     println("ZEB")
     println(result)
@@ -108,6 +110,33 @@ class TransformationUtilsSpec extends Specification {
 
   def "can i construct a record"() {
     when:
+    println("YO ZEB")
+    // println(
+    //     DataUtils.wipMapKeys('type', DataUtils.wipMapKeys('properties', DataUtils.consolidateNestedKeysInMap(null, ".", TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))))
+    // )
+
+
+    def esmapping = DataUtils.wipMapKeys('type', DataUtils.wipMapKeys('properties', DataUtils.consolidateNestedKeysInMap(null, ".", TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))))
+    println("esmapping: "+JsonOutput.toJson(esmapping))
+
+
+
+    def knownUnmappedTemporalFields = new HashMap<String, Object>();
+    knownUnmappedTemporalFields.put("beginYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("beginDayOfYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("beginDayOfMonth", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("beginMonth", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("endYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("endDayOfYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("endDayOfMonth", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("endMonth", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("instantYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("instantDayOfYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("instantDayOfMonth", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("instantMonth", new HashMap<String, Object>());
+    def knownUnmappedFields = new HashMap<String, Object>();
+    knownUnmappedFields.put("temporalBounding", knownUnmappedTemporalFields);
+
     ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
         .setAnalysis(
           Analysis.newBuilder().setTemporalBounding(
@@ -123,13 +152,46 @@ class TransformationUtilsSpec extends Specification {
               .setBeginDayOfMonth(1)
               .build()
               ).build()).build()
-        def asdf = TransformationUtils.stuffToRemove(TransformationUtils.unfilteredAEMessage(record), TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
 
-            println("ZEB")
-            println(JsonOutput.toJson(asdf))
+              def parsed = TransformationUtils.unfilteredAEMessage(record)
+        def asdf = TransformationUtils.identifyUnmappedFields(parsed, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
+
+            println("ZEB from "+JsonOutput.toJson(parsed))
+            println("ZEB minus "+JsonOutput.toJson(asdf))
+            println("AND CLEANED? "+JsonOutput.toJson(DataUtils.removeFromMap((parsed), asdf)))
+            def pruned = TransformationUtils.pruneKnownUnmappedFields(parsed, knownUnmappedFields)
+            println("pruned unampped? "+JsonOutput.toJson(pruned))
+            def minus = TransformationUtils.identifyUnmappedFields(pruned, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
+            println("creates minus: "+JsonOutput.toJson(minus))
+            println("which results in indexing: "+ JsonOutput.toJson(DataUtils.removeFromMap(pruned, minus)))
+            asdf.get("temporalBounding").remove("instantYear")
+
+            asdf.get("temporalBounding").remove("beginYear")
+            asdf.get("temporalBounding").remove("beginDayOfYear")
+            asdf.get("temporalBounding").remove("beginDayOfMonth")
+            asdf.get("temporalBounding").remove("beginMonth")
+            asdf.get("temporalBounding").remove("endYear")
+            asdf.get("temporalBounding").remove("endDayOfYear")
+            asdf.get("temporalBounding").remove("endDayOfMonth")
+            asdf.get("temporalBounding").remove("endMonth")
+            asdf.get("temporalBounding").remove("instantYear")
+            asdf.get("temporalBounding").remove("instantDayOfYear")
+            asdf.get("temporalBounding").remove("instantDayOfMonth")
+            asdf.get("temporalBounding").remove("instantMonth")
+            println("cleaned up for dumb logging: "+JsonOutput.toJson(asdf))
+
+            def objkeys = DataUtils.consolidateNestedKeysInMap(null, ".", parsed)
+            println("objkeys: "+JsonOutput.toJson(objkeys))
+            def junkToremove = DataUtils.filterMapKeys(esmapping.keySet(), objkeys)
+            println("remove me:" + JsonOutput.toJson(junkToremove))
+            // def trimmed = DataUtils.filterMapKeys(junkToremove.keySet(), objkeys)
+            def trimmed = DataUtils.removeFromMap(objkeys, junkToremove)
+            println("fixed: "+JsonOutput.toJson(trimmed))
+
 
             then:
-            asdf.keySet().each({ assert granuleAnalysisErrorFields.contains(it) })
+            // asdf.keySet().each({ assert granuleAnalysisErrorFields.contains(it) })
+            trimmed == [ "foo" : "bar"]
   }
 
   ////////////////////////////////
