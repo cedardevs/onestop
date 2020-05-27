@@ -127,7 +127,6 @@ public class ElasticsearchConfig {
   public Map<String, ?> indexedProperties(String alias) {
     var parsed = (Map<String, Map>) parsedMapping(alias);
     var mappings = (Map<String, Map>) parsed.getOrDefault("mappings", Collections.emptyMap());
-
     return (Map<String, Map>) mappings.getOrDefault("properties", Collections.emptyMap());
   }
 

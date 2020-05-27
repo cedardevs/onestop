@@ -2,7 +2,6 @@ rootProject.name = "onestop"
 
 include(
     "client",
-    "data-utils",
     "e2e-tests",
     "elastic-common",
     "geoportal-search",

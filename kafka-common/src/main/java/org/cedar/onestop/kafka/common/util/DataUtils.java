@@ -200,8 +200,6 @@ public class DataUtils {
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
-  ////////// DELETE ^^^^^^ //////////////////
-
   /**
    * @param builderType   type of schema builder either ParsedRecord or AggregatedInput, otherwise error out
    * @param fieldData     parsed or input metadata values
