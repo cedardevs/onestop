@@ -115,21 +115,6 @@ public class TransformationUtils {
     // });
     // return result;
     //
-    // const knownUnmappedTemporalFields = new HashMap<String, Object>();
-    // knownUnmappedTemporalFields.put("beginYear", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("beginDayOfYear", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("beginDayOfMonth", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("beginMonth", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("endYear", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("endDayOfYear", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("endDayOfMonth", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("endMonth", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("instantYear", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("instantDayOfYear", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("instantDayOfMonth", "mapped to search index instead");
-    // knownUnmappedTemporalFields.put("instantMonth", "mapped to search index instead");
-    // const knownUnmappedFields = new HashMap<String, Object>();
-    // knownUnmappedFields.put("temporalBounding", knownUnmappedTemporalFields);
 
     analysisMap.forEach((k, v) -> {
       if (!mapping.containsKey(k)) {

@@ -110,14 +110,19 @@ class TransformationUtilsSpec extends Specification {
 
   def "can i construct a record"() {
     when:
-    println("YO ZEB")
+    def parsed = [identification:null, titles:null, description:null, dataAccess:null, thumbnail:null, temporalBounding:[
+    beginDescriptor:ValidDescriptor.VALID, beginPrecision:ChronoUnit.DAYS.toString(), beginIndexable:true, beginZoneSpecified:null, beginUtcDateTimeString:2000-02-01, beginYear:2000, beginDayOfYear:32, beginDayOfMonth:1, beginMonth:2,
+    endDescriptor:null, endPrecision:null, endIndexable:null, endZoneSpecified:null, endUtcDateTimeString:null, endYear:null, endDayOfYear:null, endDayOfMonth:null, endMonth:null,
+    instantDescriptor:null, instantPrecision:null, instantIndexable:null, instantZoneSpecified:null, instantUtcDateTimeString:null, instantYear:null, instantDayOfYear:null, instantDayOfMonth:null, instantMonth:null,
+    rangeDescriptor:null],
+    spatialBounding:null, internalParentIdentifier:null, errors:[[nonsense:"horrible", source:"valid field"]], garbage:"nuke meeee"]
     // println(
     //     DataUtils.wipMapKeys('type', DataUtils.wipMapKeys('properties', DataUtils.consolidateNestedKeysInMap(null, ".", TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))))
     // )
 
 
-    def esmapping = DataUtils.wipMapKeys('type', DataUtils.wipMapKeys('properties', DataUtils.consolidateNestedKeysInMap(null, ".", TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))))
-    println("esmapping: "+JsonOutput.toJson(esmapping))
+    // def esmapping = DataUtils.wipMapKeys('type', DataUtils.wipMapKeys('properties', DataUtils.consolidateNestedKeysInMap(null, ".", TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))))
+    // println("esmapping: "+JsonOutput.toJson(esmapping))
 
 
 
@@ -137,61 +142,46 @@ class TransformationUtilsSpec extends Specification {
     def knownUnmappedFields = new HashMap<String, Object>();
     knownUnmappedFields.put("temporalBounding", knownUnmappedTemporalFields);
 
-    ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
-        .setAnalysis(
-          Analysis.newBuilder().setTemporalBounding(
-          TemporalBoundingAnalysis.newBuilder()
-              .setBeginDescriptor(ValidDescriptor.VALID)
-              .setBeginIndexable(true)
-              .setBeginPrecision(ChronoUnit.DAYS.toString())
-              .setBeginZoneSpecified(null)
-              .setBeginUtcDateTimeString("2000-02-01")
-              .setBeginYear(2000)
-              .setBeginMonth(2)
-              .setBeginDayOfYear(32)
-              .setBeginDayOfMonth(1)
-              .build()
-              ).build()).build()
+    // ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
+    //     .setAnalysis(
+    //       Analysis.newBuilder().setTemporalBounding(
+    //       TemporalBoundingAnalysis.newBuilder()
+    //           .setBeginDescriptor(ValidDescriptor.VALID)
+    //           .setBeginIndexable(true)
+    //           .setBeginPrecision(ChronoUnit.DAYS.toString())
+    //           .setBeginZoneSpecified(null)
+    //           .setBeginUtcDateTimeString("2000-02-01")
+    //           .setBeginYear(2000)
+    //           .setBeginMonth(2)
+    //           .setBeginDayOfYear(32)
+    //           .setBeginDayOfMonth(1)
+    //           .build()
+    //           ).build()).build()
 
-              def parsed = TransformationUtils.unfilteredAEMessage(record)
-        def asdf = TransformationUtils.identifyUnmappedFields(parsed, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
+              // def parsed = TransformationUtils.unfilteredAEMessage(record)
+        // def asdf = TransformationUtils.identifyUnmappedFields(parsed, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
 
-            println("ZEB from "+JsonOutput.toJson(parsed))
-            println("ZEB minus "+JsonOutput.toJson(asdf))
-            println("AND CLEANED? "+JsonOutput.toJson(DataUtils.removeFromMap((parsed), asdf)))
+        println("parsed "+JsonOutput.toJson(parsed))
+        // println("???"+parsed)
+        // println("in groov"+ [identification:null, titles:null, description:null, dataAccess:null, thumbnail:null, temporalBounding:[
+        // beginDescriptor:ValidDescriptor.VALID, beginPrecision:ChronoUnit.DAYS.toString(), beginIndexable:true, beginZoneSpecified:null, beginUtcDateTimeString:2000-02-01, beginYear:2000, beginDayOfYear:32, beginDayOfMonth:1, beginMonth:2,
+        // endDescriptor:null, endPrecision:null, endIndexable:null, endZoneSpecified:null, endUtcDateTimeString:null, endYear:null, endDayOfYear:null, endDayOfMonth:null, endMonth:null,
+        // instantDescriptor:null, instantPrecision:null, instantIndexable:null, instantZoneSpecified:null, instantUtcDateTimeString:null, instantYear:null, instantDayOfYear:null, instantDayOfMonth:null, instantMonth:null,
+        // rangeDescriptor:null],
+        // spatialBounding:null, internalParentIdentifier:null, errors:[[nonsense:"horrible", source:"valid field"]], garbage:"nuke meeee"]
+// )
             def pruned = TransformationUtils.pruneKnownUnmappedFields(parsed, knownUnmappedFields)
             println("pruned unampped? "+JsonOutput.toJson(pruned))
             def minus = TransformationUtils.identifyUnmappedFields(pruned, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
             println("creates minus: "+JsonOutput.toJson(minus))
             println("which results in indexing: "+ JsonOutput.toJson(DataUtils.removeFromMap(pruned, minus)))
-            asdf.get("temporalBounding").remove("instantYear")
-
-            asdf.get("temporalBounding").remove("beginYear")
-            asdf.get("temporalBounding").remove("beginDayOfYear")
-            asdf.get("temporalBounding").remove("beginDayOfMonth")
-            asdf.get("temporalBounding").remove("beginMonth")
-            asdf.get("temporalBounding").remove("endYear")
-            asdf.get("temporalBounding").remove("endDayOfYear")
-            asdf.get("temporalBounding").remove("endDayOfMonth")
-            asdf.get("temporalBounding").remove("endMonth")
-            asdf.get("temporalBounding").remove("instantYear")
-            asdf.get("temporalBounding").remove("instantDayOfYear")
-            asdf.get("temporalBounding").remove("instantDayOfMonth")
-            asdf.get("temporalBounding").remove("instantMonth")
-            println("cleaned up for dumb logging: "+JsonOutput.toJson(asdf))
-
-            def objkeys = DataUtils.consolidateNestedKeysInMap(null, ".", parsed)
-            println("objkeys: "+JsonOutput.toJson(objkeys))
-            def junkToremove = DataUtils.filterMapKeys(esmapping.keySet(), objkeys)
-            println("remove me:" + JsonOutput.toJson(junkToremove))
-            // def trimmed = DataUtils.filterMapKeys(junkToremove.keySet(), objkeys)
-            def trimmed = DataUtils.removeFromMap(objkeys, junkToremove)
-            println("fixed: "+JsonOutput.toJson(trimmed))
-
 
             then:
             // asdf.keySet().each({ assert granuleAnalysisErrorFields.contains(it) })
-            trimmed == [ "foo" : "bar"]
+            // trimmed == [ "foo" : "bar"]
+            minus == [temporalBounding:[
+            instantIndexable:null],
+            errors:[[nonsense:"horrible"]], garbage:"nuke meeee"]
   }
 
   ////////////////////////////////
