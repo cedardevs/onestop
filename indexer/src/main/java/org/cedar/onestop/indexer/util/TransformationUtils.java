@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID;
 
+import org.cedar.onestop.kafka.common.util.DataUtils;
 
 // TODO import org.apache.kafka.streams.StreamsBuilder;
 
@@ -73,7 +74,29 @@ public class TransformationUtils {
     return analysisMap;
   }
 
-  public static Map<String, Object> stuffToRemove(Map<String, Object> analysisMap, Map<String, Object> mapping) {
+  public static Map<String, Object> pruneKnownUnmappedFields(Map<String, Object> analysisMap, Map<String, Object> unmappedFields) {
+
+    var result = new LinkedHashMap<String, Object>();
+    analysisMap.forEach((k, v) -> {
+      if (!unmappedFields.containsKey(k)) {
+        result.put(k, v);
+      } else {
+        Map<String, Object> nestedProperties = (Map<String, Object>)((Map<String, Object>)unmappedFields.get(k)); // TODO almost identical to stuff to remove... but reversed... and no ".properties" layer...
+
+        if (v instanceof Map) {
+          result.put(k, pruneKnownUnmappedFields((Map<String, Object>) v, nestedProperties));
+        } else if (v instanceof List) {
+          var list = ((List) v).stream().map(item -> pruneKnownUnmappedFields((Map<String, Object>) item, nestedProperties)).filter(item -> !((Map<String, Object>)item).isEmpty())
+                .collect(Collectors.toList());
+          System.out.println("ZEB - list: "+list);
+          result.put(k, list);
+        }
+      }
+    });
+    return result;
+  }
+
+  public static Map<String, Object> identifyUnmappedFields(Map<String, Object> analysisMap, Map<String, Object> mapping) {
     var result = new LinkedHashMap<String, Object>();
     // analysisMap.entrySet().stream().forEach(e -> {
     //   if( !mapping.containsKey(e.getKey())) {
@@ -82,15 +105,31 @@ public class TransformationUtils {
     //     if (e.getValue() instanceof Map<?,?>){
     //       System.out.println("ZEB: the value is a map!");
     //       // System.out.println("mapping: "+mapping.get(e.getKey()).get("properties"));
-    //       // System.out.println("--> "+stuffToRemove((Map<String, Object>)e.getValue(), (Map<String, Object>)mapping.get(e.getKey()).get("properties")));
-    //       result.put(e.getKey(), stuffToRemove((Map<String, Object>)e.getValue(), (Map<String, Object>)((Map<String, Object>)mapping.get(e.getKey())).get("properties"))); // TODO brute force assumes mapping is an object map string:object here too
+    //       // System.out.println("--> "+identifyUnmappedFields((Map<String, Object>)e.getValue(), (Map<String, Object>)mapping.get(e.getKey()).get("properties")));
+    //       result.put(e.getKey(), identifyUnmappedFields((Map<String, Object>)e.getValue(), (Map<String, Object>)((Map<String, Object>)mapping.get(e.getKey())).get("properties"))); // TODO brute force assumes mapping is an object map string:object here too
     //     } else if(e.getValue() instanceof Collection<?>){
     //       // TODO!!!!
-    //       // result.put(e.getKey(), ((Collection<?>)e.getValue()).filter(item -> !stuffToRemove((Map<String, Object>)item, (Map<String, Object>)((Map<String, Object>)mapping.get(e.getKey())).get("properties"))).isEmpty());
+    //       // result.put(e.getKey(), ((Collection<?>)e.getValue()).filter(item -> !identifyUnmappedFields((Map<String, Object>)item, (Map<String, Object>)((Map<String, Object>)mapping.get(e.getKey())).get("properties"))).isEmpty());
     //     }
     //   }
     // });
     // return result;
+    //
+    // const knownUnmappedTemporalFields = new HashMap<String, Object>();
+    // knownUnmappedTemporalFields.put("beginYear", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("beginDayOfYear", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("beginDayOfMonth", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("beginMonth", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("endYear", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("endDayOfYear", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("endDayOfMonth", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("endMonth", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("instantYear", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("instantDayOfYear", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("instantDayOfMonth", "mapped to search index instead");
+    // knownUnmappedTemporalFields.put("instantMonth", "mapped to search index instead");
+    // const knownUnmappedFields = new HashMap<String, Object>();
+    // knownUnmappedFields.put("temporalBounding", knownUnmappedTemporalFields);
 
     analysisMap.forEach((k, v) -> {
       if (!mapping.containsKey(k)) {
@@ -98,10 +137,12 @@ public class TransformationUtils {
       } else {
         Map<String, Object> nestedProperties = (Map<String, Object>)((Map<String, Object>)mapping.get(k)).get("properties"); // TODO assumes mapping is also a Map!
 
+        // Map<String, Object> knownUnmapped = (Map<String, Object>)knownUnmappedFields.get(k);
+
         if (v instanceof Map) {
-          result.put(k, stuffToRemove((Map<String, Object>) v, nestedProperties));
+          result.put(k, identifyUnmappedFields((Map<String, Object>) v, nestedProperties));
         } else if (v instanceof List) {
-          var list = ((List) v).stream().map(item -> stuffToRemove((Map<String, Object>) item, nestedProperties)).filter(item -> !((Map<String, Object>)item).isEmpty())
+          var list = ((List) v).stream().map(item -> identifyUnmappedFields((Map<String, Object>) item, nestedProperties)).filter(item -> !((Map<String, Object>)item).isEmpty())
                 .collect(Collectors.toList());
           System.out.println("ZEB - list: "+list);
           result.put(k, list);
