@@ -11,7 +11,6 @@ export const isBrowserUnsupported = () => {
     unsupported = true
   }
 
-
   const browser = detect()
 
   if (!browser) {
