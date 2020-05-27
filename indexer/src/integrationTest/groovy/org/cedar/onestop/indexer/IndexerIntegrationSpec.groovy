@@ -32,14 +32,17 @@ import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA
 
 class IndexerIntegrationSpec extends Specification {
 
-  // test iso records from elastic-common
-  static inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/C1.xml').text
-  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/G1.xml').text
   static indexingIntervalMs = 1000
   static indexPrefix = 'indexer_integration_spec_'
 
   static EmbeddedKafkaBroker kafka
   static RestApp schemaRegistry
+
+  static final inputCollectionXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/C1.xml').text
+  static inputCollectionRecord = TestUtils.buildRecordFromXML(inputCollectionXml)
+
+  static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/G1.xml').text
+  static inputGranuleRecord = TestUtils.buildRecordFromXML(inputGranuleXml)
 
   def setupSpec() {
     kafka = new EmbeddedKafkaBroker(1, false)
@@ -96,14 +99,14 @@ class IndexerIntegrationSpec extends Specification {
 
   def "indexes then deletes a granule and a collection"() {
     def collectionId = "C"
-    def collection = TestUtils.buildRecordFromXML(inputCollectionXml)
-    def collectionTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection)
+    def collection = inputCollectionRecord
+    def collectionTopic = TestUtils.collectionTopic
     def collectionRecord = new ProducerRecord<>(collectionTopic, collectionId, collection)
     def granuleId = "G"
-    def granule = ParsedRecord.newBuilder(TestUtils.buildRecordFromXML(inputGranuleXml))
+    def granule = ParsedRecord.newBuilder(inputGranuleRecord)
         .setRelationships([Relationship.newBuilder().setId(collectionId).setType(RelationshipType.COLLECTION).build()])
         .build()
-    def granuleTopic = Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule)
+    def granuleTopic = TestUtils.granuleTopic
     def granuleRecord = new ProducerRecord<>(granuleTopic, granuleId, granule)
     def collectionIndex = app.elasticConfig.COLLECTION_SEARCH_INDEX_ALIAS
     def granuleIndex = app.elasticConfig.GRANULE_SEARCH_INDEX_ALIAS

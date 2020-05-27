@@ -28,6 +28,9 @@ spec:
         checksum/config: {{ . | sha256sum }}
         {{- end }}
     spec:
+      {{- if .Values.debug }}
+      shareProcessNamespace: true
+      {{- end }}
       securityContext:
         fsGroup: 102
       {{- with .Values.image.pullSecrets }}
@@ -35,6 +38,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
+      {{- if .Values.debug }}
+      - name: debug
+        image: centos
+        command: ["tail", "-f", "/dev/null"]
+      {{- end }}
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -89,6 +97,22 @@ spec:
         {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 20
+          timeoutSeconds: 2
+          periodSeconds: 3
+          failureThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 60
+          timeoutSeconds: 2
+          periodSeconds: 8
+          failureThreshold: 1
       {{- if .Values.config }}
       volumes:
       - name: config

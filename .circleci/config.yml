@@ -114,7 +114,7 @@ jobs:
           path: search/build/reports
       - deploy:
           name: Publish Image(s)
-          command: ./gradlew search:jib
+          command: ./gradlew search:jib -Djib.httpTimeout=30000 -Djib.console=plain
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -137,7 +137,7 @@ jobs:
           path: ~/tests
       - deploy:
           name: Publish Image(s)
-          command: ./gradlew client:jib
+          command: ./gradlew client:jib -Djib.httpTimeout=30000 -Djib.console=plain
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -165,7 +165,7 @@ jobs:
           path: indexer/build/reports
       - deploy:
           name: Publish Image(s)
-          command: ./gradlew indexer:jib
+          command: ./gradlew indexer:jib -Djib.httpTimeout=30000 -Djib.console=plain
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -192,7 +192,7 @@ jobs:
         path: registry/build/reports
     - deploy:
         name: Publish Image(s)
-        command: ./gradlew registry:jib
+        command: ./gradlew registry:jib -Djib.httpTimeout=30000 -Djib.console=plain
     - persist_to_workspace:
         root: ~/repo
         paths:
@@ -219,7 +219,7 @@ jobs:
         path: stream-manager/build/reports
     - deploy:
         name: Publish Image(s)
-        command: ./gradlew stream-manager:jib
+        command: ./gradlew stream-manager:jib -Djib.httpTimeout=30000 -Djib.console=plain
     - persist_to_workspace:
         root: ~/repo
         paths:
@@ -312,6 +312,7 @@ workflows:
           requires:
             - client
             - registry
+            - indexer
             - search
             - stream-manager
           <<: *jobFilters

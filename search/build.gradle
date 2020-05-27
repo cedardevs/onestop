@@ -1,15 +1,10 @@
 plugins {
   // https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
   id "io.forgo.keystoreplugin" version "1.1"
-  id 'war'
 }
 
 sourceCompatibility = 11
 targetCompatibility = 11
-
-configurations {
-  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
-}
 
 dependencies {
   def Versions = project.Versions
@@ -42,7 +37,7 @@ dependencies {
 
   runtime("org.springframework.boot:spring-boot-devtools")
 
-  providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+  // providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 
   testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")
   testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
@@ -167,14 +162,14 @@ task integrationTest(type: Test) {
 }
 check.dependsOn integrationTest
 
-bootWar {
+bootJar {
   from("${buildDir}/resources/main") {
     include "onestop-request-schema.json"
     into "WEB-INF/classes"
   }
-
-  archiveBaseName.set("${rootProject.name}-${project.name}")
-  archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
+  classifier = 'all' // add a classifier to distinguish the executable jar
+  archiveBaseName = "${rootProject.name}-${project.name}"
+  launchScript()
 }
 
 // these environment variables would normally be set by kubernetes objects;
@@ -182,6 +177,9 @@ bootWar {
 // variables are not set and can require different values (e.g. - keystore path/file)
 //task environmentVariables(type: Exec) {
 bootRun {
+  environment['server.port'] = '8097'
+  environment['elasticsearch.host'] = 'localhost'
+  environment['elasticsearch.ssl.enabled'] = 'false'
   environment project.envVars as Map<String, ?>
 }
 
@@ -209,7 +207,7 @@ jib {
 
     from {
       // base image
-      image = 'tomcat:9.0.27-jdk11-openjdk'
+      image = 'gcr.io/distroless/java:11'
     }
     to {
       image = publish.repository()
@@ -221,11 +219,7 @@ jib {
     container {
       creationTime = publish.created.toString()
       labels = publish.ociAnnotations()
-      ports = ['8080'.toString()]
-      // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin#war-projects
-      // The `onestop-admin` dir is where our WAR will be exploded. Tomcat uses this directory to assume a context-path
-      // that overrides the Spring one, so they should match up to keep our assumptions about client proxying consistent
-      appRoot = "/usr/local/tomcat/webapps/onestop-search".toString()
+      ports = ['8080']
     }
   }
 }

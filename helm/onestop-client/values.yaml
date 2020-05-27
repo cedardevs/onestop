@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: cedardevs/onestop-client
-  tag: master-SNAPSHOT
+  tag: "3.0.0-alpha3"
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -27,7 +27,7 @@ prefixPath: onestop
 # SERVICE ENDPOINTS (tells client how to access in cluster)
 ###############################################################################
 apiSearch:
-  endpoint: onestop-search:8080/onestop-search
+  endpoint: onestop-search:8080
 
 ingress:
   enabled: true

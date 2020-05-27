@@ -1,0 +1,175 @@
+{
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "dataAccess": {
+        "properties": {
+          "dataAccessExists": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": {
+        "properties": {
+          "descriptionCharacters": {
+            "type": "short"
+          },
+          "descriptionExists": {
+            "type": "boolean"
+          },
+          "descriptionFleschKincaidReadingGradeLevel": {
+            "type": "half_float"
+          },
+          "descriptionFleschReadingEaseScore": {
+            "type": "half_float"
+          }
+        }
+      },
+      "identification": {
+        "properties": {
+          "doiExists": {
+            "type": "boolean"
+          },
+          "doiString": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "fileIdentifierExists": {
+            "type": "boolean"
+          },
+          "fileIdentifierString": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "hierarchyLevelNameExists": {
+            "type": "boolean"
+          },
+          "matchesIdentifiers": {
+            "type": "boolean"
+          },
+          "parentIdentifierExists": {
+            "type": "boolean"
+          }
+        }
+      },
+      "spatialBounding": {
+        "properties": {
+          "isValid": {
+            "type": "boolean"
+          },
+          "spatialBoundingExists": {
+            "type": "boolean"
+          },
+          "validationError": {
+            "type": "keyword"
+          }
+        }
+      },
+      "temporalBounding": {
+        "properties": {
+          "beginDescriptor": {
+            "type": "keyword"
+          },
+          "beginIndexable": {
+            "type": "boolean"
+          },
+          "beginPrecision": {
+            "type": "keyword"
+          },
+          "beginUtcDateTimeString": {
+            "type": "keyword"
+          },
+          "beginZoneSpecified": {
+            "type": "keyword"
+          },
+          "endDescriptor": {
+            "type": "keyword"
+          },
+          "endIndexable": {
+            "type": "boolean"
+          },
+          "endPrecision": {
+            "type": "keyword"
+          },
+          "endUtcDateTimeString": {
+            "type": "keyword"
+          },
+          "instantDescriptor": {
+            "type": "keyword"
+          },
+          "instantIndexable": {
+            "type": "boolean"
+          },
+          "instantPrecision": {
+            "type": "keyword"
+          },
+          "instantUtcDateTimeString": {
+            "type": "keyword"
+          },
+          "rangeDescriptor": {
+            "type": "keyword"
+          }
+        }
+      },
+      "thumbnail": {
+        "properties": {
+          "thumbnailExists": {
+            "type": "boolean"
+          }
+        }
+      },
+      "titles": {
+        "properties": {
+          "alternateTitleCharacters": {
+            "type": "short"
+          },
+          "alternateTitleExists": {
+            "type": "boolean"
+          },
+          "alternateTitleFleschKincaidReadingGradeLevel": {
+            "type": "half_float"
+          },
+          "alternateTitleFleschReadingEaseScore": {
+            "type": "half_float"
+          },
+          "titleCharacters": {
+            "type": "short"
+          },
+          "titleExists": {
+            "type": "boolean"
+          },
+          "titleFleschKincaidReadingGradeLevel": {
+            "type": "half_float"
+          },
+          "titleFleschReadingEaseScore": {
+            "type": "half_float"
+          }
+        }
+      },
+      "errors": {
+        "type": "nested",
+        "properties": {
+          "applicationSource": {
+            "type": "keyword"
+          },
+          "title": {
+            "type": "keyword"
+          },
+          "detail": {
+            "type": "text"
+          }
+        }
+      }
+    }
+  }
+}
