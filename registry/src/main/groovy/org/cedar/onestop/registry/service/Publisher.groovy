@@ -7,6 +7,7 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.cedar.onestop.registry.util.UUIDValidator
 import org.cedar.schemas.avro.psi.Input
 import org.cedar.schemas.avro.psi.Method
+import org.cedar.schemas.avro.psi.OperationType
 import org.cedar.schemas.avro.psi.RecordType
 import org.json.JSONException
 import org.json.JSONObject
@@ -37,7 +38,7 @@ class Publisher {
     this.kafkaProducer = kafkaProducer
   }
 
-  Map publishMetadata(HttpServletRequest request, RecordType type, String data, String source, String id = null) {
+  Map publishMetadata(HttpServletRequest request, RecordType type, String data, String source, String id = null, String op) {
     // check for valid UUID String
     if(id != null && !UUIDValidator.isValid(id)){
       return UUIDValidator.uuidErrorMsg(id)
@@ -57,14 +58,22 @@ class Publisher {
     }
 
     String key = id ?: UUID.randomUUID().toString()
-    def message = buildInputTopicMessage(request, type, data, source, key)
-    def record = new ProducerRecord<String, Input>(topic, key, message)
-    log.debug("Publishing $type with id: ${id} from source: $source and method: $message.method")
-    kafkaProducer.send(record)?.get()
-    return [
-        status : 200,
-        content: [id: key, type: type]
-    ]
+    try {
+      def message = buildInputTopicMessage(request, type, data, source, op)
+      def record = new ProducerRecord<String, Input>(topic, key, message)
+      log.debug("Publishing $type with id: ${id} from source: $source and method: $message.method")
+      kafkaProducer.send(record)?.get()
+      return [
+          status : 200,
+          content: [id: key, type: type]
+      ]
+    }
+    catch (IllegalArgumentException e) {
+      return [
+          status: 400,
+          content: [errors: [[title: "Bad op for PATCH request", detail: e.getMessage()]]]
+      ]
+    }
   }
 
   Map isContentValid(String content, String contentType) {
@@ -120,13 +129,27 @@ class Publisher {
     ]
   }
 
-  Input buildInputTopicMessage(HttpServletRequest request, RecordType type, String data, String source, String id) {
+  Input buildInputTopicMessage(HttpServletRequest request, RecordType type, String data, String source, String op) {
+    OperationType operation;
+    if (op == null) {
+      operation = OperationType.NO_OP
+    }
+    else {
+      try {
+        operation = OperationType.valueOf(op.toUpperCase().strip())
+      }
+      catch(IllegalArgumentException e) {
+        throw new IllegalArgumentException("Received PATCH request with invalid operation type value of [ " + op + " ]. " +
+            "Permitted options are (case-insensitive): " + EnumSet.allOf(OperationType.class))
+      }
+    }
     def builder = Input.newBuilder()
     builder.type = type
     builder.method = Method.valueOf(request?.method?.toUpperCase())
     builder.content = data
     builder.contentType = request?.contentType
     builder.source = source
+    builder.operation = operation
     return builder.build()
   }
 
