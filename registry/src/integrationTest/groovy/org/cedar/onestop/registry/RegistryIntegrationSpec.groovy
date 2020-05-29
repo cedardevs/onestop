@@ -11,6 +11,7 @@ import io.confluent.kafka.schemaregistry.RestApp
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.streams.KafkaStreams
 import org.cedar.onestop.kafka.common.constants.Topics
+import org.cedar.schemas.avro.psi.OperationType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
@@ -110,7 +111,7 @@ class RegistryIntegrationSpec extends Specification {
     data.attributes.events[0].timestamp instanceof Long
     data.attributes.events[0].method == "POST"
     data.attributes.events[0].source == "common-ingest"
-    data.attributes.events[0].operation == null
+    data.attributes.events[0].operation == OperationType.NO_OP.name()
     data.attributes.errors == []
   }
 
