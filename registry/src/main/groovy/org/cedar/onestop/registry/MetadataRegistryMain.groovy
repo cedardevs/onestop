@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
+import java.util.concurrent.CompletableFuture
+
 @CompileStatic
 @SpringBootApplication
 class MetadataRegistryMain extends SpringBootServletInitializer {
@@ -16,7 +18,11 @@ class MetadataRegistryMain extends SpringBootServletInitializer {
   }
 
   static void main(String[] args) {
-    SpringApplication.run(MetadataRegistryMain.class, args)
+    def context = SpringApplication.run(MetadataRegistryMain.class, args)
+    def streamsErrorFuture = context.getBean("streamsErrorFuture", CompletableFuture)
+    streamsErrorFuture.thenAcceptAsync({
+      SpringApplication.exit(context, {-> 1})
+    })
   }
 
 }

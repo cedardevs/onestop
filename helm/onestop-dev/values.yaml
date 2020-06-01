@@ -3,6 +3,15 @@
 # CONFLUENT
 ###############################################################################
 cp-helm-charts:
+  cp-control-center:
+    enabled: true
+    configurationOverrides:
+      "replication.factor": "1"
+    jmx:
+      port: 5555
+    prometheus:
+      jmx:
+        enabled: true
   cp-kafka:
     enabled: true
     brokers: 1
@@ -62,6 +71,13 @@ cp-helm-charts:
     prometheus:
       jmx:
         enabled: true
+
+###############################################################################
+# Nginx Ingress
+###############################################################################
+controller:
+  admissionWebhooks:
+    enabled: false
 
 ###############################################################################
 # CAS

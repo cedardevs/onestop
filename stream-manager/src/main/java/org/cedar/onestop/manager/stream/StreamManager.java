@@ -34,7 +34,7 @@ public class StreamManager {
   public static KafkaStreams buildStreamsApp(AppConfig config) {
     var topology = buildTopology();
     var streamsConfig = streamsConfig(StreamsApps.MANAGER_ID, config);
-    return KafkaHelpers.buildStreamsAppWithKillSwitch(topology, streamsConfig);
+    return new KafkaStreams(topology, streamsConfig);
   }
 
   static Topology buildTopology() {

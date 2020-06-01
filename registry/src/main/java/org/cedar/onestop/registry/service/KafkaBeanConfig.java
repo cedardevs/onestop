@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.apache.kafka.streams.StreamsConfig.*;
@@ -74,10 +75,17 @@ public class KafkaBeanConfig {
   }
 
   @Bean(initMethod = "start", destroyMethod = "close")
-  KafkaStreams streamsApp(Properties streamsConfig, TopicInitializer topicInitializer) throws InterruptedException, ExecutionException {
+  KafkaStreams streamsApp(Properties streamsConfig, TopicInitializer topicInitializer, CompletableFuture<Object> streamsErrorFuture) throws InterruptedException, ExecutionException {
     topicInitializer.initialize();
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
-    return KafkaHelpers.buildStreamsAppWithKillSwitch(streamsTopology, streamsConfig);
+    var app = new KafkaStreams(streamsTopology, streamsConfig);
+    KafkaHelpers.onError(app).thenAcceptAsync(o -> streamsErrorFuture.complete(0));
+    return app;
+  }
+
+  @Bean
+  CompletableFuture<Object> streamsErrorFuture() {
+    return new CompletableFuture<>();
   }
 
   @Bean
@@ -91,7 +99,7 @@ public class KafkaBeanConfig {
   }
 
   @Profile("!integration")
-  @Bean(initMethod = "initialize")
+  @Bean
   TopicInitializer topicInitializer(AdminClient adminClient) {
     return new TopicInitializer(adminClient, topicsConfigurationProps());
   }
