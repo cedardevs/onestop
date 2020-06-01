@@ -396,23 +396,26 @@ public class TransformationUtils {
 
   private static HashMap<String, Object> parseAdditionalTimeFields(String prefix, String time){
     var result = new HashMap<String, Object>();
-    Integer dayOfYear, dayOfMonth, month;
-    if (time != null) {
-      ZonedDateTime dateTime = ZonedDateTime.parse(time);
+    try {
 
-      dayOfYear = dateTime.getDayOfYear();
-      dayOfMonth = dateTime.getDayOfMonth();
-      month = dateTime.getMonthValue();
-    }
-    else {
-      dayOfYear = null;
-      dayOfMonth = null;
-      month = null;
-    }
+      Integer dayOfYear, dayOfMonth, month;
+      if (time != null) {
+        ZonedDateTime dateTime = ZonedDateTime.parse(time);
 
-    result.put(prefix + "DayOfYear", dayOfYear);
-    result.put(prefix + "DayOfMonth", dayOfMonth);
-    result.put(prefix + "Month", month);
+        dayOfYear = dateTime.getDayOfYear();
+        dayOfMonth = dateTime.getDayOfMonth();
+        month = dateTime.getMonthValue();
+      }
+      else {
+        dayOfYear = null;
+        dayOfMonth = null;
+        month = null;
+      }
+
+      result.put(prefix + "DayOfYear", dayOfYear);
+      result.put(prefix + "DayOfMonth", dayOfMonth);
+      result.put(prefix + "Month", month);
+    } catch (Exception e) {} // TODO temporary
     return result;
   }
 
