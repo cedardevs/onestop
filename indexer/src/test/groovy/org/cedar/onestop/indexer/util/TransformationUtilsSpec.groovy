@@ -25,9 +25,9 @@ import org.cedar.onestop.kafka.common.util.DataUtils;
 @Unroll
 class TransformationUtilsSpec extends Specification {
 
-  static collectionFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet()
-  static granuleFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS).keySet()
-  static granuleAnalysisErrorFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS).keySet()
+  static Map<String, Map> collectionFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+  static Map<String, Map> granuleFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS)
+  static Map<String, Map> granuleAnalysisErrorFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS)
 
   static expectedKeywords = [
       "SIO > Super Important Organization",
@@ -80,35 +80,20 @@ class TransformationUtilsSpec extends Specification {
   ///////////////////////////////
   // Generic Indexed Fields    //
   ///////////////////////////////
-  def "only mapped #type fields are indexed"() {
-    when:
-    def result = TransformationUtils.reformatMessageForSearch(record, fields)
+  // def "only mapped #type fields are indexed"() {
+  //   when:
+  //   def result = TransformationUtils.reformatMessageForSearch(record, fields)
+  //
+  //   then:
+  //   result.keySet().each({ assert fields.keySet().contains(it) }) // TODO this is a shallow only check!
+  //
+  //   where:
+  //   type          | fields            | record
+  //   'collection'  | collectionFields  | TestUtils.inputCollectionRecord
+  //   'granule'     | granuleFields     | TestUtils.inputGranuleRecord
+  // }
 
-    then:
-    result.keySet().each({ assert fields.contains(it) })
-
-    where:
-    type          | fields            | record
-    'collection'  | collectionFields  | TestUtils.inputCollectionRecord
-    'granule'     | granuleFields     | TestUtils.inputGranuleRecord
-  }
-
-  def "only mapped nested fields are indexed"() {
-    when:
-    def result = TransformationUtils.reformatMessageForAnalysisAndErrors(TestUtils.inputGranuleRecord, granuleAnalysisErrorFields)
-
-
-    def asdf = TransformationUtils.identifyUnmappedFields(TransformationUtils.unfilteredAEMessage(TestUtils.inputGranuleRecord), TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
-
-    println("ZEB")
-    println(result)
-    println(JsonOutput.toJson(asdf))
-
-    then:
-    result.keySet().each({ assert granuleAnalysisErrorFields.contains(it) })
-  }
-
-  def "clean up nested map before indexing strictly mapped fields"() {
+  def "clean up nested map before indexing strictly mapped fields"() { // TODO change to use reformatMessageFor method
     when:
     def parsed = [
       identification: null,
@@ -160,21 +145,21 @@ class TransformationUtilsSpec extends Specification {
 
 
 
-    def knownUnmappedTemporalFields = new HashMap<String, Object>();
-    knownUnmappedTemporalFields.put("beginYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("beginDayOfYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("beginDayOfMonth", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("beginMonth", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("endYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("endDayOfYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("endDayOfMonth", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("endMonth", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("instantYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("instantDayOfYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("instantDayOfMonth", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("instantMonth", new HashMap<String, Object>());
-    def knownUnmappedFields = new HashMap<String, Object>();
-    knownUnmappedFields.put("temporalBounding", knownUnmappedTemporalFields);
+    // def knownUnmappedTemporalFields = new HashMap<String, Object>();
+    // knownUnmappedTemporalFields.put("beginYear", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("beginDayOfYear", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("beginDayOfMonth", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("beginMonth", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("endYear", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("endDayOfYear", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("endDayOfMonth", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("endMonth", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("instantYear", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("instantDayOfYear", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("instantDayOfMonth", new HashMap<String, Object>());
+    // knownUnmappedTemporalFields.put("instantMonth", new HashMap<String, Object>());
+    // def knownUnmappedFields = new HashMap<String, Object>();
+    // knownUnmappedFields.put("temporalBounding", knownUnmappedTemporalFields);
 
     // ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
     //     .setAnalysis(
@@ -195,7 +180,7 @@ class TransformationUtilsSpec extends Specification {
             // def parsed = TransformationUtils.unfilteredAEMessage(record)
 
     println("parsed "+JsonOutput.toJson(parsed))
-    def pruned = TransformationUtils.pruneKnownUnmappedFields(parsed, knownUnmappedFields)
+    def pruned = TransformationUtils.pruneKnownUnmappedFields(parsed, IndexingInput.getUnmappedAnalysisAndErrorsIndexFields())
     println("pruned unampped? "+JsonOutput.toJson(pruned))
     def minus = TransformationUtils.identifyUnmappedFields(pruned, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS))
     println("creates minus: "+JsonOutput.toJson(minus))
@@ -215,71 +200,6 @@ class TransformationUtilsSpec extends Specification {
       garbage:"nuke meeee"
     ]
 
-    // println("wtf"+JsonOutput.toJson(indexedRecord))
-    //     println("wtf"+JsonOutput.toJson([
-    //       identification: null,
-    //       titles: null,
-    //       description: null,
-    //       dataAccess: null,
-    //       thumbnail: null,
-    //       temporalBounding: [
-    //         beginDescriptor: ValidDescriptor.VALID,
-    //         beginPrecision: ChronoUnit.DAYS.toString(),
-    //         beginIndexable: true,
-    //         beginZoneSpecified: null,
-    //         beginUtcDateTimeString: "2000-02-01",
-    //         endDescriptor: null,
-    //         endPrecision: null,
-    //         endIndexable: null,
-    //         endZoneSpecified: null,
-    //         endUtcDateTimeString: null,
-    //         instantDescriptor: null,
-    //         instantPrecision: null,
-    //         instantIndexable: null,
-    //         instantZoneSpecified: null,
-    //         instantUtcDateTimeString: null,
-    //         rangeDescriptor: null
-    //       ],
-    //       spatialBounding: null,
-    //       internalParentIdentifier: null,
-    //       errors: [
-    //         [nonsense:"horrible",
-    //           source: "valid field"
-    //         ]
-    //       ]
-    //     ]))
-    // assert indexedRecord == [
-    //   identification: null,
-    //   titles: null,
-    //   description: null,
-    //   dataAccess: null,
-    //   thumbnail: null,
-    //   temporalBounding: [
-    //     beginDescriptor: ValidDescriptor.VALID,
-    //     beginPrecision: ChronoUnit.DAYS.toString(),
-    //     beginIndexable: true,
-    //     beginZoneSpecified: null,
-    //     beginUtcDateTimeString: "2000-02-01",
-    //     endDescriptor: null,
-    //     endPrecision: null,
-    //     endIndexable: null,
-    //     endZoneSpecified: null,
-    //     endUtcDateTimeString: null,
-    //     instantDescriptor: null,
-    //     instantPrecision: null,
-    //     instantIndexable: null,
-    //     instantZoneSpecified: null,
-    //     instantUtcDateTimeString: null,
-    //     rangeDescriptor: null
-    //   ],
-    //   spatialBounding: null,
-    //   internalParentIdentifier: null,
-    //   errors: [
-    //     [nonsense:"horrible", // FIXME this is not actually desired
-    //       source: "valid field"
-    //     ]
-    //   ]
-    // ]
     def expectedKeyset = ["identification", "titles", "description", "dataAccess", "thumbnail", "temporalBounding", "spatialBounding", "internalParentIdentifier", "errors" ]
     indexedRecord.keySet().size() == expectedKeyset.size()
     indexedRecord.keySet().each({ assert expectedKeyset.contains(it) })
@@ -577,7 +497,7 @@ class TransformationUtilsSpec extends Specification {
 
   def "accession values are not included"() {
     when:
-    def result = TransformationUtils.reformatMessageForSearch(TestUtils.inputAvroRecord, TestUtils.esConfig.parsedMapping(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet())
+    def result = TransformationUtils.reformatMessageForSearch(TestUtils.inputAvroRecord, collectionFields)
 
     then:
     result.accessionValues == null

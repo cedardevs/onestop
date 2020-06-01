@@ -78,9 +78,9 @@ public class IndexingUtils {
     }
     else {
       var formattedRecord = new HashMap<String, Object>();
-      log.info("build A&E write request "+input.getValue().value() +" and "+ input.getTargetAnalysisAndErrorsIndexFields());
-      log.info("transforms to "+TransformationUtils.reformatMessageForAnalysisAndErrors(input.getValue().value(), input.getTargetAnalysisAndErrorsIndexFields()));
-      formattedRecord.putAll(TransformationUtils.reformatMessageForAnalysisAndErrors(input.getValue().value(), input.getTargetAnalysisAndErrorsIndexFields()));
+      // log.info("build A&E write request "+input.getValue().value() +" and "+ input.getTargetAnalysisAndErrorsIndexFields());
+      // log.info("transforms to "+TransformationUtils.reformatMessageForAnalysisAndErrors(input.getValue().value(), input.getTargetAnalysisAndErrorsIndexFields(), input.getUnmappedAnalysisAndErrorsIndexFields())); // TODO change this to pass the ES mapping in instead
+      formattedRecord.putAll(TransformationUtils.reformatMessageForAnalysisAndErrors(input.getValue().value(), input.getTargetAnalysisAndErrorsIndexFields(), input.getUnmappedAnalysisAndErrorsIndexFields()));
       formattedRecord.put("stagedDate", input.getValue().timestamp());
       return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
     }

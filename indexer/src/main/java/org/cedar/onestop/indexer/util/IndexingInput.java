@@ -52,23 +52,43 @@ public class IndexingInput {
     return esConfig.analysisAndErrorsAliasFromType(recordType.toString());
   }
 
-  public Set<String> getTargetSearchIndexFields() {
+  public static Map<String, Object> getUnmappedAnalysisAndErrorsIndexFields() {
+    // this method is just to prevent us from logging warnings about fields in the analysis schema that we know and choose not to map
+    Map<String, Object> knownUnmappedTemporalFields = new HashMap<String, Object>();
+    knownUnmappedTemporalFields.put("beginYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("beginDayOfYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("beginDayOfMonth", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("beginMonth", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("endYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("endDayOfYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("endDayOfMonth", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("endMonth", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("instantYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("instantDayOfYear", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("instantDayOfMonth", new HashMap<String, Object>());
+    knownUnmappedTemporalFields.put("instantMonth", new HashMap<String, Object>());
+    Map<String, Object> knownUnmappedFields = new HashMap<String, Object>();
+    knownUnmappedFields.put("temporalBounding", knownUnmappedTemporalFields);
+    return knownUnmappedFields;
+  }
+
+  public Map<String, Map> getTargetSearchIndexFields() {
     var searchAlias = esConfig.searchAliasFromType(recordType.toString());
     if(searchAlias != null) {
-      return esConfig.indexedProperties(searchAlias).keySet();
+      return esConfig.indexedProperties(searchAlias);
     }
     else {
-      return new HashSet<>();
+      return new HashMap<>();
     }
   }
 
-  public Set<String> getTargetAnalysisAndErrorsIndexFields() {
+  public Map<String, Map> getTargetAnalysisAndErrorsIndexFields() {
     var aeAlias = esConfig.analysisAndErrorsAliasFromType(recordType.toString());
     if(aeAlias != null) {
-      return esConfig.indexedProperties(aeAlias).keySet();
+      return esConfig.indexedProperties(aeAlias);
     }
     else {
-      return new HashSet<>();
+      return new HashMap<>();
     }
   }
 

@@ -32,7 +32,7 @@ public class TransformationUtils {
   ///////////////////////////////////////////////////////////////////////////////
   //                     Indexing For Analysis & Errors                        //
   ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForAnalysisAndErrors(ParsedRecord record, Set<String> targetFields) {
+  public static Map<String, Object> reformatMessageForAnalysisAndErrors(ParsedRecord record, Map<String, Map> targetFieldsMapping, Map<String, Object> knownUnmappedFields) {
     var analysis = record.getAnalysis();
     var errors = record.getErrors();
 
@@ -46,33 +46,34 @@ public class TransformationUtils {
     analysisMap.put("errors", errorsList);
 
     // drop fields not present in target index
-    // TODO make recursive!
-    var result = new LinkedHashMap<String, Object>(targetFields.size());
-    targetFields.forEach(f -> result.put(f, analysisMap.get(f)));
-    return result;
+
+    var pruned = TransformationUtils.pruneKnownUnmappedFields(analysisMap, knownUnmappedFields);
+    var minus = TransformationUtils.identifyUnmappedFields(pruned, targetFieldsMapping); // TODO identify which it's going to
+    log.warn("The following fields were dropped when indexing to analysis and errors: " + minus);  // TODO "add for record `id`"
+    return DataUtils.removeFromMap(pruned, minus);
   }
 
-  public static Map<String, Object> unfilteredAEMessage(ParsedRecord record) {
-    var analysis = record.getAnalysis();
-    var errors = record.getErrors();
-
-    var analysisMap = AvroUtils.avroToMap(analysis, true);
-    analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
-    var errorsList = errors.stream()
-        .map(e -> AvroUtils.avroToMap(e))
-        .collect(Collectors.toList());
-
-
-    var garbageError = new LinkedHashMap<String, Object>();
-    garbageError.put("nonsense", "horrible");
-    garbageError.put("source", "valid field" );
-    errorsList.add(garbageError);
-
-
-    analysisMap.put("errors", errorsList);
-    analysisMap.put("garbage", "nuke meeee"); // FIXME
-    return analysisMap;
-  }
+  // public static Map<String, Object> unfilteredAEMessage(ParsedRecord record) {
+  //   var analysis = record.getAnalysis();
+  //   var errors = record.getErrors();
+  //
+  //   var analysisMap = AvroUtils.avroToMap(analysis, true);
+  //   analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+  //   var errorsList = errors.stream()
+  //       .map(e -> AvroUtils.avroToMap(e))
+  //       .collect(Collectors.toList());
+  //
+  //
+  //   var garbageError = new LinkedHashMap<String, Object>();
+  //   garbageError.put("nonsense", "horrible");
+  //   garbageError.put("source", "valid field" );
+  //   errorsList.add(garbageError);
+  //
+  //
+  //   analysisMap.put("errors", errorsList);
+  //   analysisMap.put("garbage", "nuke meeee"); // FIXME
+  //   return analysisMap;
+  // }
 
   public static Map<String, Object> pruneKnownUnmappedFields(Map<String, Object> analysisMap, Map<String, Object> unmappedFields) {
 
@@ -81,14 +82,13 @@ public class TransformationUtils {
       if (!unmappedFields.containsKey(k)) {
         result.put(k, v);
       } else {
-        Map<String, Object> nestedProperties = (Map<String, Object>)((Map<String, Object>)unmappedFields.get(k)); // TODO almost identical to stuff to remove... but reversed... and no ".properties" layer...
+        Map<String, Object> nestedProperties = (Map<String, Object>)((Map<String, Object>)unmappedFields.get(k));
 
         if (v instanceof Map) {
           result.put(k, pruneKnownUnmappedFields((Map<String, Object>) v, nestedProperties));
         } else if (v instanceof List) {
           var list = ((List) v).stream().map(item -> pruneKnownUnmappedFields((Map<String, Object>) item, nestedProperties)).filter(item -> !((Map<String, Object>)item).isEmpty())
                 .collect(Collectors.toList());
-          System.out.println("ZEB - list: "+list);
           result.put(k, list);
         }
       }
@@ -96,67 +96,35 @@ public class TransformationUtils {
     return result;
   }
 
-  public static Map<String, Object> identifyUnmappedFields(Map<String, Object> analysisMap, Map<String, Object> mapping) {
+  public static Map<String, Object> identifyUnmappedFields(Map<String, Object> analysisMap, Map<String, Map> mapping) {
     var result = new LinkedHashMap<String, Object>();
-    // analysisMap.entrySet().stream().forEach(e -> {
-    //   if( !mapping.containsKey(e.getKey())) {
-    //     result.put(e.getKey(), e.getValue());
-    //   } else {
-    //     if (e.getValue() instanceof Map<?,?>){
-    //       System.out.println("ZEB: the value is a map!");
-    //       // System.out.println("mapping: "+mapping.get(e.getKey()).get("properties"));
-    //       // System.out.println("--> "+identifyUnmappedFields((Map<String, Object>)e.getValue(), (Map<String, Object>)mapping.get(e.getKey()).get("properties")));
-    //       result.put(e.getKey(), identifyUnmappedFields((Map<String, Object>)e.getValue(), (Map<String, Object>)((Map<String, Object>)mapping.get(e.getKey())).get("properties"))); // TODO brute force assumes mapping is an object map string:object here too
-    //     } else if(e.getValue() instanceof Collection<?>){
-    //       // TODO!!!!
-    //       // result.put(e.getKey(), ((Collection<?>)e.getValue()).filter(item -> !identifyUnmappedFields((Map<String, Object>)item, (Map<String, Object>)((Map<String, Object>)mapping.get(e.getKey())).get("properties"))).isEmpty());
-    //     }
-    //   }
-    // });
-    // return result;
-    //
+
+    if (mapping == null) {
+      return analysisMap;
+    }
 
     analysisMap.forEach((k, v) -> {
       if (!mapping.containsKey(k)) {
         result.put(k, v);
       } else {
-        Map<String, Object> nestedProperties = (Map<String, Object>)((Map<String, Object>)mapping.get(k)).get("properties"); // TODO assumes mapping is also a Map!
-
-        // Map<String, Object> knownUnmapped = (Map<String, Object>)knownUnmappedFields.get(k);
+        Map<String, Map> nestedProperties = (Map<String, Map>)((Map<String, Map>)mapping.get(k)).get("properties"); // TODO assumes mapping is also a Map!
 
         if (v instanceof Map) {
           result.put(k, identifyUnmappedFields((Map<String, Object>) v, nestedProperties));
         } else if (v instanceof List) {
-          var list = ((List) v).stream().map(item -> identifyUnmappedFields((Map<String, Object>) item, nestedProperties)).filter(item -> !((Map<String, Object>)item).isEmpty())
+          var list = ((List) v).stream().filter(item -> item instanceof Map).map(item -> identifyUnmappedFields((Map<String, Object>) item, nestedProperties)).filter(item -> !((Map<String, Object>)item).isEmpty())
                 .collect(Collectors.toList());
-          System.out.println("ZEB - list: "+list);
           result.put(k, list);
         }
       }
     });
     return result;
   }
-/*
-  toRemove.forEach((k, v) -> {
-    var originalValue = mergedMap.get(k);
-    if (v instanceof Map && originalValue instanceof Map) {
-      mergedMap.put(k, removeFromMap((Map) originalValue, (Map) v));
-    }
-    else if (v instanceof List && originalValue instanceof List) {
-      var mergedList = new HashSet<>((List) originalValue);
-      mergedList.removeAll((List) v);
-      mergedMap.put(k, mergedList);
-    }
-    else if ((v == null && originalValue == null) || v.equals(originalValue)) {
-      mergedMap.remove(k);
-    }
-  });
-*/
 
   ///////////////////////////////////////////////////////////////////////////////
   //                          Indexing For Search                              //
   ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> targetFields) {
+  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Map<String, Map> targetFieldsMapping) {
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
     var discoveryMap = AvroUtils.avroToMap(discovery, true);
@@ -174,9 +142,16 @@ public class TransformationUtils {
     discoveryMap.put("checksums", prepareChecksums(record));
 
     // drop fields not present in target index
-    var result = new LinkedHashMap<String, Object>(targetFields.size());
-    targetFields.forEach(f -> result.put(f, discoveryMap.get(f)));
-    return result;
+    // // FIXME
+    // var result = new LinkedHashMap<String, Object>(targetFieldsMapping.size());
+    // // targetFields.forEach(f -> result.put(f, discoveryMap.get(f)));
+    // return result;
+
+    // var pruned = TransformationUtils.pruneKnownUnmappedFields(discoveryMap, knownUnmappedFields);
+    var pruned = discoveryMap;
+    var minus = TransformationUtils.identifyUnmappedFields(pruned, targetFieldsMapping);
+    log.warn("The following fields were dropped when indexing to search: " + minus); // TODO "add for record `id`"
+    return DataUtils.removeFromMap(pruned, minus);
   }
 
   ////////////////////////////////
