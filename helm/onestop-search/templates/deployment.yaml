@@ -31,6 +31,10 @@ spec:
         - name: debug
           image: centos
           command: ["tail", "-f", "/dev/null"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
         {{- end }}
         - name: {{ .Chart.Name }}
           image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}

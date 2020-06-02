@@ -83,4 +83,8 @@ cas:
 ###############################################################################
 metrics-server:
   args:
+    - --v=2
+    - --kubelet-preferred-address-types=InternalIP
     - --kubelet-insecure-tls
+  hostNetwork:
+    enabled: true
