@@ -7,11 +7,7 @@ metadata:
   {{- with .Values.autoscaler.annotations }}
   annotations: {{ toYaml . | nindent 4 }}
   {{- end }}
-  labels:
-    app.kubernetes.io/name: {{ include "onestop-registry.name" . }}-autoscaler
-    helm.sh/chart: {{ include "onestop-registry.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  labels: {{- include "onestop-registry.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

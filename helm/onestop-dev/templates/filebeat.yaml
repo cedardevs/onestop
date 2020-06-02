@@ -4,9 +4,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: filebeat-config
+  name: {{ include "onestop-dev.fullname" . }}-filebeat
   labels:
-    k8s-app: filebeat
+    {{- include "onestop-dev.labels.filebeat" . | nindent 4 }}
 data:
   filebeat.yml: |-
     filebeat.inputs:
@@ -45,17 +45,17 @@ data:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: filebeat
+  name: {{ include "onestop-dev.fullname" . }}-filebeat
   labels:
-    k8s-app: filebeat
+    {{- include "onestop-dev.labels.filebeat" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      k8s-app: filebeat
+      {{- include "onestop-dev.selectorLabels.filebeat" . | nindent 6 }}
   template:
     metadata:
       labels:
-        k8s-app: filebeat
+        {{- include "onestop-dev.selectorLabels.filebeat" . | nindent 8 }}
     spec:
       serviceAccountName: filebeat
       terminationGracePeriodSeconds: 30
@@ -70,7 +70,7 @@ spec:
           ]
           env:
             - name: ELASTICSEARCH_HOST
-              value: onestop-es-http
+              value: {{ include "onestop-dev.fullname" . }}-es-http
             - name: ELASTICSEARCH_PORT
               value: "9200"
             - name: ELASTICSEARCH_USERNAME
@@ -78,7 +78,7 @@ spec:
             - name: ELASTICSEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: onestop-es-elastic-user
+                  name: {{ include "onestop-dev.fullname" . }}-es-elastic-user
                   key: elastic
             - name: NODE_NAME
               valueFrom:
@@ -115,7 +115,7 @@ spec:
         - name: config
           configMap:
             defaultMode: 0600
-            name: filebeat-config
+            name: {{ include "onestop-dev.fullname" . }}-filebeat
         - name: varlibdockercontainers
           hostPath:
             path: /var/lib/docker/containers
@@ -129,12 +129,14 @@ spec:
             type: DirectoryOrCreate
         - name: es-certs
           secret:
-            secretName: onestop-es-http-certs-public
+            secretName: {{ include "onestop-dev.fullname" . }}-es-http-certs-public
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: filebeat
+  name: {{ include "onestop-dev.fullname" . }}-filebeat
+  labels:
+    {{- include "onestop-dev.labels.filebeat" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
     name: filebeat
@@ -147,9 +149,9 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: filebeat
+  name: {{ include "onestop-dev.fullname" . }}-filebeat
   labels:
-    k8s-app: filebeat
+    {{- include "onestop-dev.labels.filebeat" . | nindent 4 }}
 rules:
   - apiGroups: [""] # "" indicates the core API group
     resources:
@@ -163,8 +165,8 @@ rules:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: filebeat
+  name: {{ include "onestop-dev.fullname" . }}-filebeat
   labels:
-    k8s-app: filebeat
+    {{- include "onestop-dev.labels.filebeat" . | nindent 4 }}
 ---
 {{- end }}

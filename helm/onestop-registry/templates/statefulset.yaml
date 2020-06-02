@@ -3,11 +3,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "onestop-registry.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "onestop-registry.name" . }}
-    helm.sh/chart: {{ include "onestop-registry.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  labels: {{- include "onestop-registry.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   serviceName: {{ include "onestop-registry.fullname" . }}
@@ -16,13 +12,11 @@ spec:
   podManagementPolicy: OrderedReady
   selector:
     matchLabels:
-      app: {{ include "onestop-registry.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "onestop-registry.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ include "onestop-registry.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "onestop-registry.selectorLabels" . | nindent 8 }}
       annotations:
         {{- with .Values.config }}
         checksum/config: {{ . | sha256sum }}

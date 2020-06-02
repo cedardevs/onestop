@@ -2,17 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "onestop-indexer.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "onestop-indexer.name" . }}
-    helm.sh/chart: {{ include "onestop-indexer.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  labels: {{- include "onestop-indexer.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "onestop-indexer.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "onestop-indexer.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.config }}
@@ -20,8 +15,7 @@ spec:
         checksum/config: {{ . | sha256sum }}
       {{- end }}
       labels:
-        app.kubernetes.io/name: {{ include "onestop-indexer.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "onestop-indexer.selectorLabels" . | nindent 8 }}
     spec:
       {{- if .Values.debug }}
       shareProcessNamespace: true
@@ -70,18 +64,20 @@ spec:
               value: {{ .Values.elasticsearch.port | quote }}
             - name: elasticsearch.ssl.enabled
               value: {{ .Values.elasticsearch.ssl.enabled | quote }}
+            {{- if .Values.elasticsearch.ssl.certSecret }}
             - name: elasticsearch.ssl.cert.path
-              value: {{ .Values.elasticsearch.ssl.cert.path }}
+              value: "/etc/certs/elasticsearch"
             - name: elasticsearch.ssl.cert.tls
-              value: {{ .Values.elasticsearch.ssl.cert.tls }}
+              value: "tls.crt"
+            {{- end }}
+            {{- with .Values.elasticsearch.username }}
             - name: elasticsearch.rw.user
-              value: {{ .Values.elasticsearch.rw.user }}
-            # The password, specifically, is derived from the ECK operator secret, keyed by the username
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with .Values.elasticsearch.password }}
             - name: elasticsearch.rw.pass
-              valueFrom:
-                secretKeyRef:
-                  name: onestop-es-elastic-user
-                  key: {{ .Values.elasticsearch.rw.user }}
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
             {{- if .Values.debug }}
             - name: JAVA_TOOL_OPTIONS
               value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
@@ -112,9 +108,11 @@ spec:
               mountPath: /etc/conf/
           {{- end }}
           # MOUNT PUBLIC CERTS FOR ELASTICSEARCH (ca.crt & tls.crt)
-            - name: onestop-es-http-certs-public-volume
-              mountPath: {{ .Values.elasticsearch.ssl.cert.path }}
+          {{- if .Values.elasticsearch.ssl.certSecret }}
+            - name: es-http-certs-public-volume
+              mountPath: "/etc/certs/elasticsearch"
               readOnly: true
+          {{- end }}
       volumes:
       # CREATE VOLUME FOR ADDITIONAL CONFIG (if config provided)
       # additional location for Spring config allows overriding defaults
@@ -124,10 +122,11 @@ spec:
             name: {{ include "onestop-indexer.configname" . }}
       {{- end }}
       # CREATE VOLUME FOR ELASTICSEARCH PUBLIC CERTS
-      # the secret name used here is the default used for the ECK operator
-        - name: onestop-es-http-certs-public-volume
+      {{- with .Values.elasticsearch.ssl.certSecret }}
+        - name: es-http-certs-public-volume
           secret:
-            secretName: onestop-es-http-certs-public
+            secretName: {{ . | quote }}
+      {{- end }}
 #      restartPolicy: Always
       {{- with .Values.nodeSelector }}
       nodeSelector:

@@ -3,22 +3,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "onestop-manager.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "onestop-manager.name" . }}
-    helm.sh/chart: {{ include "onestop-manager.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  labels: {{- include "onestop-manager.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "onestop-manager.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "onestop-manager.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ include "onestop-manager.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "onestop-manager.selectorLabels" . | nindent 8 }}
       annotations:
         {{- with .Values.config }}
         checksum/config: {{ . | sha256sum }}
