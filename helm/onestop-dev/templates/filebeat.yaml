@@ -1,4 +1,5 @@
 # Modified from: https://github.com/elastic/beats/blob/master/deploy/kubernetes/filebeat-kubernetes.yaml
+{{ if .Values.filebeat.enabled }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -166,3 +167,4 @@ metadata:
   labels:
     k8s-app: filebeat
 ---
+{{- end }}
