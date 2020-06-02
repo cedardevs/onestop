@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   onestop:
   - apiVersion: v1
-    created: "2020-05-21T09:33:37.985246-06:00"
+    created: "2020-06-02T17:23:30.020719-06:00"
     dependencies:
     - name: onestop-client
       repository: file://../onestop-client
@@ -23,14 +23,14 @@ entries:
       repository: file://../onestop-user
       version: 3.0.0-alpha
     description: A Helm chart for the OneStop system
-    digest: 2e8d37e1cd3235002e82796408e5c3639c3f0fab84968c59e77b37f20d501d8a
+    digest: b7cbf50fa7d72a0032179d3edf12f0963ef0c3f77337e0c87111bdbf3fe88a56
     name: onestop
     urls:
     - onestop-3.0.0-alpha.tgz
     version: 3.0.0-alpha
   - apiVersion: v1
     appVersion: 2.4.0
-    created: "2020-05-21T09:33:37.98323-06:00"
+    created: "2020-06-02T17:23:30.018268-06:00"
     dependencies:
     - condition: cp.enabled,global.cp.enabled
       name: cp-helm-charts
@@ -63,7 +63,7 @@ entries:
     version: 0.4.0
   - apiVersion: v1
     appVersion: 2.4.0
-    created: "2020-05-21T09:33:37.976958-06:00"
+    created: "2020-06-02T17:23:30.010644-06:00"
     dependencies:
     - condition: cp.enabled,global.cp.enabled
       name: cp-helm-charts
@@ -96,7 +96,7 @@ entries:
     version: 0.3.0
   - apiVersion: v1
     appVersion: 2.2.0
-    created: "2020-05-21T09:33:37.970304-06:00"
+    created: "2020-06-02T17:23:30.003525-06:00"
     dependencies:
     - condition: elasticsearch.enabled,global.elasticsearch.enabled
       name: elasticsearch
@@ -119,7 +119,7 @@ entries:
     version: 0.2.1
   - apiVersion: v1
     appVersion: 2.2.0
-    created: "2020-05-21T09:33:37.968338-06:00"
+    created: "2020-06-02T17:23:30.001269-06:00"
     dependencies:
     - condition: elasticsearch.enabled,global.elasticsearch.enabled
       name: elasticsearch
@@ -142,7 +142,7 @@ entries:
     version: 0.2.0
   - apiVersion: v1
     appVersion: 2.1.0
-    created: "2020-05-21T09:33:37.966379-06:00"
+    created: "2020-06-02T17:23:29.999044-06:00"
     dependencies:
     - name: api-admin
       repository: file://../api-admin
@@ -162,4 +162,4 @@ entries:
     urls:
     - onestop-0.1.0.tgz
     version: 0.1.0
-generated: "2020-05-21T09:33:37.963705-06:00"
+generated: "2020-06-02T17:23:29.995464-06:00"
