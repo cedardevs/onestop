@@ -19,5 +19,4 @@ spec:
     protocol: TCP
     name: http
   selector:
-    app: {{ include "onestop-registry.name" . }}
-    release: {{ .Release.Name }}
+    {{- include "onestop-registry.selectorLabels" . | nindent 4 }}

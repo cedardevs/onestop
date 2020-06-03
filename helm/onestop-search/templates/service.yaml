@@ -20,5 +20,4 @@ spec:
       nodePort: {{ .Values.service.nodePort }}
     {{- end }}
   selector:
-    app.kubernetes.io/name: {{ include "onestop-search.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "onestop-search.selectorLabels" . | nindent 4 }}
