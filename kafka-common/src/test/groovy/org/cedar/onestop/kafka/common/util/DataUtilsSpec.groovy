@@ -42,7 +42,8 @@ class DataUtilsSpec extends Specification {
         b: "B value",
         c: [
             d: 1.2,
-            e: "E!"
+            e: "E!",
+            f: ["Here I am"]
         ]
     ]
 
@@ -51,36 +52,24 @@ class DataUtilsSpec extends Specification {
         c: [
             d: 1.2,
             e: "E!",
-            f: ["I wasn't here before", "Neither was I"]
-        ]
+            f: ["Here am I", "I wasn't here before"]
+        ],
+        g: true,
+        h: null
     ]
 
     when:
     def diffList = DataUtils.getJsonDiffList(source, target)
 
     then:
-    diffList.size() == 3
-    println(JsonOutput.toJson(diffList.get(0)) + "\n\n\n")
-    println(JsonOutput.prettyPrint(JsonOutput.toJson(diffList.get(0))))
+    diffList.size() == 6
     JsonOutput.toJson(diffList.get(0)) == JsonOutput.toJson([op: "replace", path: "/a", value: 2])
+    JsonOutput.toJson(diffList.get(1)) == JsonOutput.toJson([op: "remove", path: "/b"])
+    JsonOutput.toJson(diffList.get(2)) == JsonOutput.toJson([op: "replace", path: "/c/f/0", value: "I wasn't here before"])
+    JsonOutput.toJson(diffList.get(3)) == JsonOutput.toJson([op: "add", path:"/c/f/0", value: "Here am I"])
+    JsonOutput.toJson(diffList.get(4)) == JsonOutput.toJson([op: "add", path: "/g", value: true])
+    JsonOutput.toJson(diffList.get(5)) == JsonOutput.toJson([op: "add", path: "/h", value: null])
 
-    and:
-    def firstDiff = diffList.get(0)
-    firstDiff.op instanceof String
-    firstDiff.op.equals('replace')
-    firstDiff.path.equals("/a")
-    firstDiff.value == 2
-
-    and:
-    def secondDiff = diffList.get(1)
-    secondDiff.op.equals("remove")
-    secondDiff.path.equals("/b")
-
-    and:
-    def thirdDiff = diffList.get(2)
-    thirdDiff.op == "add"
-    thirdDiff.path == "/c/f"
-    thirdDiff.value == '["I wasn\'t here before", "Neither was I"]'
   }
 
   def "sortMapByKeys works at top level and in nested map and lists of maps"() {

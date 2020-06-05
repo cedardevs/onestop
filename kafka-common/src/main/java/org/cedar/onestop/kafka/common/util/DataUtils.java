@@ -110,32 +110,53 @@ public class DataUtils {
     JsonPatch diff = Json.createDiff(sourceJson, targetJson);
     List<Map<String, Object>> finalList = new ArrayList<>();
     List<JsonObject> joList = diff.toJsonArray().getValuesAs(JsonObject.class);
+
     joList.forEach(jo -> {
       var keys = jo.keySet();
       Map<String, Object> nestedMap = new HashMap<>();
       keys.forEach(k -> {
         JsonValue v = jo.get(k);
-        var type = v.getValueType();
-        Object value;
-        switch (type) {
-          case TRUE: case FALSE:
-            value = Boolean.parseBoolean(v.toString());
-            break;
-          case NUMBER:
-            value = ((JsonNumber) v).numberValue();
-            break;
-          case NULL:
-            value = null;
-          default:
-            value = v.toString();
-            break;
-        }
-        nestedMap.put(k, value);
+        nestedMap.put(k, convertToPlainJavaType(v));
       });
       finalList.add(nestedMap);
     });
 
     return finalList;
+  }
+
+  private static Object convertToPlainJavaType(JsonValue v) {
+    var type = v.getValueType();
+    Object value;
+    switch (type) {
+      case TRUE: case FALSE:
+        value = Boolean.parseBoolean(v.toString());
+        break;
+      case NUMBER:
+        value = ((JsonNumber) v).numberValue();
+        break;
+      case STRING:
+        value = ((JsonString) v).getString();
+        break;
+      case ARRAY:
+        var it = ((JsonArray) v).listIterator();
+        var list = new ArrayList<>();
+        while(it.hasNext()) {
+          list.add(convertToPlainJavaType(it.next()));
+        }
+        value = list;
+        break;
+      case OBJECT:
+        var entries = ((JsonObject) v).entrySet();
+        var map = new LinkedHashMap<String, Object>();
+        entries.forEach(e -> map.put(e.getKey(), convertToPlainJavaType(e.getValue())));
+        value = map;
+        break;
+      default:
+        // This handles case NULL and v == null
+        value = null;
+        break;
+    }
+    return value;
   }
 
   public static JsonObject getJsonObject(String jsonString) throws IOException {
