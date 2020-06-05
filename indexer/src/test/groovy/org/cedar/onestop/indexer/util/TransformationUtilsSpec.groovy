@@ -86,7 +86,7 @@ class TransformationUtilsSpec extends Specification {
   ///////////////////////////////
   // def "only mapped #type fields are indexed"() {
   //   when:
-  //   def result = TransformationUtils.reformatMessageForSearch(record, fields)
+  //   def result = TransformationUtils.reformatMessage(record, fields)
   //
   //   then:
   //   result.keySet().each({ assert fields.keySet().contains(it) }) // TODO this is a shallow only check!
@@ -103,7 +103,7 @@ class TransformationUtilsSpec extends Specification {
     ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
       .setFileInformation(FileInformation.newBuilder().setChecksums([Checksum.newBuilder().setAlgorithm(ChecksumAlgorithm.MD5).setValue('abc').build()]).build()).build()
 
-    def indexedRecord = TransformationUtils.reformatMessageForSearch(record, fields)
+    def indexedRecord = TransformationUtils.reformatMessage(record, fields)
 
     then:
 
@@ -183,7 +183,7 @@ class TransformationUtilsSpec extends Specification {
 
 
     // def pruned = TransformationUtils.pruneKnownUnmappedFields(parsed, IndexingInput.getUnmappedAnalysisAndErrorsIndexFields())
-    def indexedRecord = TransformationUtils.reformatMessageForSearch(record, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS).keySet())
+    def indexedRecord = TransformationUtils.reformatMessage(record, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS).keySet())
     // def indexedRecord = DataUtils.removeFromMap(pruned, minus)
 
     then:
@@ -646,7 +646,7 @@ class TransformationUtilsSpec extends Specification {
 
 
     // def pruned = TransformationUtils.pruneKnownUnmappedFields(parsed, IndexingInput.getUnmappedAnalysisAndErrorsIndexFields())
-    def indexedRecord = TransformationUtils.reformatMessageForSearch(record, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet())
+    def indexedRecord = TransformationUtils.reformatMessage(record, TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet())
     // def indexedRecord = DataUtils.removeFromMap(pruned, minus)
 
     then:
@@ -1043,7 +1043,7 @@ class TransformationUtilsSpec extends Specification {
   def "party names are not included in granule search info"() {
     when:
     def record = TestUtils.inputGranuleRecord // <-- granule!
-    def result = TransformationUtils.reformatMessageForSearch(record, collectionFields) // <-- top level reformat method!
+    def result = TransformationUtils.reformatMessage(record, collectionFields) // <-- top level reformat method!
 
     then:
     result.individualNames == [] as Set
@@ -1160,7 +1160,7 @@ class TransformationUtilsSpec extends Specification {
 
   def "accession values are not included"() {
     when:
-    def result = TransformationUtils.reformatMessageForSearch(TestUtils.inputAvroRecord, collectionFields)
+    def result = TransformationUtils.reformatMessage(TestUtils.inputAvroRecord, collectionFields)
 
     then:
     result.accessionValues == null

@@ -30,17 +30,20 @@ public class TransformationUtils {
   static final private Logger log = LoggerFactory.getLogger(TransformationUtils.class);
 
   ///////////////////////////////////////////////////////////////////////////////
-  //                     Indexing For Analysis & Errors                        //
+  //                     Convert to Indexing Message                           //
   ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForAnalysisAndErrors(ParsedRecord record, Set<String> fields) {
+  public static Map<String, Object> reformatMessage(ParsedRecord record, Set<String> fields) {
+
+    var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
     var errors = record.getErrors();
-
+    var discoveryMap = AvroUtils.avroToMap(discovery, true);
     var analysisMap = AvroUtils.avroToMap(analysis, true);
     var message = new HashMap<String, Object>();
 
     fields.forEach(field -> {
       message.put(field, analysisMap.get(field));
+      message.put(field, discoveryMap.get(field));
     });
     if (fields.contains("internalParentIdentifier")) {
       analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
@@ -49,26 +52,23 @@ public class TransformationUtils {
         .map(e -> AvroUtils.avroToMap(e))
         .collect(Collectors.toList());
 
-    message.put("errors", errorsList);
+    if (fields.contains("errors")) {
+      message.put("errors", errorsList);
+    }
 
-    return message;
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////
-  //                          Indexing For Search                              //
-  ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> fields) {
-    var discovery = record.getDiscovery();
-    var analysis = record.getAnalysis();
-    var discoveryMap = AvroUtils.avroToMap(discovery, true);
-
-    var message = new HashMap<String, Object>();
-    fields.forEach(field -> {
-      message.put(field, discoveryMap.get(field));
-    });
     // prepare and apply fields that need to be reformatted for search
-    message.putAll(prepareGcmdKeyword(discovery));// TODO does this need and iff?
-    message.putAll(prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding())); // TODO does this need and iff?
+    Map<String, Set<String>> gcmdKeywords = prepareGcmdKeyword(discovery);
+    gcmdKeywords.forEach((key, value) -> {
+      if (fields.contains(key)) {
+        message.put(key, value);
+      }
+    });
+    Map<String, Object> dates = prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding());
+    dates.forEach((key, value) -> {
+      if (fields.contains(key)) {
+        message.put(key, value);
+      }
+    });
     if (fields.contains("dataFormat")) {
       message.put("dataFormat", prepareDataFormats(discovery));
     }
@@ -96,11 +96,7 @@ public class TransformationUtils {
     }
     if (fields.contains("checksums")) {
       message.put("checksums", prepareChecksums(record));
-      log.info("ZEB - including checksums (presumed granule)");
-    } else {
-      log.info("ZEB - excluding checksums (presumed collection)");
     }
-
     return message;
   }
 
