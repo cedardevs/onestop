@@ -69,6 +69,9 @@ public class TransformationUtils {
         message.put(key, value);
       }
     });
+    if (fields.contains("temporalBounding")) {
+      message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
+    }
     if (fields.contains("dataFormat")) {
       message.put("dataFormat", prepareDataFormats(discovery));
     }
@@ -287,6 +290,28 @@ public class TransformationUtils {
   ////////////////////////////
   // Dates                  //
   ////////////////////////////
+
+  private static Map<String, Object> prepareTemporalBounding(TemporalBoundingAnalysis analysis) {
+    var result = new HashMap<String, Object>();
+    result.put("beginDescriptor", analysis.getBeginDescriptor());
+    result.put("beginIndexable", analysis.getBeginIndexable());
+    result.put("beginPrecision", analysis.getBeginPrecision());
+    result.put("beginUtcDateTimeString", analysis.getBeginUtcDateTimeString());
+    result.put("beginZoneSpecified", analysis.getBeginZoneSpecified());
+    result.put("endDescriptor", analysis.getEndDescriptor());
+    result.put("endIndexable", analysis.getEndIndexable());
+    result.put("endPrecision", analysis.getEndPrecision());
+    result.put("endUtcDateTimeString", analysis.getEndUtcDateTimeString());
+    result.put("endZoneSpecified", analysis.getEndZoneSpecified());
+    result.put("instantDescriptor", analysis.getInstantDescriptor());
+    result.put("instantIndexable", analysis.getInstantIndexable());
+    result.put("instantPrecision", analysis.getInstantPrecision());
+    result.put("instantUtcDateTimeString", analysis.getInstantUtcDateTimeString());
+    result.put("instantZoneSpecified", analysis.getInstantZoneSpecified());
+    result.put("rangeDescriptor", analysis.getRangeDescriptor());
+    return result;
+  }
+
   private static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     String beginDate, endDate;
     Long year;
