@@ -87,16 +87,16 @@ spec:
               path: /health/readiness
               port: 8080
             initialDelaySeconds: 20
-            timeoutSeconds: 2
-            periodSeconds: 3
+            timeoutSeconds: 5
+            periodSeconds: 5
             failureThreshold: 2
           livenessProbe:
             httpGet:
               path: /health/liveness
               port: 8080
             initialDelaySeconds: 60
-            timeoutSeconds: 2
-            periodSeconds: 8
+            timeoutSeconds: 5
+            periodSeconds: 10
             failureThreshold: 1
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
