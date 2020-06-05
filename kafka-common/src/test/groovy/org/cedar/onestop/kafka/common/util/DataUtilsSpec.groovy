@@ -1,11 +1,117 @@
 package org.cedar.onestop.kafka.common.util
 
 import org.cedar.schemas.avro.psi.InputEvent
+import groovy.json.JsonOutput
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
 class DataUtilsSpec extends Specification {
+
+  def "getJsonDiffList returns empty list for matching maps"() {
+    given:
+    def source = [
+        a: 1,
+        b: "B value",
+        c: [
+            d: 1.2,
+            e: "E!"
+        ]
+    ]
+
+    def target = [
+        a: 1,
+        c: [
+            e: "E!",
+            d: 1.2
+        ],
+        b: "B value"
+    ]
+
+    when:
+    def diffList = DataUtils.getJsonDiffList(source, target)
+
+    then:
+    diffList.isEmpty()
+  }
+
+  def "getJsonDiffList returns ordered list of JSON PATCH diffs to go from source to target"() {
+    given:
+    def source = [
+        a: 1,
+        b: "B value",
+        c: [
+            d: 1.2,
+            e: "E!"
+        ]
+    ]
+
+    def target = [
+        a: 2,
+        c: [
+            d: 1.2,
+            e: "E!",
+            f: ["I wasn't here before", "Neither was I"]
+        ]
+    ]
+
+    when:
+    def diffList = DataUtils.getJsonDiffList(source, target)
+
+    then:
+    diffList.size() == 3
+    println(JsonOutput.toJson(diffList.get(0)) + "\n\n\n")
+    println(JsonOutput.prettyPrint(JsonOutput.toJson(diffList.get(0))))
+    JsonOutput.toJson(diffList.get(0)) == JsonOutput.toJson([op: "replace", path: "/a", value: 2])
+
+    and:
+    def firstDiff = diffList.get(0)
+    firstDiff.op instanceof String
+    firstDiff.op.equals('replace')
+    firstDiff.path.equals("/a")
+    firstDiff.value == 2
+
+    and:
+    def secondDiff = diffList.get(1)
+    secondDiff.op.equals("remove")
+    secondDiff.path.equals("/b")
+
+    and:
+    def thirdDiff = diffList.get(2)
+    thirdDiff.op == "add"
+    thirdDiff.path == "/c/f"
+    thirdDiff.value == '["I wasn\'t here before", "Neither was I"]'
+  }
+
+  def "sortMapByKeys works at top level and in nested map and lists of maps"() {
+    given:
+    def expectedMap = [
+        a: "valueA",
+        b: 123,
+        c: [
+            d: false,
+            e: [5, 4, 2],
+            f: [[a: 3, b: 4], [a: 1, b: 2]]
+        ]
+    ]
+
+    def givenMap = [
+        b: 123,
+        c: [
+            e: [5, 4, 2],
+            d: false,
+            f: [[a: 3, b: 4], [b: 2, a: 1]]
+        ],
+        a: "valueA"
+    ]
+
+    when:
+    def sortedResultMap = DataUtils.sortMapByKeys(givenMap)
+    def sortedResult = JsonOutput.toJson(sortedResultMap)
+
+    then:
+    sortedResult.equals(JsonOutput.toJson(expectedMap))
+  }
 
   def "addOrInit works"() {
     expect:

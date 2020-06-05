@@ -1,18 +1,22 @@
 package org.cedar.onestop.kafka.common.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.json.*;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ErrorEvent;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.util.AvroUtils;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class DataUtils {
+
+  private static final ObjectMapper mapper = new ObjectMapper();
 
   public static <T> List<T> addOrInit(List<T> list, T item) {
     var result = new ArrayList<T>();
@@ -60,8 +64,118 @@ public class DataUtils {
       return new LinkedHashMap();
     }
     else {
-      return new ObjectMapper().readValue(json, Map.class);
+      return mapper.readValue(json, Map.class);
     }
+  }
+
+  /**
+   * Compares a source map to a target map and returns a diff list POJO of JSON PATCHes to go from the source to the
+   * target. Maps are assumed to represent JSON objects. Input objects are alphabetically sorted for the user to return
+   * an accurate diff list.
+   * @param sourceJson
+   * @param targetJson
+   * @return JSON PATCH diff list for converting sourceJson to targetJson
+   * @throws IOException
+   */
+  public static List<Map<String, Object>> getJsonDiffList(Map sourceJson, Map targetJson) throws IOException {
+    var sortedSource = getJsonObject(mapper.writeValueAsString(sortMapByKeys(sourceJson)));
+    var sortedTarget = getJsonObject(mapper.writeValueAsString(sortMapByKeys(targetJson)));
+
+    return getJsonDiffList(sortedSource, sortedTarget);
+  }
+
+  /**
+   * Compares a source JSON string to a target JSON string and returns a diff list POJO of JSON PATCHes to go from
+   * the source to the target. Input JSON objects are alphabetically sorted for the user to return an accurate diff list.
+   * @param sourceJson
+   * @param targetJson
+   * @return JSON PATCH diff list for converting sourceJson to targetJson
+   * @throws IOException
+   */
+  public static List<Map<String, Object>> getJsonDiffList(String sourceJson, String targetJson) throws IOException {
+    var sourceMap = parseJsonMap(sourceJson);
+    var targetMap = parseJsonMap(targetJson);
+    return getJsonDiffList(sourceMap, targetMap);
+  }
+
+  /**
+   * Private method working directly with JsonObjects to create POJO of JSON PATCH diff list from source to target.
+   * IMPORTANT: Unlike the public overloaded methods, this method assumes input JsonObjects are already sorted alphabetically.
+   *
+   * @param sourceJson
+   * @param targetJson
+   * @return JSON PATCH diff list for converting sourceJson to targetJson
+   */
+  private static List<Map<String, Object>> getJsonDiffList(JsonObject sourceJson, JsonObject targetJson) {
+    JsonPatch diff = Json.createDiff(sourceJson, targetJson);
+    List<Map<String, Object>> finalList = new ArrayList<>();
+    List<JsonObject> joList = diff.toJsonArray().getValuesAs(JsonObject.class);
+    joList.forEach(jo -> {
+      var keys = jo.keySet();
+      Map<String, Object> nestedMap = new HashMap<>();
+      keys.forEach(k -> {
+        JsonValue v = jo.get(k);
+        var type = v.getValueType();
+        Object value;
+        switch (type) {
+          case TRUE: case FALSE:
+            value = Boolean.parseBoolean(v.toString());
+            break;
+          case NUMBER:
+            value = ((JsonNumber) v).numberValue();
+            break;
+          case NULL:
+            value = null;
+          default:
+            value = v.toString();
+            break;
+        }
+        nestedMap.put(k, value);
+      });
+      finalList.add(nestedMap);
+    });
+
+    return finalList;
+  }
+
+  public static JsonObject getJsonObject(String jsonString) throws IOException {
+    JsonReader reader = Json.createReader(new StringReader(jsonString));
+    try {
+      var object = reader.readObject();
+      reader.close();
+      return object;
+    }
+    catch (Exception e) {
+      throw new IOException("Cannot parse text [ " + jsonString + " ] as JSON object. Details: [ " + e.getMessage() + " ]");
+    }
+  }
+
+  /**
+   * Sorts a given Map by its keys. Recurses both singular nested maps and arrays of maps (but does not change the array order).
+   * @param unsortedMap
+   * @return A new sorted LinkedHashMap
+   */
+  public static LinkedHashMap<String, Object> sortMapByKeys(Map<String, Object> unsortedMap) {
+    var sortedMap = new LinkedHashMap<String, Object>();
+
+    unsortedMap.entrySet()
+        .stream()
+        .sorted(Map.Entry.comparingByKey())
+        .forEach(e -> sortedMap.put(e.getKey(), e.getValue()));
+
+    sortedMap.forEach((k, v) -> {
+      if (v instanceof Map) {
+        sortedMap.put(k, sortMapByKeys((Map) v));
+      }
+      else if (v instanceof List && !((List) v).isEmpty() && ((List) v).get(0) instanceof Map) {
+        var sortedList = ((List) v).stream()
+            .map(e -> sortMapByKeys((Map) e))
+            .collect(Collectors.toList());
+        sortedMap.put(k, sortedList);
+      }
+    });
+
+    return sortedMap;
   }
 
   /**
@@ -274,7 +388,6 @@ public class DataUtils {
    * @param value metadata values that need to be updated
    * @return returns the builder setter name
    */
-  // TODO - this method is a BEGGING to be memoized
   private static Optional<Method> findSetterForValue(Object pojo, String fieldName, Object value) {
     var setterName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
     return Arrays.stream(pojo.getClass().getMethods())
@@ -291,7 +404,6 @@ public class DataUtils {
    * @param clazz schema class name
    * @return returns the builder getter name
    */
-  // TODO - this method is a BEGGING to be memoized
   private static Optional<Method> findGetterForType(Object pojo, String fieldName, Class clazz) {
     var getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
     return Arrays.stream(pojo.getClass().getMethods())

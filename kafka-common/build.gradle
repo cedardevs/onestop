@@ -11,6 +11,9 @@ dependencies {
   implementation("org.apache.avro:avro:${Versions.AVRO}")
   implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
   implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
+  implementation("jakarta.json:jakarta.json-api:${Versions.JSONP}")
+  implementation("org.glassfish:jakarta.json:${Versions.JSONP}")
+
 
   // reactor release train BOM governs reactor dependency versions
   implementation(platform("io.projectreactor:reactor-bom:${Versions.REACTOR_BOM}"))

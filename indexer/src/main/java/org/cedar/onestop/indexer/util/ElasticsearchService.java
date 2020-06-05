@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -92,8 +91,8 @@ public class ElasticsearchService {
   private void ensureAliasWithIndex(String alias) throws IOException {
     var aliasExists = checkAliasExists(alias);
     if (aliasExists) {
-      var mapping = getMappingByAlias(alias);
-      putMapping(alias, mapping);
+      var mapping = getExpectedMappingByAlias(alias);
+      putMapping(alias, mapping); // FIXME handle when unacceptable field changes encountered and stop app; log ERROR
     }
     else {
       createIndex(alias, true);
@@ -125,8 +124,8 @@ public class ElasticsearchService {
 
   public String createIndex(String aliasName, boolean applyAlias) throws IOException {
     String indexName = newIndexName(aliasName);
-    var jsonIndexMapping = getMappingByAlias(aliasName);
-    var jsonIndexSettings = getIndexSettingsByAlias(aliasName);
+    var jsonIndexMapping = getExpectedMappingByAlias(aliasName);
+    var jsonIndexSettings = getExpectedIndexSettingsByAlias(aliasName);
     var request = new CreateIndexRequest(indexName)
         .mapping(jsonIndexMapping, XContentType.JSON);
     if (applyAlias) {
@@ -171,17 +170,22 @@ public class ElasticsearchService {
     return client.indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT).isAcknowledged();
   }
 
-  private String getMappingByAlias(String alias) throws IOException {
+  private String getExpectedMappingByAlias(String alias) throws IOException {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     return mapper.writeValueAsString((Map) parsedDefinition.get("mappings"));
   }
 
-  private String getIndexSettingsByAlias(String alias) throws IOException {
+  private String getExpectedIndexSettingsByAlias(String alias) throws IOException {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     return mapper.writeValueAsString((Map) parsedDefinition.get("settings"));
   }
+
+  // FIXME
+//  private String getDeployedMappingByAlias(String alias) throws IOException {
+//    var mapping = client.get(new GetRequest(alias), RequestOptions.DEFAULT);
+//  }
 
   private String newIndexName(String alias) {
     return alias + "-" + System.currentTimeMillis();
