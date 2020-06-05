@@ -52,63 +52,25 @@ public class IndexingInput {
     return esConfig.analysisAndErrorsAliasFromType(recordType.toString());
   }
 
-  public static Map<String, Object> getUnmappedAnalysisAndErrorsIndexFields() {
-    // this method is just to prevent us from logging warnings about fields in the analysis schema that we know and choose not to map
-    Map<String, Object> knownUnmappedTemporalFields = new HashMap<String, Object>();
-    knownUnmappedTemporalFields.put("beginYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("beginDayOfYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("beginDayOfMonth", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("beginMonth", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("endYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("endDayOfYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("endDayOfMonth", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("endMonth", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("instantYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("instantDayOfYear", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("instantDayOfMonth", new HashMap<String, Object>());
-    knownUnmappedTemporalFields.put("instantMonth", new HashMap<String, Object>());
-    Map<String, Object> knownUnmappedFields = new HashMap<String, Object>();
-    knownUnmappedFields.put("temporalBounding", knownUnmappedTemporalFields);
-    return knownUnmappedFields;
-  }
-
-  public Map<String, Map> getTargetSearchIndexFields() {
+  public Set<String> getTargetSearchIndexFields() {
     var searchAlias = esConfig.searchAliasFromType(recordType.toString());
     if(searchAlias != null) {
-      return esConfig.indexedProperties(searchAlias);
+      return esConfig.indexedProperties(searchAlias).keySet();
     }
     else {
-      return new HashMap<>();
+      return new HashSet<>();
     }
   }
 
-  public Map<String, Map> getTargetAnalysisAndErrorsIndexFields() {
+  public Set<String> getTargetAnalysisAndErrorsIndexFields() {
     var aeAlias = esConfig.analysisAndErrorsAliasFromType(recordType.toString());
     if(aeAlias != null) {
-      return esConfig.indexedProperties(aeAlias);
+      return esConfig.indexedProperties(aeAlias).keySet();
     }
     else {
-      return new HashMap<>();
+      return new HashSet<>();
     }
   }
-
-  // public Map<String, Object> getTargetAnalysisAndErrorsIndexMapping() {
-  //   var aeAlias = esConfig.analysisAndErrorsAliasFromType(recordType.toString());
-  //   if(aeAlias != null) {
-  //     return esConfig.indexedProperties(aeAlias);
-  //   }
-  //   else {
-  //     return new HashMap<>();
-  //   }
-  // }
-
-  // public static Map<String, Object> getNestedKeys(Map<String, Object> originalMap) {
-  //   if (keysToKeep == null || keysToKeep.size() == 0) {
-  //     return new HashMap<>();
-  //   }
-  //   return originalMap.entrySet().stream()
-  //       .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-  // }
 
   @Override
   public String toString() {

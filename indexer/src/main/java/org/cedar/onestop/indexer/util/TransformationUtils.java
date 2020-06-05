@@ -32,126 +32,76 @@ public class TransformationUtils {
   ///////////////////////////////////////////////////////////////////////////////
   //                     Indexing For Analysis & Errors                        //
   ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForAnalysisAndErrors(ParsedRecord record, Map<String, Map> targetFieldsMapping, Map<String, Object> knownUnmappedFields) {
+  public static Map<String, Object> reformatMessageForAnalysisAndErrors(ParsedRecord record, Set<String> fields) {
     var analysis = record.getAnalysis();
     var errors = record.getErrors();
 
     var analysisMap = AvroUtils.avroToMap(analysis, true);
-    analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    var message = new HashMap<String, Object>();
+
+    fields.forEach(field -> {
+      message.put(field, analysisMap.get(field));
+    });
+    if (fields.contains("internalParentIdentifier")) {
+      analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    }
     var errorsList = errors.stream()
         .map(e -> AvroUtils.avroToMap(e))
         .collect(Collectors.toList());
 
+    message.put("errors", errorsList);
 
-    analysisMap.put("errors", errorsList);
-
-    // drop fields not present in target index
-
-    var pruned = TransformationUtils.pruneKnownUnmappedFields(analysisMap, knownUnmappedFields);
-    var minus = TransformationUtils.identifyUnmappedFields(pruned, targetFieldsMapping); // TODO identify which it's going to
-    log.warn("The following fields were dropped when indexing to analysis and errors: " + minus);  // TODO "add for record `id`"
-    return DataUtils.removeFromMap(pruned, minus);
-  }
-
-  // public static Map<String, Object> unfilteredAEMessage(ParsedRecord record) {
-  //   var analysis = record.getAnalysis();
-  //   var errors = record.getErrors();
-  //
-  //   var analysisMap = AvroUtils.avroToMap(analysis, true);
-  //   analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
-  //   var errorsList = errors.stream()
-  //       .map(e -> AvroUtils.avroToMap(e))
-  //       .collect(Collectors.toList());
-  //
-  //
-  //   var garbageError = new LinkedHashMap<String, Object>();
-  //   garbageError.put("nonsense", "horrible");
-  //   garbageError.put("source", "valid field" );
-  //   errorsList.add(garbageError);
-  //
-  //
-  //   analysisMap.put("errors", errorsList);
-  //   analysisMap.put("garbage", "nuke meeee"); // FIXME
-  //   return analysisMap;
-  // }
-
-  public static Map<String, Object> pruneKnownUnmappedFields(Map<String, Object> analysisMap, Map<String, Object> unmappedFields) {
-
-    var result = new LinkedHashMap<String, Object>();
-    analysisMap.forEach((k, v) -> {
-      if (!unmappedFields.containsKey(k)) {
-        result.put(k, v);
-      } else {
-        Map<String, Object> nestedProperties = (Map<String, Object>)((Map<String, Object>)unmappedFields.get(k));
-
-        if (v instanceof Map) {
-          result.put(k, pruneKnownUnmappedFields((Map<String, Object>) v, nestedProperties));
-        } else if (v instanceof List) {
-          var list = ((List) v).stream().map(item -> pruneKnownUnmappedFields((Map<String, Object>) item, nestedProperties)).filter(item -> !((Map<String, Object>)item).isEmpty())
-                .collect(Collectors.toList());
-          result.put(k, list);
-        }
-      }
-    });
-    return result;
-  }
-
-  public static Map<String, Object> identifyUnmappedFields(Map<String, Object> analysisMap, Map<String, Map> mapping) {
-    var result = new LinkedHashMap<String, Object>();
-
-    if (mapping == null) {
-      return analysisMap;
-    }
-
-    analysisMap.forEach((k, v) -> {
-      if (!mapping.containsKey(k)) {
-        result.put(k, v);
-      } else {
-        Map<String, Map> nestedProperties = (Map<String, Map>)((Map<String, Map>)mapping.get(k)).get("properties"); // TODO assumes mapping is also a Map!
-
-        if (v instanceof Map) {
-          result.put(k, identifyUnmappedFields((Map<String, Object>) v, nestedProperties));
-        } else if (v instanceof List) {
-          var list = ((List) v).stream().filter(item -> item instanceof Map).map(item -> identifyUnmappedFields((Map<String, Object>) item, nestedProperties)).filter(item -> !((Map<String, Object>)item).isEmpty())
-                .collect(Collectors.toList());
-          result.put(k, list);
-        }
-      }
-    });
-    return result;
+    return message;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
   //                          Indexing For Search                              //
   ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Map<String, Map> targetFieldsMapping) {
+  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> fields) {
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
     var discoveryMap = AvroUtils.avroToMap(discovery, true);
 
+    var message = new HashMap<String, Object>();
+    fields.forEach(field -> {
+      message.put(field, discoveryMap.get(field));
+    });
     // prepare and apply fields that need to be reformatted for search
-    discoveryMap.putAll(prepareGcmdKeyword(discovery));
-    discoveryMap.putAll(prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding()));
-    discoveryMap.put("dataFormat", prepareDataFormats(discovery));
-    discoveryMap.put("linkProtocol", prepareLinkProtocols(discovery));
-    discoveryMap.put("serviceLinks", prepareServiceLinks(discovery));
-    discoveryMap.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
-    discoveryMap.putAll(prepareResponsibleParties(record));
-    discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
-    discoveryMap.put("filename", prepareFilename(record));
-    discoveryMap.put("checksums", prepareChecksums(record));
+    message.putAll(prepareGcmdKeyword(discovery));// TODO does this need and iff?
+    message.putAll(prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding())); // TODO does this need and iff?
+    if (fields.contains("dataFormat")) {
+      message.put("dataFormat", prepareDataFormats(discovery));
+    }
+    if (fields.contains("linkProtocol")) {
+      message.put("linkProtocol", prepareLinkProtocols(discovery));
+    }
+    if (fields.contains("serviceLinks")) {
+      message.put("serviceLinks", prepareServiceLinks(discovery));
+    }
+    if (fields.contains("serviceLinkProtocol")) {
+      message.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
+    }
+    Map<String, Set<String>> responsibleParties = prepareResponsibleParties(record);
+    responsibleParties.forEach((key, value) -> {
+      if (fields.contains(key)) {
+        message.put(key, value);
+      }
+    });
 
-    // drop fields not present in target index
-    // // FIXME
-    // var result = new LinkedHashMap<String, Object>(targetFieldsMapping.size());
-    // // targetFields.forEach(f -> result.put(f, discoveryMap.get(f)));
-    // return result;
+    if (fields.contains("internalParentIdentifier")) {
+      message.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    }
+    if (fields.contains("filename")) {
+      message.put("filename", prepareFilename(record));
+    }
+    if (fields.contains("checksums")) {
+      message.put("checksums", prepareChecksums(record));
+      log.info("ZEB - including checksums (presumed granule)");
+    } else {
+      log.info("ZEB - excluding checksums (presumed collection)");
+    }
 
-    // var pruned = TransformationUtils.pruneKnownUnmappedFields(discoveryMap, knownUnmappedFields);
-    var pruned = discoveryMap;
-    var minus = TransformationUtils.identifyUnmappedFields(pruned, targetFieldsMapping);
-    log.warn("The following fields were dropped when indexing to search: " + minus); // TODO "add for record `id`"
-    return DataUtils.removeFromMap(pruned, minus);
+    return message;
   }
 
   ////////////////////////////////
