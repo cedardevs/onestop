@@ -2,16 +2,21 @@
 # Feature Toggling
 
 ## Spring Profiles
-Our APIs are now consistently leveraging Spring Profiles to enable certain features in the deployed environment and as a fail-safe to back off a feature.
+Our APIs are now consistently leveraging Spring Profiles to enable certain features in the deployed environment and as a fail-safe to back off a feature.  Our code is written in such a way that features are *disabled by default* and are only activated by telling Spring which feature-specific profile name(s) are active. 
 
-Features are written to be *disabled by default*. They are only activated by telling Spring which feature-specific profile names are active. There are many mechanisms Spring allows to do this, but we prefer the simplicity and priority of the `SPRING_PROFILES_ACTIVE` environment variable.
-
-The environment variable can contain multiple features by using a comma-delimited list. For example, the following could be used on the search API:
+There are many ways to set Spring profiles such as an external application yaml, environment variables, and many more.
+ 
+ We prefer the simplicity and priority of setting the environment variable `SPRING_PROFILES_ACTIVE`. The environment variable can contain a comma-delimited list. For example, the following could be used on the search API:
 
 ```
 export SPRING_PROFILES_ACTIVE="sitemap,login-gov"
 ```
 
+If done via a yaml configuration file it might look something like this:
+
+```
+spring.profiles.active: sitemap
+```
 ### Admin Service (admin)
 
 | Spring Profile | Feature Description | Default Value |
