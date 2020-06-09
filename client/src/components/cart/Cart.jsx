@@ -11,6 +11,7 @@ import ScriptDownloader from './ScriptDownloader'
 import {FEATURE_CART} from '../../utils/featureUtils'
 import CartListItem from './CartListItem'
 import {PAGE_SIZE} from '../../utils/queryUtils'
+import {Confirmation, useConfirmation} from '../common/dialog/OneStopDialog'
 
 const styleCenterContent = {
   display: 'flex',
@@ -44,15 +45,14 @@ const styleCartActionsTitle = {
 }
 
 // export default class Cart extends React.Component {
-export default function Cart(props){
-  const {
-    featuresEnabled,
-    // loading, TODO does this need to wire up specific loading state somewhere else correctly now?
-    selectedGranules,
-    numberOfGranulesSelected,
-    deselectAllGranules,
-  } = props
-
+export default function Cart({
+  featuresEnabled,
+  // loading, TODO does this need to wire up specific loading state somewhere else correctly now?
+  selectedGranules,
+  numberOfGranulesSelected,
+  deselectGranule,
+  deselectAllGranules,
+}){
   if (!featuresEnabled.includes(FEATURE_CART)) {
     return null
   }
@@ -62,6 +62,22 @@ export default function Cart(props){
 
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
+
+  const {dialog: dialogEmptyCart, confirmation} = useConfirmation({
+    title: `Clear all cart contents.`,
+    question: `Are you sure you want remove all items (${Object.keys(
+      selectedGranules
+    ).length} total)?`,
+    yesAction: dialog => {
+      deselectAllGranules()
+      dialog.hide()
+    },
+    yesText: 'Empty cart',
+    noAction: dialog => {
+      dialog.hide()
+    },
+    noText: 'Never mind',
+  })
 
   //only show granules for this page
   const allowed = Object.keys(selectedGranules).slice(
@@ -77,7 +93,6 @@ export default function Cart(props){
     }, {})
 
   const propsForItem = (item, itemId) => {
-    const {collectionDetailFilter, selectCollection, deselectGranule} = props
     const collectionId = item.internalParentIdentifier
     return {
       onSelect: key => {
@@ -130,20 +145,31 @@ export default function Cart(props){
     </h2>
   )
 
-  const cartListCustomActions = [
-    {
-      text: 'Clear All',
-      title: 'Clear All Files from Cart',
-      icon: clearIcon,
-      showText: false,
-      handler: deselectAllGranules,
-      notification: 'Clearing all files from cart',
+  const clearAllAction = {
+    text: 'Clear All',
+    title: 'Clear All Files from Cart',
+    icon: clearIcon,
+    showText: false,
+    handler: () => {
+      // allow user to confirm action before commiting
+      dialogEmptyCart.show()
     },
-  ]
+    notification: 'Clearing all files from cart',
+  }
+
+  // only show this button when there's something to clear
+
+  const cartListCustomActions = []
+
+  if (Object.keys(selectedGranules).length > 0) {
+    cartListCustomActions.push(clearAllAction)
+  }
 
   return (
     <div style={styleCenterContent}>
       <Meta title="File Access Cart" robots="noindex" />
+
+      <Confirmation confirmation={confirmation} />
 
       <div style={styleCartListWrapper}>
         {cartActionsWrapper}
