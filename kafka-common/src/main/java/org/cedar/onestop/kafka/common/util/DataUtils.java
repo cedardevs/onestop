@@ -60,8 +60,8 @@ public class DataUtils {
   }
 
   public static Map<String, Object> parseJsonMap(String json) throws IOException {
-    if (json == null || json == "") {
-      return new LinkedHashMap();
+    if (json == null || json.equals("")) {
+      return new LinkedHashMap<>();
     }
     else {
       return mapper.readValue(json, Map.class);
@@ -72,12 +72,12 @@ public class DataUtils {
    * Compares a source map to a target map and returns a diff list POJO of JSON PATCHes to go from the source to the
    * target. Maps are assumed to represent JSON objects. Input objects are alphabetically sorted for the user to return
    * an accurate diff list.
-   * @param sourceJson
-   * @param targetJson
+   * @param sourceJson source JSON as Java Map
+   * @param targetJson target JSON as Java Map
    * @return JSON PATCH diff list for converting sourceJson to targetJson
-   * @throws IOException
+   * @throws IOException if either Map cannot be parsed as JSON
    */
-  public static List<Map<String, Object>> getJsonDiffList(Map sourceJson, Map targetJson) throws IOException {
+  public static List<Map<String, Object>> getJsonDiffList(Map<String, Object> sourceJson, Map<String, Object> targetJson) throws IOException {
     var sortedSource = getJsonObject(mapper.writeValueAsString(sortMapByKeys(sourceJson)));
     var sortedTarget = getJsonObject(mapper.writeValueAsString(sortMapByKeys(targetJson)));
 
@@ -87,10 +87,10 @@ public class DataUtils {
   /**
    * Compares a source JSON string to a target JSON string and returns a diff list POJO of JSON PATCHes to go from
    * the source to the target. Input JSON objects are alphabetically sorted for the user to return an accurate diff list.
-   * @param sourceJson
-   * @param targetJson
+   * @param sourceJson source JSON as String
+   * @param targetJson target JSON as String
    * @return JSON PATCH diff list for converting sourceJson to targetJson
-   * @throws IOException
+   * @throws IOException if either String cannot be parsed as JSON
    */
   public static List<Map<String, Object>> getJsonDiffList(String sourceJson, String targetJson) throws IOException {
     var sourceMap = parseJsonMap(sourceJson);
@@ -102,8 +102,8 @@ public class DataUtils {
    * Private method working directly with JsonObjects to create POJO of JSON PATCH diff list from source to target.
    * IMPORTANT: Unlike the public overloaded methods, this method assumes input JsonObjects are already sorted alphabetically.
    *
-   * @param sourceJson
-   * @param targetJson
+   * @param sourceJson source JSON as JsonObject
+   * @param targetJson source JSON as JsonObject
    * @return JSON PATCH diff list for converting sourceJson to targetJson
    */
   private static List<Map<String, Object>> getJsonDiffList(JsonObject sourceJson, JsonObject targetJson) {
@@ -173,7 +173,7 @@ public class DataUtils {
 
   /**
    * Sorts a given Map by its keys. Recurses both singular nested maps and arrays of maps (but does not change the array order).
-   * @param unsortedMap
+   * @param unsortedMap incoming map
    * @return A new sorted LinkedHashMap
    */
   public static LinkedHashMap<String, Object> sortMapByKeys(Map<String, Object> unsortedMap) {

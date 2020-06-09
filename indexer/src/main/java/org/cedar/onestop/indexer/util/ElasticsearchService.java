@@ -6,6 +6,7 @@ import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
 import org.cedar.onestop.indexer.stream.FlatteningConfig;
 import org.cedar.onestop.indexer.stream.FlatteningTransformer;
+import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.cluster.node.tasks.list.ListTasksRequest;
 import org.elasticsearch.action.admin.indices.alias.Alias;
@@ -23,6 +24,8 @@ import org.elasticsearch.client.Cancellable;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.GetMappingsRequest;
+import org.elasticsearch.client.indices.GetMappingsResponse;
 import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
@@ -34,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -91,8 +95,11 @@ public class ElasticsearchService {
   private void ensureAliasWithIndex(String alias) throws IOException {
     var aliasExists = checkAliasExists(alias);
     if (aliasExists) {
-      var mapping = getExpectedMappingByAlias(alias);
-      putMapping(alias, mapping); // FIXME handle when unacceptable field changes encountered and stop app; log ERROR
+      String existingMapping = getDeployedMappingByAlias(alias);
+      String expectedMapping = getExpectedMappingByAlias(alias);
+      List mappingDiffs = DataUtils.getJsonDiffList(existingMapping, expectedMapping);
+      log.error(mapper.writeValueAsString(mappingDiffs));
+      putMapping(alias, expectedMapping); // FIXME handle when unacceptable field changes encountered and stop app; log ERROR
     }
     else {
       createIndex(alias, true);
@@ -176,16 +183,17 @@ public class ElasticsearchService {
     return mapper.writeValueAsString((Map) parsedDefinition.get("mappings"));
   }
 
+  private String getDeployedMappingByAlias(String alias) throws IOException {
+    GetMappingsRequest request = new GetMappingsRequest().indices(alias);
+    GetMappingsResponse response = client.indices().getMapping(request, RequestOptions.DEFAULT);
+    return mapper.writeValueAsString(response.mappings().get(alias));
+  }
+
   private String getExpectedIndexSettingsByAlias(String alias) throws IOException {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     return mapper.writeValueAsString((Map) parsedDefinition.get("settings"));
   }
-
-  // FIXME
-//  private String getDeployedMappingByAlias(String alias) throws IOException {
-//    var mapping = client.get(new GetRequest(alias), RequestOptions.DEFAULT);
-//  }
 
   private String newIndexName(String alias) {
     return alias + "-" + System.currentTimeMillis();
