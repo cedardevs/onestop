@@ -59,3 +59,12 @@ import Enzyme from 'enzyme/build'
 import Adapter from 'enzyme-adapter-react-16/build'
 
 Enzyme.configure({adapter: new Adapter()})
+
+// we use `react-a11y-dialog` which leverages React portal and tells us to add a separate dialog root (e.g. - in index.js)
+// because our tests use enzyme and mount `App` without this DOM structure, we need to add the #dialog id to the global body
+// to ensure the Confirmation dialog is tested appropriately
+// see: https://stackoverflow.com/questions/48094581/testing-react-portals-with-enzyme
+const modalRoot = global.document.createElement('div')
+modalRoot.setAttribute('id', 'dialog')
+const body = global.document.querySelector('body')
+body.appendChild(modalRoot)
