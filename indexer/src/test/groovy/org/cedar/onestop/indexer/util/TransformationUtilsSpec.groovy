@@ -85,18 +85,6 @@ class TransformationUtilsSpec extends Specification {
   ///////////////////////////////
   // Generic Indexed Fields    //
   ///////////////////////////////
-  // def "only mapped #type fields are indexed"() {
-  //   when:
-  //   def result = TransformationUtils.reformatMessage(record, fields)
-  //
-  //   then:
-  //   result.keySet().each({ assert fields.keySet().contains(it) }) // TODO this is a shallow only check!
-  //
-  //   where:
-  //   type          | fields            | record
-  //   'collection'  | collectionSearchFields  | TestUtils.inputCollectionRecord
-  //   'granule'     | granuleSearchFields     | TestUtils.inputGranuleRecord
-  // }
 
   def "reformatMessage populates with correct fields for #label"() {
     when:
