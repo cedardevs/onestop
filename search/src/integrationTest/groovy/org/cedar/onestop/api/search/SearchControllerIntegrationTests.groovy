@@ -49,7 +49,7 @@ class SearchControllerIntegrationTests extends Specification {
   @LocalServerPort
   private String port
 
-  @Value('${server.servlet.context-path}')
+  @Value('${server.servlet.context-path:}')
   private String contextPath
 
   private MediaType contentType = MediaType.APPLICATION_JSON

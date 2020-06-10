@@ -88,6 +88,7 @@ module.exports = env => {
             '/onestop-search/*': {
               target: `${env.URL_API_SEARCH}/`,
               secure: false,
+              pathRewrite: {'^/onestop-search' : ''}
             },
           },
         },

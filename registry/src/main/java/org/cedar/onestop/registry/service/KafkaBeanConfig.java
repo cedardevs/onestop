@@ -13,7 +13,6 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.state.HostInfo;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.util.DataUtils;
-import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.registry.stream.TopicInitializer;
 import org.cedar.onestop.registry.stream.TopologyBuilders;
 import org.cedar.schemas.avro.psi.Input;
@@ -77,7 +76,7 @@ public class KafkaBeanConfig {
   KafkaStreams streamsApp(Properties streamsConfig, TopicInitializer topicInitializer) throws InterruptedException, ExecutionException {
     topicInitializer.initialize();
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval);
-    return KafkaHelpers.buildStreamsAppWithKillSwitch(streamsTopology, streamsConfig);
+    return new KafkaStreams(streamsTopology, streamsConfig);
   }
 
   @Bean

@@ -32,6 +32,7 @@ deploy:
         values:
           image: cedardevs/onestop-indexer
         setValues:
+          debug: true
           config: |-
             ---
             kafka:
@@ -50,13 +51,13 @@ deploy:
         values:
           image: cedardevs/onestop-registry
         setValues:
+          debug: true
           config: |-
             ---
             logging:
               level:
                 org.cedar: DEBUG
                 org.cedar.schemas.avro.util: INFO
-            server.servlet.context-path: /registry
             kafka.commit.interval: 1000
             topics:
               num-partitions: 2
@@ -67,7 +68,6 @@ deploy:
               roles:
                 ROLE_ADMIN:
                   - casuser
-          debug: "false"
           features.cas: "false"
           kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
           kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
@@ -80,6 +80,7 @@ deploy:
         values:
           image: cedardevs/onestop-stream-manager
         setValues:
+          debug: true
           config: |-
             ---
             logging:
@@ -96,6 +97,7 @@ deploy:
         values:
           image: cedardevs/onestop-search
         setValues:
+          debug: true
           env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
           env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
           features.login-gov: "false"
@@ -110,7 +112,6 @@ deploy:
         values:
           image: cedardevs/onestop-client
         setValues:
-          apiSearch.endpoint: onestop-search:8080/onestop-search
           prefixPath: onestop
           service.clusterIP: 10.100.100.3
         imageStrategy:
@@ -127,6 +128,7 @@ profiles:
             values:
               image: cedardevs/onestop-stream-manager
             setValues:
+              debug: true
               config: |-
                 ---
                 logging:
@@ -143,13 +145,13 @@ profiles:
             values:
               image: cedardevs/onestop-registry
             setValues:
+              debug: true
               config: |-
                 ---
                 logging:
                   level:
                     org.cedar: DEBUG
                     org.cedar.schemas.avro.util: INFO
-                server.servlet.context-path: /registry
                 kafka.commit.interval: 1000
                 topics:
                   num-partitions: 2
@@ -160,7 +162,6 @@ profiles:
                   roles:
                     ROLE_ADMIN:
                       - casuser
-              debug: "false"
               features.cas: "false"
               kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
               kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
@@ -178,6 +179,7 @@ profiles:
             values:
               image: cedardevs/onestop-search
             setValues:
+              debug: true
               env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
               env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
               features.login-gov: "false"
@@ -191,7 +193,6 @@ profiles:
             values:
               image: cedardevs/onestop-client
             setValues:
-              apiSearch.endpoint: onestop-search:8080/onestop-search
               prefixPath: onestop
             imageStrategy:
               helm: {}

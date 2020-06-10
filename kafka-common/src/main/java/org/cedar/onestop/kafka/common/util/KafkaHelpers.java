@@ -26,22 +26,22 @@ import static org.apache.kafka.streams.StreamsConfig.*;
 public class KafkaHelpers {
   private static final Logger log = LoggerFactory.getLogger(KafkaHelpers.class);
 
-  public static KafkaStreams buildStreamsAppWithKillSwitch(Topology topology, Properties streamsConfig) {
-    var killSwitch = new CompletableFuture<KafkaStreams.State>();
-    killSwitch.thenAcceptAsync((state) -> {
-      log.error("kill switch triggered with state [" + state + "] exiting...");
-      throw new Error("kafka streams entered dead state [" + state + "]");
-    });
-    KafkaStreams.StateListener killSwitchListener = (newState, oldState) -> {
-      if (!killSwitch.isDone() && (newState == ERROR || newState == NOT_RUNNING)) {
-        log.error("app entered bad state " + newState + ", executing kill switch");
-        killSwitch.complete(newState);
+  public static CompletableFuture<Object> onError(KafkaStreams streams) {
+    var stateFuture = new CompletableFuture<KafkaStreams.State>();
+    streams.setStateListener((newState, oldState) -> {
+      if (!stateFuture.isDone() && (newState == ERROR || newState == NOT_RUNNING)) {
+        log.error("Streams app entered a bad state: " + newState + "");
+        stateFuture.complete(newState);
       }
-    };
+    });
 
-    var app = new KafkaStreams(topology, streamsConfig);
-    app.setStateListener(killSwitchListener);
-    return app;
+    var exceptionFuture = new CompletableFuture<Throwable>();
+    streams.setUncaughtExceptionHandler((Thread t, Throwable e) -> {
+      log.error("Caught unhandled exception in thread [" + t + "]", e);
+      exceptionFuture.complete(e);
+    });
+
+    return CompletableFuture.anyOf(stateFuture, exceptionFuture);
   }
 
   public static CreateTopicsResult ensureTopics(AdminClient client, Collection<String> names, int partitions, short replicas) throws ExecutionException, InterruptedException {
