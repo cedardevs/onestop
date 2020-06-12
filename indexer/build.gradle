@@ -30,6 +30,7 @@ configurations {
 dependencies {
   def Versions = project.Versions
 
+  implementation(project(':data-common'))
   implementation(project(':kafka-common'))
   implementation(project(':elastic-common'))
   implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")

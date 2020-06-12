@@ -8,7 +8,8 @@ import org.apache.kafka.streams.TestOutputTopic
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.state.ValueAndTimestamp
-import org.cedar.onestop.elastic.common.FileUtil
+import org.cedar.onestop.data.util.FileUtils
+
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer
 import org.cedar.onestop.indexer.stream.FlatteningConfig
 import org.cedar.onestop.indexer.stream.FlatteningTransformer
@@ -264,7 +265,7 @@ class SearchIndexTopologySpec extends Specification {
   }
 
   private static buildTestRecord(String resourcePath) {
-    TestUtils.buildRecordFromXML(FileUtil.textFromClasspathFile(resourcePath))
+    TestUtils.buildRecordFromXML(FileUtils.textFromClasspathFile(resourcePath))
   }
 
   private static KeyValue<String, IndexingOutput> buildIndexerResult(String key, ParsedRecord record, String index, OpType opType) {
