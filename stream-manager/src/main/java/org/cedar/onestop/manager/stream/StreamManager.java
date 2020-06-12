@@ -8,11 +8,10 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
+import org.cedar.onestop.data.util.MapUtils;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
-import org.cedar.onestop.kafka.common.util.DataUtils;
-import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.manager.util.RecordParser;
 import org.cedar.onestop.manager.util.RoutingUtils;
 import org.cedar.schemas.analyze.Analyzers;
@@ -83,8 +82,8 @@ public class StreamManager {
 
   static Properties streamsConfig(String appId, AppConfig config) {
     // Filter to only valid config values -- Streams config + possible internal Producer & Consumer config
-    var kafkaConfigs = DataUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
-    var filteredConfigs = DataUtils.filterMapKeys(KafkaConfigNames.streams, kafkaConfigs);
+    var kafkaConfigs = MapUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
+    var filteredConfigs = MapUtils.filterMapKeys(KafkaConfigNames.streams, kafkaConfigs);
 
     log.info("Building kafka streams appConfig for {}", appId);
     Properties streamsConfiguration = new Properties();

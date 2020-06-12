@@ -2,6 +2,7 @@ package org.cedar.onestop.manager.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.cedar.onestop.data.util.MapUtils;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.cedar.onestop.kafka.common.util.ValueWithErrors;
@@ -56,7 +57,7 @@ public class RecordParser {
       combinedErrors.addAll(metadataFromJson.errors);
     }
 
-    final Map<String, Object> combinedMetadata = DataUtils.mergeMaps(metadataFromXml.value, metadataFromJson.value);
+    final Map<String, Object> combinedMetadata = MapUtils.mergeMaps(metadataFromXml.value, metadataFromJson.value);
     final var builder = ParsedRecord.newBuilder().setType(input.getType()).setErrors(combinedErrors);
     if (!combinedMetadata.isEmpty()) {
       DataUtils.updateDerivedFields(builder, combinedMetadata, fieldsToParse);

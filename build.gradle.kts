@@ -98,6 +98,7 @@ Gradle version: ${gradle.gradleVersion}
 val projectDescriptions: Map<String, String> = mapOf(
         Pair("client", "A browser UI for the OneStop system."),
         Pair("cli", "A command-line interface to query the OneStop search API."),
+        Pair("data-common", "A Shared project with API response POJOs and utilities for data manipulation"),
         Pair("e2e-tests", "End-to-end test project for the OneStop system."),
         Pair("elastic-common", "A shared project used by OneStop applications interacting with Elastic"),
         Pair("geoportal-search", "An application supporting OpenSearch and CSW search standards against the OneStop system."),
@@ -110,7 +111,7 @@ val projectDescriptions: Map<String, String> = mapOf(
 )
 
 // only apply plugins, configuration, tasks, etc. to projects that need it
-val javaProjects: List<String> = listOf("client", "cli", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "stream-manager", "user")
+val javaProjects: List<String> = listOf("client", "cli", "data-common", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "stream-manager", "user")
 val jibProjects: List<String> = listOf("client", "cli", "indexer", "registry", "search", "stream-manager", "user")
 val springBootProjects: List<String> = listOf("elastic-common", "search", "registry")
 val nodeProjects: List<String> = listOf("client", "registry")

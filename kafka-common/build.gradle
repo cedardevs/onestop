@@ -10,13 +10,12 @@ dependencies {
 
   compileOnly("org.slf4j:slf4j-api:1.7.25")
 
+  implementation(project(':data-common'))
   implementation("org.apache.kafka:kafka-streams:${Versions.KAFKA}")
   implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
   implementation("org.apache.avro:avro:${Versions.AVRO}")
   implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
   implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
-  api("jakarta.json:jakarta.json-api:${Versions.JSONP}")
-  implementation("org.glassfish:jakarta.json:${Versions.JSONP}")
 
 
   // reactor release train BOM governs reactor dependency versions

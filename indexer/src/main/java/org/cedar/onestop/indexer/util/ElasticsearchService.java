@@ -54,11 +54,6 @@ public class ElasticsearchService {
   public ElasticsearchService(RestHighLevelClient client, ElasticsearchConfig config) {
     this.client = client;
     this.config = config;
-//    int majorVersion = Integer.parseInt(config.version.getNumber().split("\\.")[0]);
-//    int minimumCompatibleMajorVersion = 6;
-//    if (majorVersion < minimumCompatibleMajorVersion) {
-//      throw new IllegalStateException("The indexer service does not work against Elasticsearch < version " + minimumCompatibleMajorVersion);
-//    }
   }
 
   public RestHighLevelClient getClient() {
@@ -95,10 +90,12 @@ public class ElasticsearchService {
   private void ensureAliasWithIndex(String alias) throws IOException {
     var aliasExists = checkAliasExists(alias);
     if (aliasExists) {
-      String existingMapping = getDeployedMappingByAlias(alias);
+//      String existingMapping = getDeployedMappingByAlias(alias);
+//      log.error("EXISTING MAPPING:\n\n\n" + existingMapping + "\n\n\n");
       String expectedMapping = getExpectedMappingByAlias(alias);
-      List mappingDiffs = DataUtils.getJsonDiffList(existingMapping, expectedMapping);
-      log.error(mapper.writeValueAsString(mappingDiffs));
+//      log.error("EXPECTED MAPPING:\n\n\n" + expectedMapping + "\n\n\n");
+//      List mappingDiffs = DataUtils.getJsonDiffList(existingMapping, expectedMapping);
+//      log.error(mapper.writeValueAsString(mappingDiffs));
       putMapping(alias, expectedMapping); // FIXME handle when unacceptable field changes encountered and stop app; log ERROR
     }
     else {
