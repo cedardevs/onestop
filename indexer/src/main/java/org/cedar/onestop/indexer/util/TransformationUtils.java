@@ -32,7 +32,58 @@ public class TransformationUtils {
   ///////////////////////////////////////////////////////////////////////////////
   //                     Convert to Indexing Message                           //
   ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessage(ParsedRecord record, Set<String> fields) {
+  public static Map<String, Object> reformatMessageForAnalysis(ParsedRecord record, Set<String> fields) {
+
+    var analysis = record.getAnalysis();
+    var errors = record.getErrors();
+    var analysisMap = AvroUtils.avroToMap(analysis, true);
+    var message = new HashMap<String, Object>();
+
+    fields.forEach(field -> {
+      message.put(field, analysisMap.get(field));
+    });
+    if (fields.contains("internalParentIdentifier")) {
+      analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    }
+    var errorsList = errors.stream()
+        .map(e -> AvroUtils.avroToMap(e))
+        .collect(Collectors.toList());
+
+    if (fields.contains("errors")) {
+      message.put("errors", errorsList);
+    }
+
+    if (fields.contains("temporalBounding")) {
+      message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
+    }
+    if (fields.contains("identification")) {
+      message.put("identification", prepareIdentification(analysis.getIdentification()));
+    }
+
+    return message;
+  }
+
+  public static Map<String, Object> prepareIdentification(IdentificationAnalysis identification) {
+    var result = new HashMap<String, Object>();
+    var analysis = AvroUtils.avroToMap(identification); // TODO using map because I need javadocs on the IdentificationAnalysis object...
+
+    if (analysis == null) {
+      return result;
+    }
+    result.put("doiExists", analysis.get("doiExists"));
+    result.put("doiString", analysis.get("doiString"));
+    result.put("fileIdentifierExists", analysis.get("fileIdentifierExists"));
+    result.put("fileIdentifierString", analysis.get("fileIdentifierString"));
+    result.put("hierarchyLevelNameExists", analysis.get("hierarchyLevelNameExists"));
+    result.put("isGranule", analysis.get("isGranule"));
+    result.put("parentIdentifierExists", analysis.get("parentIdentifierExists"));
+    // if ((Boolean)analysis.get("isGranule")) { FIXME
+    //   result.put("parentIdentifierString", analysis.get("parentIdentifierString"));
+    // }
+    return result;
+  }
+
+  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> fields) {
 
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
@@ -42,12 +93,8 @@ public class TransformationUtils {
     var message = new HashMap<String, Object>();
 
     fields.forEach(field -> {
-      message.put(field, analysisMap.get(field));
       message.put(field, discoveryMap.get(field));
     });
-    if (fields.contains("internalParentIdentifier")) {
-      analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
-    }
     var errorsList = errors.stream()
         .map(e -> AvroUtils.avroToMap(e))
         .collect(Collectors.toList());

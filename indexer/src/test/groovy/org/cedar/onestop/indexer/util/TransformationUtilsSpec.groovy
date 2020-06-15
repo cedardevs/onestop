@@ -86,7 +86,7 @@ class TransformationUtilsSpec extends Specification {
   // Generic Indexed Fields    //
   ///////////////////////////////
 
-  def "reformatMessage populates with correct fields for #label"() {
+  def "reformatMessageForAnalysis populates with correct fields for #label"() {
     when:
 
     ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
@@ -118,7 +118,59 @@ class TransformationUtilsSpec extends Specification {
         )
       .build()
 
-    def indexedRecord = TransformationUtils.reformatMessage(record, fields)
+    def indexedRecord = TransformationUtils.reformatMessageForAnalysis(record, fields)
+
+    then:
+
+    println(label)
+    println(JsonOutput.toJson(AvroUtils.avroToMap(record.getAnalysis(), true)))
+    println(JsonOutput.toJson(indexedRecord))
+    indexedRecord.keySet().contains("checksums") == shouldIncludeChecksums
+    indexedRecord.keySet().contains("internalParentIdentifier") == shouldIncludeParentIdentifier
+    (indexedRecord.keySet().contains("temporalBounding") && indexedRecord.get("temporalBounding").keySet().contains("beginMonth")) == false
+    (indexedRecord.keySet().contains("temporalBounding") && indexedRecord.get("temporalBounding").keySet().contains("beginIndexable")) == shouldIncludeTemporalAnalysis
+
+    where:
+    label | fields | shouldIncludeChecksums | shouldIncludeTemporalAnalysis | shouldIncludeParentIdentifier
+    'analysis and errors collections' | collectionAnalysisErrorFields | false | true  | false
+    'analysis and errors granules'    | granuleAnalysisErrorFields    | false | true  | true
+
+  }
+
+
+  def "reformatMessageForSearch populates with correct fields for #label"() {
+    when:
+
+    ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
+      .setFileInformation(
+        FileInformation.newBuilder()
+        .setChecksums(
+          [
+          Checksum.newBuilder()
+          .setAlgorithm(ChecksumAlgorithm.MD5)
+          .setValue('abc')
+          .build()
+          ]
+        ).build()
+      )
+      .setAnalysis(
+        Analysis.newBuilder().setTemporalBounding(
+        TemporalBoundingAnalysis.newBuilder()
+            .setBeginDescriptor(ValidDescriptor.VALID)
+            .setBeginIndexable(true)
+            .setBeginPrecision(ChronoUnit.DAYS.toString())
+            .setBeginZoneSpecified(null)
+            .setBeginUtcDateTimeString("2000-02-01")
+            .setBeginYear(2000)
+            .setBeginMonth(2)
+            .setBeginDayOfYear(32)
+            .setBeginDayOfMonth(1)
+            .build()
+          ).build()
+        )
+      .build()
+
+    def indexedRecord = TransformationUtils.reformatMessageForSearch(record, fields)
 
     then:
 
@@ -134,9 +186,6 @@ class TransformationUtilsSpec extends Specification {
     label | fields | shouldIncludeChecksums | shouldIncludeTemporalAnalysis | shouldIncludeParentIdentifier
     'search collections'              | collectionSearchFields        | false | false | false
     'search granules'                 | granuleSearchFields           | true  | false | true
-    'analysis and errors collections' | collectionAnalysisErrorFields | false | true  | false
-    'analysis and errors granules'    | granuleAnalysisErrorFields    | false | true  | true
-
   }
 
   ////////////////////////////////
@@ -290,7 +339,7 @@ class TransformationUtilsSpec extends Specification {
   def "party names are not included in granule search info"() {
     when:
     def record = TestUtils.inputGranuleRecord // <-- granule!
-    def result = TransformationUtils.reformatMessage(record, collectionSearchFields) // <-- top level reformat method!
+    def result = TransformationUtils.reformatMessageForSearch(record, collectionSearchFields) // <-- top level reformat method!
 
     then:
     result.individualNames == [] as Set
@@ -407,7 +456,7 @@ class TransformationUtilsSpec extends Specification {
 
   def "accession values are not included"() {
     when:
-    def result = TransformationUtils.reformatMessage(TestUtils.inputAvroRecord, collectionSearchFields)
+    def result = TransformationUtils.reformatMessageForSearch(TestUtils.inputAvroRecord, collectionSearchFields)
 
     then:
     result.accessionValues == null
