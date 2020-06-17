@@ -32,7 +32,7 @@ public class TransformationUtils {
   ///////////////////////////////////////////////////////////////////////////////
   //                     Convert to Indexing Message                           //
   ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForAnalysis(ParsedRecord record, Set<String> fields) {
+  public static Map<String, Object> reformatMessageForAnalysis(ParsedRecord record, Set<String> fields, RecordType recordType) {
 
     var analysis = record.getAnalysis();
     var errors = record.getErrors();
@@ -57,13 +57,13 @@ public class TransformationUtils {
       message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
     }
     if (fields.contains("identification")) {
-      message.put("identification", prepareIdentification(analysis.getIdentification()));
+      message.put("identification", prepareIdentification(analysis.getIdentification(), recordType));
     }
 
     return message;
   }
 
-  public static Map<String, Object> prepareIdentification(IdentificationAnalysis identification) {
+  public static Map<String, Object> prepareIdentification(IdentificationAnalysis identification, RecordType recordType) {
     var result = new HashMap<String, Object>();
     var analysis = AvroUtils.avroToMap(identification); // TODO using map because I need javadocs on the IdentificationAnalysis object...
 
@@ -77,9 +77,9 @@ public class TransformationUtils {
     result.put("hierarchyLevelNameExists", analysis.get("hierarchyLevelNameExists"));
     result.put("isGranule", analysis.get("isGranule"));
     result.put("parentIdentifierExists", analysis.get("parentIdentifierExists"));
-    // if ((Boolean)analysis.get("isGranule")) { FIXME
-    //   result.put("parentIdentifierString", analysis.get("parentIdentifierString"));
-    // }
+    if (recordType == RecordType.granule) {
+      result.put("parentIdentifierString", analysis.get("parentIdentifierString"));
+    }
     return result;
   }
 

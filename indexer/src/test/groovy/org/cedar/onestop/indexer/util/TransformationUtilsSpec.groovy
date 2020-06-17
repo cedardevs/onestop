@@ -118,7 +118,7 @@ class TransformationUtilsSpec extends Specification {
         )
       .build()
 
-    def indexedRecord = TransformationUtils.reformatMessageForAnalysis(record, fields)
+    def indexedRecord = TransformationUtils.reformatMessageForAnalysis(record, fields, RecordType.granule)
 
     then:
 
