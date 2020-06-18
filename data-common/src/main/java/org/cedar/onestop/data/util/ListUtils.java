@@ -2,6 +2,8 @@ package org.cedar.onestop.data.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ListUtils {
 
@@ -44,5 +46,13 @@ public class ListUtils {
       }
     }
     return result;
+  }
+
+  public static <T> List<T> pruneEmptyElements(List<T> list) {
+    var prunedList = list.stream()
+        .filter(Objects::nonNull)
+        .filter(i -> !(i instanceof String) || (!((String) i).isBlank()))
+        .collect(Collectors.toList());
+    return prunedList;
   }
 }

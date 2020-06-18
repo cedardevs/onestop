@@ -72,7 +72,7 @@ class JsonUtilsSpec extends Specification {
 
   def "parseJsonMap works for good json"() {
     when:
-    def result = JsonUtils.parseJsonMap('{"hello":"world","list":[1,2]}')
+    def result = JsonUtils.parseJsonAsMapSafe('{"hello":"world","list":[1,2]}')
 
     then:
     result instanceof Map
@@ -83,7 +83,7 @@ class JsonUtilsSpec extends Specification {
 
   def "parseJsonMap throws up on bad json"() {
     when:
-    def result = JsonUtils.parseJsonMap('THIS IS NOT JSON')
+    def result = JsonUtils.parseJsonAsMapSafe('THIS IS NOT JSON')
 
     then:
     thrown(Exception)

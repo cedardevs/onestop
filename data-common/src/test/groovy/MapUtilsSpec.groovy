@@ -1,4 +1,5 @@
 import groovy.json.JsonOutput
+import groovy.json.JsonParser
 import org.cedar.onestop.data.util.MapUtils
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -312,5 +313,34 @@ class MapUtilsSpec extends Specification {
 
     then:
     sortedResult.equals(JsonOutput.toJson(expectedMap))
+  }
+
+  def "pruneEmptyElements traverses a nested map successfully"() {
+    given:
+    def input = [
+        a: 1,
+        b: null,
+        c: [
+            d: "string",
+            e: "",
+            f: [],
+            g: [1, "", "stuff", null]
+        ],
+        h: [:]
+    ]
+
+    def expected = [
+        a: 1,
+        c: [
+            d: "string",
+            g: [1, "stuff"]
+        ]
+    ]
+
+    when:
+    def result = MapUtils.pruneEmptyElements(input)
+
+    then:
+    result == expected
   }
 }

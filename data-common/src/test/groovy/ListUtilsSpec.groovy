@@ -42,4 +42,11 @@ class ListUtilsSpec extends Specification {
     thrown(IllegalArgumentException)
   }
 
+  def "pruneEmptyElements removes nulls and empty strings"() {
+    // TODO
+  }
+
+  def "pruneEmptyElements removes empty elements when list of maps"() {
+    // TODO
+  }
 }

@@ -1,5 +1,6 @@
 package org.cedar.onestop.data.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.*;
 
@@ -11,13 +12,67 @@ public class JsonUtils {
 
   private static final ObjectMapper mapper = new ObjectMapper();
 
-  public static Map<String, Object> parseJsonMap(String json) throws IOException {
+  /**
+   * Method parses a JSON string into a plain Java Map object. Throws an exception if String is invalid.
+   * @param json JSON String to convert
+   * @return Map representation of input JSON string.
+   * @throws IOException if input string cannot be parsed as JSON
+   */
+  public static Map<String, Object> parseJsonAsMapSafe(String json) throws IOException {
     if (json == null || json.equals("")) {
       return new LinkedHashMap<>();
     }
     else {
       return mapper.readValue(json, Map.class);
     }
+  }
+
+  /**
+   * Method parses a JSON string into a plain Java Map object. Returns a null instead of an exception if String is invalid.
+   * @param json JSON String to convert
+   * @return Map representation of input JSON string. Returns null if input is invalid.
+   */
+  public static Map<String, Object> parseJsonAsMap(String json) {
+    if (json == null || json.equals("")) {
+      return new LinkedHashMap<>();
+    }
+    else {
+      try {
+        return mapper.readValue(json, Map.class);
+      } catch (JsonProcessingException e) {
+        return null;
+      }
+    }
+  }
+
+  /**
+   * Converts input Map object to JSON string and returns null if map cannot produce valid JSON
+   * @param map Map object to convert to JSON String
+   * @return JSON string representation of input map or null if map cannot be interpreted as JSON
+   */
+  public static String toJson(Map<String, Object> map) {
+    if(map == null || map.isEmpty()) {
+      return "";
+    }
+    try {
+      return mapper.writeValueAsString(map);
+    }
+    catch (JsonProcessingException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Converts input Map object to JSON string and throws and exception if map cannot produce valid JSON
+   * @param map Map object to convert to JSON String
+   * @return JSON string representation of input map
+   * @throws JsonProcessingException if input map cannot be interpreted as JSON
+   */
+  public static String toJsonSafe(Map<String, Object> map) throws JsonProcessingException {
+    if(map == null || map.isEmpty()) {
+      return "";
+    }
+    return mapper.writeValueAsString(map);
   }
 
   /**
@@ -45,8 +100,8 @@ public class JsonUtils {
    * @throws IOException if either String cannot be parsed as JSON
    */
   public static List<Map<String, Object>> getJsonDiffList(String sourceJson, String targetJson) throws IOException {
-    var sourceMap = parseJsonMap(sourceJson);
-    var targetMap = parseJsonMap(targetJson);
+    var sourceMap = parseJsonAsMapSafe(sourceJson);
+    var targetMap = parseJsonAsMapSafe(targetJson);
     return getJsonDiffList(sourceMap, targetMap);
   }
 

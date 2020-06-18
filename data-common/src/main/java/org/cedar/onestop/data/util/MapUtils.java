@@ -168,4 +168,44 @@ public class MapUtils {
         .filter(e -> keysToKeep.contains(e.getKey()))
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
+
+  /**
+   * Prunes
+   * @param originalMap
+   * @return
+   */
+  public static Map<String, Object> pruneEmptyElements(Map<String, Object> originalMap) {
+    Map<String, Object> prunedRequest = new HashMap<>();
+    originalMap.forEach((k, v) -> {
+      // Remove individual empty elements from a map or an entire empty map:
+      if(v instanceof Map) {
+        if(!((Map) v).isEmpty()) {
+          prunedRequest.put(k, pruneEmptyElements((Map) v));
+        }
+        return;
+      }
+
+      // Remove individual empty elements from a list or an entire empty list:
+      if(v instanceof List) {
+        if(!((List) v).isEmpty()) {
+          prunedRequest.put(k, ListUtils.pruneEmptyElements((List) v));
+        }
+        return;
+      }
+
+      // Only salvage non-null elements and non-blank Strings:
+      else if(v != null && (!(v instanceof String) || (!((String) v).isBlank()))) {
+        prunedRequest.put(k, v);
+      }
+    });
+
+//    var prunedRequest = originalMap.entrySet().stream()
+//        .map(e -> e.getValue() instanceof Map ? pruneEmptyElements((Map) e.getValue()) : e.getValue())
+//        .filter()
+
+//    def prunedRequest = requestBody.collectEntries { k, v ->
+//        [k, v instanceof Map ? pruneEmptyElements(v) : v]}
+//        .findAll { k, v -> v != null && v != [:] }
+    return prunedRequest;
+  }
 }

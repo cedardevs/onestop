@@ -125,8 +125,8 @@ public class StreamFunctions {
 
   public static Map updateRawJson(AggregatedInput.Builder builder, Input input, OperationType operationType) {
     try {
-      var currentMap = JsonUtils.parseJsonMap(builder.getRawJson());
-      var inputMap = JsonUtils.parseJsonMap(input.getContent());
+      var currentMap = JsonUtils.parseJsonAsMapSafe(builder.getRawJson());
+      var inputMap = JsonUtils.parseJsonAsMapSafe(input.getContent());
       Map mergedMap;
       if(operationType == OperationType.REMOVE) {
         mergedMap = MapUtils.removeFromMap(currentMap, inputMap);
