@@ -6,6 +6,7 @@ import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
+import org.cedar.onestop.elastic.common.ElasticsearchReadService
 import org.elasticsearch.client.Request
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
@@ -23,6 +24,7 @@ import static org.cedar.onestop.elastic.common.DocumentUtil.*
 class ElasticsearchService {
 
   private SearchRequestParserService searchRequestParserService
+  private ElasticsearchReadService esService
 
   private RestClient restClient
   ElasticsearchConfig esConfig
@@ -35,46 +37,22 @@ class ElasticsearchService {
     this.restClient = restClient
     this.esConfig = elasticsearchConfig
     this.isES6 = esConfig.version.isMajorVersion(6)
+    this.esService = new ElasticsearchReadService(this.restClient, this.esConfig)
   }
 
 ////////////
   // Counts //
   ////////////
   Map totalCollections() {
-    return totalCounts(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+    return esService.getTotalCounts(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
   }
 
   Map totalGranules() {
-    return totalCounts(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
+    return esService.getTotalCounts(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
   }
 
   Map totalFlattenedGranules() {
-    return totalCounts(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
-  }
-
-  private Map totalCounts(String alias) {
-    String endpoint = "/${alias}/_search"
-    HttpEntity requestQuery = new NStringEntity(JsonOutput.toJson([
-        track_total_hits: true,
-        query: [
-            match_all: [:]
-        ],
-        size : 0
-    ]), ContentType.APPLICATION_JSON)
-    Request totalCountsRequest = new Request('GET', endpoint)
-    totalCountsRequest.entity = requestQuery
-    Response totalCountsResponse = restClient.performRequest(totalCountsRequest)
-    Map parsedResponse = parseSearchResponse(totalCountsResponse)
-
-    return [
-        data: [
-            [
-                type : "count",
-                id   : esConfig.typeFromAlias(alias),
-                count: getHitsTotalValue(parsedResponse, isES6)
-            ]
-        ]
-    ]
+    return esService.getTotalCounts(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
   }
 
 
@@ -82,7 +60,7 @@ class ElasticsearchService {
   // Get By ID //
   ///////////////
   Map getCollectionById(String id) {
-    def getCollection = getById(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, id)
+    def getCollection = esService.getById(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, id)
 
     if(getCollection.data) {
       // get the total number of granules for this collection id
@@ -113,40 +91,15 @@ class ElasticsearchService {
   }
 
   Map getGranuleById(String id) {
-    return getById(esConfig.GRANULE_SEARCH_INDEX_ALIAS, id)
+    return esService.getById(esConfig.GRANULE_SEARCH_INDEX_ALIAS, id)
   }
 
   Map getFlattenedGranuleById(String id) {
-    return getById(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS, id)
+    return esService.getById(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS, id)
   }
 
   Map getSitemapById(String id) {
-    return getById(esConfig.SITEMAP_INDEX_ALIAS, id)
-  }
-
-  private Map getById(String alias, String id) {
-    String endpoint = "/${alias}/_doc/${id}"
-    log.debug("Get by ID against endpoint: ${endpoint}")
-    Request idRequest = new Request('GET', endpoint)
-    Response idResponse = restClient.performRequest(idRequest)
-    Map collectionDocument = parseSearchResponse(idResponse)
-    String type = esConfig.typeFromAlias(alias)
-    if (collectionDocument.found) {
-      return [
-          data: [[
-                     id        : getId(collectionDocument),
-                     type      : esConfig.typeFromAlias(alias),
-                     attributes: getSource(collectionDocument)
-                 ]]
-      ]
-    }
-    else {
-      return [
-          status: HttpStatus.NOT_FOUND.value(),
-          title : 'No such document',
-          detail: "Record type ${type} with Elasticsearch ID [ ${id} ] does not exist."
-      ]
-    }
+    return esService.getById(esConfig.SITEMAP_INDEX_ALIAS, id)
   }
 
 
