@@ -266,20 +266,7 @@ class ElasticsearchService {
   }
 
   private static Map addSourceFilter(Map requestBody) {
-    def sourceFilter = [
-        "internalParentIdentifier",
-        "title",
-        "thumbnail",
-        "spatialBounding",
-        "beginDate",
-        "beginYear",
-        "endDate",
-        "endYear",
-        "links",
-        "citeAsStatements",
-        "serviceLinks"
-  ]
-    requestBody._source = sourceFilter
+    requestBody._source = DocumentationService.summaryFields
     return requestBody
   }
 
