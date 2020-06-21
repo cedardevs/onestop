@@ -1,5 +1,7 @@
 package org.cedar.onestop.registry.service
 
+import org.apache.kafka.streams.KafkaStreams
+import org.apache.kafka.streams.KeyQueryMetadata
 import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.HostInfo
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
@@ -13,10 +15,13 @@ import spock.lang.Unroll
 @Unroll
 class MetadataStoreSpec extends Specification {
 
-  HostInfo localHostInfo = new HostInfo("thetesthost", 8080)
-  StreamsMetadata localStreamsMetadata = new StreamsMetadata(localHostInfo, Collections.emptySet(), Collections.emptySet())
+  HostInfo localHostInfo = new HostInfo("localhost", 8080)
+  HostInfo remoteHostInfo = new HostInfo("remotehost", 8080)
 
-  StreamsStateService mockStreamsStateService = Mock(StreamsStateService)
+  KeyQueryMetadata localActiveMetadata = new KeyQueryMetadata(localHostInfo, [remoteHostInfo] as Set, 0)
+  KeyQueryMetadata remoteActiveMetadata = new KeyQueryMetadata(remoteHostInfo, [localHostInfo] as Set, 0)
+
+  KafkaStreams mockStreamsApp = Mock(KafkaStreams)
   ReadOnlyKeyValueStore mockAvroStore = Mock(ReadOnlyKeyValueStore)
   MockSchemaRegistrySerde mockSerde = new MockSchemaRegistrySerde()
 
@@ -24,7 +29,7 @@ class MetadataStoreSpec extends Specification {
   def testSource = 'class'
   def testPort = 9090
 
-  MetadataStore metadataStore = new MetadataStore(mockStreamsStateService, localHostInfo, testPort, 'http://dummyurl')
+  MetadataStore metadataStore = new MetadataStore(mockStreamsApp, localHostInfo, testPort, 'http://dummyurl')
 
   def setup() {
     // override the internal serde with one that uses a MockSchemaRegistryClient
@@ -36,30 +41,30 @@ class MetadataStoreSpec extends Specification {
     metadataStore.retrieveInput(null, 'notarealsource', 'notarealid') == null
   }
 
-  def 'returns null for a nonexistent store'() {
+  def 'returns null for a nonexistent input id'() {
     def testId = 'notarealid'
 
     when:
     def result = metadataStore.retrieveInput(testType, testSource, testId)
 
     then:
-    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockStreamsStateService.getAvroStore(_) >> null
-    0 * mockAvroStore.get(testId)
+    1 * mockStreamsApp.queryMetadataForKey(_, _, _) >> localActiveMetadata
+    1 * mockStreamsApp.store(_) >> mockAvroStore
+    1 * mockAvroStore.get(testId) >> null
 
     and:
     result == null
   }
 
-  def 'returns null for unknown id'() {
+  def 'returns null for nonexistent parsed id'() {
     def testId = 'notarealid'
 
     when:
     def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockStreamsApp.queryMetadataForKey(_, _, _) >> localActiveMetadata
+    1 * mockStreamsApp.store(_) >> mockAvroStore
     1 * mockAvroStore.get(testId) >> null
 
     and:
@@ -73,8 +78,8 @@ class MetadataStoreSpec extends Specification {
     metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockStreamsStateService.getAvroStore(_) >> {
+    1 * mockStreamsApp.queryMetadataForKey(_, _, _) >> localActiveMetadata
+    1 * mockStreamsApp.getAvroStore(_) >> {
       throw new InvalidStateStoreException('test')
     }
 
@@ -91,8 +96,8 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveInput(testType, testSource, testId)
 
     then:
-    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockStreamsApp.queryMetadataForKey(_, _, _) >> localActiveMetadata
+    1 * mockStreamsApp.store(_) >> mockAvroStore
     1 * mockAvroStore.get(testId) >> testAggInput
 
     and:
@@ -106,8 +111,8 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockStreamsApp.queryMetadataForKey(_, _, _) >> localActiveMetadata
+    1 * mockStreamsApp.store(_) >> mockAvroStore
     1 * mockAvroStore.get(testId) >> testParsed
 
     and:
@@ -121,8 +126,8 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockStreamsApp.queryMetadataForKey(_, _, _) >> localActiveMetadata
+    1 * mockStreamsApp.store(_) >> mockAvroStore
     1 * mockAvroStore.get(testId) >> testErrorRecord
 
     and:
@@ -141,8 +146,8 @@ class MetadataStoreSpec extends Specification {
         .retrieve().bodyToMono(byte[].class).block()
 
     then:
-    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockStreamsApp.queryMetadataForKey(_, _, _) >> localActiveMetadata
+    1 * mockStreamsApp.store(_) >> mockAvroStore
     1 * mockAvroStore.get(key) >> testRecord
 
     and:
@@ -174,9 +179,9 @@ class MetadataStoreSpec extends Specification {
 
     then:
     // first kafka metadata lookup indicates remote, subsequent lookups indicate local
-    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> remoteStreamsMetadata
-    _ * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockStreamsApp.metadataForStoreAndKey(_, _, _) >> remoteStreamsMetadata
+    _ * mockStreamsApp.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsApp.getAvroStore(_) >> mockAvroStore
     1 * mockAvroStore.get(_) >> testAggInput
 
     and:
@@ -201,9 +206,9 @@ class MetadataStoreSpec extends Specification {
 
     then:
     // first kafka metadata lookup indicates remote, subsequent lookups indicate local
-    1 * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> remoteStreamsMetadata
-    _ * mockStreamsStateService.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
-    1 * mockStreamsStateService.getAvroStore(_) >> mockAvroStore
+    1 * mockStreamsApp.metadataForStoreAndKey(_, _, _) >> remoteStreamsMetadata
+    _ * mockStreamsApp.metadataForStoreAndKey(_, _, _) >> localStreamsMetadata
+    1 * mockStreamsApp.getAvroStore(_) >> mockAvroStore
     1 * mockAvroStore.get(_) >> null
 
     and:

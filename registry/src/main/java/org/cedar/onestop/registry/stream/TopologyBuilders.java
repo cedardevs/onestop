@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class TopologyBuilders {
@@ -29,7 +30,7 @@ public class TopologyBuilders {
   }
 
   public static StreamsBuilder addTopologyForType(StreamsBuilder builder, RecordType type, Long publishInterval) {
-    Topics.inputSources(type).stream()
+    var inputTopics = Topics.inputSources(type).stream()
         .map((s) -> Topics.inputTopic(type, s))
         .collect(Collectors.toList());
 

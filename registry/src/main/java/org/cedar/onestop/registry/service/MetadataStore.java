@@ -3,8 +3,10 @@ package org.cedar.onestop.registry.service;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.state.HostInfo;
-import org.apache.kafka.streams.state.StreamsMetadata;
+import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
@@ -28,6 +30,7 @@ import reactor.netty.http.server.HttpServer;
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.ArrayList;
 import java.util.Map;
 
 import static org.cedar.onestop.kafka.common.constants.Topics.inputStore;
@@ -37,7 +40,7 @@ import static org.cedar.onestop.kafka.common.constants.Topics.parsedStore;
 public class MetadataStore {
   private static final Logger log = LoggerFactory.getLogger(MetadataStore.class);
 
-  private StreamsStateService streamsStateService;
+  private KafkaStreams streamsApp;
   private HostInfo hostInfo;
   private int port;
   private WebClient webClient;
@@ -45,11 +48,11 @@ public class MetadataStore {
   private SpecificAvroSerde<SpecificRecord> serde;
 
   @Autowired
-  public MetadataStore(final StreamsStateService streamsStateService,
+  public MetadataStore(final KafkaStreams streamsApp,
                        final HostInfo hostInfo,
                        final @Value("${db.server.port:9090}") int port,
                        final @Value("${kafka.schema.registry.url}") String schemaRegistryUrl) {
-    this.streamsStateService = streamsStateService;
+    this.streamsApp = streamsApp;
     this.hostInfo = hostInfo;
     this.port = port;
     this.webClient = WebClient.create();
@@ -68,32 +71,69 @@ public class MetadataStore {
 
   public ParsedRecord retrieveParsed(RecordType type, String source, String id) {
     String storeName = type != null ? parsedStore(type) : null;
-    return getRecordFromTable(storeName, id);
+    return getRecord(storeName, id);
   }
 
   public AggregatedInput retrieveInput(RecordType type, String source, String id) {
     String storeName = type != null && id != null ? inputStore(type, source) : null;
-    return getRecordFromTable(storeName, id);
+    return getRecord(storeName, id);
   }
 
-  @SuppressWarnings("unchecked")
-  private <T extends SpecificRecord> T getRecordFromTable(String table, String key) {
+  private <T extends SpecificRecord> T getRecord(String table, String key) {
     if (table == null || key == null) {
       return null;
     }
     try {
-      var metadata = streamsStateService.metadataForStoreAndKey(table, key, Serdes.String().serializer());
-      if (thisHost(metadata)) {
-        var store = streamsStateService.getAvroStore(table);
-        return store != null ? (T) store.get(key) : null;
+      var metadata = streamsApp.queryMetadataForKey(table, key, Serdes.String().serializer());
+      if (metadata == null) {
+        throw new IllegalStateException("Unable to retrieve Kafka metadata");
       }
-      else {
-        return (T) getRemoteStoreState(metadata, table, key);
+      var preferredHostList = new ArrayList<HostInfo>();
+      var activeHost = metadata.getActiveHost();
+      if (activeHost != null) {
+        log.debug("active host exists and is: " + activeHost);
+        preferredHostList.add(activeHost);
       }
+      preferredHostList.addAll(metadata.getStandbyHosts());
+      if (preferredHostList.isEmpty()) {
+        log.debug("no hosts exist for table [" + table + "] and key [" + key + "]");
+        return null;
+      }
+      for (HostInfo host : preferredHostList) {
+        try {
+          return getRecordFromHost(table, key, host);
+        }
+        catch (WebClientResponseException e) {
+          log.warn("Retrieving record from host [" + host + "] failed", e);
+        }
+      }
+      throw new IllegalStateException("All active and standby hosts failed");
     }
     catch (Exception e) {
       log.error("Failed to retrieve record from table [" + table + "] with key [" + key + "]", e);
       throw e;
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T extends SpecificRecord> T getRecordFromHost(String table, String key, HostInfo targetHost) {
+    log.debug("getting record from table [" + table + "] with key [" + key + "] from host [" + targetHost + "]");
+    if (hostInfo.equals(targetHost)) {
+      log.debug("[" + targetHost + "] is the local host");
+      var storeQuery = StoreQueryParameters.fromNameAndType(table, QueryableStoreTypes.keyValueStore()).enableStaleStores();
+      var store = streamsApp.store(storeQuery);
+      return store != null ? (T) store.get(key) : null;
+    }
+    else {
+      String url = "http://" + targetHost.host() + ":" + targetHost.port() + "/db/" + table + '/' + key;
+      log.debug("getting remote avro from: " + url);
+      try {
+        var bytes = webClient.get().uri(url).retrieve().bodyToMono(byte[].class).block();
+        return (T) serde.deserializer().deserialize(null, bytes);
+      }
+      catch (WebClientResponseException.NotFound e) {
+        return null;
+      }
     }
   }
 
@@ -114,7 +154,7 @@ public class MetadataStore {
     try {
       var table = request.pathVariable("table");
       var key = request.pathVariable("key");
-      var record = getRecordFromTable(table, key);
+      var record = getRecordFromHost(table, key, hostInfo);
       var bytes = record != null ? serde.serializer().serialize(null, record) : null;
       return bytes != null ?
           ServerResponse.ok().contentLength(bytes.length).syncBody(bytes) :
@@ -125,30 +165,11 @@ public class MetadataStore {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private <T extends SpecificRecord> T getRemoteStoreState(StreamsMetadata metadata, String store, String id) {
-    String url = "http://" + metadata.host() + ":" + metadata.port() + "/db/" + store + '/' + id;
-    log.debug("getting remote avro from: " + url);
-    try {
-      var bytes = webClient.get().uri(url).retrieve().bodyToMono(byte[].class).block();
-      return (T) serde.deserializer().deserialize(null, bytes);
-    }
-    catch (WebClientResponseException.NotFound e) {
-      return null;
-    }
-  }
-
-  private boolean thisHost(final StreamsMetadata metadata) {
-    var otherHostInfo = metadata != null ? metadata.hostInfo() : null;
-    log.debug("checking if " + otherHostInfo + " is the local host: " + hostInfo);
-    return hostInfo.equals(otherHostInfo);
-  }
-
   private SpecificAvroSerde<SpecificRecord> buildSerde(String schemaRegistryUrl) {
     var config = Map.of("schema.registry.url", schemaRegistryUrl,
         // since there is no topic name to use in this context, name the registered schemas after the record types
         "value.subject.name.strategy", "io.confluent.kafka.serializers.subject.RecordNameStrategy");
-    var serde = new SpecificAvroSerde<SpecificRecord>();
+    var serde = new SpecificAvroSerde<>();
     serde.configure(config, false);
     return serde;
   }
