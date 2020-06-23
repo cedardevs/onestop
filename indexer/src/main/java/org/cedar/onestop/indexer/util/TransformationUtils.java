@@ -340,6 +340,11 @@ public class TransformationUtils {
 
   private static Map<String, Object> prepareTemporalBounding(TemporalBoundingAnalysis analysis) {
     var result = new HashMap<String, Object>();
+
+    if (analysis == null) {
+      return result;
+    }
+
     result.put("beginDescriptor", analysis.getBeginDescriptor());
     result.put("beginIndexable", analysis.getBeginIndexable());
     result.put("beginPrecision", analysis.getBeginPrecision());
