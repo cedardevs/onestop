@@ -360,94 +360,64 @@ public class TransformationUtils {
   }
 
   private static Map<String, Object> prepareDatesForInstant(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    String beginDate, endDate;
-    Long beginYear, endYear;
-    Integer beginDayOfYear, beginDayOfMonth, beginMonth;
-    Integer endDayOfYear, endDayOfMonth, endMonth;
     var result = new HashMap<String, Object>();
 
-    if (!analysis.getInstantIndexable()) {
-      // paleo dates are not indexable, so don't add beginDate or endDate to the index
-      beginDate = null;
-      endDate = null;
-    } else {
-      beginDate = analysis.getInstantUtcDateTimeString();
-      endDate = analysis.getInstantEndUtcDateTimeString();
+    if (analysis.getInstantIndexable()) {
+      // paleo dates are not indexable, so only add beginDate or endDate to the index if instantIndexable
+      result.put("beginDate", analysis.getInstantUtcDateTimeString());
+      result.put("endDate", analysis.getInstantEndUtcDateTimeString());
     }
 
-    beginDayOfYear = analysis.getInstantDayOfYear();
-    endDayOfYear = analysis.getInstantEndDayOfYear();
-    beginMonth = analysis.getInstantMonth();
-    endMonth = analysis.getInstantEndMonth();
-    beginDayOfMonth = analysis.getInstantDayOfMonth();
-    endDayOfMonth = analysis.getInstantEndDayOfMonth();
-    beginYear = analysis.getInstantYear();
-    endYear = analysis.getInstantYear();
+    result.put("beginYear", analysis.getInstantYear());
+    result.put("beginDayOfYear", analysis.getInstantDayOfYear());
+    result.put("beginDayOfMonth", analysis.getInstantDayOfMonth());
+    result.put("beginMonth",  analysis.getInstantMonth());
 
-    result.put("beginDate", beginDate);
-    result.put("beginYear", beginYear);
-    result.put("beginDayOfYear", beginDayOfYear);
-    result.put("beginDayOfMonth", beginDayOfMonth);
-    result.put("beginMonth", beginMonth);
-
-    result.put("endDate", endDate);
-    result.put("endYear", endYear);
-    result.put("endDayOfYear", endDayOfYear);
-    result.put("endDayOfMonth", endDayOfMonth);
-    result.put("endMonth", endMonth);
+    result.put("endYear", analysis.getInstantYear());
+    result.put("endDayOfYear", analysis.getInstantEndDayOfYear());
+    result.put("endDayOfMonth", analysis.getInstantEndDayOfMonth());
+    result.put("endMonth", analysis.getInstantEndMonth());
 
     return result;
   }
 
   private static Map<String, Object> prepareBeginDate(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     var result = new HashMap<String, Object>();
-    Integer beginDayOfYear, beginDayOfMonth, beginMonth;
 
     if (analysis.getBeginDescriptor() == VALID) {
       if (analysis.getBeginIndexable()) {
         result.put("beginDate", analysis.getBeginUtcDateTimeString());
       }
-      beginDayOfYear = analysis.getBeginDayOfYear();
-      beginDayOfMonth = analysis.getBeginDayOfMonth();
-      beginMonth = analysis.getBeginMonth();
 
       result.put("beginYear", analysis.getBeginYear());
-      result.put("beginDayOfYear", beginDayOfYear);
-      result.put("beginDayOfMonth", beginDayOfMonth);
-      result.put("beginMonth", beginMonth);
+      result.put("beginDayOfYear", analysis.getBeginDayOfYear());
+      result.put("beginDayOfMonth", analysis.getBeginDayOfMonth());
+      result.put("beginMonth", analysis.getBeginMonth());
     }
     return result;
   }
 
   private static Map<String, Object> prepareEndDate(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     var result = new HashMap<String, Object>();
-    Integer endDayOfYear, endDayOfMonth, endMonth;
 
     if (analysis.getEndDescriptor() == VALID) {
       if (analysis.getEndIndexable()) {
         result.put("endDate", analysis.getEndUtcDateTimeString());
       }
 
-      endDayOfYear = analysis.getEndDayOfYear();
-      endDayOfMonth = analysis.getEndDayOfMonth();
-      endMonth = analysis.getEndMonth();
       result.put("endYear", analysis.getEndYear());
-      result.put("endDayOfYear", endDayOfYear);
-      result.put("endDayOfMonth", endDayOfMonth);
-      result.put("endMonth", endMonth);
+      result.put("endDayOfYear", analysis.getEndDayOfYear());
+      result.put("endDayOfMonth", analysis.getEndDayOfMonth());
+      result.put("endMonth", analysis.getEndMonth());
     }
     return result;
   }
 
   private static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    String beginDate, endDate;
-    Long beginYear, endYear;
-    Integer beginDayOfYear, beginDayOfMonth, beginMonth;
-    Integer endDayOfYear, endDayOfMonth, endMonth;
     var result = new HashMap<String, Object>();
 
     // If bounding is actually an instant, set search fields accordingly
-    if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT && analysis.getBeginDescriptor() == UNDEFINED) { // distinguished getting begin and end date that were exactly the same (also described as instant)
+    if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT && analysis.getBeginDescriptor() == UNDEFINED) { // distinguished getting begin and end date that were exactly the same (also described as instant), but in that case need to use prepareBeginDate and prepareEndDate to get data off the correct analysis fields
       return prepareDatesForInstant(bounding, analysis);
     } else {
       result.putAll(prepareBeginDate(bounding, analysis));
