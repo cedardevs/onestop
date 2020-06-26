@@ -1,6 +1,6 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
 
 const path = require('path')
 require('babel-polyfill')
@@ -18,7 +18,7 @@ const basePlugins = [
     inject: false,
     template: require('html-webpack-template'),
     lang: 'en-US',
-  })
+  }),
 ]
 
 const devPlugins = [
@@ -29,7 +29,7 @@ const devPlugins = [
 const prodPlugins = [
   new webpack.DefinePlugin({
     'process.env': {
-      'NODE_ENV': JSON.stringify('production'),
+      NODE_ENV: JSON.stringify('production'),
     },
   }),
   new webpack.LoaderOptionsPlugin({
@@ -45,7 +45,7 @@ const devEntryPoints = [
   // ensure host and port here matches the host and port specified in the `devServer` section
   // otherwise, you may see console warnings like: `sockjs-node ERR_CONNECTION_REFUSED`
   // see: https://github.com/webpack/webpack-dev-server/issues/416#issuecomment-287797086
-  'webpack-dev-server/client?http://localhost:9090',
+  'webpack-dev-server/client?http://localhost:8888',
 
   // bundle the client for hot reloading hot reload for successful updates
   'webpack/hot/only-dev-server',
@@ -53,26 +53,21 @@ const devEntryPoints = [
   './index.jsx',
 ]
 
-const prodEntryPoints = [
-  'babel-polyfill',
-  './index.jsx',
-]
+const prodEntryPoints = ['babel-polyfill', './index.jsx']
 
-module.exports = env => {
+module.exports = (env) => {
   return smp.wrap({
     entry: isProd ? prodEntryPoints : devEntryPoints,
-    output:
-        {
-          path: path.resolve(__dirname, 'build/webpack'),
-          publicPath: `/${rootPath}/`,
-          filename: '[name]-[hash].bundle.js',
-        }
-    ,
+    output: {
+      path: path.resolve(__dirname, 'build/webpack'),
+      publicPath: `/${rootPath}/`,
+      filename: '[name]-[hash].bundle.js',
+    },
     context: path.resolve(__dirname, 'src'),
-    devtool:
-        isProd ? false : 'cheap-module-eval-source-map',
-    devServer:
-        isProd ? {} : {
+    devtool: isProd ? false : 'cheap-module-eval-source-map',
+    devServer: isProd
+      ? {}
+      : {
           publicPath: `/${rootPath}/`,
           historyApiFallback: {
             index: `/${rootPath}/`,
@@ -88,98 +83,113 @@ module.exports = env => {
             '/onestop-search/*': {
               target: `${env.URL_API_SEARCH}/`,
               secure: false,
-              pathRewrite: {'^/onestop-search' : ''}
+              pathRewrite: { '^/onestop-search': '' },
             },
           },
         },
-    module:
+    module: {
+      rules: [
         {
-          rules: [{
-            enforce: 'pre',
-            test: /\.js$/,
-            use: 'eslint-loader',
-            exclude: /node_modules/,
-          }, {
-            test: /\.jsx?$/,
-            exclude: /node_modules/,
-            use: {
-              loader: 'babel-loader',
-              options: {
-                babelrc: true,
-                babelrcRoots: ['.', '../'],
-              },
+          enforce: 'pre',
+          test: /\.js$/,
+          use: 'eslint-loader',
+          exclude: /node_modules/,
+        },
+        {
+          test: /\.jsx?$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              babelrc: true,
+              babelrcRoots: ['.', '../'],
             },
-          }, {
-            test: /\.css$/,
-            include: /node_modules/,
-            use: [{
+          },
+        },
+        {
+          test: /\.css$/,
+          include: /node_modules/,
+          use: [
+            {
               loader: 'style-loader',
               options: {
                 sourceMap: !isProd,
               },
-            }, {
+            },
+            {
               loader: 'css-loader',
-            }],
-          }, {
-            test: /\.css$/,
-            exclude: /node_modules/,
-            use: [{
+            },
+          ],
+        },
+        {
+          test: /\.css$/,
+          exclude: /node_modules/,
+          use: [
+            {
               loader: 'style-loader',
-
-            }, {
-              loader: 'css-loader', options: {url:false}
-            }],
-          }, {
-            test: /\.(jpe?g|png|gif|svg)$/,
-            use: [
-              {
-                loader: 'file-loader',
-                options: {
-                  hash: 'sha512',
-                  digestType: 'hex',
-                  name: '[hash].[ext]',
-                  outputPath: `${assetPath}/img`
-                },
+            },
+            {
+              loader: 'css-loader',
+              options: { url: false },
+            },
+          ],
+        },
+        {
+          test: /\.(jpe?g|png|gif|svg)$/,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                hash: 'sha512',
+                digestType: 'hex',
+                name: '[hash].[ext]',
+                outputPath: `${assetPath}/img`,
               },
-            ],
-          }, {
-            test: /\.(ico)$/,
-            exclude: /node_modules/,
-            include: /img/,
-            use: [
-              {
-                loader: 'file-loader',
-                options: {
-                  name: '[name].[ext]',
-                  outputPath: assetPath
-                },
+            },
+          ],
+        },
+        {
+          test: /\.(ico)$/,
+          exclude: /node_modules/,
+          include: /img/,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: '[name].[ext]',
+                outputPath: assetPath,
               },
-            ],
-          }, {
-            test: /\.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
-            use: [{loader: 'file-loader'
-              , options: {
+            },
+          ],
+        },
+        {
+          test: /\.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
                 name: '/[name].[ext]',
-                outputPath: `${assetPath}/fonts`
-            }
-          }]
-          }],
-        }
-    ,
+                outputPath: `${assetPath}/fonts`,
+              },
+            },
+          ],
+        },
+      ],
+    },
     resolve: {
-      modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules',
-        path.resolve('./src/common/link')],
-      extensions:
-          ['.js', '.jsx'],
-      unsafeCache:
-          !isProd,
-      alias:
-          {
-            'fa':
-                path.resolve(__dirname, 'img/font-awesome/white/svg/'),
-          },
-    }
-    ,
-    plugins: isProd ? basePlugins.concat(prodPlugins) : basePlugins.concat(devPlugins),
+      modules: [
+        path.resolve('./node_modules/leaflet/dist', 'root'),
+        'node_modules',
+        path.resolve('./src/common/link'),
+      ],
+      extensions: ['.js', '.jsx'],
+      unsafeCache: !isProd,
+      alias: {
+        fa: path.resolve(__dirname, 'img/font-awesome/white/svg/'),
+      },
+    },
+    plugins: isProd
+      ? basePlugins.concat(prodPlugins)
+      : basePlugins.concat(devPlugins),
   })
 }

@@ -9,16 +9,18 @@ export const apiPath = () => {
 }
 
 // makes urls protocol-relative and url-encodes quotes
-export const processUrl = url => {
+export const processUrl = (url) => {
   if (typeof url === 'string') {
-    return url.replace(/^https?:/, '').replace(/'/, '%27').replace(/"/, '%22')
-  }
-  else {
+    return url
+      .replace(/^https?:/, '')
+      .replace(/'/, '%27')
+      .replace(/"/, '%22')
+  } else {
     return url
   }
 }
 
-export const isFTP = url => {
+export const isFTP = (url) => {
   if (typeof url === 'string') {
     return url.toLowerCase().startsWith('ftp')
   }
@@ -38,14 +40,14 @@ endorse the views expressed, the information presented, or any commercial produc
 be advertised or available on that site.`
 
 // returns true of the url points outside the .gov domain
-export const isGovExternal = url => {
+export const isGovExternal = (url) => {
   const isAbsolute = url.match(/^([a-zA-Z]+:)?\/\//) !== null
   const isGov = url.match(/^([a-zA-Z]+:)?\/\/[^/]+\.gov/) !== null
   return isAbsolute && !isGov
 }
 
 export const buildGovExternalOnClick = (href, target, onClick) => {
-  return e => {
+  return (e) => {
     if (typeof onClick === 'function') {
       onClick()
     }
@@ -67,7 +69,7 @@ export const ROUTE = Object.freeze({
   collections: {
     path: '/collections',
     regex: /\/collections([^/])*$/,
-    toLocation: id => {
+    toLocation: (id) => {
       return '/collections'
     },
   },
@@ -81,7 +83,7 @@ export const ROUTE = Object.freeze({
   details: {
     path: '/collections/details',
     regex: /\/collections\/details\/([-\w]+)/,
-    toLocation: id => {
+    toLocation: (id) => {
       return `/collections/details/${id}`
     },
   },
@@ -89,22 +91,24 @@ export const ROUTE = Object.freeze({
     path: '/collections/granules',
     parameterized: '/collections/granules/:id',
     regex: /\/collections\/granules\/([-\w]+)/,
-    toLocation: id => {
+    toLocation: (id) => {
       return `/collections/granules/${id}`
     },
   },
-  about: {path: '/about', regex: /\/about/},
-  help: {path: '/help', regex: /\/help/},
-  error: {path: '/error', regex: /\/error/},
+  userDashboard: { path: '/dashboard', regex: /\/dashboard/ },
+  about: { path: '/about', regex: /\/about/ },
+  help: { path: '/help', regex: /\/help/ },
+  error: { path: '/error', regex: /\/error/ },
 })
 
-export const routeA11yAnnouncer = path => {
+export const routeA11yAnnouncer = (path) => {
   if (isHome(path)) return 'OneStop home page showing'
   if (isRoute(path, ROUTE.collections))
     return 'collection search results page showing'
   if (isRoute(path, ROUTE.details)) return 'collection page showing'
   if (isRoute(path, ROUTE.granules)) return 'file results page showing'
   if (isRoute(path, ROUTE.cart)) return 'download cart page showing'
+  if (isRoute(path, ROUTE.userDashboard)) return 'user dashboard page showing'
   if (isRoute(path, ROUTE.about)) return 'about OneStop page showing'
   if (isRoute(path, ROUTE.help)) return 'help page showing'
   if (isRoute(path, ROUTE.error)) return 'error page showing'
@@ -115,8 +119,8 @@ export const isRoute = (path, route) => {
   return route.regex.exec(path)
 }
 
-export const extractBaseFromKnownRoutes = path => {
-  var findMatch = _.find(ROUTE, route => {
+export const extractBaseFromKnownRoutes = (path) => {
+  var findMatch = _.find(ROUTE, (route) => {
     return isRoute(path, route)
   })
   if (findMatch) {
@@ -125,19 +129,19 @@ export const extractBaseFromKnownRoutes = path => {
   }
 }
 
-const sitemapMatch = path => {
+const sitemapMatch = (path) => {
   return isRoute(path, ROUTE.sitemap)
 }
 
-export const isSitemap = path => {
+export const isSitemap = (path) => {
   return sitemapMatch(path) ? true : false
 }
 
-export const validHomePaths = [ '', 'index', 'index.html' ] // put this in some util you can export like urlUtils, I think
+export const validHomePaths = ['', 'index', 'index.html'] // put this in some util you can export like urlUtils, I think
 
-export const isHome = path => {
+export const isHome = (path) => {
   let pathNoTrailingSlash = path.replace(/\/+$/, '')
-  return validHomePaths.some(homePath => {
+  return validHomePaths.some((homePath) => {
     return (
       path === '/' ||
       pathNoTrailingSlash === '' ||
@@ -146,19 +150,19 @@ export const isHome = path => {
   })
 }
 
-export const isSearch = path => {
+export const isSearch = (path) => {
   return isRoute(path, ROUTE.collections) || isRoute(path, ROUTE.granules)
 }
 
-export const isDetailPage = path => {
+export const isDetailPage = (path) => {
   return isRoute(path, ROUTE.details) ? true : false
 }
 
-export const isGranuleListPage = path => {
+export const isGranuleListPage = (path) => {
   return isRoute(path, ROUTE.granules) ? true : false
 }
 
-export const getIdFromPath = path => {
+export const getIdFromPath = (path) => {
   if (isDetailPage(path)) {
     const match = isRoute(path, ROUTE.details)
     return match && match[1] ? match[1] : null
@@ -169,7 +173,7 @@ export const getIdFromPath = path => {
   }
 }
 
-export const getCollectionIdFromDetailPath = path => {
+export const getCollectionIdFromDetailPath = (path) => {
   if (!isDetailPage(path)) {
     return null
   }
@@ -177,7 +181,7 @@ export const getCollectionIdFromDetailPath = path => {
   return match && match[1] ? match[1] : null
 }
 
-export const getCollectionIdFromGranuleListPath = path => {
+export const getCollectionIdFromGranuleListPath = (path) => {
   if (!isGranuleListPage(path)) {
     return null
   }
