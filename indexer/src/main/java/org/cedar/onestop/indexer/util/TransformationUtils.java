@@ -17,9 +17,6 @@ import java.util.stream.Stream;
 
 import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID;
-// import org.cedar.schemas.analyze.Temporal;
-//
-// import java.time.temporal.ChronoField;
 
 import org.cedar.onestop.kafka.common.util.DataUtils;
 
@@ -373,52 +370,17 @@ public class TransformationUtils {
       // paleo dates are not indexable, so don't add beginDate or endDate to the index
       beginDate = null;
       endDate = null;
-      beginDayOfYear = null;
-      beginDayOfMonth = null;
-      beginMonth = null;
-      endDayOfYear = null;
-      endDayOfMonth = null;
-      endMonth = null;
     } else {
       beginDate = analysis.getInstantUtcDateTimeString();
-      var precision = analysis.getInstantPrecision();
-      if (precision.equals(ChronoUnit.DAYS.toString())) {
-        // End of day
-        endDate = bounding.getInstant() + "T23:59:59Z";
-      } else if (precision.equals(ChronoUnit.YEARS.toString())) {
-        // Last day of year + end of day
-        endDate = bounding.getInstant() + "-12-31T23:59:59Z";
-      } else {
-        // Precision is NANOS so use instant value as-is
-        // TODO hopefully it's not a weird rare precision like "month"
-        endDate = beginDate;
-      }
-
-      if (analysis.getInstantDayOfYear() != null) {
-        beginDayOfYear = analysis.getInstantDayOfYear();
-        endDayOfYear = analysis.getInstantDayOfYear();
-      } else {
-        beginDayOfYear = 1;
-        endDayOfYear = 365; // TODO leap year
-      }
-
-      if (analysis.getInstantDayOfMonth() != null) {
-        beginDayOfMonth = analysis.getInstantDayOfMonth();
-        endDayOfMonth = analysis.getInstantDayOfMonth();
-      } else {
-        beginDayOfMonth = 1;
-        endDayOfMonth = 31; // TODO depends on if there is a month but no day, but for the moment I'm assuming it's Year or Day precision, but not month...
-      }
-
-      if (analysis.getInstantMonth() != null) {
-        beginMonth = analysis.getInstantMonth();
-        endMonth = analysis.getInstantMonth();
-      } else {
-        beginMonth = 1;
-        endMonth = 12;
-      }
+      endDate = analysis.getInstantEndUtcDateTimeString();
     }
 
+    beginDayOfYear = analysis.getInstantDayOfYear();
+    endDayOfYear = analysis.getInstantEndDayOfYear();
+    beginMonth = analysis.getInstantMonth();
+    endMonth = analysis.getInstantEndMonth();
+    beginDayOfMonth = analysis.getInstantDayOfMonth();
+    endDayOfMonth = analysis.getInstantEndDayOfMonth();
     beginYear = analysis.getInstantYear();
     endYear = analysis.getInstantYear();
 
@@ -444,44 +406,12 @@ public class TransformationUtils {
     if (analysis.getBeginDescriptor() == VALID) {
       if (analysis.getBeginIndexable()) {
         result.put("beginDate", analysis.getBeginUtcDateTimeString());
-
-        var precision = analysis.getBeginPrecision();
-
-        // if (Temporal.extractField(parsedDate, ChronoField.DAY_OF_YEAR) != null) {
-        if (precision.equals(ChronoUnit.DAYS.toString()) || precision.equals(ChronoUnit.NANOS.toString())) {
-          beginDayOfYear = analysis.getBeginDayOfYear();
-          beginDayOfMonth = analysis.getBeginDayOfMonth();
-          beginMonth = analysis.getBeginMonth();
-        }
-        else {
-          beginDayOfYear = 1;
-          beginDayOfMonth = 1;
-          beginMonth = 1; // TODO base off month precision, if applicable
-        }
-
-      } else {
-        beginDayOfYear = null;
-        beginDayOfMonth = null;
-        beginMonth = null;
       }
+      beginDayOfYear = analysis.getBeginDayOfYear();
+      beginDayOfMonth = analysis.getBeginDayOfMonth();
+      beginMonth = analysis.getBeginMonth();
+
       result.put("beginYear", analysis.getBeginYear());
-
-      // if (precision.equals(ChronoUnit.DAYS.toString())) {
-      //   beginDayOfYear = analysis.getBeginDayOfYear();
-      //   beginDayOfMonth = analysis.getBeginDayOfMonth();
-      //   beginMonth = analysis.getBeginMonth();
-      // }
-      // // else {
-      // //   beginDayOfYear = 1;
-      // //   beginDayOfMonth = 1;
-      // //   beginMonth = 1; // TODO base off month precision, if applicable
-      // // }
-      // else {
-      //   beginDayOfYear = null;
-      //   beginDayOfMonth = null;
-      //   beginMonth = null;
-      // }
-
       result.put("beginDayOfYear", beginDayOfYear);
       result.put("beginDayOfMonth", beginDayOfMonth);
       result.put("beginMonth", beginMonth);
@@ -496,42 +426,12 @@ public class TransformationUtils {
     if (analysis.getEndDescriptor() == VALID) {
       if (analysis.getEndIndexable()) {
         result.put("endDate", analysis.getEndUtcDateTimeString());
-
-        var precision = analysis.getEndPrecision();
-        if (precision.equals(ChronoUnit.DAYS.toString())) {
-          endDayOfYear = analysis.getEndDayOfYear();
-          endDayOfMonth = analysis.getEndDayOfMonth();
-          endMonth = analysis.getEndMonth();
-        }
-        else { // TODO this implies other precision checks (begin date) are also needed
-          endDayOfYear = 365; // TODO leap years
-          endDayOfMonth = 31; // TODO base off month precision, if applicable
-          endMonth = 12; // TODO base off month precision, if applicable
-        }
-      } else {
-        endDayOfYear = null;
-        endDayOfMonth = null;
-        endMonth = null;
       }
+
+      endDayOfYear = analysis.getEndDayOfYear();
+      endDayOfMonth = analysis.getEndDayOfMonth();
+      endMonth = analysis.getEndMonth();
       result.put("endYear", analysis.getEndYear());
-
-
-      // if (precision.equals(ChronoUnit.DAYS.toString())) {
-      //   endDayOfYear = analysis.getEndDayOfYear();
-      //   endDayOfMonth = analysis.getEndDayOfMonth();
-      //   endMonth = analysis.getEndMonth();
-      // }
-      // // else { // TODO this implies other precision checks (begin date) are also needed
-      //   // endDayOfYear = 365; // TODO leap years
-      //   // endDayOfMonth = 31; // TODO base off month precision, if applicable
-      //   // endMonth = 12; // TODO base off month precision, if applicable
-      // // }
-      // else {
-      //   endDayOfYear = null;
-      //   endDayOfMonth = null;
-      //   endMonth = null;
-      // }
-
       result.put("endDayOfYear", endDayOfYear);
       result.put("endDayOfMonth", endDayOfMonth);
       result.put("endMonth", endMonth);
@@ -541,113 +441,21 @@ public class TransformationUtils {
 
   private static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     String beginDate, endDate;
-    // Long year;
     Long beginYear, endYear;
     Integer beginDayOfYear, beginDayOfMonth, beginMonth;
     Integer endDayOfYear, endDayOfMonth, endMonth;
     var result = new HashMap<String, Object>();
 
     // If bounding is actually an instant, set search fields accordingly
-    if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT && analysis.getBeginDescriptor() == UNDEFINED) {
+    if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT && analysis.getBeginDescriptor() == UNDEFINED) { // distinguished getting begin and end date that were exactly the same (also described as instant)
       return prepareDatesForInstant(bounding, analysis);
     } else {
-      // If dates exist (thus VALID) and are indexable use value from analysis block where dates are UTC datetime normalized,
-      // else only set the year values as this is indicative of a paleo date TODO does this all behave the same now?
-
       result.putAll(prepareBeginDate(bounding, analysis));
       result.putAll(prepareEndDate(bounding, analysis));
-      // if (analysis.getBeginDescriptor() == VALID && analysis.getBeginIndexable()) {
-      //   beginDate = analysis.getBeginUtcDateTimeString();
-      //   beginYear = analysis.getBeginYear();
-      //   var precision = analysis.getBeginPrecision();
-      //   if (precision.equals(ChronoUnit.DAYS.toString())) {
-      //     beginDayOfYear = analysis.getBeginDayOfYear();
-      //     beginDayOfMonth = analysis.getBeginDayOfMonth();
-      //     beginMonth = analysis.getBeginMonth();
-      //   } else {
-      //     beginDayOfYear = 1;
-      //     beginDayOfMonth = 1;
-      //     beginMonth = 1; // TODO base off month precision, if applicable
-      //   }
-      // } else {
-      //   beginDate = null;
-      //   beginYear = null;
-      //   beginDayOfYear = null;
-      //   beginDayOfMonth = null;
-      //   beginMonth = null;
-      // }
-      // if (analysis.getEndDescriptor() == VALID && analysis.getEndIndexable()) {
-      //   endDate = analysis.getEndUtcDateTimeString();
-      //   endYear = analysis.getEndYear();
-      //   var precision = analysis.getEndPrecision();
-      //   if (precision.equals(ChronoUnit.DAYS.toString())) {
-      //     endDayOfYear = analysis.getEndDayOfYear();
-      //     endDayOfMonth = analysis.getEndDayOfMonth();
-      //     endMonth = analysis.getEndMonth();
-      //   } else { // TODO this implies other precision checks (begin date) are also needed
-      //     endDayOfYear = 365; // TODO leap years
-      //     endDayOfMonth = 31; // TODO base off month precision, if applicable
-      //     endMonth = 12; // TODO base off month precision, if applicable
-      //   }
-      // } else {
-      //   endDate = null;
-      //   endYear = null;
-      //   endDayOfYear = null;
-      //   endDayOfMonth = null;
-      //   endMonth = null;
-      // }
     }
-
-    // result.put("beginDate", beginDate);
-    // result.put("beginYear", beginYear);
-    // result.put("beginDayOfYear", beginDayOfYear);
-    // result.put("beginDayOfMonth", beginDayOfMonth);
-    // result.put("beginMonth", beginMonth);
-    // result.putAll(parseAdditionalTimeFields("begin", beginDate));
-
-    // result.put("endDate", endDate);
-    // result.put("endYear", endYear);
-    // result.put("endDayOfYear", endDayOfYear);
-    // result.put("endDayOfMonth", endDayOfMonth);
-    // result.put("endMonth", endMonth);
-    // result.putAll(parseAdditionalTimeFields("end", endDate));
 
     return result;
   }
-
-  // private static HashMap<String, Object> parseAdditionalTimeFields(String prefix, String time){
-  //   var result = new HashMap<String, Object>();
-  //   try {
-  //
-  //     Integer dayOfYear, dayOfMonth, month;
-  //     if (time != null) {
-  //       ZonedDateTime dateTime = ZonedDateTime.parse(time);
-  //
-  //       dayOfYear = dateTime.getDayOfYear();
-  //       dayOfMonth = dateTime.getDayOfMonth();
-  //       month = dateTime.getMonthValue();
-  //     }
-  //     else {
-  //       dayOfYear = null;
-  //       dayOfMonth = null;
-  //       month = null;
-  //     }
-  //
-  //     result.put(prefix + "DayOfYear", dayOfYear);
-  //     result.put(prefix + "DayOfMonth", dayOfMonth);
-  //     result.put(prefix + "Month", month);
-  //   } catch (Exception e) {} // TODO temporary
-  //   return result;
-  // }
-
-  // private static Long parseYear(String utcDateTime) {
-  //   if (StringUtils.isBlank(utcDateTime)) {
-  //     return null;
-  //   } else {
-  //     // Watch out for BCE years
-  //     return Long.parseLong(utcDateTime.substring(0, utcDateTime.indexOf('-', 1)));
-  //   }
-  // }
 
   ////////////////////////////
   // Keywords               //
