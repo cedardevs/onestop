@@ -16,7 +16,7 @@ plugins {
     // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/index.html
     // - provides monitoring of the projects dependent libraries;
     //   creating a report of known vulnerable components that are included in the build.
-    id("org.owasp.dependencycheck").version("5.3.0")
+    id("org.owasp.dependencycheck").version("5.3.2.1")
 
     // Note: The plugins below are not universally `apply(true)`because subprojects only need them conditionally.
 
@@ -46,13 +46,13 @@ plugins {
     // Spring dependency management plugin
     // https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/
     // - A Gradle plugin that provides Maven-like dependency management and exclusions
-    id("io.spring.dependency-management").version("1.0.6.RELEASE").apply(false)
+    id("io.spring.dependency-management").version("1.0.9.RELEASE").apply(false)
 
     // Spring Boot plugin
     // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
     // - A Gradle plugin that allows you to package executable jar or war archives,
     //   run Spring Boot applications, and use the dependency management provided by spring-boot-dependencies
-    id("org.springframework.boot").version("2.2.5.RELEASE").apply(false)
+    id("org.springframework.boot").version("2.3.1.RELEASE").apply(false)
 
     // Gogradle plugin
     // https://github.com/gogradle/gogradle
@@ -269,25 +269,9 @@ subprojects {
         val developmentOnly: Configuration by configurations.creating
 
         dependencies {
-            annotationProcessor(platform("io.micronaut:micronaut-bom:${Versions.MICRONAUT}"))
-            annotationProcessor("io.micronaut:micronaut-inject-java")
-            annotationProcessor("io.micronaut:micronaut-validation")
-            implementation(platform("io.micronaut:micronaut-bom:${Versions.MICRONAUT}"))
-            implementation("io.micronaut:micronaut-management")
-            implementation("io.micronaut.kubernetes:micronaut-kubernetes-discovery-client")
-            implementation("io.micronaut:micronaut-inject")
-            implementation("io.micronaut:micronaut-validation")
-            implementation("io.micronaut:micronaut-runtime")
-            implementation("javax.annotation:javax.annotation-api")
-            implementation("io.micronaut:micronaut-http-server-netty")
-            implementation("io.micronaut:micronaut-http-client")
-            implementation("io.micronaut.configuration:micronaut-kafka")
+            implementation("javax.annotation-api:2.0.1.Final")
             runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
-            testAnnotationProcessor(platform("io.micronaut:micronaut-bom:${Versions.MICRONAUT}"))
-            testAnnotationProcessor("io.micronaut:micronaut-inject-java")
-            testImplementation(platform("io.micronaut:micronaut-bom:${Versions.MICRONAUT}"))
             testImplementation("org.junit.jupiter:junit-jupiter-api")
-            testImplementation("io.micronaut.test:micronaut-test-junit5")
             testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
         }
 
