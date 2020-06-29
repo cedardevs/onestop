@@ -1,3 +1,5 @@
+import com.moowork.gradle.node.npm.NpmTask
+
 sourceCompatibility = 11
 targetCompatibility = 11
 
@@ -102,9 +104,13 @@ task extractSchemaDefinitions(type: Copy) {
   into "$buildDir/resources/main"
 }
 
+task retire(type: NpmTask) {
+  args = ["run", "retire"]
+}
+
 // NOTE: The 'build' task defined in package.json pipes the output directly to the output file
 task generateOpenApi(type: NpmTask) {
-  dependsOn { ['npmInstall', 'extractSchemaDefinitions'] }
+  dependsOn { ['npmInstall', 'retire', 'extractSchemaDefinitions'] }
   args = ['run', 'build']
   outputs.file("$buildDir/resources/main/static/openapi.yaml")
 }
