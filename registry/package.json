@@ -1,9 +1,9 @@
 {
-  "name": "psi-schema-deref",
+  "name": "schema-deref",
   "scripts": {
     "build": "speccy resolve build/resources/main/openapi_base.yaml --json-schema > build/resources/main/static/openapi.yaml"
   },
-  "dependencies": {
+  "devDependencies": {
     "speccy": "^0.11.0"
   }
 }
