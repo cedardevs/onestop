@@ -269,7 +269,6 @@ subprojects {
         val developmentOnly: Configuration by configurations.creating
 
         dependencies {
-            implementation("javax.annotation:javax.annotation-api")
             runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
             testImplementation("org.junit.jupiter:junit-jupiter-api")
             testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")

@@ -1,9 +1,11 @@
 {
   "name": "schema-deref",
   "scripts": {
-    "build": "speccy resolve build/resources/main/openapi_base.yaml --json-schema > build/resources/main/static/openapi.yaml"
+    "build": "speccy resolve build/resources/main/openapi_base.yaml --json-schema > build/resources/main/static/openapi.yaml",
+    "retire": "retire -p"
   },
   "devDependencies": {
+    "retire": "^2.2.1",
     "speccy": "^0.11.0"
   }
 }
