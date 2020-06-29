@@ -316,6 +316,13 @@ subprojects {
                     }
                 }
 
+                if (requested.group == "org.apache.logging.log4j" && requested.name == "log4j-api") {
+                    if (requested.version!!.startsWith("2.11.1")) {
+                        useVersion("2.13.3")
+                        because("fixes vulnerability in 2.11.1 and before")
+                    }
+                }
+
                 if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
                     if (requested.version!!.startsWith("2.9.") || requested.version!!.startsWith("2.10.") ) {
                         useVersion("2.10.1")
