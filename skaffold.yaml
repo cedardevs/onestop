@@ -3,22 +3,22 @@ kind: Config
 
 build:
   artifacts:
-    #    - image: cedardevs/onestop-indexer
-    #      jib:
-    #        project: indexer
-    #        type: gradle
-    #    - image: cedardevs/onestop-registry
-    #      jib:
-    #        project: registry
-    #        type: gradle
-    #    - image: cedardevs/onestop-stream-manager
-    #      jib:
-    #        project: stream-manager
-    #        type: gradle
-    #    - image: cedardevs/onestop-search
-    #      jib:
-    #        project: search
-    #        type: gradle
+    - image: cedardevs/onestop-indexer
+      jib:
+        project: indexer
+        type: gradle
+    - image: cedardevs/onestop-registry
+      jib:
+        project: registry
+        type: gradle
+    - image: cedardevs/onestop-stream-manager
+      jib:
+        project: stream-manager
+        type: gradle
+    - image: cedardevs/onestop-search
+      jib:
+        project: search
+        type: gradle
     - image: cedardevs/onestop-client
       jib:
         project: client
@@ -27,10 +27,10 @@ build:
       jib:
         project: user
         type: gradle
-#    - image: cedardevs/onestop-gateway
-#      jib:
-#        project: gateway
-#        type: gradle
+    - image: cedardevs/onestop-gateway
+      jib:
+        project: gateway
+        type: gradle
 
 .onestop-indexer: &onestop-indexer
   name: onestop-indexer
@@ -110,11 +110,16 @@ build:
   setValues:
     env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
     env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
+    env.UI_AUTH_LOGINENDPOINT: http://localhost/oauth2/authorization/login-gov
+    env.UI_AUTH_LOGOUTENDPOINT: http://localhost/logout
+    env.UI_AUTH_USERPROFILEENDPOINT: http://localhost/api/user/v1/saved-search/user/
+
     features.login-gov: "false"
     features.sitemap: "true"
     service.nodePort: "30097"
     service.clusterIP: 10.100.100.2
     service.type: NodePort
+
   imageStrategy:
     helm: {}
 
@@ -144,7 +149,6 @@ build:
     config: |-
       ---
       server.servlet.context-path: /user
-
       logging.level.org.springframework.security: DEBUG
       logging.level.org.springframework.web: DEBUG
       spring:
@@ -175,19 +179,16 @@ build:
       ---
       logging.level.org.springframework.security: DEBUG
       logging.level.org.springframework.web: DEBUG
-
       server.servlet.context-path: /api
-
       gateway:
         routes:
-          user: http://onestop-user:8080
+          user: http://onestop-user:8080/user/
       login-gov:
         keystore:
           alias: ${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
           file: ${PRIVATE_KEY_JWT_KEYSTORE_FILE}
           password: ${PRIVATE_KEY_JWT_KEYSTORE_PASSWORD}
           type: ${PRIVATE_KEY_JWT_KEYSTORE_TYPE}
-
 .onestop-postgresql: &onestop-postgresql
   name: onestop-postgresql
   chartPath: helm/onestop-postgresql
@@ -205,13 +206,15 @@ deploy:
 
   helm:
     releases:
-      #      - *onestop-indexer
-      #      - *onestop-registry
-      #      - *onestop-manager
-      #      - *onestop-search
-      #      - *onestop-client
+      - *onestop-indexer
+      - *onestop-registry
+      - *onestop-manager
+      - *onestop-search
+      - *onestop-client
       - *onestop-user
       - *onestop-gateway
+      - *onestop-ingress
+      - *onestop-postgresql
       - name: onestop-dev
         chartPath: helm/onestop-dev
 
@@ -240,9 +243,16 @@ profiles:
     deploy:
       helm:
         releases:
-#          - *onestop-gateway
-          - *onestop-user
-          - *onestop-ingress
-          - *onestop-postgresql
-          - *onestop-net-tools
+          - *onestop-search
           - *onestop-client
+          - *onestop-gateway
+          - *onestop-user
+          - *onestop-postgresql
+          - *onestop-ingress
+#          - *onestop-net-tools
+          - name: onestop-dev
+            chartPath: helm/onestop-dev
+            setValues:
+              cp-kafka.enabled: "false"
+              cp-schema-registry.enabled: "false"
+              cp-zookeeper.enabled: "false"
