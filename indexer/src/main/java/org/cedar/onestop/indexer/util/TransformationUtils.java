@@ -18,10 +18,6 @@ import java.util.stream.Stream;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID;
 
-import org.cedar.onestop.kafka.common.util.DataUtils;
-
-// TODO import org.apache.kafka.streams.StreamsBuilder;
-
 /**
  * This class contains utilities for transforming the contents of the Avro (schemas) records into the appropriate
  * corresponding Elasticsearch mapping format.
@@ -65,7 +61,7 @@ public class TransformationUtils {
 
   public static Map<String, Object> prepareIdentification(IdentificationAnalysis identification, RecordType recordType) {
     var result = new HashMap<String, Object>();
-    var analysis = AvroUtils.avroToMap(identification); // TODO using map because I need javadocs on the IdentificationAnalysis object...
+    var analysis = AvroUtils.avroToMap(identification); // currently using map because couldn't get it working with IdentificationAnalysis object. Worth revisiting at some point.
 
     if (analysis == null) {
       return result;
