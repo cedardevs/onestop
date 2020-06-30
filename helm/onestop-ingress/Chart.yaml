@@ -21,6 +21,6 @@ version: 0.1.0
 appVersion: 1.16.0
 
 dependencies:
-  - name: nginx-ingress
-    version: ~1.1.4
-    repository: "https://kubernetes-charts.storage.googleapis.com/"
+  - name: ingress-nginx
+    version: ~2.3.0
+    repository: "https://kubernetes.github.io/ingress-nginx"
