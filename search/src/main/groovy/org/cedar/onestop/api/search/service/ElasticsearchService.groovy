@@ -40,7 +40,7 @@ class ElasticsearchService {
     this.esService = new ElasticsearchReadService(this.restClient, this.esConfig)
   }
 
-////////////
+  ////////////
   // Counts //
   ////////////
   Map totalCollections() {
@@ -169,9 +169,7 @@ class ElasticsearchService {
     ]
     String searchEndpoint = "${esConfig.SITEMAP_INDEX_ALIAS}/_search"
     log.debug("searching for sitemap against endpoint ${searchEndpoint}")
-    HttpEntity searchRequestQuery = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
-    Request searchRequest = new Request('GET', searchEndpoint)
-    searchRequest.entity = searchRequestQuery
+    Request searchRequest = new Request('GET', searchEndpoint).setJsonEntity(requestBody)
     Response searchResponse = restClient.performRequest(searchRequest)
     Map parsedSearchResponse = parseSearchResponse(searchResponse)
 
