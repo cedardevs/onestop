@@ -77,8 +77,6 @@ task integrationTest(type: Test) {
   reports.html.destination =  file("${buildDir}/reports/integrationTests")
 }
 
-check.dependsOn integrationTest
-
 bootJar {
   classifier = 'all' // add a classifier to distinguish the executable jar
   baseName = "${rootProject.name}-${project.name}"
@@ -104,16 +102,26 @@ task extractSchemaDefinitions(type: Copy) {
   into "$buildDir/resources/main"
 }
 
+dependencyCheck {
+  analyzers.nodeAudit.enabled = false
+  analyzers.retirejs.enabled = false
+  analyzers.retirejs.forceupdate = false
+  analyzers.retirejs.filterNonVulnerable = false
+}
+
 task retire(type: NpmTask) {
+  dependsOn { ['npmInstall']}
   args = ["run", "retire"]
 }
 
 // NOTE: The 'build' task defined in package.json pipes the output directly to the output file
 task generateOpenApi(type: NpmTask) {
-  dependsOn { ['npmInstall', 'retire', 'extractSchemaDefinitions'] }
+  dependsOn { ['npmInstall', 'extractSchemaDefinitions'] }
   args = ['run', 'build']
   outputs.file("$buildDir/resources/main/static/openapi.yaml")
 }
+
+check.dependsOn {['retire', integrationTest] }
 
 processResources.finalizedBy(generateOpenApi)
 assemble.dependsOn(sourceJar)

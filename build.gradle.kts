@@ -66,6 +66,10 @@ repositories {
     jcenter()
 }
 
+subprojects {
+    apply(plugin = "org.owasp.dependencycheck")
+}
+
 group = "org.cedar.onestop"
 
 version = rootProject.dynamicVersion(vendor ="cedardevs", envBuildTag = "ONESTOP_BUILD_TAG", ci = CI.CIRCLE, registry = Registry.DOCKER_HUB)
@@ -259,40 +263,7 @@ subprojects {
         }
 
     }
-    if(micronautProjects.contains(name)) {
 
-        apply(plugin = "application")
-
-        // for creating fat/uber JARs
-        apply(plugin = "com.github.johnrengelman.shadow")
-
-        val developmentOnly: Configuration by configurations.creating
-
-        dependencies {
-            runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
-            testImplementation("org.junit.jupiter:junit-jupiter-api")
-            testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-        }
-
-        // use JUnit 5 platform
-        tasks.withType<Test> {
-            classpath += developmentOnly
-            useJUnitPlatform()
-        }
-        tasks.withType<JavaCompile> {
-            options.encoding = "UTF-8"
-            options.compilerArgs.add("-parameters")
-        }
-
-        tasks.withType<ShadowJar> {
-            mergeServiceFiles()
-        }
-
-        tasks.named<JavaExec>("run") {
-            classpath += developmentOnly
-            jvmArgs("-noverify", "-XX:TieredStopAtLevel=1", "-Dcom.sun.management.jmxremote")
-        }
-    }
     if(goProjects.contains(name)) {
         // apply the Gogradle plugin to projects using Go
         apply(plugin = "com.github.blindpirate.gogradle")
@@ -302,6 +273,7 @@ subprojects {
         // override versions of dependencies with vulnerabilities
         configurations.all {
             resolutionStrategy.eachDependency {
+
                 if (requested.group == "org.apache.santuario" && requested.name == "xmlsec") {
                     if (requested.version!!.startsWith("2.0") && requested.version!! <= "2.1.4") {
                         useVersion("2.1.4")
@@ -323,42 +295,34 @@ subprojects {
                     }
                 }
 
+                if (requested.group == "org.bouncycastle" && requested.name == "bcprov-jdk15on") {
+                    if (requested.version!!.startsWith("1.63")) {
+                        useVersion("1.65")
+                        because("fixes vulnerability in 1.63 and before")
+                    }
+                }
+
                 if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
                     if (requested.version!!.startsWith("2.9.") || requested.version!!.startsWith("2.10.") ) {
                         useVersion("2.10.1")
                         because("fixes vulnerability in 2.9.9 and before")
                     }
                 }
-                if (requested.group == "org.bouncycastle" && requested.name == "bcprov-jdk15on") {
-                    if (requested.version!!.startsWith("1.5") && requested.version!! <= "1.59") {
-                        useVersion("1.62")
-                        because("fixes vulnerability in 1.5x before 1.6x")
-                    }
-                }
-                if (requested.group == "org.apache.zookeeper" && requested.name == "zookeeper") {
-                    if (requested.version!!.startsWith("3.4") && requested.version!! <= "3.5.5") {
-                        useVersion("3.5.5")
-                        because("Enforce zookeeper 3.4.14+ to avoid vulnerability CVE-2019-0201")
-                    }
-                }
-                if (requested.group == "org.apache.kafka" && requested.name == "kafka_2.11") {
-                    if (requested.version!!.startsWith("2.0.1") && requested.version!! <= "2.2.1") {
-                        useVersion("2.2.1")
-                        because("Enforce kafka_2.11 2.0.1 to avoid vulnerability CVE-2018-17196")
-                    }
-                }
-                if (requested.group == "org.elasticsearch" && requested.name == "elasticsearch") {
-                    if (requested.version!! <= Versions.ELASTIC) {
-                        useVersion(Versions.ELASTIC)
-                        because("some packages had an earlier ES version")
-                    }
-                }
+
                 if (requested.group == "com.google.guava" && requested.name == "guava") {
                     if (requested.version!! <= "27.0.1") {
                         useVersion("27.0.1-jre")
                         because("fixes CVE-2018-10237")
                     }
                 }
+
+                if (requested.group == "org.jasig.cas.client" && requested.name == "cas-client-core") {
+                    if (requested.version!! <= "3.5.0") {
+                        useVersion("3.6.0")
+                        because("fixes CWE-611: Improper Restriction of XML External Entity Reference")
+                    }
+                }
+
                 if (requested.group == "io.netty" && requested.name == "netty-all") {
                     if (requested.version!! < "4.1.42.Final") {
                         useVersion("4.1.42.Final")

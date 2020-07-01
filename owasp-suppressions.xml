@@ -12,16 +12,6 @@
 
   <suppress>
     <notes><![CDATA[
-      file name: zookeeper-3.4.13.jar
-      The CVE (https://nvd.nist.gov/vuln/detail/CVE-2018-8012) explicitly states that it only applies to
-      versions of zookeeper prior to 3.4.10. We're currently using 3.4.13.
-    ]]></notes>
-    <gav regex="true">^org\.apache\.zookeeper:zookeeper:3\.4\.[1-9][0-9]+$</gav>
-    <cve>CVE-2018-8012</cve>
-  </suppress>
-
-  <suppress>
-    <notes><![CDATA[
       Applies to FasterXML jackson-databind versions 2.9.x or earlier, while this application uses 2.10.1 via gradle
       dependency resolution strategy
       ]]></notes>
@@ -59,14 +49,6 @@
     ]]></notes>
     <sha1>906d56dcbd43343b6ca42188ae18ba98dc6c2fdf</sha1>
     <cve>CVE-2018-10237</cve>
-  </suppress>
-
-  <suppress>
-    <notes><![CDATA[
-      Refers to a Groovy LDAP class which is not in use in this application
-      ]]></notes>
-    <filePath regex="true">.*\bgroovy-.*\.jar</filePath>
-    <cve>CVE-2016-6497</cve>
   </suppress>
 
   <suppress>
@@ -133,6 +115,7 @@
     <sha1>4a4e49d0c3ae69671a3c8d63d730b0fc84da91a5</sha1>
     <cve>CVE-2019-10755</cve>
   </suppress>
+
   <suppress>
     <notes><![CDATA[
       file name: spring-webmvc-pac4j-3.2.0.jar
@@ -141,13 +124,21 @@
     <sha1>6fa360c8647f4c5d166437883bbfe639826fc162</sha1>
     <cve>CVE-2019-10755</cve>
   </suppress>
+
   <suppress>
     <notes><![CDATA[
-      file name: pac4j-cas-3.8.2.jar
-      This vulnerability relates to using pac4j to authenticate via SAML, which is something we are not using pac4j to do
+      file name: spring-webmvc-pac4j-3.2.0.jar
+      These CVE vulnerabilities are all described in relation to Spring Framework versions <= 4. Because the dependency
+      triggering these is coming from spring mvc version 3 and 4 but we know we using spring mvc 5.2.7.
     ]]></notes>
-    <sha1>a000f0af5afc878769977db6d3de5501018f6002</sha1>
-    <cpe>cpe:/a:pac4j:pac4j</cpe>
+    <cve>CVE-2014-1904</cve>
+    <cve>CVE-2014-3578</cve>
+    <cve>CVE-2014-3625</cve>
+    <cve>CVE-2014-0225</cve>
+    <cve>CVE-2013-6430</cve>
+    <cve>CVE-2015-5211</cve>
+    <cve>CVE-2016-5007</cve>
+    <cve>CVE-2015-3192</cve>
   </suppress>
 
   <suppress>
@@ -158,6 +149,7 @@
     ]]></notes>
     <cve>CVE-2014-3488</cve>
   </suppress>
+
   <suppress>
     <notes><![CDATA[
       file names: spring-boot-starter-reactor-netty-2.2.0.RELEASE.jar, reactor-netty-0.9.0.RELEASE.jar
@@ -166,6 +158,7 @@
     ]]></notes>
     <cve>CVE-2015-2156</cve>
   </suppress>
+
   <suppress>
     <notes><![CDATA[
       file names: spring-boot-starter-reactor-netty-2.2.0.RELEASE.jar, reactor-netty-0.9.0.RELEASE.jar
