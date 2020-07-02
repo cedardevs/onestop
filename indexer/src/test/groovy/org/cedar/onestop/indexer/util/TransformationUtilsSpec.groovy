@@ -3,6 +3,7 @@ package org.cedar.onestop.indexer.util
 import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.analyze.Temporal
 import org.cedar.schemas.avro.psi.Analysis
+import org.cedar.schemas.avro.psi.IdentificationAnalysis
 import org.cedar.schemas.avro.psi.TemporalBoundingAnalysis
 import org.cedar.schemas.avro.psi.ValidDescriptor
 import org.cedar.schemas.avro.psi.Checksum
@@ -135,6 +136,34 @@ class TransformationUtilsSpec extends Specification {
 
   }
 
+  def "reformatMessageForAnalysis populates #label"() {
+    String identifier = 'gov.noaa.nodc:0173643'
+    when:
+    def identificationAnalysis = IdentificationAnalysis.newBuilder()
+        .setFileIdentifierExists(true)
+        .setDoiExists(false)
+        .setParentIdentifierString(identifier)
+        .build()
+    def analysis = Analysis.newBuilder().setIdentification(identificationAnalysis).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setType(type).setAnalysis(analysis).build()
+
+    def indexedRecord = TransformationUtils.reformatMessageForAnalysis(record, fields, RecordType.granule)
+
+    then:
+    println(label)
+    println(JsonOutput.toJson(AvroUtils.avroToMap(record.getAnalysis(), true)))
+    println(JsonOutput.toJson(indexedRecord))
+    indexedRecord.each {
+      key, value -> println ("key=$key value=$value")
+    }
+
+    indexedRecord?.identification?.parentIdentifierString == identifier
+
+    where:
+    label                                     | fields                        | type
+    'collections with parentIdentifierString' | collectionAnalysisErrorFields | RecordType.collection
+    'granules with parentIdentifierString'    | granuleAnalysisErrorFields    | RecordType.granule
+  }
 
   def "reformatMessageForSearch populates with correct fields for #label"() {
     when:

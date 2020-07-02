@@ -48,7 +48,9 @@ export default class GranulesSummary extends React.Component {
 
     const linkText =
       loading || totalGranuleFilteredCount == totalGranuleCount
-        ? `Show all ${totalGranuleCount? totalGranuleCount.toLocaleString(): '0'} files in collection`
+        ? `Show all ${totalGranuleCount
+            ? totalGranuleCount.toLocaleString()
+            : '0'} files in collection`
         : `Show ${totalGranuleFilteredCount} matching files of ${totalGranuleCount} in collection`
 
     // TODO 508 this should probably be a link, not a button
