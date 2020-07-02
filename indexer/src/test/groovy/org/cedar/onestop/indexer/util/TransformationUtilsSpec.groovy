@@ -1,6 +1,13 @@
 package org.cedar.onestop.indexer.util
 
 import org.cedar.schemas.analyze.Analyzers
+import org.cedar.schemas.analyze.Temporal
+import org.cedar.schemas.avro.psi.Analysis
+import org.cedar.schemas.avro.psi.IdentificationAnalysis
+import org.cedar.schemas.avro.psi.TemporalBoundingAnalysis
+import org.cedar.schemas.avro.psi.ValidDescriptor
+import org.cedar.schemas.avro.psi.Checksum
+import org.cedar.schemas.avro.psi.ChecksumAlgorithm
 import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.FileInformation
 import org.cedar.schemas.avro.psi.ParsedRecord
@@ -8,16 +15,23 @@ import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
 import org.cedar.schemas.avro.psi.TemporalBounding
+import java.time.temporal.ChronoUnit
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static org.cedar.schemas.avro.util.TemporalTestData.getSituations
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import org.cedar.schemas.avro.util.AvroUtils
+
+import org.cedar.onestop.kafka.common.util.DataUtils;
 
 @Unroll
 class TransformationUtilsSpec extends Specification {
 
-  static collectionFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet()
-  static granuleFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS).keySet()
+  static Set<String> collectionSearchFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet()
+  static Set<String> granuleSearchFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS).keySet()
+  static Set<String> granuleAnalysisErrorFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS).keySet()
+  static Set<String> collectionAnalysisErrorFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS).keySet()
 
   static expectedKeywords = [
       "SIO > Super Important Organization",
@@ -70,17 +84,135 @@ class TransformationUtilsSpec extends Specification {
   ///////////////////////////////
   // Generic Indexed Fields    //
   ///////////////////////////////
-  def "only mapped #type fields are indexed"() {
+
+  def "reformatMessageForAnalysis populates with correct fields for #label"() {
     when:
-    def result = TransformationUtils.reformatMessageForSearch(record, fields)
+
+    ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
+      .setFileInformation(
+        FileInformation.newBuilder()
+        .setChecksums(
+          [
+          Checksum.newBuilder()
+          .setAlgorithm(ChecksumAlgorithm.MD5)
+          .setValue('abc')
+          .build()
+          ]
+        ).build()
+      )
+      .setAnalysis(
+        Analysis.newBuilder().setTemporalBounding(
+        TemporalBoundingAnalysis.newBuilder()
+            .setBeginDescriptor(ValidDescriptor.VALID)
+            .setBeginIndexable(true)
+            .setBeginPrecision(ChronoUnit.DAYS.toString())
+            .setBeginZoneSpecified(null)
+            .setBeginUtcDateTimeString("2000-02-01")
+            .setBeginYear(2000)
+            .setBeginMonth(2)
+            .setBeginDayOfYear(32)
+            .setBeginDayOfMonth(1)
+            .build()
+          ).build()
+        )
+      .build()
+
+    def indexedRecord = TransformationUtils.reformatMessageForAnalysis(record, fields, RecordType.granule)
 
     then:
-    result.keySet().each({ assert fields.contains(it) })
+
+    println(label)
+    println(JsonOutput.toJson(AvroUtils.avroToMap(record.getAnalysis(), true)))
+    println(JsonOutput.toJson(indexedRecord))
+    indexedRecord.keySet().contains("checksums") == shouldIncludeChecksums
+    indexedRecord.keySet().contains("internalParentIdentifier") == shouldIncludeParentIdentifier
+    (indexedRecord.keySet().contains("temporalBounding") && indexedRecord.get("temporalBounding").keySet().contains("beginMonth")) == false
+    (indexedRecord.keySet().contains("temporalBounding") && indexedRecord.get("temporalBounding").keySet().contains("beginIndexable")) == shouldIncludeTemporalAnalysis
 
     where:
-    type          | fields            | record
-    'collection'  | collectionFields  | TestUtils.inputCollectionRecord
-    'granule'     | granuleFields     | TestUtils.inputGranuleRecord
+    label | fields | shouldIncludeChecksums | shouldIncludeTemporalAnalysis | shouldIncludeParentIdentifier
+    'analysis and errors collections' | collectionAnalysisErrorFields | false | true  | false
+    'analysis and errors granules'    | granuleAnalysisErrorFields    | false | true  | true
+
+  }
+
+  def "reformatMessageForAnalysis populates #label"() {
+    String identifier = 'gov.noaa.nodc:0173643'
+    when:
+    def identificationAnalysis = IdentificationAnalysis.newBuilder()
+        .setFileIdentifierExists(true)
+        .setDoiExists(false)
+        .setParentIdentifierString(identifier)
+        .build()
+    def analysis = Analysis.newBuilder().setIdentification(identificationAnalysis).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setType(type).setAnalysis(analysis).build()
+
+    def indexedRecord = TransformationUtils.reformatMessageForAnalysis(record, fields, RecordType.granule)
+
+    then:
+    println(label)
+    println(JsonOutput.toJson(AvroUtils.avroToMap(record.getAnalysis(), true)))
+    println(JsonOutput.toJson(indexedRecord))
+    indexedRecord.each {
+      key, value -> println ("key=$key value=$value")
+    }
+
+    indexedRecord?.identification?.parentIdentifierString == identifier
+
+    where:
+    label                                     | fields                        | type
+    'collections with parentIdentifierString' | collectionAnalysisErrorFields | RecordType.collection
+    'granules with parentIdentifierString'    | granuleAnalysisErrorFields    | RecordType.granule
+  }
+
+  def "reformatMessageForSearch populates with correct fields for #label"() {
+    when:
+
+    ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
+      .setFileInformation(
+        FileInformation.newBuilder()
+        .setChecksums(
+          [
+          Checksum.newBuilder()
+          .setAlgorithm(ChecksumAlgorithm.MD5)
+          .setValue('abc')
+          .build()
+          ]
+        ).build()
+      )
+      .setAnalysis(
+        Analysis.newBuilder().setTemporalBounding(
+        TemporalBoundingAnalysis.newBuilder()
+            .setBeginDescriptor(ValidDescriptor.VALID)
+            .setBeginIndexable(true)
+            .setBeginPrecision(ChronoUnit.DAYS.toString())
+            .setBeginZoneSpecified(null)
+            .setBeginUtcDateTimeString("2000-02-01")
+            .setBeginYear(2000)
+            .setBeginMonth(2)
+            .setBeginDayOfYear(32)
+            .setBeginDayOfMonth(1)
+            .build()
+          ).build()
+        )
+      .build()
+
+    def indexedRecord = TransformationUtils.reformatMessageForSearch(record, fields)
+
+    then:
+
+    println(label)
+    println(JsonOutput.toJson(AvroUtils.avroToMap(record.getAnalysis(), true)))
+    println(JsonOutput.toJson(indexedRecord))
+    indexedRecord.keySet().contains("checksums") == shouldIncludeChecksums
+    indexedRecord.keySet().contains("internalParentIdentifier") == shouldIncludeParentIdentifier
+    (indexedRecord.keySet().contains("temporalBounding") && indexedRecord.get("temporalBounding").keySet().contains("beginMonth")) == false
+    (indexedRecord.keySet().contains("temporalBounding") && indexedRecord.get("temporalBounding").keySet().contains("beginIndexable")) == shouldIncludeTemporalAnalysis
+
+    where:
+    label | fields | shouldIncludeChecksums | shouldIncludeTemporalAnalysis | shouldIncludeParentIdentifier
+    'search collections'              | collectionSearchFields        | false | false | false
+    'search granules'                 | granuleSearchFields           | true  | false | true
   }
 
   ////////////////////////////////
@@ -234,7 +366,7 @@ class TransformationUtilsSpec extends Specification {
   def "party names are not included in granule search info"() {
     when:
     def record = TestUtils.inputGranuleRecord // <-- granule!
-    def result = TransformationUtils.reformatMessageForSearch(record, collectionFields) // <-- top level reformat method!
+    def result = TransformationUtils.reformatMessageForSearch(record, collectionSearchFields) // <-- top level reformat method!
 
     then:
     result.individualNames == [] as Set
@@ -244,29 +376,48 @@ class TransformationUtilsSpec extends Specification {
   ////////////////////////////
   // Dates                  //
   ////////////////////////////
-  def "When #situation.description, expected temporal bounding generated"() {
+
+  def "when #label, expected temporal bounding generated"() {
     when:
-    def newTimeMetadata = TransformationUtils.prepareDates(situation.bounding, situation.analysis)
+    def discovery = Discovery.newBuilder().setTemporalBounding(input).build()
+    def newTimeMetadata = TransformationUtils.prepareDates(input, Temporal.analyzeBounding(discovery))
+
+    println("debug " + label + ": " + Temporal.analyzeBounding(discovery))
 
     then:
-    newTimeMetadata.sort() == expectedResult
+    newTimeMetadata.beginDate == beginDate
+    newTimeMetadata.beginYear == beginYear
+    newTimeMetadata.beginDayOfYear == beginDayOfYear
+    newTimeMetadata.beginDayOfMonth == beginDayOfMonth
+    newTimeMetadata.beginMonth == beginMonth
+    newTimeMetadata.endDate == endDate
+    newTimeMetadata.endYear == endYear
+    newTimeMetadata.endDayOfYear == endDayOfYear
+    newTimeMetadata.endDayOfMonth == endDayOfMonth
+    newTimeMetadata.endMonth == endMonth
 
     where:
-    situation               | expectedResult
-    situations.instantDay   | [beginDate: '1999-12-31T00:00:00Z', beginYear: 1999, beginDayOfYear: 365, beginDayOfMonth: 31, beginMonth: 12, endDate: '1999-12-31T23:59:59Z', endYear: 1999, endDayOfYear:365, endDayOfMonth:31, endMonth:12].sort()
-    situations.instantYear  | [beginDate: '1999-01-01T00:00:00Z', beginYear: 1999, beginDayOfYear: 1, beginDayOfMonth:1, beginMonth: 1, endDate: '1999-12-31T23:59:59Z', endYear: 1999, endDayOfMonth:31, endDayOfYear:365, endMonth:12].sort()
-    situations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000, beginDayOfYear: null, beginDayOfMonth:null, beginMonth: null, endDayOfYear: null, endDayOfMonth:null, endMonth:null].sort()
-    situations.instantNano  | [beginDate: '2008-04-01T00:00:00Z', beginYear: 2008, beginDayOfYear: 92, beginDayOfMonth:1, beginMonth: 4, endDate: '2008-04-01T00:00:00Z', endYear: 2008,  endDayOfYear: 92, endDayOfMonth:1, endMonth:4].sort()
-    situations.bounded      | [beginDate: '1900-01-01T00:00:00Z',  beginYear: 1900, beginDayOfYear: 1, beginDayOfMonth:1, beginMonth: 1, endDate: '2009-12-31T23:59:59Z', endYear: 2009, endDayOfYear:365, endDayOfMonth:31, endMonth:12].sort()
-    situations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000, beginDayOfYear: null, beginDayOfMonth:null, beginMonth: null, endDayOfYear: null, endDayOfMonth:null, endMonth:null].sort()
-    situations.ongoing      | [beginDate: "1975-06-15T12:30:00Z", beginDayOfMonth:15, beginDayOfYear:166, beginMonth:6, beginYear:1975, endDate:null, endYear:null, endDayOfYear: null, endDayOfMonth: null, endMonth: null].sort()
-    situations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null, beginDayOfYear: null, beginDayOfMonth:null, beginMonth: null, endDayOfYear: null, endDayOfMonth:null, endMonth:null].sort()
+    label | input | beginDate | beginYear | beginDayOfYear | beginDayOfMonth | beginMonth | endDate | endYear | endDayOfYear | endDayOfMonth | endMonth
+
+    "undefined range" | TemporalBounding.newBuilder().build() | null | null | null | null | null | null | null | null | null | null
+    "non-paleo bounded range with day and year precision" | TemporalBounding.newBuilder().setBeginDate('1900-01-01').setEndDate('2009').build() | '1900-01-01T00:00:00Z' | 1900 | 1 | 1 | 1 | '2009-12-31T23:59:59.999Z' | 2009 | 365 | 31 | 12
+    "paleo bounded range" | TemporalBounding.newBuilder().setBeginDate('-2000000000').setEndDate('-1000000000').build() | null | -2000000000 | null | null | null | null | -1000000000 | null | null | null
+    "ongoing range with second precision for begin" | TemporalBounding.newBuilder().setBeginDate('1975-06-15T12:30:00Z').build() | "1975-06-15T12:30:00Z" | 1975 | 166 | 15 | 6 | null | null | null | null | null
+    // INSTANTS:
+    "instant leapyear" | TemporalBounding.newBuilder().setInstant('2004').build() | '2004-01-01T00:00:00Z' | 2004 | 1 | 1 | 1 | '2004-12-31T23:59:59.999Z' | 2004 | 366 | 31 | 12
+    "instant with month precision" | TemporalBounding.newBuilder().setInstant('1999-02').build() | '1999-02-01T00:00:00Z' | 1999 | 32 | 1 | 2 | '1999-02-28T23:59:59.999Z' | 1999 | 59 | 28 | 2
+    "instant on leapyear with month precision" | TemporalBounding.newBuilder().setInstant('2004-02').build() | '2004-02-01T00:00:00Z' | 2004 | 32 | 1 | 2 | '2004-02-29T23:59:59.999Z' | 2004 | 60 | 29 | 2
+    "instant set with begin and end date matching" | TemporalBounding.newBuilder().setBeginDate('1994-07-20T13:22:00Z').setEndDate('1994-07-20T13:22:00Z').build() | '1994-07-20T13:22:00Z' | 1994 | 201 | 20 | 7 | '1994-07-20T13:22:00Z' | 1994 | 201 | 20 | 7
+    "non-paleo instant with years precision" | TemporalBounding.newBuilder().setInstant('1999').build() | '1999-01-01T00:00:00Z' | 1999 | 1 | 1 | 1 | '1999-12-31T23:59:59.999Z' | 1999 | 365 | 31 | 12
+    "non-paleo instant with days precision" | TemporalBounding.newBuilder().setInstant('1999-12-31').build() | '1999-12-31T00:00:00Z' | 1999 | 365 | 31 | 12 | '1999-12-31T23:59:59.999Z' | 1999 | 365 | 31 | 12
+    "paleo instant with years precision" | TemporalBounding.newBuilder().setInstant('-1000000000').build() | null | -1000000000 | null | null | null | null | -1000000000 | null | null | null
+    "non-paleo instant with nanos precision" | TemporalBounding.newBuilder().setInstant('2008-04-01T00:00:00Z').build() | '2008-04-01T00:00:00Z' | 2008 | 92 | 1 | 4 | '2008-04-01T00:00:00Z' | 2008 | 92 | 1 | 4
   }
 
   def "temporal bounding with #testCase dates is prepared correctly"() {
     given:
     def bounding = TemporalBounding.newBuilder().setBeginDate(begin).setEndDate(end).build()
-    def analysis = Analyzers.analyzeTemporalBounding(Discovery.newBuilder().setTemporalBounding(bounding).build())
+    def analysis = Temporal.analyzeBounding(Discovery.newBuilder().setTemporalBounding(bounding).build())
 
     when:
     def result = TransformationUtils.prepareDates(bounding, analysis)
@@ -351,7 +502,7 @@ class TransformationUtilsSpec extends Specification {
 
   def "accession values are not included"() {
     when:
-    def result = TransformationUtils.reformatMessageForSearch(TestUtils.inputAvroRecord, TestUtils.esConfig.parsedMapping(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet())
+    def result = TransformationUtils.reformatMessageForSearch(TestUtils.inputAvroRecord, collectionSearchFields)
 
     then:
     result.accessionValues == null
