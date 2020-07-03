@@ -119,12 +119,12 @@ class StreamFunctionsSpec extends Specification {
   def 'records errors for bad fields and still parses good ones'() {
     def key = 'ABC'
     def input = new Input([
-        type: RecordType.granule,
-        method: Method.POST,
-        content: '{"fileInformation":{"size":"THIS IS NOT A NUMBER!!"},"fileLocations":{"test:one":{"uri":"test:one"}}}',
+        type       : RecordType.granule,
+        method     : Method.POST,
+        content    : '{"fileInformation":{"size":"THIS IS NOT A NUMBER!!"},"fileLocations":{"test:one":{"uri":"test:one"}}}',
         contentType: 'application/json',
-        source: 'test',
-        operation: null
+        source     : 'test',
+        operation  : null
     ])
     def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
     def aggregate = AggregatedInput.newBuilder().build()
@@ -146,10 +146,10 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregate inputs with PATCH method and no operation declared'() {
     def currentAggregate = new AggregatedInput([
-        type: RecordType.granule,
-        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        type         : RecordType.granule,
+        rawJson      : '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        events: [new InputEvent(null, Method.POST, 'test', null, false)]
+        events       : [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = Input.newBuilder()
         .setType(RecordType.granule)
@@ -173,10 +173,10 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregate inputs with PATCH method and operation ADD'() {
     def currentAggregate = new AggregatedInput([
-        type: RecordType.granule,
-        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        type         : RecordType.granule,
+        rawJson      : '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        events: [new InputEvent(null, Method.POST, 'test', null, false)]
+        events       : [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = Input.newBuilder()
         .setType(RecordType.granule)
@@ -201,10 +201,10 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregate inputs with PATCH method and operation REMOVE'() {
     def currentAggregate = new AggregatedInput([
-        type: RecordType.granule,
-        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        type         : RecordType.granule,
+        rawJson      : '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        events: [new InputEvent(null, Method.POST, 'test', null, false)]
+        events       : [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = Input.newBuilder()
         .setType(RecordType.granule)
@@ -229,17 +229,17 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregate input with PUT method'() {
     def currentAggregate = new AggregatedInput([
-        type: RecordType.granule,
-        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        type         : RecordType.granule,
+        rawJson      : '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        events: [new InputEvent(null, Method.POST, 'test', null, false)]
+        events       : [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = new Input([
-        type: RecordType.granule,
-        method: Method.PUT,
-        content: '{"trackingId":"ABC","message":"this is only a test","greeting":"hello, world!"}',
+        type       : RecordType.granule,
+        method     : Method.PUT,
+        content    : '{"trackingId":"ABC","message":"this is only a test","greeting":"hello, world!"}',
         contentType: 'application/json',
-        source: 'test'
+        source     : 'test'
     ])
     def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
 
@@ -257,11 +257,11 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregate input with DELETE method that deletes a record'() {
     def currentAggregate = new AggregatedInput([
-        type: RecordType.granule,
-        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        type         : RecordType.granule,
+        rawJson      : '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        deleted: false,
-        events: [new InputEvent(null, Method.POST, 'test', null, false)]
+        deleted      : false,
+        events       : [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = new Input([
         method: Method.DELETE,
@@ -281,11 +281,11 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregate input with GET method that resurrects a record'() {
     def currentAggregate = new AggregatedInput([
-        type: RecordType.granule,
-        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        type         : RecordType.granule,
+        rawJson      : '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        deleted: true,
-        events: [new InputEvent(null, Method.POST, 'test', null, false)]
+        deleted      : true,
+        events       : [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = new Input([
         method: Method.GET,
@@ -305,11 +305,11 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregate input with DELETE method on already deleted record'() {
     def currentAggregate = new AggregatedInput([
-        type: RecordType.granule,
-        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        type         : RecordType.granule,
+        rawJson      : '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        deleted: true,
-        events: [new InputEvent(null, Method.POST, 'test', null, false)]
+        deleted      : true,
+        events       : [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = new Input([
         method: Method.DELETE,
@@ -329,11 +329,11 @@ class StreamFunctionsSpec extends Specification {
 
   def 'aggregate input with GET method on record that is not deleted'() {
     def currentAggregate = new AggregatedInput([
-        type: RecordType.granule,
-        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        type         : RecordType.granule,
+        rawJson      : '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        deleted: false,
-        events: [new InputEvent(null, Method.POST, 'test', null, false)]
+        deleted      : false,
+        events       : [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = new Input([
         method: Method.GET,
@@ -354,12 +354,12 @@ class StreamFunctionsSpec extends Specification {
   def 'most recent input event indicates success when successful'() {
     def key = 'ABC'
     def input = new Input([
-        type: RecordType.granule,
-        method: Method.POST,
-        content: '{"fileInformation":{"size":1500},"fileLocations":{"test:one":{"uri":"test:one"}}}',
+        type       : RecordType.granule,
+        method     : Method.POST,
+        content    : '{"fileInformation":{"size":1500},"fileLocations":{"test:one":{"uri":"test:one"}}}',
         contentType: 'application/json',
-        source: 'test',
-        operation: null
+        source     : 'test',
+        operation  : null
     ])
     def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
     def aggregate = AggregatedInput.newBuilder().build()
@@ -380,12 +380,12 @@ class StreamFunctionsSpec extends Specification {
   def 'most recent input event indicates failure when failed'() {
     def key = 'ABC'
     def input = new Input([
-        type: RecordType.granule,
-        method: Method.POST,
-        content: '{"fileInformation":{"size":"THIS IS NOT A NUMBER!!"},"fileLocations":{"test:one":{"uri":"test:one"}}}',
+        type       : RecordType.granule,
+        method     : Method.POST,
+        content    : '{"fileInformation":{"size":"THIS IS NOT A NUMBER!!"},"fileLocations":{"test:one":{"uri":"test:one"}}}',
         contentType: 'application/json',
-        source: 'test',
-        operation: null
+        source     : 'test',
+        operation  : null
     ])
     def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
     def aggregate = AggregatedInput.newBuilder().build()
@@ -418,10 +418,10 @@ class StreamFunctionsSpec extends Specification {
 
   def 'null update input received results in tombstone'() {
     def currentAggregate = new AggregatedInput([
-        type: RecordType.granule,
-        rawJson: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        type         : RecordType.granule,
+        rawJson      : '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         initialSource: 'test',
-        events: [new InputEvent(null, Method.POST, 'test', null, false)]
+        events       : [new InputEvent(null, Method.POST, 'test', null, false)]
     ])
     def input = null
     def timestampedInput = ValueAndTimestamp.make(input, System.currentTimeMillis())
@@ -435,11 +435,11 @@ class StreamFunctionsSpec extends Specification {
 
   def 'errors reset on new input'() {
     def currentAggregate = new AggregatedInput([
-        type: RecordType.granule,
-        rawJson: '{"fileInformation":{"size":"THIS IS NOT A NUMBER!!"},"fileLocations":{"test:one":{"uri":"test:one"}}}',
+        type         : RecordType.granule,
+        rawJson      : '{"fileInformation":{"size":"THIS IS NOT A NUMBER!!"},"fileLocations":{"test:one":{"uri":"test:one"}}}',
         initialSource: 'test',
-        events: [new InputEvent(null, Method.POST, 'test', null, true)],
-        errors: [ErrorEvent.newBuilder().setTitle("Failed to parse field [fileInformation.size]").setDetail("Expected a Number but found a String").build()]
+        events       : [new InputEvent(null, Method.POST, 'test', null, true)],
+        errors       : [ErrorEvent.newBuilder().setTitle("Failed to parse field [fileInformation.size]").setDetail("Expected a Number but found a String").build()]
     ])
     def input = Input.newBuilder()
         .setType(RecordType.granule)
@@ -464,5 +464,25 @@ class StreamFunctionsSpec extends Specification {
     result.errors instanceof List
     result.errors.isEmpty()
     result.rawJson == '{"fileInformation":{},"fileLocations":{"test:one":{"uri":"test:one"}}}'
+  }
+
+  def 'flattens records by inheriting discovery attributes'() {
+    def parent = ParsedRecord.newBuilder()
+        .setDiscoveryBuilder(Discovery.newBuilder()
+            .setTitle("parent")
+            .setAlternateTitle("inherit me"))
+            // TODO - test more fields w/ different data types
+        .build()
+    def child = ParsedRecord.newBuilder()
+        .setDiscoveryBuilder(Discovery.newBuilder()
+            .setTitle("child"))
+        .build()
+
+    when:
+    def flattened = StreamFunctions.flattenRecords.apply(child, parent)
+
+    then:
+    flattened.discovery.title == child.discovery.title
+    flattened.discovery.alternateTitle == parent.discovery.alternateTitle
   }
 }

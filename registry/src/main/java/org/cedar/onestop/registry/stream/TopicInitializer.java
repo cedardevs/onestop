@@ -44,6 +44,8 @@ public class TopicInitializer {
     declaredTopics.addAll(fromExtractorTopics());
     declaredTopics.addAll(toExtractorTopics());
     declaredTopics.addAll(publishedTopics());
+    declaredTopics.add(flattenedGranuleTopic());
+    declaredTopics.add(granulesByCollectionId());
 
     CreateTopicsResult result = KafkaHelpers.ensureTopics(adminClient, declaredTopics, numPartitions, replicationFactor, topicConfigs);
     result.all().get();

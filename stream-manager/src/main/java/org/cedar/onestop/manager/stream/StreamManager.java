@@ -12,7 +12,6 @@ import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.util.DataUtils;
-import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.manager.util.RecordParser;
 import org.cedar.onestop.manager.util.RoutingUtils;
 import org.cedar.schemas.analyze.Analyzers;
@@ -48,7 +47,7 @@ public class StreamManager {
   }
 
   private static void addTopologyForType(StreamsBuilder builder, RecordType type) {
-    var inputStream = builder.<String, AggregatedInput>stream(inputChangelogTopics(StreamsApps.REGISTRY_ID, type));
+    var inputStream = builder.<String, AggregatedInput>stream(inputChangelogTopicsSplit(StreamsApps.REGISTRY_ID, type));
 
     inputStream
         .filterNot(RoutingUtils::hasErrors)

@@ -1,9 +1,11 @@
 package org.cedar.onestop.registry.stream;
 
 import groovy.json.JsonOutput;
+import org.apache.avro.specific.SpecificData;
 import org.apache.kafka.streams.kstream.Aggregator;
 import org.apache.kafka.streams.kstream.Initializer;
 import org.apache.kafka.streams.kstream.Reducer;
+import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.util.DataUtils;
@@ -154,5 +156,33 @@ public class StreamFunctions {
         .setFailedState(failedState)
         .build();
   }
+
+  /**
+   * A value joiner to combine two parsed records by flattening/denormalizing their Discovery values
+   *
+   * NOTE: This is a simple field-by-field override process, i.e. if a child discovery field has been set
+   * to any non-default value then it will fully replace the value from the parent. This is designed to mimic
+   * the behavior implemented downstream via Elasticsearch update_by_query requests, which are still in use
+   * for bulk updates when a parent collection changes.
+   *
+   * TODO: Revisit this logic if/when we have another approach for bulk flattening on collection changes or
+   * if we rethink our flattening approach in its entirety.
+   */
+  public static ValueJoiner<? super ParsedRecord, ? super ParsedRecord, ParsedRecord> flattenRecords = (child, parent) -> {
+    var discoverySchema = Discovery.getClassSchema();
+    // defensive copy of the parent discovery object
+    var copyForOverrides = SpecificData.getForClass(Discovery.class).deepCopy(discoverySchema, parent.getDiscovery());
+    discoverySchema.getFields().forEach(f -> {
+      var childVal = child.getDiscovery().get(f.name());
+      if (childVal != null && !childVal.equals(f.defaultVal())) {
+        // override the parent value if a child value exists
+        copyForOverrides.put(f.pos(), childVal);
+      }
+    });
+    // build a new record with the overridden discovery copy
+    var flattenedRecordBuilder = ParsedRecord.newBuilder(child);
+    flattenedRecordBuilder.setDiscovery(copyForOverrides);
+    return flattenedRecordBuilder.build();
+  };
 
 }
