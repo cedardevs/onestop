@@ -173,23 +173,9 @@
     <notes><![CDATA[
    file name: dompurify:1.0.11
    ]]></notes>
-    <sha1>1ad08708ef62caebb131b2757e740c7d32688072</sha1>
+    <packageUrl regex="true">^pkg:npm/dompurify@.*$</packageUrl>
     <vulnerabilityName>1205</vulnerabilityName>
-  </suppress>
-
-  <suppress>
-    <notes><![CDATA[
-   file name: dompurify:1.0.11
-   ]]></notes>
-    <sha1>1ad08708ef62caebb131b2757e740c7d32688072</sha1>
     <vulnerabilityName>1223</vulnerabilityName>
-  </suppress>
-
-  <suppress>
-    <notes><![CDATA[
-   file name: dompurify:1.0.11
-   ]]></notes>
-    <sha1>1ad08708ef62caebb131b2757e740c7d32688072</sha1>
     <vulnerabilityName>CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</vulnerabilityName>
   </suppress>
 
@@ -205,7 +191,7 @@
     <notes><![CDATA[
    file name: lodash:4.17.15
    ]]></notes>
-    <sha1>baaf6ccef38a633cbf29fdb3b3e8d4a10171746c</sha1>
+    <packageUrl regex="true">^pkg:npm/lodash@.*$</packageUrl>
     <vulnerabilityName>1523</vulnerabilityName>
   </suppress>
 
@@ -213,15 +199,8 @@
     <notes><![CDATA[
    file name: marked:0.6.3
    ]]></notes>
-    <sha1>9fee9b4c521c53ced9e2a75d035fd2cb5eeeea7d</sha1>
+    <packageUrl regex="true">^pkg:npm/marked@.*$</packageUrl>
     <vulnerabilityName>1076</vulnerabilityName>
-  </suppress>
-
-  <suppress>
-    <notes><![CDATA[
-   file name: marked:0.6.3
-   ]]></notes>
-    <sha1>9fee9b4c521c53ced9e2a75d035fd2cb5eeeea7d</sha1>
     <vulnerabilityName>CWE-400: Uncontrolled Resource Consumption ('Resource Exhaustion')</vulnerabilityName>
   </suppress>
 
