@@ -2,6 +2,15 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
 
   <suppress>
+     <notes><![CDATA[
+     file name: lodash:4.17.15
+     Vunerability is specific to function zipObjectDeep, which is not used in our code.
+     ]]></notes>
+     <packageUrl regex="true">^pkg:npm/lodash@.*$</packageUrl>
+     <vulnerabilityName>1523</vulnerabilityName>
+  </suppress>
+
+  <suppress>
     <notes><![CDATA[
      file name: json-schema-core-1.2.8.jar
      Tests have been added to confirm that XML parsing has DTD disabled, and endpoints accepting application/json data reject all xml.
@@ -185,14 +194,6 @@
    ]]></notes>
     <sha1>88523924351bac0b5d560fe0c5781e2556e7693d</sha1>
     <vulnerabilityName>Regex in its jQuery.htmlPrefilter  sometimes may introduce XSS</vulnerabilityName>
-  </suppress>
-
-  <suppress>
-    <notes><![CDATA[
-   file name: lodash:4.17.15
-   ]]></notes>
-    <packageUrl regex="true">^pkg:npm/lodash@.*$</packageUrl>
-    <vulnerabilityName>1523</vulnerabilityName>
   </suppress>
 
   <suppress>
