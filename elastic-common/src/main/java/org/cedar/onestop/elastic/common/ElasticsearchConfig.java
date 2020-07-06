@@ -119,12 +119,12 @@ public class ElasticsearchConfig {
     return this.jsonMappings.getOrDefault(alias, null);
   }
 
-  public Map<String, ?> parsedMapping(String alias) {
+  public Map<String, Map> parsedMapping(String alias) {
     // retrieve JSON mapping for index alias
     return this.parsedMappings.getOrDefault(alias, Collections.emptyMap());
   }
 
-  public Map<String, ?> indexedProperties(String alias) {
+  public Map<String, Map> indexedProperties(String alias) {
     var parsed = (Map<String, Map>) parsedMapping(alias);
     var mappings = (Map<String, Map>) parsed.getOrDefault("mappings", Collections.emptyMap());
     return (Map<String, Map>) mappings.getOrDefault("properties", Collections.emptyMap());
