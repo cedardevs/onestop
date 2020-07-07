@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { Route, Switch } from 'react-router'
-import { LiveAnnouncer, LiveMessage } from 'react-aria-live'
+import React, {useState} from 'react'
+import {Route, Switch} from 'react-router'
+import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
 
 import Layout from '../layout/Layout'
 
@@ -23,7 +23,7 @@ import CollectionSearchLoadingContainer from '../loading/CollectionSearchLoading
 
 import FooterContainer from '../footer/FooterContainer'
 
-import { SiteColors } from '../../style/defaultStyles'
+import {SiteColors} from '../../style/defaultStyles'
 import {
   isGranuleListPage,
   isHome,
@@ -35,10 +35,10 @@ import {
 import NotFoundContainer from '../404/NotFoundContainer'
 
 import earth from '../../../img/Earth.jpg'
-import { isBrowserUnsupported } from '../../utils/browserUtils'
+import {isBrowserUnsupported} from '../../utils/browserUtils'
 
-import { ProxyContext, useProxy } from '../common/ui/Proxy'
-import UserDashboard from '../user/dashboard/UserDashboard'
+import {ProxyContext, useProxy} from '../common/ui/Proxy'
+import UserDashboardContainer from '../user/dashboard/UserDashboardContainer'
 
 const styleBrowserWarning = {
   background: SiteColors.WARNING,
@@ -78,13 +78,13 @@ const BrowserUnsupportedWarning = () => {
 
 export const MapProxyContext = ProxyContext()
 
-const Root = (props) => {
-  const { location, leftOpen, rightOpen, showMap } = props
+const Root = props => {
+  const {location, leftOpen, rightOpen, showMap} = props
 
   const mapProxy = useProxy(showMap)
 
   // store browser support in component state to prevent checking every render
-  const [browserUnsupported, _] = useState(isBrowserUnsupported())
+  const [ browserUnsupported, _ ] = useState(isBrowserUnsupported())
   if (browserUnsupported) {
     return <BrowserUnsupportedWarning />
   }
@@ -108,7 +108,7 @@ const Root = (props) => {
   let message = routeA11yAnnouncer(location.pathname)
 
   const middle = (
-    <div style={{ width: '100%', zIndex: 4 }}>
+    <div style={{width: '100%', zIndex: 4}}>
       <LiveAnnouncer>
         <LiveMessage message={message} aria-live="polite" />
       </LiveAnnouncer>
@@ -153,7 +153,7 @@ const Root = (props) => {
         </Route>
 
         <Route path={ROUTE.userDashboard.path}>
-          <UserDashboard />
+          <UserDashboardContainer />
         </Route>
 
         <Route path={ROUTE.error.path}>

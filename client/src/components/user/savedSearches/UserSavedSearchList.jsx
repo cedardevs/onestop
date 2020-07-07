@@ -3,17 +3,17 @@ import UserSavedSearch from './UserSavedSearch'
 import ListView from '../../common/ui/ListView'
 
 function listToMap(searchList){
-  let index = 1;
+  let index = 1
   let mapSearches = {}
   while (index <= searchList.length) {
-    mapSearches[index.toString()] = searchList[index-1]
-    index++;
+    mapSearches[index.toString()] = searchList[index - 1]
+    index++
   }
   return mapSearches
 }
 // user.savedSearches = undefined;
 const UserSavedSearchList = props => {
-  const searches = props.savedSearches ? listToMap(props.savedSearches ) : null
+  const searches = props.savedSearches ? listToMap(props.savedSearches) : null
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
 

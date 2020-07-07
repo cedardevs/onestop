@@ -19,13 +19,16 @@ const styleDashboardWrapper = {
   color: '#222',
 }
 
-const UserDashboard = (props) => {
+const UserDashboard = props => {
   return (
     <div style={styleCenterContent}>
       <div style={styleDashboardWrapper}>
         <Meta title="User Dashboard for NOAA OneStop" />
         <section>
-          <UserSavedSearchList user={props.user} savedSearches={props.savedSearches} />
+          <UserSavedSearchList
+            user={props.user}
+            savedSearches={props.savedSearches}
+          />
         </section>
       </div>doc
     </div>

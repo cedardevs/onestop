@@ -1,7 +1,7 @@
 import React from 'react'
 import AppliedFilters from '../../filters/AppliedFilters'
 
-const UserSavedSearchAppliedFilters = ({ collectionFilter }) => {
+const UserSavedSearchAppliedFilters = ({collectionFilter}) => {
   //   const {
   //     selectedFacets,
   //     startDateTime,

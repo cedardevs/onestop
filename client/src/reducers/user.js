@@ -5,7 +5,11 @@ import {
   USER_PROFILE_FAILURE,
   USER_LOGOUT,
 } from '../actions/UserActions'
-import {SAVED_SEARCH_FAILURE, SAVED_SEARCH_REQUEST, SAVED_SEARCH_SUCCESS} from "../actions/SavedSearchActions";
+import {
+  SAVED_SEARCH_FAILURE,
+  SAVED_SEARCH_REQUEST,
+  SAVED_SEARCH_SUCCESS,
+} from '../actions/SavedSearchActions'
 
 export const initialState = Immutable({
   isAuthenticated: false,
@@ -49,14 +53,14 @@ export const user = (state = initialState, action) => {
     case SAVED_SEARCH_SUCCESS:
       if (action.payload.data) {
         return state
-            .setIn([ 'searches' ], action.payload.data)
-            .setIn([ 'isFetchingSearches' ], false)
+          .setIn([ 'searches' ], action.payload.data)
+          .setIn([ 'isFetchingSearches' ], false)
       }
 
     case SAVED_SEARCH_FAILURE:
       return state
-          .setIn([ 'error' ], action.error)
-          .setIn([ 'isFetchingSearches' ], false)
+        .setIn([ 'error' ], action.error)
+        .setIn([ 'isFetchingSearches' ], false)
     default:
       return state
   }

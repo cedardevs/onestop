@@ -2,7 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import AppliedFilterBubble from './AppliedFilterBubble'
 import * as geoUtils from '../../utils/geoUtils'
-import { displayBigYears } from '../../utils/readableUtils'
+import {displayBigYears} from '../../utils/readableUtils'
 
 const Theme = {
   facet: {
@@ -83,7 +83,7 @@ export default class AppliedFilters extends React.Component {
   // }
 
   buildTextBubbles = () => {
-    const { textFilter, allTermsMustMatch } = this.props
+    const {textFilter, allTermsMustMatch} = this.props
     let bubbles = []
     if (textFilter) {
       let qualifier = allTermsMustMatch ? 'All' : 'Any'
@@ -101,9 +101,9 @@ export default class AppliedFilters extends React.Component {
   }
 
   buildFacetBubbles = () => {
-    const { selectedFacets } = this.props
+    const {selectedFacets} = this.props
     return _.flatMap(selectedFacets, (terms, category) => {
-      return _.map(terms, (term) => {
+      return _.map(terms, term => {
         const name = term.split('>').pop().trim() || (
           <abbr title="Does Not Exist">DNE</abbr>
         ) // TODO verify the title is handled correctly for these see search for title: "NOAA Aircraft Operations Center (AOC) Flight Level Data"
@@ -134,20 +134,20 @@ export default class AppliedFilters extends React.Component {
       endYear,
       timeRelationship,
     } = this.props
-    const removeZeroTime = (dateTime) => dateTime.replace('T00:00:00Z', '')
+    const removeZeroTime = dateTime => dateTime.replace('T00:00:00Z', '')
     let timeBubbles = []
     if (startDateTime) {
       timeBubbles.push(
         <AppliedFilterBubble
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
-          text={`${_.capitalize(timeRelationship)}${
-            timeRelationship == 'disjoint' ? ' From' : ''
-          } Date After: ${removeZeroTime(startDateTime)}`}
+          text={`${_.capitalize(timeRelationship)}${timeRelationship ==
+          'disjoint'
+            ? ' From'
+            : ''} Date After: ${removeZeroTime(startDateTime)}`}
           key="appliedFilter::start"
           onUnselect={() =>
-            this.unselectDateTimeAndSubmitSearch(null, endDateTime)
-          }
+            this.unselectDateTimeAndSubmitSearch(null, endDateTime)}
         />
       )
     }
@@ -156,13 +156,13 @@ export default class AppliedFilters extends React.Component {
         <AppliedFilterBubble
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
-          text={`${_.capitalize(timeRelationship)}${
-            timeRelationship == 'disjoint' ? ' From' : ''
-          } Date Before: ${removeZeroTime(endDateTime)}`}
+          text={`${_.capitalize(timeRelationship)}${timeRelationship ==
+          'disjoint'
+            ? ' From'
+            : ''} Date Before: ${removeZeroTime(endDateTime)}`}
           key="appliedFilter::end"
           onUnselect={() =>
-            this.unselectDateTimeAndSubmitSearch(startDateTime, null)
-          }
+            this.unselectDateTimeAndSubmitSearch(startDateTime, null)}
         />
       )
     }
@@ -208,17 +208,17 @@ export default class AppliedFilters extends React.Component {
   }
 
   buildSpaceBubbles = () => {
-    const { bbox, excludeGlobal, geoRelationship } = this.props
+    const {bbox, excludeGlobal, geoRelationship} = this.props
     let spaceBubbles = []
     if (bbox) {
-      const { west, south, east, north } = bbox
+      const {west, south, east, north} = bbox
       spaceBubbles.push(
         <AppliedFilterBubble
           backgroundColor={Theme.map.backgroundColor}
           borderColor={Theme.map.borderColor}
-          text={`${_.capitalize(geoRelationship)}${
-            geoRelationship == 'disjoint' ? ' From' : ''
-          } West: ${west}°, South: ${south}°, East: ${east}°, North: ${north}°`}
+          text={`${_.capitalize(geoRelationship)}${geoRelationship == 'disjoint'
+            ? ' From'
+            : ''} West: ${west}°, South: ${south}°, East: ${east}°, North: ${north}°`}
           key="appliedFilter::boundingBox"
           onUnselect={() => this.unselectMapAndSubmitSearch()}
         />
@@ -241,7 +241,7 @@ export default class AppliedFilters extends React.Component {
   }
 
   render() {
-    const { showAppliedFilters } = this.props
+    const {showAppliedFilters} = this.props
 
     const appliedFilters = [
       ...this.buildTextBubbles(),

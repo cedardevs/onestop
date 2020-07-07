@@ -28,23 +28,21 @@ export const getSavedSearches = savedSearchEndpoint => {
   }
 
   return dispatch => {
-    console.log("Fetching saved searches")
+    console.log('Fetching saved searches')
     // notify reducer of our intention to request user profile
     dispatch(savedSearchRequest())
 
     // initiate asynchronous request to user profile endpoint
     return fetch(savedSearchEndpoint, requestOptions)
-        .then(response => response.json())
-        .then(
-            response => {
-              dispatch(savedSearchSuccess(response))
-            },
-            error => {
-              dispatch(savedSearchFailure(error))
-              throw error
-            }
-        )
+      .then(response => response.json())
+      .then(
+        response => {
+          dispatch(savedSearchSuccess(response))
+        },
+        error => {
+          dispatch(savedSearchFailure(error))
+          throw error
+        }
+      )
   }
 }
-
-

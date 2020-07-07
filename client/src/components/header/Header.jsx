@@ -155,14 +155,14 @@ class Header extends React.Component {
       <li style={styleLinkListItem(false, !cartEnabled)}>{userActionButton}</li>
     ) : null
 
-    const userDashboardItem = userButtonDisplayed && user.isAuthenticated ? (
+    const userDashboardItem =
+      userButtonDisplayed && user.isAuthenticated ? (
         <li style={styleLinkListItem(false, !cartEnabled)}>
           <HeaderLink title="Dashboard" to="/dashboard">
-          Dashboard
+            Dashboard
           </HeaderLink>
         </li>
-    ) : null
-
+      ) : null
 
     const cartListItem = cartEnabled ? (
       <li style={styleLinkListItem(false, cartEnabled)}>

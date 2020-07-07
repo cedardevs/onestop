@@ -1,4 +1,4 @@
-import {getSavedSearches} from "./SavedSearchActions"
+import {getSavedSearches} from './SavedSearchActions'
 
 export const USER_PROFILE_REQUEST = 'USER_PROFILE_REQUEST'
 export const userProfileRequest = () => {
@@ -22,7 +22,10 @@ export const userProfileFailure = error => {
 }
 export const USER_LOGOUT = 'USER_LOGOUT'
 
-export const getUser = (userProfileEndpoint, savedSearchEndpoint = undefined) => {
+export const getUser = (
+  userProfileEndpoint,
+  savedSearchEndpoint = undefined
+) => {
   const requestOptions = {
     method: 'GET',
     redirect: 'error',
@@ -40,7 +43,7 @@ export const getUser = (userProfileEndpoint, savedSearchEndpoint = undefined) =>
       .then(
         response => {
           dispatch(userProfileSuccess(response))
-          if(savedSearchEndpoint){
+          if (savedSearchEndpoint) {
             dispatch(getSavedSearches(savedSearchEndpoint))
           }
         },
