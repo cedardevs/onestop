@@ -8,6 +8,8 @@ import org.cedar.onestop.user.service.ResourceNotFoundException;
 import org.cedar.onestop.user.service.SavedSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -46,7 +48,7 @@ public class SavedSearchController {
     return ResponseEntity.ok().body(savedSearch);
   }
 
-  @ApiOperation(value = "View all available save searches by UserId", response = Iterable.class)
+  @ApiOperation(value = "View all available save searches by UserId (ADMIN)", response = Iterable.class)
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Successfully retrieved list"),
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
@@ -57,7 +59,21 @@ public class SavedSearchController {
     return savedSearchRepository.findAllByUserId(userId);
   }
 
-  @ApiOperation(value = "Add user searches")
+  @ApiOperation(value = "View all user searches", response = Iterable.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Successfully retrieved list"),
+          @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+  })
+  @RequestMapping(value = "/saved-search/user", method = RequestMethod.GET, produces = "application/json")
+  public  Map<String, List> getByUserId(final @AuthenticationPrincipal Authentication authentication)
+          throws RuntimeException {
+    String userId = authentication.getName();
+    Map<String, List> jsonSpecResponse = new HashMap<String, List>();
+    jsonSpecResponse.put("data" , savedSearchRepository.findAllByUserId(userId));
+    return jsonSpecResponse;
+  }
+
+  @ApiOperation(value = "Add user search")
   @RequestMapping(value = "/saved-search", method = RequestMethod.POST, produces = "application/json")
   public SavedSearch create(@Valid @RequestBody SavedSearch savedSearch) {
     return savedSearchRepository.save(savedSearch);
