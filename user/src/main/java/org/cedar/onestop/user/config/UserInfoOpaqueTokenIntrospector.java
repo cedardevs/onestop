@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -53,7 +54,7 @@ public class UserInfoOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
     Boolean emailVerified = (Boolean) attributes.getOrDefault("email_verified", false);
 
     List<String> adminEmails = Arrays.asList(
-        "elliott.richerson@noaa.gov"
+        "christopher.esterlein@noaa.gov"
     );
 
     List<String> publicRoles = Arrays.asList("ROLE_PUBLIC");
