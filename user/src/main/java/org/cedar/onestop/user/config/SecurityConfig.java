@@ -29,9 +29,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
           // any url starting with `/admin` will be restricted to users with role `ROLE_ADMIN`
           .antMatchers("/admin/**")
             .hasRole("ADMIN")
+          //getting user data with id as a path param is an admin operation
+          .antMatchers("/v1/user/**")
+            .hasRole(("ADMIN"))
+          //use auth principal name to get user without path param
+          .antMatchers("/v1/user")
+            .hasRole(("PUBLIC"))
           // any url starting with `/v1/saved-search` will be restricted to users with role `ROLE_PUBLIC`
           .antMatchers("/v1/saved-search/**")
             .hasRole(("PUBLIC"))
+          .antMatchers("/v1/saved-search/user")
+            .hasRole(("PUBLIC"))
+          .antMatchers("/v1/saved-search/user/**")
+            .hasRole(("ADMIN"))
           // any request that has not already been matched requires only authentication
           .anyRequest()
             .authenticated()
