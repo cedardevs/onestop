@@ -1,8 +1,8 @@
 import React from 'react'
-import ListViewItem, { useListViewItem } from '../../common/ui/ListViewItem'
-import { fontFamilySerif } from '../../../utils/styleUtils'
+import ListViewItem, {useListViewItem} from '../../common/ui/ListViewItem'
+import {fontFamilySerif} from '../../../utils/styleUtils'
 import FlexRow from '../../common/ui/FlexRow'
-import { decodePathAndQueryString } from '../../../utils/queryUtils'
+import {decodePathAndQueryString} from '../../../utils/queryUtils'
 import UserSavedSearchAppliedFilters from './UserSavedSearchAppliedFilters'
 
 const styleTitle = {
@@ -24,20 +24,20 @@ const styleSavedSearch = {
   marginBottom: '0.309em',
 }
 
-const UserSavedSearch = (props) => {
-  const { itemId, item, expanded, setExpanded } = useListViewItem(props)
+const UserSavedSearch = props => {
+  const {itemId, item, expanded, setExpanded} = useListViewItem(props)
 
-  const url = item.url
+  const url = item.value
 
   const title = (
     <h3 key={'UserSavedSearch::title'} style={styleTitle}>
-      <a href={item.url}>{item.name}</a>
+      <a href={url}>{item.name}</a>
     </h3>
   )
 
   const heading = (
     <div style={styleHeading}>
-      <FlexRow items={[title, ': Collection']} />
+      <FlexRow items={[ title, ': Collection' ]} />
     </div>
   )
 

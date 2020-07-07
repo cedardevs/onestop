@@ -1,8 +1,8 @@
 import React from 'react'
-import { fontFamilySerif, fontFamilyMonospace } from '../../../utils/styleUtils'
+import {fontFamilySerif, fontFamilyMonospace} from '../../../utils/styleUtils'
 import Meta from '../../helmet/Meta'
 import UserSavedSearchList from '../savedSearches/UserSavedSearchList'
-import { boxShadow } from '../../../style/defaultStyles'
+import {boxShadow} from '../../../style/defaultStyles'
 
 const styleCenterContent = {
   display: 'flex',
@@ -19,15 +19,15 @@ const styleDashboardWrapper = {
   color: '#222',
 }
 
-const UserDashboard = () => {
+const UserDashboard = (props) => {
   return (
     <div style={styleCenterContent}>
       <div style={styleDashboardWrapper}>
         <Meta title="User Dashboard for NOAA OneStop" />
         <section>
-          <UserSavedSearchList />
+          <UserSavedSearchList user={props.user} savedSearches={props.savedSearches} />
         </section>
-      </div>
+      </div>doc
     </div>
   )
 }
