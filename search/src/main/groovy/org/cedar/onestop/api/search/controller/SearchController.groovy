@@ -166,9 +166,10 @@ class SearchController {
     // if our 'login-gov' profile is not active,
     // we should NOT include the 'auth' section of the config,
     // as the client will think it needs to show a login link, etc.
-    if(!activeProfiles.contains('login-gov')) {
-      uiConfigMap.remove('auth')
-    }
+    //todo we need this auth config coming through for gateway
+//    if(!activeProfiles.contains('login-gov')) {
+//      uiConfigMap.remove('auth')
+//    }
 
     return uiConfigMap
   }
