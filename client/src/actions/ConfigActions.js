@@ -50,7 +50,7 @@ export const fetchConfig = () => {
       .then(json => {
         dispatch(setConfig(json))
         if (json.auth) {
-          dispatch(getUser(json.auth.userProfileEndpoint))
+          dispatch(getUser(json.auth.userProfileEndpoint, json.auth.savedSearchEndpoint))
         }
         dispatch(toggleFeatures(json.features))
       })
