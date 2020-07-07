@@ -126,13 +126,9 @@ public class StreamFunctions {
     try {
       var currentMap = DataUtils.parseJsonMap(builder.getRawJson());
       var inputMap = DataUtils.parseJsonMap(input.getContent());
-      Map mergedMap = new HashMap();
-      if(operationType == OperationType.REMOVE) {
-        mergedMap = DataUtils.removeFromMap(currentMap, inputMap);
-      }
-      else {
-        mergedMap = DataUtils.mergeMaps(currentMap, inputMap);
-      }
+      Map mergedMap = operationType == OperationType.REMOVE ?
+          DataUtils.removeFromMap(currentMap, inputMap) :
+          DataUtils.mergeMaps(currentMap, inputMap);
       builder.setRawJson(JsonOutput.toJson(mergedMap));
       return mergedMap;
     }
