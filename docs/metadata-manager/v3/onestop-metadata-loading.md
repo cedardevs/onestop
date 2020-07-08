@@ -1,87 +1,53 @@
 ## Loading Metadata Into PSI
-Metadata can be published into the OneStop system using Registry application REST API. Use the Registry API `/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload Metadata records. The application is also 
-equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
-NOTE: The REST API is also secured via CAS authentication, for more detail see [OneStop Registry Security documentation](../../operator/security/registry-security.md). 
+Metadata can be published into the OneStop system using Registry application REST API. Use the Registry API `/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload Metadata records. The application is also equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
+NOTE: The REST API is also secured via CAS authentication. For more detail see [OneStop Registry Security documentation](../../operator/security/registry-security.md). 
     
 ### Available methods
-Registry resource has various endpoints that are also described in the [user docs about the REST API](../registry-api.md) and
+The Registry application has various endpoints that are also described in the [user docs about the REST API](../registry-api.md) and
 [OpenAPI Specification documentation](https://sciapps.colorado.edu/registry/openapi.yaml) in detail.
 
 - Create a new Collection/Granule record 
 
-HTTP Method | Endpoint                                       | Body              | Function
-------------|------------------------------------------------|-------------------|--------------------------
-POST        | /registry/metadata/${type}/${source}/${id}     | ISO-XML or JSON   | create a metadata record 
+HTTP Method | Endpoint                                           | Body              | Function
+------------|----------------------------------------------------|-------------------|--------------------------
+POST        | /registry/metadata/${type}/${source}/${id}         | ISO-XML or JSON   | create/replace a metadata record 
 
 - Create or update a new Collection/Granule record 
 
-HTTP Method | Endpoint                                       | Body              | Function
-------------|------------------------------------------------|-------------------|--------------------------
-PUT         | /registry/metadata/${type}/${source}/${id}     | ISO-XML or JSON   | create/update a metadata record 
+HTTP Method | Endpoint                                           | Body              | Function
+------------|----------------------------------------------------|-------------------|--------------------------
+PUT         | /registry/metadata/${type}/${source}/${id}         | ISO-XML or JSON   | create/replace a metadata record 
 
 - Create or edit a new Collection/Granule record
  
-HTTP Method | Endpoint                                       | Body              | Function
-------------|------------------------------------------------|-------------------|--------------------------
-PATCH       | /registry/metadata/${type}/${source}/${id}     | ISO-XML or JSON   | create/update a metadata record 
+HTTP Method | Endpoint                                           | Body              | Function
+------------|----------------------------------------------------|-------------------|--------------------------
+PATCH       | /registry/metadata/${type}/${source}/${id}?${op}   | JSON              | update a portion of a metadata record 
 
 - Read a Collection/Granule record 
 
-HTTP Method | Endpoint                                       | Body              | Function
-------------|------------------------------------------------|-------------------|--------------------------
-GET         | /registry/metadata/${type}/${source}/${id}     | (none)            | Retrieve a metadata record 
+HTTP Method | Endpoint                                           | Body              | Function
+------------|----------------------------------------------------|-------------------|--------------------------
+GET         | /registry/metadata/${type}/${source}/${id}         | (none)            | Retrieve a metadata record 
 
 - Delete a Collection/Granule record 
 
-HTTP Method | Endpoint                                       | Body              | Function
-------------|------------------------------------------------|-------------------|--------------------------
-DELETE      | /registry/metadata/${type}/${source}/${id}     | (none)            | delete uploaded record 
+HTTP Method | Endpoint                                           | Body              | Function
+------------|----------------------------------------------------|-------------------|--------------------------
+DELETE      | /registry/metadata/${type}/${source}/${id}         | (none)            | delete uploaded record 
 
-- resurrect a deleted Collection/Granule record 
+- Resurrect a deleted Collection/Granule record 
 
 HTTP Method | Endpoint                                       | Body              | Function
 ------------|------------------------------------------------|-------------------|--------------------------
 GET         | /metadata/${type}/${source}/${id}/resurrection | (none)            | resurrect a metadata record 
  
 #### Endpoint key words: 
-- Types: The type of record it could be either collection or granule. 
-- Source: The name of an external system which produced this record, example: comet for collection and common-ingest for granules.   
-- Id: A valid universally unique identifier (UUID) which is a 128-bit number that identifies unique record.
+- Types: The type of record. This is currently either `collection` or `granule`. 
+- Source: The name of an external system which produced this record, example: `comet` for collection and `common-ingest` for granules. This can be omitted when POSTing and is set to `unknown` in this case.
+- Id: A valid universally unique identifier (UUID) which is a 128-bit number that identifies unique record. Not including this value with POSTing will result in an automatically generated UUID for the received record. 
 
-#### Uploading an xml Collection record: 
-All metadata xml documents can have a `<gmd:fileIdentifier>` tag containing either a
-`<gco:CharacterString>` or a `<gmx:Anchor>` tag with the identifier. For example:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<gmi:MI_Metadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gmi="http://www.isotc211.org/2005/gmi">
-  ...
-  <gmd:fileIdentifier>
-    <gco:CharacterString>[IDENTIFIER]</gco:CharacterString>
-  </gmd:fileIdentifier>
-  ...
-</gmi:MI_Metadata>  
-```
-
-Optionally, the record can also have a `<gmd:parentIdentifier>` tag (also containing
-either a `<gco:CharacterString>` or a `<gmx:Anchor>` tag) to indicate that the record is
-a child of another. In this case, the `parentIdentifier` of the child record must match
-the `fileIdentifier` OR the `doi` of the parent record verbatim. For example:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<gmi:MI_Metadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gmi="http://www.isotc211.org/2005/gmi">
-  ...
-  <gmd:fileIdentifier>
-    <gco:CharacterString>[CHILD'S FILE IDENTIFIER]</gco:CharacterString>
-  </gmd:fileIdentifier>
-  <gmd:parentIdentifier>
-    <gco:CharacterString>[PARENT'S FILE IDENTIFIER]</gco:CharacterString>
-  </gmd:parentIdentifier>
-  ...
-</gmi:MI_Metadata>  
-```
-
+#### Uploading an XML Collection record: 
 Example: Uploading a COLLECTION type XML file from a source COMET with uuid 11111111-1111-2222-3333-44444444: 
 ```
 curl -iu <username:password> -v -X PUT -H "content-type: application/xml" http://data-dev.ncei.noaa.gov/psi-registry/ 
@@ -102,9 +68,21 @@ Unsuccessful operations will return a response body with an error message format
 }
 ```
 
-#### Uploading Json record: 
-All metadata input in json format should contain `FileLocation`, `relationships (if the input metadata is granule)`,   
-`FileInformation (optinal)` and `discovery (optinal)` information in order to be searchable and discoverable by the OneStop client: 
+#### Uploading an XML Granule record: 
+When uploading granules in XML format, it is imperative to follow-up with a **PATCH** request containing the JSON `Relationships` indicating the associated collection UUID:
+```
+{
+  "relationships": [
+    {
+      "type": "COLLECTION",
+      "id": <collection-uuid>
+    }
+  ]
+}
+```
+
+#### Uploading a JSON record: 
+All metadata input in JSON format should contain `FileLocation`. If the input metadata is a granule, `Relationships` are required to indicate the UUID of the associated collection. Optionally, to ensure optimal discoverabilty and access in the OneStop Search API and UI, `FileInformation` and `Discovery` should be included as well.   
 
 1. FileLocation information: A map of URIs to location objects describing where the file is located
 1. FileInformation information: Details about the file that this input object is in reference to
@@ -113,7 +91,7 @@ All metadata input in json format should contain `FileLocation`, `relationships 
 1. discovery information: A key/value metadata information.
 
 
-Input json Template: 
+Example Input JSON Template: 
 ```
 {
   "fileInformation": {
@@ -183,7 +161,7 @@ Input json Template:
   }
 }
 ```
-Note: Refer to supported discovery metadata [fields](https://sciapps.colorado.edu/registry/openapi.yaml).
+Note: Refer to supported Discovery metadata [fields](https://sciapps.colorado.edu/registry/openapi.yaml).
 
 Example: Uploading a GRANULE type JSON file from a source COMMON-INGEST with trackingId/UUID 11111111-1111-1111-1111-111111111: 
 ```
@@ -261,7 +239,7 @@ Unsuccessful operations will return a response body with an error message format
 }
 ```
 
-#### OneStop Required fields
+#### OneStop Required Fields
 For a records to be indexed and searchable by the downstream OneStop client, a record must include the follow discovery fields: 
 
 Required Collection fields:

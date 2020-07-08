@@ -14,7 +14,7 @@ plugins {
     // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/index.html
     // - provides monitoring of the projects dependent libraries;
     //   creating a report of known vulnerable components that are included in the build.
-    id("org.owasp.dependencycheck").version("5.3.0")
+    id("org.owasp.dependencycheck").version("5.3.2.1")
 
     // Note: The plugins below are not universally `apply(true)`because subprojects only need them conditionally.
 
@@ -44,13 +44,13 @@ plugins {
     // Spring dependency management plugin
     // https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/
     // - A Gradle plugin that provides Maven-like dependency management and exclusions
-    id("io.spring.dependency-management").version("1.0.6.RELEASE").apply(false)
+    id("io.spring.dependency-management").version("1.0.9.RELEASE").apply(false)
 
     // Spring Boot plugin
     // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
     // - A Gradle plugin that allows you to package executable jar or war archives,
     //   run Spring Boot applications, and use the dependency management provided by spring-boot-dependencies
-    id("org.springframework.boot").version("2.2.5.RELEASE").apply(false)
+    id("org.springframework.boot").version("2.3.1.RELEASE").apply(false)
 
     // Gogradle plugin
     // https://github.com/gogradle/gogradle
@@ -62,6 +62,10 @@ plugins {
 // resolve build dependencies from Bintray jcenter
 repositories {
     jcenter()
+}
+
+subprojects {
+    apply(plugin = "org.owasp.dependencycheck")
 }
 
 group = "org.cedar.onestop"
@@ -257,57 +261,7 @@ subprojects {
         }
 
     }
-    if(micronautProjects.contains(name)) {
 
-        apply(plugin = "application")
-
-        // for creating fat/uber JARs
-        apply(plugin = "com.github.johnrengelman.shadow")
-
-        val developmentOnly: Configuration by configurations.creating
-
-        dependencies {
-            annotationProcessor(platform("io.micronaut:micronaut-bom:${Versions.MICRONAUT}"))
-            annotationProcessor("io.micronaut:micronaut-inject-java")
-            annotationProcessor("io.micronaut:micronaut-validation")
-            implementation(platform("io.micronaut:micronaut-bom:${Versions.MICRONAUT}"))
-            implementation("io.micronaut:micronaut-management")
-            implementation("io.micronaut.kubernetes:micronaut-kubernetes-discovery-client")
-            implementation("io.micronaut:micronaut-inject")
-            implementation("io.micronaut:micronaut-validation")
-            implementation("io.micronaut:micronaut-runtime")
-            implementation("javax.annotation:javax.annotation-api")
-            implementation("io.micronaut:micronaut-http-server-netty")
-            implementation("io.micronaut:micronaut-http-client")
-            implementation("io.micronaut.configuration:micronaut-kafka")
-            runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
-            testAnnotationProcessor(platform("io.micronaut:micronaut-bom:${Versions.MICRONAUT}"))
-            testAnnotationProcessor("io.micronaut:micronaut-inject-java")
-            testImplementation(platform("io.micronaut:micronaut-bom:${Versions.MICRONAUT}"))
-            testImplementation("org.junit.jupiter:junit-jupiter-api")
-            testImplementation("io.micronaut.test:micronaut-test-junit5")
-            testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-        }
-
-        // use JUnit 5 platform
-        tasks.withType<Test> {
-            classpath += developmentOnly
-            useJUnitPlatform()
-        }
-        tasks.withType<JavaCompile> {
-            options.encoding = "UTF-8"
-            options.compilerArgs.add("-parameters")
-        }
-
-        tasks.withType<ShadowJar> {
-            mergeServiceFiles()
-        }
-
-        tasks.named<JavaExec>("run") {
-            classpath += developmentOnly
-            jvmArgs("-noverify", "-XX:TieredStopAtLevel=1", "-Dcom.sun.management.jmxremote")
-        }
-    }
     if(goProjects.contains(name)) {
         // apply the Gogradle plugin to projects using Go
         apply(plugin = "com.github.blindpirate.gogradle")
@@ -317,6 +271,7 @@ subprojects {
         // override versions of dependencies with vulnerabilities
         configurations.all {
             resolutionStrategy.eachDependency {
+
                 if (requested.group == "org.apache.santuario" && requested.name == "xmlsec") {
                     if (requested.version!!.startsWith("2.0") && requested.version!! <= "2.1.4") {
                         useVersion("2.1.4")
@@ -331,42 +286,41 @@ subprojects {
                     }
                 }
 
+                if (requested.group == "org.apache.logging.log4j" && requested.name == "log4j-api") {
+                    if (requested.version!!.startsWith("2.11.1")) {
+                        useVersion("2.13.3")
+                        because("fixes vulnerability in 2.11.1 and before")
+                    }
+                }
+
+                if (requested.group == "org.bouncycastle" && requested.name == "bcprov-jdk15on") {
+                    if (requested.version!!.startsWith("1.63")) {
+                        useVersion("1.65")
+                        because("fixes vulnerability in 1.63 and before")
+                    }
+                }
+
                 if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
                     if (requested.version!!.startsWith("2.9.") || requested.version!!.startsWith("2.10.") ) {
                         useVersion("2.10.1")
                         because("fixes vulnerability in 2.9.9 and before")
                     }
                 }
-                if (requested.group == "org.bouncycastle" && requested.name == "bcprov-jdk15on") {
-                    if (requested.version!!.startsWith("1.5") && requested.version!! <= "1.59") {
-                        useVersion("1.62")
-                        because("fixes vulnerability in 1.5x before 1.6x")
-                    }
-                }
-                if (requested.group == "org.apache.zookeeper" && requested.name == "zookeeper") {
-                    if (requested.version!!.startsWith("3.4") && requested.version!! <= "3.5.5") {
-                        useVersion("3.5.5")
-                        because("Enforce zookeeper 3.4.14+ to avoid vulnerability CVE-2019-0201")
-                    }
-                }
-                if (requested.group == "org.apache.kafka" && requested.name == "kafka_2.11") {
-                    if (requested.version!!.startsWith("2.0.1") && requested.version!! <= "2.2.1") {
-                        useVersion("2.2.1")
-                        because("Enforce kafka_2.11 2.0.1 to avoid vulnerability CVE-2018-17196")
-                    }
-                }
-                if (requested.group == "org.elasticsearch" && requested.name == "elasticsearch") {
-                    if (requested.version!! <= Versions.ELASTIC) {
-                        useVersion(Versions.ELASTIC)
-                        because("some packages had an earlier ES version")
-                    }
-                }
+
                 if (requested.group == "com.google.guava" && requested.name == "guava") {
                     if (requested.version!! <= "27.0.1") {
                         useVersion("27.0.1-jre")
                         because("fixes CVE-2018-10237")
                     }
                 }
+
+                if (requested.group == "org.jasig.cas.client" && requested.name == "cas-client-core") {
+                    if (requested.version!! <= "3.5.0") {
+                        useVersion("3.6.0")
+                        because("fixes CWE-611: Improper Restriction of XML External Entity Reference")
+                    }
+                }
+
                 if (requested.group == "io.netty" && requested.name == "netty-all") {
                     if (requested.version!! < "4.1.42.Final") {
                         useVersion("4.1.42.Final")
