@@ -470,22 +470,38 @@ class StreamFunctionsSpec extends Specification {
     def parent = ParsedRecord.newBuilder()
         .setDiscoveryBuilder(Discovery.newBuilder()
             .setTitle("parent")
-            .setAlternateTitle("inherit me"))
-            // TODO - test more fields w/ different data types
+            .setAlternateTitle("inherit me")
+            .setDsmmAverage(1.0f)
+            .setDsmmAccessibility(1)
+            .setCiteAsStatements(["parent citation"])
+            .setIsGlobal(true))
+        .setRelationships([Relationship.newBuilder().setType(RelationshipType.COLLECTION).setId('abc').build()])
+        .setPublishing(Publishing.newBuilder().setIsPrivate(true).build())
         .build()
     def childId = 'child'
     def child = ParsedRecord.newBuilder()
         .setDiscoveryBuilder(Discovery.newBuilder()
-            .setTitle("child"))
+            .setTitle("child")
+            .setDsmmAverage(2.0f)
+            .setCiteAsStatements(["child citation"])
+            .setIsGlobal(false))
         .build()
 
     when:
     def wrappedChild = new ParsedRecordWithId(id: childId, record: child)
     def flattened = StreamFunctions.flattenRecords.apply(wrappedChild, parent)
 
-    then:
+    then: "inherits fields from the parent"
+    flattened.record.discovery.alternateTitle == parent.discovery.alternateTitle
+    flattened.record.discovery.dsmmAccessibility == parent.discovery.dsmmAccessibility
+    flattened.record.relationships.isEmpty() // does not inherit values outside of discovery
+    !flattened.record.publishing.isPrivate // does not inherit values outside of discovery
+
+    and: "preserves fields set by the child"
     flattened.id == childId
     flattened.record.discovery.title == child.discovery.title
-    flattened.record.discovery.alternateTitle == parent.discovery.alternateTitle
+    flattened.record.discovery.dsmmAverage == child.discovery.dsmmAverage
+    flattened.record.discovery.citeAsStatements == child.discovery.citeAsStatements
+    flattened.record.discovery.isGlobal == child.discovery.isGlobal
   }
 }
