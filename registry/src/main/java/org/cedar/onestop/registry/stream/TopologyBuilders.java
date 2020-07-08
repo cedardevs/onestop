@@ -38,16 +38,21 @@ public class TopologyBuilders {
         .flatMap((granuleId, granuleRecord) ->
             granuleRecord.getRelationships().stream()
                 .filter(relationship -> relationship.getType().equals(RelationshipType.COLLECTION))
-                .map((collection -> new KeyValue<>(collection.getId(), granuleRecord)))
+                .map((collection -> new KeyValue<>(collection.getId(), StreamFunctions.wrapRecordWithId(granuleId, granuleRecord))))
                 .collect(Collectors.toList()))
         .through(Topics.granulesByCollectionId()); // go through kafka to co-partition granules with their collections
 
     var flattenedGranuleStream = granulesByCollectionId.join(
         collectionTopology.parsedTable,
         StreamFunctions.flattenRecords);
-    flattenedGranuleStream.to(Topics.flattenedGranuleTopic());
+    // re-key with granule's id and flattened value, then publish
+    flattenedGranuleStream
+        .map((collectionId, flattenedRecordWithGranuleId) ->
+            new KeyValue<>(flattenedRecordWithGranuleId.getId(), flattenedRecordWithGranuleId.getRecord()))
+        .to(Topics.flattenedGranuleTopic());
 
     // pipe legacy changelogs into combined ones
+    // TODO - remove in 4.x
     var existingTopics = adminClient.listTopics().names().get();
     consumeLegacyChangelogs(builder, RecordType.collection, existingTopics);
     consumeLegacyChangelogs(builder, RecordType.granule, existingTopics);

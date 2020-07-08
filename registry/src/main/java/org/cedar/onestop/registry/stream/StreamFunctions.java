@@ -164,21 +164,32 @@ public class StreamFunctions {
    * TODO: Revisit this logic if/when we have another approach for bulk flattening on collection changes or
    * if we rethink our flattening approach in its entirety.
    */
-  public static ValueJoiner<? super ParsedRecord, ? super ParsedRecord, ParsedRecord> flattenRecords = (child, parent) -> {
+  public static ValueJoiner<? super ParsedRecordWithId, ? super ParsedRecord, ParsedRecordWithId> flattenRecords = (child, parent) -> {
     var discoverySchema = Discovery.getClassSchema();
     // defensive copy of the parent discovery object
     var copyForOverrides = SpecificData.getForClass(Discovery.class).deepCopy(discoverySchema, parent.getDiscovery());
     discoverySchema.getFields().forEach(f -> {
-      var childVal = child.getDiscovery().get(f.name());
+      var childVal = child.getRecord().getDiscovery().get(f.name());
       if (childVal != null && !childVal.equals(f.defaultVal())) {
         // override the parent value if a child value exists
         copyForOverrides.put(f.pos(), childVal);
       }
     });
     // build a new record with the overridden discovery copy
-    var flattenedRecordBuilder = ParsedRecord.newBuilder(child);
-    flattenedRecordBuilder.setDiscovery(copyForOverrides);
-    return flattenedRecordBuilder.build();
+    var flattenedRecord = ParsedRecord.newBuilder(child.getRecord())
+        .setDiscovery(copyForOverrides)
+        .build();
+    // wrap the flattened record with the child's id
+    return ParsedRecordWithId.newBuilder()
+        .setId(child.getId())
+        .setRecord(flattenedRecord)
+        .build();
   };
 
+  static ParsedRecordWithId wrapRecordWithId(String id, ParsedRecord record) {
+    return ParsedRecordWithId.newBuilder()
+        .setId(id)
+        .setRecord(record)
+        .build();
+  }
 }

@@ -473,16 +473,19 @@ class StreamFunctionsSpec extends Specification {
             .setAlternateTitle("inherit me"))
             // TODO - test more fields w/ different data types
         .build()
+    def childId = 'child'
     def child = ParsedRecord.newBuilder()
         .setDiscoveryBuilder(Discovery.newBuilder()
             .setTitle("child"))
         .build()
 
     when:
-    def flattened = StreamFunctions.flattenRecords.apply(child, parent)
+    def wrappedChild = new ParsedRecordWithId(id: childId, record: child)
+    def flattened = StreamFunctions.flattenRecords.apply(wrappedChild, parent)
 
     then:
-    flattened.discovery.title == child.discovery.title
-    flattened.discovery.alternateTitle == parent.discovery.alternateTitle
+    flattened.id == childId
+    flattened.record.discovery.title == child.discovery.title
+    flattened.record.discovery.alternateTitle == parent.discovery.alternateTitle
   }
 }
