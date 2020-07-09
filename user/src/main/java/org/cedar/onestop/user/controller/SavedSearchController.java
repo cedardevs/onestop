@@ -7,6 +7,7 @@ import org.cedar.onestop.user.repository.SavedSearchRepository;
 import org.cedar.onestop.user.service.ResourceNotFoundException;
 import org.cedar.onestop.user.service.SavedSearch;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -65,12 +66,22 @@ public class SavedSearchController {
           @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @RequestMapping(value = "/saved-search/user", method = RequestMethod.GET, produces = "application/json")
-  public  Map<String, List> getByUserId(final @AuthenticationPrincipal Authentication authentication)
+  public  ResponseEntity<?> getByUserId(final @AuthenticationPrincipal Authentication authentication)
           throws RuntimeException {
-    String userId = authentication.getName();
-    Map<String, List> jsonSpecResponse = new HashMap<String, List>();
-    jsonSpecResponse.put("data" , savedSearchRepository.findAllByUserId(userId));
-    return jsonSpecResponse;
+    if(authentication != null) {
+      Map<String, List> jsonSpecResponse = new HashMap<>();
+      String userId = authentication.getName();
+      Map<String, String> userData = new HashMap<String, String>();
+      jsonSpecResponse.put("data" , savedSearchRepository.findAllByUserId(userId));
+      return new ResponseEntity<>(jsonSpecResponse, HttpStatus.OK);
+    }
+    else{
+      Map<String, Map<String, String>> jsonSpecErrorResponse = new HashMap<>();
+      Map<String, String> errorMap = new HashMap<String, String>();
+      errorMap.put("reason", "Unauthorized");
+      jsonSpecErrorResponse.put("error", errorMap);
+      return new ResponseEntity<>(jsonSpecErrorResponse, HttpStatus.UNAUTHORIZED);
+    }
   }
 
   @ApiOperation(value = "Add user search")
