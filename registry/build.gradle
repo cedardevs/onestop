@@ -28,6 +28,7 @@ dependencies {
   implementation(project(':kafka-common'))
   implementation("org.json:json:20190722")
   implementation('javax.validation:validation-api:2.0.1.Final')
+  implementation("org.hibernate.validator:hibernate-validator:6.0.2.Final")
 
   // -- CAS Authentication --
   implementation "org.pac4j:spring-webmvc-pac4j:3.2.0"
@@ -39,6 +40,7 @@ dependencies {
   compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
 
   runtime("org.springframework.boot:spring-boot-devtools")
+  
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")
