@@ -39,6 +39,7 @@ dependencies {
   compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
 
   runtime("org.springframework.boot:spring-boot-devtools")
+  runtime("org.hibernate.validator:hibernate-validator:6.0.2.Final")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")
