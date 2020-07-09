@@ -22,9 +22,7 @@ dependencies {
   implementation("org.apache.kafka:kafka-streams:${Versions.KAFKA}")
   implementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}")
   implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
-  // TODO - update to official version when schema change is merged and tagged
-  implementation("com.github.cedardevs.schemas:schemas-core:36-parseRecordWithId-SNAPSHOT")
-//  implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
+  implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
   implementation(project(':kafka-common'))
   implementation("org.json:json:20190722")
   
