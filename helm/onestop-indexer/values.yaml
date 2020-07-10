@@ -13,7 +13,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 elasticsearch:
-  host: onestop-es-dev-http
+  host: onestop-dev-es-http
   port: "9200"
   ssl:
     enabled: true
