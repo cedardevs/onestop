@@ -33,6 +33,9 @@ deploy:
           image: cedardevs/onestop-indexer
         setValues:
           debug: true
+          elasticsearch.host: "onestop-dev-es-http"
+          elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
+          elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
           config: |-
             ---
             kafka:
@@ -105,6 +108,9 @@ deploy:
           service.nodePort: "30097"
           service.type: NodePort
           service.clusterIP: 10.100.100.2
+          elasticsearch.host: "onestop-dev-es-http"
+          elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
+          elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
         imageStrategy:
           helm: {}
       - name: onestop-client
@@ -186,6 +192,9 @@ profiles:
               features.sitemap: "true"
               service.nodePort: "30097"
               service.type: NodePort
+              elasticsearch.host: "onestop-dev-es-http"
+              elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
+              elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
             imageStrategy:
               helm: {}
           - name: onestop-client

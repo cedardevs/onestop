@@ -37,3 +37,23 @@ Create chart name and version as used by the chart label.
 {{- define "onestop-indexer.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "onestop-indexer.labels" -}}
+helm.sh/chart: {{ include "onestop-indexer.chart" . }}
+{{ include "onestop-indexer.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "onestop-indexer.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "onestop-indexer.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
