@@ -63,4 +63,15 @@ class SavedSearchControllerSpec extends Specification {
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
   }
+
+  def "access denied to saved search"() {
+    when:
+    def results = mockMvc.perform(MockMvcRequestBuilders
+        .get("/v1/saved-search/user")
+        .accept(MediaType.APPLICATION_JSON))
+
+    then:
+    results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+  }
+
 }
