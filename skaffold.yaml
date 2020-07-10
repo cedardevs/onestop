@@ -248,7 +248,6 @@ profiles:
           - *onestop-user
           - *onestop-postgresql
           - *onestop-ingress
-#          - *onestop-net-tools
           - name: onestop-dev
             chartPath: helm/onestop-dev
             setValues:
