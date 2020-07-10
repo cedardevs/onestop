@@ -3,6 +3,7 @@ package org.cedar.onestop.registry.stream
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.kafka.streams.state.ValueAndTimestamp
+import org.cedar.schemas.avro.geojson.Point
 import org.cedar.schemas.avro.psi.*
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -468,22 +469,27 @@ class StreamFunctionsSpec extends Specification {
 
   def 'flattens records by inheriting discovery attributes'() {
     def parent = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscoveryBuilder(Discovery.newBuilder()
             .setTitle("parent")
             .setAlternateTitle("inherit me")
             .setDsmmAverage(1.0f)
             .setDsmmAccessibility(1)
             .setCiteAsStatements(["parent citation"])
+            .setLegalConstraints(["parent constraints"])
+            .setSpatialBounding(Point.newBuilder().setCoordinates([0.0, 0.0]).build())
             .setIsGlobal(true))
         .setRelationships([Relationship.newBuilder().setType(RelationshipType.COLLECTION).setId('abc').build()])
         .setPublishing(Publishing.newBuilder().setIsPrivate(true).build())
         .build()
     def childId = 'child'
     def child = ParsedRecord.newBuilder()
+        .setType(RecordType.granule)
         .setDiscoveryBuilder(Discovery.newBuilder()
             .setTitle("child")
             .setDsmmAverage(2.0f)
             .setCiteAsStatements(["child citation"])
+            .setSpatialBounding(Point.newBuilder().setCoordinates([42.0, 42.0]).build())
             .setIsGlobal(false))
         .build()
 
@@ -491,17 +497,24 @@ class StreamFunctionsSpec extends Specification {
     def wrappedChild = new ParsedRecordWithId(id: childId, record: child)
     def flattened = StreamFunctions.flattenRecords.apply(wrappedChild, parent)
 
-    then: "inherits fields from the parent"
-    flattened.record.discovery.alternateTitle == parent.discovery.alternateTitle
-    flattened.record.discovery.dsmmAccessibility == parent.discovery.dsmmAccessibility
-    flattened.record.relationships.isEmpty() // does not inherit values outside of discovery
-    !flattened.record.publishing.isPrivate // does not inherit values outside of discovery
+    then: "inherits unset fields from the parent"
+    flattened.record.discovery.alternateTitle == parent.discovery.alternateTitle // string
+    flattened.record.discovery.dsmmAccessibility == parent.discovery.dsmmAccessibility // int
+    flattened.record.discovery.legalConstraints.size() == parent.discovery.legalConstraints.size() // list
+    flattened.record.discovery.legalConstraints.every { parent.discovery.legalConstraints.contains(it) } // list
 
     and: "preserves fields set by the child"
+    flattened.record.discovery.title == child.discovery.title // string
+    flattened.record.discovery.dsmmAverage == child.discovery.dsmmAverage  // float
+    flattened.record.discovery.isGlobal == child.discovery.isGlobal // bool
+    flattened.record.discovery.spatialBounding == child.discovery.spatialBounding // geometry
+    flattened.record.discovery.citeAsStatements.size() == child.discovery.citeAsStatements.size() // list
+    flattened.record.discovery.citeAsStatements.every { child.discovery.citeAsStatements.contains(it) } // list
+
+    and: "preserves fields outside of discovery, even if set on parent"
     flattened.id == childId
-    flattened.record.discovery.title == child.discovery.title
-    flattened.record.discovery.dsmmAverage == child.discovery.dsmmAverage
-    flattened.record.discovery.citeAsStatements == child.discovery.citeAsStatements
-    flattened.record.discovery.isGlobal == child.discovery.isGlobal
+    flattened.record.type == RecordType.granule
+    flattened.record.relationships.isEmpty()
+    !flattened.record.publishing.isPrivate
   }
 }
