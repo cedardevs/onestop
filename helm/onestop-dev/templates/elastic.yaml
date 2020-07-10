@@ -13,7 +13,7 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1beta1
 kind: Elasticsearch
 metadata:
-  name: onestop
+  name: {{ include "onestop-dev.fullname" . }}
 spec:
   version: 7.6.2
   nodeSets:
@@ -29,12 +29,12 @@ spec:
 apiVersion: kibana.k8s.elastic.co/v1beta1
 kind: Kibana
 metadata:
-  name: onestop
+  name: {{ include "onestop-dev.fullname" . }}
 spec:
   version: 7.6.2
   count: 1
   elasticsearchRef:
-    name: onestop
+    name: {{ include "onestop-dev.fullname" . }}
   http:
     service:
       spec:
@@ -44,7 +44,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: onestop-es-elastic-user # override the default secret used by ECK operator
+  name: {{ include "onestop-dev.fullname" . }}-es-elastic-user # override the default secret used by ECK operator
 type: Opaque
 data:
   elastic: Zm9hbWNhdA== # development user:pass => elastic:foamcat

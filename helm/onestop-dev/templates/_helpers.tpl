@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "onestop-user.name" -}}
+{{- define "onestop-dev.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "onestop-user.fullname" -}}
+{{- define "onestop-dev.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -27,16 +27,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "onestop-user.chart" -}}
+{{- define "onestop-dev.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
-Common labels
+Filebeat common labels
 */}}
-{{- define "onestop-user.labels" -}}
-helm.sh/chart: {{ include "onestop-user.chart" . }}
-{{ include "onestop-user.selectorLabels" . }}
+{{- define "onestop-dev.labels.filebeat" -}}
+helm.sh/chart: {{ include "onestop-dev.chart" . }}
+{{ include "onestop-dev.selectorLabels.filebeat" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -44,27 +44,29 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
-Selector labels
+Filebeat selector labels
 */}}
-{{- define "onestop-user.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "onestop-user.name" . }}
+{{- define "onestop-dev.selectorLabels.filebeat" -}}
+app.kubernetes.io/name: {{ include "onestop-dev.name" . }}-filebeat
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Create the name of the service account to use
+Metricbeat common labels
 */}}
-{{- define "onestop-user.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default (include "onestop-user.fullname" .) .Values.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
+{{- define "onestop-dev.labels.metricbeat" -}}
+helm.sh/chart: {{ include "onestop-dev.chart" . }}
+{{ include "onestop-dev.selectorLabels.metricbeat" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
 
 {{/*
-Use a common config name variable, rather than appending -config in several places.
+Metricbeat selector labels
 */}}
-{{- define "onestop-user.configname" -}}
-{{ template "onestop-user.fullname" . }}-config
-{{- end -}}
+{{- define "onestop-dev.selectorLabels.metricbeat" -}}
+app.kubernetes.io/name: {{ include "onestop-dev.name" . }}-metricbeat
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

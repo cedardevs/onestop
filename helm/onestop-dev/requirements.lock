@@ -4,9 +4,12 @@ dependencies:
   version: 0.4.1
 - name: kube-state-metrics
   repository: https://kubernetes-charts.storage.googleapis.com/
-  version: 2.8.9
+  version: 2.8.8
+- name: metrics-server
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 2.11.1
 - name: cas
   repository: file://../cas
   version: 0.1.0
-digest: sha256:956a407ed5c0e6c78599f5bf5cc96e22905e09ef01584a27725528f8f2cc79a4
-generated: "2020-06-12T14:34:28.47442-06:00"
+digest: sha256:43f6dc8e9f85383b9a7467eb7963c55c7b205ba937a53fad4ce11139cd1b1f9c
+generated: "2020-06-02T11:45:34.203802-06:00"

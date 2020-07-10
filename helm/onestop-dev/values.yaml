@@ -86,8 +86,19 @@ cas:
   enabled: false
 
 ###############################################################################
-# K8S METRICS SERVER
+# METRICS/MONITORING
 ###############################################################################
+metricbeat:
+  enabled: false
+filebeat:
+  enabled: false
+kube-state-metrics:
+  enabled: false
 metrics-server:
+  enabled: false # NOTE: metrics-server is required to support autoscaling; set to true to test HPAs
   args:
+    - --v=2
+    - --kubelet-preferred-address-types=InternalIP
     - --kubelet-insecure-tls
+  hostNetwork:
+    enabled: true
