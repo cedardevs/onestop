@@ -5,10 +5,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.TransformerSupplier;
+import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.Stores;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.constants.Topics;
@@ -32,9 +29,17 @@ public class TopologyBuilders {
     var collectionTopology = addTopologyForType(builder, RecordType.collection, publishInterval);
     var granuleTopology = addTopologyForType(builder, RecordType.granule, publishInterval);
 
-    // add flattening topology
-    var granulesByCollectionId = granuleTopology.parsedTable
-        .toStream()
+    //-- begin flattening topology --
+    var parsedGranuleStream = granuleTopology.parsedTable.toStream();
+
+    // publish tombstones directly to flattened topic
+    parsedGranuleStream
+        .filter((k, v) -> v == null)
+        .to(Topics.flattenedGranuleTopic());
+
+    // map granules by their parent id(s)
+    var granulesByCollectionId = parsedGranuleStream
+        .filter((k, v) -> v != null)
         .flatMap((granuleId, granuleRecord) ->
             granuleRecord.getRelationships().stream()
                 .filter(relationship -> relationship.getType().equals(RelationshipType.COLLECTION))
@@ -42,14 +47,13 @@ public class TopologyBuilders {
                 .collect(Collectors.toList()))
         .through(Topics.granulesByCollectionId()); // go through kafka to co-partition granules with their collections
 
-    var flattenedGranuleStream = granulesByCollectionId.join(
-        collectionTopology.parsedTable,
-        StreamFunctions.flattenRecords);
-    // re-key with granule's id and flattened value, then publish
-    flattenedGranuleStream
+    // join the granule with each parent, re-key with granule's id and flattened value, then publish
+    granulesByCollectionId
+        .join(collectionTopology.parsedTable, StreamFunctions.flattenRecords)
         .map((collectionId, flattenedRecordWithGranuleId) ->
             new KeyValue<>(flattenedRecordWithGranuleId.getId(), flattenedRecordWithGranuleId.getRecord()))
         .to(Topics.flattenedGranuleTopic());
+    //-- end flattening topology --
 
     // pipe legacy changelogs into combined ones
     // TODO - remove in 4.x
@@ -60,11 +64,7 @@ public class TopologyBuilders {
     return builder.build();
   }
 
-  public static TopologyWrapperForType addTopologyForType(StreamsBuilder builder, RecordType type, Long publishInterval) {
-    return new TopologyWrapperForType(builder, type, publishInterval);
-  }
-
-  public static void consumeLegacyChangelogs(StreamsBuilder builder, RecordType type, Collection<String> existingTopics) {
+  private static void consumeLegacyChangelogs(StreamsBuilder builder, RecordType type, Collection<String> existingTopics) {
     // filter legacy changelogs to those that actually exist
     var legacyChangelogs = Topics.inputChangelogTopicsSplit(StreamsApps.REGISTRY_ID, type)
         .stream()
@@ -75,6 +75,10 @@ public class TopologyBuilders {
       builder.stream(legacyChangelogs)
           .to(Topics.inputChangelogTopicCombined(StreamsApps.REGISTRY_ID, type));
     }
+  }
+
+  public static TopologyWrapperForType addTopologyForType(StreamsBuilder builder, RecordType type, Long publishInterval) {
+    return new TopologyWrapperForType(builder, type, publishInterval);
   }
 
   public static class TopologyWrapperForType {

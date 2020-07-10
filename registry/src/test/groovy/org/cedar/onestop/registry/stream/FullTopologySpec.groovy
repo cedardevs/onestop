@@ -337,6 +337,24 @@ class FullTopologySpec extends Specification {
     output.size() == 1
   }
 
+  def 'granule tombstones result in flattened granule tombstones'() {
+    def granuleKey = 'flatteningtombstone'
+    def dummyValue = ParsedRecord.newBuilder()
+        .setType(RecordType.granule)
+        .build()
+
+    when:
+    // send a dummy value first, else nothing is stored in the ktable => nothing is deleted => no tombstone is emitted
+    driver.pipeInput(parsedFactory.create(parsedTopic(RecordType.granule), granuleKey, dummyValue))
+    driver.pipeInput(parsedFactory.create(parsedTopic(RecordType.granule), granuleKey, null, new RecordHeaders()))
+
+    then:
+    parsedStore.get(granuleKey) == null
+    def output = readAllOutput(driver, flattenedGranuleTopic())
+    OutputVerifier.compareKeyValue(output[0], granuleKey, null)
+    output.size() == 1
+  }
+
 
   private static buildTestGranule(String content, Method method) {
     def builder = Input.newBuilder()
