@@ -64,7 +64,6 @@ build:
         level:
           org.cedar: DEBUG
           org.cedar.schemas.avro.util: INFO
-      server.servlet.context-path: /registry
       kafka.commit.interval: 1000
       topics:
         num-partitions: 2
