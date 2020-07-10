@@ -3,21 +3,15 @@ package org.cedar.onestop.user.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.cedar.onestop.user.repository.OnestopUserRepository;
-import org.cedar.onestop.user.service.OnestopUser;
-import org.cedar.onestop.user.service.ResourceNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -51,9 +45,8 @@ public class UserController {
             Map<String, String> errorMap = new HashMap<String, String>();
             errorMap.put("reason", "Unauthorized");
             jsonSpecResponse.put("error", errorMap);
+            return new ResponseEntity(jsonSpecResponse, HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity(jsonSpecResponse, HttpStatus.UNAUTHORIZED);
-//        return jsonSpecResponse;
     }
 
 
