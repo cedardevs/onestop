@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID;
 
 /**
@@ -25,50 +26,124 @@ public class TransformationUtils {
   static final private Logger log = LoggerFactory.getLogger(TransformationUtils.class);
 
   ///////////////////////////////////////////////////////////////////////////////
-  //                     Indexing For Analysis & Errors                        //
+  //                     Convert to Indexing Message                           //
   ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForAnalysisAndErrors(ParsedRecord record, Set<String> targetFields) {
+  public static Map<String, Object> reformatMessageForAnalysis(ParsedRecord record, Set<String> fields, RecordType recordType) {
+
     var analysis = record.getAnalysis();
     var errors = record.getErrors();
-
     var analysisMap = AvroUtils.avroToMap(analysis, true);
+    var message = new HashMap<String, Object>();
+
+    fields.forEach(field -> {
+      message.put(field, analysisMap.get(field));
+    });
+    if (fields.contains("internalParentIdentifier")) {
+      analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    }
     var errorsList = errors.stream()
         .map(e -> AvroUtils.avroToMap(e))
         .collect(Collectors.toList());
 
-    analysisMap.put("errors", errorsList);
+    if (fields.contains("errors")) {
+      message.put("errors", errorsList);
+    }
 
-    // drop fields not present in target index
-    var result = new LinkedHashMap<String, Object>(targetFields.size());
-    targetFields.forEach(f -> result.put(f, analysisMap.get(f)));
+    if (fields.contains("temporalBounding")) {
+      message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
+    }
+    if (fields.contains("identification")) {
+      message.put("identification", prepareIdentification(analysis.getIdentification(), recordType));
+    }
+
+    return message;
+  }
+
+  public static Map<String, Object> prepareIdentification(IdentificationAnalysis identification, RecordType recordType) {
+    var result = new HashMap<String, Object>();
+    var analysis = AvroUtils.avroToMap(identification); // currently using map because couldn't get it working with IdentificationAnalysis object. Worth revisiting at some point.
+
+    if (analysis == null) {
+      return result;
+    }
+    result.put("doiExists", analysis.get("doiExists"));
+    result.put("doiString", analysis.get("doiString"));
+    result.put("fileIdentifierExists", analysis.get("fileIdentifierExists"));
+    result.put("fileIdentifierString", analysis.get("fileIdentifierString"));
+    result.put("hierarchyLevelNameExists", analysis.get("hierarchyLevelNameExists"));
+    result.put("isGranule", analysis.get("isGranule"));
+    result.put("parentIdentifierExists", analysis.get("parentIdentifierExists"));
+    if (recordType == RecordType.granule) {
+      result.put("parentIdentifierString", analysis.get("parentIdentifierString"));
+    }
     return result;
   }
 
+  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> fields) {
 
-  ///////////////////////////////////////////////////////////////////////////////
-  //                          Indexing For Search                              //
-  ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> targetFields) {
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
+    var errors = record.getErrors();
     var discoveryMap = AvroUtils.avroToMap(discovery, true);
+    var analysisMap = AvroUtils.avroToMap(analysis, true);
+    var message = new HashMap<String, Object>();
+
+    fields.forEach(field -> {
+      message.put(field, discoveryMap.get(field));
+    });
+    var errorsList = errors.stream()
+        .map(e -> AvroUtils.avroToMap(e))
+        .collect(Collectors.toList());
+
+    if (fields.contains("errors")) {
+      message.put("errors", errorsList);
+    }
 
     // prepare and apply fields that need to be reformatted for search
-    discoveryMap.putAll(prepareGcmdKeyword(discovery));
-    discoveryMap.putAll(prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding()));
-    discoveryMap.put("dataFormat", prepareDataFormats(discovery));
-    discoveryMap.put("linkProtocol", prepareLinkProtocols(discovery));
-    discoveryMap.put("serviceLinks", prepareServiceLinks(discovery));
-    discoveryMap.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
-    discoveryMap.putAll(prepareResponsibleParties(record));
-    discoveryMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
-    discoveryMap.put("filename", prepareFilename(record));
-    discoveryMap.put("checksums", prepareChecksums(record));
+    Map<String, Set<String>> gcmdKeywords = prepareGcmdKeyword(discovery);
+    gcmdKeywords.forEach((key, value) -> {
+      if (fields.contains(key)) {
+        message.put(key, value);
+      }
+    });
+    Map<String, Object> dates = prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding());
+    dates.forEach((key, value) -> {
+      if (fields.contains(key)) {
+        message.put(key, value);
+      }
+    });
+    if (fields.contains("temporalBounding")) {
+      message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
+    }
+    if (fields.contains("dataFormat")) {
+      message.put("dataFormat", prepareDataFormats(discovery));
+    }
+    if (fields.contains("linkProtocol")) {
+      message.put("linkProtocol", prepareLinkProtocols(discovery));
+    }
+    if (fields.contains("serviceLinks")) {
+      message.put("serviceLinks", prepareServiceLinks(discovery));
+    }
+    if (fields.contains("serviceLinkProtocol")) {
+      message.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
+    }
+    Map<String, Set<String>> responsibleParties = prepareResponsibleParties(record);
+    responsibleParties.forEach((key, value) -> {
+      if (fields.contains(key)) {
+        message.put(key, value);
+      }
+    });
 
-    // drop fields not present in target index
-    var result = new LinkedHashMap<String, Object>(targetFields.size());
-    targetFields.forEach(f -> result.put(f, discoveryMap.get(f)));
-    return result;
+    if (fields.contains("internalParentIdentifier")) {
+      message.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    }
+    if (fields.contains("filename")) {
+      message.put("filename", prepareFilename(record));
+    }
+    if (fields.contains("checksums")) {
+      message.put("checksums", prepareChecksums(record));
+    }
+    return message;
   }
 
   ////////////////////////////////
@@ -258,88 +333,99 @@ public class TransformationUtils {
   ////////////////////////////
   // Dates                  //
   ////////////////////////////
+
+  private static Map<String, Object> prepareTemporalBounding(TemporalBoundingAnalysis analysis) {
+    var result = new HashMap<String, Object>();
+
+    if (analysis == null) {
+      return result;
+    }
+
+    result.put("beginDescriptor", analysis.getBeginDescriptor());
+    result.put("beginIndexable", analysis.getBeginIndexable());
+    result.put("beginPrecision", analysis.getBeginPrecision());
+    result.put("beginUtcDateTimeString", analysis.getBeginUtcDateTimeString());
+    result.put("beginZoneSpecified", analysis.getBeginZoneSpecified());
+    result.put("endDescriptor", analysis.getEndDescriptor());
+    result.put("endIndexable", analysis.getEndIndexable());
+    result.put("endPrecision", analysis.getEndPrecision());
+    result.put("endUtcDateTimeString", analysis.getEndUtcDateTimeString());
+    result.put("endZoneSpecified", analysis.getEndZoneSpecified());
+    result.put("instantDescriptor", analysis.getInstantDescriptor());
+    result.put("instantIndexable", analysis.getInstantIndexable());
+    result.put("instantPrecision", analysis.getInstantPrecision());
+    result.put("instantUtcDateTimeString", analysis.getInstantUtcDateTimeString());
+    result.put("instantZoneSpecified", analysis.getInstantZoneSpecified());
+    result.put("rangeDescriptor", analysis.getRangeDescriptor());
+    return result;
+  }
+
+  private static Map<String, Object> prepareDatesForInstant(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
+    var result = new HashMap<String, Object>();
+
+    if (analysis.getInstantIndexable()) {
+      // paleo dates are not indexable, so only add beginDate or endDate to the index if instantIndexable
+      result.put("beginDate", analysis.getInstantUtcDateTimeString());
+      result.put("endDate", analysis.getInstantEndUtcDateTimeString());
+    }
+
+    result.put("beginYear", analysis.getInstantYear());
+    result.put("beginDayOfYear", analysis.getInstantDayOfYear());
+    result.put("beginDayOfMonth", analysis.getInstantDayOfMonth());
+    result.put("beginMonth",  analysis.getInstantMonth());
+
+    result.put("endYear", analysis.getInstantYear());
+    result.put("endDayOfYear", analysis.getInstantEndDayOfYear());
+    result.put("endDayOfMonth", analysis.getInstantEndDayOfMonth());
+    result.put("endMonth", analysis.getInstantEndMonth());
+
+    return result;
+  }
+
+  private static Map<String, Object> prepareBeginDate(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
+    var result = new HashMap<String, Object>();
+
+    if (analysis.getBeginDescriptor() == VALID) {
+      if (analysis.getBeginIndexable()) {
+        result.put("beginDate", analysis.getBeginUtcDateTimeString());
+      }
+
+      result.put("beginYear", analysis.getBeginYear());
+      result.put("beginDayOfYear", analysis.getBeginDayOfYear());
+      result.put("beginDayOfMonth", analysis.getBeginDayOfMonth());
+      result.put("beginMonth", analysis.getBeginMonth());
+    }
+    return result;
+  }
+
+  private static Map<String, Object> prepareEndDate(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
+    var result = new HashMap<String, Object>();
+
+    if (analysis.getEndDescriptor() == VALID) {
+      if (analysis.getEndIndexable()) {
+        result.put("endDate", analysis.getEndUtcDateTimeString());
+      }
+
+      result.put("endYear", analysis.getEndYear());
+      result.put("endDayOfYear", analysis.getEndDayOfYear());
+      result.put("endDayOfMonth", analysis.getEndDayOfMonth());
+      result.put("endMonth", analysis.getEndMonth());
+    }
+    return result;
+  }
+
   private static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    String beginDate, endDate;
-    Long year;
-    Long beginYear, endYear;
-    int beginDayOfYear, beginDayOfMonth, beginMonth;
-    int endDayOfYear, endDayOfMonth, endMonth;
     var result = new HashMap<String, Object>();
 
     // If bounding is actually an instant, set search fields accordingly
-    if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT) {
-      beginDate = analysis.getInstantUtcDateTimeString();
-      year = parseYear(beginDate);
-
-      // Add time and/or date to endDate based on precision
-      var precision = analysis.getInstantPrecision();
-      if (precision.equals(ChronoUnit.DAYS.toString())) {
-        // End of day
-        endDate = bounding.getInstant() + "T23:59:59Z";
-      } else if (precision.equals(ChronoUnit.YEARS.toString())) {
-        if (!analysis.getInstantIndexable()) {
-          // Paleo date, so only return year value (null out dates)
-          beginDate = null;
-          endDate = null;
-        } else {
-          // Last day of year + end of day
-          endDate = bounding.getInstant() + "-12-31T23:59:59Z";
-        }
-      } else {
-        // Precision is NANOS so use instant value as-is
-        endDate = beginDate;
-      }
-      beginYear = year;
-      endYear = year;
+    if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT && analysis.getBeginDescriptor() == UNDEFINED) { // distinguished getting begin and end date that were exactly the same (also described as instant), but in that case need to use prepareBeginDate and prepareEndDate to get data off the correct analysis fields
+      return prepareDatesForInstant(bounding, analysis);
     } else {
-      // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
-      // use value from analysis block where dates are UTC datetime normalized
-      beginDate = analysis.getBeginDescriptor() == VALID && analysis.getBeginIndexable() ? analysis.getBeginUtcDateTimeString() : null;
-      beginYear = parseYear(analysis.getBeginUtcDateTimeString());
-      endDate = analysis.getEndDescriptor() == VALID && analysis.getEndIndexable() ? analysis.getEndUtcDateTimeString() : null;
-      endYear = parseYear(analysis.getEndUtcDateTimeString());
+      result.putAll(prepareBeginDate(bounding, analysis));
+      result.putAll(prepareEndDate(bounding, analysis));
     }
-
-    result.put("beginDate", beginDate);
-    result.put("beginYear", beginYear);
-    result.putAll(parseAdditionalTimeFields("begin", beginDate));
-
-    result.put("endDate", endDate);
-    result.put("endYear", endYear);
-    result.putAll(parseAdditionalTimeFields("end", endDate));
 
     return result;
-  }
-
-  private static HashMap<String, Object> parseAdditionalTimeFields(String prefix, String time){
-    var result = new HashMap<String, Object>();
-    Integer dayOfYear, dayOfMonth, month;
-    if (time != null) {
-      ZonedDateTime dateTime = ZonedDateTime.parse(time);
-
-      dayOfYear = dateTime.getDayOfYear();
-      dayOfMonth = dateTime.getDayOfMonth();
-      month = dateTime.getMonthValue();
-    }
-    else {
-      dayOfYear = null;
-      dayOfMonth = null;
-      month = null;
-    }
-
-    result.put(prefix + "DayOfYear", dayOfYear);
-    result.put(prefix + "DayOfMonth", dayOfMonth);
-    result.put(prefix + "Month", month);
-    return result;
-  }
-
-  private static Long parseYear(String utcDateTime) {
-    if (StringUtils.isBlank(utcDateTime)) {
-      return null;
-    } else {
-      // Watch out for BCE years
-      return Long.parseLong(utcDateTime.substring(0, utcDateTime.indexOf('-', 1)));
-    }
   }
 
   ////////////////////////////
