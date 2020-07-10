@@ -1,10 +1,17 @@
-## Loading Metadata Into PSI
-Metadata can be published into the OneStop system using Registry application REST API. Use the Registry API `/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload Metadata records. The application is also equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
+## Loading Metadata Into Inventory Manager
+Metadata can be published into the OneStop Inventory Manager system using the Registry application REST API. Use the Registry API `/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload metadata records. The application is equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
 NOTE: The REST API is also secured via CAS authentication. For more detail see [OneStop Registry Security documentation](../../operator/security/registry-security.md). 
     
-### Available methods
+### Available Methods
 The Registry application has various endpoints that are also described in the [user docs about the REST API](../registry-api.md) and
 [OpenAPI Specification documentation](https://sciapps.colorado.edu/registry/openapi.yaml) in detail.
+
+#### URL Parameter Notes: 
+- Types: The type of record. This is currently either `collection` or `granule`. **This URL parameter is REQUIRED.**
+- Source: The name of an external system which produced this record, example: `comet` for collection and `common-ingest` for granules. This can be omitted when POSTing and is set to `unknown` in this case.
+- Id: A valid universally unique identifier (UUID) which is a 128-bit number that identifies a unique record. Not including this value with POSTing will result in an automatically generated UUID for the received record. 
+
+#### HTTP Methods:
 
 - Create a new Collection/Granule record 
 
@@ -12,13 +19,13 @@ HTTP Method | Endpoint                                           | Body         
 ------------|----------------------------------------------------|-------------------|--------------------------
 POST        | /registry/metadata/${type}/${source}/${id}         | ISO-XML or JSON   | create/replace a metadata record 
 
-- Create or update a new Collection/Granule record 
+- Create or replace a Collection/Granule record 
 
 HTTP Method | Endpoint                                           | Body              | Function
 ------------|----------------------------------------------------|-------------------|--------------------------
 PUT         | /registry/metadata/${type}/${source}/${id}         | ISO-XML or JSON   | create/replace a metadata record 
 
-- Create or edit a new Collection/Granule record
+- Update a subset of a Collection/Granule record
  
 HTTP Method | Endpoint                                           | Body              | Function
 ------------|----------------------------------------------------|-------------------|--------------------------
@@ -42,10 +49,6 @@ HTTP Method | Endpoint                                       | Body             
 ------------|------------------------------------------------|-------------------|--------------------------
 GET         | /metadata/${type}/${source}/${id}/resurrection | (none)            | resurrect a metadata record 
  
-#### Endpoint key words: 
-- Types: The type of record. This is currently either `collection` or `granule`. 
-- Source: The name of an external system which produced this record, example: `comet` for collection and `common-ingest` for granules. This can be omitted when POSTing and is set to `unknown` in this case.
-- Id: A valid universally unique identifier (UUID) which is a 128-bit number that identifies unique record. Not including this value with POSTing will result in an automatically generated UUID for the received record. 
 
 #### Uploading an XML Collection record: 
 Example: Uploading a COLLECTION type XML file from a source COMET with uuid 11111111-1111-2222-3333-44444444: 
@@ -69,7 +72,7 @@ Unsuccessful operations will return a response body with an error message format
 ```
 
 #### Uploading an XML Granule record: 
-When uploading granules in XML format, it is imperative to follow-up with a **PATCH** request containing the JSON `Relationships` indicating the associated collection UUID:
+When uploading granules in XML format, it is imperative to follow-up with a **PATCH** request containing the JSON `Relationships` indicating the associated collection UUID so that the granule is correctly linked to its collection downstream in the OneStop Search API/UI:
 ```
 {
   "relationships": [
@@ -84,14 +87,19 @@ When uploading granules in XML format, it is imperative to follow-up with a **PA
 #### Uploading a JSON record: 
 All metadata input in JSON format should contain `FileLocation`. If the input metadata is a granule, `Relationships` are required to indicate the UUID of the associated collection. Optionally, to ensure optimal discoverabilty and access in the OneStop Search API and UI, `FileInformation` and `Discovery` should be included as well.   
 
-1. FileLocation information: A map of URIs to location objects describing where the file is located
-1. FileInformation information: Details about the file that this input object is in reference to
-1. relationships information: A record of this objects relationships to other objects in the inventory
-1. publishing information: Information pertaining to whether a file is private and for how long if so
-1. discovery information: A key/value metadata information.
+**NOTE**: When submitting content to OneStop Inventory Manager via the Registry REST API, the request body can contain any or all of the following content (links direct to the associated Avro schemas describing the accepted content):
 
+1. [FileLocation](https://github.com/cedardevs/schemas/blob/master/schemas-core/src/main/resources/avro/psi/fileLocation.avsc): A map of URIs to location objects describing where the file is located
+1. [FileInformation](https://github.com/cedardevs/schemas/blob/master/schemas-core/src/main/resources/avro/psi/fileInformation.avsc): Details about the file that this input object is in reference to
+1. [Relationships](https://github.com/cedardevs/schemas/blob/master/schemas-core/src/main/resources/avro/psi/relationship.avsc): A record of this objects relationships to other objects in the inventory
+1. [Publishing](https://github.com/cedardevs/schemas/blob/master/schemas-core/src/main/resources/avro/psi/publishing.avsc): Information pertaining to whether a file is private and for how long if so
+1. [Discovery](https://github.com/cedardevs/schemas/blob/master/schemas-core/src/main/resources/avro/psi/discovery.avsc): Metadata about the file contents that is meant for discoverability/search/access
 
-Example Input JSON Template: 
+The complete set of Avro schemas used by OneStop Inventory Manager can be found in the [schemas-core module of the Schemas repository](https://github.com/cedardevs/schemas/tree/master/schemas-core/src/main/resources/avro). Many fields in the above schemas reference other schemas contained within this repository.
+
+**When loading metadata via writing directly to the underlying Kafka topic, content must follow the [Input schema](https://github.com/cedardevs/schemas/blob/master/schemas-core/src/main/resources/avro/psi/input.avsc), where the aforementioned elements are contained in the `content` field as a string. This is true for both JSON and XML content submitted.**
+
+Example Input JSON: 
 ```
 {
   "fileInformation": {
@@ -161,86 +169,9 @@ Example Input JSON Template:
   }
 }
 ```
-Note: Refer to supported Discovery metadata [fields](https://sciapps.colorado.edu/registry/openapi.yaml).
-
-Example: Uploading a GRANULE type JSON file from a source COMMON-INGEST with trackingId/UUID 11111111-1111-1111-1111-111111111: 
-```
-curl -iu <username:password> -X PUT -H "Content-Type: application/json" http://localhost/registry/metadata/granule/
-common-ingest/11111111-1111-1111-1111-111111111 --data-binary @/path/to/test-granule.json
-```
-GRANULE Input json example: test-granule.json
-```
-{
-  "fileInformation": {
-    "name": "Demo granule file one (NOTE: this is not a REAL GRANULE file)",
-    "size": 42,
-    "checksums": [
-      {
-        "algorithm": "MD5",
-        "value": "fd297fcceb94fdbec5297938c99cc7f6"
-      }
-    ],
-    "format": "",
-    "headers": null,
-    "optionalAttributes": {
-      "test": "very yes"
-    }
-  },
-  "fileLocations": {
-      "https://not-real-access.s3.us-west-1.amazonaws.com/688e0838-991f-47f9-a76a-da044e068863": {
-        "uri": "https://not-real-access.s3.us-west-1.amazonaws.com/688e0838-991f-47f9-a76a-da044e068863",
-        "type": "ACCESS",
-        "deleted": false,
-        "restricted": false,
-        "asynchronous": false,
-        "locality": null,
-        "lastModified": null,
-        "serviceType": {
-          "string": "cloud"
-        },
-        "optionalAttributes": {}
-      }
-    },
-  "relationships": [
-    {
-      "type": "COLLECTION",
-      "id": "22222222-1111-1111-1111-22222222"
-    }
-  ],
-  "discovery": {
-    "fileIdentifier": "gov.noaa.ncdc:C00811",
-    "parentIdentifier": null,
-    "hierarchyLevelName": null,
-    "doi": "doi:10.7289/V5TM782M",
-    "status": "onGoing",
-    "credit": null,
-    "title": "NOAA Climate Data Record (CDR) of AVHRR Surface Reflectance, Version 4",
-    "alternateTitle": "AVHRR Surface Reflectance",
-    "dsmmProductionSustainability": 4,
-    "dsmmTransparencyTraceability": 3,
-    "dsmmUsability": 4,
-    "dsmmAverage": 3.2222223,
-    "updateFrequency": "daily",
-    "services": [ ]
-  }
-``` 
-Successful operations will return a response body:
-```json
-{
-  "id"  : "11111111-1111-1111-1111-111111111",
-  "type": "granule"
-}
-```
-
-Unsuccessful operations will return a response body with an error message formatted as:
-```json
-{
-  "errors": []
-}
-```
 
 #### OneStop Required Fields
-For a records to be indexed and searchable by the downstream OneStop client, a record must include the follow discovery fields: 
+For a record to be indexed and searchable by the downstream OneStop Search API/UI, the following Discovery fields must be populated: 
 
 Required Collection fields:
 - fileIdentifier
@@ -249,8 +180,10 @@ Required Collection fields:
 Required Granule fields:
 - fileIdentifier
 - parentIdentifier
-- hierarchyLevelName
+- hierarchyLevelName (must be case-insensitive 'granule')
 - title
+
+In the event that only `FileInformation` is received, the default parser may be able to extract rudimentary content for the `fileIdentifier` and `title` fields from filename information. Hierarchy level name will be auto-populated in this case. However, the granule must still have the corresponding collection identified in the `Relationships` JSON block. 
     
 <hr>
 <div align="center"><a href="/onestop/metadata-manager/#Metadata-Manager-Navigation-Guide">Previous</a> | <a href="#loading-metadata-into-psi">Top of Page</a> | <a href="upstream-kafka-connect">Next</a></div>

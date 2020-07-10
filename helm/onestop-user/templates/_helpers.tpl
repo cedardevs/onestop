@@ -43,6 +43,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
+
 {{/*
 Selector labels
 */}}
@@ -68,3 +69,4 @@ Use a common config name variable, rather than appending -config in several plac
 {{- define "onestop-user.configname" -}}
 {{ template "onestop-user.fullname" . }}-config
 {{- end -}}
+
