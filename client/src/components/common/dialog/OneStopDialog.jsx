@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import Dialog from 'react-a11y-dialog'
 import './OneStopDialog.css'
-import Close from './OneStopDialogClose'
+import {times, SvgIcon} from '../common/SvgIcon'
 import Button from '../input/Button'
 
 const dialogClassNames = {
@@ -88,7 +88,11 @@ export const Confirmation = ({confirmation}) => {
       dialogRef={dialog => setDialog(dialog)}
       title={title}
       classNames={dialogClassNames}
-      closeButtonContent={<Close />}
+      closeButtonContent={<SvgIcon
+        size="1.1em"
+        verticalAlign="initial"
+        path={times}
+      />}
     >
       <div style={styleQuestion}>{question ? question : 'Are you sure?'}</div>
 
