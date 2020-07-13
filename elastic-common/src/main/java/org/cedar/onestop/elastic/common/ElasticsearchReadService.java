@@ -35,22 +35,22 @@ public class ElasticsearchReadService extends ElasticsearchService {
     Request totalCountsRequest = assembleTotalCountRequest(endpoint, query);
     Map<String, Object> marshalledResponse = performRequest(totalCountsRequest);
 
+    Map<String, Object> attributes = new HashMap<>();
+    attributes.put("count", extractHitsValue(marshalledResponse));
+
     Map<String, Object> dataObject = new HashMap<>();
     dataObject.put("type", "count");
     dataObject.put("id", config.typeFromAlias(indexAlias));
     dataObject.put("count", extractHitsValue(marshalledResponse)); // FIXME -- Remove this in OSIMv3.1 release
+    dataObject.put("attributes", attributes);
 
     // FIXME -- deprecation warning to be removed in OSIMv3.1 release
     Map<String, Object> meta = new HashMap<>();
     meta.put("DEPRECATION_WARNING", "The high-level 'count' field is deprecated and will be removed in OSIM v3.1.0. The 'count' field will only be found in 'attributes'.");
 
-    Map<String, Object> attributes = new HashMap<>();
-    attributes.put("count", extractHitsValue(marshalledResponse));
-
     Map<String, Object> resultMap = new HashMap<>();
     resultMap.put("data", List.of(dataObject));
     resultMap.put("meta", meta);
-    resultMap.put("attributes", attributes);
 
     return resultMap;
   }
@@ -69,18 +69,18 @@ public class ElasticsearchReadService extends ElasticsearchService {
     Request totalCountsRequest = assembleTotalCountRequest(endpoint, query);
     Map<String, Object> marshalledResponse = performRequest(totalCountsRequest);
 
-    Map<String, Object> dataObject = new HashMap<>();
-    dataObject.put("type", "countByTerm");
-    dataObject.put("id", config.typeFromAlias(indexAlias));
-
     Map<String, Object> attributes = new HashMap<>();
     attributes.put("count", extractHitsValue(marshalledResponse));
     attributes.put("termField", termField);
     attributes.put("termValue", termValue);
 
+    Map<String, Object> dataObject = new HashMap<>();
+    dataObject.put("type", "countByTerm");
+    dataObject.put("id", config.typeFromAlias(indexAlias));
+    dataObject.put("attributes", attributes);
+
     Map<String, Object> resultMap = new HashMap<>();
     resultMap.put("data", List.of(dataObject));
-    resultMap.put("attributes", attributes);
 
     return resultMap;
   }
