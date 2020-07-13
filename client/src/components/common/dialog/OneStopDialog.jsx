@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import Dialog from 'react-a11y-dialog'
 import './OneStopDialog.css'
-import {times, SvgIcon} from '../common/SvgIcon'
+import {times, SvgIcon} from '../SvgIcon'
 import Button from '../input/Button'
 
 const dialogClassNames = {
