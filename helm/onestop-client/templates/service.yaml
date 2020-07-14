@@ -2,11 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "onestop-client.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "onestop-client.name" . }}
-    helm.sh/chart: {{ include "onestop-client.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  labels: {{- include "onestop-client.labels" . | nindent 4 }}
 spec:
   {{- with .Values.service.clusterIP }}
   clusterIP: {{ . }}
@@ -24,5 +20,4 @@ spec:
       nodePort: {{ .Values.service.nodePort }}
     {{- end }}
   selector:
-    app.kubernetes.io/name: {{ include "onestop-client.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "onestop-client.selectorLabels" . | nindent 4 }}
