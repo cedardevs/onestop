@@ -26,18 +26,18 @@ class ElasticsearchService {
   private SearchRequestParserService searchRequestParserService
   private ElasticsearchReadService esService
 
-  private RestClient restClient
+  private RestHighLevelClient restHighLevelClient
   ElasticsearchConfig esConfig
 
   boolean isES6
 
   @Autowired
-  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestHighLevelClient restHighLevelClient, RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
+  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestHighLevelClient restHighLevelClient, ElasticsearchConfig elasticsearchConfig) {
     this.searchRequestParserService = searchRequestParserService
-    this.restClient = restClient
+    this.restHighLevelClient = restHighLevelClient
     this.esConfig = elasticsearchConfig
     this.isES6 = esConfig.version.isMajorVersion(6)
-    this.esService = new ElasticsearchReadService(this.restClient, this.esConfig)
+    this.esService = new ElasticsearchReadService(this.restHighLevelClient, this.esConfig)
   }
 
   ////////////

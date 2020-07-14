@@ -15,8 +15,8 @@ import static org.cedar.onestop.elastic.common.DocumentUtil.getSource;
 // FIXME Replace generic Map response with JsonApiResponse
 public class ElasticsearchReadService extends ElasticsearchService {
 
-  public ElasticsearchReadService(RestHighLevelClient restClient, ElasticsearchConfig esConfig) {
-    super(restClient, esConfig);
+  public ElasticsearchReadService(RestHighLevelClient restHighLevelClient, ElasticsearchConfig esConfig) {
+    super(restHighLevelClient, esConfig);
   }
 
   ////////////////////////////////////////////////////////////
