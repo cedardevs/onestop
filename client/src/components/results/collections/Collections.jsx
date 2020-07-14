@@ -9,6 +9,8 @@ import {asterisk, SvgIcon} from '../../common/SvgIcon'
 import {decodePathAndQueryString, PAGE_SIZE} from '../../../utils/queryUtils'
 import defaultStyles from '../../../style/defaultStyles'
 import saveIcon from 'fa/bookmark-o.svg'
+import alreadySavedIcon from 'fa/bookmark.svg'
+import _ from 'lodash'
 
 const styleCollections = {
   color: '#222',
@@ -40,28 +42,44 @@ export default function Collections(props){
     saveSearch,
     savedSearchUrl,
     isAuthenticatedUser,
+    user,
+    filter,
   } = props
+
   const queryText = props.collectionDetailFilter.queryText
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
   const [ headingMessage, setHeadingMessage ] = useState(null)
 
-  function handleSave(savedSearchUrl, urlToSave) {
+  function isAlreadySaved(savedSearches, currentSearch) {
+    return savedSearches.filter(function (entry) {
+      return Object.keys(currentSearch).every(function (key) {
+        return entry[key] === currentSearch[key];
+      });
+    });
+  }
+
+  function handleSave(savedSearchUrl, urlToSave, filter) {
     const queryStringIndex = urlToSave.indexOf('?')
     const queryString = urlToSave.slice(queryStringIndex)
     const decodedSavedSearch = decodePathAndQueryString('', queryString)
-    saveSearch(savedSearchUrl, urlToSave, decodedSavedSearch.filters.queryText)
+    saveSearch(savedSearchUrl, urlToSave, decodedSavedSearch.filters.queryText, filter)
   }
+
+  const currentSearchAlreadySaved = isAlreadySaved(user.searches, filter)
+  const bookmarkIcon = currentSearchAlreadySaved? alreadySavedIcon : saveIcon
+  const title = currentSearchAlreadySaved ? 'Search already saved' : 'Save search'
+  const text = currentSearchAlreadySaved ? 'Unsave' : 'Save'
+  const notification = text
 
   const saveSearchAction =  isAuthenticatedUser ? [
     {
-      text: 'Save',
-      title: 'Save search',
-      icon: saveIcon,
+      text: text,
+      title: title,
+      icon: bookmarkIcon,
       showText: false,
-      // hiddenForm: true,
-      handler: () => {handleSave(savedSearchUrl, window.location.href)},
-      notification: 'Save search',
+      handler: () => {handleSave(savedSearchUrl, window.location.href, filter)},
+      notification: notification,
     }
   ] : []
 

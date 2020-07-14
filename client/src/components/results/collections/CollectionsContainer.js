@@ -15,9 +15,10 @@ const mapStateToProps = state => {
     pageSize,
   } = state.search.collectionResult
 
-  const {user, config} = state
+  const {user, config, search} = state
   const savedSearchUrl = config.auth ? config.auth.savedSearchEndpoint : null
   const isAuthenticatedUser = user && user.isAuthenticated ? true : false
+  const filter = search.collectionFilter
 
   return {
     results: collections,
@@ -29,13 +30,15 @@ const mapStateToProps = state => {
     pageSize,
     savedSearchUrl: savedSearchUrl,
     isAuthenticatedUser : isAuthenticatedUser,
+    user: user,
+    filter: filter,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    saveSearch: (savedSearchUrl, urlToSave, saveName) => {
-      dispatch(saveSearch(savedSearchUrl, urlToSave, saveName))
+    saveSearch: (savedSearchUrl, urlToSave, saveName, filter) => {
+      dispatch(saveSearch(savedSearchUrl, urlToSave, saveName, filter))
     },
     selectCollection: (id, filterState) => {
       dispatch(submitCollectionDetail(ownProps.history, id, filterState))

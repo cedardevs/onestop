@@ -20,17 +20,19 @@ const styleDashboardWrapper = {
 }
 
 const UserDashboard = props => {
+  const {navigateToSearch} = props
   return (
     <div style={styleCenterContent}>
       <div style={styleDashboardWrapper}>
         <Meta title="User Dashboard for NOAA OneStop" />
         <section>
           <UserSavedSearchList
+            navigateToSearch={filter => navigateToSearch(filter)}
             user={props.user}
             savedSearches={props.savedSearches}
           />
         </section>
-      </div>doc
+      </div>
     </div>
   )
 }

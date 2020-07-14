@@ -4,6 +4,8 @@ import {fontFamilySerif} from '../../../utils/styleUtils'
 import FlexRow from '../../common/ui/FlexRow'
 import {decodePathAndQueryString} from '../../../utils/queryUtils'
 import UserSavedSearchAppliedFilters from './UserSavedSearchAppliedFilters'
+import Button from "../../common/input/Button";
+import linkIcon from 'fa/arrow-right.svg'
 
 const styleTitle = {
   fontFamily: fontFamilySerif(),
@@ -12,6 +14,11 @@ const styleTitle = {
   overflowWrap: 'break-word',
   wordWrap: 'break-word',
   margin: '0 1.236em 0 0',
+}
+
+const styleButton = {
+  padding: '0.309em',
+  borderRadius: '0.309em',
 }
 
 const styleHeading = {
@@ -26,7 +33,7 @@ const styleSavedSearch = {
 
 const UserSavedSearch = props => {
   const {itemId, item, expanded, setExpanded} = useListViewItem(props)
-
+  const {navigateToSearch} = props
   const url = item.value
   const name = item.name ? item.name : item.value
 
@@ -35,6 +42,26 @@ const UserSavedSearch = props => {
       <a href={url}>{name}</a>
     </h3>
   )
+
+  const navigateToAction =  [
+    {
+      text: "navigateTo",
+      title: "navigateTo",
+      icon: linkIcon,
+      showText: false,
+      handler: () => {navigateToSearch(JSON.parse(item.filter))},
+      notification: "notification",
+    }
+  ]
+  const navigateToButton = <Button
+      key="navigateTo"
+      title="navigate to"
+      icon={linkIcon}
+      style={styleButton}
+      // styleIcon={styleIcon}
+      // iconPadding={'0.309em'}
+      onClick={() => {navigateToSearch(JSON.parse(item.filter))}}
+  />
 
   const heading = (
     <div style={styleHeading}>
@@ -55,6 +82,7 @@ const UserSavedSearch = props => {
         <li>URL: {item.url}</li>
 
       </ul> */}
+      {/*{navigateToButton}*/}
       <UserSavedSearchAppliedFilters
         collectionFilter={decodedSavedSearch.filters}
       />
@@ -69,6 +97,7 @@ const UserSavedSearch = props => {
       content={content}
       expanded={expanded}
       setExpanded={setExpanded}
+      actions={navigateToButton}
     />
   )
 }

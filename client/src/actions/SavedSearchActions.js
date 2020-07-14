@@ -46,7 +46,7 @@ export const getSavedSearches = savedSearchEndpoint => {
   }
 }
 
-export const saveSearch = (savedSearchEndpoint, urlToSave, saveName) => {
+export const saveSearch = (savedSearchEndpoint, urlToSave, saveName, filter) => {
   const requestOptions = {
     method: 'POST',
     redirect: 'error',
@@ -56,7 +56,7 @@ export const saveSearch = (savedSearchEndpoint, urlToSave, saveName) => {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({value: urlToSave, name: saveName})
+    body: JSON.stringify({value: urlToSave, name: saveName, filter: JSON.stringify(filter)})
   }
 
   return dispatch => {
