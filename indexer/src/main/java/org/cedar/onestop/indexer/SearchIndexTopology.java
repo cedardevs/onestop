@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,7 +56,9 @@ public class SearchIndexTopology {
     streamsBuilder.addStateStore(indexerStoreBuilder);
 
     //----- Indexing Stream --------
-    var inputRecords = streamsBuilder.<String, ParsedRecord>stream(Topics.parsedChangelogTopics(StreamsApps.REGISTRY_ID));
+    var inputTopics = new ArrayList<>(Topics.parsedChangelogTopics(StreamsApps.REGISTRY_ID));
+    inputTopics.add(Topics.flattenedGranuleTopic());
+    var inputRecords = streamsBuilder.<String, ParsedRecord>stream(inputTopics);
     var filledInRecords = inputRecords.mapValues(DefaultParser::fillInDefaults);
     var analyzedRecords = filledInRecords.mapValues(Analyzers::addAnalysis);
     var recordsWithTopic = analyzedRecords.transformValues(TopicIdentifier<ParsedRecord>::new);
