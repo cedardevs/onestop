@@ -6,8 +6,9 @@ import Meta from '../../helmet/Meta'
 import CollectionListItem from './CollectionListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {asterisk, SvgIcon} from '../../common/SvgIcon'
-import {PAGE_SIZE} from '../../../utils/queryUtils'
+import {decodePathAndQueryString, PAGE_SIZE} from '../../../utils/queryUtils'
 import defaultStyles from '../../../style/defaultStyles'
+import saveIcon from 'fa/bookmark-o.svg'
 
 const styleCollections = {
   color: '#222',
@@ -36,11 +37,33 @@ export default function Collections(props){
     selectCollection,
     collectionDetailFilter,
     loading,
+    saveSearch,
+    savedSearchUrl,
+    isAuthenticatedUser,
   } = props
   const queryText = props.collectionDetailFilter.queryText
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
   const [ headingMessage, setHeadingMessage ] = useState(null)
+
+  function handleSave(savedSearchUrl, urlToSave) {
+    const queryStringIndex = urlToSave.indexOf('?')
+    const queryString = urlToSave.slice(queryStringIndex)
+    const decodedSavedSearch = decodePathAndQueryString('', queryString)
+    saveSearch(savedSearchUrl, urlToSave, decodedSavedSearch.filters.queryText)
+  }
+
+  const saveSearchAction =  isAuthenticatedUser ? [
+    {
+      text: 'Save',
+      title: 'Save search',
+      icon: saveIcon,
+      showText: false,
+      // hiddenForm: true,
+      handler: () => {handleSave(savedSearchUrl, window.location.href)},
+      notification: 'Save search',
+    }
+  ] : []
 
   useEffect(
     () => {
@@ -118,6 +141,7 @@ export default function Collections(props){
         }}
         currentPage={currentPage}
         setCurrentPage={page => setCurrentPage(page)}
+        customActions={saveSearchAction}
       />
       {/*{showMoreButton}*/}
     </div>

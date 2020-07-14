@@ -28,10 +28,11 @@ const UserSavedSearch = props => {
   const {itemId, item, expanded, setExpanded} = useListViewItem(props)
 
   const url = item.value
+  const name = item.name ? item.name : item.value
 
   const title = (
     <h3 key={'UserSavedSearch::title'} style={styleTitle}>
-      <a href={url}>{item.name}</a>
+      <a href={url}>{name}</a>
     </h3>
   )
 
