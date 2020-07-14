@@ -5,6 +5,7 @@ CREATE TABLE savesearch
     user_id VARCHAR(255) NOT NULL,
     name VARCHAR(255),
     value VARCHAR(2047),
+    filter VARCHAR(2047),
     created_on DATE ,
     last_updated_on DATE
 );

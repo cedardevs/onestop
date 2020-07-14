@@ -31,6 +31,9 @@ public class SavedSearch {
   @Column(name = "value", nullable = false)
   public String value;
 
+  @Column(name = "filter")
+  public String filter;
+
   @Column(name = "createdOn", updatable = false)
   @CreationTimestamp
   public Date createdOn; //TODO do we also accept part of the query
@@ -44,21 +47,23 @@ public class SavedSearch {
   }
 
   //constructor is for creating instances.
-  public SavedSearch(String id, String userId, String name, String value, Date createdOn, Date lastUpdatedOn) {
+  public SavedSearch(String id, String userId, String name, String value, String filter,  Date createdOn, Date lastUpdatedOn) {
     this.id = id;
     this.userId = userId;
     this.name = name;
     this.value = value;
+    this.filter = filter;
     this.createdOn = createdOn;
     this.lastUpdatedOn = lastUpdatedOn;
   }
 
   //constructor is for creating instances.
-  public SavedSearch(String id, String userId, String name, String value) {
+  public SavedSearch(String id, String userId, String name, String filter, String value) {
     this.id = id;
     this.userId = userId;
     this.name = name;
     this.value = value;
+    this.filter = filter;
   }
 
   @PrePersist
@@ -101,6 +106,14 @@ public class SavedSearch {
 
   public void setValue(String value) {
     this.value = value;
+  }
+
+  public String getFilter() {
+    return filter;
+  }
+
+  public void setFilter(String filter) {
+    this.filter = filter;
   }
 
   public Date getLastUpdatedOn() {
