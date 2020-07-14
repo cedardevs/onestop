@@ -28,7 +28,6 @@ export const getSavedSearches = savedSearchEndpoint => {
   }
 
   return dispatch => {
-    console.log('Fetching saved searches')
     // notify reducer of our intention to request user profile
     dispatch(savedSearchRequest())
 
@@ -44,5 +43,38 @@ export const getSavedSearches = savedSearchEndpoint => {
           throw error
         }
       )
+  }
+}
+
+export const saveSearch = (savedSearchEndpoint, urlToSave, saveName) => {
+  const requestOptions = {
+    method: 'POST',
+    redirect: 'error',
+    mode: 'cors',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({value: urlToSave, name: saveName})
+  }
+
+  return dispatch => {
+    // notify reducer of our intention to request user profile
+    dispatch(savedSearchRequest())
+
+    // initiate asynchronous request to user profile endpoint
+    return fetch(savedSearchEndpoint, requestOptions)
+        .then(response => response.json())
+        .then(
+            response => {
+              dispatch(getSavedSearches(savedSearchEndpoint))
+              // dispatch(savedSearchSuccess(response))
+            },
+            error => {
+              dispatch(savedSearchFailure(error))
+              throw error
+            }
+        )
   }
 }
