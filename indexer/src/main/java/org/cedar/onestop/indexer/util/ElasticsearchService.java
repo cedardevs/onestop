@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,11 +50,6 @@ public class ElasticsearchService {
   public ElasticsearchService(RestHighLevelClient client, ElasticsearchConfig config) {
     this.client = client;
     this.config = config;
-//    int majorVersion = Integer.parseInt(config.version.getNumber().split("\\.")[0]);
-//    int minimumCompatibleMajorVersion = 6;
-//    if (majorVersion < minimumCompatibleMajorVersion) {
-//      throw new IllegalStateException("The indexer service does not work against Elasticsearch < version " + minimumCompatibleMajorVersion);
-//    }
   }
 
   public RestHighLevelClient getClient() {
