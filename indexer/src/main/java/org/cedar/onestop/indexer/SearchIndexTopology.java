@@ -78,17 +78,9 @@ public class SearchIndexTopology {
       var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
 
       //----- Flattening Stream --------
-      var flatteningTriggersFromGranules = successfulBulkResults
-          .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(granuleIndex))
-          .flatMap((k, v) ->
-              getParentIds(v.getRecord())
-                  .map(parentId -> new KeyValue<>(parentId, v.getTimestamp()))
-                  .collect(Collectors.toList())); // stream of collectionId => timestamp of granule to flatten from
-      var flatteningTriggersFromCollections = successfulBulkResults
+      successfulBulkResults
           .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
-          .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
-
-      flatteningTriggersFromCollections.merge(flatteningTriggersFromGranules)
+          .mapValues(bulkItemResponse -> 0L) // stream of collectionId => 0, since all granules should be flattened
           .peek((k, v) -> log.debug("producing flattening trigger [{} => {}]", k, v))
           // re-partition so all triggers for a given collection go to the same consumer
           .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()))

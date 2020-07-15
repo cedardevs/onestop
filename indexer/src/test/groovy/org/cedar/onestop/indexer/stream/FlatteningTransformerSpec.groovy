@@ -9,6 +9,7 @@ import org.cedar.onestop.indexer.util.ElasticsearchService
 import org.cedar.onestop.indexer.util.TestUtils
 import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.get.GetResponse
+import org.elasticsearch.client.Cancellable
 import org.elasticsearch.common.bytes.BytesArray
 import org.elasticsearch.common.unit.TimeValue
 import org.elasticsearch.common.xcontent.ToXContent
@@ -42,6 +43,7 @@ class FlatteningTransformerSpec extends Specification {
     mockEsService = Mock(ElasticsearchService)
     mockBulkByScrollResponse = Mock(BulkByScrollResponse)
     mockEsService.getConfig() >> TestUtils.esConfig
+    mockEsService.currentRunningTasks() >> 0
     mockProcessorContext = new MockProcessorContext()
     mockProcessorContext.setTimestamp(startTime.toEpochMilli())
     testStore = Stores.keyValueStoreBuilder(
@@ -74,15 +76,14 @@ class FlatteningTransformerSpec extends Specification {
     testTransformer.transform(testId, timestamp)
 
     then:
-    0 * mockEsService.reindex(_)
+    0 * mockEsService.reindexAsync(_)
 
     when:
     advanceWallClockTime(mockProcessorContext, startTimePlusInterval.toEpochMilli())
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindex(_)
+    1 * mockEsService.reindexAsync(_, _)
   }
 
   def "flattening triggers are windowed and the earliest timestamp is used"() {
@@ -99,8 +100,8 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindex({ it.script.params.stagedDate == timestamp1 }) // <-- verify timestamp param
+    1 * mockEsService.reindexAsync({ it.script.params.stagedDate == timestamp1 }, _)// <-- verify timestamp param
+
   }
 
   def "does not flatten if collection doesn't exist"() {
@@ -113,13 +114,13 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, null)
-    0 * mockEsService.blockUntilTasksAvailable()
-    0 * mockEsService.reindex(_)
+    0 * mockEsService.reindexAsync(_, _)
   }
 
   def "flattening requests use the parent collection for defaults"() {
     def testId = 'a'
     def timestamp = 1000L
+    def actionListener
 
     when:
     testTransformer.transform(testId, timestamp)
@@ -127,13 +128,16 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindex({ it.script.params.defaults.title == 'collection' })// <-- verify defaults param
+    1 * mockEsService.reindexAsync(
+        { it.script.params.defaults.title == 'collection' }, // <-- verify defaults param
+        { actionListener = it } // <-- capture listener
+    ) >> Mock(Cancellable)
   }
 
   def "successful requests produce successful results"() {
     def testId = 'a'
     def timestamp = 1000L
+    def actionListener
 
     when:
     testTransformer.transform(testId, timestamp)
@@ -141,8 +145,10 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindex(_) >> buildSuccessBulkByScrollResponse() // <- capture listener
+    1 * mockEsService.reindexAsync(_, { actionListener = it }) >> Mock(Cancellable) // <- capture listener
+
+    when:
+    actionListener.onResponse(buildSuccessBulkByScrollResponse())
 
     then:
     mockProcessorContext.forwarded().size() == 1
@@ -155,6 +161,7 @@ class FlatteningTransformerSpec extends Specification {
   def "failed requests produce unsuccessful results"() {
     def testId = 'a'
     def timestamp = 1000L
+    def actionListener
 
     when:
     testTransformer.transform(testId, timestamp)
@@ -162,8 +169,10 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindex(_) >> buildFailBulkByScrollResponse([BulkItemResponse.Failure.PARSER]) // <- capture listener
+    1 * mockEsService.reindexAsync(_, { actionListener = it }) // <- capture listener
+
+    when:
+    actionListener.onResponse(buildFailBulkByScrollResponse([BulkItemResponse.Failure.PARSER]))
 
     then:
     mockProcessorContext.forwarded().size() == 1
@@ -176,6 +185,7 @@ class FlatteningTransformerSpec extends Specification {
   def "IOExceptions produce unsuccessful results"() {
     def testId = 'a'
     def timestamp = 1000L
+    def actionListener
 
     when:
     testTransformer.transform(testId, timestamp)
@@ -183,8 +193,58 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.blockUntilTasksAvailable()
-    1 * mockEsService.reindex(_) >> { throw new IOException() }
+    1 * mockEsService.reindexAsync(_, { actionListener = it }) >> Mock(Cancellable) // <-- capture listener
+
+    when:
+    actionListener.onFailure(new IOException())
+
+    then:
+    mockProcessorContext.forwarded().size() == 0
+  }
+
+  def "second collection update cancels in-flight flattening task"() {
+    def testId = 'a'
+    def timestamp = 1000L
+    def firstRequest = Mock(Cancellable)
+
+    when:
+    testTransformer.transform(testId, timestamp)
+    advanceWallClockTime(mockProcessorContext, startTimePlusInterval.toEpochMilli())
+
+    then:
+    1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
+    1 * mockEsService.reindexAsync(_, _) >> firstRequest
+
+    when:
+    testTransformer.transform(testId, timestamp + 1000)
+    advanceWallClockTime(mockProcessorContext, (startTimePlusInterval + testInterval).toEpochMilli())
+
+    then:
+    1 * firstRequest.cancel() // <-- cancels first request before submitting second
+    1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "updated collection"}')
+    1 * mockEsService.reindexAsync(_, _) >> Mock(Cancellable)
+  }
+
+  def "waits for available tasks before submitting"() {
+    def testId = 'a'
+    def timestamp = 1000L
+
+    when:
+    testTransformer.transform(testId, timestamp)
+    advanceWallClockTime(mockProcessorContext, startTimePlusInterval.toEpochMilli())
+
+    then:
+    1 * mockEsService.currentRunningTasks() >> 1000 // <-- too many!
+    0 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
+    0 * mockEsService.reindexAsync(_, _) >> Mock(Cancellable)
+
+    when:
+    advanceWallClockTime(mockProcessorContext, (startTimePlusInterval + testInterval).toEpochMilli())
+
+    then:
+    1 * mockEsService.currentRunningTasks() >> 0 // <-- better now
+    1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "updated collection"}')
+    1 * mockEsService.reindexAsync(_, _) >> Mock(Cancellable)
   }
 
   private static advanceWallClockTime(MockProcessorContext context, Long timestamp) {
