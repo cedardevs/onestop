@@ -30,7 +30,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Map;
 
-import static org.cedar.onestop.kafka.common.constants.Topics.inputStore;
+import static org.cedar.onestop.kafka.common.constants.Topics.inputStoreCombined;
 import static org.cedar.onestop.kafka.common.constants.Topics.parsedStore;
 
 @Service
@@ -72,7 +72,7 @@ public class MetadataStore {
   }
 
   public AggregatedInput retrieveInput(RecordType type, String source, String id) {
-    String storeName = type != null && id != null ? inputStore(type, source) : null;
+    String storeName = type != null && id != null ? inputStoreCombined(type) : null;
     return getRecordFromTable(storeName, id);
   }
 

@@ -39,7 +39,7 @@ object Versions {
     const val SNAKE_YAML = "1.24"
     const val REACTOR_BOM = "Dysprosium-SR7"
 
-    const val ONESTOP_SCHEMAS: String = "0.6.0"
+    const val ONESTOP_SCHEMAS: String = "0.7.0"
 }
 
 // data classes
