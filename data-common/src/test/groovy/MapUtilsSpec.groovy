@@ -343,4 +343,9 @@ class MapUtilsSpec extends Specification {
     then:
     result == expected
   }
+
+  def "pruneEmptyElements handles null inputs"() {
+    expect:
+    MapUtils.pruneEmptyElements(null) == null
+  }
 }

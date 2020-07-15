@@ -5,7 +5,7 @@ import spock.lang.Unroll
 @Unroll
 class ListUtilsSpec extends Specification {
 
-  def "addOrInit works"() {
+  def "addOrInit works (add #inItem to #inList)"() {
     expect:
     ListUtils.addOrInit(inList, inItem) == out
 
@@ -19,7 +19,7 @@ class ListUtilsSpec extends Specification {
     ['x']  | null    | ['x']
   }
 
-  def "truncateList works"() {
+  def "truncateList works (#inList)"() {
     expect:
     ListUtils.truncateList(inList, listSize, tailEnd) == outList
 
@@ -42,11 +42,28 @@ class ListUtilsSpec extends Specification {
     thrown(IllegalArgumentException)
   }
 
-  def "pruneEmptyElements removes nulls and empty strings"() {
-    // TODO
+  def "pruneEmptyElements removes nulls and empty strings (#inList)"() {
+    expect:
+    ListUtils.pruneEmptyElements(inList) == outList
+
+    where:
+    inList                | outList
+    null                  | null
+    []                    | []
+    ['', '', '']          | []
+    [1, 'a', '', 3]       | [1, 'a', 3]
+    ['x', 'y', null, 'z'] | ['x', 'y', 'z']
   }
 
   def "pruneEmptyElements removes empty elements when list of maps"() {
-    // TODO
+    expect:
+    def inList = [ [:], [a: 'b']]
+    ListUtils.pruneEmptyElements(inList) == [[ a: 'b'] ]
+  }
+
+  def "pruneEmptyElements removes empty elements when list of lists"() {
+    expect:
+    def inList = [ [], ['a', 'b']]
+    ListUtils.pruneEmptyElements(inList) == [[ 'a', 'b'] ]
   }
 }
