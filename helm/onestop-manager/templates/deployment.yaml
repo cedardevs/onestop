@@ -3,22 +3,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "onestop-manager.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "onestop-manager.name" . }}
-    helm.sh/chart: {{ include "onestop-manager.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  labels: {{- include "onestop-manager.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "onestop-manager.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "onestop-manager.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ include "onestop-manager.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "onestop-manager.selectorLabels" . | nindent 8 }}
       annotations:
         {{- with .Values.config }}
         checksum/config: {{ . | sha256sum }}
@@ -36,6 +30,10 @@ spec:
       - name: debug
         image: centos
         command: ["tail", "-f", "/dev/null"]
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
       {{- end }}
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -71,16 +69,16 @@ spec:
             path: /health/readiness
             port: 8080
           initialDelaySeconds: 20
-          timeoutSeconds: 2
-          periodSeconds: 3
+          timeoutSeconds: 5
+          periodSeconds: 5
           failureThreshold: 2
         livenessProbe:
           httpGet:
             path: /health/liveness
             port: 8080
           initialDelaySeconds: 60
-          timeoutSeconds: 2
-          periodSeconds: 8
+          timeoutSeconds: 5
+          periodSeconds: 10
           failureThreshold: 1
         {{/* TODO: liveness, readiness */}}
         resources:

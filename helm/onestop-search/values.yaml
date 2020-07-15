@@ -118,11 +118,14 @@ elasticsearch:
   port: "9200"
   ssl:
     enabled: true
-    cert:
-      path: "/etc/onestop-indexer/elastic"
-      tls: "tls.crt"
-  ro:
-    user: elastic
+    certSecret: onestop-es-http-certs-public
+  username:
+    value: elastic
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: onestop-es-elastic-user
+        key: elastic
 
 keystoreFiles:
   jks:
@@ -141,17 +144,26 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 1
+    memory: 512Mi
+
+autoscaler:
+  enabled: false
+#  minReplicas: 1
+#  maxReplicas: 2
+#  annotations: {}
+#  metrics:
+#  - type: Resource
+#    resource:
+#      name: cpu
+#      target:
+#        type: Utilization
+#        averageUtilization: 75
 
 nodeSelector: {}
 

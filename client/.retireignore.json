@@ -9,7 +9,7 @@
   },
   {
     "path": "node_modules/npm",
-    "version": "6.1.0",
+    "version": "6.14.5",
     "justification": "Prototype pollution attacks don't affect this project. We do not run server-side JS."
   },
   {
@@ -19,5 +19,16 @@
   {
     "path": "node_modules/handlebars",
     "justification": "Development dependecy of jest: Not packaged in production code."
+  },
+  {
+    "path": "node_modules/yargs-parser",
+    "justification": "Uncontrolled Resource Consumption but Not packaged in production code."
+  },
+  {
+    "path": "node_modules/http-proxy",
+    "justification": "Uncontrolled Resource Consumption but Not packaged in production code."
   }
+
+
+
 ]

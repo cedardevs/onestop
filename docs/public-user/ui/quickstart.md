@@ -7,11 +7,10 @@
 # User Interface Quick Start Guide
 The OneStop UI is designed to be useful and intuitive for a large cross-section of end-users: scientists, researchers, students, and the average person in general. It's a great starting point when trying to discover and download scientific data, and is designed to help users find more specific services of interest as well.
 
-The UI leverages a modern build process and features, the output of which has been tested and determined compatible with the most recent versions of the following browsers (as of November 2019):
+The UI leverages a modern build process and features, the output of which has been tested and determined compatible with the most recent versions of the following browsers (as of May 2020):
 * Chrome
 * Firefox
 * Edge
-* Internet Explorer 11
 * Safari
 
 This quick start guide is meant for a true beginner to the website's functionality, and will only briefly touch on features -- the goal is to demonstrate the user experience from start to finish. If you're interested in a specific feature, we've covered them all in depth on the next page, [UI Features In Depth](/onestop/public-user/ui/features-in-depth).

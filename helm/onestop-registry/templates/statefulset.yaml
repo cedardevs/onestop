@@ -3,11 +3,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "onestop-registry.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "onestop-registry.name" . }}
-    helm.sh/chart: {{ include "onestop-registry.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  labels: {{- include "onestop-registry.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   serviceName: {{ include "onestop-registry.fullname" . }}
@@ -16,13 +12,11 @@ spec:
   podManagementPolicy: OrderedReady
   selector:
     matchLabels:
-      app: {{ include "onestop-registry.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "onestop-registry.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ include "onestop-registry.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "onestop-registry.selectorLabels" . | nindent 8 }}
       annotations:
         {{- with .Values.config }}
         checksum/config: {{ . | sha256sum }}
@@ -42,6 +36,10 @@ spec:
       - name: debug
         image: centos
         command: ["tail", "-f", "/dev/null"]
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
       {{- end }}
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -102,16 +100,16 @@ spec:
             path: /actuator/health/readiness
             port: 8080
           initialDelaySeconds: 20
-          timeoutSeconds: 2
-          periodSeconds: 3
+          timeoutSeconds: 5
+          periodSeconds: 5
           failureThreshold: 2
         livenessProbe:
           httpGet:
             path: /actuator/health/liveness
             port: 8080
           initialDelaySeconds: 60
-          timeoutSeconds: 2
-          periodSeconds: 8
+          timeoutSeconds: 5
+          periodSeconds: 10
           failureThreshold: 1
       {{- if .Values.config }}
       volumes:
