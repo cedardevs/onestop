@@ -118,17 +118,26 @@ public class SavedSearchController {
     return ResponseEntity.ok(updatedSavedSearch);
   }
 
+//todo more to do here so users cannot delete each others request
   @ApiOperation(value = "Delete saved search")
   @RequestMapping(value = "/saved-search/{id}", method = RequestMethod.DELETE, produces = "application/json")
-  public Map<String, Boolean> deleteById(@PathVariable(value = "id") String id)
-      throws ResourceNotFoundException {
-    SavedSearch savedSearch = savedSearchRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + id));
-
-    savedSearchRepository.delete(savedSearch);
-    Map<String, Boolean> response = new HashMap<>();
-    response.put("deleted", Boolean.TRUE);
-    return response;
+  public ResponseEntity<?> delete(@PathVariable(value = "id") String id, final @AuthenticationPrincipal Authentication authentication)
+          throws ResourceNotFoundException {
+    if(authentication != null) {
+      Map<String, SavedSearch> jsonSpecResponse = new HashMap<>();
+      SavedSearch savedSearch = savedSearchRepository.findById(id)
+              .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + id));
+      savedSearchRepository.delete(savedSearch);
+      Map<String, Boolean> response = new HashMap<>();
+      response.put("deleted", Boolean.TRUE);
+      jsonSpecResponse.put("data" , response);
+      return new ResponseEntity<>(jsonSpecResponse, HttpStatus.OK);
+    }else{
+      Map<String, Map<String, String>> jsonSpecErrorResponse = new HashMap<>();
+      Map<String, String> errorMap = new HashMap<String, String>();
+      errorMap.put("reason", "Unauthorized");
+      jsonSpecErrorResponse.put("error", errorMap);
+      return new ResponseEntity<>(jsonSpecErrorResponse, HttpStatus.UNAUTHORIZED);
+    }
   }
-
 }
