@@ -18,7 +18,7 @@ const mapStateToProps = state => {
   const {user, config, search} = state
   const savedSearchUrl = config.auth ? config.auth.savedSearchEndpoint : null
   const isAuthenticatedUser = user && user.isAuthenticated ? true : false
-  const filter = search.collectionFilter
+  const collectionFilter = search.collectionFilter
 
   return {
     results: collections,
@@ -30,8 +30,8 @@ const mapStateToProps = state => {
     pageSize,
     savedSearchUrl: savedSearchUrl,
     isAuthenticatedUser : isAuthenticatedUser,
-    user: user,
-    filter: filter,
+    savedSearches: user.searches ? user.searches : null,
+    collectionFilter: collectionFilter,
   }
 }
 

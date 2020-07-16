@@ -42,32 +42,26 @@ export default function Collections(props){
     saveSearch,
     savedSearchUrl,
     isAuthenticatedUser,
-    user,
-    filter,
+    savedSearches, // todo use this to figure out if their current filter is already saved
+    collectionFilter,
   } = props
 
   const queryText = props.collectionDetailFilter.queryText
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
   const [ headingMessage, setHeadingMessage ] = useState(null)
-
-  function isAlreadySaved(savedSearches, currentSearch) {
-    return savedSearches.filter(function (entry) {
-      return Object.keys(currentSearch).every(function (key) {
-        return entry[key] === currentSearch[key];
-      });
-    });
-  }
+  const [searchSaved, setSearchSaved] = useState(false)
 
   function handleSave(savedSearchUrl, urlToSave, filter) {
     const queryStringIndex = urlToSave.indexOf('?')
     const queryString = urlToSave.slice(queryStringIndex)
     const decodedSavedSearch = decodePathAndQueryString('', queryString)
     saveSearch(savedSearchUrl, urlToSave, decodedSavedSearch.filters.queryText, filter)
+    setSearchSaved(true)
   }
 
-  const currentSearchAlreadySaved = isAlreadySaved(user.searches, filter)
-  const bookmarkIcon = currentSearchAlreadySaved? alreadySavedIcon : saveIcon
+  const currentSearchAlreadySaved = searchSaved //todo identify if they have this search saved already
+  const bookmarkIcon = currentSearchAlreadySaved ? alreadySavedIcon : saveIcon
   const title = currentSearchAlreadySaved ? 'Search already saved' : 'Save search'
   const text = currentSearchAlreadySaved ? 'Unsave' : 'Save'
   const notification = text
@@ -78,7 +72,7 @@ export default function Collections(props){
       title: title,
       icon: bookmarkIcon,
       showText: false,
-      handler: () => {handleSave(savedSearchUrl, window.location.href, filter)},
+      handler: () => {handleSave(savedSearchUrl, window.location.href, collectionFilter)},
       notification: notification,
     }
   ] : []
