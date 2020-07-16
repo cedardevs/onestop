@@ -6,10 +6,11 @@ import {decodePathAndQueryString} from '../../../utils/queryUtils'
 import UserSavedSearchAppliedFilters from './UserSavedSearchAppliedFilters'
 import Button from "../../common/input/Button";
 import linkIcon from 'fa/arrow-right.svg'
+import trashIcon from 'fa/trash.svg'
 
 const styleTitle = {
   fontFamily: fontFamilySerif(),
-  fontSize: '1em',
+  fontSize: '2em',
   fontWeight: 'bold',
   overflowWrap: 'break-word',
   wordWrap: 'break-word',
@@ -18,11 +19,13 @@ const styleTitle = {
 
 const styleButton = {
   padding: '0.309em',
+  margin: '0.309em',
   borderRadius: '0.309em',
 }
 
 const styleHeading = {
   padding: 0,
+  justifyContent: 'space-between'
 }
 
 const styleSavedSearch = {
@@ -33,12 +36,13 @@ const styleSavedSearch = {
 
 const UserSavedSearch = props => {
   const {itemId, item, expanded, setExpanded} = useListViewItem(props)
-  const {navigateToSearch} = props
+  const {navigateToSearch, deleteSearch} = props
   const url = item.value
   const name = item.name ? item.name : item.value
 
   const title = (
     <h3 key={'UserSavedSearch::title'} style={styleTitle}>
+      {/*{name}*/}
       <a href={url}>{name}</a>
     </h3>
   )
@@ -63,16 +67,30 @@ const UserSavedSearch = props => {
       onClick={() => {navigateToSearch(JSON.parse(item.filter))}}
   />
 
+  const deleteSearchButton = <Button
+      key="delete"
+      title="delete"
+      icon={trashIcon}
+      style={styleButton}
+      // styleIcon={styleIcon}
+      // iconPadding={'0.309em'}
+      onClick={() => {deleteSearch(itemId)}}
+  />
+
+  const actionButtons = (<div>
+    <FlexRow items={[ deleteSearchButton, navigateToButton ]} />
+  </div>)
+
   const heading = (
     <div style={styleHeading}>
-      <FlexRow items={[ title, ': Collection' ]} />
+      <FlexRow items={[ title ]} />
     </div>
   )
 
   const queryStringIndex = url.indexOf('?')
   const queryString = url.slice(queryStringIndex)
   const decodedSavedSearch = decodePathAndQueryString('', queryString)
-  console.log('decodedSavedSearch', decodedSavedSearch)
+  // console.log('decodedSavedSearch', decodedSavedSearch)
 
   const content = (
     <div style={styleSavedSearch}>
@@ -97,7 +115,7 @@ const UserSavedSearch = props => {
       content={content}
       expanded={expanded}
       setExpanded={setExpanded}
-      actions={navigateToButton}
+      actions={actionButtons}
     />
   )
 }

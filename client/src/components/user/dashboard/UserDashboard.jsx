@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {fontFamilySerif, fontFamilyMonospace} from '../../../utils/styleUtils'
 import Meta from '../../helmet/Meta'
 import UserSavedSearchList from '../savedSearches/UserSavedSearchList'
@@ -20,7 +20,16 @@ const styleDashboardWrapper = {
 }
 
 const UserDashboard = props => {
-  const {navigateToSearch} = props
+  const [savedSearchCount, setSavedSearchCount] = useState(0);
+  useEffect(() => {
+    // Update the document title using the browser API
+    if (!props.user.isFetchingSearches && props.user.searches && savedSearchCount < props.user.searches.length){
+      props.getSavedSearches(props.savedSearchEndpoint)
+      setSavedSearchCount(props.user.searches.length)
+    }
+  });
+
+  const {navigateToSearch, deleteSearch} = props
   return (
     <div style={styleCenterContent}>
       <div style={styleDashboardWrapper}>
@@ -28,6 +37,7 @@ const UserDashboard = props => {
         <section>
           <UserSavedSearchList
             navigateToSearch={filter => navigateToSearch(filter)}
+            deleteSearch={id => deleteSearch( props.savedSearchEndpoint, id)}
             user={props.user}
             savedSearches={props.savedSearches}
           />
