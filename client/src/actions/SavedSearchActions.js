@@ -28,10 +28,8 @@ export const getSavedSearches = savedSearchEndpoint => {
   }
 
   return dispatch => {
-    // notify reducer of our intention to request user profile
     dispatch(savedSearchRequest())
 
-    // initiate asynchronous request to user profile endpoint
     return fetch(savedSearchEndpoint, requestOptions)
       .then(response => response.json())
       .then(
@@ -43,6 +41,36 @@ export const getSavedSearches = savedSearchEndpoint => {
           throw error
         }
       )
+  }
+}
+
+export const deleteSearch = (savedSearchEndpoint, id) => {
+  const requestOptions = {
+    method: 'DELETE',
+    redirect: 'error',
+    mode: 'cors',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+  }
+  const endpoint = savedSearchEndpoint + '/' + id
+  return dispatch => {
+    dispatch(savedSearchRequest())
+
+    return fetch(endpoint, requestOptions)
+        .then(response => response.json())
+        .then(
+            response => {
+              dispatch(savedSearchSuccess(response))
+              dispatch(getSavedSearches(savedSearchEndpoint))
+            },
+            error => {
+              dispatch(savedSearchFailure(error))
+              throw error
+            }
+        )
   }
 }
 
@@ -60,16 +88,13 @@ export const saveSearch = (savedSearchEndpoint, urlToSave, saveName, filter) => 
   }
 
   return dispatch => {
-    // notify reducer of our intention to request user profile
     dispatch(savedSearchRequest())
 
-    // initiate asynchronous request to user profile endpoint
     return fetch(savedSearchEndpoint, requestOptions)
-        .then(response => response.json())
         .then(
             response => {
+              dispatch(savedSearchSuccess(response))
               dispatch(getSavedSearches(savedSearchEndpoint))
-              // dispatch(savedSearchSuccess(response))
             },
             error => {
               dispatch(savedSearchFailure(error))
