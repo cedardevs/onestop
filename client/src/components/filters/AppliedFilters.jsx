@@ -250,8 +250,6 @@ export default class AppliedFilters extends React.Component {
       ...this.buildFacetBubbles(),
     ]
 
-    console.log('appliedFilters', appliedFilters)
-
     if (showAppliedFilters && appliedFilters.length !== 0) {
       return <div style={styleWrapper}>{appliedFilters}</div>
     }
