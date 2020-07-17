@@ -52,7 +52,8 @@ export default function Collections(props){
   const [ headingMessage, setHeadingMessage ] = useState(null)
   const [ searchSaved, setSearchSaved ] = useState(false)
 
-  function handleSave(savedSearchUrl, urlToSave, filter){
+  function handleSave(){
+    const urlToSave = window.location.href
     const queryStringIndex = urlToSave.indexOf('?')
     const queryString = urlToSave.slice(queryStringIndex)
     const decodedSavedSearch = decodePathAndQueryString('', queryString)
@@ -60,9 +61,9 @@ export default function Collections(props){
       savedSearchUrl,
       urlToSave,
       decodedSavedSearch.filters.queryText,
-      filter
+      collectionFilter
     )
-    setSearchSaved(true)
+    setSearchSaved(!searchSaved)
   }
 
   const currentSearchAlreadySaved = searchSaved //todo identify if they have this search saved already
@@ -81,7 +82,7 @@ export default function Collections(props){
           icon: bookmarkIcon,
           showText: false,
           handler: () => {
-            handleSave(savedSearchUrl, window.location.href, collectionFilter)
+            handleSave()
           },
           notification: notification,
         },
