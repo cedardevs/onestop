@@ -57,7 +57,7 @@ spec:
       labels:
         {{- include "onestop-dev.selectorLabels.filebeat" . | nindent 8 }}
     spec:
-      serviceAccountName: filebeat
+      serviceAccountName: {{ include "onestop-dev.fullname" . }}-filebeat
       terminationGracePeriodSeconds: 30
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
@@ -139,11 +139,11 @@ metadata:
     {{- include "onestop-dev.labels.filebeat" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: filebeat
+    name: {{ include "onestop-dev.fullname" . }}-filebeat
     namespace: default
 roleRef:
   kind: ClusterRole
-  name: filebeat
+  name: {{ include "onestop-dev.fullname" . }}-filebeat
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1
