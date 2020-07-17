@@ -4,7 +4,7 @@ import {fontFamilySerif} from '../../../utils/styleUtils'
 import FlexRow from '../../common/ui/FlexRow'
 import {decodePathAndQueryString} from '../../../utils/queryUtils'
 import UserSavedSearchAppliedFilters from './UserSavedSearchAppliedFilters'
-import Button from "../../common/input/Button";
+import Button from '../../common/input/Button'
 import linkIcon from 'fa/arrow-right.svg'
 import trashIcon from 'fa/trash.svg'
 
@@ -25,7 +25,7 @@ const styleButton = {
 
 const styleHeading = {
   padding: 0,
-  justifyContent: 'space-between'
+  justifyContent: 'space-between',
 }
 
 const styleSavedSearch = {
@@ -47,39 +47,51 @@ const UserSavedSearch = props => {
     </h3>
   )
 
-  const navigateToAction =  [
+  const navigateToAction = [
     {
-      text: "navigateTo",
-      title: "navigateTo",
+      text: 'navigateTo',
+      title: 'navigateTo',
       icon: linkIcon,
       showText: false,
-      handler: () => {navigateToSearch(JSON.parse(item.filter))},
-      notification: "notification",
-    }
+      handler: () => {
+        navigateToSearch(JSON.parse(item.filter))
+      },
+      notification: 'notification',
+    },
   ]
-  const navigateToButton = <Button
+  const navigateToButton = (
+    <Button
       key="navigateTo"
       title="navigate to"
       icon={linkIcon}
       style={styleButton}
       // styleIcon={styleIcon}
       // iconPadding={'0.309em'}
-      onClick={() => {navigateToSearch(JSON.parse(item.filter))}}
-  />
+      onClick={() => {
+        navigateToSearch(JSON.parse(item.filter))
+      }}
+    />
+  )
 
-  const deleteSearchButton = <Button
+  const deleteSearchButton = (
+    <Button
       key="delete"
       title="delete"
       icon={trashIcon}
       style={styleButton}
       // styleIcon={styleIcon}
       // iconPadding={'0.309em'}
-      onClick={() => {deleteSearch(itemId)}}
-  />
+      onClick={() => {
+        deleteSearch(itemId)
+      }}
+    />
+  )
 
-  const actionButtons = (<div>
-    <FlexRow items={[ deleteSearchButton, navigateToButton ]} />
-  </div>)
+  const actionButtons = (
+    <div>
+      <FlexRow items={[ deleteSearchButton, navigateToButton ]} />
+    </div>
+  )
 
   const heading = (
     <div style={styleHeading}>

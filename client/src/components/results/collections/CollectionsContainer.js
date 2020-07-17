@@ -29,7 +29,7 @@ const mapStateToProps = state => {
     collectionDetailFilter: state.search.collectionFilter, // just used to submit collection detail correctly
     pageSize,
     savedSearchUrl: savedSearchUrl,
-    isAuthenticatedUser : isAuthenticatedUser,
+    isAuthenticatedUser: isAuthenticatedUser,
     savedSearches: user.searches ? user.searches : null,
     collectionFilter: collectionFilter,
   }

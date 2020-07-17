@@ -20,15 +20,19 @@ const styleDashboardWrapper = {
 }
 
 const UserDashboard = props => {
-  const [savedSearchCount, setSavedSearchCount] = useState(0);
+  const [ savedSearchCount, setSavedSearchCount ] = useState(0)
   useEffect(() => {
     // Update the saved searches when we navigate to this component
     //todo figure out if there is a better way to do this
-    if (!props.user.isFetchingSearches && props.user.searches && savedSearchCount < props.user.searches.length){
+    if (
+      !props.user.isFetchingSearches &&
+      props.user.searches &&
+      savedSearchCount < props.user.searches.length
+    ) {
       props.getSavedSearches(props.savedSearchEndpoint)
       setSavedSearchCount(props.user.searches.length)
     }
-  });
+  })
 
   const {navigateToSearch, deleteSearch} = props
   return (
@@ -38,7 +42,7 @@ const UserDashboard = props => {
         <section>
           <UserSavedSearchList
             navigateToSearch={filter => navigateToSearch(filter)}
-            deleteSearch={id => deleteSearch( props.savedSearchEndpoint, id)}
+            deleteSearch={id => deleteSearch(props.savedSearchEndpoint, id)}
             user={props.user}
             savedSearches={props.savedSearches}
           />

@@ -50,32 +50,43 @@ export default function Collections(props){
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
   const [ headingMessage, setHeadingMessage ] = useState(null)
-  const [searchSaved, setSearchSaved] = useState(false)
+  const [ searchSaved, setSearchSaved ] = useState(false)
 
-  function handleSave(savedSearchUrl, urlToSave, filter) {
+  function handleSave(savedSearchUrl, urlToSave, filter){
     const queryStringIndex = urlToSave.indexOf('?')
     const queryString = urlToSave.slice(queryStringIndex)
     const decodedSavedSearch = decodePathAndQueryString('', queryString)
-    saveSearch(savedSearchUrl, urlToSave, decodedSavedSearch.filters.queryText, filter)
+    saveSearch(
+      savedSearchUrl,
+      urlToSave,
+      decodedSavedSearch.filters.queryText,
+      filter
+    )
     setSearchSaved(true)
   }
 
   const currentSearchAlreadySaved = searchSaved //todo identify if they have this search saved already
   const bookmarkIcon = currentSearchAlreadySaved ? alreadySavedIcon : saveIcon
-  const title = currentSearchAlreadySaved ? 'Search already saved' : 'Save search'
+  const title = currentSearchAlreadySaved
+    ? 'Search already saved'
+    : 'Save search'
   const text = currentSearchAlreadySaved ? 'Unsave' : 'Save'
   const notification = text
 
-  const saveSearchAction =  isAuthenticatedUser ? [
-    {
-      text: text,
-      title: title,
-      icon: bookmarkIcon,
-      showText: false,
-      handler: () => {handleSave(savedSearchUrl, window.location.href, collectionFilter)},
-      notification: notification,
-    }
-  ] : []
+  const saveSearchAction = isAuthenticatedUser
+    ? [
+        {
+          text: text,
+          title: title,
+          icon: bookmarkIcon,
+          showText: false,
+          handler: () => {
+            handleSave(savedSearchUrl, window.location.href, collectionFilter)
+          },
+          notification: notification,
+        },
+      ]
+    : []
 
   useEffect(
     () => {

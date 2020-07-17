@@ -51,8 +51,8 @@ export const deleteSearch = (savedSearchEndpoint, id) => {
     mode: 'cors',
     credentials: 'include',
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
     },
   }
   const endpoint = savedSearchEndpoint + '/' + id
@@ -60,46 +60,54 @@ export const deleteSearch = (savedSearchEndpoint, id) => {
     dispatch(savedSearchRequest())
 
     return fetch(endpoint, requestOptions)
-        .then(response => response.json())
-        .then(
-            response => {
-              dispatch(savedSearchSuccess(response))
-              dispatch(getSavedSearches(savedSearchEndpoint))
-            },
-            error => {
-              dispatch(savedSearchFailure(error))
-              throw error
-            }
-        )
+      .then(response => response.json())
+      .then(
+        response => {
+          dispatch(savedSearchSuccess(response))
+          dispatch(getSavedSearches(savedSearchEndpoint))
+        },
+        error => {
+          dispatch(savedSearchFailure(error))
+          throw error
+        }
+      )
   }
 }
 
-export const saveSearch = (savedSearchEndpoint, urlToSave, saveName, filter) => {
+export const saveSearch = (
+  savedSearchEndpoint,
+  urlToSave,
+  saveName,
+  filter
+) => {
   const requestOptions = {
     method: 'POST',
     redirect: 'error',
     mode: 'cors',
     credentials: 'include',
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({value: urlToSave, name: saveName, filter: JSON.stringify(filter)})
+    body: JSON.stringify({
+      value: urlToSave,
+      name: saveName,
+      filter: JSON.stringify(filter),
+    }),
   }
 
   return dispatch => {
     dispatch(savedSearchRequest())
 
-    return fetch(savedSearchEndpoint, requestOptions)
-        .then(
-            response => {
-              dispatch(savedSearchSuccess(response))
-              dispatch(getSavedSearches(savedSearchEndpoint))
-            },
-            error => {
-              dispatch(savedSearchFailure(error))
-              throw error
-            }
-        )
+    return fetch(savedSearchEndpoint, requestOptions).then(
+      response => {
+        dispatch(savedSearchSuccess(response))
+        dispatch(getSavedSearches(savedSearchEndpoint))
+      },
+      error => {
+        dispatch(savedSearchFailure(error))
+        throw error
+      }
+    )
   }
 }
