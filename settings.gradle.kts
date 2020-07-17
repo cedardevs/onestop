@@ -9,7 +9,8 @@ include(
     "kafka-common",
     "registry",
     "search",
-    "stream-manager"
+    "stream-manager",
+    "test-common"
     //"user"
 )
 

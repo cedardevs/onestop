@@ -85,9 +85,9 @@ val authors: List<Author> = listOf(
 description = """
 
 ------------------------------------------------------------
-OneStop is a data discovery system being built by CIRES 
-researchers on a grant from the NOAA National Centers for 
-Environmental Information.  We welcome contributions from 
+OneStop is a data discovery system being built by CIRES
+researchers on a grant from the NOAA National Centers for
+Environmental Information.  We welcome contributions from
 the community!
 ------------------------------------------------------------
 group:   $group
@@ -110,11 +110,12 @@ val projectDescriptions: Map<String, String> = mapOf(
         Pair("registry", "A private API to upload ISO metadata to the OneStop system Kafka event stream."),
         Pair("search", "An read-only API for the OneStop system to query data indexed in Elasticsearch."),
         Pair("stream-manager", "A Kafka Streams app which picks up from the raw metadata topic, parses into a standard format, analyzes some fields for further insight, and places onto a parsed topic."),
+        Pair("test-common", "A Utility project to test transformations throughout the system."),
         Pair("user", "An API to authenticate and manage public user data of the OneStop system.")
 )
 
 // only apply plugins, configuration, tasks, etc. to projects that need it
-val javaProjects: List<String> = listOf("client", "cli", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "stream-manager", "user")
+val javaProjects: List<String> = listOf("client", "cli", "data-common", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "stream-manager", "test-common", "user")
 val jibProjects: List<String> = listOf("client", "cli", "indexer", "registry", "search", "stream-manager", "user")
 val springBootProjects: List<String> = listOf("elastic-common", "search", "registry")
 val nodeProjects: List<String> = listOf("client", "registry")
