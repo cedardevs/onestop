@@ -165,11 +165,19 @@ public class StreamFunctions {
    * if we rethink our flattening approach in its entirety.
    */
   public static ValueJoiner<? super ParsedRecordWithId, ? super ParsedRecord, ParsedRecordWithId> flattenRecords = (child, parent) -> {
+    if (child == null) {
+      return null;
+    }
     var discoverySchema = Discovery.getClassSchema();
     // defensive copy of the parent discovery object
-    var copyForOverrides = SpecificData.getForClass(Discovery.class).deepCopy(discoverySchema, parent.getDiscovery());
+    var parentDiscovery = Optional.ofNullable(parent).map(ParsedRecord::getDiscovery).orElse(Discovery.newBuilder().build());
+    var copyForOverrides = SpecificData.getForClass(Discovery.class).deepCopy(discoverySchema, parentDiscovery);
     discoverySchema.getFields().forEach(f -> {
-      var childVal = child.getRecord().getDiscovery().get(f.name());
+      var childVal = Optional.ofNullable(child)
+          .map(ParsedRecordWithId::getRecord)
+          .map(ParsedRecord::getDiscovery)
+          .map(d -> d.get(f.name()))
+          .orElse(null);
       if (childVal != null && !childVal.equals(f.defaultVal())) {
         // override the parent value if a child value exists
         copyForOverrides.put(f.pos(), childVal);

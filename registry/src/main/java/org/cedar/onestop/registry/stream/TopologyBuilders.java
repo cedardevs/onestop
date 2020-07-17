@@ -35,20 +35,24 @@ public class TopologyBuilders {
     // publish tombstones directly to flattened topic
     parsedGranuleStream
         .filter((k, v) -> v == null)
+        .peek((k, v) -> log.debug("sending flattening tombstone for granule with id {}", k))
         .to(Topics.flattenedGranuleTopic());
 
     // map granules by their parent id(s)
     var granulesByCollectionId = parsedGranuleStream
         .filter((k, v) -> v != null)
+        .peek((k, v) -> log.debug("starting flattening flow for granule with id {}", k))
         .flatMap((granuleId, granuleRecord) ->
             granuleRecord.getRelationships().stream()
                 .filter(relationship -> relationship.getType().equals(RelationshipType.COLLECTION))
                 .map((collection -> new KeyValue<>(collection.getId(), StreamFunctions.wrapRecordWithId(granuleId, granuleRecord))))
                 .collect(Collectors.toList()))
+        .peek((k, v) -> log.debug("repartitioning granule {} with collection key {}", v.getId(), k))
         .through(Topics.granulesByCollectionId()); // go through kafka to co-partition granules with their collections
 
     // join the granule with each parent, re-key with granule's id and flattened value, then publish
     granulesByCollectionId
+        .peek((k, v) -> log.debug("joining granule {} with collection {}", v.getId(), k))
         .join(collectionTopology.parsedTable, StreamFunctions.flattenRecords)
         .map((collectionId, flattenedRecordWithGranuleId) ->
             new KeyValue<>(flattenedRecordWithGranuleId.getId(), flattenedRecordWithGranuleId.getRecord()))

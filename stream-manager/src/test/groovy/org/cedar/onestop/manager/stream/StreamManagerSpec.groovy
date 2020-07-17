@@ -32,7 +32,7 @@ class StreamManagerSpec extends Specification {
 
   def testType = RecordType.granule
   def testSource = Topics.DEFAULT_SOURCE
-  def testChangelog = Topics.inputChangelogTopicSplit(StreamsApps.REGISTRY_ID, testType, testSource)
+  def testChangelog = Topics.inputChangelogTopicCombined(StreamsApps.REGISTRY_ID, testType)
 
   def cleanup() {
     driver.close()

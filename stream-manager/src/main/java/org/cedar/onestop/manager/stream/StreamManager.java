@@ -47,7 +47,7 @@ public class StreamManager {
   }
 
   private static void addTopologyForType(StreamsBuilder builder, RecordType type) {
-    var inputStream = builder.<String, AggregatedInput>stream(inputChangelogTopicsSplit(StreamsApps.REGISTRY_ID, type));
+    var inputStream = builder.<String, AggregatedInput>stream(inputChangelogTopicCombined(StreamsApps.REGISTRY_ID, type));
 
     inputStream
         .filterNot(RoutingUtils::hasErrors)
@@ -67,7 +67,6 @@ public class StreamManager {
         .merge(fromExtractorsStream)
         .mapValues(Analyzers::addAnalysis)
         .to(parsedTopic(type));
-
   }
 
   private static String toJsonOrNull(Object o) {
