@@ -1,17 +1,17 @@
 package org.cedar.onestop.api.search.service
 
 import groovy.util.logging.Slf4j
+import org.cedar.onestop.elastic.common.ElasticsearchReadService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Profile
 
 @Slf4j
 @Service
 @Profile("trending-search")
 class TrendingSearchService {
-  private final ElasticsearchService elasticsearchService
+  private final ElasticsearchReadService esReadService
   private final TrendingBlacklistConfig blacklistConfig
 
   static final String SEARCH_TERM = 'queries'
@@ -21,8 +21,8 @@ class TrendingSearchService {
   private final String TRENDING_INDEX
 
   @Autowired
-  TrendingSearchService(ElasticsearchService elasticsearchService, TrendingBlacklistConfig blacklistConfig) {
-      this.elasticsearchService = elasticsearchService
+  TrendingSearchService(ElasticsearchReadService esReadService, TrendingBlacklistConfig blacklistConfig) {
+      this.esReadService = esReadService
       this.blacklistConfig = blacklistConfig
   }
 
@@ -42,7 +42,7 @@ class TrendingSearchService {
   Map getTopRecentTerms(Integer size, Integer numIndices, String term) {
     Map query = queryBuilder(size, term)
     String indices = indicesBuilder(numIndices)
-    return elasticsearchService.queryElasticsearch(query, indices)
+    return esReadService.getSearchResults(indices, query)
   }
 
   String indicesBuilder(Integer numIndices) {
