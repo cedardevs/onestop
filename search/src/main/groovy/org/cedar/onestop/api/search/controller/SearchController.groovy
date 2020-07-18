@@ -39,7 +39,7 @@ class SearchController {
   @RequestMapping(path = ["/collection", "/v1/collection"], method = [GET, HEAD], produces = 'application/json')
   Map getCollectionInfo(HttpServletRequest request, HttpServletResponse response) {
     log.info("Request URI: ${request.getRequestURI()}")
-    return elasticsearchService.totalCollections()
+    return elasticsearchService.getTotalCollections()
   }
 
   // GET Collection by ID
@@ -79,7 +79,7 @@ class SearchController {
   @RequestMapping(path = ["/granule", "/v1/granule"], method = [GET, HEAD], produces = 'application/json')
   Map getGranuleInfo(HttpServletRequest request, HttpServletResponse response) {
     log.info("Request URI: ${request.getRequestURI()}")
-    return elasticsearchService.totalGranules()
+    return elasticsearchService.getTotalGranules()
   }
 
   // GET Granule by ID
@@ -119,7 +119,7 @@ class SearchController {
   @RequestMapping(path = ["/flattened-granule", "/v1/flattened-granule"], method = [GET, HEAD], produces = 'application/json')
   Map getFlattenedGranuleInfo(HttpServletRequest request, HttpServletResponse response) {
     log.info("Request URI: ${request.getRequestURI()}")
-    return elasticsearchService.totalFlattenedGranules()
+    return elasticsearchService.getTotalFlattenedGranules()
   }
 
   // GET Flattened Granule by ID
