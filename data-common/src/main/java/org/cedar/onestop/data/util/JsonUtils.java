@@ -33,6 +33,7 @@ public class JsonUtils {
    * @return Map representation of input JSON string. Returns null if input is invalid.
    */
   public static Map<String, Object> parseJsonAsMap(String json) {
+    // FIXME null and empty string would return empty map without this code
     if (json == null || json.equals("")) {
       return new LinkedHashMap<>();
     }
@@ -51,6 +52,7 @@ public class JsonUtils {
    * @return JSON string representation of input map or null if map cannot be interpreted as JSON
    */
   public static String toJson(Map<String, Object> map) {
+    // FIXME empty map should return "{}" ie empty json
     if(map == null || map.isEmpty()) {
       return "";
     }
@@ -69,6 +71,7 @@ public class JsonUtils {
    * @throws JsonProcessingException if input map cannot be interpreted as JSON
    */
   public static String toJsonSafe(Map<String, Object> map) throws JsonProcessingException {
+    // FIXME empty map should return "{}" ie empty json
     if(map == null || map.isEmpty()) {
       return "";
     }
