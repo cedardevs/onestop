@@ -1,58 +1,45 @@
 package org.cedar.onestop.api.search.service
 
-import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-import org.apache.http.HttpEntity
-import org.apache.http.entity.ContentType
-import org.apache.http.nio.entity.NStringEntity
+import org.cedar.onestop.data.util.JsonUtils
+import org.cedar.onestop.data.util.MapUtils
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.cedar.onestop.elastic.common.ElasticsearchReadService
-import org.elasticsearch.client.Request
-import org.elasticsearch.client.Response
-import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-
-import java.util.stream.Collectors
-
-import static org.cedar.onestop.elastic.common.DocumentUtil.*
 
 @Slf4j
 @Service
 class ElasticsearchService {
 
   private SearchRequestParserService searchRequestParserService
-  private ElasticsearchReadService esService
+  private ElasticsearchReadService esReadService
 
   private RestHighLevelClient restHighLevelClient
   ElasticsearchConfig esConfig
-
-  boolean isES6
 
   @Autowired
   ElasticsearchService(SearchRequestParserService searchRequestParserService, RestHighLevelClient restHighLevelClient, ElasticsearchConfig elasticsearchConfig) {
     this.searchRequestParserService = searchRequestParserService
     this.restHighLevelClient = restHighLevelClient
     this.esConfig = elasticsearchConfig
-    this.isES6 = esConfig.version.isMajorVersion(6)
-    this.esService = new ElasticsearchReadService(this.restHighLevelClient, this.esConfig)
+    this.esReadService = new ElasticsearchReadService(this.restHighLevelClient, this.esConfig)
   }
 
   ////////////
   // Counts //
   ////////////
-  Map totalCollections() {
-    return esService.getTotalCountInIndex(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+  Map getTotalCollections() {
+    return esReadService.getTotalCountInIndex(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
   }
 
-  Map totalGranules() {
-    return esService.getTotalCountInIndex(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
+  Map getTotalGranules() {
+    return esReadService.getTotalCountInIndex(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
   }
 
-  Map totalFlattenedGranules() {
-    return esService.getTotalCountInIndex(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
+  Map getTotalFlattenedGranules() {
+    return esReadService.getTotalCountInIndex(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
   }
 
 
@@ -60,13 +47,14 @@ class ElasticsearchService {
   // Get By ID //
   ///////////////
   Map getCollectionById(String id) {
-    def getCollection = esService.getById(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, id)
+    def getCollection = esReadService.getById(esConfig.COLLECTION_SEARCH_INDEX_ALIAS, id)
 
     if(getCollection.data) {
       // get the total number of granules for this collection id
-      def totalGranulesForCollection = esService.getTotalCountInIndexByTerm(esConfig.GRANULE_SEARCH_INDEX_ALIAS, "internalParentIdentifier", id)
+      def totalGranulesForCollection = esReadService.getTotalCountInIndexByTerm(esConfig.GRANULE_SEARCH_INDEX_ALIAS, "internalParentIdentifier", id)
+      def attributes = (Map) ((Map) ((List) totalGranulesForCollection.get("data")).first()).get("attributes")
       getCollection.meta = [
-          totalGranules: totalGranulesForCollection
+          totalGranules: attributes.get("count")
       ]
     }
 
@@ -74,15 +62,15 @@ class ElasticsearchService {
   }
 
   Map getGranuleById(String id) {
-    return esService.getById(esConfig.GRANULE_SEARCH_INDEX_ALIAS, id)
+    return esReadService.getById(esConfig.GRANULE_SEARCH_INDEX_ALIAS, id)
   }
 
   Map getFlattenedGranuleById(String id) {
-    return esService.getById(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS, id)
+    return esReadService.getById(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS, id)
   }
 
   Map getSitemapById(String id) {
-    return esService.getById(esConfig.SITEMAP_INDEX_ALIAS, id)
+    return esReadService.getById(esConfig.SITEMAP_INDEX_ALIAS, id)
   }
 
 
@@ -90,44 +78,15 @@ class ElasticsearchService {
   // Mappings //
   //////////////
   Map getCollectionMapping() {
-    return getIndexMapping(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
+    return esReadService.getIndexMapping(esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
   }
 
   Map getGranuleMapping() {
-    return getIndexMapping(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
+    return esReadService.getIndexMapping(esConfig.GRANULE_SEARCH_INDEX_ALIAS)
   }
 
   Map getFlattenedGranuleMapping() {
-    return getIndexMapping(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
-  }
-
-  Map getIndexMapping(String alias) {
-    String endpoint = "/${alias}?include_type_name=false"
-    log.debug("GET mapping for ${alias}")
-
-    def request = new Request('GET', endpoint)
-    def response = restClient.performRequest(request)
-    Map result = parseSearchResponse(response)
-
-    if(!result.error) {
-      // Actual timestamped name is used, not the alias, but need to drop the "statusCode"
-      def keys = result.keySet().stream().filter({String key -> !key.equals('statusCode')}).collect(Collectors.toList())
-      def indexName = keys.first()
-      return [
-          data: [[
-              id: alias,
-              type: 'index-map',
-              attributes: result.get(indexName)
-          ]]
-      ]
-    }
-    else {
-      return [
-          status: HttpStatus.NOT_FOUND.value(),
-          title : 'No such index',
-          detail: "Index with alias [ ${alias} ] does not exist."
-      ]
-    }
+    return esReadService.getIndexMapping(esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
   }
 
 
@@ -146,64 +105,30 @@ class ElasticsearchService {
     return searchFromRequest(searchParams, esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS)
   }
 
-  Map searchSitemap() {
+  Map<String, Object> searchSitemap() {
     def requestBody = [
       _source: ["lastUpdatedDate",]
     ]
-    String searchEndpoint = "${esConfig.SITEMAP_INDEX_ALIAS}/_search"
-    log.debug("searching for sitemap against endpoint ${searchEndpoint}")
-    Request searchRequest = new Request('GET', searchEndpoint).setJsonEntity(requestBody)
-    Response searchResponse = restClient.performRequest(searchRequest)
-    Map parsedSearchResponse = parseSearchResponse(searchResponse)
-
-    def result = [
-      data: getDocuments(parsedSearchResponse).collect {
-        [id: getId(it), type: esConfig.typeFromIndex(getIndex(it)), attributes: getSource(it)]
-      },
-      meta: [
-          took : getTook(parsedSearchResponse),
-          total: getHitsTotalValue(parsedSearchResponse, isES6)
-      ]
-    ]
-    return result
+    log.debug("Searching for sitemap")
+    return esReadService.getSearchResults(esConfig.SITEMAP_INDEX_ALIAS, requestBody);
   }
 
-  Map searchFromRequest(Map params, String index) {
+  Map<String, Object> searchFromRequest(Map params, String index) {
     def requestBody = buildRequestBody(params)
+    def marshalledResponse = esReadService.performRequest('GET', "$index/_search", JsonUtils.toJson(requestBody))
 
-    Map searchResponse = queryElasticsearch(requestBody, index)
-    def result = [
-        data: getDocuments(searchResponse).collect {
-          [id: getId(it), type: esConfig.typeFromIndex(getIndex(it)), attributes: getSource(it)]
-        },
-        meta: [
-            took : getTook(searchResponse),
-            total: getHitsTotalValue(searchResponse, isES6)
-        ]
-    ]
+    def searchResponse = esReadService.constructSearchResponse(marshalledResponse);
 
-    def facets = prepareFacets(searchResponse)
+    def facets = prepareFacets(marshalledResponse)
     if (facets) {
-      result.meta.facets = facets
+      def meta = new HashMap<String, Object>((Map) searchResponse.get("meta"))
+      meta.facets = facets
+      searchResponse.put("meta", meta)
     }
-    return result
+    return searchResponse
   }
 
-  Map queryElasticsearch(Map query, String index) {
-    log.debug("Querying Elasticsearch index: ${index}")
-    String jsonQuery = JsonOutput.toJson(query)
-    log.trace("jsonQuery: ${jsonQuery}")
-    HttpEntity searchQuery = new NStringEntity(jsonQuery, ContentType.APPLICATION_JSON)
-    String endpoint = "${index}/_search"
-    Request searchRequest = new Request('GET', endpoint)
-    searchRequest.entity = searchQuery
-    log.debug("search request: ${searchRequest.toString()}")
-    Response searchResponse = restClient.performRequest(searchRequest)
-    log.debug("search response: ${searchResponse.toString()}")
-    return parseSearchResponse(searchResponse)
-  }
-
-  Map buildRequestBody(Map params) {
+  Map<String, Object> buildRequestBody(Map params) {
     def query = searchRequestParserService.parseSearchQuery(params)
     def getFacets = params.facets as boolean
 
@@ -226,7 +151,7 @@ class ElasticsearchService {
     if (params.containsKey('search_after')) {
       requestBody = addSearchAfter(requestBody, params.search_after as List)
     }
-    requestBody = pruneEmptyElements(requestBody)
+    requestBody = MapUtils.pruneEmptyElements(requestBody)
     return requestBody
   }
 

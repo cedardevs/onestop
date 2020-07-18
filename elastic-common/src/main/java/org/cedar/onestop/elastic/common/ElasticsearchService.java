@@ -26,7 +26,7 @@ public abstract class ElasticsearchService {
     this.config = esConfig;
   }
 
-  Map<String, Object> performRequest(Request request) {
+  public Map<String, Object> performRequest(Request request) {
     try {
       var response = llClient.performRequest(request);
       log.debug("Got response: " + response);
@@ -46,14 +46,14 @@ public abstract class ElasticsearchService {
     }
   }
 
-  Map<String, Object> performRequest(String method, String endpoint, String requestBody) {
+  public Map<String, Object> performRequest(String method, String endpoint, String requestBody) {
     log.debug("Performing elasticsearch request: " + method + " " + endpoint + " " + requestBody);
     var request = new Request(method, endpoint);
     request.setJsonEntity(requestBody);
     return performRequest(request);
   }
 
-  Map<String, Object> parseResponse(Response response) {
+  public Map<String, Object> parseResponse(Response response) {
     int statusCode = response.getStatusLine().getStatusCode();
     Map<String, Object> result = new HashMap<>();
     // Negative status codes can occur with network/connection problems so replace them with 500-level error
@@ -66,7 +66,9 @@ public abstract class ElasticsearchService {
       }
     }
     catch (Exception e) {
-      log.warn("Failed to parse Elasticsearch response as JSON", e);
+      result.put("statusCode", HttpStatus.SC_SERVICE_UNAVAILABLE);
+      // TODO -- correct status code? need more info?
+      log.error("Failed to parse Elasticsearch response as JSON", e);
     }
     return result;
   }
