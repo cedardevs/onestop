@@ -72,6 +72,10 @@ public class IndexingInput {
     }
   }
 
+  public RecordType getRecordType() {
+    return recordType;
+  }
+
   @Override
   public String toString() {
     return "IndexingInput {" +

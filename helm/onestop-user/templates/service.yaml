@@ -15,5 +15,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "onestop-user.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "onestop-user.selectorLabels" . | nindent 4 }}

@@ -3,10 +3,7 @@ kind: Service
 metadata:
   name: {{ include "cas.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "cas.name" . }}
-    helm.sh/chart: {{ include "cas.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "cas.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:

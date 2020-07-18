@@ -6,7 +6,7 @@
   "license": "GPL-2.0",
   "scripts": {
     "dev": "webpack-dev-server --hot --mode development --env.URL_API_SEARCH=http://localhost:8097/ --progress --config webpack.config.js --colors",
-    "kub": "webpack-dev-server --hot --mode development --env.URL_API_SEARCH=http://localhost:30097/ --progress --config webpack.config.js --colors",
+    "kub": "webpack-dev-server --host 0.0.0.0 --hot --mode development --env.URL_API_SEARCH=http://localhost:30097/ --progress --config webpack.config.js --colors",
     "format": "find -f src test -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --config .prettierrc.json --write",
     "formatCheck": "find -f src test -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --config .prettierrc.json --list-different",
     "test": "jest --maxWorkers=2 --config jest.config.js",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "connected-react-router": "^6.5.2",
+    "detect-browser": "^5.1.0",
     "esri-leaflet": "^2.2.3",
     "esri-loader": "^2.6.0",
     "file-saver": "^2.0.0",
@@ -26,7 +27,7 @@
     "leaflet-draw": "^0.4.13",
     "lodash": "^4.17.15",
     "moment": "^2.23.0",
-    "npm": "^6.12.0",
+    "npm": "^6.14.5",
     "prop-types": "^15.6.2",
     "react": "^16.7.0",
     "react-animate-height": "^2.0.7",
@@ -65,7 +66,7 @@
     "@babel/preset-react": "^7.0.0",
     "@testing-library/react-hooks": "^3.2.1",
     "@types/jest": "^24.9.1",
-    "acorn": "^6.0.7",
+    "acorn": "^6.4.1",
     "autoprefixer": "^9.5.1",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
@@ -74,7 +75,7 @@
     "css-loader": "^2.1.1",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.7.1",
-    "eslint": "^5.13.0",
+    "eslint": "^6.8.0",
     "eslint-loader": "^2.1.2",
     "fetch-mock": "^7.3.0",
     "file-loader": "^1.1.5",
@@ -85,6 +86,7 @@
     "jsdom": "12.2.0",
     "jsdom-global": "3.0.2",
     "json-loader": "^0.5.7",
+    "minimist": "^1.2.5",
     "nock": "^9.1.0",
     "path": "^0.12.7",
     "postcss-assets": "^5.0.0",
@@ -102,8 +104,8 @@
     "speed-measure-webpack-plugin": "^1.2.5",
     "style-loader": "^0.19.0",
     "url-loader": "^0.6.2",
-    "webpack": "^4.41.2",
+    "webpack": "^4.43.0",
     "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.9.0"
+    "webpack-dev-server": "^3.11.0"
   }
 }

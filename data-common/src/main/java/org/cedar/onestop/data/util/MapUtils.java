@@ -175,6 +175,9 @@ public class MapUtils {
    * @return
    */
   public static Map<String, Object> pruneEmptyElements(Map<String, Object> originalMap) {
+    if (originalMap == null) {
+      return null;
+    }
     Map<String, Object> prunedRequest = new HashMap<>();
     originalMap.forEach((k, v) -> {
       // Remove individual empty elements from a map or an entire empty map:
