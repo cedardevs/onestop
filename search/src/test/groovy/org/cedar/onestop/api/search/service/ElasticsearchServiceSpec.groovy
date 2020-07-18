@@ -19,6 +19,7 @@ import spock.lang.Unroll
 @Unroll
 class ElasticsearchServiceSpec extends Specification {
 
+  // FIXME failing here due to call to restHighLevelClient.getLowLevelClient(); how to mock this?
   RestHighLevelClient mockRestHighLevelClient = Mock(RestHighLevelClient)
   RestClient mockRestClient = Mock(RestClient)
   SearchConfig searchConfig = new SearchConfig()
@@ -36,7 +37,7 @@ class ElasticsearchServiceSpec extends Specification {
 
   def "preserve page max 0 offset 0 into request" () {
     given:
-    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestHighLevelClient, mockRestClient, esConfig)
+    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestHighLevelClient, esConfig)
     // post processing on the request was altering the results after addPagination
     when:
     def queryResult = elasticsearchService.buildRequestBody([page:[max: 0, offset:0]])
@@ -50,7 +51,7 @@ class ElasticsearchServiceSpec extends Specification {
 //todo is this necessary?
   def "preserve sort request" () {
     given:
-    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestHighLevelClient, mockRestClient, esConfig)
+    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestHighLevelClient, esConfig)
     Map params = [sort:[[stagedDate: "desc"]]]
     List resultingSort = params.sort
     // post processing on the request was altering the results after addPagination
@@ -68,31 +69,10 @@ class ElasticsearchServiceSpec extends Specification {
         filters: [[type: 'year', beginYear: 1999]],
         page   : [max: 42, offset: 24]
     ]
-    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestHighLevelClient, mockRestClient, esConfig)
+    ElasticsearchService elasticsearchService = new ElasticsearchService(searchRequestParserService, mockRestHighLevelClient, esConfig)
 
-    Response mockResponse
-    if(esVersion.isMajorVersion(6)) {
-      mockResponse = buildMockElasticResponse(200, [
+    Response mockResponse = buildMockElasticResponse(200, [
           hits: [
-              total: 1,
-              hits: [
-                  [
-                      _id       : 'ABC',
-                      _index    : esConfig.COLLECTION_SEARCH_INDEX_ALIAS,
-                      attributes: [
-                          title: 'THIS IS A TEST'
-                      ]
-                  ]
-              ]
-          ],
-          took: 1234,
-      ])
-    }
-    else {
-      mockResponse = buildMockElasticResponse(200, [
-          hits: [
-              // the structure of the hits in response is different between ES6/ES7
-              // https://www.elastic.co/guide/en/elasticsearch/reference/current/breaking-changes-7.0.html#hits-total-now-object-search-response
               total: [
                   value: 1,
                   relation: 'eq'
@@ -109,8 +89,6 @@ class ElasticsearchServiceSpec extends Specification {
           ],
           took: 1234,
       ])
-    }
-
 
     when:
     def result = elasticsearchService.searchFromRequest(searchRequest, esConfig.COLLECTION_SEARCH_INDEX_ALIAS)
