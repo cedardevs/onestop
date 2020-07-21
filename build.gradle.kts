@@ -338,7 +338,7 @@ subprojects {
                 if (requested.group.startsWith("org.apache.tomcat") &&
                         requested.name.contains("tomcat") &&
                         requested.version!! <= "9.0.29") {
-                    useVersion("9.0.30")
+                    useVersion("9.0.37")
                     because("Enforce tomcat 9.0.20+ to avoid vulnerabilities CVE-2019-0199, CVE-2019-0232, and CVE-2019-10072")
                 }
             }
