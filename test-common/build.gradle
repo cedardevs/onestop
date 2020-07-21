@@ -28,7 +28,7 @@ dependencies {
   // implementation(project(':data-common'))
 
   compile project(path: ':indexer', configuration: 'shadow')
-  compile api("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
+  compile implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
 
 
   // compile implementation("org.apache.avro:avro:1.8.2") // not sure what needs this jsonToAvroLenient apparently?
