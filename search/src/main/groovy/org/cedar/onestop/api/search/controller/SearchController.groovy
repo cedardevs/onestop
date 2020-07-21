@@ -53,7 +53,7 @@ class SearchController {
       log.info("${request.getMethod()} collection ID param: {\"id\":\"${id}\"}")
     }
     else {
-      response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
+      response.status = result.errors[0].status ?: HttpStatus.BAD_REQUEST.value()
     }
 
     return result
@@ -93,7 +93,7 @@ class SearchController {
       log.info("${request.getMethod()} granule ID param: {\"id\":\"${id}\"}")
     }
     else {
-      response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
+      response.status = result.errors[0].status ?: HttpStatus.BAD_REQUEST.value()
     }
 
     return result
@@ -133,7 +133,7 @@ class SearchController {
       log.info("${request.getMethod()} flattened-granule ID param: {\"id\":\"${id}\"}")
     }
     else {
-      response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
+      response.status = result.errors[0].status ?: HttpStatus.BAD_REQUEST.value()
     }
     return result
   }

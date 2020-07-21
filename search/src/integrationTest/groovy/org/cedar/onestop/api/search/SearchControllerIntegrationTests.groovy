@@ -124,7 +124,7 @@ class SearchControllerIntegrationTests extends Specification {
     ElasticsearchConfig.TYPE_FLATTENED_GRANULE | 2
   }
 
-//  @Ignore
+  @Ignore // PASS
   def 'Get existing collection by ID returns expected record and granule count'() {
     given:
     URI endpointUri = "${baseUri}/collection/${TestUtil.testData.COOPS.C1.id}".toURI()
@@ -152,7 +152,7 @@ class SearchControllerIntegrationTests extends Specification {
     meta.totalGranules == 2
   }
 
-  @Ignore
+  @Ignore // PASS
   def 'Get existing #type by ID returns expected record'() {
     given:
     URI endpointUri = "${baseUri}/${type}/${idPath}".toURI()
@@ -182,7 +182,7 @@ class SearchControllerIntegrationTests extends Specification {
     ElasticsearchConfig.TYPE_FLATTENED_GRANULE | TestUtil.testData.COOPS.C1.flattenedGranules.FG2.id | 'CO-OPS.NOS_9410170_201503_D1_v00'
   }
 
-  @Ignore
+//  @Ignore
   def 'Get nonexisting #type by ID returns NOT FOUND'() {
     given:
     URI endpointUri = "${baseUri}/${type}/123-this-is-a-BAD-ID-456".toURI()

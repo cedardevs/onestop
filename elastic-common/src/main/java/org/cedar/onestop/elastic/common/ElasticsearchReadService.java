@@ -166,10 +166,11 @@ public class ElasticsearchReadService extends ElasticsearchService {
       response.put("data", List.of(dataMap));
     }
     else {
-      // FIXME errors?
-      response.put("status", HttpStatus.SC_NOT_FOUND);
-      response.put("title", "No such document");
-      response.put("detail", "Record type [ " + type + " ] with ID [ " + id + " ] does not exist.");
+      var error = new HashMap<String, Object>();
+      error.put("status", HttpStatus.SC_NOT_FOUND);
+      error.put("title", "No such document");
+      error.put("detail", "Record type [ " + type + " ] with ID [ " + id + " ] does not exist.");
+      response.put("errors", List.of(error));
     }
 
     return response;

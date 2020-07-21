@@ -27,10 +27,8 @@ public abstract class ElasticsearchService {
   }
 
   public Map<String, Object> performRequest(Request request) {
-    //log.debug("Performing elasticsearch request: " + method + " " + endpoint + " " + requestBody);
     log.debug("Sending Elasticsearch request: " + request.toString());
     try {
-      log.debug("Performing elasticsearch request: " + request.getMethod() + " " + request.getEndpoint() + " " + request.getEntity().toString());
       var response = llClient.performRequest(request);
       log.debug("Got response: " + response);
       return parseResponse(response);
@@ -50,7 +48,7 @@ public abstract class ElasticsearchService {
   }
 
   public Map<String, Object> performRequest(String method, String endpoint, String requestBody) {
-    log.debug("Performing elasticsearch request: " + method + " " + endpoint + " " + requestBody);
+    log.debug("Sending elasticsearch request: " + method + " " + endpoint + " " + requestBody);
     var request = new Request(method, endpoint);
     request.setJsonEntity(requestBody);
     return performRequest(request);
