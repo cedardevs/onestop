@@ -282,12 +282,12 @@ subprojects {
                     }
                 }
 
-                if (requested.group == "org.apache.avro" && requested.name == "avro") {
+                /* if (requested.group == "org.apache.avro" && requested.name == "avro") {
                     if(requested.version!! < Versions.AVRO) {
                         useVersion(Versions.AVRO)
                         because("latest avro does not depend on vulnerable jackson-mapper-asl which has not been updated since 2013")
                     }
-                }
+                } FIXME! The jackson databind changes wasn't playing nice with test-common code, due to a package name change and a weird thin-jar dependency of the schemas project */
 
                 if (requested.group == "org.apache.logging.log4j" && requested.name == "log4j-api") {
                     if (requested.version!!.startsWith("2.11.1")) {
@@ -303,12 +303,12 @@ subprojects {
                     }
                 }
 
-                if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
+                /* if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
                     if (requested.version!!.startsWith("2.9.") || requested.version!!.startsWith("2.10.") ) {
                         useVersion("2.10.1")
                         because("fixes vulnerability in 2.9.9 and before")
                     }
-                }
+                } FIXME! The jackson databind changes wasn't playing nice with test-common code, due to a package name change and a weird thin-jar dependency of the schemas project*/
 
                 if (requested.group == "com.google.guava" && requested.name == "guava") {
                     if (requested.version!! <= "27.0.1") {
