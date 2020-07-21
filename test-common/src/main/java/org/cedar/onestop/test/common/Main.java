@@ -12,82 +12,91 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.lang.Exception;
 import org.cedar.schemas.avro.util.AvroUtils;
-
+import org.cedar.schemas.analyze.Analyzers;
 
 public class Main {
 
-// ./gradlew test-common:shadowJar
-// java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main Hello World
-
-/*
   public static void main(String[] args) {
-    // String json = "{\"name\":\"testfile\"}";
-    System.out.println( ParsedRecord.newBuilder().build() );
-    Set<String> fields = new HashSet<String>();
-    fields.add("description");
-    System.out.println( TransformationUtils.reformatMessageForAnalysis(ParsedRecord.newBuilder().build(), fields, RecordType.granule) );
-    System.out.println( args[0] );
-    System.out.println( args[1] );
-  }
-*/
-  // commands: parse, analyze, searchIndex, errorIndex
-  // type: collection, granule
-  // usage: java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main TYPE COMMAND FILE
-
-  public static void main(String[] args) {
-    if (args.length != 3) {
+    if (args.length < 2) {
       System.err.println(usage());
-      System.err.println("Expected exactly 3 args.");
-      System.exit(1);
-      return;
-    }
-    if( !args[0].equals("collection") && !args[0].equals("granule") ) {
-      System.err.println(usage());
-      System.err.println("Expected type: collection or granule.");
-      System.err.println("'"+args[0]+"'");
-      System.exit(1);
-      return;
-    }
-    if( !args[1].equals("parse") && !args[1].equals("analyze") && !args[1].equals("searchIndex") && !args[1].equals("errorIndex") ) {
-      System.err.println(usage());
-      System.err.println("Expected command: parse, analyze, searchIndex, or errorIndex.");
-      System.err.println("'"+args[1]+"'");
+      System.err.println("Expected 2 or more args.");
       System.exit(1);
       return;
     }
 
-    //>> java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main granule parse ../onestop-test-data/COOPS/granules/CO-OPS.NOS_1820000_201602_D1_v00.xml
-    //>> java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main granule parse ../onestop-test-data/analysisErrors/collections/invalid_dates.json
-    System.out.println("processing "+args[0]+" "+args[1]+" "+args[2]);
+    String filename = args[args.length-1];
 
     try {
-
-      if( args[1].equals("parse") ) {
-        parse(args[2]); // TODO doesn't require TYPE - revisit input pattern
+      // ParsedRecord record = ParsedRecord.newBuilder().build();
+      // switch(args[0]) {
+      //   case "parseISO":
+      //   record = parseISO(filename);
+      //   break;
+      //   case "parseAvro":
+      //   record = parseJSON(filename);
+      //   break;
+      //   default:
+      //   System.err.println("Could not recognize step "+args[0]);
+      //   System.exit(1);
+      // }
+      ParsedRecord record = init(args[0], filename);
+      for (int i=1; i<args.length-1; i++) {
+        record = step(args[i], record);
       }
+      System.out.println(record.toString());
+
     }
     catch (Exception e) {
       System.err.println(e);
       System.exit(1);
     }
+    // >> java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseAvro ../onestop-test-data/analysisErrors/collections/invalid_dates.json
+
+    //>> java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseISO ../onestop-test-data/COOPS/granules/CO-OPS.NOS_1820000_201602_D1_v00.xml
+
+    // >> java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseAvro analyze ../onestop-test-data/analysisErrors/collections/invalid_dates.json
+
+    //>> java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseISO analyze ../onestop-test-data/COOPS/granules/CO-OPS.NOS_1820000_201602_D1_v00.xml
 
   }
 
   public static String usage() {
-    return "commands: parse, analyze, searchIndex, errorIndex\ntype: collection, granule\nusage: TYPE COMMAND FILE";
+    return "usage: STEP [STEP...] filename";
   }
 
-  public static void parse(String filename) throws Exception {
-    if (filename.endsWith("xml")) {
-      ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(parseISO(filename)).build();
-      System.out.println(record.toString());
-    } else {
-      System.out.println(parseJSON(filename).toString());
+  public static ParsedRecord init(String command, String filename) throws Exception {
+    ParsedRecord record = ParsedRecord.newBuilder().build();
+    switch(command) {
+      case "parseISO":
+      record = parseISO(filename);
+      break;
+      case "parseAvro":
+      record = parseJSON(filename);
+      break;
+      default:
+      System.err.println("Could not recognize step "+command);
+      System.exit(1);
     }
+    return record;
   }
 
-  public static Discovery parseISO(String filename) throws Exception {
-    return ISOParser.parseXMLMetadataToDiscovery(Files.readString(Path.of(filename)));
+  public static ParsedRecord step(String command, ParsedRecord record) throws Exception {
+    switch(command) {
+      case "analyze":
+      return analyze(record);
+      default:
+      System.err.println("Could not recognize step "+command);
+      System.exit(1);
+    }
+    return null;
+  }
+
+  public static ParsedRecord analyze(ParsedRecord record) {
+    return Analyzers.addAnalysis(record);
+  }
+
+  public static ParsedRecord parseISO(String filename) throws Exception {
+    return ParsedRecord.newBuilder().setDiscovery(ISOParser.parseXMLMetadataToDiscovery(Files.readString(Path.of(filename)))).build();
   }
 
   public static ParsedRecord parseJSON(String filename) throws Exception {

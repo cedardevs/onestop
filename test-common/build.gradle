@@ -35,7 +35,7 @@ dependencies {
   compile implementation("org.codehaus.groovy:groovy-xml:2.4.16") // needed by schemas parse
   compile implementation("org.codehaus.groovy:groovy-json:2.4.16") // needed by schemas parse
   compile api("com.github.cedardevs.schemas:schemas-parse:${Versions.ONESTOP_SCHEMAS}")
-  // compile api("com.github.cedardevs.schemas:schemas-analyze:${Versions.ONESTOP_SCHEMAS}")
+  compile api("com.github.cedardevs.schemas:schemas-analyze:${Versions.ONESTOP_SCHEMAS}")
   implementation("org.slf4j:slf4j-api:1.7.25")
   implementation("ch.qos.logback:logback-classic:1.2.3")
 
