@@ -17,7 +17,7 @@ configurations {
 dependencies {
   def Versions = project.Versions
 
-  implementation(project(':kafka-common'))
+  compile implementation(project(':kafka-common'))
 
   implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   implementation("org.apache.kafka:kafka-streams:${Versions.KAFKA}")

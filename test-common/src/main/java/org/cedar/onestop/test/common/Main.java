@@ -11,8 +11,8 @@ import org.cedar.schemas.parse.ISOParser;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.lang.Exception;
-import org.cedar.schemas.avro.util.AvroUtils;
 import org.cedar.schemas.analyze.Analyzers;
+import org.cedar.onestop.manager.util.RecordParser;
 
 public class Main {
 
@@ -109,8 +109,6 @@ public class Main {
   }
 
   public static ParsedRecord parseJSON(String filename) throws Exception {
-    // TODO currently requires commenting out fixing jackson databind versions to work
-    return AvroUtils.jsonToAvroLenient(Files.readString(Path.of(filename)), ParsedRecord.getClassSchema());
-
+    return RecordParser.parseRaw(Files.readString(Path.of(filename)), RecordType.granule); // TODO type is arbitrary and potentially wrong here, just hardcoded to test
   }
 }
