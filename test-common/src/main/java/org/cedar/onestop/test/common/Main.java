@@ -1,11 +1,11 @@
 package org.cedar.onestop.test.common;
 
- // import org.cedar.schemas.avro.util.AvroUtils;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.Discovery;
 import org.cedar.onestop.indexer.util.TransformationUtils;
 import org.cedar.schemas.avro.psi.RecordType;
 import java.util.Set;
+import java.util.Map;
 import java.util.HashSet;
 import org.cedar.schemas.parse.ISOParser;
 import java.nio.file.Files;
@@ -27,36 +27,26 @@ public class Main {
     String filename = args[args.length-1];
 
     try {
-      // ParsedRecord record = ParsedRecord.newBuilder().build();
-      // switch(args[0]) {
-      //   case "parseISO":
-      //   record = parseISO(filename);
-      //   break;
-      //   case "parseAvro":
-      //   record = parseJSON(filename);
-      //   break;
-      //   default:
-      //   System.err.println("Could not recognize step "+args[0]);
-      //   System.exit(1);
-      // }
       ParsedRecord record = init(args[0], filename);
+      Map<String, Object> esResult = null;
       for (int i=1; i<args.length-1; i++) {
-        record = step(args[i], record);
+        ParsedRecord updated = step(args[i], record);
+        if (updated == null) {
+          esResult = esStep(args[i], record);
+        } else {
+          record = updated;
+        }
       }
-      System.out.println(record.toString());
-
+      if (esResult != null ) {
+        System.out.println(esResult.toString());
+      } else {
+        System.out.println(record.toString());
+      }
     }
     catch (Exception e) {
       System.err.println(e);
       System.exit(1);
     }
-    // >> java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseAvro ../onestop-test-data/analysisErrors/collections/invalid_dates.json
-
-    //>> java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseISO ../onestop-test-data/COOPS/granules/CO-OPS.NOS_1820000_201602_D1_v00.xml
-
-    // >> java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseAvro analyze ../onestop-test-data/analysisErrors/collections/invalid_dates.json
-
-    //>> java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseISO analyze ../onestop-test-data/COOPS/granules/CO-OPS.NOS_1820000_201602_D1_v00.xml
 
   }
 
@@ -84,6 +74,25 @@ public class Main {
     switch(command) {
       case "analyze":
       return analyze(record);
+      // default:
+      // System.err.println("Could not recognize step "+command);
+      // System.exit(1);
+    }
+    return null;
+  }
+
+  public static Map<String, Object> esStep(String command, ParsedRecord record) {
+    Set<String> fields = new HashSet<String>(); // TODO refactor reformatMessageForAnalysis to not need fields input
+    fields.add("description");
+    switch(command) {
+      case "granuleSearch":
+      return TransformationUtils.reformatMessageForSearch(record, fields);
+      case "collectionSearch":
+      return TransformationUtils.reformatMessageForSearch(record, fields);
+      case "granuleError":
+      return TransformationUtils.reformatMessageForAnalysis(record, fields, RecordType.granule);
+      case "collectionError":
+      return TransformationUtils.reformatMessageForAnalysis(record, fields, RecordType.collection);
       default:
       System.err.println("Could not recognize step "+command);
       System.exit(1);

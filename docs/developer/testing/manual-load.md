@@ -77,3 +77,17 @@ OUTPUT: JSON matching the Elasticsearch mapping for the collection analysis and 
 You can use any step by itself, assuming you have the correct input. Or you can chain the steps together to produce the ES record based on the original input.
 
 For example, if you have an XML record for a collection, `parseISO analyze collectionSearch record.xml` should produce the JSON you would post to the collection search index.
+
+## examples
+
+Note these assume you are running the command from the base onestop project dir, and that `onestop-test-data` is a sibling project.
+
+`java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseAvro ../onestop-test-data/analysisErrors/collections/invalid_dates.json`
+
+`java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseISO ../onestop-test-data/COOPS/granules/CO-OPS.NOS_1820000_201602_D1_v00.xml`
+
+`java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseAvro analyze ../onestop-test-data/analysisErrors/collections/invalid_dates.json`
+
+`java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseISO analyze ../onestop-test-data/COOPS/granules/CO-OPS.NOS_1820000_201602_D1_v00.xml`
+
+`java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseISO analyze granuleSearch ../onestop-test-data/COOPS/granules/CO-OPS.NOS_1820000_201602_D1_v00.xml > tmp.json`
