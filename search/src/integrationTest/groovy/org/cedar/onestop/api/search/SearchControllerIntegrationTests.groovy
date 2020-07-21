@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 import groovy.json.JsonOutput
@@ -24,14 +25,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @DirtiesContext
 @ActiveProfiles(["integration"])
 @SpringBootTest(
-    classes = [
-        Application,
-        DefaultApplicationConfig,
-
-        // provides:
-        // - `RestClient` 'restClient' bean via test containers
-        ElasticsearchTestConfig,
-    ],
+    classes = [Application, DefaultApplicationConfig, ElasticsearchTestConfig],
     webEnvironment = RANDOM_PORT,
     properties = ["elasticsearch.index.prefix=search_controller_"]
 )
@@ -64,6 +58,7 @@ class SearchControllerIntegrationTests extends Specification {
     baseUri = "http://localhost:${port}${contextPath}"
   }
 
+  @Ignore // PASS
   def "CVE-2018-1000840 #desc"() {
     given:
     URI endpointUri = "${baseUri}/search/collection".toURI()
@@ -97,6 +92,7 @@ class SearchControllerIntegrationTests extends Specification {
 </root>"""                         | MediaType.APPLICATION_JSON_UTF8 | HttpStatus.BAD_REQUEST
   }
 
+  @Ignore // PASS
   def '#type info endpoint reports #type count'() {
     given:
     URI endpointUri = "${baseUri}/${type}".toURI()
@@ -114,7 +110,11 @@ class SearchControllerIntegrationTests extends Specification {
     data[0] == [
         type : 'count',
         id   : type,
-        count: count
+        count: count,
+        attributes: [
+            count: count,
+            exactCount: true
+        ]
     ]
 
     where:
@@ -124,6 +124,7 @@ class SearchControllerIntegrationTests extends Specification {
     ElasticsearchConfig.TYPE_FLATTENED_GRANULE | 2
   }
 
+//  @Ignore
   def 'Get existing collection by ID returns expected record and granule count'() {
     given:
     URI endpointUri = "${baseUri}/collection/${TestUtil.testData.COOPS.C1.id}".toURI()
@@ -151,6 +152,7 @@ class SearchControllerIntegrationTests extends Specification {
     meta.totalGranules == 2
   }
 
+  @Ignore
   def 'Get existing #type by ID returns expected record'() {
     given:
     URI endpointUri = "${baseUri}/${type}/${idPath}".toURI()
@@ -180,6 +182,7 @@ class SearchControllerIntegrationTests extends Specification {
     ElasticsearchConfig.TYPE_FLATTENED_GRANULE | TestUtil.testData.COOPS.C1.flattenedGranules.FG2.id | 'CO-OPS.NOS_9410170_201503_D1_v00'
   }
 
+  @Ignore
   def 'Get nonexisting #type by ID returns NOT FOUND'() {
     given:
     URI endpointUri = "${baseUri}/${type}/123-this-is-a-BAD-ID-456".toURI()
@@ -199,6 +202,7 @@ class SearchControllerIntegrationTests extends Specification {
     type << ['collection', 'granule', 'flattened-granule']
   }
 
+  @Ignore
   def 'Valid collection search request returns OK with expected results'() {
     given:
     List<String> summaryFields = [
@@ -249,6 +253,7 @@ class SearchControllerIntegrationTests extends Specification {
     }
   }
 
+  @Ignore
   def 'valid granule search with checksum filter'() {
     given:
     URI endpointUri = "${baseUri}/search/granule".toURI()
@@ -284,6 +289,7 @@ class SearchControllerIntegrationTests extends Specification {
     thumbnails.sort() == expectedThumbnails.sort()
   }
 
+  @Ignore
   def 'Valid #type search request returns OK with expected results'() {
     given:
     // Summary fields for granule types contain internalParentIdentifier field unlike collections
@@ -326,6 +332,7 @@ class SearchControllerIntegrationTests extends Specification {
     type << ['granule', 'flattened-granule']
   }
 
+  @Ignore
   def 'Invalid search; #type endpoint returns BAD_REQUEST error when not conforming to schema'() {
     setup:
     URI endpointUri = "${baseUri}/search/${type}".toURI()
@@ -362,6 +369,7 @@ class SearchControllerIntegrationTests extends Specification {
     type << ['collection', 'granule', 'flattened-granule']
   }
 
+  @Ignore
   def 'Invalid search; #type endpoint returns UNSUPPORTED_MEDIA_TYPE error when request body not specified as json content'() {
     setup:
     URI endpointUri = "${baseUri}/search/${type}".toURI()
@@ -399,6 +407,7 @@ class SearchControllerIntegrationTests extends Specification {
     type << [ElasticsearchConfig.TYPE_COLLECTION, ElasticsearchConfig.TYPE_GRANULE, ElasticsearchConfig.TYPE_FLATTENED_GRANULE]
   }
 
+  @Ignore
   def 'Invalid search; #type endpoint returns BAD_REQUEST error when no request body'() {
     setup:
     URI endpointUri = "${baseUri}/search/${type}".toURI()
@@ -427,6 +436,7 @@ class SearchControllerIntegrationTests extends Specification {
     type << [ElasticsearchConfig.TYPE_COLLECTION, ElasticsearchConfig.TYPE_GRANULE, ElasticsearchConfig.TYPE_FLATTENED_GRANULE]
   }
 
+  @Ignore
   def 'Invalid search; #type endpoint returns BAD_REQUEST error when request body is malformed json'() {
     setup:
     URI endpointUri = "${baseUri}/search/${type}".toURI()
@@ -464,6 +474,7 @@ class SearchControllerIntegrationTests extends Specification {
     type << [ElasticsearchConfig.TYPE_COLLECTION, ElasticsearchConfig.TYPE_GRANULE, ElasticsearchConfig.TYPE_FLATTENED_GRANULE]
   }
 
+  @Ignore
   def 'Invalid search; #type endpoint returns BAD_REQUEST error when request body is invalid'() {
     setup:
     URI endpointUri = "${baseUri}/search/${type}".toURI()
@@ -501,6 +512,7 @@ class SearchControllerIntegrationTests extends Specification {
     type << [ElasticsearchConfig.TYPE_COLLECTION, ElasticsearchConfig.TYPE_GRANULE, ElasticsearchConfig.TYPE_FLATTENED_GRANULE]
   }
 
+  @Ignore
   def 'Sort a collection search'() {
     setup:
     URI endpointUri = "${baseUri}/search/collection".toURI()

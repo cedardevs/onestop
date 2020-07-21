@@ -29,13 +29,15 @@ public class ElasticsearchReadService extends ElasticsearchService {
    */
   public Map<String, Object> getTotalCountInIndex(String indexAlias) {
     String endpoint = "/" + indexAlias + "/_search";
-    String query = "{\"match_all\": []}";
+    Map<String, Object> query = new HashMap<>();
+    query.put("match_all", new HashMap<>());
 
     Request totalCountsRequest = assembleTotalCountRequest(endpoint, query);
     Map<String, Object> marshalledResponse = performRequest(totalCountsRequest);
 
     Map<String, Object> attributes = new HashMap<>();
     attributes.put("count", extractHitsValue(marshalledResponse));
+    attributes.put("exactCount", isCountExact(marshalledResponse));
 
     Map<String, Object> dataObject = new HashMap<>();
     dataObject.put("type", "count");
@@ -64,13 +66,17 @@ public class ElasticsearchReadService extends ElasticsearchService {
    */
   public Map<String, Object> getTotalCountInIndexByTerm(String indexAlias, String termField, String termValue) {
     String endpoint = "/" + indexAlias + "/_search";
-    String query = "{\"term\": {\"" + termField + "\": \"" + termValue +"\"}}";
+    Map<String, Object> query = new HashMap<>();
+    Map<String, Object> term = new HashMap<>();
+    term.put(termField, termValue);
+    query.put("term", term);
 
     Request totalCountsRequest = assembleTotalCountRequest(endpoint, query);
     Map<String, Object> marshalledResponse = performRequest(totalCountsRequest);
 
     Map<String, Object> attributes = new HashMap<>();
     attributes.put("count", extractHitsValue(marshalledResponse));
+    attributes.put("exactCount", isCountExact(marshalledResponse));
     attributes.put("termField", termField);
     attributes.put("termValue", termValue);
 
@@ -118,14 +124,17 @@ public class ElasticsearchReadService extends ElasticsearchService {
    * @param query
    * @return
    */
-  private Request assembleTotalCountRequest(String endpoint, String query) {
+  private Request assembleTotalCountRequest(String endpoint, Object query) {
     var requestMap = new HashMap<String, Object>();
     requestMap.put("query", query);
     requestMap.put("track_total_hits", true);
     requestMap.put("size", 0);
 
+    String requestBody = JsonUtils.toJson(requestMap);
+    log.debug("Request body: " + requestBody);
+
     Request countRequest = new Request("GET", endpoint);
-    countRequest.setJsonEntity(JsonUtils.toJson(requestMap));
+    countRequest.setJsonEntity(requestBody);
 
     return countRequest;
   }
