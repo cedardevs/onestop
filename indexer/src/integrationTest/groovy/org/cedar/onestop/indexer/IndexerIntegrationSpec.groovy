@@ -11,11 +11,10 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsConfig
 import org.cedar.onestop.indexer.util.TestUtils
 import org.cedar.onestop.kafka.common.conf.AppConfig
-import org.cedar.onestop.kafka.common.constants.StreamsApps
 import org.cedar.onestop.kafka.common.constants.Topics
 import org.cedar.onestop.kafka.common.util.KafkaHelpers
+import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.ParsedRecord
-import org.cedar.schemas.avro.psi.RecordType
 import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
 import org.elasticsearch.action.get.GetRequest
@@ -43,6 +42,10 @@ class IndexerIntegrationSpec extends Specification {
 
   static inputGranuleXml = ClassLoader.systemClassLoader.getResourceAsStream('test/data/xml/COOPS/G1.xml').text
   static inputGranuleRecord = TestUtils.buildRecordFromXML(inputGranuleXml)
+
+  static inputFlattenedGranuleRecord = ParsedRecord.newBuilder(inputGranuleRecord)
+      .setDiscovery(Discovery.newBuilder(inputGranuleRecord.discovery).setTitle("flattened").build())
+      .build()
 
   def setupSpec() {
     kafka = new EmbeddedKafkaBroker(1, false)
@@ -108,6 +111,8 @@ class IndexerIntegrationSpec extends Specification {
         .build()
     def granuleTopic = TestUtils.granuleTopic
     def granuleRecord = new ProducerRecord<>(granuleTopic, granuleId, granule)
+    def flattenedGranuleTopic = Topics.flattenedGranuleTopic()
+    def flattenedGranuleRecord = new ProducerRecord<>(flattenedGranuleTopic, granuleId, inputFlattenedGranuleRecord)
     def collectionIndex = app.elasticConfig.COLLECTION_SEARCH_INDEX_ALIAS
     def granuleIndex = app.elasticConfig.GRANULE_SEARCH_INDEX_ALIAS
     def flattenedIndex = app.elasticConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS
@@ -117,6 +122,7 @@ class IndexerIntegrationSpec extends Specification {
     when: // produce records before starting app so the input topics get created
     producer.send(collectionRecord).get()
     producer.send(granuleRecord).get()
+    producer.send(flattenedGranuleRecord).get()
     app.start()
 
     then:
@@ -142,6 +148,7 @@ class IndexerIntegrationSpec extends Specification {
     when: // send tombstones for inputs
     producer.send(new ProducerRecord<>(granuleTopic, granuleId, null))
     producer.send(new ProducerRecord<>(collectionTopic, collectionId, null))
+    producer.send(new ProducerRecord<>(flattenedGranuleTopic, granuleId, null))
 
     then:
     pollingConditions.within(10, {

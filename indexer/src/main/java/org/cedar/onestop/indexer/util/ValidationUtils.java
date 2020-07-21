@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.cedar.schemas.avro.psi.ValidDescriptor.*;
 import static org.cedar.schemas.avro.psi.TimeRangeDescriptor.*;
 
 /**
@@ -67,7 +66,7 @@ public class ValidationUtils {
   public static List<ErrorEvent> validateTopicPlacement(ParsedRecord record, String topic) {
     var result = new ArrayList<ErrorEvent>();
     var declaredRecordType = record.getType();
-    var recordTypeForTopic = IndexingUtils.determineTypeFromTopic(topic);
+    var recordTypeForTopic = IndexingUtils.determineRecordTypeFromTopic(topic);
 
     if(declaredRecordType != recordTypeForTopic) {
       result.add(buildValidationError(ValidationError.TYPE,
@@ -77,7 +76,7 @@ public class ValidationUtils {
     }
 
     var identification = record.getAnalysis().getIdentification();
-    var hlm = record.getDiscovery().getHierarchyLevelName();
+    var hln = record.getDiscovery().getHierarchyLevelName();
     // Granule on collection topic
     if(identification != null && identification.getIsGranule() && recordTypeForTopic != RecordType.granule) {
       result.add(buildValidationError(ValidationError.TYPE,
@@ -95,9 +94,9 @@ public class ValidationUtils {
         result.add(buildValidationError(ValidationError.TYPE,
             "Expected granule record but missing hierarchyLevelName. This must be present and equal to case-insensitive 'granule'."));
       }
-      if(identification.getHierarchyLevelNameExists() && !hlm.toLowerCase().equals("granule")) {
+      if(identification.getHierarchyLevelNameExists() && !hln.toLowerCase().equals("granule")) {
         result.add(buildValidationError(ValidationError.TYPE,
-            "Expected granule record but hierarchyLevelName is [ " + hlm + " ] and should be case-insensitive 'granule'."));
+            "Expected granule record but hierarchyLevelName is [ " + hln + " ] and should be case-insensitive 'granule'."));
       }
     }
     return result;

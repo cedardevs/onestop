@@ -53,23 +53,32 @@ public class Topics {
     return String.format("psi-%s-input-%s", type, source);
   }
 
-  public static String inputStore(RecordType type, String source) {
+  public static String inputStoreSplit(RecordType type, String source) {
     if (!isValidInput(type, source)) { return null; }
     return String.format("%s-input-%s", type, source);
   }
 
-  public static List<String> inputChangelogTopics(String appName) {
-    return inputTypes().stream().map(type -> inputChangelogTopics(appName, type)).flatMap(Collection::stream).collect(Collectors.toList());
+  public static String inputStoreCombined(RecordType type) {
+    if (!isValidInput(type)) { return null; }
+    return String.format("%s-input", type);
   }
 
-  public static List<String> inputChangelogTopics(String appName, RecordType type) {
+  public static List<String> inputChangelogTopicsSplit(String appName) {
+    return inputTypes().stream().map(type -> inputChangelogTopicsSplit(appName, type)).flatMap(Collection::stream).collect(Collectors.toList());
+  }
+
+  public static List<String> inputChangelogTopicsSplit(String appName, RecordType type) {
     if (!isValidInput(type)) { return Collections.emptyList(); }
-    return inputSources(type).stream().map(source -> inputChangelogTopic(appName, type, source)).collect(Collectors.toList());
+    return inputSources(type).stream().map(source -> inputChangelogTopicSplit(appName, type, source)).collect(Collectors.toList());
   }
 
-  public static String inputChangelogTopic(String appName, RecordType type, String source) {
+  public static String inputChangelogTopicSplit(String appName, RecordType type, String source) {
     if (!isValidInput(type, source)) { return null; }
-    return String.format("%s-%s-changelog", appName, inputStore(type, source));
+    return String.format("%s-%s-changelog", appName, inputStoreSplit(type, source));
+  }
+
+  public static String inputChangelogTopicCombined(String appName, RecordType type) {
+    return String.format("%s-%s-changelog", appName, inputStoreCombined(type));
   }
 
   public static List<String> parsedTopics() {
@@ -120,6 +129,14 @@ public class Topics {
   public static String publishedTopic(RecordType type) {
     if (!isValidInput(type)) { return null; }
     return String.format("psi-%s-published", type);
+  }
+
+  public static String flattenedGranuleTopic() {
+    return "psi-flattened-granules";
+  }
+
+  public static String granulesByCollectionId() {
+    return "psi-granules-by-collection";
   }
 
   public static String publishTimeStore(RecordType type) {

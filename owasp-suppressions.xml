@@ -180,6 +180,22 @@
 <!-- dev npm dependency and gradle address approach for npm checks -->
   <suppress>
     <notes><![CDATA[
+   file name: npm:6.14.5
+   ]]></notes>
+    <packageUrl regex="true">^pkg:npm/npm@.*$</packageUrl>
+    <vulnerabilityName>1543</vulnerabilityName>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+   file name: npm-registry-fetch:4.0.4
+   ]]></notes>
+    <packageUrl regex="true">^pkg:npm/npm\-registry\-fetch@.*$</packageUrl>
+    <vulnerabilityName>1544</vulnerabilityName>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
    file name: dompurify:1.0.11
    ]]></notes>
     <packageUrl regex="true">^pkg:npm/dompurify@.*$</packageUrl>

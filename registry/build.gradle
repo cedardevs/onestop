@@ -38,9 +38,7 @@ dependencies {
   schemaDefinitions ("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
 
   compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
-
-  runtime("org.springframework.boot:spring-boot-devtools")
-  
+  compileOnly("org.springframework.boot:spring-boot-devtools")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")

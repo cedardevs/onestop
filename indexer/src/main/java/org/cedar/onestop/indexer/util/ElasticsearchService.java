@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,11 +50,6 @@ public class ElasticsearchService {
   public ElasticsearchService(RestHighLevelClient client, ElasticsearchConfig config) {
     this.client = client;
     this.config = config;
-//    int majorVersion = Integer.parseInt(config.version.getNumber().split("\\.")[0]);
-//    int minimumCompatibleMajorVersion = 6;
-//    if (majorVersion < minimumCompatibleMajorVersion) {
-//      throw new IllegalStateException("The indexer service does not work against Elasticsearch < version " + minimumCompatibleMajorVersion);
-//    }
   }
 
   public RestHighLevelClient getClient() {
@@ -210,13 +204,17 @@ public class ElasticsearchService {
   }
 
   public void blockUntilTasksAvailable() throws IOException {
-    while (client.tasks().list(new ListTasksRequest(), RequestOptions.DEFAULT).getTasks().size() >= config.MAX_TASKS) {
+    while (currentRunningTasks() >= config.MAX_TASKS) {
       try {
         sleep(100);
       } catch (InterruptedException e) {
         log.info("blocking for tasks interrupted", e);
       }
     }
+  }
+
+  public Integer currentRunningTasks() throws IOException {
+    return client.tasks().list(new ListTasksRequest(), RequestOptions.DEFAULT).getTasks().size();
   }
 
   public BulkByScrollResponse reindex(ReindexRequest request) throws IOException {

@@ -1,6 +1,7 @@
 package org.cedar.onestop.indexer.util
 
 import org.apache.kafka.streams.state.ValueAndTimestamp
+import org.cedar.onestop.kafka.common.constants.Topics
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.Publishing
 import org.elasticsearch.action.delete.DeleteRequest
@@ -38,13 +39,12 @@ class IndexingUtilsSpec extends Specification {
     def results = IndexingUtils.mapRecordToRequests(new IndexingInput(testKey, null, TestUtils.granuleTopic, TestUtils.esConfig))
 
     then:
-    results.size() == 3
+    results.size() == 2
     results.each { r -> r instanceof DeleteRequest }
     results.each { r -> r.id() == testKey }
     results*.index().containsAll([
         TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS,
         TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS,
-        TestUtils.esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS
     ])
   }
 
@@ -83,6 +83,25 @@ class IndexingUtilsSpec extends Specification {
     results*.index().containsAll([
         TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS,
         TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS,
+    ])
+  }
+
+  def "creates index requests for flattened granules"() {
+    def testKey = 'ABC'
+    def testRecord = ParsedRecord.newBuilder(TestUtils.inputGranuleRecord)
+        .setPublishing(Publishing.newBuilder().build()).build()
+    def testValue = ValueAndTimestamp.make(testRecord, System.currentTimeMillis())
+
+    when:
+    def results = IndexingUtils.mapRecordToRequests(new IndexingInput(testKey, testValue, Topics.flattenedGranuleTopic(), TestUtils.esConfig))
+
+    then:
+    results.size() == 1
+    results.every { it instanceof IndexRequest }
+    results.every { it.id() == testKey }
+    results*.index().containsAll([
+        TestUtils.esConfig.FLAT_GRANULE_SEARCH_INDEX_ALIAS
+        // no A&E index for flattened granules
     ])
   }
 
