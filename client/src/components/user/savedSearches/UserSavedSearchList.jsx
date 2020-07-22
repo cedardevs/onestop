@@ -4,21 +4,9 @@ import ListView from '../../common/ui/ListView'
 import Meta from '../../helmet/Meta'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 
-function listToMap(searchList){
-  console.log('searchList')
-  console.log(searchList)
-  let index = 0
-  let mapSearches = {}
-  while (index < searchList.length) {
-    let id = searchList[index].id
-    mapSearches[id] = searchList[index]
-    index++
-  }
-  return mapSearches
-}
 // user.savedSearches = undefined;
 const UserSavedSearchList = props => {
-  const searches = props.savedSearches ? listToMap(props.savedSearches) : null
+  const searches = props.savedSearches
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
   const {navigateToSearch, deleteSearch} = props

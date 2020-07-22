@@ -10,6 +10,7 @@ import {
   SAVED_SEARCH_REQUEST,
   SAVED_SEARCH_SUCCESS,
 } from '../actions/SavedSearchActions'
+import {searchListToMap} from '../utils/resultUtils'
 
 export const initialState = Immutable({
   isAuthenticated: false,
@@ -53,7 +54,7 @@ export const user = (state = initialState, action) => {
     case SAVED_SEARCH_SUCCESS:
       if (action.payload.data) {
         return state
-          .setIn([ 'searches' ], action.payload.data)
+          .setIn([ 'searches' ], searchListToMap(action.payload.data))
           .setIn([ 'isFetchingSearches' ], false)
       }
 
