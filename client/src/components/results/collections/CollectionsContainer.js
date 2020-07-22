@@ -3,7 +3,7 @@ import {withRouter} from 'react-router'
 
 import {submitCollectionSearchWithPage} from '../../../actions/routing/CollectionSearchRouteActions'
 import {submitCollectionDetail} from '../../../actions/routing/CollectionDetailRouteActions'
-import {saveSearch} from '../../../actions/SavedSearchActions'
+import {saveSearch, deleteSearch} from '../../../actions/SavedSearchActions'
 
 import Collections from './Collections'
 
@@ -39,6 +39,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     saveSearch: (savedSearchUrl, urlToSave, saveName, filter) => {
       dispatch(saveSearch(savedSearchUrl, urlToSave, saveName, filter))
+    },
+    deleteSearch: (savedSearchUrl, id) => {
+      dispatch(deleteSearch(savedSearchUrl, id))
     },
     selectCollection: (id, filterState) => {
       dispatch(submitCollectionDetail(ownProps.history, id, filterState))

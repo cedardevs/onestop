@@ -40,6 +40,7 @@ export default function Collections(props){
     collectionDetailFilter,
     loading,
     saveSearch,
+    deleteSearch,
     savedSearchUrl,
     isAuthenticatedUser,
     savedSearches, // todo use this to figure out if their current filter is already saved
@@ -47,31 +48,45 @@ export default function Collections(props){
   } = props
 
   const queryText = props.collectionDetailFilter.queryText
+  const savedId = findSavedId()
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
   const [ headingMessage, setHeadingMessage ] = useState(null)
-  const [ searchSaved, setSearchSaved ] = useState(false)
+  const [ searchSaved, setSearchSaved ] = useState( !!savedId )
 
   function handleSave(){
     const urlToSave = window.location.href
     const queryStringIndex = urlToSave.indexOf('?')
     const queryString = urlToSave.slice(queryStringIndex)
     const decodedSavedSearch = decodePathAndQueryString('', queryString)
-    saveSearch(
-      savedSearchUrl,
-      urlToSave,
-      decodedSavedSearch.filters.queryText,
-      collectionFilter
-    )
+    
+    if (searchSaved && savedId) {
+      deleteSearch(savedSearchUrl, savedId)
+    }else{
+      saveSearch(
+          savedSearchUrl,
+          urlToSave,
+          decodedSavedSearch.filters.queryText,
+          collectionFilter
+      )
+    }
     setSearchSaved(!searchSaved)
   }
 
-  const currentSearchAlreadySaved = searchSaved //todo identify if they have this search saved already
-  const bookmarkIcon = currentSearchAlreadySaved ? alreadySavedIcon : saveIcon
-  const title = currentSearchAlreadySaved
+  function findSavedId(){
+    for (const [key, value] of Object.entries(savedSearches)) {
+      if (JSON.stringify(collectionFilter) === value.filter) {
+        return key
+      }
+    }
+    return null
+  }
+
+  const bookmarkIcon = searchSaved ? alreadySavedIcon : saveIcon
+  const title = searchSaved
     ? 'Search already saved'
     : 'Save search'
-  const text = currentSearchAlreadySaved ? 'Unsave' : 'Save'
+  const text = searchSaved ? 'Unsave' : 'Save'
   const notification = text
 
   const saveSearchAction = isAuthenticatedUser
@@ -81,8 +96,8 @@ export default function Collections(props){
           title: title,
           icon: bookmarkIcon,
           showText: false,
-          handler: () => {
-            handleSave()
+          handler: (id) => {
+            handleSave(id)
           },
           notification: notification,
         },
