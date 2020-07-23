@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Profile
 @Service
 @Profile("trending-search")
 class TrendingSearchService {
-  private final ElasticsearchReadService esReadService
+  private final ElasticsearchService esService
   private final TrendingBlacklistConfig blacklistConfig
 
   static final String SEARCH_TERM = 'queries'
@@ -21,9 +21,9 @@ class TrendingSearchService {
   private final String TRENDING_INDEX
 
   @Autowired
-  TrendingSearchService(ElasticsearchReadService esReadService, TrendingBlacklistConfig blacklistConfig) {
-      this.esReadService = esReadService
-      this.blacklistConfig = blacklistConfig
+  TrendingSearchService(ElasticsearchService esService, TrendingBlacklistConfig blacklistConfig) {
+    this.esService = esService
+    this.blacklistConfig = blacklistConfig
   }
 
   Map topRecentSearchTerms(int numResults, int numDays) {
@@ -42,7 +42,7 @@ class TrendingSearchService {
   Map getTopRecentTerms(Integer size, Integer numIndices, String term) {
     Map query = queryBuilder(size, term)
     String indices = indicesBuilder(numIndices)
-    return esReadService.getSearchResults(indices, query)
+    return esService.getReadService().getSearchResults(indices, query)
   }
 
   String indicesBuilder(Integer numIndices) {

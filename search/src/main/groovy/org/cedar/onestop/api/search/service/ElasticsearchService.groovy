@@ -27,6 +27,11 @@ class ElasticsearchService {
     this.esReadService = new ElasticsearchReadService(this.restHighLevelClient, this.esConfig)
   }
 
+  ElasticsearchReadService getReadService() {
+    // FIXME This is ONLY here to support TrendingSearchService and should be removed upon refactoring/removing that code
+    return esReadService;
+  }
+
   ////////////
   // Counts //
   ////////////
