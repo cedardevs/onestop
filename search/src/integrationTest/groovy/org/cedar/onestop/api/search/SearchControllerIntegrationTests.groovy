@@ -182,7 +182,7 @@ class SearchControllerIntegrationTests extends Specification {
     ElasticsearchConfig.TYPE_FLATTENED_GRANULE | TestUtil.testData.COOPS.C1.flattenedGranules.FG2.id | 'CO-OPS.NOS_9410170_201503_D1_v00'
   }
 
-//  @Ignore
+  @Ignore // PASS
   def 'Get nonexisting #type by ID returns NOT FOUND'() {
     given:
     URI endpointUri = "${baseUri}/${type}/123-this-is-a-BAD-ID-456".toURI()
@@ -202,7 +202,7 @@ class SearchControllerIntegrationTests extends Specification {
     type << ['collection', 'granule', 'flattened-granule']
   }
 
-  @Ignore
+  @Ignore // PASS
   def 'Valid collection search request returns OK with expected results'() {
     given:
     List<String> summaryFields = [
