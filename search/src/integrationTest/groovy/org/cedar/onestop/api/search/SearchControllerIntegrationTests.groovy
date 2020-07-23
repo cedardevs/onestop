@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 import groovy.json.JsonOutput
