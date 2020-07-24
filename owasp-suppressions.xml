@@ -208,8 +208,9 @@
     <notes><![CDATA[
    file name: gradle-api-6.5.jar: jquery.min-3.4.1.js
    ]]></notes>
-    <sha1>88523924351bac0b5d560fe0c5781e2556e7693d</sha1>
-    <vulnerabilityName>Regex in its jQuery.htmlPrefilter  sometimes may introduce XSS</vulnerabilityName>
+    <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
+    <cve>CVE-2020-11022</cve>
+    <cve>CVE-2020-11023</cve>
   </suppress>
 
   <suppress>
