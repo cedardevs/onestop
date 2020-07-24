@@ -43,7 +43,7 @@ open class ESMappingTask : DefaultTask() {
       } else if (prop.get("type").getAsString() == "long" ) {
         val desc = JsonObject()
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
-        desc.addProperty("javaType", "java.lang.Long")
+        desc.addProperty("existingJavaType", "java.lang.Long")
         properties.add(key, desc)
         if (key.endsWith("s")) {
           val arr = JsonObject()
@@ -54,7 +54,7 @@ open class ESMappingTask : DefaultTask() {
       } else if (prop.get("type").getAsString() == "byte") {
         val desc = JsonObject()
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
-        desc.addProperty("javaType", "java.lang.Byte")
+        desc.addProperty("existingJavaType", "java.lang.Byte")
         properties.add(key, desc)
         if (key.endsWith("s")) {
           val arr = JsonObject()
@@ -65,7 +65,7 @@ open class ESMappingTask : DefaultTask() {
       } else if (prop.get("type").getAsString() == "short") {
         val desc = JsonObject()
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
-        desc.addProperty("javaType", "java.lang.Short")
+        desc.addProperty("existingJavaType", "java.lang.Short")
         properties.add(key, desc)
         if (key.endsWith("s")) {
           val arr = JsonObject()
@@ -76,7 +76,7 @@ open class ESMappingTask : DefaultTask() {
       } else if (prop.get("type").getAsString() == "float") {
         val desc = JsonObject()
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
-        desc.addProperty("javaType", "java.lang.Float")
+        desc.addProperty("existingJavaType", "java.lang.Float")
         properties.add(key, desc)
         if (key.endsWith("s")) {
           val arr = JsonObject()
@@ -88,7 +88,7 @@ open class ESMappingTask : DefaultTask() {
       else if (prop.get("type").getAsString() == "date") {
         val desc = JsonObject()
         desc.addProperty("type", "object")
-        desc.addProperty("javaType", "java.time.ZonedDateTime")
+        desc.addProperty("existingJavaType", "java.time.ZonedDateTime")
         properties.add(key, desc)
         if (key.endsWith("s")) {
           val arr = JsonObject()
