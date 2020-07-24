@@ -119,6 +119,7 @@ val javaProjects: List<String> = listOf("client", "cli", "data-common", "indexer
 val jibProjects: List<String> = listOf("client", "cli", "indexer", "registry", "search", "stream-manager", "user")
 val springBootProjects: List<String> = listOf("elastic-common", "search", "registry")
 val nodeProjects: List<String> = listOf("client", "registry")
+val mappingProjects: List<String> = listOf("elastic-common")
 val micronautProjects: List<String> = listOf("user")
 val goProjects: List<String> = listOf("cli")
 
@@ -211,6 +212,10 @@ subprojects {
 
         // apply the spring boot plugin to projects using spring
         apply(plugin = "org.springframework.boot")
+    }
+    if (mappingProjects.contains(name)) {
+      tasks.register<ESMappingTask>("esMappingGenerate") {
+      }
     }
     if (nodeProjects.contains(name)) {
         // apply node gradle plugin to projects using node/npm
