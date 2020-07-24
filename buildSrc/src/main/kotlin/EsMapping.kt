@@ -14,6 +14,7 @@ import org.jsonschema2pojo.SchemaGenerator
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.Path
+import java.io.File
 import java.net.URL
 
 import com.google.gson.Gson
@@ -25,7 +26,23 @@ open class ESMappingTask : DefaultTask() {
     val properties = JsonObject()
     for (key in mappingObject.keySet()) {
       val prop = mappingObject.get(key).getAsJsonObject()
-      if (prop.get("type").getAsString() == "text" || prop.get("type").getAsString() == "keyword") {
+      if (prop.get("type") == null || prop.get("type").getAsString() == "nested") {
+        val desc = JsonObject()
+        desc.addProperty("type", "object")
+        // automatically makes java class in the correct package and name
+        if(prop.get("properties").getAsJsonObject().keySet().contains("linkName")) {
+          // hack it to only produce one link class instead of several
+          desc.addProperty("javaType", "org.cedar.onestop.mapping.Link")
+        }
+        desc.add("properties", buildJsonSchemaProperties(prop.get("properties").getAsJsonObject()))
+        properties.add(key, desc)
+        if (key.endsWith("s")) {
+          val arr = JsonObject()
+          arr.addProperty("type", "array")
+          arr.add("items", desc)
+          properties.add(key, arr)
+        }
+      } else if (prop.get("type").getAsString() == "text" || prop.get("type").getAsString() == "keyword") {
         val desc = JsonObject()
         desc.addProperty("type", "string")
         properties.add(key, desc)
@@ -97,23 +114,6 @@ open class ESMappingTask : DefaultTask() {
           properties.add(key, arr)
         }
       }
-      else if (prop.get("type").getAsString() == "nested") {
-        val desc = JsonObject()
-        desc.addProperty("type", "object")
-        // automatically makes java class in the correct package and name
-        if(prop.get("properties").getAsJsonObject().keySet().contains("linkName")) {
-          // hack it to only produce one link class instead of several
-          desc.addProperty("javaType", "org.cedar.onestop.mapping.Link")
-        }
-        desc.add("properties", buildJsonSchemaProperties(prop.get("properties").getAsJsonObject()))
-        properties.add(key, desc)
-        if (key.endsWith("s")) {
-          val arr = JsonObject()
-          arr.addProperty("type", "array")
-          arr.add("items", desc)
-          properties.add(key, arr)
-        }
-      }
       else if (prop.get("type").getAsString() == "boolean") {
         val desc = JsonObject()
         desc.addProperty("type", "boolean")
@@ -150,23 +150,31 @@ open class ESMappingTask : DefaultTask() {
     return properties
   }
 
-  @TaskAction
-  fun update() {
-    logger.lifecycle("Running 'updateESMapping' task on ${project.name}")
-    val codeModel = JCodeModel()
+  fun generateClasses(filename:String, mapper:SchemaMapper, dest: File) {
+    var source: String
+    source = Files.readString(Path.of(filename))
     // create Gson instance for deserializing/serializing
     val gson = Gson()
-
-    var source: String
-    source = Files.readString(Path.of(project.projectDir.absolutePath + "/src/main/resources/mappings/search_collectionIndex.json"))
-
     // deserialize JSON file into JsonObject
     val mappingObject = gson.fromJson(source, JsonObject::class.java)
     val schemaObject = JsonObject()
-    // TODO add property description - "mapping for index XYZ" ?
     schemaObject.addProperty("type", "object")
-    schemaObject.addProperty("javaType", "org.cedar.onestop.mapping.SearchCollection")
+    val index = filename.replace(Regex(".*/"),"").replace("Index.json","").replace("_"," ")
+    schemaObject.addProperty("description", "Mapping for ${index} index.")
+    val classname = filename.replace(Regex(".*/"),"").replace("Index.json","").splitToSequence("_").map { it.capitalize() }.joinToString("")
+    logger.lifecycle("Generating $classname")
+    schemaObject.addProperty("javaType", "org.cedar.onestop.mapping.${classname}")
     schemaObject.add("properties", buildJsonSchemaProperties(mappingObject.getAsJsonObject("mappings").getAsJsonObject("properties")))
+    val codeModel = JCodeModel()
+
+    mapper.generate(codeModel, classname, "org.cedar.onestop.mapping", gson.newBuilder().setPrettyPrinting().create().toJson(schemaObject))
+    codeModel.build(dest) // TODO multiple mappings to dest means last-one-in clobbers other objects (in theory this is fine because they should be the same across mappings but.... who knows)
+
+  }
+
+  @TaskAction
+  fun update() {
+    logger.lifecycle("Running 'updateESMapping' task on ${project.name}")
 
     open class ESGenerationConfig() : DefaultGenerationConfig() {
       override fun isGenerateBuilders(): Boolean {
@@ -191,12 +199,22 @@ open class ESMappingTask : DefaultTask() {
     val config = ESGenerationConfig()
 
     val mapper = SchemaMapper(RuleFactory(config, Jackson2Annotator(config), SchemaStore()), SchemaGenerator())
-    mapper.generate(codeModel, "ClassName", "com.example", gson.newBuilder().setPrettyPrinting().create().toJson(schemaObject))
 
     /* logger.lifecycle("trying to make dir ${project.projectDir.absolutePath + "/build/esGenerated"}") */
     val dest = Files.createDirectories(Paths.get(project.projectDir.absolutePath + "/build/esGenerated")).toFile()
-
     /* logger.lifecycle("writing generated files to ${dest}") */
-    codeModel.build(dest)
+    var dir = File(project.projectDir.absolutePath + "/src/main/resources/mappings/")
+    for (f in dir.listFiles()) {
+      /* logger.lifecycle("mappings: ${f} ${f.getAbsolutePath​()}") */
+      /* logger.lifecycle("??? ${f.getPath​()}") */
+      val filename : String
+      filename = f.getPath()
+      logger.lifecycle(filename)
+      generateClasses(filename, mapper, dest)
+      /* val tmp = f.getAbsolutePath(::)
+      logger.lifecycle("???: ${tmp}")
+      generateClasses("asdf", mapper, dest) */
+
+    }
   }
 }
