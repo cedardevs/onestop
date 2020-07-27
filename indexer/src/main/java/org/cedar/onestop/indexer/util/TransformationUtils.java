@@ -135,22 +135,26 @@ public class TransformationUtils {
       .withValidationError(spatialAnalysis.getValidationError());
   }
 
-  public static AnalysisErrorCollection reformatCollectionForAnalysis(long timestamp, ParsedRecord record) {
+  public static AnalysisErrorGranule reformatGranuleForAnalysis(long timestamp, ParsedRecord record) {
 
     Analysis analysis = record.getAnalysis();
 
 
-    // TODO switch based on type and/or split into separate methods
       // .withStagedDate(ZonedDateTime.now()) // TODO FIXME DO NOT LEAVE THIS WITHOUT PASSING ALONG TIMESTAMP CORRECTLY:!>!>!>!!!!1111!!
 
-    AnalysisErrorCollection message = new AnalysisErrorCollection().withDataAccess(convertDataAccess(analysis.getDataAccess()))
-    .withDescription(convertDescription(analysis.getDescription()))
-    .withIdentification(convertIdentificationAnalysis(analysis.getIdentification()))
-    .withSpatialBounding(convertSpatialAnalysis(analysis.getSpatialBounding()))
-    .withTemporalBounding(
-      convertTemporalAnalysis(analysis.getTemporalBounding()))
-    .withThumbnail(convertThumbnail(analysis.getThumbnail()))
-    .withTitles(convertTitles(analysis.getTitles()));
+    AnalysisErrorGranule message = new AnalysisErrorGranule()
+      // .withInternalParentIdentifier() TODO
+      // TODO parentIdentifierExists
+      // TODO parentIdentifierString
+      .withDataAccess(convertDataAccess(analysis.getDataAccess()))
+      .withDescription(convertDescription(analysis.getDescription()))
+      .withIdentification(convertIdentificationAnalysis(analysis.getIdentification()))
+      .withSpatialBounding(convertSpatialAnalysis(analysis.getSpatialBounding()))
+      .withTemporalBounding(
+        convertTemporalAnalysis(analysis.getTemporalBounding()))
+      .withThumbnail(convertThumbnail(analysis.getThumbnail()))
+      .withTitles(convertTitles(analysis.getTitles()));
+
     var errorsList = record.getErrors().stream()
         .map(e -> new Error().withTitle(e.getTitle()).withDetail(e.getDetail())) // TODO withSource(??)
         .collect(Collectors.toList());
@@ -159,68 +163,52 @@ public class TransformationUtils {
 
 
     return message;
-
-    // ObjectMapper mapper = new ObjectMapper();
-    // try {
-    //   return mapper.writeValueAsString(message);
-    // } catch (JsonProcessingException e) {
-    //   // TODO DECIDE HOW TO HANDLE THIS ERROR FIXME DO NOT IGNORE THIS SERIOUSLY DO NOT DO IT
-    //   System.out.println("UNABLE TO MAP OBJECT");
-    //   System.out.println(e);
-    //   System.out.println("returning null!!");
-    // }
-    // return null;
-
-
-
-    // var analysis = record.getAnalysis();
-    // var errors = record.getErrors();
-    // var analysisMap = AvroUtils.avroToMap(analysis, true);
-    // var message = new HashMap<String, Object>();
-    //
-    // fields.forEach(field -> {
-    //   message.put(field, analysisMap.get(field));
-    // });
-    // if (fields.contains("internalParentIdentifier")) {
-    //   analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
-    // }
-    // var errorsList = errors.stream()
-    //     .map(e -> AvroUtils.avroToMap(e))
-    //     .collect(Collectors.toList());
-    //
-    // if (fields.contains("errors")) {
-    //   message.put("errors", errorsList);
-    // }
-    //
-    // if (fields.contains("temporalBounding")) {
-    //   message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
-    // }
-    // if (fields.contains("identification")) {
-    //   message.put("identification", prepareIdentification(analysis.getIdentification(), recordType));
-    // }
-    //
-    // return message;
   }
 
-  public static Map<String, Object> prepareIdentification(IdentificationAnalysis identification, RecordType recordType) {
-    var result = new HashMap<String, Object>();
-    var analysis = AvroUtils.avroToMap(identification); // currently using map because couldn't get it working with IdentificationAnalysis object. Worth revisiting at some point.
+  public static AnalysisErrorCollection reformatCollectionForAnalysis(long timestamp, ParsedRecord record) {
 
-    if (analysis == null) {
-      return result;
-    }
-    result.put("doiExists", analysis.get("doiExists"));
-    result.put("doiString", analysis.get("doiString"));
-    result.put("fileIdentifierExists", analysis.get("fileIdentifierExists"));
-    result.put("fileIdentifierString", analysis.get("fileIdentifierString"));
-    result.put("hierarchyLevelNameExists", analysis.get("hierarchyLevelNameExists"));
-    result.put("isGranule", analysis.get("isGranule"));
-    result.put("parentIdentifierExists", analysis.get("parentIdentifierExists"));
-    if (recordType == RecordType.granule) {
-      result.put("parentIdentifierString", analysis.get("parentIdentifierString"));
-    }
-    return result;
+    Analysis analysis = record.getAnalysis();
+
+
+      // .withStagedDate(ZonedDateTime.now()) // TODO FIXME DO NOT LEAVE THIS WITHOUT PASSING ALONG TIMESTAMP CORRECTLY:!>!>!>!!!!1111!!
+
+    AnalysisErrorCollection message = new AnalysisErrorCollection()
+      .withDataAccess(convertDataAccess(analysis.getDataAccess()))
+      .withDescription(convertDescription(analysis.getDescription()))
+      .withIdentification(convertIdentificationAnalysis(analysis.getIdentification()))
+      .withSpatialBounding(convertSpatialAnalysis(analysis.getSpatialBounding()))
+      .withTemporalBounding(
+        convertTemporalAnalysis(analysis.getTemporalBounding()))
+      .withThumbnail(convertThumbnail(analysis.getThumbnail()))
+      .withTitles(convertTitles(analysis.getTitles()));
+
+    var errorsList = record.getErrors().stream()
+        .map(e -> new Error().withTitle(e.getTitle()).withDetail(e.getDetail())) // TODO withSource(??)
+        .collect(Collectors.toList());
+    message.setErrors(errorsList);
+
+    return message;
   }
+
+  // public static Map<String, Object> prepareIdentification(IdentificationAnalysis identification, RecordType recordType) {
+  //   var result = new HashMap<String, Object>();
+  //   var analysis = AvroUtils.avroToMap(identification); // currently using map because couldn't get it working with IdentificationAnalysis object. Worth revisiting at some point.
+  //
+  //   if (analysis == null) {
+  //     return result;
+  //   }
+  //   result.put("doiExists", analysis.get("doiExists"));
+  //   result.put("doiString", analysis.get("doiString"));
+  //   result.put("fileIdentifierExists", analysis.get("fileIdentifierExists"));
+  //   result.put("fileIdentifierString", analysis.get("fileIdentifierString"));
+  //   result.put("hierarchyLevelNameExists", analysis.get("hierarchyLevelNameExists"));
+  //   result.put("isGranule", analysis.get("isGranule"));
+  //   result.put("parentIdentifierExists", analysis.get("parentIdentifierExists"));
+  //   if (recordType == RecordType.granule) {
+  //     result.put("parentIdentifierString", analysis.get("parentIdentifierString"));
+  //   }
+  //   return result;
+  // }
 
   public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> fields) {
 

@@ -91,6 +91,9 @@ public class IndexingUtils {
       switch (recordType) {
         case collection:
         formattedRecord = TransformationUtils.reformatCollectionForAnalysis(input.getValue().timestamp(), input.getValue().value());
+        break;
+        case granule:
+        formattedRecord = TransformationUtils.reformatGranuleForAnalysis(input.getValue().timestamp(), input.getValue().value());
 
       }
       ObjectMapper mapper = new ObjectMapper();

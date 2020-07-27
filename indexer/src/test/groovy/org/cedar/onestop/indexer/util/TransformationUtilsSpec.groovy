@@ -89,105 +89,6 @@ class TransformationUtilsSpec extends Specification {
       gcmdTemporalResolution  : ['Seasonal'] as Set
   ]
 
-  ///////////////////////////////
-  // Generic Indexed Fields    //
-  ///////////////////////////////
-
-  // def "reformatMessageForAnalysis populates with correct fields for #label"() {
-  //   when:
-  //
-  //   ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
-  //     .setFileInformation(
-  //       FileInformation.newBuilder()
-  //       .setChecksums(
-  //         [
-  //         Checksum.newBuilder()
-  //         .setAlgorithm(ChecksumAlgorithm.MD5)
-  //         .setValue('abc')
-  //         .build()
-  //         ]
-  //       ).build()
-  //     )
-  //     .setAnalysis(
-  //       Analysis.newBuilder().setTemporalBounding(
-  //       TemporalBoundingAnalysis.newBuilder()
-  //           .setBeginDescriptor(ValidDescriptor.VALID)
-  //           .setBeginIndexable(true)
-  //           .setBeginPrecision(ChronoUnit.DAYS.toString())
-  //           .setBeginZoneSpecified(null)
-  //           .setBeginUtcDateTimeString("2000-02-01")
-  //           .setBeginYear(2000)
-  //           .setBeginMonth(2)
-  //           .setBeginDayOfYear(32)
-  //           .setBeginDayOfMonth(1)
-  //           .build()
-  //         ).build()
-  //       )
-  //     .build()
-  //
-  //   def indexedRecord = TransformationUtils.reformatMessageForAnalysis(12341234, record, RecordType.granule) // TODO 12341234 is an arbitrary "timestamp" for now...
-  //
-  //   then:
-  //
-  //   println(label)
-  //   println(JsonOutput.toJson(AvroUtils.avroToMap(record.getAnalysis(), true)))
-  //   println(JsonOutput.toJson(indexedRecord))
-  //   // indexedRecord.keySet().contains("checksums") == shouldIncludeChecksums
-  //   // indexedRecord.keySet().contains("internalParentIdentifier") == shouldIncludeParentIdentifier
-  //   // TODO actually this whole test is nonsense with the POJOs solution - it just checks if fields exist
-  //   indexedRecord.getTemporalBounding.getBeginIndexable == shouldIncludeTemporalAnalysis
-  //   // (indexedRecord.keySet().contains("temporalBounding") && indexedRecord.get("temporalBounding").keySet().contains("beginMonth")) == false
-  //   // (indexedRecord.keySet().contains("temporalBounding") && indexedRecord.get("temporalBounding").keySet().contains("beginIndexable")) == shouldIncludeTemporalAnalysis
-  //
-  //   where:
-  //   label | fields | shouldIncludeChecksums | shouldIncludeTemporalAnalysis | //shouldIncludeParentIdentifier
-  //   'analysis and errors collections' | collectionAnalysisErrorFields | false | true  //| false TODO internal parent identifier once method refactored to separate by type
-  //   'analysis and errors granules'    | granuleAnalysisErrorFields    | false | true  //| true
-  //
-  // }
-  //
-  // def "object mapper" () {
-  //   when:
-  //   ObjectMapper mapper = new ObjectMapper()
-  //   // {"identification":null,"titles":null,"description":null,"dataAccess":null,"thumbnail":null,"temporalBounding":{"beginDescriptor":"VALID","beginPrecision":"Days","beginIndexable":true,"beginZoneSpecified":null,"beginUtcDateTimeString":"2000-02-01","beginYear":2000,"beginDayOfYear":32,"beginDayOfMonth":1,"beginMonth":2,"endDescriptor":null,"endPrecision":null,"endIndexable":null,"endZoneSpecified":null,"endUtcDateTimeString":null,"endYear":null,"endDayOfYear":null,"endDayOfMonth":null,"endMonth":null,"instantDescriptor":null,"instantPrecision":null,"instantIndexable":null,"instantZoneSpecified":null,"instantUtcDateTimeString":null,"instantEndUtcDateTimeString":null,"instantYear":null,"instantDayOfYear":null,"instantEndDayOfYear":null,"instantDayOfMonth":null,"instantEndDayOfMonth":null,"instantMonth":null,"instantEndMonth":null,"rangeDescriptor":null},"spatialBounding":null}
-  //
-  //   def record = new AnalysisErrorCollection().withTemporalBounding(new org.cedar.onestop.mapping.TemporalBounding().withBeginDescriptor("VALID").withBeginPrecision("Days").withBeginIndexable(true).withBeginUtcDateTimeString("2000-02-01"))
-  //   then:
-  //   println("ZEB")
-  //   println(mapper.writeValueAsString(record))
-  //   println("ZEB")
-  // }
-
-  // TODO replace this test method too
-  // def "reformatMessageForAnalysis populates #label"() {
-  //   String identifier = 'gov.noaa.nodc:0173643'
-  //   when:
-  //   def identificationAnalysis = IdentificationAnalysis.newBuilder()
-  //       .setFileIdentifierExists(true)
-  //       .setDoiExists(false)
-  //       .setParentIdentifierString(identifier)
-  //       .build()
-  //   def analysis = Analysis.newBuilder().setIdentification(identificationAnalysis).build()
-  //   ParsedRecord record = ParsedRecord.newBuilder().setType(type).setAnalysis(analysis).build()
-  //
-  //   def indexedRecord = TransformationUtils.reformatMessageForAnalysis(12341234, record, RecordType.granule) // TODO 12341234 is an arbitrary "timestamp" for now...
-  //
-  //   then:
-  //   println(label)
-  //   println(JsonOutput.toJson(AvroUtils.avroToMap(record.getAnalysis(), true)))
-  //   println(JsonOutput.toJson(indexedRecord))
-  //   indexedRecord.each {
-  //     key, value -> println ("key=$key value=$value")
-  //   }
-  //
-  //   indexedRecord?.identification?.parentIdentifierString == identifier
-  //
-  //   where:
-  //   label                                     | fields                        | type
-  //   'collections with parentIdentifierString' | collectionAnalysisErrorFields | RecordType.collection
-  //   'granules with parentIdentifierString'    | granuleAnalysisErrorFields    | RecordType.granule
-  // }
-
   def "reformatCollectionForAnalysis identification file #fileId doi #doi"() {
     String identifier = 'gov.noaa.nodc:0173643'
     when:
@@ -198,7 +99,6 @@ class TransformationUtilsSpec extends Specification {
     def indexedRecord = TransformationUtils.reformatCollectionForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
 
     then:
-    // indexedRecord.getIdentification().getParentIdentifierString() == identifier // TODO this might be a problem for collections, and the shared package thing??
     indexedRecord.getIdentification().getFileIdentifierExists() == fileIdExists
     indexedRecord.getIdentification().getDoiExists() == doiExists
 
@@ -219,7 +119,6 @@ class TransformationUtilsSpec extends Specification {
     def indexedRecord = TransformationUtils.reformatCollectionForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
 
     then:
-    // indexedRecord.getIdentification().getParentIdentifierString() == identifier // TODO this might be a problem for collections, and the shared package thing??
     indexedRecord.getIdentification().getFileIdentifierExists() == fileIdExists
     indexedRecord.getIdentification().getDoiExists() == doiExists
 
@@ -242,7 +141,6 @@ class TransformationUtilsSpec extends Specification {
     def indexedRecord = TransformationUtils.reformatCollectionForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
 
     then:
-    // indexedRecord.getIdentification().getParentIdentifierString() == identifier // TODO this might be a problem for collections, and the shared package thing??
     indexedRecord.getDataAccess().getDataAccessExists() == dataAccessExists
     indexedRecord.getThumbnail().getThumbnailExists() == thumbnailExists
 
@@ -375,6 +273,203 @@ class TransformationUtilsSpec extends Specification {
     ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(Analysis.newBuilder().build()).setErrors(errors).build()
 
     def indexedRecord = TransformationUtils.reformatCollectionForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+
+    then:
+    indexedRecord.getErrors().size() == numErrors
+    indexedRecord.getErrors()[0].getTitle() == 'one'
+    indexedRecord.getErrors()[0].getDetail() == 'first error'
+    where:
+    errors | numErrors
+    [ErrorEvent.newBuilder().setTitle('one').setDetail('first error').build(), ErrorEvent.newBuilder().setTitle('two').setDetail('second error').build()] | 2
+    [ErrorEvent.newBuilder().setTitle('one').setDetail('first error').build()] | 1
+  }
+
+
+  def "reformatGranuleForAnalysis identification file #fileId doi #doi"() {
+    String identifier = 'gov.noaa.nodc:0173643'
+    when:
+    def discovery = Discovery.newBuilder().setDoi(doi).setFileIdentifier(fileId).setHierarchyLevelName(hierarchy).build()
+    def analysis = Analysis.newBuilder().setIdentification(Analyzers.analyzeIdentifiers(discovery)).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
+
+    def indexedRecord = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+
+    then:
+    // TODO FIXME where on the parsed record do I set this? indexedRecord.getInternalParentIdentifier() == identifier
+    indexedRecord.getIdentification().getFileIdentifierExists() == fileIdExists
+    indexedRecord.getIdentification().getDoiExists() == doiExists
+
+    where:
+    fileId | doi | hierarchy    | fileIdExists | doiExists | hierarchyExists
+    'abc' | null | 'collection' | true | false | true
+    null | '123' | 'collection' | false | true | true
+    'abc' | '123' | null        | true | true | false
+  }
+
+  def "reformatGranuleForAnalysis identification file #fileId doi #doi"() {
+    String identifier = 'gov.noaa.nodc:0173643'
+    when:
+    def discovery = Discovery.newBuilder().setDoi(doi).setFileIdentifier(fileId).setHierarchyLevelName(hierarchy).build()
+    def analysis = Analysis.newBuilder().setIdentification(Analyzers.analyzeIdentifiers(discovery)).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
+
+    def indexedRecord = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+
+    then:
+    indexedRecord.getIdentification().getFileIdentifierExists() == fileIdExists
+    indexedRecord.getIdentification().getDoiExists() == doiExists
+
+    where:
+    fileId | doi | hierarchy    | fileIdExists | doiExists | hierarchyExists
+    'abc' | null | 'collection' | true | false | true
+    null | '123' | 'collection' | false | true | true
+    'abc' | '123' | null        | true | true | false
+  }
+
+  def "reformatGranuleForAnalysis data access, thumbnail etc #label"() {
+    when:
+    def analysis = Analysis.newBuilder().setDataAccess(
+      DataAccessAnalysis.newBuilder().setDataAccessExists(dataAccessExists).build()
+    ).setThumbnail(
+      ThumbnailAnalysis.newBuilder().setThumbnailExists(thumbnailExists).build()
+    ).build() //TODO not sure exactly where on discovery record this is populated rom, so populate directly
+    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
+
+    def indexedRecord = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+
+    then:
+    indexedRecord.getDataAccess().getDataAccessExists() == dataAccessExists
+    indexedRecord.getThumbnail().getThumbnailExists() == thumbnailExists
+
+    where:
+    label | dataAccessExists | thumbnailExists
+    'has data access & thumbnail' | true | true
+    'no data access or thumbnail' | false | false
+  }
+
+  def "reformatGranuleForAnalysis description #desc"() {
+    when:
+
+    def discovery = Discovery.newBuilder().setDescription(desc).build()
+    def analysis = Analysis.newBuilder().setDescription(Analyzers.analyzeDescription(discovery)).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
+
+    def indexedRecord = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+
+    then:
+    indexedRecord.getDescription().getDescriptionExists() == exists
+    indexedRecord.getDescription().getDescriptionCharacters() == length
+
+    where:
+    desc | exists | length
+    'test description' | true | 16
+    null | false | 0
+  }
+
+  def "reformatGranuleForAnalysis title #title"() {
+    when:
+
+    def discovery = Discovery.newBuilder().setTitle(title).setAlternateTitle(altTitle).build()
+    def analysis = Analysis.newBuilder().setTitles(Analyzers.analyzeTitles(discovery)).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
+
+    def indexedRecord = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+
+    then:
+    indexedRecord.getTitles().getTitleExists() == exists
+    indexedRecord.getTitles().getTitleCharacters() == length
+    indexedRecord.getTitles().getAlternateTitleExists() == altExists
+    indexedRecord.getTitles().getAlternateTitleCharacters() == altLength
+
+    where:
+    title | altTitle | exists | length | altExists | altLength
+    null | null | false | 0 | false | 0
+    "title only" | null | true | 10 | false | 0
+    "title and alt" | "alt" | true | 13 | true | 3
+  }
+
+  def "reformatGranuleForAnalysis temporal #label"() {
+    when:
+
+    def analysis = Analysis.newBuilder().setTemporalBounding(
+      TemporalBoundingAnalysis.newBuilder()
+      .setBeginDescriptor(beginDesc)
+      .setBeginIndexable(beginIndexable)
+      .setBeginPrecision(beginPrecision)
+      .setBeginUtcDateTimeString(beginString)
+      .setBeginZoneSpecified(beginZone)
+      .setEndDescriptor(endDesc)
+      .setEndIndexable(endIndexable)
+      .setEndPrecision(endPrecision)
+      .setEndUtcDateTimeString(endString)
+      .setEndZoneSpecified(endZone)
+      .setInstantDescriptor(instantDesc)
+      .setInstantIndexable(instantIndexable)
+      .setInstantPrecision(instantPrecision)
+      .setInstantUtcDateTimeString(instantString)
+      .setInstantZoneSpecified(instantZone)
+      .setRangeDescriptor(rangeDesc)
+      .build()).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
+
+    def indexedRecord = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+
+    then:
+    indexedRecord.getTemporalBounding().getBeginDescriptor() == expectedBeginDesc
+    indexedRecord.getTemporalBounding().getBeginIndexable() == beginIndexable
+    indexedRecord.getTemporalBounding().getBeginPrecision() == beginPrecision
+    indexedRecord.getTemporalBounding().getBeginUtcDateTimeString() == beginString
+    indexedRecord.getTemporalBounding().getBeginZoneSpecified() == beginZone
+    indexedRecord.getTemporalBounding().getEndDescriptor() == expectedEndDesc
+    indexedRecord.getTemporalBounding().getEndIndexable() == endIndexable
+    indexedRecord.getTemporalBounding().getEndPrecision() == endPrecision
+    indexedRecord.getTemporalBounding().getEndUtcDateTimeString() == endString
+    indexedRecord.getTemporalBounding().getEndZoneSpecified() == endZone
+    indexedRecord.getTemporalBounding().getInstantDescriptor() == expectedInstantDesc
+    indexedRecord.getTemporalBounding().getInstantIndexable() == instantIndexable
+    indexedRecord.getTemporalBounding().getInstantPrecision() == instantPrecision
+    indexedRecord.getTemporalBounding().getInstantUtcDateTimeString() == instantString
+    indexedRecord.getTemporalBounding().getInstantZoneSpecified() == instantZone
+    indexedRecord.getTemporalBounding().getRangeDescriptor() == expectedRangeDesc
+
+    where:
+    label | beginDesc | expectedBeginDesc | beginIndexable | beginPrecision | beginString | beginZone | endDesc | expectedEndDesc | endIndexable | endPrecision | endString | endZone | instantDesc | expectedInstantDesc | instantIndexable | instantPrecision | instantString | instantZone | rangeDesc | expectedRangeDesc
+    'bounded' | ValidDescriptor.VALID | 'VALID' | true | 'Days' | '2001-01-01T00:00.00Z' | 'Z' | ValidDescriptor.VALID | 'VALID' | true | 'Nanos' | '2001-05-05T12:12:12.000Z' | 'Z' | ValidDescriptor.UNDEFINED | 'UNDEFINED' | false | null | null | null | TimeRangeDescriptor.BOUNDED | 'BOUNDED'
+    'instant' | ValidDescriptor.UNDEFINED | 'UNDEFINED' | false | null | null | null | ValidDescriptor.UNDEFINED | 'UNDEFINED' | false | null | null | null | ValidDescriptor.INVALID | 'INVALID' | true | 'Month' | '2001-02' | 'Z' | TimeRangeDescriptor.INSTANT | 'INSTANT' // Note the timezone values are a total random guess. Everything else is approximately accurate to the best of my knowledge
+
+  }
+
+  def "reformatGranuleForAnalysis spatial #label"() {
+    when:
+
+    def analysis = Analysis.newBuilder().setSpatialBounding(
+      SpatialBoundingAnalysis.newBuilder()
+      .setSpatialBoundingExists(boundsExist)
+      .setIsValid(isValid)
+      .setValidationError(error)
+      .build()).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
+
+    def indexedRecord = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+
+    then:
+    indexedRecord.getSpatialBounding().getSpatialBoundingExists() == boundsExist
+    indexedRecord.getSpatialBounding().getIsValid() == isValid
+    indexedRecord.getSpatialBounding().getValidationError() == error
+
+    where:
+    label | boundsExist | isValid | error
+    'happy space' | true | true | null
+    'sad space' | true | false | 'unable to parse'
+    'empty space' | false | true | null
+  }
+
+  def "reformatGranuleForAnalysis errors #numErrors"() {
+    when:
+
+    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(Analysis.newBuilder().build()).setErrors(errors).build()
+
+    def indexedRecord = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
 
     then:
     indexedRecord.getErrors().size() == numErrors
