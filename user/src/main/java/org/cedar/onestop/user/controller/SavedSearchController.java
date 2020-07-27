@@ -124,7 +124,7 @@ public class SavedSearchController {
   public ResponseEntity<?> delete(@PathVariable(value = "id") String id, final @AuthenticationPrincipal Authentication authentication)
           throws ResourceNotFoundException {
     if(authentication != null) {
-      Map<String, SavedSearch> jsonSpecResponse = new HashMap<>();
+      Map<String, Map<String, Boolean>> jsonSpecResponse = new HashMap<>();
       SavedSearch savedSearch = savedSearchRepository.findById(id)
               .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + id));
       savedSearchRepository.delete(savedSearch);
