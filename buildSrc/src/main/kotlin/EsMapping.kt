@@ -26,7 +26,7 @@ open class ESMappingTask : DefaultTask() {
     return (key == "errors" || key == "links" || key == "checksums" || key == "keywords" || key == "dataFormats" || key.startsWith("gcmd"))
   }
 
-  fun buildJsonSchemaProperties(mappingObject: JsonObject): JsonObject {
+  fun buildJsonSchemaProperties(mappingObject: JsonObject, isGranule:Boolean): JsonObject {
     val properties = JsonObject()
     for (key in mappingObject.keySet()) {
       val prop = mappingObject.get(key).getAsJsonObject()
@@ -38,7 +38,16 @@ open class ESMappingTask : DefaultTask() {
           // hack it to only produce one link class instead of several
           desc.addProperty("javaType", "org.cedar.onestop.mapping.Link")
         }
-        desc.add("properties", buildJsonSchemaProperties(prop.get("properties").getAsJsonObject()))
+        if(key == "identification") { // note this is the only place where the 2 analysisError indices differ
+          if (isGranule) {
+            desc.addProperty("javaType", "org.cedar.onestop.mapping.analysis.GranuleIdentification")
+
+          } else {
+            desc.addProperty("javaType", "org.cedar.onestop.mapping.analysis.CollectionIdentification")
+
+          }
+        }
+        desc.add("properties", buildJsonSchemaProperties(prop.get("properties").getAsJsonObject(), isGranule))
         properties.add(key, desc)
         if (keyIndicatesArray(key)) {
           val arr = JsonObject()
@@ -129,6 +138,10 @@ open class ESMappingTask : DefaultTask() {
           properties.add(key, arr)
         }
       }
+      /* else if (prop.get("type").getAsString() == "half_float") {
+        // TODO figure out what type to use!!!
+        // impacts description and titles reading scores
+      } */
       else if (prop.get("type").getAsString() == "geo_shape") {
         val desc = JsonObject()
         desc.addProperty("type", "object")
@@ -169,7 +182,7 @@ open class ESMappingTask : DefaultTask() {
     val packagename = filename.replace(Regex(".*/"),"").replace("Index.json","").split("_")[0] // use the naming convention to loosely package related index code - analysis has a different SpatialBounding than search, but all the search indices *should* share a SpatialBounding, as should all the analysis indices.
     logger.lifecycle("Generating $classname")
     /* schemaObject.addProperty("javaType", "org.cedar.onestop.mapping.${classname}") */
-    schemaObject.add("properties", buildJsonSchemaProperties(mappingObject.getAsJsonObject("mappings").getAsJsonObject("properties")))
+    schemaObject.add("properties", buildJsonSchemaProperties(mappingObject.getAsJsonObject("mappings").getAsJsonObject("properties"), filename.contains("granule")))
     val codeModel = JCodeModel()
 
     mapper.generate(codeModel, classname, "org.cedar.onestop.mapping.${packagename}", gson.newBuilder().setPrettyPrinting().create().toJson(schemaObject))

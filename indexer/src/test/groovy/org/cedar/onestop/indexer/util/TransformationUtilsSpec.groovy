@@ -109,26 +109,6 @@ class TransformationUtilsSpec extends Specification {
     'abc' | '123' | null        | true | true | false
   }
 
-  def "reformatCollectionForAnalysis identification file #fileId doi #doi"() {
-    String identifier = 'gov.noaa.nodc:0173643'
-    when:
-    def discovery = Discovery.newBuilder().setDoi(doi).setFileIdentifier(fileId).setHierarchyLevelName(hierarchy).build()
-    def analysis = Analysis.newBuilder().setIdentification(Analyzers.analyzeIdentifiers(discovery)).build()
-    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
-
-    def indexedRecord = TransformationUtils.reformatCollectionForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
-
-    then:
-    indexedRecord.getIdentification().getFileIdentifierExists() == fileIdExists
-    indexedRecord.getIdentification().getDoiExists() == doiExists
-
-    where:
-    fileId | doi | hierarchy    | fileIdExists | doiExists | hierarchyExists
-    'abc' | null | 'collection' | true | false | true
-    null | '123' | 'collection' | false | true | true
-    'abc' | '123' | null        | true | true | false
-  }
-
   def "reformatCollectionForAnalysis data access, thumbnail etc #label"() {
     when:
     def analysis = Analysis.newBuilder().setDataAccess(
@@ -286,44 +266,25 @@ class TransformationUtilsSpec extends Specification {
 
 
   def "reformatGranuleForAnalysis identification file #fileId doi #doi"() {
-    String identifier = 'gov.noaa.nodc:0173643'
     when:
-    def discovery = Discovery.newBuilder().setDoi(doi).setFileIdentifier(fileId).setHierarchyLevelName(hierarchy).build()
+    def discovery = Discovery.newBuilder().setDoi(doi).setFileIdentifier(fileId).setHierarchyLevelName(hierarchy).setParentIdentifier(parent).build()
     def analysis = Analysis.newBuilder().setIdentification(Analyzers.analyzeIdentifiers(discovery)).build()
     ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
     def indexedRecord = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
 
     then:
-    // TODO FIXME where on the parsed record do I set this? indexedRecord.getInternalParentIdentifier() == identifier
+    // TODO FIXME where on the parsed record do I set this? indexedRecord.getInternalParentIdentifier() == uuid
     indexedRecord.getIdentification().getFileIdentifierExists() == fileIdExists
     indexedRecord.getIdentification().getDoiExists() == doiExists
+    indexedRecord.getIdentification().getHierarchyLevelNameExists() == hierarchyExists
+    indexedRecord.getIdentification().getParentIdentifierExists() == parentIdExists
 
     where:
-    fileId | doi | hierarchy    | fileIdExists | doiExists | hierarchyExists
-    'abc' | null | 'collection' | true | false | true
-    null | '123' | 'collection' | false | true | true
-    'abc' | '123' | null        | true | true | false
-  }
-
-  def "reformatGranuleForAnalysis identification file #fileId doi #doi"() {
-    String identifier = 'gov.noaa.nodc:0173643'
-    when:
-    def discovery = Discovery.newBuilder().setDoi(doi).setFileIdentifier(fileId).setHierarchyLevelName(hierarchy).build()
-    def analysis = Analysis.newBuilder().setIdentification(Analyzers.analyzeIdentifiers(discovery)).build()
-    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
-
-    def indexedRecord = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
-
-    then:
-    indexedRecord.getIdentification().getFileIdentifierExists() == fileIdExists
-    indexedRecord.getIdentification().getDoiExists() == doiExists
-
-    where:
-    fileId | doi | hierarchy    | fileIdExists | doiExists | hierarchyExists
-    'abc' | null | 'collection' | true | false | true
-    null | '123' | 'collection' | false | true | true
-    'abc' | '123' | null        | true | true | false
+    fileId | doi | parent | hierarchy  | fileIdExists | doiExists | hierarchyExists | parentIdExists
+    'abc' | null | 'doi of parent'     | 'granule' | true | false | true | true
+    null | '123' | 'file id of parent' | 'granule' | false | true | true | true
+    'abc' | '123' | null               | null | true | true | false | false
   }
 
   def "reformatGranuleForAnalysis data access, thumbnail etc #label"() {

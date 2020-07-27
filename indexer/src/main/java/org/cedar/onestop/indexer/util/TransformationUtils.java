@@ -17,7 +17,8 @@ import java.util.stream.Stream;
 
 import org.cedar.onestop.mapping.analysis.AnalysisErrorGranule;
 import org.cedar.onestop.mapping.analysis.AnalysisErrorCollection;
-import org.cedar.onestop.mapping.analysis.Identification;
+import org.cedar.onestop.mapping.analysis.CollectionIdentification;
+import org.cedar.onestop.mapping.analysis.GranuleIdentification;
 import org.cedar.onestop.mapping.analysis.DataAccess;
 import org.cedar.onestop.mapping.analysis.Description;
 import org.cedar.onestop.mapping.analysis.SpatialBounding;
@@ -72,8 +73,8 @@ public class TransformationUtils {
     .withInstantZoneSpecified(temporalAnalysis.getInstantZoneSpecified());
   }
 
-  public static Identification convertIdentificationAnalysis(IdentificationAnalysis identificationAnalysis) {
-    Identification converted = new Identification();
+  public static CollectionIdentification convertCollectionIdentificationAnalysis(IdentificationAnalysis identificationAnalysis) {
+    CollectionIdentification converted = new CollectionIdentification();
     if (identificationAnalysis == null) {
       return converted;
     }
@@ -84,6 +85,22 @@ public class TransformationUtils {
     .withFileIdentifierString(identificationAnalysis.getFileIdentifierString())
     .withHierarchyLevelNameExists(identificationAnalysis.getHierarchyLevelNameExists())
     .withParentIdentifierExists(identificationAnalysis.getParentIdentifierExists());
+     // TODO .withIsGranule() my api docs for analysis might be out of date, not sure where this data is exactly
+  }
+
+  public static GranuleIdentification convertGranuleIdentificationAnalysis(IdentificationAnalysis identificationAnalysis) {
+    GranuleIdentification converted = new GranuleIdentification();
+    if (identificationAnalysis == null) {
+      return converted;
+    }
+    return converted
+    .withDoiExists(identificationAnalysis.getDoiExists())
+    .withDoiString(identificationAnalysis.getDoiString())
+    .withFileIdentifierExists(identificationAnalysis.getFileIdentifierExists())
+    .withFileIdentifierString(identificationAnalysis.getFileIdentifierString())
+    .withHierarchyLevelNameExists(identificationAnalysis.getHierarchyLevelNameExists())
+    .withParentIdentifierExists(identificationAnalysis.getParentIdentifierExists())
+    .withParentIdentifierString(identificationAnalysis.getParentIdentifierString());
      // TODO .withIsGranule() my api docs for analysis might be out of date, not sure where this data is exactly
   }
 
@@ -148,7 +165,7 @@ public class TransformationUtils {
       // TODO parentIdentifierString
       .withDataAccess(convertDataAccess(analysis.getDataAccess()))
       .withDescription(convertDescription(analysis.getDescription()))
-      .withIdentification(convertIdentificationAnalysis(analysis.getIdentification()))
+      .withIdentification(convertGranuleIdentificationAnalysis(analysis.getIdentification()))
       .withSpatialBounding(convertSpatialAnalysis(analysis.getSpatialBounding()))
       .withTemporalBounding(
         convertTemporalAnalysis(analysis.getTemporalBounding()))
@@ -175,7 +192,7 @@ public class TransformationUtils {
     AnalysisErrorCollection message = new AnalysisErrorCollection()
       .withDataAccess(convertDataAccess(analysis.getDataAccess()))
       .withDescription(convertDescription(analysis.getDescription()))
-      .withIdentification(convertIdentificationAnalysis(analysis.getIdentification()))
+      .withIdentification(convertCollectionIdentificationAnalysis(analysis.getIdentification()))
       .withSpatialBounding(convertSpatialAnalysis(analysis.getSpatialBounding()))
       .withTemporalBounding(
         convertTemporalAnalysis(analysis.getTemporalBounding()))
@@ -189,26 +206,6 @@ public class TransformationUtils {
 
     return message;
   }
-
-  // public static Map<String, Object> prepareIdentification(IdentificationAnalysis identification, RecordType recordType) {
-  //   var result = new HashMap<String, Object>();
-  //   var analysis = AvroUtils.avroToMap(identification); // currently using map because couldn't get it working with IdentificationAnalysis object. Worth revisiting at some point.
-  //
-  //   if (analysis == null) {
-  //     return result;
-  //   }
-  //   result.put("doiExists", analysis.get("doiExists"));
-  //   result.put("doiString", analysis.get("doiString"));
-  //   result.put("fileIdentifierExists", analysis.get("fileIdentifierExists"));
-  //   result.put("fileIdentifierString", analysis.get("fileIdentifierString"));
-  //   result.put("hierarchyLevelNameExists", analysis.get("hierarchyLevelNameExists"));
-  //   result.put("isGranule", analysis.get("isGranule"));
-  //   result.put("parentIdentifierExists", analysis.get("parentIdentifierExists"));
-  //   if (recordType == RecordType.granule) {
-  //     result.put("parentIdentifierString", analysis.get("parentIdentifierString"));
-  //   }
-  //   return result;
-  // }
 
   public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> fields) {
 
