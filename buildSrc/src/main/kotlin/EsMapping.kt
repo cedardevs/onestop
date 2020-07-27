@@ -22,6 +22,10 @@ import com.google.gson.JsonObject
 
 open class ESMappingTask : DefaultTask() {
 
+  fun keyIndicatesArray(key:String) :Boolean {
+    return (key == "errors" || key == "links" || key == "checksums" || key == "keywords" || key == "dataFormats" || key.startsWith("gcmd"))
+  }
+
   fun buildJsonSchemaProperties(mappingObject: JsonObject): JsonObject {
     val properties = JsonObject()
     for (key in mappingObject.keySet()) {
@@ -36,7 +40,7 @@ open class ESMappingTask : DefaultTask() {
         }
         desc.add("properties", buildJsonSchemaProperties(prop.get("properties").getAsJsonObject()))
         properties.add(key, desc)
-        if (key.endsWith("s")) {
+        if (keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
           arr.add("items", desc)
@@ -51,7 +55,7 @@ open class ESMappingTask : DefaultTask() {
           desc.addProperty("description", "DEPRECATED (see OpenAPI for details)")
         }
 
-        if (key.endsWith("s") || key.startsWith("gcmd")) { // hack to make gcmdScience a list
+        if (keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
           arr.add("items", desc)
@@ -62,7 +66,7 @@ open class ESMappingTask : DefaultTask() {
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
         desc.addProperty("existingJavaType", "java.lang.Long")
         properties.add(key, desc)
-        if (key.endsWith("s")) {
+        if (keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
           arr.add("items", desc)
@@ -73,7 +77,7 @@ open class ESMappingTask : DefaultTask() {
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
         desc.addProperty("existingJavaType", "java.lang.Byte")
         properties.add(key, desc)
-        if (key.endsWith("s")) {
+        if (keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
           arr.add("items", desc)
@@ -84,7 +88,7 @@ open class ESMappingTask : DefaultTask() {
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
         desc.addProperty("existingJavaType", "java.lang.Short")
         properties.add(key, desc)
-        if (key.endsWith("s")) {
+        if (keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
           arr.add("items", desc)
@@ -95,7 +99,7 @@ open class ESMappingTask : DefaultTask() {
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
         desc.addProperty("existingJavaType", "java.lang.Float")
         properties.add(key, desc)
-        if (key.endsWith("s")) {
+        if (keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
           arr.add("items", desc)
@@ -107,7 +111,7 @@ open class ESMappingTask : DefaultTask() {
         desc.addProperty("type", "object")
         desc.addProperty("existingJavaType", "java.time.ZonedDateTime")
         properties.add(key, desc)
-        if (key.endsWith("s")) {
+        if (keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
           arr.add("items", desc)
@@ -118,7 +122,7 @@ open class ESMappingTask : DefaultTask() {
         val desc = JsonObject()
         desc.addProperty("type", "boolean")
         properties.add(key, desc)
-        if (key.endsWith("s")) {
+        if (keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
           arr.add("items", desc)
@@ -136,7 +140,7 @@ open class ESMappingTask : DefaultTask() {
         MAJOR MAJOR TODO GEOSHAPE. Existing POJO to use? Craft one??? depends on translating pojo back to doc to post to index, I think?
         desc.add("properties", buildJsonSchemaProperties(prop.get("properties").getAsJsonObject())) */
         properties.add(key, desc)
-        if (key.endsWith("s")) {
+        if (keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
           arr.add("items", desc)
@@ -162,12 +166,13 @@ open class ESMappingTask : DefaultTask() {
     val index = filename.replace(Regex(".*/"),"").replace("Index.json","").replace("_"," ")
     schemaObject.addProperty("description", "Mapping for ${index} index.")
     val classname = filename.replace(Regex(".*/"),"").replace("Index.json","").splitToSequence("_").map { it.capitalize() }.joinToString("")
+    val packagename = filename.replace(Regex(".*/"),"").replace("Index.json","").split("_")[0] // use the naming convention to loosely package related index code - analysis has a different SpatialBounding than search, but all the search indices *should* share a SpatialBounding, as should all the analysis indices.
     logger.lifecycle("Generating $classname")
-    schemaObject.addProperty("javaType", "org.cedar.onestop.mapping.${classname}")
+    /* schemaObject.addProperty("javaType", "org.cedar.onestop.mapping.${classname}") */
     schemaObject.add("properties", buildJsonSchemaProperties(mappingObject.getAsJsonObject("mappings").getAsJsonObject("properties")))
     val codeModel = JCodeModel()
 
-    mapper.generate(codeModel, classname, "org.cedar.onestop.mapping", gson.newBuilder().setPrettyPrinting().create().toJson(schemaObject))
+    mapper.generate(codeModel, classname, "org.cedar.onestop.mapping.${packagename}", gson.newBuilder().setPrettyPrinting().create().toJson(schemaObject))
     codeModel.build(dest) // TODO multiple mappings to dest means last-one-in clobbers other objects (in theory this is fine because they should be the same across mappings but.... who knows)
 
   }

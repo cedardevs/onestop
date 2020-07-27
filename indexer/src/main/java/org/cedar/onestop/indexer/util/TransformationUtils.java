@@ -15,6 +15,17 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.cedar.onestop.mapping.analysis.AnalysisErrorGranule;
+import org.cedar.onestop.mapping.analysis.AnalysisErrorCollection;
+import org.cedar.onestop.mapping.analysis.Identification;
+import org.cedar.onestop.mapping.analysis.DataAccess;
+import org.cedar.onestop.mapping.analysis.Description;
+import org.cedar.onestop.mapping.analysis.SpatialBounding;
+import org.cedar.onestop.mapping.analysis.Thumbnail;
+import org.cedar.onestop.mapping.analysis.Titles;
+import org.cedar.onestop.mapping.analysis.Error;
+// import org.cedar.onestop.mapping.TemporalBounding;
+
 import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID;
 
@@ -28,35 +39,167 @@ public class TransformationUtils {
   ///////////////////////////////////////////////////////////////////////////////
   //                     Convert to Indexing Message                           //
   ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForAnalysis(ParsedRecord record, Set<String> fields, RecordType recordType) {
-
-    var analysis = record.getAnalysis();
-    var errors = record.getErrors();
-    var analysisMap = AvroUtils.avroToMap(analysis, true);
-    var message = new HashMap<String, Object>();
-
-    fields.forEach(field -> {
-      message.put(field, analysisMap.get(field));
-    });
-    if (fields.contains("internalParentIdentifier")) {
-      analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+  public static org.cedar.onestop.mapping.analysis.TemporalBounding convertTemporalAnalysis(TemporalBoundingAnalysis temporalAnalysis) {
+    // TODO fully resolved import path due to psi & es mapping naming conflict - could resolve with smaller util files
+    org.cedar.onestop.mapping.analysis.TemporalBounding converted = new org.cedar.onestop.mapping.analysis.TemporalBounding();
+    if (temporalAnalysis == null) {
+      return converted;
     }
-    var errorsList = errors.stream()
-        .map(e -> AvroUtils.avroToMap(e))
+    if (temporalAnalysis.getRangeDescriptor() != null) {
+      converted.setRangeDescriptor(temporalAnalysis.getRangeDescriptor().toString());
+    }
+    if (temporalAnalysis.getBeginDescriptor() != null) {
+      converted.setBeginDescriptor(temporalAnalysis.getBeginDescriptor().toString());
+    }
+    if (temporalAnalysis.getEndDescriptor() != null) {
+      converted.setEndDescriptor(temporalAnalysis.getEndDescriptor().toString());
+    }
+    if (temporalAnalysis.getInstantDescriptor() != null) {
+      converted.setInstantDescriptor(temporalAnalysis.getInstantDescriptor().toString());
+    }
+    return converted
+    .withBeginIndexable(temporalAnalysis.getBeginIndexable())
+    .withBeginPrecision(temporalAnalysis.getBeginPrecision())
+    .withBeginUtcDateTimeString(temporalAnalysis.getBeginUtcDateTimeString())
+    .withBeginZoneSpecified(temporalAnalysis.getBeginZoneSpecified())
+    .withEndIndexable(temporalAnalysis.getEndIndexable())
+    .withEndPrecision(temporalAnalysis.getEndPrecision())
+    .withEndUtcDateTimeString(temporalAnalysis.getEndUtcDateTimeString())
+    .withEndZoneSpecified(temporalAnalysis.getEndZoneSpecified())
+    .withInstantIndexable(temporalAnalysis.getInstantIndexable())
+    .withInstantPrecision(temporalAnalysis.getInstantPrecision())
+    .withInstantUtcDateTimeString(temporalAnalysis.getInstantUtcDateTimeString())
+    .withInstantZoneSpecified(temporalAnalysis.getInstantZoneSpecified());
+  }
+
+  public static Identification convertIdentificationAnalysis(IdentificationAnalysis identificationAnalysis) {
+    Identification converted = new Identification();
+    if (identificationAnalysis == null) {
+      return converted;
+    }
+    return converted
+    .withDoiExists(identificationAnalysis.getDoiExists())
+    .withDoiString(identificationAnalysis.getDoiString())
+    .withFileIdentifierExists(identificationAnalysis.getFileIdentifierExists())
+    .withFileIdentifierString(identificationAnalysis.getFileIdentifierString())
+    .withHierarchyLevelNameExists(identificationAnalysis.getHierarchyLevelNameExists())
+    .withParentIdentifierExists(identificationAnalysis.getParentIdentifierExists());
+     // TODO .withIsGranule() my api docs for analysis might be out of date, not sure where this data is exactly
+  }
+
+  public static DataAccess convertDataAccess(DataAccessAnalysis dataAccess) {
+    DataAccess converted = new DataAccess();
+    if (dataAccess == null) {
+      return converted;
+    }
+    return converted.withDataAccessExists(dataAccess.getDataAccessExists());
+  }
+
+  public static Description convertDescription(DescriptionAnalysis description) {
+    Description converted = new Description();
+    if (description == null) {
+      return converted;
+    }
+    return converted
+    .withDescriptionCharacters(description.getDescriptionCharacters().shortValue()) // TODO extra logging around this conversion?
+    .withDescriptionExists(description.getDescriptionExists());
+  }
+
+  public static Thumbnail convertThumbnail(ThumbnailAnalysis thumbnail) {
+    Thumbnail converted = new Thumbnail();
+    if (thumbnail == null) {
+      return converted;
+    }
+    return converted.withThumbnailExists(thumbnail.getThumbnailExists());
+  }
+
+  public static Titles convertTitles(TitleAnalysis titles) {
+    Titles converted = new Titles();
+    if (titles == null) {
+      return converted;
+    }
+    return converted.withTitleExists(titles.getTitleExists())
+      .withTitleCharacters(titles.getTitleCharacters().shortValue())// TODO extra logging around this conversion?
+      .withAlternateTitleExists(titles.getAlternateTitleExists())
+      .withAlternateTitleCharacters(titles.getAlternateTitleCharacters().shortValue());// TODO extra logging around this conversion?
+  }
+
+  public static SpatialBounding convertSpatialAnalysis(SpatialBoundingAnalysis spatialAnalysis) {
+    SpatialBounding converted = new SpatialBounding();
+    if (spatialAnalysis == null) {
+      return converted;
+    }
+    return converted
+      .withIsValid(spatialAnalysis.getIsValid())
+      .withSpatialBoundingExists(spatialAnalysis.getSpatialBoundingExists())
+      .withValidationError(spatialAnalysis.getValidationError());
+  }
+
+  public static AnalysisErrorCollection reformatCollectionForAnalysis(long timestamp, ParsedRecord record) {
+
+    Analysis analysis = record.getAnalysis();
+
+
+    // TODO switch based on type and/or split into separate methods
+      // .withStagedDate(ZonedDateTime.now()) // TODO FIXME DO NOT LEAVE THIS WITHOUT PASSING ALONG TIMESTAMP CORRECTLY:!>!>!>!!!!1111!!
+
+    AnalysisErrorCollection message = new AnalysisErrorCollection().withDataAccess(convertDataAccess(analysis.getDataAccess()))
+    .withDescription(convertDescription(analysis.getDescription()))
+    .withIdentification(convertIdentificationAnalysis(analysis.getIdentification()))
+    .withSpatialBounding(convertSpatialAnalysis(analysis.getSpatialBounding()))
+    .withTemporalBounding(
+      convertTemporalAnalysis(analysis.getTemporalBounding()))
+    .withThumbnail(convertThumbnail(analysis.getThumbnail()))
+    .withTitles(convertTitles(analysis.getTitles()));
+    var errorsList = record.getErrors().stream()
+        .map(e -> new Error().withTitle(e.getTitle()).withDetail(e.getDetail())) // TODO withSource(??)
         .collect(Collectors.toList());
+    message.setErrors(errorsList);
 
-    if (fields.contains("errors")) {
-      message.put("errors", errorsList);
-    }
 
-    if (fields.contains("temporalBounding")) {
-      message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
-    }
-    if (fields.contains("identification")) {
-      message.put("identification", prepareIdentification(analysis.getIdentification(), recordType));
-    }
 
     return message;
+
+    // ObjectMapper mapper = new ObjectMapper();
+    // try {
+    //   return mapper.writeValueAsString(message);
+    // } catch (JsonProcessingException e) {
+    //   // TODO DECIDE HOW TO HANDLE THIS ERROR FIXME DO NOT IGNORE THIS SERIOUSLY DO NOT DO IT
+    //   System.out.println("UNABLE TO MAP OBJECT");
+    //   System.out.println(e);
+    //   System.out.println("returning null!!");
+    // }
+    // return null;
+
+
+
+    // var analysis = record.getAnalysis();
+    // var errors = record.getErrors();
+    // var analysisMap = AvroUtils.avroToMap(analysis, true);
+    // var message = new HashMap<String, Object>();
+    //
+    // fields.forEach(field -> {
+    //   message.put(field, analysisMap.get(field));
+    // });
+    // if (fields.contains("internalParentIdentifier")) {
+    //   analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    // }
+    // var errorsList = errors.stream()
+    //     .map(e -> AvroUtils.avroToMap(e))
+    //     .collect(Collectors.toList());
+    //
+    // if (fields.contains("errors")) {
+    //   message.put("errors", errorsList);
+    // }
+    //
+    // if (fields.contains("temporalBounding")) {
+    //   message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
+    // }
+    // if (fields.contains("identification")) {
+    //   message.put("identification", prepareIdentification(analysis.getIdentification(), recordType));
+    // }
+    //
+    // return message;
   }
 
   public static Map<String, Object> prepareIdentification(IdentificationAnalysis identification, RecordType recordType) {

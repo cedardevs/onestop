@@ -40,3 +40,17 @@ artifacts {
 bootJar {
     enabled = false
 }
+
+// TODO make compile depend on esMappingGenerate?
+// tasks.esMappingGenerate {
+//   outputDir = "$buildDir/esGenerated"
+//   // setOutputDir(file("$buildDir/esGenerated"))
+// }
+assemble.dependsOn(esMappingGenerate) // TODO this is wrong because after cleaning up build dir, running gradle indexer:test fails unless you explicitly run elastic-common:build first
+sourceSets {
+  main {
+    java {
+      srcDir("$buildDir/esGenerated")
+    }
+  }
+}

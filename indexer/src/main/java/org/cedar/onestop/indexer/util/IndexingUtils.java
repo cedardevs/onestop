@@ -1,5 +1,7 @@
 package org.cedar.onestop.indexer.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
@@ -84,10 +86,24 @@ public class IndexingUtils {
       return new DeleteRequest(indexName).id(input.getKey());
     }
     else {
-      var targetFields = input.getConfig().indexedProperties(indexName).keySet();
-      var formattedRecord = new HashMap<>(TransformationUtils.reformatMessageForAnalysis(input.getValue().value(), targetFields, recordType));
-      formattedRecord.put("stagedDate", input.getValue().timestamp());
-      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
+      Object formattedRecord = null;
+      // var targetFields = input.getConfig().indexedProperties(indexName).keySet();
+      switch (recordType) {
+        case collection:
+        formattedRecord = TransformationUtils.reformatCollectionForAnalysis(input.getValue().timestamp(), input.getValue().value());
+
+      }
+      ObjectMapper mapper = new ObjectMapper();
+      try {
+        return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(mapper.writeValueAsString(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
+      } catch (JsonProcessingException e) {
+        // TODO DECIDE HOW TO HANDLE THIS ERROR FIXME DO NOT IGNORE THIS SERIOUSLY DO NOT DO IT
+        System.out.println("UNABLE TO MAP OBJECT");
+        System.out.println(e);
+        System.out.println("returning null!!");
+      }
+      return null; // FIXME TODO VERY BAD lol
+
     }
   }
 
