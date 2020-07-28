@@ -25,7 +25,8 @@ import org.cedar.onestop.mapping.analysis.SpatialBounding;
 import org.cedar.onestop.mapping.analysis.Thumbnail;
 import org.cedar.onestop.mapping.analysis.Titles;
 import org.cedar.onestop.mapping.analysis.Error;
-// import org.cedar.onestop.mapping.TemporalBounding;
+import org.cedar.onestop.mapping.search.SearchCollection;
+import org.cedar.onestop.mapping.search.ServiceLink;
 
 import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID;
@@ -207,60 +208,49 @@ public class TransformationUtils {
     return message;
   }
 
-  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> fields) {
+  public static SearchCollection reformatMessageForSearch(long timestamp, ParsedRecord record) {
+
+    // .withStagedDate(ZonedDateTime.now()) // TODO FIXME DO NOT LEAVE THIS WITHOUT PASSING ALONG TIMESTAMP CORRECTLY:!>!>!>!!!!1111!!
 
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
-    var errors = record.getErrors();
-    var discoveryMap = AvroUtils.avroToMap(discovery, true);
-    var analysisMap = AvroUtils.avroToMap(analysis, true);
-    var message = new HashMap<String, Object>();
 
-    fields.forEach(field -> {
-      message.put(field, discoveryMap.get(field));
-    });
-    var errorsList = errors.stream()
-        .map(e -> AvroUtils.avroToMap(e))
-        .collect(Collectors.toList());
-
-    if (fields.contains("errors")) {
-      message.put("errors", errorsList);
-    }
+    SearchCollection message = new SearchCollection()
+    .withParentIdentifier(discovery.getParentIdentifier())
+    .withFileIdentifier(discovery.getFileIdentifier())
+    .withDoi(discovery.getDoi())
+    .withTitle(discovery.getTitle())
+    .withDescription(discovery.getDescription())
+    .withIsGlobal(discovery.getIsGlobal())
+    .withThumbnail(discovery.getThumbnail())
+    .withDsmmAverage(discovery.getDsmmAverage())
+    .withEdition(discovery.getEdition())
+    .withOrderingInstructions(discovery.getOrderingInstructions())
+    .withAccessFeeStatement(discovery.getAccessFeeStatement())
+    .withLegalConstraints(discovery.getLegalConstraints())
+    .withUseLimitation(discovery.getUseLimitation())
+    .withCiteAsStatements(discovery.getCiteAsStatements())
+    .withDataFormats(convertDataFormats(discovery))
+    .withDataFormat(prepareDataFormats(discovery))
+    .withLinkProtocol(prepareLinkProtocols(discovery))
+    .withServiceLinkProtocol(prepareServiceLinkProtocols(discovery))
+    .withLinks(convertLinks(discovery.getLinks()))
+    .withServiceLinks(prepareServiceLinks(discovery))
+    .withLargerWorks(convertReferences(discovery.getLargerWorks()))
+    .withCrossReferences(convertReferences(discovery.getCrossReferences()));
+    prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
+    prepareResponsibleParties(message, record);
+    prepareGcmdKeyword(message, discovery);
+    //
+    //
+    //
+    // withSpatialBounding
+    //
+    //
+    //
 
     // prepare and apply fields that need to be reformatted for search
-    Map<String, Set<String>> gcmdKeywords = prepareGcmdKeyword(discovery);
-    gcmdKeywords.forEach((key, value) -> {
-      if (fields.contains(key)) {
-        message.put(key, value);
-      }
-    });
-    Map<String, Object> dates = prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding());
-    dates.forEach((key, value) -> {
-      if (fields.contains(key)) {
-        message.put(key, value);
-      }
-    });
-    if (fields.contains("temporalBounding")) {
-      message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
-    }
-    if (fields.contains("dataFormat")) {
-      message.put("dataFormat", prepareDataFormats(discovery));
-    }
-    if (fields.contains("linkProtocol")) {
-      message.put("linkProtocol", prepareLinkProtocols(discovery));
-    }
-    if (fields.contains("serviceLinks")) {
-      message.put("serviceLinks", prepareServiceLinks(discovery));
-    }
-    if (fields.contains("serviceLinkProtocol")) {
-      message.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
-    }
-    Map<String, Set<String>> responsibleParties = prepareResponsibleParties(record);
-    responsibleParties.forEach((key, value) -> {
-      if (fields.contains(key)) {
-        message.put(key, value);
-      }
-    });
+    /*
 
     if (fields.contains("internalParentIdentifier")) {
       message.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
@@ -271,9 +261,27 @@ public class TransformationUtils {
     if (fields.contains("checksums")) {
       message.put("checksums", prepareChecksums(record));
     }
+    */
     return message;
   }
 
+  public static List<org.cedar.onestop.mapping.search.Reference> convertReferences(List<Reference> references) {
+    return references.stream().map(work -> {
+          return new org.cedar.onestop.mapping.search.Reference().withTitle(work.getTitle()).withDate(work.getDate()).withLinks(convertLinks(work.getLinks()));
+        })
+        .collect(Collectors.toList());
+  }
+
+  // public static List<LargerWork> convertLargerWorks(Discovery discovery) {
+  //   return Optional.ofNullable(discovery)
+  //       .map(Discovery::getLargerWorks)
+  //       .orElse(Collections.emptyList())
+  //       .stream()
+  //       .map(work -> {
+  //         return new LargerWork().withTitle(work.getTitle()).withDate(work.getDate()).withLinks(convertLinks(work.getLinks()));
+  //       })
+  //       .collect(Collectors.toList());
+  // }
   ////////////////////////////////
   // Identifiers, "Names"       //
   ////////////////////////////////
@@ -316,18 +324,17 @@ public class TransformationUtils {
   ////////////////////////////////
   // Services, Links, Protocols //
   ////////////////////////////////
-  private static List<Map> prepareServiceLinks(Discovery discovery) {
+  private static List<ServiceLink> prepareServiceLinks(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getServices)
         .orElse(Collections.emptyList())
         .stream()
         .map(service -> {
-          var result = new HashMap<>();
-          result.put("title", service.getTitle());
-          result.put("alternateTitle", service.getAlternateTitle());
-          result.put("description", service.getDescription());
-          result.put("links", AvroUtils.avroCollectionToList(new ArrayList<>(getLinksForService(service)), true));
-          return result;
+          return new ServiceLink() // TODO note the class name should probably be ServiceLinks
+            .withTitle(service.getTitle())
+            .withAlternateTitle(service.getAlternateTitle())
+            .withDescription(service.getDescription())
+            .withLinks(convertLinks(getLinksForService(service)));
         })
         .collect(Collectors.toList());
   }
@@ -363,6 +370,19 @@ public class TransformationUtils {
         .collect(Collectors.toSet());
   }
 
+  public static List<org.cedar.onestop.mapping.Link> convertLinks(List<Link> links) {
+    List<org.cedar.onestop.mapping.Link> list = new ArrayList<org.cedar.onestop.mapping.Link>();
+    links.forEach(it -> {
+          list.add( new org.cedar.onestop.mapping.Link()
+            .withLinkName(it.getLinkName())
+            .withLinkProtocol(it.getLinkProtocol())
+            .withLinkUrl(it.getLinkUrl())
+            .withLinkDescription(it.getLinkDescription())
+            .withLinkFunction(it.getLinkFunction()));
+        });
+    return list;
+  }
+
   private static List<Link> getLinksForService(Service service) {
     return Optional.ofNullable(service)
         .map(Service::getOperations)
@@ -383,6 +403,17 @@ public class TransformationUtils {
   ////////////////////////////
   // Data Formats           //
   ////////////////////////////
+  public static List<org.cedar.onestop.mapping.search.DataFormat> convertDataFormats(Discovery discovery) {
+    List<org.cedar.onestop.mapping.search.DataFormat> converted = new ArrayList<org.cedar.onestop.mapping.search.DataFormat>();
+    if (discovery == null || discovery.getDataFormats() == null) {
+      return converted;
+    }
+    discovery.getDataFormats().forEach((it) -> {
+      converted.add(new org.cedar.onestop.mapping.search.DataFormat().withName(it.getName()).withVersion(it.getVersion()));
+    });
+    return converted;
+  }
+
   private static Set<String> prepareDataFormats(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getDataFormats)
@@ -422,7 +453,7 @@ public class TransformationUtils {
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
-  private static Map<String, Set<String>> prepareResponsibleParties(ParsedRecord record) {
+  private static void prepareResponsibleParties(SearchCollection search, ParsedRecord record) {
     Set<String> individualNames = new HashSet<>();
     Set<String> organizationNames = new HashSet<>();
     Optional.ofNullable(record)
@@ -443,10 +474,8 @@ public class TransformationUtils {
             organizationNames.add(organizationName);
           }
         });
-    var result = new HashMap<String, Set<String>>();
-    result.put("individualNames", individualNames);
-    result.put("organizationNames", organizationNames);
-    return result;
+    search.setIndividualNames(individualNames);
+    search.setOrganizationNames(organizationNames);
   }
 
   private static final Set<String> contactRoles = Set.of("pointOfContact", "distributor");
@@ -462,104 +491,72 @@ public class TransformationUtils {
   // Dates                  //
   ////////////////////////////
 
-  private static Map<String, Object> prepareTemporalBounding(TemporalBoundingAnalysis analysis) {
-    var result = new HashMap<String, Object>();
-
-    if (analysis == null) {
-      return result;
-    }
-
-    result.put("beginDescriptor", analysis.getBeginDescriptor());
-    result.put("beginIndexable", analysis.getBeginIndexable());
-    result.put("beginPrecision", analysis.getBeginPrecision());
-    result.put("beginUtcDateTimeString", analysis.getBeginUtcDateTimeString());
-    result.put("beginZoneSpecified", analysis.getBeginZoneSpecified());
-    result.put("endDescriptor", analysis.getEndDescriptor());
-    result.put("endIndexable", analysis.getEndIndexable());
-    result.put("endPrecision", analysis.getEndPrecision());
-    result.put("endUtcDateTimeString", analysis.getEndUtcDateTimeString());
-    result.put("endZoneSpecified", analysis.getEndZoneSpecified());
-    result.put("instantDescriptor", analysis.getInstantDescriptor());
-    result.put("instantIndexable", analysis.getInstantIndexable());
-    result.put("instantPrecision", analysis.getInstantPrecision());
-    result.put("instantUtcDateTimeString", analysis.getInstantUtcDateTimeString());
-    result.put("instantZoneSpecified", analysis.getInstantZoneSpecified());
-    result.put("rangeDescriptor", analysis.getRangeDescriptor());
-    return result;
-  }
-
-  private static Map<String, Object> prepareDatesForInstant(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    var result = new HashMap<String, Object>();
+  private static void prepareDatesForInstant(SearchCollection search, TemporalBoundingAnalysis analysis) {
 
     if (analysis.getInstantIndexable()) {
       // paleo dates are not indexable, so only add beginDate or endDate to the index if instantIndexable
-      result.put("beginDate", analysis.getInstantUtcDateTimeString());
-      result.put("endDate", analysis.getInstantEndUtcDateTimeString());
+      search.setBeginDate(analysis.getInstantUtcDateTimeString());
+      search.setEndDate(analysis.getInstantEndUtcDateTimeString());
     }
 
-    result.put("beginYear", analysis.getInstantYear());
-    result.put("beginDayOfYear", analysis.getInstantDayOfYear());
-    result.put("beginDayOfMonth", analysis.getInstantDayOfMonth());
-    result.put("beginMonth",  analysis.getInstantMonth());
+    search.setBeginYear(analysis.getInstantYear());
+    search.setBeginDayOfYear(analysis.getInstantDayOfYear() != null ? analysis.getInstantDayOfYear().shortValue():null);
+    search.setBeginDayOfMonth(analysis.getInstantDayOfMonth() != null ? analysis.getInstantDayOfMonth().byteValue():null);
+    search.setBeginMonth(analysis.getInstantMonth() != null ? analysis.getInstantMonth().byteValue():null);
 
-    result.put("endYear", analysis.getInstantYear());
-    result.put("endDayOfYear", analysis.getInstantEndDayOfYear());
-    result.put("endDayOfMonth", analysis.getInstantEndDayOfMonth());
-    result.put("endMonth", analysis.getInstantEndMonth());
+    search.setEndYear(analysis.getInstantYear());
+    search.setEndDayOfYear(analysis.getInstantEndDayOfYear() != null ? analysis.getInstantEndDayOfYear().shortValue():null);
+    search.setEndDayOfMonth(analysis.getInstantEndDayOfMonth() != null ? analysis.getInstantEndDayOfMonth().byteValue():null);
+    search.setEndMonth(analysis.getInstantEndMonth() != null ? analysis.getInstantEndMonth().byteValue():null);
 
-    return result;
   }
 
-  private static Map<String, Object> prepareBeginDate(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    var result = new HashMap<String, Object>();
+  private static void prepareBeginDate(SearchCollection search, TemporalBoundingAnalysis analysis) {
 
     if (analysis.getBeginDescriptor() == VALID) {
       if (analysis.getBeginIndexable()) {
-        result.put("beginDate", analysis.getBeginUtcDateTimeString());
+        search.setBeginDate(analysis.getBeginUtcDateTimeString());
       }
 
-      result.put("beginYear", analysis.getBeginYear());
-      result.put("beginDayOfYear", analysis.getBeginDayOfYear());
-      result.put("beginDayOfMonth", analysis.getBeginDayOfMonth());
-      result.put("beginMonth", analysis.getBeginMonth());
+      search.setBeginYear(analysis.getBeginYear());
+      search.setBeginDayOfYear(analysis.getBeginDayOfYear() != null? analysis.getBeginDayOfYear().shortValue():null); // TODO every single call to shortValue() or byteValue should get a null check!
+      search.setBeginDayOfMonth(analysis.getBeginDayOfMonth() != null ?analysis.getBeginDayOfMonth().byteValue():null);
+      search.setBeginMonth(analysis.getBeginMonth() != null ? analysis.getBeginMonth() .byteValue():null);
     }
-    return result;
   }
 
-  private static Map<String, Object> prepareEndDate(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    var result = new HashMap<String, Object>();
+  private static void prepareEndDate(SearchCollection search, TemporalBoundingAnalysis analysis) {
 
     if (analysis.getEndDescriptor() == VALID) {
       if (analysis.getEndIndexable()) {
-        result.put("endDate", analysis.getEndUtcDateTimeString());
+        search.setEndDate(analysis.getEndUtcDateTimeString());
       }
 
-      result.put("endYear", analysis.getEndYear());
-      result.put("endDayOfYear", analysis.getEndDayOfYear());
-      result.put("endDayOfMonth", analysis.getEndDayOfMonth());
-      result.put("endMonth", analysis.getEndMonth());
+      search.setEndYear(analysis.getEndYear());
+      search.setEndDayOfYear(analysis.getEndDayOfYear() != null ? analysis.getEndDayOfYear().shortValue() : null);
+      search.setEndDayOfMonth(analysis.getEndDayOfMonth() != null? analysis.getEndDayOfMonth().byteValue():null);
+      search.setEndMonth(analysis.getEndMonth() != null ? analysis.getEndMonth().byteValue():null); // TODO log potential issues with type conversion?
     }
-    return result;
   }
 
-  private static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    var result = new HashMap<String, Object>();
-
+  private static void prepareDates(SearchCollection search, TemporalBoundingAnalysis analysis) { // TODO extract interface from SearchCollection, etc for this...
+    if (analysis == null) {
+      return;
+    }
     // If bounding is actually an instant, set search fields accordingly
     if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT && analysis.getBeginDescriptor() == UNDEFINED) { // distinguished getting begin and end date that were exactly the same (also described as instant), but in that case need to use prepareBeginDate and prepareEndDate to get data off the correct analysis fields
-      return prepareDatesForInstant(bounding, analysis);
+      prepareDatesForInstant(search, analysis);
     } else {
-      result.putAll(prepareBeginDate(bounding, analysis));
-      result.putAll(prepareEndDate(bounding, analysis));
+      prepareBeginDate(search, analysis);
+      prepareEndDate(search, analysis);
     }
 
-    return result;
   }
 
   ////////////////////////////
   // Keywords               //
   ////////////////////////////
-  private static Map<String, Set<String>> prepareGcmdKeyword(Discovery discovery) {
+  private static void prepareGcmdKeyword(SearchCollection search, Discovery discovery) {
     var allKeywords = new HashSet<String>();
     var groupedKeywords = Optional.ofNullable(discovery)
         .map(Discovery::getKeywords)
@@ -574,8 +571,18 @@ public class TransformationUtils {
         .collect(Collectors.groupingBy(
             keyword -> keyword.category.name(), // group by the category label
             Collectors.mapping(keyword -> keyword.value, Collectors.toSet()))); // map the SingleKeywords to their values then collect them in a Set
-    groupedKeywords.put("keywords", allKeywords);
-    return groupedKeywords;
+
+    search.setKeywords(allKeywords);
+    search.setGcmdScience(groupedKeywords.get("gcmdScience"));
+    search.setGcmdScienceServices(groupedKeywords.get("gcmdScienceServices"));
+    search.setGcmdLocations(groupedKeywords.get("gcmdLocations"));
+    search.setGcmdInstruments(groupedKeywords.get("gcmdInstruments"));
+    search.setGcmdPlatforms(groupedKeywords.get("gcmdPlatforms"));
+    search.setGcmdProjects(groupedKeywords.get("gcmdProjects"));
+    search.setGcmdDataCenters(groupedKeywords.get("gcmdDataCenters"));
+    search.setGcmdHorizontalResolution(groupedKeywords.get("gcmdHorizontalResolution"));
+    search.setGcmdVerticalResolution(groupedKeywords.get("gcmdVerticalResolution"));
+    search.setGcmdTemporalResolution(groupedKeywords.get("gcmdTemporalResolution"));
   }
 
   private enum KeywordCategory {

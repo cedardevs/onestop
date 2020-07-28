@@ -23,20 +23,31 @@ import com.google.gson.JsonObject
 open class ESMappingTask : DefaultTask() {
 
   fun keyIndicatesArray(key:String) :Boolean {
-    return (key == "errors" || key == "links" || key == "checksums" || key == "keywords" || key == "dataFormats" || key.startsWith("gcmd"))
+    return key == "errors" || key == "links" || key == "checksums"  || key == "dataFormats" || key == "serviceLinks" || key == "legalConstraints" || key == "citeAsStatements" || key == "largerWorks" || key == "crossReferences"
   }
 
-  fun buildJsonSchemaProperties(mappingObject: JsonObject, isGranule:Boolean): JsonObject {
+  fun keyIndicatesSet(key:String) :Boolean {
+    return key == "individualNames" || key == "organizationNames" || key == "dataFormat" || key == "linkProtocol" || key == "serviceLinkProtocol" || key == "keywords" || key.startsWith("gcmd")
+  }
+
+  fun buildJsonSchemaProperties(mappingObject: JsonObject, isGranule:Boolean, overrideNoArrays:Boolean): JsonObject {
     val properties = JsonObject()
     for (key in mappingObject.keySet()) {
       val prop = mappingObject.get(key).getAsJsonObject()
       if (prop.get("type") == null || prop.get("type").getAsString() == "nested") {
         val desc = JsonObject()
+        val childOverrideNoArrays : Boolean
         desc.addProperty("type", "object")
         // automatically makes java class in the correct package and name
         if(prop.get("properties").getAsJsonObject().keySet().contains("linkName")) {
           // hack it to only produce one link class instead of several
           desc.addProperty("javaType", "org.cedar.onestop.mapping.Link")
+          childOverrideNoArrays = true
+        } else {
+          childOverrideNoArrays = overrideNoArrays
+        }
+        if(key == "crossReferences" || key == "largerWorks") {
+          desc.addProperty("javaType", "org.cedar.onestop.mapping.search.Reference")
         }
         if(key == "identification") { // note this is the only place where the 2 analysisError indices differ
           if (isGranule) {
@@ -47,11 +58,18 @@ open class ESMappingTask : DefaultTask() {
 
           }
         }
-        desc.add("properties", buildJsonSchemaProperties(prop.get("properties").getAsJsonObject(), isGranule))
+        desc.add("properties", buildJsonSchemaProperties(prop.get("properties").getAsJsonObject(), isGranule, childOverrideNoArrays)) // TODO overrideNoArrays hack to prevent Link object getting called with linkProtocol as a list...
         properties.add(key, desc)
-        if (keyIndicatesArray(key)) {
+        if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
+          arr.add("items", desc)
+          properties.add(key, arr)
+        }
+        if (!overrideNoArrays && keyIndicatesSet(key)) { // TODO rename overrideNoArrays to overrideNoCollections
+          val arr = JsonObject()
+          arr.addProperty("type", "array")
+          arr.addProperty("uniqueItems", true) // turns array into set
           arr.add("items", desc)
           properties.add(key, arr)
         }
@@ -64,9 +82,16 @@ open class ESMappingTask : DefaultTask() {
           desc.addProperty("description", "DEPRECATED (see OpenAPI for details)")
         }
 
-        if (keyIndicatesArray(key)) {
+        if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
+          arr.add("items", desc)
+          properties.add(key, arr)
+        }
+        if (!overrideNoArrays && keyIndicatesSet(key)) { // TODO rename overrideNoArrays to overrideNoCollections
+          val arr = JsonObject()
+          arr.addProperty("type", "array")
+          arr.addProperty("uniqueItems", true) // turns array into set
           arr.add("items", desc)
           properties.add(key, arr)
         }
@@ -75,9 +100,16 @@ open class ESMappingTask : DefaultTask() {
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
         desc.addProperty("existingJavaType", "java.lang.Long")
         properties.add(key, desc)
-        if (keyIndicatesArray(key)) {
+        if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
+          arr.add("items", desc)
+          properties.add(key, arr)
+        }
+        if (!overrideNoArrays && keyIndicatesSet(key)) { // TODO rename overrideNoArrays to overrideNoCollections
+          val arr = JsonObject()
+          arr.addProperty("type", "array")
+          arr.addProperty("uniqueItems", true) // turns array into set
           arr.add("items", desc)
           properties.add(key, arr)
         }
@@ -86,9 +118,16 @@ open class ESMappingTask : DefaultTask() {
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
         desc.addProperty("existingJavaType", "java.lang.Byte")
         properties.add(key, desc)
-        if (keyIndicatesArray(key)) {
+        if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
+          arr.add("items", desc)
+          properties.add(key, arr)
+        }
+        if (!overrideNoArrays && keyIndicatesSet(key)) { // TODO rename overrideNoArrays to overrideNoCollections
+          val arr = JsonObject()
+          arr.addProperty("type", "array")
+          arr.addProperty("uniqueItems", true) // turns array into set
           arr.add("items", desc)
           properties.add(key, arr)
         }
@@ -97,9 +136,16 @@ open class ESMappingTask : DefaultTask() {
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
         desc.addProperty("existingJavaType", "java.lang.Short")
         properties.add(key, desc)
-        if (keyIndicatesArray(key)) {
+        if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
+          arr.add("items", desc)
+          properties.add(key, arr)
+        }
+        if (!overrideNoArrays && keyIndicatesSet(key)) { // TODO rename overrideNoArrays to overrideNoCollections
+          val arr = JsonObject()
+          arr.addProperty("type", "array")
+          arr.addProperty("uniqueItems", true) // turns array into set
           arr.add("items", desc)
           properties.add(key, arr)
         }
@@ -108,9 +154,16 @@ open class ESMappingTask : DefaultTask() {
         desc.addProperty("type", "object") // using "object" instead of "integer" because I can specify javaType which is more specific than making everything a long
         desc.addProperty("existingJavaType", "java.lang.Float")
         properties.add(key, desc)
-        if (keyIndicatesArray(key)) {
+        if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
+          arr.add("items", desc)
+          properties.add(key, arr)
+        }
+        if (!overrideNoArrays && keyIndicatesSet(key)) { // TODO rename overrideNoArrays to overrideNoCollections
+          val arr = JsonObject()
+          arr.addProperty("type", "array")
+          arr.addProperty("uniqueItems", true) // turns array into set
           arr.add("items", desc)
           properties.add(key, arr)
         }
@@ -118,11 +171,18 @@ open class ESMappingTask : DefaultTask() {
       else if (prop.get("type").getAsString() == "date") {
         val desc = JsonObject()
         desc.addProperty("type", "object")
-        desc.addProperty("existingJavaType", "java.time.ZonedDateTime")
+        desc.addProperty("existingJavaType", "java.lang.String") // TODO need to split stagedDate as a separate type (long, probably?)
         properties.add(key, desc)
-        if (keyIndicatesArray(key)) {
+        if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
+          arr.add("items", desc)
+          properties.add(key, arr)
+        }
+        if (!overrideNoArrays && keyIndicatesSet(key)) { // TODO rename overrideNoArrays to overrideNoCollections
+          val arr = JsonObject()
+          arr.addProperty("type", "array")
+          arr.addProperty("uniqueItems", true) // turns array into set
           arr.add("items", desc)
           properties.add(key, arr)
         }
@@ -131,9 +191,16 @@ open class ESMappingTask : DefaultTask() {
         val desc = JsonObject()
         desc.addProperty("type", "boolean")
         properties.add(key, desc)
-        if (keyIndicatesArray(key)) {
+        if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
+          arr.add("items", desc)
+          properties.add(key, arr)
+        }
+        if (!overrideNoArrays && keyIndicatesSet(key)) { // TODO rename overrideNoArrays to overrideNoCollections
+          val arr = JsonObject()
+          arr.addProperty("type", "array")
+          arr.addProperty("uniqueItems", true) // turns array into set
           arr.add("items", desc)
           properties.add(key, arr)
         }
@@ -153,9 +220,16 @@ open class ESMappingTask : DefaultTask() {
         MAJOR MAJOR TODO GEOSHAPE. Existing POJO to use? Craft one??? depends on translating pojo back to doc to post to index, I think?
         desc.add("properties", buildJsonSchemaProperties(prop.get("properties").getAsJsonObject())) */
         properties.add(key, desc)
-        if (keyIndicatesArray(key)) {
+        if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
           arr.addProperty("type", "array")
+          arr.add("items", desc)
+          properties.add(key, arr)
+        }
+        if (!overrideNoArrays && keyIndicatesSet(key)) { // TODO rename overrideNoArrays to overrideNoCollections
+          val arr = JsonObject()
+          arr.addProperty("type", "array")
+          arr.addProperty("uniqueItems", true) // turns array into set
           arr.add("items", desc)
           properties.add(key, arr)
         }
@@ -182,7 +256,7 @@ open class ESMappingTask : DefaultTask() {
     val packagename = filename.replace(Regex(".*/"),"").replace("Index.json","").split("_")[0] // use the naming convention to loosely package related index code - analysis has a different SpatialBounding than search, but all the search indices *should* share a SpatialBounding, as should all the analysis indices.
     logger.lifecycle("Generating $classname")
     /* schemaObject.addProperty("javaType", "org.cedar.onestop.mapping.${classname}") */
-    schemaObject.add("properties", buildJsonSchemaProperties(mappingObject.getAsJsonObject("mappings").getAsJsonObject("properties"), filename.contains("granule")))
+    schemaObject.add("properties", buildJsonSchemaProperties(mappingObject.getAsJsonObject("mappings").getAsJsonObject("properties"), filename.contains("granule"), false))
     val codeModel = JCodeModel()
 
     mapper.generate(codeModel, classname, "org.cedar.onestop.mapping.${packagename}", gson.newBuilder().setPrettyPrinting().create().toJson(schemaObject))

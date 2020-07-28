@@ -39,7 +39,7 @@ public class IndexingUtils {
       try {
         if (isValid) {
           var searchIndex = input.getConfig().searchAliasFromType(indexType);
-          requests.add(buildSearchWriteRequest(searchIndex, operation, input));
+          requests.add(buildSearchWriteRequest(searchIndex, operation, input, recordType));
         }
         if (!indexType.equals(ElasticsearchConfig.TYPE_FLATTENED_GRANULE)) {
           var aeIndex = input.getConfig().analysisAndErrorsAliasFromType(indexType);
@@ -69,15 +69,30 @@ public class IndexingUtils {
     return value == null || value.getErrors().isEmpty();
   }
 
-  public static DocWriteRequest<?> buildSearchWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input) {
+  public static DocWriteRequest<?> buildSearchWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input, RecordType recordType) {
     if (opType == DELETE) {
       return new DeleteRequest(indexName).id(input.getKey());
     }
     else {
-      var targetFields = input.getConfig().indexedProperties(indexName).keySet();
-      var formattedRecord = new HashMap<>(TransformationUtils.reformatMessageForSearch(input.getValue().value(), targetFields));
-      formattedRecord.put("stagedDate", input.getValue().timestamp());
-      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
+      Object formattedRecord = null;
+      switch (recordType) {
+        case collection:
+        formattedRecord = TransformationUtils.reformatMessageForSearch(input.getValue().timestamp(), input.getValue().value());
+        break;
+        case granule:
+        formattedRecord = TransformationUtils.reformatMessageForSearch(input.getValue().timestamp(), input.getValue().value());
+
+      }
+      ObjectMapper mapper = new ObjectMapper();
+      try {
+        return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(mapper.writeValueAsString(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
+      } catch (JsonProcessingException e) {
+        // TODO DECIDE HOW TO HANDLE THIS ERROR FIXME DO NOT IGNORE THIS SERIOUSLY DO NOT DO IT
+        System.out.println("UNABLE TO MAP OBJECT");
+        System.out.println(e);
+        System.out.println("returning null!!");
+      }
+      return null; // FIXME TODO VERY BAD lol
     }
   }
 

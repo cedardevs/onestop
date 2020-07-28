@@ -3,6 +3,7 @@ package org.cedar.onestop.indexer.util
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.cedar.onestop.mapping.analysis.AnalysisErrorGranule
 import org.cedar.onestop.mapping.analysis.AnalysisErrorCollection
+import org.cedar.onestop.mapping.search.SearchCollection
 import org.cedar.schemas.analyze.Analyzers
 import org.cedar.schemas.analyze.Temporal
 import org.cedar.schemas.avro.psi.Analysis
@@ -12,14 +13,18 @@ import org.cedar.schemas.avro.psi.ValidDescriptor
 import org.cedar.schemas.avro.psi.TimeRangeDescriptor
 import org.cedar.schemas.avro.psi.Checksum
 import org.cedar.schemas.avro.psi.ChecksumAlgorithm
+import org.cedar.schemas.avro.psi.DataFormat
 import org.cedar.schemas.avro.psi.DataAccessAnalysis
 import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.ErrorEvent
 import org.cedar.schemas.avro.psi.FileInformation
+import org.cedar.schemas.avro.psi.Link
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
+import org.cedar.schemas.avro.psi.Reference
 import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
+import org.cedar.schemas.avro.psi.Service
 import org.cedar.schemas.avro.psi.SpatialBoundingAnalysis
 import org.cedar.schemas.avro.psi.TemporalBounding
 import org.cedar.schemas.avro.psi.ThumbnailAnalysis
@@ -35,11 +40,11 @@ import org.cedar.onestop.kafka.common.util.DataUtils;
 
 @Unroll
 class TransformationUtilsSpec extends Specification {
-
-  static Set<String> collectionSearchFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet()
-  static Set<String> granuleSearchFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS).keySet()
-  static Set<String> granuleAnalysisErrorFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS).keySet()
-  static Set<String> collectionAnalysisErrorFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS).keySet()
+  //
+  // static Set<String> collectionSearchFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_SEARCH_INDEX_ALIAS).keySet()
+  // static Set<String> granuleSearchFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_SEARCH_INDEX_ALIAS).keySet()
+  // static Set<String> granuleAnalysisErrorFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS).keySet()
+  // static Set<String> collectionAnalysisErrorFields = TestUtils.esConfig.indexedProperties(TestUtils.esConfig.COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS).keySet()
 
   static expectedKeywords = [
       "SIO > Super Important Organization",
@@ -442,56 +447,6 @@ class TransformationUtilsSpec extends Specification {
     [ErrorEvent.newBuilder().setTitle('one').setDetail('first error').build()] | 1
   }
 
-  def "reformatMessageForSearch populates with correct fields for #label"() {
-    when:
-
-    ParsedRecord record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
-      .setFileInformation(
-        FileInformation.newBuilder()
-        .setChecksums(
-          [
-          Checksum.newBuilder()
-          .setAlgorithm(ChecksumAlgorithm.MD5)
-          .setValue('abc')
-          .build()
-          ]
-        ).build()
-      )
-      .setAnalysis(
-        Analysis.newBuilder().setTemporalBounding(
-        TemporalBoundingAnalysis.newBuilder()
-            .setBeginDescriptor(ValidDescriptor.VALID)
-            .setBeginIndexable(true)
-            .setBeginPrecision(ChronoUnit.DAYS.toString())
-            .setBeginZoneSpecified(null)
-            .setBeginUtcDateTimeString("2000-02-01")
-            .setBeginYear(2000)
-            .setBeginMonth(2)
-            .setBeginDayOfYear(32)
-            .setBeginDayOfMonth(1)
-            .build()
-          ).build()
-        )
-      .build()
-
-    def indexedRecord = TransformationUtils.reformatMessageForSearch(record, fields)
-
-    then:
-
-    println(label)
-    println(JsonOutput.toJson(AvroUtils.avroToMap(record.getAnalysis(), true)))
-    println(JsonOutput.toJson(indexedRecord))
-    indexedRecord.keySet().contains("checksums") == shouldIncludeChecksums
-    indexedRecord.keySet().contains("internalParentIdentifier") == shouldIncludeParentIdentifier
-    (indexedRecord.keySet().contains("temporalBounding") && indexedRecord.get("temporalBounding").keySet().contains("beginMonth")) == false
-    (indexedRecord.keySet().contains("temporalBounding") && indexedRecord.get("temporalBounding").keySet().contains("beginIndexable")) == shouldIncludeTemporalAnalysis
-
-    where:
-    label | fields | shouldIncludeChecksums | shouldIncludeTemporalAnalysis | shouldIncludeParentIdentifier
-    'search collections'              | collectionSearchFields        | false | false | false
-    'search granules'                 | granuleSearchFields           | true  | false | true
-  }
-
   ////////////////////////////////
   // Identifiers, "Names"       //
   ////////////////////////////////
@@ -541,33 +496,6 @@ class TransformationUtilsSpec extends Specification {
   ////////////////////////////////
   // Services, Links, Protocols //
   ////////////////////////////////
-  def "prepares service links"() {
-    when:
-    def discovery = TestUtils.inputGranuleRecord.discovery
-    def result = TransformationUtils.prepareServiceLinks(discovery)
-
-    then:
-    result.size() == 1
-    result[0].title == "Multibeam Bathymetric Surveys ArcGIS Map Service"
-    result[0].alternateTitle == "Alternate Title for Testing"
-    result[0].description == "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green."
-    result[0].links as Set == [
-        [
-            linkProtocol   : 'http',
-            linkUrl        : 'https://maps.ngdc.noaa.gov/arcgis/services/web_mercator/multibeam_dynamic/MapServer/WMSServer?request=GetCapabilities&service=WMS',
-            linkName       : 'Multibeam Bathymetric Surveys Web Map Service (WMS)',
-            linkDescription: 'The Multibeam Bathymetric Surveys ArcGIS cached map service provides rapid display of ship tracks from global scales down to zoom level 9 (approx. 1:1,200,000 scale).',
-            linkFunction   : 'search'
-        ],
-        [
-            linkProtocol   : 'http',
-            linkUrl        : 'https://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/multibeam/MapServer',
-            linkName       : 'Multibeam Bathymetric Surveys ArcGIS Cached Map Service',
-            linkDescription: 'Capabilities document for Open Geospatial Consortium Web Map Service for Multibeam Bathymetric Surveys',
-            linkFunction   : 'search'
-        ]
-    ] as Set
-  }
 
   def "prepares service link protocols"() {
     Set protocols = ['HTTP']
@@ -585,9 +513,107 @@ class TransformationUtilsSpec extends Specification {
     TransformationUtils.prepareLinkProtocols(discovery) == protocols
   }
 
+  def "search - populated link and service link protocols"() {
+    when:
+    def discovery = Discovery.newBuilder().setLinks([
+        Link.newBuilder().setLinkProtocol("HTTP").build(),
+        Link.newBuilder().setLinkProtocol("https").build()
+      ]).setServices([
+        Service.newBuilder().setOperations([
+          Link.newBuilder().setLinkProtocol("FTP").build()
+        ]).build()
+      ]).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
+    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+
+    then:
+    search.getLinkProtocol().size() == 2
+    search.getLinkProtocol() == ["HTTP", "HTTPS"] as Set
+    search.getServiceLinkProtocol().size() == 1
+    search.getServiceLinkProtocol() == ["FTP"] as Set
+  }
+
+  def "search - populated service links"() {
+    when:
+    def discovery = Discovery.newBuilder().setServices([
+        Service.newBuilder().setTitle("ABC").setAlternateTitle("the ABC service").setDescription("A service that serves ABC.").setOperations([
+          Link.newBuilder().setLinkName("A").setLinkUrl("example.com/A").setLinkDescription("ABC - A").setLinkFunction("info").setLinkProtocol("http").build(),
+          Link.newBuilder().setLinkName("B").setLinkUrl("example.com/B").setLinkDescription("ABC - B").setLinkFunction("info").setLinkProtocol("http").build(),
+          Link.newBuilder().setLinkName("C").setLinkUrl("example.com/C").setLinkDescription("ABC - C").setLinkFunction("info").setLinkProtocol("http").build()
+        ]).build(),
+        Service.newBuilder().setTitle("123").setDescription("A 123 service.").setOperations([
+          Link.newBuilder().setLinkName("123").setLinkUrl("example.com/123").setLinkFunction("download").setLinkProtocol("https").build()
+        ]).build()
+      ]).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
+    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+
+    then:
+    search.getServiceLinks().size() == 2
+    search.getServiceLinks()[0].getTitle() == "ABC"
+    search.getServiceLinks()[0].getAlternateTitle() == "the ABC service"
+    search.getServiceLinks()[0].getDescription() == "A service that serves ABC."
+    search.getServiceLinks()[0].getLinks().size() == 3
+    search.getServiceLinks()[0].getLinks()[0].getLinkName() == "A"
+    search.getServiceLinks()[0].getLinks()[0].getLinkUrl() == "example.com/A"
+    search.getServiceLinks()[0].getLinks()[0].getLinkDescription() == "ABC - A"
+    search.getServiceLinks()[0].getLinks()[0].getLinkFunction() == "info"
+    search.getServiceLinks()[0].getLinks()[0].getLinkProtocol() == "http"
+    search.getServiceLinks()[0].getLinks()[1].getLinkName() == "B"
+    search.getServiceLinks()[0].getLinks()[1].getLinkUrl() == "example.com/B"
+    search.getServiceLinks()[0].getLinks()[1].getLinkDescription() == "ABC - B"
+    search.getServiceLinks()[0].getLinks()[1].getLinkFunction() == "info"
+    search.getServiceLinks()[0].getLinks()[1].getLinkProtocol() == "http"
+    search.getServiceLinks()[0].getLinks()[2].getLinkName() == "C"
+    search.getServiceLinks()[0].getLinks()[2].getLinkUrl() == "example.com/C"
+    search.getServiceLinks()[0].getLinks()[2].getLinkDescription() == "ABC - C"
+    search.getServiceLinks()[0].getLinks()[2].getLinkFunction() == "info"
+    search.getServiceLinks()[0].getLinks()[2].getLinkProtocol() == "http"
+
+    search.getServiceLinks()[1].getTitle() == "123"
+    search.getServiceLinks()[1].getAlternateTitle() == null
+    search.getServiceLinks()[1].getDescription() == "A 123 service."
+    search.getServiceLinks()[1].getLinks().size() == 1
+    search.getServiceLinks()[1].getLinks()[0].getLinkName() == "123"
+    search.getServiceLinks()[1].getLinks()[0].getLinkUrl() == "example.com/123"
+    search.getServiceLinks()[1].getLinks()[0].getLinkDescription() == null
+    search.getServiceLinks()[1].getLinks()[0].getLinkFunction() == "download"
+    search.getServiceLinks()[1].getLinks()[0].getLinkProtocol() == "https"
+  }
+
+  def "search - populated links"() {
+    when:
+    def discovery = Discovery.newBuilder().setLinks([
+        Link.newBuilder().setLinkName("1").setLinkUrl("example.com/1").setLinkFunction("info").setLinkProtocol("http").build(),
+        Link.newBuilder().setLinkName("2").setLinkUrl("example.com/2").setLinkDescription("1st download").setLinkFunction("download").setLinkProtocol("http").build(),
+        Link.newBuilder().setLinkName("3").setLinkUrl("example.com/3").setLinkDescription("2nd download").setLinkFunction("download").setLinkProtocol("https").build()
+      ]).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
+    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+
+    then:
+    search.getLinks().size() == 3
+    search.getLinks()[0].getLinkName() == "1"
+    search.getLinks()[0].getLinkUrl() == "example.com/1"
+    search.getLinks()[0].getLinkDescription() == null
+    search.getLinks()[0].getLinkFunction() == "info"
+    search.getLinks()[0].getLinkProtocol() == "http"
+    search.getLinks()[1].getLinkName() == "2"
+    search.getLinks()[1].getLinkUrl() == "example.com/2"
+    search.getLinks()[1].getLinkDescription() == "1st download"
+    search.getLinks()[1].getLinkFunction() == "download"
+    search.getLinks()[1].getLinkProtocol() == "http"
+    search.getLinks()[2].getLinkName() == "3"
+    search.getLinks()[2].getLinkUrl() == "example.com/3"
+    search.getLinks()[2].getLinkDescription() == "2nd download"
+    search.getLinks()[2].getLinkFunction() == "download"
+    search.getLinks()[2].getLinkProtocol() == "https"
+  }
+
   ////////////////////////////
   // Data Formats           //
   ////////////////////////////
+
   def "prepares data formats"() {
     def discovery = TestUtils.inputGranuleRecord.discovery
 
@@ -601,16 +627,123 @@ class TransformationUtilsSpec extends Specification {
     ] as Set
   }
 
+  def "search - populated data formats"() {
+    when:
+    def discovery = Discovery.newBuilder().setDataFormats([DataFormat.newBuilder().setName("netCDF").setVersion('4').build(), DataFormat.newBuilder().setName("netcdf").build()]).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
+    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+
+    then:
+    search.getDataFormat().size() == 2
+    search.getDataFormat() == ["NETCDF", "NETCDF > 4"] as Set
+  }
+
+  def "search - various identifiers parent #parentId file #fileId doi #doi"() {
+    when:
+    def discovery = Discovery.newBuilder().setParentIdentifier(parentId).setFileIdentifier(fileId).setDoi(doi).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
+    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+
+    then:
+    search.getParentIdentifier() == parentId
+    search.getFileIdentifier() == fileId
+    search.getDoi() == doi
+
+    where:
+    parentId | fileId | doi
+    'gov.noaa.nodc:1234567' | null | null
+    null | 'gov.noaa.nodc:9876543' | null
+    null | null | 'doi:10.7289/V5V985ZM'
+  }
+
+  def "search - title and description and thumbnail"() {
+    def title = "a record title"
+    def description = "some sort of descriptive paragraph, explaining the record"
+    def thumbnail = "example.com"
+
+    when:
+    def discovery = Discovery.newBuilder().setTitle(title).setDescription(description).setThumbnail(thumbnail).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
+    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+
+    then:
+    search.getTitle() == title
+    search.getDescription() == description
+    search.getThumbnail() == thumbnail
+  }
+
+  def "search - larger works & cross references"() {
+    when:
+    def discovery = Discovery.newBuilder().setLargerWorks([
+      Reference.newBuilder().setTitle("ref 1").setDate("2001-02-01").setLinks([
+        Link.newBuilder().setLinkUrl("doi:10.7289/V5V985ZM").build()
+        ]).build(),
+      Reference.newBuilder().setTitle("ref 2").setDate("2011-01-01").build()
+      ]).setCrossReferences([
+        Reference.newBuilder().setTitle("see also").setLinks([
+          Link.newBuilder().setLinkUrl("example.com").build()
+          ]).build()
+        ]).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
+    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+
+    then:
+    search.getLargerWorks().size() == 2
+    search.getLargerWorks()[0].getTitle() == "ref 1"
+    search.getLargerWorks()[0].getDate() == "2001-02-01"
+    search.getLargerWorks()[0].getLinks().size() == 1
+    search.getLargerWorks()[1].getTitle() == "ref 2"
+    search.getLargerWorks()[1].getDate() == "2011-01-01"
+    search.getLargerWorks()[1].getLinks().size() == 0
+    search.getCrossReferences().size == 1
+    search.getCrossReferences()[0].getTitle() == "see also"
+    search.getCrossReferences()[0].getDate() == null
+    search.getCrossReferences()[0].getLinks().size() == 1
+  }
+
+  def "search - spatial #label"() {
+    when:
+    def discovery = Discovery.newBuilder().setIsGlobal(isGlobal).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
+    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+
+    then:
+    search.getIsGlobal() == isGlobal
+
+    where:
+    label | isGlobal
+    "global" | true
+    "small" | false
+  }
+
+  def "search - misc fields"() {
+    when:
+    def discovery = Discovery.newBuilder().setDsmmAverage(3.14).setEdition("1.0").setOrderingInstructions("hello").setAccessFeeStatement("world").setUseLimitation("use").setLegalConstraints(["legal", "constraint"]).setCiteAsStatements(["citations"]).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
+    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+
+    then:
+    search.getDsmmAverage() - 3.14f < 0.001
+    search.getEdition() == "1.0"
+    search.getOrderingInstructions() == "hello"
+    search.getAccessFeeStatement() == "world"
+    search.getLegalConstraints() == ["legal", "constraint"]
+    search.getUseLimitation() == "use"
+    search.getCiteAsStatements() == ["citations"]
+
+  }
+
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
   def "prepares responsible party names"() {
     when:
     def record = TestUtils.inputCollectionRecord
-    def result = TransformationUtils.prepareResponsibleParties(record)
+    def search = new SearchCollection()
+    TransformationUtils.prepareResponsibleParties(search, record)
 
     then:
-    result.individualNames == [
+    search.getIndividualNames() == [
         'John Smith',
         'Jane Doe',
         'Jarianna Whackositz',
@@ -619,7 +752,7 @@ class TransformationUtilsSpec extends Specification {
         'Little Rhinoceros',
         'Skeletor McSkittles',
     ] as Set
-    result.organizationNames == [
+    search.getOrganizationNames() == [
         'University of Awesome',
         'Secret Underground Society',
         'Soap Boxes Inc.',
@@ -633,17 +766,18 @@ class TransformationUtilsSpec extends Specification {
   def "does not prepare responsible party names for granules"() {
     when:
     def record = TestUtils.inputGranuleRecord
-    def result = TransformationUtils.prepareResponsibleParties(record)
+    def search = new SearchCollection()
+    TransformationUtils.prepareResponsibleParties(search, record)
 
     then:
-    result.individualNames == [] as Set
-    result.organizationNames == [] as Set
+    search.getIndividualNames() == [] as Set
+    search.getOrganizationNames() == [] as Set
   }
 
   def "party names are not included in granule search info"() {
     when:
     def record = TestUtils.inputGranuleRecord // <-- granule!
-    def result = TransformationUtils.reformatMessageForSearch(record, collectionSearchFields) // <-- top level reformat method!
+    def result = TransformationUtils.reformatMessageForSearch(12341234L, record) // <-- top level reformat method!
 
     then:
     result.individualNames == [] as Set
@@ -657,21 +791,22 @@ class TransformationUtilsSpec extends Specification {
   def "when #label, expected temporal bounding generated"() {
     when:
     def discovery = Discovery.newBuilder().setTemporalBounding(input).build()
-    def newTimeMetadata = TransformationUtils.prepareDates(input, Temporal.analyzeBounding(discovery))
+    def search = new SearchCollection()
+    TransformationUtils.prepareDates(search, Temporal.analyzeBounding(discovery))
 
     println("debug " + label + ": " + Temporal.analyzeBounding(discovery))
 
     then:
-    newTimeMetadata.beginDate == beginDate
-    newTimeMetadata.beginYear == beginYear
-    newTimeMetadata.beginDayOfYear == beginDayOfYear
-    newTimeMetadata.beginDayOfMonth == beginDayOfMonth
-    newTimeMetadata.beginMonth == beginMonth
-    newTimeMetadata.endDate == endDate
-    newTimeMetadata.endYear == endYear
-    newTimeMetadata.endDayOfYear == endDayOfYear
-    newTimeMetadata.endDayOfMonth == endDayOfMonth
-    newTimeMetadata.endMonth == endMonth
+    search.beginDate == beginDate
+    search.beginYear == beginYear
+    search.beginDayOfYear == beginDayOfYear
+    search.beginDayOfMonth == beginDayOfMonth
+    search.beginMonth == beginMonth
+    search.endDate == endDate
+    search.endYear == endYear
+    search.endDayOfYear == endDayOfYear
+    search.endDayOfMonth == endDayOfMonth
+    search.endMonth == endMonth
 
     where:
     label | input | beginDate | beginYear | beginDayOfYear | beginDayOfMonth | beginMonth | endDate | endYear | endDayOfYear | endDayOfMonth | endMonth
@@ -695,21 +830,23 @@ class TransformationUtilsSpec extends Specification {
     given:
     def bounding = TemporalBounding.newBuilder().setBeginDate(begin).setEndDate(end).build()
     def analysis = Temporal.analyzeBounding(Discovery.newBuilder().setTemporalBounding(bounding).build())
+    def search = new SearchCollection()
 
     when:
-    def result = TransformationUtils.prepareDates(bounding, analysis)
+    TransformationUtils.prepareDates(search, analysis)
 
     then:
-    expected.forEach({ k, v ->
-      assert result.get(k) == v
-    })
+    search.beginDate == beginDate
+    search.beginYear == beginYear
+    search.endYear == endYear
+    search.endDate == endDate
 
     where:
-    testCase      | begin                  | end                     | expected
-    'typical'     | '2005-05-09T00:00:00Z' | '2010-10-01'            | [beginDate: '2005-05-09T00:00:00Z', endDate: '2010-10-01T23:59:59.999Z', beginYear: 2005, endYear: 2010]
-    'no timezone' | '2005-05-09T00:00:00'  | '2010-10-01T00:00:00'   | [beginDate: '2005-05-09T00:00:00Z', endDate: '2010-10-01T00:00:00Z', beginYear: 2005, endYear: 2010]
-    'paleo'       | '-100000001'           | '-1601050'              | [beginDate: null, endDate: '-1601050-12-31T23:59:59.999Z', beginYear: -100000001, endYear: -1601050]
-    'invalid'     | '1984-04-31'           | '1985-505-09T00:00:00Z' | [beginDate: null, endDate: null, beginYear: null, endYear: null]
+    testCase      | begin                  | end                     | beginDate | beginYear | endDate | endYear
+    'typical'     | '2005-05-09T00:00:00Z' | '2010-10-01'            | '2005-05-09T00:00:00Z' | 2005 | '2010-10-01T23:59:59.999Z' | 2010
+    'no timezone' | '2005-05-09T00:00:00'  | '2010-10-01T00:00:00'   | '2005-05-09T00:00:00Z' | 2005 | '2010-10-01T00:00:00Z' | 2010
+    'paleo'       | '-100000001'           | '-1601050'              | null | -100000001 | '-1601050-12-31T23:59:59.999Z' | -1601050
+    'invalid'     | '1984-04-31'           | '1985-505-09T00:00:00Z' | null | null | null | null
   }
 
   ////////////////////////////
@@ -717,22 +854,23 @@ class TransformationUtilsSpec extends Specification {
   ////////////////////////////
   def "Create GCMD keyword lists"() {
     when:
-    Map parsedKeywords = TransformationUtils.prepareGcmdKeyword(TestUtils.inputAvroRecord.discovery)
+    def search = new SearchCollection()
+    TransformationUtils.prepareGcmdKeyword(search, TestUtils.inputAvroRecord.discovery)
 
     then:
-    parsedKeywords.gcmdScienceServices == expectedGcmdKeywords.gcmdScienceServices
-    parsedKeywords.gcmdScience == expectedGcmdKeywords.gcmdScience
-    parsedKeywords.gcmdLocations == expectedGcmdKeywords.gcmdLocations
-    parsedKeywords.gcmdInstruments == expectedGcmdKeywords.gcmdInstruments
-    parsedKeywords.gcmdPlatforms == expectedGcmdKeywords.gcmdPlatforms
-    parsedKeywords.gcmdProjects == expectedGcmdKeywords.gcmdProjects
-    parsedKeywords.gcmdDataCenters == expectedGcmdKeywords.gcmdDataCenters
-    parsedKeywords.gcmdHorizontalResolution == expectedGcmdKeywords.gcmdHorizontalResolution
-    parsedKeywords.gcmdVerticalResolution == expectedGcmdKeywords.gcmdVerticalResolution
-    parsedKeywords.gcmdTemporalResolution == expectedGcmdKeywords.gcmdTemporalResolution
+    search.getGcmdScienceServices() == expectedGcmdKeywords.gcmdScienceServices
+    search.getGcmdScience() == expectedGcmdKeywords.gcmdScience
+    search.getGcmdLocations() == expectedGcmdKeywords.gcmdLocations
+    search.getGcmdInstruments() == expectedGcmdKeywords.gcmdInstruments
+    search.getGcmdPlatforms() == expectedGcmdKeywords.gcmdPlatforms
+    search.getGcmdProjects() == expectedGcmdKeywords.gcmdProjects
+    search.getGcmdDataCenters() == expectedGcmdKeywords.gcmdDataCenters
+    search.getGcmdHorizontalResolution() == expectedGcmdKeywords.gcmdHorizontalResolution
+    search.getGcmdVerticalResolution() == expectedGcmdKeywords.gcmdVerticalResolution
+    search.getGcmdTemporalResolution() == expectedGcmdKeywords.gcmdTemporalResolution
 
     and: "should recreate keywords without accession values"
-    parsedKeywords.keywords.size() == expectedKeywords.size()
+    search.getKeywords().size() == expectedKeywords.size() // note the accession numbers are not included
   }
 
   def "science keywords are parsed as expected from iso"() {
@@ -769,19 +907,15 @@ class TransformationUtilsSpec extends Specification {
     ]
 
     when:
+    def search = new SearchCollection()
     def discovery = TestUtils.inputCollectionRecord.discovery
-    def parsedKeywords = TransformationUtils.prepareGcmdKeyword(discovery)
+    TransformationUtils.prepareGcmdKeyword(search, discovery)
 
     then:
-    parsedKeywords.gcmdScience == expectedKeywordsFromIso.science
-    parsedKeywords.gcmdScienceServices == expectedKeywordsFromIso.scienceService
+    search.getGcmdScience() == expectedKeywordsFromIso.science
+    search.getGcmdScienceServices() == expectedKeywordsFromIso.scienceService
   }
 
-  def "accession values are not included"() {
-    when:
-    def result = TransformationUtils.reformatMessageForSearch(TestUtils.inputAvroRecord, collectionSearchFields)
 
-    then:
-    result.accessionValues == null
-  }
+
 }
