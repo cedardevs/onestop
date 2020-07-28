@@ -25,7 +25,11 @@ import org.cedar.onestop.mapping.analysis.SpatialBounding;
 import org.cedar.onestop.mapping.analysis.Thumbnail;
 import org.cedar.onestop.mapping.analysis.Titles;
 import org.cedar.onestop.mapping.analysis.Error;
+// import org.cedar.onestop.mapping.search.SearchObject;
+import org.cedar.onestop.mapping.search.SearchObjectWithDates;
+import org.cedar.onestop.mapping.search.SearchObjectWithKeywords;
 import org.cedar.onestop.mapping.search.SearchCollection;
+import org.cedar.onestop.mapping.search.SearchGranule;
 import org.cedar.onestop.mapping.search.ServiceLink;
 
 import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
@@ -157,13 +161,11 @@ public class TransformationUtils {
 
     Analysis analysis = record.getAnalysis();
 
-
-      // .withStagedDate(ZonedDateTime.now()) // TODO FIXME DO NOT LEAVE THIS WITHOUT PASSING ALONG TIMESTAMP CORRECTLY:!>!>!>!!!!1111!!
-
     AnalysisErrorGranule message = new AnalysisErrorGranule()
       // .withInternalParentIdentifier() TODO
       // TODO parentIdentifierExists
       // TODO parentIdentifierString
+      .withStagedDate(timestamp)
       .withDataAccess(convertDataAccess(analysis.getDataAccess()))
       .withDescription(convertDescription(analysis.getDescription()))
       .withIdentification(convertGranuleIdentificationAnalysis(analysis.getIdentification()))
@@ -187,10 +189,8 @@ public class TransformationUtils {
 
     Analysis analysis = record.getAnalysis();
 
-
-      // .withStagedDate(ZonedDateTime.now()) // TODO FIXME DO NOT LEAVE THIS WITHOUT PASSING ALONG TIMESTAMP CORRECTLY:!>!>!>!!!!1111!!
-
     AnalysisErrorCollection message = new AnalysisErrorCollection()
+      .withStagedDate(timestamp)
       .withDataAccess(convertDataAccess(analysis.getDataAccess()))
       .withDescription(convertDescription(analysis.getDescription()))
       .withIdentification(convertCollectionIdentificationAnalysis(analysis.getIdentification()))
@@ -208,14 +208,59 @@ public class TransformationUtils {
     return message;
   }
 
-  public static SearchCollection reformatMessageForSearch(long timestamp, ParsedRecord record) {
+  public static SearchGranule reformatGranuleForSearch(long timestamp, ParsedRecord record) { // TODO add specific tests!!!
 
-    // .withStagedDate(ZonedDateTime.now()) // TODO FIXME DO NOT LEAVE THIS WITHOUT PASSING ALONG TIMESTAMP CORRECTLY:!>!>!>!!!!1111!!
+    var discovery = record.getDiscovery();
+    var analysis = record.getAnalysis();
+
+    SearchGranule message = new SearchGranule() // TODO FIXME add internal parent identifier, make sure that's the only granule-only field!
+    .withStagedDate(timestamp)
+    .withParentIdentifier(discovery.getParentIdentifier())
+    .withFileIdentifier(discovery.getFileIdentifier())
+    .withDoi(discovery.getDoi())
+    .withTitle(discovery.getTitle())
+    .withDescription(discovery.getDescription())
+    .withIsGlobal(discovery.getIsGlobal())
+    .withThumbnail(discovery.getThumbnail())
+    .withDataFormats(convertDataFormats(discovery))
+    .withDataFormat(prepareDataFormats(discovery))
+    .withLinkProtocol(prepareLinkProtocols(discovery))
+    .withServiceLinkProtocol(prepareServiceLinkProtocols(discovery))
+    .withLinks(convertLinks(discovery.getLinks()))
+    .withServiceLinks(prepareServiceLinks(discovery));
+    prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
+    prepareGcmdKeyword(message, discovery);
+    //
+    //
+    //
+    // withSpatialBounding
+    //
+    //
+    //
+
+    // prepare and apply fields that need to be reformatted for search
+    /*
+
+    if (fields.contains("internalParentIdentifier")) {
+      message.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+    }
+    if (fields.contains("filename")) {
+      message.put("filename", prepareFilename(record));
+    }
+    if (fields.contains("checksums")) {
+      message.put("checksums", prepareChecksums(record));
+    }
+    */
+    return message;
+  }
+
+  public static SearchCollection reformatCollectionForSearch(long timestamp, ParsedRecord record) {
 
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
 
     SearchCollection message = new SearchCollection()
+    .withStagedDate(timestamp)
     .withParentIdentifier(discovery.getParentIdentifier())
     .withFileIdentifier(discovery.getFileIdentifier())
     .withDoi(discovery.getDoi())
@@ -239,6 +284,9 @@ public class TransformationUtils {
     .withLargerWorks(convertReferences(discovery.getLargerWorks()))
     .withCrossReferences(convertReferences(discovery.getCrossReferences()));
     prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
+    // if (message instanceof SearchObjectExpanded) {
+    //   prepareResponsibleParties((SearchObjectExpanded)message, record);
+    // }
     prepareResponsibleParties(message, record);
     prepareGcmdKeyword(message, discovery);
     //
@@ -491,7 +539,7 @@ public class TransformationUtils {
   // Dates                  //
   ////////////////////////////
 
-  private static void prepareDatesForInstant(SearchCollection search, TemporalBoundingAnalysis analysis) {
+  private static void prepareDatesForInstant(SearchObjectWithDates search, TemporalBoundingAnalysis analysis) {
 
     if (analysis.getInstantIndexable()) {
       // paleo dates are not indexable, so only add beginDate or endDate to the index if instantIndexable
@@ -511,7 +559,7 @@ public class TransformationUtils {
 
   }
 
-  private static void prepareBeginDate(SearchCollection search, TemporalBoundingAnalysis analysis) {
+  private static void prepareBeginDate(SearchObjectWithDates search, TemporalBoundingAnalysis analysis) {
 
     if (analysis.getBeginDescriptor() == VALID) {
       if (analysis.getBeginIndexable()) {
@@ -525,7 +573,7 @@ public class TransformationUtils {
     }
   }
 
-  private static void prepareEndDate(SearchCollection search, TemporalBoundingAnalysis analysis) {
+  private static void prepareEndDate(SearchObjectWithDates search, TemporalBoundingAnalysis analysis) {
 
     if (analysis.getEndDescriptor() == VALID) {
       if (analysis.getEndIndexable()) {
@@ -539,7 +587,7 @@ public class TransformationUtils {
     }
   }
 
-  private static void prepareDates(SearchCollection search, TemporalBoundingAnalysis analysis) { // TODO extract interface from SearchCollection, etc for this...
+  private static void prepareDates(SearchObjectWithDates search, TemporalBoundingAnalysis analysis) {
     if (analysis == null) {
       return;
     }
@@ -556,7 +604,7 @@ public class TransformationUtils {
   ////////////////////////////
   // Keywords               //
   ////////////////////////////
-  private static void prepareGcmdKeyword(SearchCollection search, Discovery discovery) {
+  private static void prepareGcmdKeyword(SearchObjectWithKeywords search, Discovery discovery) {
     var allKeywords = new HashSet<String>();
     var groupedKeywords = Optional.ofNullable(discovery)
         .map(Discovery::getKeywords)

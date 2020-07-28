@@ -524,7 +524,7 @@ class TransformationUtilsSpec extends Specification {
         ]).build()
       ]).build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
-    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+    def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
 
     then:
     search.getLinkProtocol().size() == 2
@@ -546,7 +546,7 @@ class TransformationUtilsSpec extends Specification {
         ]).build()
       ]).build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
-    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+    def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
 
     then:
     search.getServiceLinks().size() == 2
@@ -589,7 +589,7 @@ class TransformationUtilsSpec extends Specification {
         Link.newBuilder().setLinkName("3").setLinkUrl("example.com/3").setLinkDescription("2nd download").setLinkFunction("download").setLinkProtocol("https").build()
       ]).build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
-    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+    def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
 
     then:
     search.getLinks().size() == 3
@@ -631,7 +631,7 @@ class TransformationUtilsSpec extends Specification {
     when:
     def discovery = Discovery.newBuilder().setDataFormats([DataFormat.newBuilder().setName("netCDF").setVersion('4').build(), DataFormat.newBuilder().setName("netcdf").build()]).build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
-    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+    def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
 
     then:
     search.getDataFormat().size() == 2
@@ -642,7 +642,7 @@ class TransformationUtilsSpec extends Specification {
     when:
     def discovery = Discovery.newBuilder().setParentIdentifier(parentId).setFileIdentifier(fileId).setDoi(doi).build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
-    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+    def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
 
     then:
     search.getParentIdentifier() == parentId
@@ -664,7 +664,7 @@ class TransformationUtilsSpec extends Specification {
     when:
     def discovery = Discovery.newBuilder().setTitle(title).setDescription(description).setThumbnail(thumbnail).build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
-    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+    def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
 
     then:
     search.getTitle() == title
@@ -685,7 +685,7 @@ class TransformationUtilsSpec extends Specification {
           ]).build()
         ]).build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
-    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+    def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
 
     then:
     search.getLargerWorks().size() == 2
@@ -705,7 +705,7 @@ class TransformationUtilsSpec extends Specification {
     when:
     def discovery = Discovery.newBuilder().setIsGlobal(isGlobal).build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
-    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+    def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
 
     then:
     search.getIsGlobal() == isGlobal
@@ -720,7 +720,7 @@ class TransformationUtilsSpec extends Specification {
     when:
     def discovery = Discovery.newBuilder().setDsmmAverage(3.14).setEdition("1.0").setOrderingInstructions("hello").setAccessFeeStatement("world").setUseLimitation("use").setLegalConstraints(["legal", "constraint"]).setCiteAsStatements(["citations"]).build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
-    def search = TransformationUtils.reformatMessageForSearch(12341234L, record)
+    def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
 
     then:
     search.getDsmmAverage() - 3.14f < 0.001
@@ -777,7 +777,7 @@ class TransformationUtilsSpec extends Specification {
   def "party names are not included in granule search info"() {
     when:
     def record = TestUtils.inputGranuleRecord // <-- granule!
-    def result = TransformationUtils.reformatMessageForSearch(12341234L, record) // <-- top level reformat method!
+    def result = TransformationUtils.reformatCollectionForSearch(12341234L, record) // <-- top level reformat method!
 
     then:
     result.individualNames == [] as Set

@@ -77,10 +77,10 @@ public class IndexingUtils {
       Object formattedRecord = null;
       switch (recordType) {
         case collection:
-        formattedRecord = TransformationUtils.reformatMessageForSearch(input.getValue().timestamp(), input.getValue().value());
+        formattedRecord = TransformationUtils.reformatCollectionForSearch(input.getValue().timestamp(), input.getValue().value());
         break;
         case granule:
-        formattedRecord = TransformationUtils.reformatMessageForSearch(input.getValue().timestamp(), input.getValue().value());
+        formattedRecord = TransformationUtils.reformatGranuleForSearch(input.getValue().timestamp(), input.getValue().value());
 
       }
       ObjectMapper mapper = new ObjectMapper();

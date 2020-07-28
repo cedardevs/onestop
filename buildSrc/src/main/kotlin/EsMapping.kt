@@ -19,6 +19,7 @@ import java.net.URL
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.JsonArray
 
 open class ESMappingTask : DefaultTask() {
 
@@ -172,6 +173,9 @@ open class ESMappingTask : DefaultTask() {
         val desc = JsonObject()
         desc.addProperty("type", "object")
         desc.addProperty("existingJavaType", "java.lang.String") // TODO need to split stagedDate as a separate type (long, probably?)
+        if(key == "stagedDate") {
+          desc.addProperty("existingJavaType", "java.lang.Long")
+        }
         properties.add(key, desc)
         if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
@@ -254,6 +258,22 @@ open class ESMappingTask : DefaultTask() {
     schemaObject.addProperty("description", "Mapping for ${index} index.")
     val classname = filename.replace(Regex(".*/"),"").replace("Index.json","").splitToSequence("_").map { it.capitalize() }.joinToString("")
     val packagename = filename.replace(Regex(".*/"),"").replace("Index.json","").split("_")[0] // use the naming convention to loosely package related index code - analysis has a different SpatialBounding than search, but all the search indices *should* share a SpatialBounding, as should all the analysis indices.
+    if (packagename == "search") {
+      val interfaces = JsonArray()
+
+      /* interfaces.add("org.cedar.onestop.mapping.search.SearchObject" as String) */
+      if (classname != "SearchFlattenedGranule"){
+        interfaces.add("org.cedar.onestop.mapping.search.SearchObjectWithDates" as String)
+        interfaces.add("org.cedar.onestop.mapping.search.SearchObjectWithKeywords" as String)
+
+
+        /* interfaces.add("org.cedar.onestop.mapping.search.SearchObjectExpanded" as String) */
+      }
+      schemaObject.add("javaInterfaces", interfaces)
+
+    }
+
+
     logger.lifecycle("Generating $classname")
     /* schemaObject.addProperty("javaType", "org.cedar.onestop.mapping.${classname}") */
     schemaObject.add("properties", buildJsonSchemaProperties(mappingObject.getAsJsonObject("mappings").getAsJsonObject("properties"), filename.contains("granule"), false))
