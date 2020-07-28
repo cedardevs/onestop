@@ -345,7 +345,7 @@ public class TransformationUtils {
         .orElse(null);
   }
 
-  static String prepareFilename(ParsedRecord record) {
+  static String prepareFilename(ParsedRecord record) { // TODO add this back in!
     return Optional.ofNullable(record)
         .filter(r -> r.getType() == RecordType.granule)
         .map(ParsedRecord::getFileInformation)

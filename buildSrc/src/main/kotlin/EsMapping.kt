@@ -172,7 +172,7 @@ open class ESMappingTask : DefaultTask() {
       else if (prop.get("type").getAsString() == "date") {
         val desc = JsonObject()
         desc.addProperty("type", "object")
-        desc.addProperty("existingJavaType", "java.lang.String") // TODO need to split stagedDate as a separate type (long, probably?)
+        desc.addProperty("existingJavaType", "java.lang.String")
         if(key == "stagedDate") {
           desc.addProperty("existingJavaType", "java.lang.Long")
         }
