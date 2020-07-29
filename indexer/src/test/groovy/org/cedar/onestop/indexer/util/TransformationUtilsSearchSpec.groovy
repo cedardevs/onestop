@@ -3,6 +3,8 @@ package org.cedar.onestop.indexer.util
 import org.cedar.onestop.mapping.search.SearchCollection
 import org.cedar.onestop.mapping.search.SearchGranule
 import org.cedar.schemas.analyze.Temporal
+import org.cedar.schemas.avro.psi.Checksum
+import org.cedar.schemas.avro.psi.ChecksumAlgorithm
 import org.cedar.schemas.avro.psi.DataFormat
 import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.FileInformation
@@ -68,6 +70,19 @@ class TransformationUtilsSearchSpec extends Specification {
       gcmdTemporalResolution  : ['Seasonal'] as Set
   ]
 
+  def "produces checksums for granule record"() {
+    when:
+    FileInformation fileInfo = FileInformation.newBuilder().setChecksums([
+      Checksum.newBuilder().setValue("1234abcd").setAlgorithm(ChecksumAlgorithm.MD5).build(),
+      Checksum.newBuilder().setValue("qwerty").setAlgorithm(ChecksumAlgorithm.SHA1).build()
+      ]).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setFileInformation(fileInfo).setDiscovery(Discovery.newBuilder().build()).build()
+    def search = TransformationUtils.reformatGranuleForSearch(12341234L, record)
+
+    then:
+    search.getChecksums().size() == 2
+  }
+
   ////////////////////////////////
   // Identifiers, "Names"       //
   ////////////////////////////////
@@ -87,6 +102,18 @@ class TransformationUtilsSearchSpec extends Specification {
 
     expect:
     TransformationUtils.prepareInternalParentIdentifier(record) == testId
+  }
+
+  def "populates search - internalParentIdentifier for granule"() {
+    when:
+    def testId = "ABC"
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(Discovery.newBuilder().build()).setRelationships([
+        Relationship.newBuilder().setType(RelationshipType.COLLECTION).setId(testId).build()
+    ]).build()
+    def search = TransformationUtils.reformatGranuleForSearch(12341234L, record)
+
+    then:
+    search.getInternalParentIdentifier() == testId
   }
 
   def "produces filename for collection record correctly"() {
@@ -112,6 +139,16 @@ class TransformationUtilsSearchSpec extends Specification {
 
     expect:
     TransformationUtils.prepareFilename(record) == null
+  }
+
+  def "populates search - filename for granule"() {
+    when:
+    FileInformation fileInfo = FileInformation.newBuilder().setName("file_name.txt").build()
+    ParsedRecord record = ParsedRecord.newBuilder().setFileInformation(fileInfo).setDiscovery(Discovery.newBuilder().build()).build()
+    def search = TransformationUtils.reformatGranuleForSearch(12341234L, record)
+
+    then:
+    search.getFilename() == "file_name.txt"
   }
 
   ////////////////////////////////
@@ -443,7 +480,6 @@ class TransformationUtilsSearchSpec extends Specification {
     def discovery = Discovery.newBuilder().setDsmmAverage(3.14).setEdition("1.0").setOrderingInstructions("hello").setAccessFeeStatement("world").setUseLimitation("use").setLegalConstraints(["legal", "constraint"]).setCiteAsStatements(["citations"]).build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
     def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
-    // note: granule doesn't have these fields
 
     then:
     search.getDsmmAverage() - 3.14f < 0.001
@@ -452,6 +488,13 @@ class TransformationUtilsSearchSpec extends Specification {
     search.getAccessFeeStatement() == "world"
     search.getLegalConstraints() == ["legal", "constraint"]
     search.getUseLimitation() == "use"
+    search.getCiteAsStatements() == ["citations"]
+
+    when: 'granule'
+    search = TransformationUtils.reformatGranuleForSearch(12341234L, record)
+    // note: granule only has cite as statements, of these fields
+
+    then:
     search.getCiteAsStatements() == ["citations"]
   }
 

@@ -25,12 +25,12 @@ import org.cedar.onestop.mapping.analysis.SpatialBounding;
 import org.cedar.onestop.mapping.analysis.Thumbnail;
 import org.cedar.onestop.mapping.analysis.Titles;
 import org.cedar.onestop.mapping.analysis.Error;
-// import org.cedar.onestop.mapping.search.SearchObject;
 import org.cedar.onestop.mapping.search.SearchObjectWithDates;
 import org.cedar.onestop.mapping.search.SearchObjectWithKeywords;
 import org.cedar.onestop.mapping.search.SearchCollection;
 import org.cedar.onestop.mapping.search.SearchGranule;
 import org.cedar.onestop.mapping.search.ServiceLink;
+import org.cedar.onestop.mapping.search.Checksum;
 
 import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID;
@@ -227,7 +227,11 @@ public class TransformationUtils {
     .withLinkProtocol(prepareLinkProtocols(discovery))
     .withServiceLinkProtocol(prepareServiceLinkProtocols(discovery))
     .withLinks(convertLinks(discovery.getLinks()))
-    .withServiceLinks(prepareServiceLinks(discovery));
+    .withServiceLinks(prepareServiceLinks(discovery))
+    .withCiteAsStatements(discovery.getCiteAsStatements())
+    .withChecksums(prepareChecksums(record))
+    .withInternalParentIdentifier(prepareInternalParentIdentifier(record))
+    .withFilename(prepareFilename(record));
     prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
     prepareGcmdKeyword(message, discovery);
     //
@@ -235,22 +239,7 @@ public class TransformationUtils {
     //
     // withSpatialBounding
     //
-    //
-    //
 
-    // prepare and apply fields that need to be reformatted for search
-    /*
-
-    if (fields.contains("internalParentIdentifier")) {
-      message.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
-    }
-    if (fields.contains("filename")) {
-      message.put("filename", prepareFilename(record));
-    }
-    if (fields.contains("checksums")) {
-      message.put("checksums", prepareChecksums(record));
-    }
-    */
     return message;
   }
 
@@ -284,9 +273,6 @@ public class TransformationUtils {
     .withLargerWorks(convertReferences(discovery.getLargerWorks()))
     .withCrossReferences(convertReferences(discovery.getCrossReferences()));
     prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
-    // if (message instanceof SearchObjectExpanded) {
-    //   prepareResponsibleParties((SearchObjectExpanded)message, record);
-    // }
     prepareResponsibleParties(message, record);
     prepareGcmdKeyword(message, discovery);
     //
@@ -297,19 +283,6 @@ public class TransformationUtils {
     //
     //
 
-    // prepare and apply fields that need to be reformatted for search
-    /*
-
-    if (fields.contains("internalParentIdentifier")) {
-      message.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
-    }
-    if (fields.contains("filename")) {
-      message.put("filename", prepareFilename(record));
-    }
-    if (fields.contains("checksums")) {
-      message.put("checksums", prepareChecksums(record));
-    }
-    */
     return message;
   }
 
@@ -320,22 +293,11 @@ public class TransformationUtils {
         .collect(Collectors.toList());
   }
 
-  // public static List<LargerWork> convertLargerWorks(Discovery discovery) {
-  //   return Optional.ofNullable(discovery)
-  //       .map(Discovery::getLargerWorks)
-  //       .orElse(Collections.emptyList())
-  //       .stream()
-  //       .map(work -> {
-  //         return new LargerWork().withTitle(work.getTitle()).withDate(work.getDate()).withLinks(convertLinks(work.getLinks()));
-  //       })
-  //       .collect(Collectors.toList());
-  // }
   ////////////////////////////////
   // Identifiers, "Names"       //
   ////////////////////////////////
   private static String prepareInternalParentIdentifier(ParsedRecord record) {
     return Optional.ofNullable(record)
-        .filter(r -> r.getType() == RecordType.granule)
         .map(ParsedRecord::getRelationships)
         .orElse(Collections.emptyList())
         .stream()
@@ -345,26 +307,23 @@ public class TransformationUtils {
         .orElse(null);
   }
 
-  static String prepareFilename(ParsedRecord record) { // TODO add this back in!
+  static String prepareFilename(ParsedRecord record) {
     return Optional.ofNullable(record)
-        .filter(r -> r.getType() == RecordType.granule)
         .map(ParsedRecord::getFileInformation)
         .map(FileInformation::getName)
         .orElse(null);
   }
 
-  static List prepareChecksums(ParsedRecord record) {
+  static List<Checksum> prepareChecksums(ParsedRecord record) {
     return Optional.ofNullable(record)
-        .filter(r -> r.getType() == RecordType.granule)
         .map(ParsedRecord::getFileInformation)
         .map(FileInformation::getChecksums)
         .orElse(Collections.emptyList())
         .stream()
         .map(checksumObject -> {
-          var result = new HashMap<>();
-          result.put("algorithm", checksumObject.getAlgorithm());
-          result.put("value", checksumObject.getValue());
-          return result;
+          return new Checksum()
+          .withAlgorithm(checksumObject.getAlgorithm().toString()) // TODO will probably fail if it's null?
+          .withValue(checksumObject.getValue());
         })
         .collect(Collectors.toList());
   }
@@ -505,7 +464,7 @@ public class TransformationUtils {
     Set<String> individualNames = new HashSet<>();
     Set<String> organizationNames = new HashSet<>();
     Optional.ofNullable(record)
-        .filter(r -> r.getType() == RecordType.collection)
+        .filter(r -> r.getType() == RecordType.collection) // TODO no longer need to check - this is only called for collections regardless
         .map(ParsedRecord::getDiscovery)
         .map(Discovery::getResponsibleParties)
         .orElse(Collections.emptyList())
