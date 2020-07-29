@@ -70,6 +70,22 @@ class TransformationUtilsSearchSpec extends Specification {
       gcmdTemporalResolution  : ['Seasonal'] as Set
   ]
 
+  def "handles timestamp #label"() {
+    when:
+    ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(Discovery.newBuilder().build()).build()
+    def indexedGranule = TransformationUtils.reformatGranuleForSearch(time, record)
+    def indexedCollection = TransformationUtils.reformatCollectionForSearch(time, record)
+
+    then:
+    indexedGranule.getStagedDate() == time
+    indexedCollection.getStagedDate() == time
+
+    where:
+    label | time
+    'Thursday, July 29, 2010 5:32:16 PM' | 1280424736L
+    'Saturday, January 1, 2000 12:00:00 PM' | 946728000L
+  }
+
   def "produces checksums for granule record"() {
     when:
     FileInformation fileInfo = FileInformation.newBuilder().setChecksums([
@@ -86,10 +102,6 @@ class TransformationUtilsSearchSpec extends Specification {
   ////////////////////////////////
   // Identifiers, "Names"       //
   ////////////////////////////////
-  def "produces internalParentIdentifier for collection record correctly"() {
-    expect:
-    TransformationUtils.prepareInternalParentIdentifier(TestUtils.inputAvroRecord) == null
-  }
 
   def "produces internalParentIdentifier for granule record correctly"() {
     def testId = "ABC"
@@ -526,27 +538,6 @@ class TransformationUtilsSearchSpec extends Specification {
         'The Underworld',
         'Super Important Organization',
     ] as Set
-  }
-
-  def "does not prepare responsible party names for granules"() {
-    when:
-    def record = TestUtils.inputGranuleRecord
-    def search = new SearchCollection() // note: granule doesn't have these fields, so this doesn't make a ton of sense TODO remove this test?
-    TransformationUtils.prepareResponsibleParties(search, record)
-
-    then:
-    search.getIndividualNames() == [] as Set
-    search.getOrganizationNames() == [] as Set
-  }
-
-  def "party names are not included in granule search info"() {
-    when:
-    def record = TestUtils.inputGranuleRecord // <-- granule!
-    def result = TransformationUtils.reformatCollectionForSearch(12341234L, record) // note: granule doesn't have these fields, so this doesn't make a ton of sense TODO remove this test?
-
-    then:
-    result.individualNames == [] as Set
-    result.organizationNames == [] as Set
   }
 
   ////////////////////////////

@@ -9,6 +9,8 @@ import org.cedar.schemas.avro.psi.DataAccessAnalysis
 import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.ErrorEvent
 import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.Relationship
+import org.cedar.schemas.avro.psi.RelationshipType
 import org.cedar.schemas.avro.psi.SpatialBoundingAnalysis
 import org.cedar.schemas.avro.psi.ThumbnailAnalysis
 import spock.lang.Specification
@@ -18,17 +20,43 @@ import spock.lang.Unroll
 @Unroll
 class TransformationUtilsAnalysisSpec extends Specification {
 
+  def "reformat handles timestamp #label"() {
+    when:
+    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(Analysis.newBuilder().build()).build()
+    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(time, record)
+    def indexedCollection = TransformationUtils.reformatCollectionForAnalysis(time, record)
+    then:
+    indexedGranule.getStagedDate() == time
+    indexedCollection.getStagedDate() == time
+
+    where:
+    label | time
+    'Thursday, July 29, 2010 5:32:16 PM' | 1280424736L
+    'Saturday, January 1, 2000 12:00:00 PM' | 946728000L
+  }
+
+  def "reformat handles internalParentIdentifier for granule"() {
+    when:
+    def testId = "ABC"
+    ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(Analysis.newBuilder().build()).setRelationships([
+        Relationship.newBuilder().setType(RelationshipType.COLLECTION).setId(testId).build()
+    ]).build()
+    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
+
+    then:
+    indexedGranule.getInternalParentIdentifier() == testId
+  }
+
   def "reformat handles identification file: #fileId doi: #doi (#hierarchy)"() {
     when:
     def discovery = Discovery.newBuilder().setDoi(doi).setFileIdentifier(fileId).setHierarchyLevelName(hierarchy).setParentIdentifier(parent).build()
     def analysis = Analysis.newBuilder().setIdentification(Analyzers.analyzeIdentifiers(discovery)).build()
     ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
-    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
-    def indexedCollection = TransformationUtils.reformatCollectionForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
+    def indexedCollection = TransformationUtils.reformatCollectionForAnalysis(12341234L, record)
 
     then:
-    // TODO FIXME where on the parsed record do I set this? indexedGranule.getInternalParentIdentifier() == uuid
     indexedGranule.getIdentification().getFileIdentifierExists() == fileIdExists
     indexedGranule.getIdentification().getFileIdentifierString() == fileId
     indexedGranule.getIdentification().getDoiExists() == doiExists
@@ -60,11 +88,11 @@ class TransformationUtilsAnalysisSpec extends Specification {
     when:
     def analysis = Analysis.newBuilder().setDataAccess(
       DataAccessAnalysis.newBuilder().setDataAccessExists(dataAccessExists).build()
-    ).build() //TODO not sure exactly where on discovery record this is populated rom, so populate directly
+    ).build() // populate analysis directly instead of running analysis on populated parsed record, for simplicity
     ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
-    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
-    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
+    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
 
     then:
     indexedGranule.getDataAccess().getDataAccessExists() == dataAccessExists
@@ -81,11 +109,11 @@ class TransformationUtilsAnalysisSpec extends Specification {
     when:
     def analysis = Analysis.newBuilder().setThumbnail(
       ThumbnailAnalysis.newBuilder().setThumbnailExists(thumbnailExists).build()
-    ).build() //TODO not sure exactly where on discovery record this is populated rom, so populate directly
+    ).build() // populate analysis directly instead of running analysis on populated parsed record, for simplicity
     ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
-    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
-    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
+    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
 
     then:
     indexedGranule.getThumbnail().getThumbnailExists() == thumbnailExists
@@ -105,8 +133,8 @@ class TransformationUtilsAnalysisSpec extends Specification {
     def analysis = Analysis.newBuilder().setDescription(Analyzers.analyzeDescription(discovery)).build()
     ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
-    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
-    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
+    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
 
     then:
     indexedGranule.getDescription().getDescriptionExists() == exists
@@ -129,8 +157,8 @@ class TransformationUtilsAnalysisSpec extends Specification {
     def analysis = Analysis.newBuilder().setTitles(Analyzers.analyzeTitles(discovery)).build()
     ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
-    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
-    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
+    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
 
     then:
     indexedGranule.getTitles().getTitleExists() == exists
@@ -175,8 +203,8 @@ class TransformationUtilsAnalysisSpec extends Specification {
       .build()).build()
     ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
-    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
-    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
+    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
 
     then:
     indexedGranule.getTemporalBounding().getBeginDescriptor() == expectedBeginDesc
@@ -232,8 +260,8 @@ class TransformationUtilsAnalysisSpec extends Specification {
       .build()).build()
     ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(analysis).build()
 
-    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
-    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
+    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
 
     then:
     indexedGranule.getSpatialBounding().getSpatialBoundingExists() == boundsExist
@@ -257,8 +285,8 @@ class TransformationUtilsAnalysisSpec extends Specification {
 
     ParsedRecord record = ParsedRecord.newBuilder().setAnalysis(Analysis.newBuilder().build()).setErrors(errors).build()
 
-    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
-    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record) // TODO 12341234 is an arbitrary "timestamp" for now...
+    def indexedGranule = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
+    def indexedCollection = TransformationUtils.reformatGranuleForAnalysis(12341234L, record)
 
     then:
     indexedGranule.getErrors().size() == numErrors

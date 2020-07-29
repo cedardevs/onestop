@@ -162,7 +162,7 @@ public class TransformationUtils {
     Analysis analysis = record.getAnalysis();
 
     AnalysisErrorGranule message = new AnalysisErrorGranule()
-      // .withInternalParentIdentifier() TODO
+      .withInternalParentIdentifier(prepareInternalParentIdentifier(record))
       // TODO parentIdentifierExists
       // TODO parentIdentifierString
       .withStagedDate(timestamp)
@@ -464,7 +464,6 @@ public class TransformationUtils {
     Set<String> individualNames = new HashSet<>();
     Set<String> organizationNames = new HashSet<>();
     Optional.ofNullable(record)
-        .filter(r -> r.getType() == RecordType.collection) // TODO no longer need to check - this is only called for collections regardless
         .map(ParsedRecord::getDiscovery)
         .map(Discovery::getResponsibleParties)
         .orElse(Collections.emptyList())
