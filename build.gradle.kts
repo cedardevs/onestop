@@ -109,13 +109,13 @@ val projectDescriptions: Map<String, String> = mapOf(
         Pair("kafka-common", "A shared project used by OneStop applications interacting with Kafka"),
         Pair("registry", "A private API to upload ISO metadata to the OneStop system Kafka event stream."),
         Pair("search", "An read-only API for the OneStop system to query data indexed in Elasticsearch."),
-        Pair("stream-manager", "A Kafka Streams app which picks up from the raw metadata topic, parses into a standard format, analyzes some fields for further insight, and places onto a parsed topic."),
+        Pair("parsalyzer", "A Kafka Streams app which picks up from the raw metadata topic, parses into a standard format, analyzes some fields for further insight, and places onto a parsed topic."),
         Pair("user", "An API to authenticate and manage public user data of the OneStop system.")
 )
 
 // only apply plugins, configuration, tasks, etc. to projects that need it
-val javaProjects: List<String> = listOf("client", "cli", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "stream-manager", "user")
-val jibProjects: List<String> = listOf("client", "cli", "indexer", "registry", "search", "stream-manager", "user")
+val javaProjects: List<String> = listOf("client", "cli", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "parsalyzer", "user")
+val jibProjects: List<String> = listOf("client", "cli", "indexer", "registry", "search", "parsalyzer", "user")
 val springBootProjects: List<String> = listOf("elastic-common", "search", "registry")
 val nodeProjects: List<String> = listOf("client", "registry")
 val micronautProjects: List<String> = listOf("user")
