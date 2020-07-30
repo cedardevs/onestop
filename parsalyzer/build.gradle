@@ -4,7 +4,7 @@ plugins {
 
 apply plugin: "com.github.johnrengelman.shadow"
 
-mainClassName = 'org.cedar.onestop.manager.StreamManagerMain'
+mainClassName = 'org.cedar.onestop.parsalyzer.parsalyzerMain'
 
 sourceCompatibility = 11
 targetCompatibility = 11

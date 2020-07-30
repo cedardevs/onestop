@@ -78,8 +78,8 @@ deploy:
           service.clusterIP: 10.100.100.1
         imageStrategy:
           helm: {}
-      - name: onestop-manager
-        chartPath: helm/onestop-manager
+      - name: onestop-parsalyzer
+        chartPath: helm/onestop-parsalyzer
         values:
           image: cedardevs/onestop-parsalyzer
         setValues:
@@ -129,8 +129,8 @@ profiles:
     deploy:
       helm:
         releases:
-          - name: onestop-manager
-            chartPath: helm/onestop-manager
+          - name: onestop-parsalyzer
+            chartPath: helm/onestop-parsalyzer
             values:
               image: cedardevs/onestop-parsalyzer
             setValues:
