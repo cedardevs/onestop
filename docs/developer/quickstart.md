@@ -51,14 +51,14 @@ Table of Contents
 ./gradlew search:build
 ./gradlew client:build
 ./gradlew registry:build
-./gradlew stream-manager:build
+./gradlew parsalyzer:build
 </pre>
 </details>
 
 ### Run
 ```
 ./gradlew registry:bootrun
-./gradlew stream-manager:run
+./gradlew parsalyzer:run
 ./gradlew search:bootrun
 cd client && npm run dev
 ```
