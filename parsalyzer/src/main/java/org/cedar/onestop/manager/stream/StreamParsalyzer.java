@@ -27,8 +27,8 @@ import java.util.Properties;
 import static org.apache.kafka.streams.StreamsConfig.*;
 import static org.cedar.onestop.kafka.common.constants.Topics.*;
 
-public class StreamManager {
-  private static final Logger log = LoggerFactory.getLogger(StreamManager.class);
+public class StreamParsalyzer {
+  private static final Logger log = LoggerFactory.getLogger(StreamParsalyzer.class);
 
   public static KafkaStreams buildStreamsApp(AppConfig config) {
     var topology = buildTopology();
@@ -53,7 +53,7 @@ public class StreamManager {
         .filterNot(RoutingUtils::hasErrors)
         .filter(RoutingUtils::requiresExtraction)
         .mapValues(v -> AvroUtils.avroToMap(v))
-        .mapValues(StreamManager::toJsonOrNull)
+        .mapValues(StreamParsalyzer::toJsonOrNull)
         .filterNot(RoutingUtils::isNull)
         .to(toExtractorTopic(type), Produced.with(Serdes.String(), Serdes.String()));
 
