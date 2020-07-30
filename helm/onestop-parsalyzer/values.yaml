@@ -1,11 +1,11 @@
-# Default values for onestop-manager.
+# Default values for onestop-parsalyzer.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: cedardevs/onestop-stream-manager
+  repository: cedardevs/onestop-parsalyzer
   tag: "3.0.0-alpha3"
   pullPolicy: IfNotPresent
   pullSecrets: []

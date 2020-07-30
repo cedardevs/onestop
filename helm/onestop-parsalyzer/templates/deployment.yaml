@@ -2,17 +2,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "onestop-manager.fullname" . }}
-  labels: {{- include "onestop-manager.labels" . | nindent 4 }}
+  name: {{ include "onestop-parsalyzer.fullname" . }}
+  labels: {{- include "onestop-parsalyzer.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "onestop-manager.selectorLabels" . | nindent 6 }}
+      {{- include "onestop-parsalyzer.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "onestop-manager.selectorLabels" . | nindent 8 }}
+        {{- include "onestop-parsalyzer.selectorLabels" . | nindent 8 }}
       annotations:
         {{- with .Values.config }}
         checksum/config: {{ . | sha256sum }}
@@ -48,9 +48,9 @@ spec:
         {{- end }}
         env:
         - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "{{ include "onestop-manager.kafka.bootstrap.servers" . }}"
+          value: "{{ include "onestop-parsalyzer.kafka.bootstrap.servers" . }}"
         - name: KAFKA_SCHEMA_REGISTRY_URL
-          value: "{{ include "onestop-manager.kafka.schema.registry.url" . }}"
+          value: "{{ include "onestop-parsalyzer.kafka.schema.registry.url" . }}"
         {{- if .Values.config }}
         - name: spring.config.additional-location
           value: /etc/conf/application.yaml
@@ -87,7 +87,7 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ include "onestop-manager.fullname" . }}-config
+          name: {{ include "onestop-parsalyzer.fullname" . }}-config
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
