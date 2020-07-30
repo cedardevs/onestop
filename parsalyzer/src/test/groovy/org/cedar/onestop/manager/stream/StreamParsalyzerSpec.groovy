@@ -16,16 +16,16 @@ import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
 import org.cedar.schemas.avro.util.StreamSpecUtils
 import spock.lang.Specification
 
-class StreamManagerSpec extends Specification {
+class StreamParsalyzerSpec extends Specification {
 
   def STRING_DESERIALIZER = Serdes.String().deserializer()
   def AVRO_DESERIALIZER = new MockSchemaRegistrySerde().deserializer()
 
-  def streamsConfig = StreamManager.streamsConfig(StreamsApps.MANAGER_ID, new AppConfig()).with {
+  def streamsConfig = StreamParsalyzer.streamsConfig(StreamsApps.MANAGER_ID, new AppConfig()).with {
     it.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, MockSchemaRegistrySerde.class.name)
     it
   }
-  def topology = StreamManager.buildTopology()
+  def topology = StreamParsalyzer.buildTopology()
   def driver = new TopologyTestDriver(topology, streamsConfig)
   def inputFactory = new ConsumerRecordFactory(Serdes.String().serializer(), new MockSchemaRegistrySerde().serializer())
   def jsonFactory = new ConsumerRecordFactory(Serdes.String().serializer(), JsonSerdes.Map().serializer())
@@ -188,7 +188,7 @@ class StreamManagerSpec extends Specification {
   }
 
   def "streams app throws exception when transitioning to bad state #state"() {
-    def streamsApp = StreamManager.buildStreamsApp(new AppConfig())
+    def streamsApp = StreamParsalyzer.buildStreamsApp(new AppConfig())
 
     when:
     streamsApp.setState(state)
