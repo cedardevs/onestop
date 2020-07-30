@@ -1,4 +1,4 @@
-package org.cedar.onestop.manager.util
+package org.cedar.onestop.parsalyzer.util
 
 import org.cedar.schemas.avro.psi.AggregatedInput
 import org.cedar.schemas.avro.psi.ErrorEvent

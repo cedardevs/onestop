@@ -1,4 +1,4 @@
-package org.cedar.onestop.manager.stream
+package org.cedar.onestop.parsalyzer.stream
 
 import groovy.json.JsonOutput
 import org.apache.kafka.common.serialization.Serdes

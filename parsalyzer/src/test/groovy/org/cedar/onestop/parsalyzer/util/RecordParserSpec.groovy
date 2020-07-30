@@ -1,4 +1,4 @@
-package org.cedar.onestop.manager.util
+package org.cedar.onestop.parsalyzer.util
 
 import groovy.json.JsonOutput
 import org.cedar.schemas.avro.psi.*

@@ -1,4 +1,4 @@
-package org.cedar.onestop.manager.stream;
+package org.cedar.onestop.parsalyzer.stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
@@ -12,8 +12,8 @@ import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.util.DataUtils;
-import org.cedar.onestop.manager.util.RecordParser;
-import org.cedar.onestop.manager.util.RoutingUtils;
+import org.cedar.onestop.parsalyzer.util.RecordParser;
+import org.cedar.onestop.parsalyzer.util.RoutingUtils;
 import org.cedar.schemas.analyze.Analyzers;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.RecordType;

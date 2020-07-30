@@ -1,4 +1,4 @@
-package org.cedar.onestop.manager.util;
+package org.cedar.onestop.parsalyzer.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;

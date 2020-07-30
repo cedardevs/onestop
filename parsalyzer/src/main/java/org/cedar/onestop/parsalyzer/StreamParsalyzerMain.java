@@ -1,9 +1,9 @@
-package org.cedar.onestop.manager;
+package org.cedar.onestop.parsalyzer;
 
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.util.KafkaHealthProbeServer;
 import org.cedar.onestop.kafka.common.util.KafkaHelpers;
-import org.cedar.onestop.manager.stream.StreamParsalyzer;
+import org.cedar.onestop.parsalyzer.stream.StreamParsalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
