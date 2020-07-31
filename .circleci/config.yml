@@ -308,6 +308,9 @@ workflows:
           requires:
             - checkout
           <<: *jobFilters
+      - check-owasp-cve:
+          requires:
+            - checkout
       - finalize:
           requires:
             - client
@@ -315,6 +318,7 @@ workflows:
             - indexer
             - search
             - stream-manager
+            - check-owasp-cve
           <<: *jobFilters
 
   nightly:
