@@ -221,6 +221,7 @@ public class TransformationUtils {
     .withDescription(discovery.getDescription())
     .withIsGlobal(discovery.getIsGlobal())
     .withThumbnail(discovery.getThumbnail())
+    .withSpatialBounding(prepareSpatialBounding(discovery))
     .withDataFormats(convertDataFormats(discovery))
     .withDataFormat(prepareDataFormats(discovery))
     .withLinkProtocol(prepareLinkProtocols(discovery))
@@ -233,11 +234,6 @@ public class TransformationUtils {
     .withFilename(prepareFilename(record));
     prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
     prepareGcmdKeyword(message, discovery);
-    //
-    //
-    //
-    // withSpatialBounding
-    //
 
     return message;
   }
@@ -256,6 +252,7 @@ public class TransformationUtils {
     .withDescription(discovery.getDescription())
     .withIsGlobal(discovery.getIsGlobal())
     .withThumbnail(discovery.getThumbnail())
+    .withSpatialBounding(prepareSpatialBounding(discovery))
     .withDsmmAverage(discovery.getDsmmAverage())
     .withEdition(discovery.getEdition())
     .withOrderingInstructions(discovery.getOrderingInstructions())
@@ -274,15 +271,13 @@ public class TransformationUtils {
     prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
     prepareResponsibleParties(message, record);
     prepareGcmdKeyword(message, discovery);
-    //
-    //
-    //
-    // withSpatialBounding
-    //
-    //
-    //
 
     return message;
+  }
+
+  public static Map<String, Object> prepareSpatialBounding(Discovery discovery) {
+    var discoveryMap = AvroUtils.avroToMap(discovery, true);
+    return (Map<String, Object>)discoveryMap.get("spatialBounding");
   }
 
   public static List<org.cedar.onestop.mapping.search.Reference> convertReferences(List<Reference> references) {

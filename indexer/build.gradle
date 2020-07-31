@@ -44,7 +44,6 @@ dependencies {
   implementation("ch.qos.logback:logback-classic:1.2.3")
   implementation("org.apache.commons:commons-text:1.2")
 
-
   testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
   testImplementation("org.objenesis:objenesis:3.1")

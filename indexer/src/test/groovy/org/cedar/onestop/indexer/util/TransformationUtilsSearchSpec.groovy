@@ -16,6 +16,8 @@ import org.cedar.schemas.avro.psi.Relationship
 import org.cedar.schemas.avro.psi.RelationshipType
 import org.cedar.schemas.avro.psi.Service
 import org.cedar.schemas.avro.psi.TemporalBounding
+import org.cedar.schemas.avro.geojson.PolygonType
+// import com.mapbox.geojson.Polygon
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -466,20 +468,53 @@ class TransformationUtilsSearchSpec extends Specification {
 
   def "populates search spatial #label"() {
     when:
-    def discovery = Discovery.newBuilder().setIsGlobal(isGlobal).build()
+    def placeholderBoundingObject = new HashMap<String,Object>()
+    placeholderBoundingObject.put("type", PolygonType.Polygon)
+    placeholderBoundingObject.put("coordinates", [[[-140.3989, 59.3811], [-139.4611, 59.3811], [-139.4611, 60.0611], [-140.3989, 60.0611], [-140.3989, 59.3811]]])
+    def discovery = Discovery.newBuilder().setIsGlobal(isGlobal)
+    // TODO switch schemas and EsMapping.kt to depend on mapbox Polygon for geojson?
+//     .setSpatialBounding(Polygon.fromJson("""{
+//     "type": "Polygon",
+//     "coordinates": [
+//         [
+//             [
+//                 100,
+//                 0
+//             ],
+//             [
+//                 101,
+//                 0
+//             ],
+//             [
+//                 101,
+//                 1
+//             ],
+//             [
+//                 100,
+//                 1
+//             ],
+//             [
+//                 100,
+//                 0
+//             ]
+//         ]
+//     ]
+// }"""))
+    .setSpatialBounding(placeholderBoundingObject)
+    .build()
     ParsedRecord record = ParsedRecord.newBuilder().setDiscovery(discovery).build()
     def search = TransformationUtils.reformatCollectionForSearch(12341234L, record)
 
     then:
     search.getIsGlobal() == isGlobal
-    // TODO expand with spatial bounds!
+    search.getSpatialBounding() == placeholderBoundingObject
 
     when: 'repeat for granule'
     search = TransformationUtils.reformatGranuleForSearch(12341234L, record)
 
     then:
     search.getIsGlobal() == isGlobal
-    // TODO expand with spatial bounds!
+    search.getSpatialBounding() == placeholderBoundingObject
 
     where:
     label | isGlobal

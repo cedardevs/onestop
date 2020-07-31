@@ -74,6 +74,7 @@ public class IndexingUtils {
       return new DeleteRequest(indexName).id(input.getKey());
     }
     else {
+      System.out.println("What is the record type and index? "+ recordType +" "+indexName);
       Object formattedRecord = null;
       switch (recordType) {
         case collection:
@@ -86,6 +87,7 @@ public class IndexingUtils {
       ObjectMapper mapper = new ObjectMapper();
       try {
         return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(mapper.writeValueAsString(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
+        // return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(org.elasticsearch.common.xcontent.XContentType.JSON, formattedRecord);
       } catch (JsonProcessingException e) {
         // TODO DECIDE HOW TO HANDLE THIS ERROR FIXME DO NOT IGNORE THIS SERIOUSLY DO NOT DO IT
         System.out.println("UNABLE TO MAP OBJECT");

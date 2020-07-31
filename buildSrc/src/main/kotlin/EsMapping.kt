@@ -16,7 +16,6 @@ import java.nio.file.Paths
 import java.nio.file.Path
 import java.io.File
 import java.net.URL
-
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonArray
@@ -216,13 +215,9 @@ open class ESMappingTask : DefaultTask() {
       else if (prop.get("type").getAsString() == "geo_shape") {
         val desc = JsonObject()
         desc.addProperty("type", "object")
-        /* // automatically makes java class in the correct package and name
-        if(prop.get("properties").getAsJsonObject().keySet().contains("linkName")) {
-          // hack it to only produce one link class instead of several
-          desc.addProperty("javaType", "org.cedar.onestop.mapping.Link")
-        }
-        MAJOR MAJOR TODO GEOSHAPE. Existing POJO to use? Craft one??? depends on translating pojo back to doc to post to index, I think?
-        desc.add("properties", buildJsonSchemaProperties(prop.get("properties").getAsJsonObject())) */
+        // TODO add mapbox Geometry to schemas instead of Object? desc.addProperty("existingJavaType", "com.mapbox.geojson.Geometry")
+        // TODO note that having it directly use the avro generated pojos isn't working
+        desc.addProperty("existingJavaType", "java.lang.Object")
         properties.add(key, desc)
         if (!overrideNoArrays && keyIndicatesArray(key)) {
           val arr = JsonObject()
@@ -328,5 +323,6 @@ open class ESMappingTask : DefaultTask() {
       generateClasses("asdf", mapper, dest) */
 
     }
+
   }
 }
