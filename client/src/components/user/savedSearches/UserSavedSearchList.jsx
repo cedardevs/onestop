@@ -3,6 +3,7 @@ import UserSavedSearch from './UserSavedSearch'
 import ListView from '../../common/ui/ListView'
 import Meta from '../../helmet/Meta'
 import {fontFamilySerif} from '../../../utils/styleUtils'
+import _ from 'lodash'
 
 // user.savedSearches = undefined;
 const UserSavedSearchList = props => {
@@ -28,9 +29,9 @@ const UserSavedSearchList = props => {
     fontSize: '1.2em',
   }
   const heading =
-    props.savedSearches && props.savedSearches.length > 0
-      ? 'Saved Searches'
-      : 'You have no saved searches'
+      _.isEmpty(searches)
+      ? 'You have no saved searches'
+      : 'Saved Searches'
   const listHeading = (
     <h2 key="SavedSearch::listHeading" style={styleListHeading}>
       <span role="alert" aria-live="polite">

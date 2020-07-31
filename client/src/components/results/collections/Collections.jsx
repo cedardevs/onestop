@@ -53,24 +53,62 @@ export default function Collections(props){
   const [ currentPage, setCurrentPage ] = useState(1)
   const [ headingMessage, setHeadingMessage ] = useState(null)
   const [ searchSaved, setSearchSaved ] = useState( !!savedId )
+  const [ bookmarkButton, setBookmark ] = useState(null)
 
   function handleSave(){
     const urlToSave = window.location.href
     const queryStringIndex = urlToSave.indexOf('?')
     const queryString = urlToSave.slice(queryStringIndex)
     const decodedSavedSearch = decodePathAndQueryString('', queryString)
-    
-    if (searchSaved && savedId) {
-      deleteSearch(savedSearchUrl, savedId)
-    }else{
-      saveSearch(
-          savedSearchUrl,
-          urlToSave,
-          decodedSavedSearch.filters.queryText,
-          collectionFilter
-      )
-    }
-    setSearchSaved(!searchSaved)
+    saveSearch(
+        savedSearchUrl,
+        urlToSave,
+        decodedSavedSearch.filters.queryText,
+        collectionFilter
+    )
+  }
+
+  function handleDelete(){
+    deleteSearch(savedSearchUrl, savedId)
+  }
+
+  function setBookmarkButton(){
+    const title = searchSaved
+        ? 'Search already saved'
+        : 'Save search'
+    const text = searchSaved ? 'Unsave' : 'Save'
+    const notification = text
+    const savedId = findSavedId()
+
+    const saveSearchAction = savedId
+        ? [
+          {
+            text: text,
+            title: title,
+            icon: alreadySavedIcon,
+            showText: false,
+            handler: () => {
+              handleDelete()
+              setSearchSaved(!searchSaved)
+            },
+            notification: notification,
+          },
+        ]
+        : [
+          {
+            text: text,
+            title: title,
+            icon: saveIcon,
+            showText: false,
+            handler: () => {
+              handleSave()
+              setSearchSaved(!searchSaved)
+            },
+            notification: notification,
+          },
+        ]
+
+    setBookmark(saveSearchAction)
   }
 
   function findSavedId(){
@@ -82,30 +120,12 @@ export default function Collections(props){
     return null
   }
 
-  const bookmarkIcon = searchSaved ? alreadySavedIcon : saveIcon
-  const title = searchSaved
-    ? 'Search already saved'
-    : 'Save search'
-  const text = searchSaved ? 'Unsave' : 'Save'
-  const notification = text
-
-  const saveSearchAction = isAuthenticatedUser
-    ? [
-        {
-          text: text,
-          title: title,
-          icon: bookmarkIcon,
-          showText: false,
-          handler: (id) => {
-            handleSave(id)
-          },
-          notification: notification,
-        },
-      ]
-    : []
-
   useEffect(
     () => {
+      if(isAuthenticatedUser){
+        setBookmarkButton()
+      }
+
       if (loading) {
         setHeadingMessage(
           <span>
@@ -141,7 +161,7 @@ export default function Collections(props){
         setHeadingMessage(`No collection results matched '${searchTerms}'`)
       }
     },
-    [ loading ]
+    [ loading, savedSearches, collectionFilter ]
   )
   const listHeading = (
     <h2 key="Collections::listHeading" style={styleListHeading}>
@@ -180,7 +200,7 @@ export default function Collections(props){
         }}
         currentPage={currentPage}
         setCurrentPage={page => setCurrentPage(page)}
-        customActions={saveSearchAction}
+        customActions={bookmarkButton}
       />
       {/*{showMoreButton}*/}
     </div>
