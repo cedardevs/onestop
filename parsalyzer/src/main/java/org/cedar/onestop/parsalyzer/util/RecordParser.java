@@ -65,7 +65,7 @@ public class RecordParser {
       var error = ErrorEvent.newBuilder()
           .setTitle("No content provided")
           .setDetail("Input contains no content")
-          .setSource(StreamsApps.MANAGER_ID)
+          .setSource(StreamsApps.PARSALYZER_ID)
           .build();
       builder.setErrors(List.of(error));
     }
@@ -98,7 +98,7 @@ public class RecordParser {
       var error = ErrorEvent.newBuilder()
           .setTitle("No content provided")
           .setDetail("Input contains no content")
-          .setSource(StreamsApps.MANAGER_ID)
+          .setSource(StreamsApps.PARSALYZER_ID)
           .build();
       builder.setErrors(List.of(error));
     }
@@ -119,7 +119,7 @@ public class RecordParser {
       var error = ErrorEvent.newBuilder()
           .setTitle("Unable to parse input")
           .setDetail("Input content does not appear to be either xml or json")
-          .setSource(StreamsApps.MANAGER_ID)
+          .setSource(StreamsApps.PARSALYZER_ID)
           .build();
       return new ValueWithErrors(null, List.of(error));
     }
@@ -137,7 +137,7 @@ public class RecordParser {
       var error = ErrorEvent.newBuilder()
           .setTitle("Unable to parse malformed xml")
           .setDetail(ExceptionUtils.getRootCauseMessage(e).trim())
-          .setSource(StreamsApps.MANAGER_ID)
+          .setSource(StreamsApps.PARSALYZER_ID)
           .build();
       log.info("{}: {}", error.getTitle(), error.getDetail());
       return new ValueWithErrors(null, List.of(error));
@@ -156,7 +156,7 @@ public class RecordParser {
       var error = ErrorEvent.newBuilder()
           .setTitle("Unable to parse malformed json")
           .setDetail(ExceptionUtils.getRootCauseMessage(e).trim())
-          .setSource(StreamsApps.MANAGER_ID)
+          .setSource(StreamsApps.PARSALYZER_ID)
           .build();
       log.info("{}: {}", error.getTitle(), error.getDetail());
       return new ValueWithErrors(null, List.of(error));
@@ -198,7 +198,7 @@ public class RecordParser {
       var error = ErrorEvent.newBuilder()
           .setTitle("Unable to parse input")
           .setDetail("Input content does not appear to be either xml or json")
-          .setSource(StreamsApps.MANAGER_ID)
+          .setSource(StreamsApps.PARSALYZER_ID)
           .build();
       return new ValueWithErrors(null, List.of(error));
     }

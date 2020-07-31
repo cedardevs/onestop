@@ -21,7 +21,7 @@ class StreamParsalyzerSpec extends Specification {
   def STRING_DESERIALIZER = Serdes.String().deserializer()
   def AVRO_DESERIALIZER = new MockSchemaRegistrySerde().deserializer()
 
-  def streamsConfig = StreamParsalyzer.streamsConfig(StreamsApps.MANAGER_ID, new AppConfig()).with {
+  def streamsConfig = StreamParsalyzer.streamsConfig(StreamsApps.PARSALYZER_ID, new AppConfig()).with {
     it.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, MockSchemaRegistrySerde.class.name)
     it
   }

@@ -32,7 +32,7 @@ public class StreamParsalyzer {
 
   public static KafkaStreams buildStreamsApp(AppConfig config) {
     var topology = buildTopology();
-    var streamsConfig = streamsConfig(StreamsApps.MANAGER_ID, config);
+    var streamsConfig = streamsConfig(StreamsApps.PARSALYZER_ID, config);
     return new KafkaStreams(topology, streamsConfig);
   }
 
