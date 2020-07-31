@@ -163,8 +163,6 @@ public class TransformationUtils {
 
     AnalysisErrorGranule message = new AnalysisErrorGranule()
       .withInternalParentIdentifier(prepareInternalParentIdentifier(record))
-      // TODO parentIdentifierExists
-      // TODO parentIdentifierString
       .withStagedDate(timestamp)
       .withDataAccess(convertDataAccess(analysis.getDataAccess()))
       .withDescription(convertDescription(analysis.getDescription()))
@@ -176,11 +174,12 @@ public class TransformationUtils {
       .withTitles(convertTitles(analysis.getTitles()));
 
     var errorsList = record.getErrors().stream()
-        .map(e -> new Error().withTitle(e.getTitle()).withDetail(e.getDetail())) // TODO withSource(??)
+        .map(e -> new Error()
+          .withTitle(e.getTitle())
+          .withDetail(e.getDetail())
+          .withSource(e.getSource()))
         .collect(Collectors.toList());
     message.setErrors(errorsList);
-
-
 
     return message;
   }
@@ -208,12 +207,12 @@ public class TransformationUtils {
     return message;
   }
 
-  public static SearchGranule reformatGranuleForSearch(long timestamp, ParsedRecord record) { // TODO add specific tests!!!
+  public static SearchGranule reformatGranuleForSearch(long timestamp, ParsedRecord record) {
 
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
 
-    SearchGranule message = new SearchGranule() // TODO FIXME add internal parent identifier, make sure that's the only granule-only field!
+    SearchGranule message = new SearchGranule()
     .withStagedDate(timestamp)
     .withParentIdentifier(discovery.getParentIdentifier())
     .withFileIdentifier(discovery.getFileIdentifier())
