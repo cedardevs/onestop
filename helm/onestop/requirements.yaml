@@ -8,10 +8,10 @@ dependencies:
     version: "3.0.0-alpha"
     repository: file://../onestop-indexer
     conditions: onestop-indexer.enabled,global.onestop-indexer.enabled
-  - name: onestop-manager
+  - name: onestop-parsalyzer
     version: "3.0.0-alpha"
-    repository: file://../onestop-manager
-    conditions: manager.enabled,global.manager.enabled
+    repository: file://../onestop-parsalyzer
+    conditions: parsalyzer.enabled,global.parsalyzer.enabled
   - name: onestop-registry
     version: "3.0.0-alpha"
     repository: file://../onestop-registry
