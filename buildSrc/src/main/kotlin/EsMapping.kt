@@ -257,13 +257,14 @@ open class ESMappingTask : DefaultTask() {
       val interfaces = JsonArray()
 
       /* interfaces.add("org.cedar.onestop.mapping.search.SearchObject" as String) */
-      if (classname != "SearchFlattenedGranule"){
-        interfaces.add("org.cedar.onestop.mapping.search.SearchObjectWithDates" as String)
-        interfaces.add("org.cedar.onestop.mapping.search.SearchObjectWithKeywords" as String)
+      interfaces.add("org.cedar.onestop.mapping.search.SearchObjectWithDates" as String)
+      interfaces.add("org.cedar.onestop.mapping.search.SearchObjectWithKeywords" as String)
+      if (classname != "SearchGranule"){
+        interfaces.add("org.cedar.onestop.mapping.search.SearchObjectWithResponsibleParties" as String)
+      }
 
 
         /* interfaces.add("org.cedar.onestop.mapping.search.SearchObjectExpanded" as String) */
-      }
       schemaObject.add("javaInterfaces", interfaces)
 
     }

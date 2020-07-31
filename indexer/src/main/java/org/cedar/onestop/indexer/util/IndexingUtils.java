@@ -81,8 +81,11 @@ public class IndexingUtils {
         formattedRecord = TransformationUtils.reformatCollectionForSearch(input.getValue().timestamp(), input.getValue().value());
         break;
         case granule:
-        formattedRecord = TransformationUtils.reformatGranuleForSearch(input.getValue().timestamp(), input.getValue().value());
-
+        if(indexName.contains("flattened")) {
+          formattedRecord = TransformationUtils.reformatFlattenedGranuleForSearch(input.getValue().timestamp(), input.getValue().value());
+        } else {
+          formattedRecord = TransformationUtils.reformatGranuleForSearch(input.getValue().timestamp(), input.getValue().value());
+        }
       }
       ObjectMapper mapper = new ObjectMapper();
       try {

@@ -27,8 +27,10 @@ import org.cedar.onestop.mapping.analysis.Titles;
 import org.cedar.onestop.mapping.analysis.Error;
 import org.cedar.onestop.mapping.search.SearchObjectWithDates;
 import org.cedar.onestop.mapping.search.SearchObjectWithKeywords;
+import org.cedar.onestop.mapping.search.SearchObjectWithResponsibleParties;
 import org.cedar.onestop.mapping.search.SearchCollection;
 import org.cedar.onestop.mapping.search.SearchGranule;
+import org.cedar.onestop.mapping.search.SearchFlattenedGranule;
 import org.cedar.onestop.mapping.search.ServiceLink;
 import org.cedar.onestop.mapping.search.Checksum;
 
@@ -233,6 +235,46 @@ public class TransformationUtils {
     .withInternalParentIdentifier(prepareInternalParentIdentifier(record))
     .withFilename(prepareFilename(record));
     prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
+    prepareGcmdKeyword(message, discovery);
+
+    return message;
+  }
+
+  public static SearchFlattenedGranule reformatFlattenedGranuleForSearch(long timestamp, ParsedRecord record) {
+    // TODO add unit tests
+    var discovery = record.getDiscovery();
+    var analysis = record.getAnalysis();
+
+    SearchFlattenedGranule message = new SearchFlattenedGranule()
+    .withStagedDate(timestamp)
+    .withParentIdentifier(discovery.getParentIdentifier())
+    .withFileIdentifier(discovery.getFileIdentifier())
+    .withDoi(discovery.getDoi())
+    .withTitle(discovery.getTitle())
+    .withDescription(discovery.getDescription())
+    .withIsGlobal(discovery.getIsGlobal())
+    .withThumbnail(discovery.getThumbnail())
+    .withSpatialBounding(prepareSpatialBounding(discovery))
+    .withDsmmAverage(discovery.getDsmmAverage())
+    .withEdition(discovery.getEdition())
+    .withOrderingInstructions(discovery.getOrderingInstructions())
+    .withAccessFeeStatement(discovery.getAccessFeeStatement())
+    .withLegalConstraints(discovery.getLegalConstraints())
+    .withUseLimitation(discovery.getUseLimitation())
+    .withDataFormats(convertDataFormats(discovery))
+    .withDataFormat(prepareDataFormats(discovery))
+    .withLinkProtocol(prepareLinkProtocols(discovery))
+    .withServiceLinkProtocol(prepareServiceLinkProtocols(discovery))
+    .withLinks(convertLinks(discovery.getLinks()))
+    .withServiceLinks(prepareServiceLinks(discovery))
+    .withCiteAsStatements(discovery.getCiteAsStatements())
+    .withChecksums(prepareChecksums(record))
+    .withInternalParentIdentifier(prepareInternalParentIdentifier(record))
+    .withFilename(prepareFilename(record))
+    .withLargerWorks(convertReferences(discovery.getLargerWorks()))
+    .withCrossReferences(convertReferences(discovery.getCrossReferences()));
+    prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
+    prepareResponsibleParties(message, record);
     prepareGcmdKeyword(message, discovery);
 
     return message;
@@ -454,7 +496,7 @@ public class TransformationUtils {
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
-  private static void prepareResponsibleParties(SearchCollection search, ParsedRecord record) {
+  private static void prepareResponsibleParties(SearchObjectWithResponsibleParties search, ParsedRecord record) {
     Set<String> individualNames = new HashSet<>();
     Set<String> organizationNames = new HashSet<>();
     Optional.ofNullable(record)
