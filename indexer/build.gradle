@@ -11,6 +11,7 @@ buildscript {
 
 plugins {
   id 'application'
+  // id "com.github.johnrengelman.shadow" version "6.0.0"
 }
 
 apply plugin: "com.github.johnrengelman.shadow"
@@ -124,7 +125,7 @@ shadowJar {
   archiveBaseName.set("${rootProject.name}-${project.name}")
   archiveVersion.set("${project.version}")
   archiveClassifier.set("all")
-  configurations = [project.configurations.compile]
+  // configurations = [project.configurations.compile]
 }
 
 task sourceJar(type: Jar) {

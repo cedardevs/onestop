@@ -14,6 +14,8 @@ import java.lang.Exception;
 import org.cedar.schemas.analyze.Analyzers;
 import org.cedar.onestop.manager.util.RecordParser;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class Main {
 
   public static void main(String[] args) {
@@ -28,11 +30,13 @@ public class Main {
 
     try {
       ParsedRecord record = init(args[0], filename);
-      Map<String, Object> esResult = null;
+      Object esResult = null;
       for (int i=1; i<args.length-1; i++) {
         ParsedRecord updated = step(args[i], record);
         if (updated == null) {
           esResult = esStep(args[i], record);
+          ObjectMapper mapper = new ObjectMapper();
+          System.out.println(mapper.writeValueAsString(esResult));
         } else {
           record = updated;
         }
@@ -81,18 +85,17 @@ public class Main {
     return null;
   }
 
-  public static Map<String, Object> esStep(String command, ParsedRecord record) {
-    Set<String> fields = new HashSet<String>(); // TODO refactor reformatMessageForAnalysis to not need fields input
-    fields.add("description");
+  public static Object esStep(String command, ParsedRecord record) {
     switch(command) {
       case "granuleSearch":
-      return TransformationUtils.reformatMessageForSearch(record, fields);
+      return TransformationUtils.reformatGranuleForSearch(System.currentTimeMillis(), record);
+      // TODO add flatttened granule as an option?
       case "collectionSearch":
-      return TransformationUtils.reformatMessageForSearch(record, fields);
+      return TransformationUtils.reformatCollectionForSearch(System.currentTimeMillis(), record);
       case "granuleError":
-      return TransformationUtils.reformatMessageForAnalysis(record, fields, RecordType.granule);
+      return TransformationUtils.reformatGranuleForAnalysis(System.currentTimeMillis(), record);
       case "collectionError":
-      return TransformationUtils.reformatMessageForAnalysis(record, fields, RecordType.collection);
+      return TransformationUtils.reformatCollectionForAnalysis(System.currentTimeMillis(), record);
       default:
       System.err.println("Could not recognize step "+command);
       System.exit(1);

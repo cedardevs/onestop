@@ -7,8 +7,10 @@ buildscript {
 plugins {
   id 'application'
   id 'java-library'
+  // id "com.github.johnrengelman.shadow" version "6.0.0"
+
 }
-//
+
 apply plugin: "com.github.johnrengelman.shadow"
 
 mainClassName = 'org.cedar.onestop.transformer.Main'
@@ -29,13 +31,17 @@ dependencies {
 
   compile project(path: ':indexer', configuration: 'shadow')
   compile project(path: ':stream-manager', configuration: 'shadow')
+  // compile project(path: ':elastic-common', configuration: 'shadow') // for ES POJOs
+
+  // implementation(project(':elastic-common')) // for ES POJOs that should be coming from indexer dependency
+  // compile project(':elastic-common', configuration: 'shadow')
 
   compile implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
 
 
   // compile implementation("org.apache.avro:avro:1.8.2") // not sure what needs this jsonToAvroLenient apparently?
-  compile implementation("org.codehaus.groovy:groovy-xml:2.4.16") // needed by schemas parse
-  compile implementation("org.codehaus.groovy:groovy-json:2.4.16") // needed by schemas parse
+  // compile implementation("org.codehaus.groovy:groovy-xml:2.4.16") // needed by schemas parse
+  // compile implementation("org.codehaus.groovy:groovy-json:2.4.16") // needed by schemas parse
   compile api("com.github.cedardevs.schemas:schemas-parse:${Versions.ONESTOP_SCHEMAS}")
   compile api("com.github.cedardevs.schemas:schemas-analyze:${Versions.ONESTOP_SCHEMAS}")
   implementation("org.slf4j:slf4j-api:1.7.25")
@@ -66,7 +72,7 @@ shadowJar {
   archiveBaseName.set("${rootProject.name}-${project.name}")
   archiveVersion.set("${project.version}")
   archiveClassifier.set("all")
-  configurations = [project.configurations.compile]
+  // configurations = [project.configurations.compile]
 }
 
 task sourceJar(type: Jar) {
