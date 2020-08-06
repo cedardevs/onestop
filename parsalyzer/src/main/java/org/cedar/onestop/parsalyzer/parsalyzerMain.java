@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-public class parsalyzerMain {
-  private static final Logger log = LoggerFactory.getLogger(parsalyzerMain.class);
+public class ParsalyzerMain {
+  private static final Logger log = LoggerFactory.getLogger(ParsalyzerMain.class);
 
   public static void main(String[] args) {
     AppConfig appConfig = new AppConfig();
