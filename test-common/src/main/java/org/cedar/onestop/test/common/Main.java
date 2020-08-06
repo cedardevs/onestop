@@ -35,14 +35,15 @@ public class Main {
         ParsedRecord updated = step(args[i], record);
         if (updated == null) {
           esResult = esStep(args[i], record);
-          ObjectMapper mapper = new ObjectMapper();
-          System.out.println(mapper.writeValueAsString(esResult));
+          // ObjectMapper mapper = new ObjectMapper();
+          // System.out.println(mapper.writeValueAsString(esResult));
         } else {
           record = updated;
         }
       }
       if (esResult != null ) {
-        System.out.println(esResult.toString());
+        ObjectMapper mapper = new ObjectMapper();
+        System.out.println(mapper.writeValueAsString(esResult));
       } else {
         System.out.println(record.toString());
       }
