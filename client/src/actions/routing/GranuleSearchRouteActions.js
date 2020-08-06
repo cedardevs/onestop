@@ -162,7 +162,13 @@ const pageSuccessHandler = dispatch => {
       return
     }
     const granules = payload.data
-    dispatch(granuleResultsPageReceived(granules, payload.meta.total))
+    dispatch(
+      granuleResultsPageReceived(
+        granules,
+        payload.meta.total,
+        payload.meta.facets
+      )
+    )
   }
 }
 
@@ -362,7 +368,7 @@ export const submitGranuleSearchWithPage = (offset, max) => {
     return granulePromise(
       dispatch,
       updatedFilterState,
-      false,
+      offset == 0,
       pageSuccessHandler
     )
   }

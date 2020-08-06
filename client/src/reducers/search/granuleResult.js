@@ -40,6 +40,7 @@ const pageResultsReceived = (state, total, action) => {
     granules: newGranules,
     loadedGranuleCount: countKeys(newGranules),
     totalGranuleCount: total,
+    facets: action.facets != null ? action.facets : state.facets,
   })
 }
 
