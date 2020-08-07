@@ -1,13 +1,17 @@
 package org.cedar.onestop.user
 
-import org.cedar.onestop.user.service.SavedSearch
-import org.cedar.onestop.user.repository.SavedSearchRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.web.server.LocalServerPort
-import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.context.WebApplicationContext
 import org.testcontainers.containers.PostgreSQLContainer
 import spock.lang.Specification
 
@@ -18,27 +22,16 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class SavedSearchControllerSpec extends Specification {
   private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
 
-  @LocalServerPort
-  private int port
-
-  private String getRootUrl() {
-    return "http://localhost:" + port
-  }
-
   @Autowired
-  SavedSearch saveSearch
+  private WebApplicationContext context
 
-  private TestRestTemplate restTemplate
-  String baseUrl
-
-  @Autowired
-  SavedSearchRepository saveSearchRepository
-
-  private SavedSearch saveSearch
+  private MockMvc mvc
 
   def setup() {
-    restTemplate = new TestRestTemplate()
-    baseUrl = getRootUrl()
+    mvc = MockMvcBuilders
+        .webAppContextSetup(context)
+        .apply(SecurityMockMvcConfigurers.springSecurity())
+        .build()
   }
   // Run before all the tests:
   def setupSpec() {
@@ -50,65 +43,60 @@ class SavedSearchControllerSpec extends Specification {
     postgres.stop()
   }
 
-  def "Create and get all saved searches"() {
-    given:
-    saveSearch = new SavedSearch("1", "userOne", "entryName1", "value 1")
-    saveSearchRepository.save(saveSearch)
-
+  def "saved search denied"() {
     when:
-    def postResponse = restTemplate
-        .postForEntity(getBaseUrl() + "/v1/saved-search", saveSearch, SavedSearch.class)
-    def savedSearchId = postResponse.body.id
+    def postSearch = mvc.perform(MockMvcRequestBuilders
+        .post("/v1/saved-search")
+        .contentType("application/json")
+        .content(('{ "userId": "u1", "name": "test", "value": "value" }'))
+        .accept(MediaType.APPLICATION_JSON))
 
     then:
-    savedSearchId instanceof String
-    postResponse.statusCode == HttpStatus.OK
-
-    when:
-    sleep(200)
-    def retrieveEntity = restTemplate
-        .getForEntity(getBaseUrl()+ "/v1/saved-search/${savedSearchId}", SavedSearch.class)
-
-    then:
-    retrieveEntity.statusCode == HttpStatus.OK
-
-    and:
-    def data = retrieveEntity.body
-    data.id == savedSearchId
-    data.userId == "userOne"
-    data.name == "entryName1"
-    data.value == "value 1"
+    postSearch.andExpect(MockMvcResultMatchers.status().isUnauthorized())
   }
 
-  def "Create and Get all save searches by user id"() {
-    given:
-    SavedSearch saveSearch1 = new SavedSearch("2", "userIdTwo", "entryName2", "value 2")
-    SavedSearch saveSearch2 = new SavedSearch("3", "userIdTwo", "entryName3", "value 3")
-    saveSearchRepository.save(saveSearch1)
-
+  @WithMockUser(username = "mockMvcUser", roles = "PUBLIC")
+  def "save search items, userId is taken from Authentication principal"() {
     when:
-    def postResponse = restTemplate
-        .postForEntity(getBaseUrl() + "/v1/saved-search", saveSearch1, SavedSearch.class)
+    ResultActions postOneResults = mvc.perform(MockMvcRequestBuilders
+        .post("/v1/saved-search")
+        .contentType("application/json")
+        .content(('{ "userId": "userOne", "name": "testOne", "value": "valueOne" }'))
+        .accept(MediaType.APPLICATION_JSON))
 
-    def postResponseTwo = restTemplate
-        .postForEntity(getBaseUrl() + "/v1/saved-search", saveSearch2, SavedSearch.class)
-
-    def savedSearchId = postResponse.body.id
+    ResultActions postTwoResults = mvc.perform(MockMvcRequestBuilders
+        .post("/v1/saved-search")
+        .contentType("application/json")
+        .content(('{ "userId": "userOne", "name": "testTwo", "value": "valueTwo" }'))
+        .accept(MediaType.APPLICATION_JSON))
 
     then:
-    postResponse.statusCode == HttpStatus.OK
+    postOneResults.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.name").value("testOne"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.value").value("valueOne"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.userId").value("mockMvcUser")) //userId comes from authentication.getName(), payload is ignored
+
+    postTwoResults.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.name").value("testTwo"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.value").value("valueTwo"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.userId").value("mockMvcUser"))
 
     when:
-    sleep(200)
-    def retrieveEntity = restTemplate.getForEntity(getBaseUrl()+ "/v1/saved-search/${savedSearchId}", SavedSearch.class)
+    def getResults = mvc.perform(MockMvcRequestBuilders
+        .get("/v1/saved-search")
+        .accept(MediaType.APPLICATION_JSON))
 
     then:
-    retrieveEntity.statusCode == HttpStatus.OK
-
-    and:
-    def data = retrieveEntity.body
-    data.userId == "userIdTwo"
-    data.name == "entryName2"
-    data.value == "value 2"
+    getResults.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].name").value("testOne"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].value").value("valueOne"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].userId").value("mockMvcUser")) //userId comes from authentication.getName(), payload is ignored
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].name").value("testTwo"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].value").value("valueTwo"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].userId").value("mockMvcUser")) //userId comes from authentication.getName(), payload is ignored
   }
+
 }
