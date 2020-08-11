@@ -4,7 +4,7 @@ targetCompatibility = 11
 dependencies {
     def Versions = project.Versions
 
-    compileOnly("org.slf4j:slf4j-api:1.7.25")
+    compileOnly("org.slf4j:slf4j-api:${Versions.SLF4J}")
 
     implementation(project(':data-common'))
     implementation("org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}")

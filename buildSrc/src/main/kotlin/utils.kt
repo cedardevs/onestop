@@ -32,6 +32,7 @@ object Versions {
     const val TEST_CONTAINERS: String = "1.12.2"
     const val OPEN_SAML = "3.4.3"
     const val LOGBACK = "1.2.3"
+    const val SLF4J = "1.7.28"
     const val JAVAX_SERVLET_API = "4.0.1"
     const val JUNIT = "4.12"
     const val AUTH0_JAVA_JWT = "3.4.1"
