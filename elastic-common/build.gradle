@@ -50,7 +50,11 @@ bootJar {
 //   outputDir = "$buildDir/esGenerated"
 //   // setOutputDir(file("$buildDir/esGenerated"))
 // }
-assemble.dependsOn(esMappingGenerate) // TODO this is wrong because after cleaning up build dir, running gradle indexer:test fails unless you explicitly run elastic-common:build first
+// assemble.mustRunAfter(esMappingGenerate)
+// assemble.dependsOn(esMappingGenerate) // TODO this is wrong because after cleaning up build dir, running gradle indexer:test fails unless you explicitly run elastic-common:build first
+
+// compileJava.mustRunAfter(esMappingGenerate)
+compileJava.dependsOn(esMappingGenerate)
 sourceSets {
   main {
     java {
