@@ -16,10 +16,10 @@ dependencies:
     version: ~0.1.0
     repository: file://../onestop-client
     conditions: onestop-client.enabled,global.onestop-client.enabled
-  - name: onestop-manager
+  - name: onestop-parsalyzer
     version: ~0.4.0
-    repository: file://../onestop-manager
-    conditions: manager.enabled,global.manager.enabled
+    repository: file://../onestop-parsalyzer
+    conditions: parsalyzer.enabled,global.parsalyzer.enabled
   - name: onestop-registry
     version: ~0.4.0
     repository: file://../onestop-registry

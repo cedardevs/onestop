@@ -243,13 +243,17 @@ public class ElasticsearchService {
   }
 
   public void blockUntilTasksAvailable() throws IOException {
-    while (client.tasks().list(new ListTasksRequest(), RequestOptions.DEFAULT).getTasks().size() >= config.MAX_TASKS) {
+    while (currentRunningTasks() >= config.MAX_TASKS) {
       try {
         sleep(100);
       } catch (InterruptedException e) {
         log.info("blocking for tasks interrupted", e);
       }
     }
+  }
+
+  public Integer currentRunningTasks() throws IOException {
+    return client.tasks().list(new ListTasksRequest(), RequestOptions.DEFAULT).getTasks().size();
   }
 
   public BulkByScrollResponse reindex(ReindexRequest request) throws IOException {

@@ -10,9 +10,9 @@ build:
       jib:
         project: registry
         type: gradle
-    - image: cedardevs/onestop-stream-manager
+    - image: cedardevs/onestop-parsalyzer
       jib:
-        project: stream-manager
+        project: parsalyzer
         type: gradle
     - image: cedardevs/onestop-search
       jib:
@@ -78,10 +78,10 @@ deploy:
           service.clusterIP: 10.100.100.1
         imageStrategy:
           helm: {}
-      - name: onestop-manager
-        chartPath: helm/onestop-manager
+      - name: onestop-parsalyzer
+        chartPath: helm/onestop-parsalyzer
         values:
-          image: cedardevs/onestop-stream-manager
+          image: cedardevs/onestop-parsalyzer
         setValues:
           debug: true
           config: |-
@@ -129,10 +129,10 @@ profiles:
     deploy:
       helm:
         releases:
-          - name: onestop-manager
-            chartPath: helm/onestop-manager
+          - name: onestop-parsalyzer
+            chartPath: helm/onestop-parsalyzer
             values:
-              image: cedardevs/onestop-stream-manager
+              image: cedardevs/onestop-parsalyzer
             setValues:
               debug: true
               config: |-

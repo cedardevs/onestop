@@ -2,6 +2,8 @@ package org.cedar.onestop.registry.stream
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.apache.kafka.clients.admin.MockAdminClient
+import org.apache.kafka.common.Node
 import org.apache.kafka.common.header.internals.RecordHeaders
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
@@ -37,7 +39,9 @@ class FullTopologySpec extends Specification {
       (AUTO_OFFSET_RESET_CONFIG)        : 'earliest'
   ]
 
-  def topology = TopologyBuilders.buildTopology(5000)
+  def mockNode= new Node(0, 'FullTopologySpecNode', 9092)
+  def mockAdminClient = new MockAdminClient([mockNode], mockNode)
+  def topology = TopologyBuilders.buildTopology(5000, mockAdminClient)
   def driver = new TopologyTestDriver(topology, new Properties(config))
   def inputFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
   def parsedFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
@@ -45,10 +49,10 @@ class FullTopologySpec extends Specification {
   def inputType = RecordType.granule
   def inputSource = DEFAULT_SOURCE
   def inputTopic = inputTopic(inputType, inputSource)
-  def inputChangelogTopic = inputChangelogTopic(config[APPLICATION_ID_CONFIG], inputType, inputSource)
+  def inputChangelogTopic = inputChangelogTopicCombined(config[APPLICATION_ID_CONFIG], inputType)
   def parsedTopic = parsedTopic(inputType)
   def publishedTopic = publishedTopic(inputType)
-  def inputStore = driver.getKeyValueStore(inputStore(inputType, inputSource))
+  def inputStore = driver.getKeyValueStore(inputStoreCombined(inputType))
   def parsedStore = driver.getKeyValueStore(parsedStore(inputType))
 
   def cleanup(){
@@ -291,6 +295,64 @@ class FullTopologySpec extends Specification {
     def output2 = readAllOutput(driver, publishedTopic)
     OutputVerifier.compareKeyValue(output2[0], key, plusFiveMessage)
     output2.size() == 1
+  }
+
+  def 'flattens granules with their collections'() {
+    def collectionKey = '1e9fa20d-3126-4141-bf04-648a24f63bb4'
+    def collectionDiscovery = Discovery.newBuilder()
+        .setTitle("collection")
+        .setAlternateTitle("inherit me")
+        .build()
+    def collection = ParsedRecord.newBuilder()
+        .setType(RecordType.granule)
+        .setDiscovery(collectionDiscovery)
+        .build()
+
+    def granuleKey = '101cccf3-2f54-4dec-9804-192545496955'
+    def granuleDiscovery = Discovery.newBuilder()
+        .setTitle("granule")
+        .build()
+    def granuleRelationship = Relationship.newBuilder()
+        .setId(collectionKey)
+        .setType(RelationshipType.COLLECTION)
+        .build()
+    def granule = ParsedRecord.newBuilder()
+        .setType(RecordType.granule)
+        .setDiscovery(granuleDiscovery)
+        .setRelationships([granuleRelationship])
+        .build()
+
+    def flattenedGranuleBuilder = ParsedRecord.newBuilder(granule)
+    flattenedGranuleBuilder.getDiscoveryBuilder().setAlternateTitle(collectionDiscovery.alternateTitle)
+    def flattenedGranule = flattenedGranuleBuilder.build()
+
+    when:
+    driver.pipeInput(parsedFactory.create(parsedTopic(RecordType.collection), collectionKey, collection))
+    driver.pipeInput(parsedFactory.create(parsedTopic(RecordType.granule), granuleKey, granule))
+
+    then:
+    parsedStore.get(granuleKey).equals(granule)
+    def output = readAllOutput(driver, flattenedGranuleTopic())
+    OutputVerifier.compareKeyValue(output[0], granuleKey, flattenedGranule)
+    output.size() == 1
+  }
+
+  def 'granule tombstones result in flattened granule tombstones'() {
+    def granuleKey = 'flatteningtombstone'
+    def dummyValue = ParsedRecord.newBuilder()
+        .setType(RecordType.granule)
+        .build()
+
+    when:
+    // send a dummy value first, else nothing is stored in the ktable => nothing is deleted => no tombstone is emitted
+    driver.pipeInput(parsedFactory.create(parsedTopic(RecordType.granule), granuleKey, dummyValue))
+    driver.pipeInput(parsedFactory.create(parsedTopic(RecordType.granule), granuleKey, null, new RecordHeaders()))
+
+    then:
+    parsedStore.get(granuleKey) == null
+    def output = readAllOutput(driver, flattenedGranuleTopic())
+    OutputVerifier.compareKeyValue(output[0], granuleKey, null)
+    output.size() == 1
   }
 
 

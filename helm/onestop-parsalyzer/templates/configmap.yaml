@@ -1,0 +1,10 @@
+{{ if .Values.config }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "onestop-parsalyzer.fullname" . }}-config
+  labels: {{- include "onestop-parsalyzer.labels" . | nindent 4 }}
+data:
+  application.yaml: {{ .Values.config | toYaml | nindent 4 }}
+{{- end }}

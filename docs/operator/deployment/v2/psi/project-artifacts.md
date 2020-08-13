@@ -133,7 +133,7 @@ that discovery information is then analyzed. All resulting info is then sent bac
 
 #### Config
 
-The following config values are set inside the stream-manager application if no environment variables, system properties, or YAML config file are available. All of these can be overridden, along with any of the values found in the [Kafka configuration documentation](https://kafka.apache.org/documentation/#configuration) through any of the configuration sources. All Kafka properties are expected to begin with `kafka` when provided to the application.
+The following config values are set inside the parsalyzer application if no environment variables, system properties, or YAML config file are available. All of these can be overridden, along with any of the values found in the [Kafka configuration documentation](https://kafka.apache.org/documentation/#configuration) through any of the configuration sources. All Kafka properties are expected to begin with `kafka` when provided to the application.
 
 | Environment Variable            | Importance | Required? | Default             | Description |
 | ------------------------------- | ---------- | --------- | ------------------- | ----------- |

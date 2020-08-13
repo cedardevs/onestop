@@ -12,14 +12,14 @@ public class IndexingInput {
 
   private final String key;
   private final ValueAndTimestamp<ParsedRecord> value;
+  private final String topic;
   private final ElasticsearchConfig esConfig;
-  private final RecordType recordType;
 
   public IndexingInput(String key, ValueAndTimestamp<ParsedRecord> value, String topic, ElasticsearchConfig esConfig) {
     this.key = key;
     this.value = value;
+    this.topic = topic;
     this.esConfig = esConfig;
-    this.recordType = IndexingUtils.determineTypeFromTopic(topic);
   }
 
   public String getKey() {
@@ -30,58 +30,20 @@ public class IndexingInput {
     return value;
   }
 
-  public boolean isIndexable() {
-    return recordType != null;
+  public String getTopic() {
+    return topic;
   }
 
-  public List<String> getTargetSearchIndices(DocWriteRequest.OpType opType, boolean recordIsValid) {
-    var indices = new ArrayList<String>();
-
-    if(recordIsValid) {
-      indices.add(esConfig.searchAliasFromType(recordType.toString()));
-
-      if(opType == DocWriteRequest.OpType.DELETE && recordType == RecordType.granule) {
-        indices.add(esConfig.searchAliasFromType(ElasticsearchConfig.TYPE_FLATTENED_GRANULE));
-      }
-    }
-
-    return indices;
-  }
-
-  public String getTargetAnalysisAndErrorsIndex() {
-    return esConfig.analysisAndErrorsAliasFromType(recordType.toString());
-  }
-
-  public Set<String> getTargetSearchIndexFields() {
-    var searchAlias = esConfig.searchAliasFromType(recordType.toString());
-    if(searchAlias != null) {
-      return esConfig.indexedProperties(searchAlias).keySet();
-    }
-    else {
-      return new HashSet<>();
-    }
-  }
-
-  public Set<String> getTargetAnalysisAndErrorsIndexFields() {
-    var aeAlias = esConfig.analysisAndErrorsAliasFromType(recordType.toString());
-    if(aeAlias != null) {
-      return esConfig.indexedProperties(aeAlias).keySet();
-    }
-    else {
-      return new HashSet<>();
-    }
-  }
-
-  public RecordType getRecordType() {
-    return recordType;
+  public ElasticsearchConfig getConfig() {
+    return esConfig;
   }
 
   @Override
   public String toString() {
     return "IndexingInput {" +
-        ", recordType='" + recordType + "'" +
-        ", key='" + key + "'" +
-        ", value=" + value +
+        "key='" + key + "'" +
+        ", value='" + value + "'" +
+        ", topic='" + topic + "'" +
         '}';
   }
 

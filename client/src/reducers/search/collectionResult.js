@@ -29,13 +29,14 @@ const newSearchResultsReceived = (state, total, collections, facets) => {
   })
 }
 
-const pageResultsReceived = (state, total, newCollections) => {
+const pageResultsReceived = (state, total, newCollections, facets) => {
   let collections = newCollections
   return Immutable.merge(state, {
     totalCollectionCount: total,
     loadedCollectionCount:
       (collections && Object.keys(collections).length) || 0,
     collections: collections,
+    facets: facets != null ? facets : state.facets,
   })
 }
 
@@ -53,7 +54,8 @@ export const collectionResult = (state = initialState, action) => {
       return pageResultsReceived(
         state,
         action.total,
-        getCollectionsFromAction(action)
+        getCollectionsFromAction(action),
+        action.facets
       )
 
     case COLLECTION_SEARCH_ERROR:

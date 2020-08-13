@@ -9,7 +9,7 @@ The build produces the following artifacts for each component:
 - docker image
 - fat, executable jar
 - thin war
-    - *N/A for stream-manager; it is not a web application*
+    - *N/A for parsalyzer; it is not a web application*
 - sources jar
 
 Note: To build only the jar and war artifacts, e.g. if docker is unavailable, use:
@@ -34,7 +34,7 @@ You can deploy the components of PSI by setting env variables to point to Kafka 
 ```bash
 export KAFKA_BOOTSTRAP_SERVERS=...
 java -jar registry/build/libs/psi-registry-$VERSION-all.jar
-java -jar stream-manager/build/libs/psi-stream-manager-$VERSION-all.jar
+java -jar parsalyzer/build/libs/psi-parsalyzer-$VERSION-all.jar
 ```
 
 ##### Variation: External Servlet Container
@@ -58,7 +58,7 @@ Requires:
 1. Docker (or another container engine)
 
 Another option is to use the docker images built by this project. For example, these commands will create and run containers
-for the registry and stream-manager, as well as Kafka and Zookeeper using the well-maintained [Confluent Platform images](https://github.com/confluentinc/cp-docker-images).
+for the registry and parsalyzer, as well as Kafka and Zookeeper using the well-maintained [Confluent Platform images](https://github.com/confluentinc/cp-docker-images).
 
 ```bash
 docker network create psi
@@ -100,7 +100,7 @@ docker run -d \
   --env KAFKA_BOOTSTRAP_SERVERS=kafka:9092 \
   --env SCHEMA_REGISTRY_URL=schema-registry:8081 \
   --network psi \
-  cedardevs/psi-stream-manager
+  cedardevs/psi-parsalyzer
 ```
 
 Of course higher level tools can be used to manage these containers, like docker-compose, docker swarm, or...

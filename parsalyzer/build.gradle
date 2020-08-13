@@ -1,0 +1,99 @@
+plugins {
+  id 'application'
+}
+
+apply plugin: "com.github.johnrengelman.shadow"
+
+mainClassName = 'org.cedar.onestop.parsalyzer.ParsalyzerMain'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+configurations {
+  integrationTestCompile.extendsFrom testCompile
+  integrationTestRuntime.extendsFrom testRuntime
+}
+
+dependencies {
+  def Versions = project.Versions
+
+  implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
+  implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
+
+  implementation(project(':data-common'))
+  implementation(project(':kafka-common'))
+
+  implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+  implementation("org.apache.kafka:kafka-streams:${Versions.KAFKA}")
+  implementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}")
+  implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
+  implementation("org.apache.commons:commons-text:1.2")
+
+  implementation("com.github.cedardevs.schemas:schemas-analyze:${Versions.ONESTOP_SCHEMAS}")
+  implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
+  implementation("com.github.cedardevs.schemas:schemas-parse:${Versions.ONESTOP_SCHEMAS}")
+
+  testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
+  testImplementation("org.apache.kafka:kafka-streams-test-utils:${Versions.KAFKA}")
+  testImplementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}:test")
+  testImplementation("org.apache.kafka:kafka_2.12:${Versions.KAFKA}")
+  testImplementation("org.apache.kafka:kafka_2.12:${Versions.KAFKA}:test")
+  testImplementation("io.confluent:kafka-schema-registry:${Versions.CONFLUENT}")
+  testImplementation("io.confluent:kafka-schema-registry:${Versions.CONFLUENT}:tests")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}:test")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}:sources")
+  testImplementation("com.github.java-json-tools:json-schema-validator:2.2.10")
+}
+
+jar {
+  baseName = "${rootProject.name}-${project.name}"
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+}
+// check http://imperceptiblethoughts.com/shadow/
+shadowJar {
+  archiveBaseName.set("${rootProject.name}-${project.name}")
+  archiveVersion.set("${project.version}")
+  archiveClassifier.set("all")
+  // configurations = [project.configurations.compile]
+}
+
+task sourceJar(type: Jar) {
+  classifier = 'sources'
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
+assemble.dependsOn(sourceJar)
+
+task BuildDockerImage {
+  group "jib"
+  dependsOn jibDockerBuild
+}
+task PublishDockerImage {
+  group "jib"
+  dependsOn jib
+}
+
+jib {
+  use(PublishingKt) {
+    def publish = project.publish
+
+    from {
+      //base image
+      image = 'gcr.io/distroless/java:11'
+    }
+    to {
+      image = publish.repository()
+      auth {
+        username = publish.username
+        password = publish.password
+      }
+    }
+    container {
+      creationTime = publish.created.toString()
+      labels = publish.ociAnnotations()
+    }
+  }
+}

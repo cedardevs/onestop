@@ -8,9 +8,9 @@ include(
     "geoportal-search",
     "indexer",
     "kafka-common",
+    "parsalyzer",
     "registry",
-    "search",
-    "stream-manager"
+    "search"
     //"user"
 )
 

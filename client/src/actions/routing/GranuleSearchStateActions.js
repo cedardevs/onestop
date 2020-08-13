@@ -34,10 +34,11 @@ export const granuleResultsPageRequested = (offset, max) => ({
 })
 
 export const GRANULE_RESULTS_PAGE_RECEIVED = 'GRANULE_RESULTS_PAGE_RECEIVED'
-export const granuleResultsPageReceived = (granules, total) => ({
+export const granuleResultsPageReceived = (granules, total, facets) => ({
   type: GRANULE_RESULTS_PAGE_RECEIVED,
   granules: granules,
   total: total,
+  facets: facets,
 })
 
 export const GRANULES_FOR_CART_REQUESTED = 'GRANULES_FOR_CART_REQUESTED'

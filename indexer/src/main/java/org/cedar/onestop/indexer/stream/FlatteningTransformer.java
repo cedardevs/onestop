@@ -7,6 +7,8 @@ import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.indexer.util.ElasticsearchService;
+import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.client.Cancellable;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.ReindexRequest;
 import org.elasticsearch.script.Script;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.Map;
 
 public class FlatteningTransformer implements Transformer<String, Long, KeyValue<String, FlatteningTransformer.FlatteningTriggerResult>> {
   private static final Logger log = LoggerFactory.getLogger(FlatteningTransformer.class);
@@ -26,6 +29,7 @@ public class FlatteningTransformer implements Transformer<String, Long, KeyValue
   private final ElasticsearchConfig config;
   private final String flatteningScript;
   private final Duration interval;
+  private final Map<String, Cancellable> requestsInFlight;
 
   private ProcessorContext context;
   private KeyValueStore<String, Long> store;
@@ -36,6 +40,7 @@ public class FlatteningTransformer implements Transformer<String, Long, KeyValue
     this.config = esService.getConfig();
     this.flatteningScript = config.getScript();
     this.interval = config.getInterval();
+    this.requestsInFlight = new HashMap<>();
   }
 
   @Override
@@ -64,8 +69,10 @@ public class FlatteningTransformer implements Transformer<String, Long, KeyValue
   private void triggerAll() {
     store.all().forEachRemaining(kv -> {
       try {
-        triggerFlattening(kv.key, kv.value);
-        store.delete(kv.key);
+        if (service.currentRunningTasks() < config.MAX_TASKS) {
+          triggerFlattening(kv.key, kv.value);
+          store.delete(kv.key);
+        }
       }
       catch(IOException e) {
         log.error("Triggering flattening for collection ["+ kv.key + "] starting at [" + kv.value +"] failed", e);
@@ -75,6 +82,11 @@ public class FlatteningTransformer implements Transformer<String, Long, KeyValue
   }
 
   private void triggerFlattening(String collectionId, Long timeToFlattenFrom) throws IOException {
+    // If an existing request is in flight, cancel it and start a new one
+    if (requestsInFlight.containsKey(collectionId)) {
+      requestsInFlight.remove(collectionId).cancel();
+    }
+
     // Unfortunately we have to retrieve the collection to provide the flattening script parameters
     var collectionResponse = service.get(config.COLLECTION_SEARCH_INDEX_ALIAS, collectionId);
     if (!collectionResponse.isExists()) {
@@ -100,17 +112,18 @@ public class FlatteningTransformer implements Transformer<String, Long, KeyValue
       request.setRequestsPerSecond(config.REQUESTS_PER_SECOND);
     }
 
-    service.blockUntilTasksAvailable();
     log.debug("starting flattening for granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
-    try{
-      var result = service.reindex(request);
-      var successful = result.getBulkFailures().size() == 0;
-      log.info("successfully flattened granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]");
-      context.forward(collectionId, new FlatteningTriggerResult(successful, timeToFlattenFrom));
-    }
-    catch (Exception e){
-      log.error("failed to flatten granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]", e);
-    }
+    var reindexCancellable = service.reindexAsync(request, ActionListener.wrap(
+        response -> {
+          var numFailures = response.getBulkFailures().size();
+          var successful = numFailures == 0;
+          log.info("flattened granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "] with [" + numFailures + "] failures");
+          context.forward(collectionId, new FlatteningTriggerResult(successful, timeToFlattenFrom));
+        },
+        error -> {
+          log.error("failed to flatten granules from collection [" + collectionId + "] updated since [" + timeToFlattenFrom + "]", error);
+        }));
+    requestsInFlight.put(collectionId, reindexCancellable);
   }
 
   @Override

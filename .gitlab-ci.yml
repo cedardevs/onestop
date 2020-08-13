@@ -26,7 +26,7 @@ build:
       - client/node_modules
       - registry/build
       - search/build
-      - stream-manager/build
+      - parsalyzer/build
       - cli/vendor
 
 test:
@@ -45,5 +45,5 @@ test:
       - client/node_modules
       - registry/build
       - search/build
-      - stream-manager/build
+      - parsalyzer/build
       - cli/vendor

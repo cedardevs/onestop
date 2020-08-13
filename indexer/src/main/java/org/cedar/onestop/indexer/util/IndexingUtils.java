@@ -1,6 +1,7 @@
 package org.cedar.onestop.indexer.util;
 
 import org.apache.kafka.streams.state.ValueAndTimestamp;
+import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.constants.Topics;
 import org.cedar.schemas.avro.psi.ParsedRecord;
@@ -22,18 +23,26 @@ public class IndexingUtils {
 
   public static List<DocWriteRequest<?>> mapRecordToRequests(IndexingInput input) {
     List<DocWriteRequest<?>> requests = new ArrayList<>();
+    if (input == null) {
+      return requests;
+    }
 
-    if (input != null && input.isIndexable()) {
+    var recordType = determineRecordTypeFromTopic(input.getTopic());
+    if (recordType != null) {
       var record = ValueAndTimestamp.getValueOrNull(input.getValue());
       var isValid = isValid(record);
       var operation = (isTombstone(record) || isPrivate(record)) ? DELETE : INDEX;
-
-      var searchIndices = input.getTargetSearchIndices(operation, isValid);
-      var aeIndex = input.getTargetAnalysisAndErrorsIndex();
+      var indexType = determineIndexTypeFromTopic(input.getTopic());
 
       try {
-        searchIndices.forEach(i -> requests.add(buildSearchWriteRequest(i, operation, input)));
-        requests.add(buildAnalysisAndErrorWriteRequest(aeIndex, operation, input));
+        if (isValid) {
+          var searchIndex = input.getConfig().searchAliasFromType(indexType);
+          requests.add(buildSearchWriteRequest(searchIndex, operation, input));
+        }
+        if (!indexType.equals(ElasticsearchConfig.TYPE_FLATTENED_GRANULE)) {
+          var aeIndex = input.getConfig().analysisAndErrorsAliasFromType(indexType);
+          requests.add(buildAnalysisAndErrorWriteRequest(aeIndex, operation, input, recordType));
+        }
 
       } catch (ElasticsearchGenerationException e) {
         log.error("Failed to serialize record with key [" + input.getKey() + "] to json", e);
@@ -63,28 +72,31 @@ public class IndexingUtils {
       return new DeleteRequest(indexName).id(input.getKey());
     }
     else {
-      var formattedRecord = new HashMap<String, Object>();
-      formattedRecord.putAll(TransformationUtils.reformatMessageForSearch(input.getValue().value(), input.getTargetSearchIndexFields()));
+      var targetFields = input.getConfig().indexedProperties(indexName).keySet();
+      var formattedRecord = new HashMap<>(TransformationUtils.reformatMessageForSearch(input.getValue().value(), targetFields));
       formattedRecord.put("stagedDate", input.getValue().timestamp());
       return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
     }
   }
 
-  public static DocWriteRequest<?> buildAnalysisAndErrorWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input) {
+  public static DocWriteRequest<?> buildAnalysisAndErrorWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input, RecordType recordType) {
     if (opType == DELETE) {
       return new DeleteRequest(indexName).id(input.getKey());
     }
     else {
-      var formattedRecord = new HashMap<String, Object>();
-      formattedRecord.putAll(TransformationUtils.reformatMessageForAnalysis(input.getValue().value(), input.getTargetAnalysisAndErrorsIndexFields(), input.getRecordType()));
+      var targetFields = input.getConfig().indexedProperties(indexName).keySet();
+      var formattedRecord = new HashMap<>(TransformationUtils.reformatMessageForAnalysis(input.getValue().value(), targetFields, recordType));
       formattedRecord.put("stagedDate", input.getValue().timestamp());
       return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
     }
   }
 
-  public static RecordType determineTypeFromTopic(String topic) {
+  public static RecordType determineRecordTypeFromTopic(String topic) {
     if (topic == null) {
       return null;
+    }
+    if (topic.equals(Topics.flattenedGranuleTopic())) {
+      return RecordType.granule;
     }
     for(RecordType record : RecordType.values()) {
       if(topic.equals(Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, record))) {
@@ -93,4 +105,23 @@ public class IndexingUtils {
     }
     return null;
   }
+
+  public static String determineIndexTypeFromTopic(String topic) {
+    if (topic == null) {
+      return null;
+    }
+    if (topic.equals(Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.granule))) {
+      return ElasticsearchConfig.TYPE_GRANULE;
+    }
+    else if (topic.equals(Topics.parsedChangelogTopic(StreamsApps.REGISTRY_ID, RecordType.collection))) {
+      return ElasticsearchConfig.TYPE_COLLECTION;
+    }
+    else if (topic.equals(Topics.flattenedGranuleTopic())) {
+      return ElasticsearchConfig.TYPE_FLATTENED_GRANULE;
+    }
+    else {
+      return null;
+    }
+  }
+
 }
