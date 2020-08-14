@@ -3,6 +3,9 @@ package org.cedar.onestop.user.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.cedar.onestop.user.common.JsonApiData;
+import org.cedar.onestop.user.common.JsonApiResponse;
+import org.cedar.onestop.user.common.JsonApiSuccessResponse;
 import org.cedar.onestop.user.repository.SavedSearchRepository;
 import org.cedar.onestop.user.service.ResourceNotFoundException;
 import org.cedar.onestop.user.service.SavedSearch;
@@ -14,14 +17,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/v1")
 public class SavedSearchController {
-
+  static String type = "search";
   private SavedSearchRepository savedSearchRepository;
 
   @Autowired
@@ -35,8 +36,23 @@ public class SavedSearchController {
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @RequestMapping(value = "/saved-search/all", method = RequestMethod.GET, produces = "application/json")
-  public List<SavedSearch> getAll() {
-    return savedSearchRepository.findAll();
+  public JsonApiResponse getAll() {
+    List<SavedSearch> searchResultList = savedSearchRepository.findAll();
+    List<JsonApiData> dataList = new ArrayList<>();
+    if (searchResultList != null) {
+      Iterator it = searchResultList.iterator();
+      while (it.hasNext()) {
+        SavedSearch searchItem = (SavedSearch) it.next();
+        JsonApiData dataItem = new JsonApiData.Builder()
+          .setId(searchItem.id)
+          .setType(type)
+          .setAttributes(searchItem.toMap()).build();
+        dataList.add(dataItem);
+      }
+    }
+
+    return new JsonApiSuccessResponse.Builder()
+      .setData(dataList).build();
   }
 
   //TODO do we need it?
@@ -83,6 +99,7 @@ public class SavedSearchController {
       return new ResponseEntity<>(jsonSpecErrorResponse, HttpStatus.UNAUTHORIZED);
     }
   }
+
   @ApiOperation(value = "Add user search")
   @RequestMapping(value = "/saved-search", method = RequestMethod.POST, produces = "application/json")
   public ResponseEntity<?> create(@RequestBody SavedSearch savedSearch, final @AuthenticationPrincipal Authentication authentication) {

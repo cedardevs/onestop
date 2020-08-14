@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Domain model class that maps the data stored into save_search table
@@ -142,5 +144,18 @@ public class SavedSearch {
         ", createdOn='" + createdOn + '\'' +
         ", lastLogin='" + lastUpdatedOn + '\'' +
         '}';
+  }
+
+  public Map<String, Object> toMap() {
+    //TODO should null fields be included?
+    Map result = new HashMap();
+    result.put("id", id);
+    result.put("userId", userId);
+    result.put("name", name);
+    result.put("value", value);
+    result.put("filter", filter);
+    result.put("createdOn", createdOn);
+    result.put("lastUpdatedOn", lastUpdatedOn);
+    return result;
   }
 }
