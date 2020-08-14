@@ -60,7 +60,6 @@ export const deleteSearch = (savedSearchEndpoint, id) => {
     dispatch(savedSearchRequest())
 
     return fetch(endpoint, requestOptions)
-      .then(response => response.json())
       .then(
         response => {
           dispatch(savedSearchSuccess(response))

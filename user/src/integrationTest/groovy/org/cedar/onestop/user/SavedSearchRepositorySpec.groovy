@@ -21,7 +21,7 @@ class SavedSearchRepositorySpec extends Specification {
   private SavedSearch saveSearch
 
   def setup(){
-    saveSearch = new SavedSearch("1", "UserId1", "entryName1", "value 1")
+    saveSearch = new SavedSearch("1", "UserId1", "entryName1","{\"test\":\"test\"}", "value 1")
   }
 
   // Run before all the tests:
@@ -36,7 +36,7 @@ class SavedSearchRepositorySpec extends Specification {
 
   def "should Store Each SaveSearch"() {
     given:
-    SavedSearch saveSearch1 = new SavedSearch("2", "UserId2", "entryName2", "value 1")
+    SavedSearch saveSearch1 = new SavedSearch("2", "UserId2", "entryName2", "{\"test\":\"test\"}","value 1")
     saveSearchRepository.save(saveSearch)
     saveSearchRepository.save(saveSearch1)
 
@@ -73,8 +73,8 @@ class SavedSearchRepositorySpec extends Specification {
 
   def "should have multiple entries for a userId"() {
     given:
-    SavedSearch saveSearch1 = new SavedSearch("2", "UserId2", "entryName2", "value 2")
-    SavedSearch saveSearch2 = new SavedSearch("3", "UserId2", "entryName3", "value 3")
+    SavedSearch saveSearch1 = new SavedSearch("2", "UserId2", "entryName2", "{\"test\":\"test\"}", "value 2")
+    SavedSearch saveSearch2 = new SavedSearch("3", "UserId2", "entryName3", "{\"test\":\"test\"}","value 3")
     iterator()
     saveSearchRepository.save(saveSearch1)
     saveSearchRepository.save(saveSearch2)

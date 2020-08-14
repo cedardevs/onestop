@@ -56,14 +56,14 @@ public class SavedSearchController {
   }
 
   //TODO do we need it?
-  @ApiOperation(value = "Search with an ID (ADMIN)", response = SavedSearch.class)
-  @RequestMapping(value = "/saved-search/{id}", method = RequestMethod.GET, produces = "application/json")
-  public ResponseEntity<SavedSearch> getById(@PathVariable(value = "id") String id)
-      throws ResourceNotFoundException {
-    SavedSearch savedSearch = savedSearchRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + id));
-    return ResponseEntity.ok().body(savedSearch);
-  }
+//  @ApiOperation(value = "Search with an ID (ADMIN)", response = SavedSearch.class)
+//  @RequestMapping(value = "/saved-search/{id}", method = RequestMethod.GET, produces = "application/json")
+//  public ResponseEntity<SavedSearch> getById(@PathVariable(value = "id") String id)
+//      throws ResourceNotFoundException {
+//    SavedSearch savedSearch = savedSearchRepository.findById(id)
+//        .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + id));
+//    return ResponseEntity.ok().body(savedSearch);
+//  }
 
   @ApiOperation(value = "View all available save searches by UserId (ADMIN)", response = Iterable.class)
   @ApiResponses(value = {
@@ -71,9 +71,20 @@ public class SavedSearchController {
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @RequestMapping(value = "/saved-search/user/{userId}", method = RequestMethod.GET, produces = "application/json")
-  public  List<SavedSearch> getByUserId(@PathVariable(value = "userId") String userId)
+  public  ResponseEntity<?> getByUserId(final @AuthenticationPrincipal Authentication authentication, @PathVariable(value = "userId") String userId)
       throws RuntimeException {
-    return savedSearchRepository.findAllByUserId(userId);
+    if(authentication != null && authentication.getName() == userId) {
+      Map<String, List> jsonSpecResponse = new HashMap<>();
+      jsonSpecResponse.put("data" , savedSearchRepository.findAllByUserId(userId));
+      return new ResponseEntity<>(jsonSpecResponse, HttpStatus.OK);
+    }
+    else{
+      Map<String, Map<String, String>> jsonSpecErrorResponse = new HashMap<>();
+      Map<String, String> errorMap = new HashMap<String, String>();
+      errorMap.put("reason", "Unauthorized");
+      jsonSpecErrorResponse.put("error", errorMap);
+      return new ResponseEntity<>(jsonSpecErrorResponse, HttpStatus.UNAUTHORIZED);
+    }
   }
 
   @ApiOperation(value = "View all user searches", response = Iterable.class)
