@@ -262,4 +262,12 @@
     <vulnerabilityName>CVE-2020-7663</vulnerabilityName>
   </suppress>
 
+  <suppress>
+    <notes><![CDATA[
+   file name: kotlin-*-1.3.72.jar
+   ]]></notes>
+    <filePath regex="true">.*\bkotlin-.*-1\.3\.72\.jar</filePath>
+    <cve>CVE-2020-15824</cve>
+  </suppress>
+
 </suppressions>
