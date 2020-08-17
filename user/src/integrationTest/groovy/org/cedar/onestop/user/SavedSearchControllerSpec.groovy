@@ -56,7 +56,18 @@ class SavedSearchControllerSpec extends Specification {
   }
 
   @WithMockUser(username = "mockMvcUser", roles = "PUBLIC")
-  def "save search items, userId is taken from Authentication principal"() {
+  def "public user not authorized to admin endpoint"() {
+    when:
+    def getResults = mvc.perform(MockMvcRequestBuilders
+        .get("/v1/saved-search/user/{id}", "abc123")
+        .accept(MediaType.APPLICATION_JSON))
+
+    then:
+    getResults.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+  }
+
+  @WithMockUser(username = "mockMvcUser", roles = "PUBLIC")
+  def "POST and GET save search items, userId is taken from Authentication principal"() {
     when:
     ResultActions postOneResults = mvc.perform(MockMvcRequestBuilders
         .post("/v1/saved-search")
