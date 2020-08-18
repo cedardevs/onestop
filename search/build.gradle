@@ -9,6 +9,7 @@ targetCompatibility = 11
 dependencies {
   def Versions = project.Versions
 
+  implementation(project(':data-common'))
   implementation(project(':elastic-common'))
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
 

@@ -1,5 +1,6 @@
 package org.cedar.onestop.kafka.common.conf;
 
+import org.cedar.onestop.data.util.MapUtils;
 import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ public class AppConfig {
       Yaml yaml = new Yaml();
       InputStream inputStream = Files.newInputStream(Path.of(filePath));
       Map<String, Object> configFileMap = yaml.load(inputStream);
-      return DataUtils.consolidateNestedKeysInMap(null, ".", configFileMap);
+      return MapUtils.consolidateNestedKeysInMap(null, ".", configFileMap);
     }
     catch (IOException e) {
       log.error("Cannot open config file path [ " + filePath + " ]. Using defaults and/or system/environment variables.");
@@ -77,7 +78,7 @@ public class AppConfig {
     }
     else {
       Map<String, Object> config = yaml.load(input);
-      return DataUtils.consolidateNestedKeysInMap(null, ".", config);
+      return MapUtils.consolidateNestedKeysInMap(null, ".", config);
     }
   }
 

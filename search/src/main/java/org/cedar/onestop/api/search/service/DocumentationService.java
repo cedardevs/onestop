@@ -1,12 +1,26 @@
 package org.cedar.onestop.api.search.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DocumentationService {
 
   public static final Map<String, String> facetNameMappings = new HashMap<>();
   public static final Map<String, String> filterableFields = new HashMap<>();
+  public static final List<String> summaryFields = List.of(
+      "internalParentIdentifier",
+      "title",
+      "thumbnail",
+      "spatialBounding",
+      "beginDate",
+      "beginYear",
+      "endDate",
+      "endYear",
+      "links",
+      "citeAsStatements",
+      "serviceLinks"
+  );
 
   static {
     facetNameMappings.put("dataFormats"         , "dataFormat");

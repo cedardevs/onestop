@@ -7,6 +7,9 @@ import org.apache.kafka.streams.kstream.Initializer;
 import org.apache.kafka.streams.kstream.Reducer;
 import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
+import org.cedar.onestop.data.util.JsonUtils;
+import org.cedar.onestop.data.util.ListUtils;
+import org.cedar.onestop.data.util.MapUtils;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.cedar.schemas.avro.psi.*;
@@ -94,8 +97,8 @@ public class StreamFunctions {
 
     // Note: we always preserve existing events, hence currentState.getEvents() instead of builder.getEvents()
     var currentEvents = currentState != null ? currentState.getEvents() : null;
-    var mergedEvents = DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput, failedState));
-    builder.setEvents(DataUtils.truncateList(mergedEvents, eventListLimit, true));
+    var mergedEvents = ListUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput, failedState));
+    builder.setEvents(ListUtils.truncateList(mergedEvents, eventListLimit, true));
     return builder.build();
   };
 
@@ -114,21 +117,25 @@ public class StreamFunctions {
     }
     else {
       assert input != null;
-      var mergedEvents = DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false));
+      var mergedEvents = ListUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false));
       return AggregatedInput.newBuilder(currentState)
           .setDeleted(deleted)
-          .setEvents(DataUtils.truncateList(mergedEvents, eventListLimit, true))
+          .setEvents(ListUtils.truncateList(mergedEvents, eventListLimit, true))
           .build();
     }
   }
 
   public static Map updateRawJson(AggregatedInput.Builder builder, Input input, OperationType operationType) {
     try {
-      var currentMap = DataUtils.parseJsonMap(builder.getRawJson());
-      var inputMap = DataUtils.parseJsonMap(input.getContent());
-      Map mergedMap = operationType == OperationType.REMOVE ?
-          DataUtils.removeFromMap(currentMap, inputMap) :
-          DataUtils.mergeMaps(currentMap, inputMap);
+      var currentMap = JsonUtils.parseJsonAsMapSafe(builder.getRawJson());
+      var inputMap = JsonUtils.parseJsonAsMapSafe(input.getContent());
+      Map mergedMap;
+      if(operationType == OperationType.REMOVE) {
+        mergedMap = MapUtils.removeFromMap(currentMap, inputMap);
+      }
+      else {
+        mergedMap = MapUtils.mergeMaps(currentMap, inputMap);
+      }
       builder.setRawJson(JsonOutput.toJson(mergedMap));
       return mergedMap;
     }
@@ -138,7 +145,7 @@ public class StreamFunctions {
           .setDetail("Failed to parsed json: " + e.getMessage())
           .setSource(StreamsApps.REGISTRY_ID)
           .build();
-      builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error));
+      builder.setErrors(ListUtils.addOrInit(builder.getErrors(), error));
       return null;
     }
   }

@@ -1,11 +1,11 @@
-package org.cedar.onestop.elastic.common;
+package org.cedar.onestop.data.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-public class FileUtil {
+public class FileUtils {
 
   public static String textFromClasspathFile(String filename) throws IOException {
     // return file as JSON string
@@ -22,5 +22,4 @@ public class FileUtil {
     }
     return null;
   }
-
 }

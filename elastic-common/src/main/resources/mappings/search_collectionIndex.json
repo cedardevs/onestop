@@ -1,6 +1,6 @@
 {
   "mappings": {
-    "dynamic": "false",
+    "dynamic": "strict",
     "properties": {
       "stagedDate": {
         "type": "date",
@@ -25,44 +25,34 @@
         "type": "text"
       },
       "gcmdScience": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "gcmdScienceServices": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "gcmdLocations": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "gcmdInstruments": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "gcmdPlatforms": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "gcmdProjects": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "gcmdDataCenters": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "gcmdHorizontalResolution": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "gcmdVerticalResolution": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "gcmdTemporalResolution": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "beginDate": {
         "type": "date",
@@ -115,8 +105,7 @@
         }
       },
       "dataFormat": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "links": {
         "type": "nested",
@@ -149,12 +138,10 @@
         }
       },
       "linkProtocol": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "serviceLinkProtocol": {
-        "type": "keyword",
-        "doc_values": true
+        "type": "keyword"
       },
       "individualNames": {
         "type": "text"

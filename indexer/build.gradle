@@ -30,6 +30,7 @@ configurations {
 dependencies {
   def Versions = project.Versions
 
+  implementation(project(':data-common'))
   implementation(project(':kafka-common'))
   implementation(project(':elastic-common'))
   implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
@@ -40,8 +41,8 @@ dependencies {
   implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${Versions.ELASTIC}")
   implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
-  implementation("org.slf4j:slf4j-api:1.7.25")
-  implementation("ch.qos.logback:logback-classic:1.2.3")
+  implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
+  implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
   implementation("org.apache.commons:commons-text:1.2")
 
 

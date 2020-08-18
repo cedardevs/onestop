@@ -17,6 +17,10 @@ configurations {
 dependencies {
   def Versions = project.Versions
 
+  implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
+  implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
+
+  implementation(project(':data-common'))
   implementation(project(':kafka-common'))
 
   implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
@@ -24,9 +28,6 @@ dependencies {
   implementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}")
   implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
   implementation("org.apache.commons:commons-text:1.2")
-
-  implementation("org.slf4j:slf4j-api:1.7.25")
-  implementation("ch.qos.logback:logback-classic:1.2.3")
 
   implementation("com.github.cedardevs.schemas:schemas-analyze:${Versions.ONESTOP_SCHEMAS}")
   implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
@@ -52,10 +53,10 @@ jar {
 }
 // check http://imperceptiblethoughts.com/shadow/
 shadowJar {
-  baseName = "${rootProject.name}-${project.name}"
-  classifier = 'all'
-  version = version
-  configurations = [project.configurations.compile]
+  archiveBaseName.set("${rootProject.name}-${project.name}")
+  archiveVersion.set("${project.version}")
+  archiveClassifier.set("all")
+  // configurations = [project.configurations.compile]
 }
 
 task sourceJar(type: Jar) {
