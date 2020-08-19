@@ -40,14 +40,15 @@ gradle_check:
     paths:
       - "*/build/reports/*"
 
-dependency_check:
+owasp_dependency_check:
   stage: security
   tags:
     - security
   script:
-    - ./gradlew dependencyCheckAggregate
+    - ./gradlew dependencyCheckUpdate dependencyCheckAggregate
   artifacts:
     paths:
+      - ".gradle/dependency-check-data"
       - "build/reports/*.html"
 
 #sonarqube:
