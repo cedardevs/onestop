@@ -1,49 +1,67 @@
-image: openjdk:11-jdk-slim
+image: ncei/centos7-openjdk11:build
 
-# Disable the Gradle daemon for Continuous Integration servers as correctness
-# is usually a priority over speed in CI environments. Using a fresh
-# runtime for each build is more reliable since the runtime is completely
-# isolated from any previous builds.
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "1346-gitlab-ci"' # TODO - remove after merged
+
+stages:
+  - build
+  - test
+  - security
+  - deploy
+
 variables:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false,org.gradle.caching=true,org.gradle.parallel=true"
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
 build:
   stage: build
-  script: ./gradlew --build-cache assemble
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
+  tags:
+    - build
+  script:
+    - gradle assemble
+  artifacts:
     paths:
-      - build
-      - .gradle
-      - buildSrc/build
-      - buildSrc/.gradle
-      - client/build
-      - client/.gradle
-      - client/node_modules
-      - registry/build
-      - search/build
-      - parsalyzer/build
-      - cli/vendor
+      - ".gradle"
+      - "build"
+      - "*/build"
+      - "*/.gradle"
+      - "*/node_modules"
 
-test:
+gradle_check:
   stage: test
-  script: ./gradlew check
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
+  tags:
+    - container
+  script:
+    - gradle check -x BuildDockerImage -x indexer:integrationTest -x search:integrationTest
+  artifacts:
     paths:
-      - build
-      - .gradle
-      - buildSrc/build
-      - buildSrc/.gradle
-      - client/build
-      - client/.gradle
-      - client/node_modules
-      - registry/build
-      - search/build
-      - parsalyzer/build
-      - cli/vendor
+      - "*/build/reports/*"
+
+dependency_check:
+  stage: security
+  tags:
+    - security
+  script:
+    - gradle dependencyCheckAggregate
+  artifacts:
+    paths:
+      - "build/reports/*.html"
+
+#sonarqube:
+#  stage: security
+#  tags:
+#    - security
+#  script:
+#    - gradle sonarqube -Dsonar.host.url=https://sonarqube.ncei.noaa.gov -Dsonar.login=${SONAR_TOKEN}
+
+#gitlab_package:
+#  stage: deploy
+#  tags:
+#    - container
+#  script:
+#    - gradle publish
+#  only:
+#    - master
