@@ -21,7 +21,7 @@ build:
   tags:
     - build
   script:
-    - gradle assemble
+    - ./gradlew assemble
   artifacts:
     paths:
       - ".gradle"
@@ -35,7 +35,7 @@ gradle_check:
   tags:
     - build
   script:
-    - gradle check -x BuildDockerImage -x indexer:integrationTest -x search:integrationTest
+    - ./gradlew check -x BuildDockerImage -x indexer:integrationTest -x search:integrationTest
   artifacts:
     paths:
       - "*/build/reports/*"
@@ -45,7 +45,7 @@ dependency_check:
   tags:
     - security
   script:
-    - gradle dependencyCheckAggregate
+    - ./gradlew dependencyCheckAggregate
   artifacts:
     paths:
       - "build/reports/*.html"
@@ -55,13 +55,13 @@ dependency_check:
 #  tags:
 #    - security
 #  script:
-#    - gradle sonarqube -Dsonar.host.url=https://sonarqube.ncei.noaa.gov -Dsonar.login=${SONAR_TOKEN}
+#    - ./gradlew sonarqube -Dsonar.host.url=https://sonarqube.ncei.noaa.gov -Dsonar.login=${SONAR_TOKEN}
 
 #gitlab_package:
 #  stage: deploy
 #  tags:
 #    - container
 #  script:
-#    - gradle publish
+#    - ./gradlew publish
 #  only:
 #    - master
