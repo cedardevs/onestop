@@ -33,7 +33,7 @@ build:
 gradle_check:
   stage: test
   tags:
-    - container
+    - build
   script:
     - gradle check -x BuildDockerImage -x indexer:integrationTest -x search:integrationTest
   artifacts:
