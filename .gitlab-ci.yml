@@ -21,7 +21,7 @@ build:
   tags:
     - build
   script:
-    - ./gradlew assemble
+    - ./gradlew --stacktrace assemble
   artifacts:
     paths:
       - ".gradle"
@@ -35,7 +35,7 @@ gradle_check:
   tags:
     - build
   script:
-    - ./gradlew check -x BuildDockerImage -x indexer:integrationTest -x search:integrationTest
+    - ./gradlew --stacktrace check -x BuildDockerImage -x indexer:integrationTest -x search:integrationTest
   artifacts:
     paths:
       - "*/build/reports/*"
@@ -45,7 +45,7 @@ owasp_dependency_check:
   tags:
     - security
   script:
-    - ./gradlew dependencyCheckUpdate dependencyCheckAggregate
+    - ./gradlew --stacktrace dependencyCheckUpdate dependencyCheckAggregate
   artifacts:
     paths:
       - ".gradle/dependency-check-data"
