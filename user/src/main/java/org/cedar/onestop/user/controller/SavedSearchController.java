@@ -3,6 +3,7 @@ package org.cedar.onestop.user.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.cedar.onestop.user.common.*;
 import org.cedar.onestop.user.repository.SavedSearchRepository;
 import org.cedar.onestop.user.service.ResourceNotFoundException;
 import org.cedar.onestop.user.service.SavedSearch;
@@ -14,14 +15,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/v1")
 public class SavedSearchController {
-
+  static String type = "search";
   private SavedSearchRepository savedSearchRepository;
 
   @Autowired
@@ -35,8 +34,9 @@ public class SavedSearchController {
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @RequestMapping(value = "/saved-search/all", method = RequestMethod.GET, produces = "application/json")
-  public List<SavedSearch> getAll() {
-    return savedSearchRepository.findAll();
+  public JsonApiResponse getAll() {
+    List<SavedSearch> searchResults = savedSearchRepository.findAll();
+    return getJsonApiResponse(searchResults);
   }
 
   //TODO do we need it?
@@ -55,19 +55,14 @@ public class SavedSearchController {
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @RequestMapping(value = "/saved-search/user/{userId}", method = RequestMethod.GET, produces = "application/json")
-  public  ResponseEntity<?> getByUserId(final @AuthenticationPrincipal Authentication authentication, @PathVariable(value = "userId") String userId)
+  public  JsonApiResponse getByUserId(final @AuthenticationPrincipal Authentication authentication, @PathVariable(value = "userId") String userId)
       throws RuntimeException {
     if(authentication != null && authentication.getName() == userId) {
-      Map<String, List> jsonSpecResponse = new HashMap<>();
-      jsonSpecResponse.put("data" , savedSearchRepository.findAllByUserId(userId));
-      return new ResponseEntity<>(jsonSpecResponse, HttpStatus.OK);
+      List <SavedSearch> searchResults = savedSearchRepository.findAllByUserId(userId);
+      return getJsonApiResponse(searchResults);
     }
     else{
-      Map<String, Map<String, String>> jsonSpecErrorResponse = new HashMap<>();
-      Map<String, String> errorMap = new HashMap<String, String>();
-      errorMap.put("reason", "Unauthorized");
-      jsonSpecErrorResponse.put("error", errorMap);
-      return new ResponseEntity<>(jsonSpecErrorResponse, HttpStatus.UNAUTHORIZED);
+      return new JsonApiErrorResponse.Builder().setCode("Unauthorized").setStatus(HttpStatus.UNAUTHORIZED).build();
     }
   }
 
@@ -77,48 +72,42 @@ public class SavedSearchController {
           @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @RequestMapping(value = "/saved-search", method = RequestMethod.GET, produces = "application/json")
-  public  ResponseEntity<?> getByUserId(final @AuthenticationPrincipal Authentication authentication)
+  public JsonApiResponse getByUserId(final @AuthenticationPrincipal Authentication authentication)
           throws RuntimeException {
     if(authentication != null) {
-      Map<String, List> jsonSpecResponse = new HashMap<>();
       String userId = authentication.getName();
-      Map<String, String> userData = new HashMap<String, String>();
-      jsonSpecResponse.put("data" , savedSearchRepository.findAllByUserId(userId));
-      return new ResponseEntity<>(jsonSpecResponse, HttpStatus.OK);
+      List <SavedSearch> searchResults = savedSearchRepository.findAllByUserId(userId);
+      return getJsonApiResponse(searchResults);
     }
     else{
-      Map<String, Map<String, String>> jsonSpecErrorResponse = new HashMap<>();
-      Map<String, String> errorMap = new HashMap<String, String>();
-      errorMap.put("reason", "Unauthorized");
-      jsonSpecErrorResponse.put("error", errorMap);
-      return new ResponseEntity<>(jsonSpecErrorResponse, HttpStatus.UNAUTHORIZED);
+      return new JsonApiErrorResponse.Builder().setCode("Unauthorized").setStatus(HttpStatus.UNAUTHORIZED).build();
     }
   }
+
   @ApiOperation(value = "Add user search")
   @RequestMapping(value = "/saved-search", method = RequestMethod.POST, produces = "application/json")
-  public ResponseEntity<?> create(@RequestBody SavedSearch savedSearch, final @AuthenticationPrincipal Authentication authentication) {
+  public JsonApiResponse create(@RequestBody SavedSearch savedSearch,
+                                final @AuthenticationPrincipal Authentication authentication) {
     if(authentication != null) {
-      Map<String, SavedSearch> jsonSpecResponse = new HashMap<>();
       String userId = authentication.getName();
       savedSearch.setUserId(userId);
-      jsonSpecResponse.put("data" , savedSearchRepository.save(savedSearch));
-      return new ResponseEntity<>(jsonSpecResponse, HttpStatus.OK);
+      SavedSearch item = savedSearchRepository.save(savedSearch);
+      List<SavedSearch> result = new ArrayList<>();
+      result.add(item);
+      return getJsonApiResponse(result);
     }
     else{
-      Map<String, Map<String, String>> jsonSpecErrorResponse = new HashMap<>();
-      Map<String, String> errorMap = new HashMap<String, String>();
-      errorMap.put("reason", "Unauthorized");
-      jsonSpecErrorResponse.put("error", errorMap);
-      return new ResponseEntity<>(jsonSpecErrorResponse, HttpStatus.UNAUTHORIZED);
+      return new JsonApiErrorResponse.Builder().setCode("Unauthorized").setStatus(HttpStatus.UNAUTHORIZED).build();
     }
   }
 
   @ApiOperation(value = "Update user saved search")
   @RequestMapping(value = "/saved-search/{id}", method = RequestMethod.PUT, produces = "application/json")
-  public ResponseEntity<SavedSearch> update(@PathVariable(value = "id") String id,
-                                            @Valid @RequestBody SavedSearch savedSearchDetails) throws ResourceNotFoundException {
+  public JsonApiResponse update(@PathVariable(value = "id") String id,
+                                @Valid @RequestBody SavedSearch savedSearchDetails)
+    throws ResourceNotFoundException {
     SavedSearch savedSearch = savedSearchRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Save search not found for this id :: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("Save search not found for this id : " + id));
 
     savedSearch.setUserId(savedSearchDetails.getUserId());
     savedSearch.setName(savedSearchDetails.getName());
@@ -126,29 +115,45 @@ public class SavedSearchController {
     savedSearch.setCreatedOn(savedSearchDetails.getCreatedOn());
     savedSearch.setLastUpdatedOn(savedSearchDetails.getLastUpdatedOn());
     final SavedSearch updatedSavedSearch = savedSearchRepository.save(savedSearch);
-    return ResponseEntity.ok(updatedSavedSearch);
+    List<SavedSearch> result = new ArrayList<>();
+    result.add(updatedSavedSearch);
+    return getJsonApiResponse(result);
   }
 
 //todo more to do here so users cannot delete each others request
   @ApiOperation(value = "Delete saved search")
   @RequestMapping(value = "/saved-search/{id}", method = RequestMethod.DELETE, produces = "application/json")
-  public ResponseEntity<?> delete(@PathVariable(value = "id") String id, final @AuthenticationPrincipal Authentication authentication)
-          throws ResourceNotFoundException {
+  public JsonApiResponse delete(@PathVariable(value = "id") String id,
+                                final @AuthenticationPrincipal Authentication authentication)
+    throws ResourceNotFoundException {
     if(authentication != null) {
-      Map<String, Map<String, Boolean>> jsonSpecResponse = new HashMap<>();
       SavedSearch savedSearch = savedSearchRepository.findById(id)
               .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + id));
       savedSearchRepository.delete(savedSearch);
       Map<String, Boolean> response = new HashMap<>();
       response.put("deleted", Boolean.TRUE);
-      jsonSpecResponse.put("data" , response);
-      return new ResponseEntity<>(jsonSpecResponse, HttpStatus.OK);
+      return new JsonApiSuccessResponse.Builder()
+        .setMeta(new JsonApiMeta.Builder().setNonStandardMetadata(response).build()).build();
     }else{
-      Map<String, Map<String, String>> jsonSpecErrorResponse = new HashMap<>();
-      Map<String, String> errorMap = new HashMap<String, String>();
-      errorMap.put("reason", "Unauthorized");
-      jsonSpecErrorResponse.put("error", errorMap);
-      return new ResponseEntity<>(jsonSpecErrorResponse, HttpStatus.UNAUTHORIZED);
+      return new JsonApiErrorResponse.Builder().setCode("Unauthorized").setStatus(HttpStatus.UNAUTHORIZED).build();
     }
+  }
+
+  private JsonApiResponse getJsonApiResponse(List<SavedSearch> searchResults) {
+    List<JsonApiData> dataList = new ArrayList<>();
+    if (searchResults != null) {
+      Iterator it = searchResults.iterator();
+      while (it.hasNext()) {
+        SavedSearch searchItem = (SavedSearch) it.next();
+        JsonApiData dataItem = new JsonApiData.Builder()
+          .setId(searchItem.id)
+          .setType(type)
+          .setAttributes(searchItem.toMap()).build();
+        dataList.add(dataItem);
+      }
+    }
+
+    return new JsonApiSuccessResponse.Builder()
+      .setData(dataList).build();
   }
 }

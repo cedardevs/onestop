@@ -24,7 +24,8 @@ class UserControllerSpec extends Specification {
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+//    results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+    results.andReturn().getResponse().getContentAsString() == """{"meta":null,"id":null,"status":"UNAUTHORIZED","code":"Unauthorized","title":null,"detail":null,"source":null}"""
   }
 
 }

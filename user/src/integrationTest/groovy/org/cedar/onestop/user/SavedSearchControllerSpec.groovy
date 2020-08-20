@@ -52,7 +52,8 @@ class SavedSearchControllerSpec extends Specification {
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    postSearch.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+//    postSearch.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+    postSearch.andReturn().getResponse().getContentAsString() == """{"meta":null,"id":null,"status":"UNAUTHORIZED","code":"Unauthorized","title":null,"detail":null,"source":null}"""
   }
 
   @WithMockUser(username = "mockMvcUser", roles = "PUBLIC")
@@ -84,15 +85,15 @@ class SavedSearchControllerSpec extends Specification {
     then:
     postOneResults.andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.name").value("testOne"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.value").value("valueOne"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.userId").value("mockMvcUser")) //userId comes from authentication.getName(), payload is ignored
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("testOne"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("valueOne"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.userId").value("mockMvcUser"))
 
     postTwoResults.andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.name").value("testTwo"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.value").value("valueTwo"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.userId").value("mockMvcUser"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("testTwo"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("valueTwo"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.userId").value("mockMvcUser"))
 
     when:
     def getResults = mvc.perform(MockMvcRequestBuilders
@@ -102,12 +103,12 @@ class SavedSearchControllerSpec extends Specification {
     then:
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].name").value("testOne"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].value").value("valueOne"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].userId").value("mockMvcUser")) //userId comes from authentication.getName(), payload is ignored
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].name").value("testTwo"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].value").value("valueTwo"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].userId").value("mockMvcUser")) //userId comes from authentication.getName(), payload is ignored
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("testOne"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("valueOne"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.userId").value("mockMvcUser")) //userId comes from authentication.getName(), payload is ignored
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].attributes.name").value("testTwo"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].attributes.value").value("valueTwo"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].attributes.userId").value("mockMvcUser")) //userId comes from authentication.getName(), payload is ignored
   }
 
 }
