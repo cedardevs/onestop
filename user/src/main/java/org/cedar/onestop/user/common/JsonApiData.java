@@ -56,7 +56,7 @@ public class JsonApiData {
     }
 
     public JsonApiData build() {
-      if(id != null && type != null && attributes != null) {
+      if(id != null && type != null) {
         return new JsonApiData(id, type, attributes);
       }
       else {
