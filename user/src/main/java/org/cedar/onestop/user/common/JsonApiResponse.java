@@ -8,7 +8,7 @@ import java.util.*;
 
 abstract public class JsonApiResponse {
   List<JsonApiData> data;
-  List<JsonApiError> errors;
+  List<JsonApiErrorResponse> errors;
   JsonApiMeta meta;
 //  List<JsonApiLink> links; ?
 }
