@@ -1,9 +1,5 @@
 image: ncei/centos7-openjdk11:build
 
-workflow:
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "1346-gitlab-ci"' # TODO - remove after merged
-
 stages:
   - build
   - test
@@ -18,8 +14,9 @@ variables:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-build:
+assemble:
   stage: build
+  needs: []
   tags:
     - build
   script:
@@ -32,18 +29,10 @@ build:
       - "*/build"
       - "*/node_modules"
 
-#owasp_update:
-#  stage: build
-#  tags:
-#    - build
-#  script:
-#    - ./gradlew --stacktrace dependencyCheckUpdate
-#  artifacts:
-#    paths:
-#      - ".gradle/dependency-check-data"
-
-gradle_check:
+check:
   stage: test
+  needs:
+    - assemble
   tags:
     - build
   script:
@@ -52,28 +41,36 @@ gradle_check:
     paths:
       - "*/build/reports/*"
 
-owasp_dependency_check:
+owasp:
   stage: security
+  needs: []
+#  only:
+#    - master
   tags:
-    - build
+    - security
   script:
-    - ./gradlew --stacktrace dependencyCheckUpdate dependencyCheckAggregate
+    - ./gradlew --stacktrace dependencyCheckUpdate dependencyCheckAggregate -Dorg.gradle.parallel=false
   artifacts:
     paths:
       - "build/reports/*.html"
 
 sonarqube:
   stage: security
+  needs:
+    - check
   tags:
     - security
   script:
-    - ./gradlew sonarqube -Dsonar.host.url=https://sonarqube.ncei.noaa.gov -Dsonar.login=${SONAR_TOKEN}
+    - ./gradlew --stacktrace sonarqube -Dsonar.host.url=https://sonarqube.ncei.noaa.gov -Dsonar.login=${SONAR_TOKEN}
 
-#gitlab_package:
-#  stage: deploy
-#  tags:
-#    - container
-#  script:
-#    - ./gradlew publish
+gitlab_package:
+  stage: deploy
+  needs:
+    - owasp
+    - sonarqube
 #  only:
 #    - master
+  tags:
+    - container
+  script:
+    - echo "I'm totally publishing right now..."
