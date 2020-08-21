@@ -30,6 +30,16 @@ build:
       - "*/.gradle"
       - "*/node_modules"
 
+owasp_update:
+  stage: build
+  tags:
+    - build
+  script:
+    - ./gradlew --stacktrace dependencyCheckUpdate
+  artifacts:
+    paths:
+      - ".gradle/dependency-check-data"
+
 gradle_check:
   stage: test
   tags:
@@ -43,12 +53,11 @@ gradle_check:
 owasp_dependency_check:
   stage: security
   tags:
-    - security
+    - build
   script:
-    - ./gradlew --stacktrace dependencyCheckUpdate dependencyCheckAggregate
+    - ./gradlew --stacktrace dependencyCheckAggregate
   artifacts:
     paths:
-      - ".gradle/dependency-check-data"
       - "build/reports/*.html"
 
 sonarqube:
