@@ -18,6 +18,10 @@ plugins {
     //   creating a report of known vulnerable components that are included in the build.
     id("org.owasp.dependencycheck").version("5.3.2.1")
 
+    // SonarQube
+    // - static code analysis for test coverage, potential bugs, potential vulnerabilities, etc.
+    id("org.sonarqube").version("3.0")
+
     // Note: The plugins below are not universally `apply(true)`because subprojects only need them conditionally.
 
     // Kotlin Plugin

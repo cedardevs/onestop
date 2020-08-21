@@ -51,12 +51,12 @@ owasp_dependency_check:
       - ".gradle/dependency-check-data"
       - "build/reports/*.html"
 
-#sonarqube:
-#  stage: security
-#  tags:
-#    - security
-#  script:
-#    - ./gradlew sonarqube -Dsonar.host.url=https://sonarqube.ncei.noaa.gov -Dsonar.login=${SONAR_TOKEN}
+sonarqube:
+  stage: security
+  tags:
+    - security
+  script:
+    - ./gradlew sonarqube -Dsonar.host.url=https://sonarqube.ncei.noaa.gov -Dsonar.login=${SONAR_TOKEN}
 
 #gitlab_package:
 #  stage: deploy
