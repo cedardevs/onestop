@@ -11,8 +11,8 @@ stages:
   - deploy
 
 variables:
-  LANG: "C.UTF-8"
-  LC_ALL: "C.UTF-8"
+  LANG: "en_US.UTF-8"
+  LC_ALL: "en_US.UTF-8"
   JAVA_OPTS: "-Dsun.jnu.encoding=UTF-8 -Dfile.encoding=UTF-8"
   GRADLE_OPTS: "-Dorg.gradle.daemon=false,org.gradle.caching=true,org.gradle.parallel=true,sun.jnu.encoding=UTF-8,file.encoding=UTF-8"
 
