@@ -26,28 +26,31 @@ public class IndexingUtils {
     if (input == null) {
       return requests;
     }
-
     var recordType = determineRecordTypeFromTopic(input.getTopic());
-    if (recordType != null) {
-      var record = ValueAndTimestamp.getValueOrNull(input.getValue());
-      var isValid = isValid(record);
-      var operation = (isTombstone(record) || isPrivate(record)) ? DELETE : INDEX;
-      var indexType = determineIndexTypeFromTopic(input.getTopic());
+    if (recordType == null) {
+      return requests;
+    }
+    var record = ValueAndTimestamp.getValueOrNull(input.getValue());
+    var isValid = isValid(record);
+    var operation = (isTombstone(record) || isPrivate(record)) ? DELETE : INDEX;
+    var indexType = determineIndexTypeFromTopic(input.getTopic());
+    if (indexType == null) {
+      return requests;
+    }
 
-      try {
-        if (isValid) {
-          var searchIndex = input.getConfig().searchAliasFromType(indexType);
-          requests.add(buildSearchWriteRequest(searchIndex, operation, input));
-        }
-        if (!indexType.equals(ElasticsearchConfig.TYPE_FLATTENED_GRANULE)) {
-          var aeIndex = input.getConfig().analysisAndErrorsAliasFromType(indexType);
-          requests.add(buildAnalysisAndErrorWriteRequest(aeIndex, operation, input, recordType));
-        }
-
-      } catch (ElasticsearchGenerationException e) {
-        log.error("Failed to serialize record with key [" + input.getKey() + "] to json", e);
-        return new ArrayList<>();
+    try {
+      if (isValid) {
+        var searchIndex = input.getConfig().searchAliasFromType(indexType);
+        requests.add(buildSearchWriteRequest(searchIndex, operation, input));
       }
+      if (!indexType.equals(ElasticsearchConfig.TYPE_FLATTENED_GRANULE)) {
+        var aeIndex = input.getConfig().analysisAndErrorsAliasFromType(indexType);
+        requests.add(buildAnalysisAndErrorWriteRequest(aeIndex, operation, input, recordType));
+      }
+
+    } catch (ElasticsearchGenerationException e) {
+      log.error("Failed to serialize record with key [" + input.getKey() + "] to json", e);
+      return new ArrayList<>();
     }
     return requests;
   }

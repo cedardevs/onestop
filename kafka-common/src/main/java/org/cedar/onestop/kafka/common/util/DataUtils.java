@@ -56,8 +56,8 @@ public class DataUtils {
   }
 
   public static Map<String, Object> parseJsonMap(String json) throws IOException {
-    if (json == null || json == "") {
-      return new LinkedHashMap();
+    if (json == null || json.equals("")) {
+      return new LinkedHashMap<>();
     }
     else {
       return new ObjectMapper().readValue(json, Map.class);

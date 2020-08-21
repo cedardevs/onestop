@@ -145,7 +145,7 @@ public class ElasticsearchService {
     aliasRequest.addAliasAction(AliasActions.add().index(index).alias(alias));
     var aliasResponse = client.indices().updateAliases(aliasRequest, RequestOptions.DEFAULT);
     if (dropOldIndices && aliasResponse.isAcknowledged()) {
-      return dropIndex((String[]) oldIndices.toArray());
+      return dropIndex(oldIndices.toArray(new String[0]));
     }
     else {
       return aliasResponse.isAcknowledged();
@@ -208,7 +208,8 @@ public class ElasticsearchService {
       try {
         sleep(100);
       } catch (InterruptedException e) {
-        log.info("blocking for tasks interrupted", e);
+        log.info("interrupted while blocking for tasks", e);
+        Thread.currentThread().interrupt();
       }
     }
   }

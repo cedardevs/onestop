@@ -98,7 +98,7 @@ public class DelayedPublisherTransformer implements Transformer<String, ParsedRe
         var value = lookupStore.get(triggerKey).value();
         if (value != null) {
           log.debug("looked up existing state for {}: {}", triggerKey, value);
-          var publishingInfo = value != null ? value.getPublishing() : null;
+          var publishingInfo = value.getPublishing();
           var publishTimestamp = publishingInfo != null ? publishingInfo.getUntil() : null;
           if (publishTimestamp != null && publishTimestamp <= timestamp) {
             log.debug("current publish date for {} has passed => publish", triggerKey);
@@ -107,7 +107,7 @@ public class DelayedPublisherTransformer implements Transformer<String, ParsedRe
         }
         log.debug("removing publishing event");
         removeTrigger(triggerTime, triggerKey);
-        if (triggerKeysStore.get(triggerKey) == triggerTime) {
+        if (triggerKeysStore.get(triggerKey).equals(triggerTime)) {
           triggerKeysStore.delete(triggerKey);
         }
       });

@@ -6,6 +6,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.*;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,10 +25,10 @@ public class KafkaConfigNames {
       KEY_SUBJECT_NAME_STRATEGY,
       VALUE_SUBJECT_NAME_STRATEGY
   );
-  public static final Set<String> admin = AdminClientConfig.configNames();
-  public static final Set<String> producer = combineSets(ProducerConfig.configNames(), avro);
-  public static final Set<String> consumer = combineSets(ConsumerConfig.configNames(), avro);
-  public static final Set<String> streams = combineSets(producer, consumer);
+  public static final Set<String> admin = Collections.unmodifiableSet(AdminClientConfig.configNames());
+  public static final Set<String> producer = Collections.unmodifiableSet(combineSets(ProducerConfig.configNames(), avro));
+  public static final Set<String> consumer = Collections.unmodifiableSet(combineSets(ConsumerConfig.configNames(), avro));
+  public static final Set<String> streams = Collections.unmodifiableSet(combineSets(producer, consumer));
 
   @SafeVarargs
   private static final <T> Set<T> combineSets(Set<T>... sets) {

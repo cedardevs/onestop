@@ -18,7 +18,7 @@ public class PublishingAwareTransformer implements ValueTransformer<ParsedRecord
     if (value == null) { return null; }
     var publishing = value.getPublishing();
     var markedPrivate = publishing != null ? publishing.getIsPrivate() : false;
-    var untilDate = publishing.getUntil();
+    var untilDate = publishing != null ? publishing.getUntil() : null;
     var untilDateHasPassed = untilDate != null && untilDate < context.timestamp();
     var isPrivate = (markedPrivate && !untilDateHasPassed) || (!markedPrivate && untilDateHasPassed);
     return isPrivate ? null : value;
