@@ -24,10 +24,10 @@ build:
     - ./gradlew --stacktrace assemble
   artifacts:
     paths:
-      - ".gradle"
+#      - ".gradle"
+#      - "*/.gradle"
       - "build"
       - "*/build"
-      - "*/.gradle"
       - "*/node_modules"
 
 owasp_update:
