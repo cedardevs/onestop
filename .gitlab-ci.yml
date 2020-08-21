@@ -33,15 +33,15 @@ build:
       - "*/build"
       - "*/node_modules"
 
-owasp_update:
-  stage: build
-  tags:
-    - build
-  script:
-    - ./gradlew --stacktrace dependencyCheckUpdate
-  artifacts:
-    paths:
-      - ".gradle/dependency-check-data"
+#owasp_update:
+#  stage: build
+#  tags:
+#    - build
+#  script:
+#    - ./gradlew --stacktrace dependencyCheckUpdate
+#  artifacts:
+#    paths:
+#      - ".gradle/dependency-check-data"
 
 gradle_check:
   stage: test
@@ -58,7 +58,7 @@ owasp_dependency_check:
   tags:
     - build
   script:
-    - ./gradlew --stacktrace dependencyCheckAggregate
+    - ./gradlew --stacktrace dependencyCheckUpdate dependencyCheckAggregate
   artifacts:
     paths:
       - "build/reports/*.html"
