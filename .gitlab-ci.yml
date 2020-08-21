@@ -49,7 +49,7 @@ owasp:
   tags:
     - security
   script:
-    - ./gradlew --stacktrace dependencyCheckUpdate dependencyCheckAggregate -Dorg.gradle.parallel=false
+    - ./gradlew --stacktrace dependencyCheckPurge dependencyCheckUpdate dependencyCheckAggregate -Dorg.gradle.parallel=false
   artifacts:
     paths:
       - "build/reports/*.html"
