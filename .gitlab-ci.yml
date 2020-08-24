@@ -9,7 +9,7 @@ stages:
 variables:
   LANG: "en_US.UTF-8"
   LC_ALL: "en_US.UTF-8"
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false,org.gradle.caching=true,org.gradle.parallel=true"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false,org.gradle.caching=true,org.gradle.parallel=false
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
