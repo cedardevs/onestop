@@ -4,12 +4,13 @@ include(
     "client",
     "e2e-tests",
     "elastic-common",
+    "data-common",
     "geoportal-search",
     "indexer",
     "kafka-common",
+    "parsalyzer",
     "registry",
     "search",
-    "stream-manager",
     "test-common"
     //"user"
 )
@@ -29,3 +30,4 @@ include(
 //        termsOfServiceAgree = "yes"
 //    }
 //}
+include("org.cedar.onestop.data")

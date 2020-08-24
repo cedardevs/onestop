@@ -31,21 +31,18 @@ class DocumentationController {
     return response.sendRedirect("openapi.yaml")
   }
 
-  @RequestMapping(path = "/docs/attributes/collection", method = [GET, HEAD], produces = 'application/json')
+  @RequestMapping(path = ["/docs/attributes/collection", "/v1/docs/attributes/collection"], method = [GET, HEAD], produces = 'application/json')
   Map getCollectionAttributes(HttpServletResponse response) {
-    log.info("Request URI: ${request.getRequestURI()}")
     return getAttributesResponse(response, elasticsearchService.getCollectionMapping())
   }
 
   @RequestMapping(path = ["/docs/attributes/granule", "/v1/docs/attributes/granule"], method = [GET, HEAD], produces = 'application/json')
   Map getGranuleAttributes(HttpServletResponse response) {
-    log.info("Request URI: ${request.getRequestURI()}")
     return getAttributesResponse(response, elasticsearchService.getGranuleMapping())
   }
 
   @RequestMapping(path = ["/docs/attributes/flattened-granule", "/v1/docs/attributes/flattened-granule"], method = [GET, HEAD], produces = 'application/json')
   Map getFlattenedGranuleAttributes(HttpServletResponse response){
-    log.info("Request URI: ${request.getRequestURI()}")
     return getAttributesResponse(response, elasticsearchService.getFlattenedGranuleMapping())
   }
 

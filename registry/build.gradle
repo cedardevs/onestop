@@ -16,6 +16,8 @@ configurations {
 dependencies {
   def Versions = project.Versions
 
+  implementation(project(':data-common'))
+
   implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
   implementation("org.springframework.boot:spring-boot-starter-web")

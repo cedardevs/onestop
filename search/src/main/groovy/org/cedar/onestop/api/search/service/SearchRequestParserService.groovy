@@ -76,7 +76,7 @@ class SearchRequestParserService {
       }
 
       if(queryTextQuery != null) {
-        def fields = config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: null
+        def fields = config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" as String }) ?: null
 
         def queryStringMap = [
             query_string: [

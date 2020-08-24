@@ -1,0 +1,103 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "onestop-parsalyzer.fullname" . }}
+  labels: {{- include "onestop-parsalyzer.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "onestop-parsalyzer.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "onestop-parsalyzer.selectorLabels" . | nindent 8 }}
+      annotations:
+        {{- with .Values.config }}
+        checksum/config: {{ . | sha256sum }}
+        {{- end }}
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.debug }}
+      shareProcessNamespace: true
+      {{- end }}
+      containers:
+      {{- if .Values.debug }}
+      - name: debug
+        image: centos
+        command: ["tail", "-f", "/dev/null"]
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+      {{- end }}
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        {{- if .Values.debug }}
+        - name: jdwp
+          containerPort: 5005
+        {{- end }}
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "{{ include "onestop-parsalyzer.kafka.bootstrap.servers" . }}"
+        - name: KAFKA_SCHEMA_REGISTRY_URL
+          value: "{{ include "onestop-parsalyzer.kafka.schema.registry.url" . }}"
+        {{- if .Values.config }}
+        - name: spring.config.additional-location
+          value: /etc/conf/application.yaml
+        {{- end }}
+        {{- if .Values.debug }}
+        - name: JAVA_TOOL_OPTIONS
+          value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+        {{- end }}
+        volumeMounts:
+        {{- if .Values.config }}
+        - name: config
+          mountPath: /etc/conf
+        {{- end }}
+        readinessProbe:
+          httpGet:
+            path: /health/readiness
+            port: 8080
+          initialDelaySeconds: 20
+          timeoutSeconds: 5
+          periodSeconds: 5
+          failureThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 8080
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          periodSeconds: 10
+          failureThreshold: 1
+        {{/* TODO: liveness, readiness */}}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      {{- if .Values.config }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "onestop-parsalyzer.fullname" . }}-config
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
