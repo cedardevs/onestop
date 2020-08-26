@@ -27,7 +27,7 @@ dependencies {
   def Versions = project.Versions
 
   compile project(path: ':indexer', configuration: 'shadow')
-  compile project(path: ':stream-manager', configuration: 'shadow')
+  compile project(path: ':parsalyzer', configuration: 'shadow')
 
   compile implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
 
