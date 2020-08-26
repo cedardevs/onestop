@@ -16,6 +16,7 @@ public class WebClientConfig {
   WebClient webClientForAuthorized(ReactiveClientRegistrationRepository clientRegistrations, ServerOAuth2AuthorizedClientRepository authorizedClients) {
     ServerOAuth2AuthorizedClientExchangeFilterFunction oauth = new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrations, authorizedClients);
     oauth.setDefaultOAuth2AuthorizedClient(true);
+
     return WebClient.builder()
         .filter(oauth)
         .build();

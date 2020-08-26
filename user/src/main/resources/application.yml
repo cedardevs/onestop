@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://onestop-postgresql:5432/user
+    url: jdbc:postgresql://localhost:9999/user
     username: onestop
     password: foamcat
     initialization-mode: always
@@ -16,7 +16,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate: # Hibernate ddl auto (create, create-drop, validate, update)
-      ddl-auto: none
+      ddl-auto: create-drop
     generate-ddl: false
 
 

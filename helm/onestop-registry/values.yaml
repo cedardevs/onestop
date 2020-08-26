@@ -88,3 +88,6 @@ tolerations: []
 
 affinity: {}
 
+controller:
+  admissionWebhooks:
+    enabled: false
