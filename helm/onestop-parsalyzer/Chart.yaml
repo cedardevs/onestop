@@ -1,0 +1,4 @@
+apiVersion: v1
+description: A Helm chart for the OneStop Stream Manager
+name: onestop-parsalyzer
+version: "3.0.0-alpha"

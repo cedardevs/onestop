@@ -1,6 +1,6 @@
 package org.cedar.onestop.indexer.stream;
 
-import org.cedar.onestop.elastic.common.FileUtil;
+import org.cedar.onestop.data.util.FileUtils;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -77,7 +77,7 @@ public class FlatteningConfig {
 
     private String getScriptText() {
       try {
-        var flatteningScript = FileUtil.textFromClasspathFile(scriptPath);
+        var flatteningScript = FileUtils.textFromClasspathFile(scriptPath);
         if (flatteningScript == null || flatteningScript.isEmpty()) {
           throw new IllegalStateException("Required flattening script [" + scriptPath + "] is empty");
         }

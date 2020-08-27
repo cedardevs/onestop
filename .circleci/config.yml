@@ -40,7 +40,7 @@ restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
     keys:
-      - onestop-cache-v21-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
+      - onestop-cache-v21-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "parsalyzer/build.gradle" }}
       # fallback to using the latest cache if no exact match is found
       # - onestop-cache-v21-
 
@@ -57,8 +57,8 @@ saveCache: &saveCache
       - client/node_modules
       - registry/build
       - search/build
-      - stream-manager/build
-    key: onestop-cache-v21-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "stream-manager/build.gradle" }}
+      - parsalyzer/build
+    key: onestop-cache-v21-{{ checksum "buildSrc/build.gradle.kts" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "client/build.gradle.kts" }}-{{ checksum "client/package.json" }}-{{ checksum "registry/build.gradle" }}-{{ checksum "search/build.gradle" }}-{{ checksum "parsalyzer/build.gradle" }}
 
 attachWorkspace: &attachWorkspace
   - attach_workspace:
@@ -198,32 +198,32 @@ jobs:
         paths:
         - registry/build
 
-  stream-manager:
+  parsalyzer:
     <<: *defaults
     <<: *env
     steps:
     - <<: *attachWorkspace
     - run:
         name: Assemble, Check, Report
-        command: ./gradlew --parallel stream-manager:assemble stream-manager:check stream-manager:jacocoTestReport
+        command: ./gradlew --parallel parsalyzer:assemble parsalyzer:check parsalyzer:jacocoTestReport
     - run:
         name: Collect Test Results
         command: |
           mkdir -p ~/tests/junit/
-          find stream-manager/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-          find stream-manager/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+          find parsalyzer/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+          find parsalyzer/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
         when: always
     - store_test_results:
         path: ~/tests
     - store_artifacts:
-        path: stream-manager/build/reports
+        path: parsalyzer/build/reports
     - deploy:
         name: Publish Image(s)
-        command: ./gradlew stream-manager:jib -Djib.httpTimeout=30000 -Djib.console=plain
+        command: ./gradlew parsalyzer:jib -Djib.httpTimeout=30000 -Djib.console=plain
     - persist_to_workspace:
         root: ~/repo
         paths:
-        - stream-manager/build
+        - parsalyzer/build
 
   finalize:
     <<: *defaults
@@ -304,7 +304,7 @@ workflows:
           requires:
             - checkout
           <<: *jobFilters
-      - stream-manager:
+      - parsalyzer:
           requires:
             - checkout
           <<: *jobFilters
@@ -314,7 +314,7 @@ workflows:
             - registry
             - indexer
             - search
-            - stream-manager
+            - parsalyzer
           <<: *jobFilters
 
   nightly:

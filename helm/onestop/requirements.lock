@@ -5,8 +5,8 @@ dependencies:
 - name: onestop-indexer
   repository: file://../onestop-indexer
   version: 3.0.0-alpha
-- name: onestop-manager
-  repository: file://../onestop-manager
+- name: onestop-parsalyzer
+  repository: file://../onestop-parsalyzer
   version: 3.0.0-alpha
 - name: onestop-registry
   repository: file://../onestop-registry
@@ -17,5 +17,5 @@ dependencies:
 - name: onestop-user
   repository: file://../onestop-user
   version: 3.0.0-alpha
-digest: sha256:cee9d96992aa6c05cc100d844a4862f9380d9901730769824486c70e487d6550
-generated: "2020-04-17T18:01:34.492588-06:00"
+digest: sha256:5a34d8915fdf747a67c9033e7bececddc679b03573591353d5d02b3619b32d4b
+generated: "2020-07-30T15:25:21.79398-06:00"

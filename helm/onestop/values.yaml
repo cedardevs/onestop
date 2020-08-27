@@ -2,7 +2,7 @@ onestop-client:
   enabled: true
 onestop-indexer:
   enabled: true
-onestop-manager:
+onestop-parsalyzer:
   enabled: true
 onestop-registry:
   enabled: true

@@ -2,7 +2,6 @@ package org.cedar.onestop.api.search
 
 import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.cedar.onestop.elastic.common.ElasticsearchTestConfig
-import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -16,14 +15,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @DirtiesContext
 @ActiveProfiles(["integration"])
 @SpringBootTest(
-    classes = [
-        Application,
-        DefaultApplicationConfig,
-
-        // provides:
-        // - `RestHighLevelClient` 'restHighLevelClient' bean via test containers
-        ElasticsearchTestConfig,
-    ],
+    classes = [Application, DefaultApplicationConfig, ElasticsearchTestConfig],
     webEnvironment = RANDOM_PORT,
     properties = ["elasticsearch.index.prefix=search_spatial_filter_"]
 )

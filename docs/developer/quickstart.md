@@ -51,14 +51,14 @@ Table of Contents
 ./gradlew search:build
 ./gradlew client:build
 ./gradlew registry:build
-./gradlew stream-manager:build
+./gradlew parsalyzer:build
 </pre>
 </details>
 
 ### Run
 ```
 ./gradlew registry:bootrun
-./gradlew stream-manager:run
+./gradlew parsalyzer:run
 ./gradlew search:bootrun
 cd client && npm run dev
 ```
@@ -264,7 +264,7 @@ helm list
 helm delete onestop-client --purge
 helm delete onestop-dev --purge
 helm delete onestop-indexer --purge
-helm delete onestop-manager --purge
+helm delete onestop-parsalyzer --purge
 helm delete onestop-registry --purge
 helm delete onestop-search --purge
 

@@ -99,7 +99,7 @@ Gradle version: ${gradle.gradleVersion}
 
 val projectDescriptions: Map<String, String> = mapOf(
         Pair("client", "A browser UI for the OneStop system."),
-        Pair("cli", "A command-line interface to query the OneStop search API."),
+        Pair("data-common", "A Shared project with API response POJOs and utilities for data manipulation"),
         Pair("e2e-tests", "End-to-end test project for the OneStop system."),
         Pair("elastic-common", "A shared project used by OneStop applications interacting with Elastic"),
         Pair("geoportal-search", "An application supporting OpenSearch and CSW search standards against the OneStop system."),
@@ -107,17 +107,18 @@ val projectDescriptions: Map<String, String> = mapOf(
         Pair("kafka-common", "A shared project used by OneStop applications interacting with Kafka"),
         Pair("registry", "A private API to upload ISO metadata to the OneStop system Kafka event stream."),
         Pair("search", "An read-only API for the OneStop system to query data indexed in Elasticsearch."),
-        Pair("stream-manager", "A Kafka Streams app which picks up from the raw metadata topic, parses into a standard format, analyzes some fields for further insight, and places onto a parsed topic."),
+        Pair("parsalyzer", "A Kafka Streams app which picks up from the raw metadata topic, parses into a standard format, analyzes some fields for further insight, and places onto a parsed topic."),
         Pair("user", "An API to authenticate and manage public user data of the OneStop system.")
 )
 
 // only apply plugins, configuration, tasks, etc. to projects that need it
-val javaProjects: List<String> = listOf("client", "cli", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "stream-manager", "user", "gateway")
-val jibProjects: List<String> = listOf("client", "cli", "indexer", "registry", "search", "stream-manager", "user", "gateway")
-val springBootProjects: List<String> = listOf("elastic-common", "search", "registry", "user", "gateway")
+val javaProjects: List<String> = listOf("client", "data-common", "indexer", "kafka-common", "e2e-tests", "elastic-common", "search", "registry", "parsalyzer", "user")
+val applicationProjects: List<String> = listOf()
+val libraryProjects: List<String> = listOf("kafka-common", "elastic-common", "data-common") // FIXME elastic?
+val jibProjects: List<String> = listOf("client", "indexer", "registry", "search", "parsalyzer", "user")
+val springBootProjects: List<String> = listOf("elastic-common", "search", "registry")
 val nodeProjects: List<String> = listOf("client", "registry")
-val micronautProjects: List<String> = listOf()
-val goProjects: List<String> = listOf("cli")
+val micronautProjects: List<String> = listOf("user")
 
 // allows projects to monitor dependent libraries for known, published vulnerabilities
 dependencyCheck {
@@ -260,11 +261,6 @@ subprojects {
             set("jibExtraDir", jibExtraDir)
         }
 
-    }
-
-    if(goProjects.contains(name)) {
-        // apply the Gogradle plugin to projects using Go
-        apply(plugin = "com.github.blindpirate.gogradle")
     }
 
     afterEvaluate {

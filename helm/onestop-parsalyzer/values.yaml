@@ -1,0 +1,56 @@
+# Default values for onestop-parsalyzer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: cedardevs/onestop-parsalyzer
+  tag: "3.0.0-alpha3"
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 80
+
+config: # inline application config yaml
+
+kafka: {}
+#  override just the name of kafka's headless service:
+#  serviceNameOverride:
+#  override the full bootstrap servers string:
+#  bootstrapServers:
+
+cp-schema-registry: {}
+#  override just the name of schema registry's service:
+#  serviceNameOverride:
+#  override the full url of the schema registry:
+#  url:
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaler:
+  enabled: false
+#  minReplicas: 1
+#  maxReplicas: 2
+#  annotations: {}
+#  metrics:
+#  - type: Resource
+#    resource:
+#      name: cpu
+#      target:
+#        type: Utilization
+#        averageUtilization: 75
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

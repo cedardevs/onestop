@@ -1,6 +1,7 @@
 package org.cedar.onestop.elastic.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cedar.onestop.data.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
@@ -83,12 +84,12 @@ public class ElasticsearchConfig {
     // Elasticsearch alias names are configurable, and this allows a central mapping between
     // the alias names configured (including the prefix) and the JSON mappings
     // https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
-    this.jsonMappings.put(COLLECTION_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_collectionIndex.json"));
-    this.jsonMappings.put(GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_granuleIndex.json"));
-    this.jsonMappings.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/search_flattened_granuleIndex.json"));
-    this.jsonMappings.put(SITEMAP_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/sitemapIndex.json"));
-    this.jsonMappings.put(COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/analysis_error_collectionIndex.json"));
-    this.jsonMappings.put(GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS, FileUtil.textFromClasspathFile("mappings/analysis_error_granuleIndex.json"));
+    this.jsonMappings.put(COLLECTION_SEARCH_INDEX_ALIAS, FileUtils.textFromClasspathFile("mappings/search_collectionIndex.json"));
+    this.jsonMappings.put(GRANULE_SEARCH_INDEX_ALIAS, FileUtils.textFromClasspathFile("mappings/search_granuleIndex.json"));
+    this.jsonMappings.put(FLAT_GRANULE_SEARCH_INDEX_ALIAS, FileUtils.textFromClasspathFile("mappings/search_flattened_granuleIndex.json"));
+    this.jsonMappings.put(SITEMAP_INDEX_ALIAS, FileUtils.textFromClasspathFile("mappings/sitemapIndex.json"));
+    this.jsonMappings.put(COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS, FileUtils.textFromClasspathFile("mappings/analysis_error_collectionIndex.json"));
+    this.jsonMappings.put(GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS, FileUtils.textFromClasspathFile("mappings/analysis_error_granuleIndex.json"));
 
     this.parsedMappings.put(COLLECTION_SEARCH_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(COLLECTION_SEARCH_INDEX_ALIAS), Map.class));
     this.parsedMappings.put(GRANULE_SEARCH_INDEX_ALIAS, jsonMapper.readValue(jsonMappings.get(GRANULE_SEARCH_INDEX_ALIAS), Map.class));

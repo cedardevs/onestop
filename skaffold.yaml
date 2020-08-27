@@ -11,9 +11,9 @@ build:
       jib:
         project: registry
         type: gradle
-    - image: cedardevs/onestop-stream-manager
+    - image: cedardevs/onestop-parsalyzer
       jib:
-        project: stream-manager
+        project: parsalyzer
         type: gradle
     - image: cedardevs/onestop-search
       jib:
@@ -32,209 +32,231 @@ build:
         project: gateway
         type: gradle
 
-.onestop-indexer: &onestop-indexer
-  name: onestop-indexer
-  chartPath: helm/onestop-indexer
-  remote: false
-  values:
-    image: cedardevs/onestop-indexer
-  setValues:
-    config: |-
-      ---
-      kafka:
-        bootstrap:
-          servers: "PLAINTEXT://onestop-dev-cp-kafka:9092"
-        schema:
-          registry:
-            url: "http://onestop-dev-cp-schema-registry:8081"
-        commit:
-          interval:
-            ms: 1000
-  imageStrategy:
-    helm: {}
-
-.onestop-registry: &onestop-registry
-  name: onestop-registry
-  chartPath: helm/onestop-registry
-  remote: false
-  values:
-    image: cedardevs/onestop-registry
-  setValues:
-    config: |-
-      ---
-      logging:
-        level:
-          org.cedar: DEBUG
-          org.cedar.schemas.avro.util: INFO
-      kafka.commit.interval: 1000
-      topics:
-        num-partitions: 2
-        replication-factor: 1
-      cas:
-        prefixUrl: 'http://onestop-dev-cas:8080/cas'
-      authorization:
-        roles:
-          ROLE_ADMIN:
-            - casuser
-    debug: "false"
-    features.cas: "false"
-    kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
-    kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
-    replicaCount: "1"
-    service.clusterIP: 10.100.100.1
-  imageStrategy:
-    helm: {}
-
-.onestop-manager: &onestop-manager
-  name: onestop-manager
-  chartPath: helm/onestop-manager
-  remote: false
-  values:
-    image: cedardevs/onestop-stream-manager
-  setValues:
-    config: |-
-      ---
-      logging:
-        level:
-          org.cedar: DEBUG
-          org.cedar.schemas.avro.util: INFO
-      kafka.commit.interval: 1000
-    kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
-    kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
-  imageStrategy:
-    helm: {}
-
-.onestop-search: &onestop-search
-  name: onestop-search
-  chartPath: helm/onestop-search
-  remote: false
-  values:
-    image: cedardevs/onestop-search
-  setValues:
-    env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
-    env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
-    env.UI_AUTH_LOGINENDPOINT: http://localhost:8888/oauth2/authorization/login-gov
-    env.UI_AUTH_LOGOUTENDPOINT: http://localhost:8888/logout
-    env.UI_AUTH_USERPROFILEENDPOINT: http://localhost:8888/api/user/v1/user/
-    env.UI_AUTH_SAVEDSEARCHENDPOINT: http://localhost:8888/api/user/v1/saved-search/
-
-    features.login-gov: "false"
-    features.sitemap: "true"
-    service.nodePort: "30097"
-    service.clusterIP: 10.100.100.2
-    service.type: NodePort
-
-  imageStrategy:
-    helm: {}
-
-.onestop-client: &onestop-client
-  name: onestop-client
-  chartPath: helm/onestop-client
-  remote: false
-  values:
-    image: cedardevs/onestop-client
-  setValues:
-    apiSearch.endpoint: onestop-search:8080/onestop-search
-    prefixPath: onestop
-    service.clusterIP: 10.100.100.3
-  imageStrategy:
-    helm: {}
-
-.onestop-user: &onestop-user
-  name: onestop-user
-  chartPath: helm/onestop-user
-  remote: false
-  values:
-    image: cedardevs/onestop-user
-  imageStrategy:
-    helm: {}
-  setValues:
-    debug: "true"
-    features.security: "true"
-    service.clusterIP: 10.100.100.4
-    config: |-
-      ---
-      server.servlet.context-path: /user
-      logging.level.org.springframework.security: DEBUG
-      logging.level.org.springframework.web: DEBUG
-      spring:
-        datasource:
-          url: jdbc:postgresql://onestop-postgresql:5432/user
-          username: onestop
-          password: foamcat
-        jpa:
-          database: POSTGRESQL
-          show-sql: true
-          properties:
-            hibernate:
-              dialect: org.hibernate.dialect.PostgreSQLDialect
-          hibernate:
-            ddl-auto: update
-
-.onestop-gateway: &onestop-gateway
-  name: onestop-gateway
-  chartPath: helm/onestop-gateway
-  remote: false
-  values:
-    image: cedardevs/onestop-gateway
-  imageStrategy:
-    helm: {}
-  setValues:
-    debug: "false"
-    service.clusterIP: 10.100.100.0
-    config: |-
-      ---
-      logging.level.org.springframework.security: DEBUG
-      logging.level.org.springframework.web: DEBUG
-      server.servlet.context-path: /api
-      gateway:
-        routes:
-          user: http://onestop-user:8080/user/
-      login-gov:
-        keystore:
-          alias: ${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
-          file: ${PRIVATE_KEY_JWT_KEYSTORE_FILE}
-          password: ${PRIVATE_KEY_JWT_KEYSTORE_PASSWORD}
-          type: ${PRIVATE_KEY_JWT_KEYSTORE_TYPE}
-.onestop-postgresql: &onestop-postgresql
-  name: onestop-postgresql
-  chartPath: helm/onestop-postgresql
-#  upgradeOnChange: false
-
-.onestop-net-tools: &onestop-net-tools
-  name: onestop-net-tools
-  chartPath: helm/onestop-net-tools
-#  upgradeOnChange: false
-
-.onestop-ingress: &onestop-ingress
-  name: onestop-ingress
-  chartPath: helm/onestop-ingress
-#  upgradeOnChange: false
-
-deploy:
-  kubectl:
-
   helm:
     releases:
-#      - *onestop-indexer
-      - *onestop-registry
-#      - *onestop-manager
-#      - *onestop-search
-#      - *onestop-client
-      - *onestop-user
-      - *onestop-gateway
-#      - *onestop-ingress
-      - *onestop-postgresql
+      - name: onestop-indexer
+        chartPath: helm/onestop-indexer
+        values:
+          image: cedardevs/onestop-indexer
+        setValues:
+          debug: true
+          elasticsearch.host: "onestop-dev-es-http"
+          elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
+          elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
+          config: |-
+            ---
+            kafka:
+              bootstrap:
+                servers: "PLAINTEXT://onestop-dev-cp-kafka:9092"
+              schema:
+                registry:
+                  url: "http://onestop-dev-cp-schema-registry:8081"
+              commit:
+                interval:
+                  ms: 1000
+        imageStrategy:
+          helm: {}
+      - name: onestop-registry
+        chartPath: helm/onestop-registry
+        values:
+          image: cedardevs/onestop-registry
+        setValues:
+          debug: true
+          config: |-
+            ---
+            logging:
+              level:
+                org.cedar: DEBUG
+                org.cedar.schemas.avro.util: INFO
+            kafka.commit.interval: 1000
+            topics:
+              num-partitions: 2
+              replication-factor: 1
+            cas:
+              prefixUrl: 'http://onestop-dev-cas:8080/cas'
+            authorization:
+              roles:
+                ROLE_ADMIN:
+                  - casuser
+          features.cas: "false"
+          kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
+          kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
+          replicaCount: "1"
+          service.clusterIP: 10.100.100.1
+        imageStrategy:
+          helm: {}
+      - name: onestop-parsalyzer
+        chartPath: helm/onestop-parsalyzer
+        values:
+          image: cedardevs/onestop-parsalyzer
+        setValues:
+          debug: true
+          config: |-
+            ---
+            logging:
+              level:
+                org.cedar: DEBUG
+                org.cedar.schemas.avro.util: INFO
+            kafka.commit.interval: 1000
+          kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
+          kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
+        imageStrategy:
+          helm: {}
+      - name: onestop-search
+        chartPath: helm/onestop-search
+        values:
+          image: cedardevs/onestop-search
+        setValues:
+          debug: true
+          env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
+          env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
+          features.login-gov: "false"
+          features.sitemap: "true"
+          service.nodePort: "30097"
+          service.type: NodePort
+          service.clusterIP: 10.100.100.2
+          elasticsearch.host: "onestop-dev-es-http"
+          elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
+          elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
+        imageStrategy:
+          helm: {}
+      - name: onestop-client
+        chartPath: helm/onestop-client
+        values:
+          image: cedardevs/onestop-client
+        setValues:
+          prefixPath: onestop
+          service.clusterIP: 10.100.100.3
+        imageStrategy:
+          helm: {}
       - name: onestop-dev
         chartPath: helm/onestop-dev
-
+      - name: onestop-user
+        chartPath: helm/onestop-user
+        values:
+          image: cedardevs/onestop-user
+        imageStrategy:
+          helm: {}
+        setValues:
+          debug: "true"
+          features.security: "true"
+          service.clusterIP: 10.100.100.4
+          config: |-
+            ---
+            server.servlet.context-path: /user
+            logging.level.org.springframework.security: DEBUG
+            logging.level.org.springframework.web: DEBUG
+            spring:
+              datasource:
+                url: jdbc:postgresql://onestop-postgresql:5432/user
+                username: onestop
+                password: foamcat
+              jpa:
+                database: POSTGRESQL
+                show-sql: true
+                properties:
+                  hibernate:
+                    dialect: org.hibernate.dialect.PostgreSQLDialect
+                hibernate:
+                  ddl-auto: update
+      - name: onestop-gateway
+        chartPath: helm/onestop-gateway
+        values:
+          image: cedardevs/onestop-gateway
+        imageStrategy:
+          helm: {}
+        setValues:
+          debug: "false"
+          service.clusterIP: 10.100.100.0
+          config: |-
+            ---
+            logging.level.org.springframework.security: DEBUG
+            logging.level.org.springframework.web: DEBUG
+            server.servlet.context-path: /api
+            gateway:
+              routes:
+                user: http://onestop-user:8080/user/
+            login-gov:
+              keystore:
+                alias: ${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
+                file: ${PRIVATE_KEY_JWT_KEYSTORE_FILE}
+                password: ${PRIVATE_KEY_JWT_KEYSTORE_PASSWORD}
+                type: ${PRIVATE_KEY_JWT_KEYSTORE_TYPE}
+      - name: onestop-manager
+        chartPath: helm/onestop-manager
+        values:
+          image: cedardevs/onestop-stream-manager
+        setValues:
+          config: |-
+            ---
+            logging:
+              level:
+                org.cedar: DEBUG
+                org.cedar.schemas.avro.util: INFO
+            kafka.commit.interval: 1000
+          kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
+          kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
+        imageStrategy:
+          helm: {}
+      - name: onestop-postgresql
+        chartPath: helm/onestop-postgresql
+      #  upgradeOnChange: false
+      - name: onestop-net-tools
+        chartPath: helm/onestop-net-tools
+        #  upgradeOnChange: false
+      - name: onestop-ingress
+        chartPath: helm/onestop-ingress
+        #  upgradeOnChange: false
 profiles:
   - name: psi
     deploy:
       helm:
         releases:
-          - *onestop-manager
-          - *onestop-registry
+          - name: onestop-parsalyzer
+            chartPath: helm/onestop-parsalyzer
+            values:
+              image: cedardevs/onestop-parsalyzer
+            setValues:
+              debug: true
+              config: |-
+                ---
+                logging:
+                  level:
+                    org.cedar: DEBUG
+                    org.cedar.schemas.avro.util: INFO
+                kafka.commit.interval: 1000
+              kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
+              kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
+            imageStrategy:
+              helm: {}
+          - name: onestop-registry
+            chartPath: helm/onestop-registry
+            values:
+              image: cedardevs/onestop-registry
+            setValues:
+              debug: true
+              config: |-
+                ---
+                logging:
+                  level:
+                    org.cedar: DEBUG
+                    org.cedar.schemas.avro.util: INFO
+                kafka.commit.interval: 1000
+                topics:
+                  num-partitions: 2
+                  replication-factor: 1
+                cas:
+                  prefixUrl: 'http://onestop-dev-cas:8080/cas'
+                authorization:
+                  roles:
+                    ROLE_ADMIN:
+                      - casuser
+              features.cas: "false"
+              kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
+              kafka.schema.registry.url: http://onestop-dev-cp-schema-registry:8081
+              replicaCount: "1"
+            imageStrategy:
+              helm: {}
           - name: onestop-dev
             chartPath: helm/onestop-dev
   - name: os

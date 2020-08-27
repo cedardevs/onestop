@@ -8,6 +8,7 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
+import org.cedar.onestop.data.util.MapUtils;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
@@ -68,8 +69,8 @@ public class KafkaHelpers {
 
   public static Properties buildAdminConfig(AppConfig config) {
     // Filter to only valid config values -- Admin config + possible internal Producer & Consumer config
-    var kafkaConfigs = DataUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
-    var filteredConfigs = DataUtils.filterMapKeys(KafkaConfigNames.admin, kafkaConfigs);
+    var kafkaConfigs = MapUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
+    var filteredConfigs = MapUtils.filterMapKeys(KafkaConfigNames.admin, kafkaConfigs);
 
     log.info("Building admin client config for {}", StreamsApps.INDEXER_ID);
     Properties streamsConfiguration = new Properties();
@@ -79,8 +80,8 @@ public class KafkaHelpers {
 
   public static Properties buildStreamsConfig(AppConfig config) {
     // Filter to only valid config values -- Streams config + possible internal Producer & Consumer config
-    var kafkaConfigs = DataUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
-    var filteredConfigs = DataUtils.filterMapKeys(KafkaConfigNames.streams, kafkaConfigs);
+    var kafkaConfigs = MapUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
+    var filteredConfigs = MapUtils.filterMapKeys(KafkaConfigNames.streams, kafkaConfigs);
 
     log.info("Building kafka streams appConfig for {}", StreamsApps.INDEXER_ID);
     Properties streamsConfiguration = new Properties();
@@ -93,8 +94,8 @@ public class KafkaHelpers {
 
   public static Map<String, Object> buildAvroSerdeConfig(AppConfig config) {
     // Filter to only valid config values -- avro/schema registry values
-    var kafkaConfigs = DataUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
-    return DataUtils.filterMapKeys(KafkaConfigNames.avro, kafkaConfigs);
+    var kafkaConfigs = MapUtils.trimMapKeys("kafka.", config.getCurrentConfigMap());
+    return MapUtils.filterMapKeys(KafkaConfigNames.avro, kafkaConfigs);
   }
 
   public static class TopicDefinition {
