@@ -112,13 +112,13 @@ val projectDescriptions: Map<String, String> = mapOf(
 )
 
 // only apply plugins, configuration, tasks, etc. to projects that need it
-val javaProjects: List<String> = listOf("client", "data-common", "indexer", "kafka-common", "e2e-tests", "elastic-common", "search", "registry", "parsalyzer", "user")
+val javaProjects: List<String> = listOf("client", "data-common", "indexer", "kafka-common", "e2e-tests", "elastic-common", "search", "registry", "parsalyzer", "user", "gateway")
 val applicationProjects: List<String> = listOf()
 val libraryProjects: List<String> = listOf("kafka-common", "elastic-common", "data-common") // FIXME elastic?
-val jibProjects: List<String> = listOf("client", "indexer", "registry", "search", "parsalyzer", "user")
-val springBootProjects: List<String> = listOf("elastic-common", "search", "registry")
+val jibProjects: List<String> = listOf("client", "indexer", "registry", "search", "parsalyzer", "user", "gateway")
+val springBootProjects: List<String> = listOf("elastic-common", "search", "registry", "gateway", "user")
 val nodeProjects: List<String> = listOf("client", "registry")
-val micronautProjects: List<String> = listOf("user")
+//val micronautProjects: List<String> = listOf("user")
 
 // allows projects to monitor dependent libraries for known, published vulnerabilities
 dependencyCheck {
