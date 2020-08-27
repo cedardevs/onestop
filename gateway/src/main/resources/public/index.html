@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <script language="JavaScript">
       // treat redirect requests as error, so we can manually point the browser to login screen
-      fetch('/api/service1/hello', {redirect: 'error'})
+      fetch('/api/user/admin/hello', {redirect: 'error'})
         .then(function(result) {
           result.json().then(function(response) {
             alert(response.message);

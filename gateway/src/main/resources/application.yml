@@ -8,6 +8,8 @@ server:
 gateway:
   routes:
     user: http://localhost/user
+    onestop: http://localhost/client
+    onestop-search: http://localhost/onestop-search
 
 spring:
   application:
@@ -41,6 +43,6 @@ spring:
 login-gov:
   keystore:
     alias: logingov
-    file: /Users/elliott/Documents/GitHub/onestop/gateway/src/main/resources/logingov.jks
+    file: /Users/chris/Projects/CEDARDEVS/onestop/gateway/src/main/resources/logingov.jks
     password: password
     type: JKS

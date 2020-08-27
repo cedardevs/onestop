@@ -39,11 +39,11 @@ export default function Collections(props){
     selectCollection,
     collectionDetailFilter,
     loading,
-    saveSearch,
-    deleteSearch,
+    saveSearch, //action
+    deleteSearch, //action
     savedSearchUrl,
     isAuthenticatedUser,
-    savedSearches, // todo use this to figure out if their current filter is already saved
+    savedSearches,
     collectionFilter,
   } = props
 
@@ -52,18 +52,20 @@ export default function Collections(props){
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
   const [ headingMessage, setHeadingMessage ] = useState(null)
+  //used to toggle bookmark button highlight
   const [ searchSaved, setSearchSaved ] = useState( !!savedId )
+  //the element containing hte bookmark button
   const [ bookmarkButton, setBookmark ] = useState(null)
 
   function handleSave(){
-    const urlToSave = window.location.href
+    const urlToSave = window.location.href //todo remove url from saved search
     const queryStringIndex = urlToSave.indexOf('?')
     const queryString = urlToSave.slice(queryStringIndex)
     const decodedSavedSearch = decodePathAndQueryString('', queryString)
     saveSearch(
         savedSearchUrl,
         urlToSave,
-        decodedSavedSearch.filters.queryText,
+        decodedSavedSearch.filters.queryText, //todo - the saved search's name should not be the query text
         collectionFilter
     )
   }
@@ -73,13 +75,13 @@ export default function Collections(props){
   }
 
   function setBookmarkButton(){
-    const title = searchSaved
-        ? 'Search already saved'
-        : 'Save search'
-    const text = searchSaved ? 'Unsave' : 'Save'
-    const notification = text
     const savedId = findSavedId()
-
+    const title = savedId
+        ? 'Delete search'
+        : 'Save search'
+    const text = savedId ? 'Delete' : 'Save'
+    const notification = text
+    //if we found a matching id, the search was saved previously
     const saveSearchAction = savedId
         ? [
           {

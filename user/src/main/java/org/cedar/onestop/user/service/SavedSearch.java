@@ -64,8 +64,8 @@ public class SavedSearch {
     this.id = id;
     this.userId = userId;
     this.name = name;
-    this.value = value;
     this.filter = filter;
+    this.value = value;
   }
 
   @PrePersist

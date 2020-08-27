@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
         .apis(RequestHandlerSelectors.any())
         .paths(PathSelectors.any())
         .build()
-        .pathMapping("/user/")
+        .pathMapping("/docs/")
         .apiInfo(metaData());
   }
 

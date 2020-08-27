@@ -1,25 +1,36 @@
 package org.cedar.onestop.gateway.config;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import net.minidev.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.net.URI;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static org.springframework.http.HttpHeaders.*;
@@ -41,16 +52,29 @@ public class ProxyConfig {
 
   private final ReactiveOAuth2AuthorizedClientService authorizedClientService;
   private final GatewayConfig config;
+  Logger logger = LoggerFactory.getLogger(ProxyConfig.class);
+
+//  @Autowired
+//  SecurityConfig securityConfig;
 
   public ProxyConfig(final ReactiveOAuth2AuthorizedClientService authorizedClientService, final GatewayConfig config) {
     this.authorizedClientService = authorizedClientService;
     this.config = config;
   }
 
-  @Bean
-  public RouterFunction<ServerResponse> index(@Value("classpath:/public/index.html") final Resource index) {
-    return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(index));
-  }
+//  @Bean
+//  public RouterFunction<ServerResponse> index() {
+////    OAuth2AuthorizedClient authorizedClient = this.getAuthorizedClient(authentication).block();
+////    System.out.println(request.toString());
+//    return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(index));
+////    System.out.println("redirected to root");
+////    return route(GET("/"), req -> ServerResponse.temporaryRedirect(URI.create("http://localhost/onestop/"))
+////            .build());
+//  }
+//  @Bean
+//  public RouterFunction<ServerResponse> index(@Value("classpath:/public/index.html") final Resource index) {
+//    return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(index));
+//  }
 
   @Bean
   public RouterFunction<ServerResponse> proxy(WebClient webClient) {
@@ -59,12 +83,77 @@ public class ProxyConfig {
             .map(attr -> webClient.method(request.method())
                 .uri(toBackendUri(request))
                 .headers(cleanedHeaders(request.headers().asHttpHeaders()))
+//                .header("Authorization", "Bearer " + createJwtHeader(request.principal().cast(OidcUser.class)))
                 .body(fromDataBuffers(request.exchange().getRequest().getBody()))
                 .attributes(attr))
             .flatMap(WebClient.RequestHeadersSpec::exchange)
             .flatMap(response -> ServerResponse.status(response.statusCode())
-                .headers(cleanedHeaders(response.headers().asHttpHeaders()))
-                .body(fromDataBuffers(response.body(toDataBuffers())))));
+                .headers(cleanedHeaders(request.headers().asHttpHeaders()))
+                .body(fromDataBuffers(response.body(toDataBuffers()))))
+    );
+  }
+
+//  private Consumer<HttpHeaders> cleanedRequestHeaders(final ServerRequest request) {
+//    System.out.println("cleanedRequestHeaders");
+//    logger.info("cleanedRequestHeaders");
+//
+//    return headers -> {
+//      System.out.println("headers ->");
+//      HttpHeaders httpHeaders = request.headers().asHttpHeaders();
+//      headers.putAll(httpHeaders);
+//
+//      request.principal()
+//              .cast(OidcUser.class)
+//              .map(this::createJwtHeader)
+//              .subscribe(headers::putAll);
+//      STRIPPED_HEADERS.forEach(headers::remove);
+//    };
+//  }
+
+//  private HttpHeaders createJwtHeader(OidcUser oidcUser){
+//    System.out.println("createJwtHeader");
+//    logger.info("createJwtHeader");
+//    HttpHeaders authHeader = new HttpHeaders();
+//    String jwt = "";
+//
+//    try {
+//      jwt = JWT.create()
+//              .withSubject(oidcUser.getSubject())
+//              .withIssuer("onestop-gateway")
+//              .withAudience(oidcUser.getAudience().toString())
+//              .withJWTId(UUID.randomUUID().toString())
+//              .withClaim("email", oidcUser.getEmail())
+//              .withClaim("emailVerified", oidcUser.getEmailVerified())
+////            .withClaim("roles", [getRoles(user.getEmail)])
+//              .withExpiresAt((Date.from(oidcUser.getExpiresAt())))
+//              .sign(Algorithm.RSA256(securityConfig.keystoreUtil.rsaPublicKey(), securityConfig.keystoreUtil.rsaPrivateKey()));
+//    }catch(Exception e){
+//      logger.info("Failed to create JWT: ", e);
+//    }
+//    System.out.println("JWT HEADER");
+//    System.out.println(jwt);
+//    authHeader.setBearerAuth(jwt);
+//    return authHeader;
+//  }
+
+  private Mono<OidcUser> getOidcUser(final ServerRequest request){
+//    Mono<OidcUser> user = Mono.empty().cast(OidcUser.class);
+//    user = request.principal().cast(OidcUser.class);
+    return request.principal().cast(OidcUser.class);
+//    OidcUser user = null;
+//    try{
+//      user = request.principal()
+//              .cast(OidcUser.class).block();
+////      .subscribe(
+////              oidcUser -> user = oidcUser
+////      );
+////      OidcUser principal = ((OidcUser) auth.getPrincipal());
+////      System.out.println(principal.getUserInfo().getEmail());
+////      user = (OidcUser)request.principal();
+//    }catch(Exception e){
+//      logger.warn("Could not cast request principal to OidcUser", e);
+//    }
+//    return user;
   }
 
   private Consumer<HttpHeaders> cleanedHeaders(final HttpHeaders httpHeaders) {
@@ -77,6 +166,7 @@ public class ProxyConfig {
   private String toBackendUri(final ServerRequest request) {
     final String service = request.pathVariable("service");
     final String backend = config.backend(service);
+//    final String userId = getUserId(request);
     return UriComponentsBuilder.fromUriString(backend)
         .path(request.path().substring(API_PREFIX.length() + service.length()))
         .queryParams(request.queryParams())
@@ -93,4 +183,6 @@ public class ProxyConfig {
   private Mono<OAuth2AuthorizedClient> loadAuthorizedClient(OAuth2AuthenticationToken authentication) {
     return authorizedClientService.loadAuthorizedClient(authentication.getAuthorizedClientRegistrationId(), authentication.getName());
   }
+
+
 }

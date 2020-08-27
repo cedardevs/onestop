@@ -35,6 +35,7 @@ build:
 .onestop-indexer: &onestop-indexer
   name: onestop-indexer
   chartPath: helm/onestop-indexer
+  remote: false
   values:
     image: cedardevs/onestop-indexer
   setValues:
@@ -55,6 +56,7 @@ build:
 .onestop-registry: &onestop-registry
   name: onestop-registry
   chartPath: helm/onestop-registry
+  remote: false
   values:
     image: cedardevs/onestop-registry
   setValues:
@@ -86,6 +88,7 @@ build:
 .onestop-manager: &onestop-manager
   name: onestop-manager
   chartPath: helm/onestop-manager
+  remote: false
   values:
     image: cedardevs/onestop-stream-manager
   setValues:
@@ -104,14 +107,16 @@ build:
 .onestop-search: &onestop-search
   name: onestop-search
   chartPath: helm/onestop-search
+  remote: false
   values:
     image: cedardevs/onestop-search
   setValues:
     env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
     env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
-    env.UI_AUTH_LOGINENDPOINT: http://localhost/oauth2/authorization/login-gov
-    env.UI_AUTH_LOGOUTENDPOINT: http://localhost/logout
-    env.UI_AUTH_USERPROFILEENDPOINT: http://localhost/api/user/v1/saved-search/user/
+    env.UI_AUTH_LOGINENDPOINT: http://localhost:8888/oauth2/authorization/login-gov
+    env.UI_AUTH_LOGOUTENDPOINT: http://localhost:8888/logout
+    env.UI_AUTH_USERPROFILEENDPOINT: http://localhost:8888/api/user/v1/user/
+    env.UI_AUTH_SAVEDSEARCHENDPOINT: http://localhost:8888/api/user/v1/saved-search/
 
     features.login-gov: "false"
     features.sitemap: "true"
@@ -125,6 +130,7 @@ build:
 .onestop-client: &onestop-client
   name: onestop-client
   chartPath: helm/onestop-client
+  remote: false
   values:
     image: cedardevs/onestop-client
   setValues:
@@ -137,6 +143,7 @@ build:
 .onestop-user: &onestop-user
   name: onestop-user
   chartPath: helm/onestop-user
+  remote: false
   values:
     image: cedardevs/onestop-user
   imageStrategy:
@@ -167,6 +174,7 @@ build:
 .onestop-gateway: &onestop-gateway
   name: onestop-gateway
   chartPath: helm/onestop-gateway
+  remote: false
   values:
     image: cedardevs/onestop-gateway
   imageStrategy:
@@ -191,28 +199,31 @@ build:
 .onestop-postgresql: &onestop-postgresql
   name: onestop-postgresql
   chartPath: helm/onestop-postgresql
+#  upgradeOnChange: false
 
 .onestop-net-tools: &onestop-net-tools
   name: onestop-net-tools
   chartPath: helm/onestop-net-tools
+#  upgradeOnChange: false
 
 .onestop-ingress: &onestop-ingress
   name: onestop-ingress
   chartPath: helm/onestop-ingress
+#  upgradeOnChange: false
 
 deploy:
   kubectl:
 
   helm:
     releases:
-      - *onestop-indexer
+#      - *onestop-indexer
       - *onestop-registry
-      - *onestop-manager
-      - *onestop-search
-      - *onestop-client
+#      - *onestop-manager
+#      - *onestop-search
+#      - *onestop-client
       - *onestop-user
       - *onestop-gateway
-      - *onestop-ingress
+#      - *onestop-ingress
       - *onestop-postgresql
       - name: onestop-dev
         chartPath: helm/onestop-dev
@@ -242,12 +253,15 @@ profiles:
     deploy:
       helm:
         releases:
+#          - *onestop-ingress
           - *onestop-search
           - *onestop-client
           - *onestop-gateway
           - *onestop-user
           - *onestop-postgresql
-          - *onestop-ingress
+#          - *onestop-indexer
+#          - *onestop-registry
+#          - *onestop-manager
           - name: onestop-dev
             chartPath: helm/onestop-dev
             setValues:
