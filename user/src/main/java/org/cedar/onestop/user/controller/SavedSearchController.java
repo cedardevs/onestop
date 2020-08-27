@@ -10,6 +10,7 @@ import org.cedar.onestop.user.service.SavedSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,7 +43,10 @@ public class SavedSearchController {
     List<SavedSearch> searchResults = savedSearchRepository.findAll();
     logger.info("Retrieved " + searchResults.size() + " saved searches.");
     logger.debug(searchResults.toString());
-    return getJsonApiResponse(searchResults);
+
+    return new JsonApiSuccessResponse.Builder()
+      .setStatus(HttpStatus.OK)
+      .setData(generateListJsonApiData(searchResults)).build();
   }
 
   @Secured("ROLE_ADMIN")
@@ -55,7 +59,10 @@ public class SavedSearchController {
         .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + id));
     List<SavedSearch> result = new ArrayList<>();
     result.add(savedSearch);
-    return getJsonApiResponse(result);
+
+    return new JsonApiSuccessResponse.Builder()
+      .setStatus(HttpStatus.OK)
+      .setData(generateListJsonApiData(result)).build();
   }
 
   @Secured("ROLE_ADMIN")
@@ -70,7 +77,10 @@ public class SavedSearchController {
     logger.info("Retrieving user searches for user id: " + userId);
     List <SavedSearch> searchResults = savedSearchRepository.findAllByUserId(userId);
     logger.info("Retrieved " + searchResults.size() + " saved searches for user id " + userId);
-    return getJsonApiResponse(searchResults);
+
+    return new JsonApiSuccessResponse.Builder()
+      .setStatus(HttpStatus.OK)
+      .setData(generateListJsonApiData(searchResults)).build();
   }
 
   @Secured({"ROLE_PUBLIC", "ROLE_ADMIN"})
@@ -86,7 +96,10 @@ public class SavedSearchController {
     logger.info("Retrieving user searches authenticated user with id: " + userId);
     List <SavedSearch> searchResults = savedSearchRepository.findAllByUserId(userId);
     logger.info("Retrieved " + searchResults.size() + " saved searches for user id " + userId);
-    return getJsonApiResponse(searchResults);
+
+    return new JsonApiSuccessResponse.Builder()
+      .setStatus(HttpStatus.OK)
+      .setData(generateListJsonApiData(searchResults)).build();
   }
 
   @Secured({"ROLE_PUBLIC", "ROLE_ADMIN"})
@@ -98,11 +111,16 @@ public class SavedSearchController {
     String userId = authentication.getName();
     savedSearch.setUserId(userId);
     logger.info("Creating search for user with ID: " + userId);
+
     SavedSearch item = savedSearchRepository.save(savedSearch);
     logger.info("Created search with ID: " + userId);
+
     List<SavedSearch> result = new ArrayList<>();
     result.add(item);
-    return getJsonApiResponse(result);
+
+    return new JsonApiSuccessResponse.Builder()
+      .setStatus(HttpStatus.CREATED)
+      .setData(generateListJsonApiData(result)).build();
   }
 
   //todo use postAuth to prevent changing others
@@ -123,9 +141,13 @@ public class SavedSearchController {
     savedSearch.setLastUpdatedOn(savedSearchDetails.getLastUpdatedOn());
     final SavedSearch updatedSavedSearch = savedSearchRepository.save(savedSearch);
     logger.info("Update complete for search with id: " + id);
+
     List<SavedSearch> result = new ArrayList<>();
     result.add(updatedSavedSearch);
-    return getJsonApiResponse(result);
+
+    return new JsonApiSuccessResponse.Builder()
+      .setStatus(HttpStatus.OK)
+      .setData(generateListJsonApiData(result)).build();
   }
 
 //todo more to do here so users cannot delete each others request
@@ -143,11 +165,17 @@ public class SavedSearchController {
     logger.info("Delete complete for search with id: " + id);
     Map<String, Boolean> response = new HashMap<>();
     response.put("deleted", Boolean.TRUE);
+
     return new JsonApiSuccessResponse.Builder()
       .setMeta(new JsonApiMeta.Builder().setNonStandardMetadata(response).build()).build();
   }
 
-  private JsonApiResponse getJsonApiResponse(List<SavedSearch> searchResults) {
+  /**
+   * Generate a List of JsonApiData to be used in a JsonApiResponse.
+   * @param searchResults List<SavedSearch> search results
+   * @return List<JsonApiData> representing the search results
+   */
+  private List<JsonApiData> generateListJsonApiData(List<SavedSearch> searchResults) {
     List<JsonApiData> dataList = new ArrayList<>();
     if (searchResults != null) {
       Iterator it = searchResults.iterator();
@@ -160,8 +188,6 @@ public class SavedSearchController {
         dataList.add(dataItem);
       }
     }
-    JsonApiSuccessResponse response = new JsonApiSuccessResponse.Builder()
-            .setData(dataList).build();
-    return response;
+    return dataList;
   }
 }

@@ -1,12 +1,15 @@
 package org.cedar.onestop.user.common;
 
+import org.springframework.http.HttpStatus;
+
 import java.util.*;
 
 public class JsonApiSuccessResponse extends JsonApiResponse {
 
   List<JsonApiData> data;
   JsonApiMeta meta;
-//  List<JsonApiLink> links; ?
+  HttpStatus status;
+  // There are lots other optional fields that can be added if needed.
 
   private JsonApiSuccessResponse( List<JsonApiData> data, JsonApiMeta meta) {
     this.data = data;
@@ -21,9 +24,15 @@ public class JsonApiSuccessResponse extends JsonApiResponse {
     return meta;
   }
 
+  public HttpStatus getStatus() {
+    return status;
+  }
+
   static public class Builder {
     List<JsonApiData> data;
     JsonApiMeta meta;
+    HttpStatus status;
+    // There are lots other optional fields that can be added if needed.
 
     public Builder setData(List<JsonApiData> data) {
       this.data = data;
@@ -35,11 +44,16 @@ public class JsonApiSuccessResponse extends JsonApiResponse {
       return this;
     }
 
+    public Builder setStatus(HttpStatus status) {
+      this.status = status;
+      return this;
+    }
+
     public JsonApiSuccessResponse build() {
-      if (data != null || meta != null) {
+      if (status != null && (data != null || meta != null)) {
         return new JsonApiSuccessResponse(data, meta);
       } else {
-        throw new NullPointerException("JSON:Successful response must have data or meta set");
+        throw new NullPointerException("JSON:Successful response must have status and either data or meta set");
       }
     }
   }
