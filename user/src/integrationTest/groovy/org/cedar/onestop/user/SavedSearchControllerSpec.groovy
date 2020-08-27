@@ -52,8 +52,8 @@ class SavedSearchControllerSpec extends Specification {
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    postSearch.andExpect(MockMvcResultMatchers.status().isForbidden())
     postSearch.andReturn().getResponse().getContentAsString() == """{"meta":null,"id":null,"status":"UNAUTHORIZED","code":"Unauthorized","title":null,"detail":null,"source":null}"""
+    postSearch.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
   @WithMockUser(username = "mockMvcUser", roles = "PUBLIC")
@@ -116,13 +116,13 @@ class SavedSearchControllerSpec extends Specification {
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    postOneResults.andExpect(MockMvcResultMatchers.status().isOk())
+    postOneResults.andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("testOne"))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("valueOne"))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.userId").value("mockMvcUser"))
 
-    postTwoResults.andExpect(MockMvcResultMatchers.status().isOk())
+    postTwoResults.andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("testTwo"))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("valueTwo"))
