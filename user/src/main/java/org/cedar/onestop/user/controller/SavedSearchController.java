@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -38,21 +39,21 @@ public class SavedSearchController {
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @GetMapping(value = "/saved-search/all", produces = "application/json")
-  public JsonApiResponse getAll() {
+  public JsonApiResponse getAll(HttpServletResponse response) {
     logger.info("Retrieving all saved searches... ");
     List<SavedSearch> searchResults = savedSearchRepository.findAll();
     logger.info("Retrieved " + searchResults.size() + " saved searches.");
     logger.debug(searchResults.toString());
 
     return new JsonApiSuccessResponse.Builder()
-      .setStatus(HttpStatus.OK)
+      .setStatus(HttpStatus.OK, response)
       .setData(generateListJsonApiData(searchResults)).build();
   }
 
   @Secured("ROLE_ADMIN")
   @ApiOperation(value = "Search with an ID (ADMIN)", response = SavedSearch.class)
   @RequestMapping(value = "/saved-search/{id}", method = RequestMethod.GET, produces = "application/json")
-  public JsonApiResponse getById(@PathVariable(value = "id") String id)
+  public JsonApiResponse getById(@PathVariable(value = "id") String id, HttpServletResponse response)
       throws ResourceNotFoundException {
     logger.info("Retrieving saved search for id: " + id);
     SavedSearch savedSearch = savedSearchRepository.findById(id)
@@ -61,7 +62,7 @@ public class SavedSearchController {
     result.add(savedSearch);
 
     return new JsonApiSuccessResponse.Builder()
-      .setStatus(HttpStatus.OK)
+      .setStatus(HttpStatus.OK, response)
       .setData(generateListJsonApiData(result)).build();
   }
 
@@ -72,14 +73,14 @@ public class SavedSearchController {
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @GetMapping(value = "/saved-search/user/{userId}", produces = "application/json")
-  public  JsonApiResponse getByUserId(@PathVariable(value = "userId") String userId)
+  public  JsonApiResponse getByUserId(@PathVariable(value = "userId") String userId, HttpServletResponse response)
       throws RuntimeException {
     logger.info("Retrieving user searches for user id: " + userId);
     List <SavedSearch> searchResults = savedSearchRepository.findAllByUserId(userId);
     logger.info("Retrieved " + searchResults.size() + " saved searches for user id " + userId);
 
     return new JsonApiSuccessResponse.Builder()
-      .setStatus(HttpStatus.OK)
+      .setStatus(HttpStatus.OK, response)
       .setData(generateListJsonApiData(searchResults)).build();
   }
 
@@ -90,7 +91,8 @@ public class SavedSearchController {
           @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @GetMapping(value = "/saved-search", produces = "application/json")
-  public JsonApiResponse getAuthenticatedUserById(final @AuthenticationPrincipal Authentication authentication)
+  public JsonApiResponse getAuthenticatedUserById(final @AuthenticationPrincipal Authentication authentication,
+                                                  HttpServletResponse response)
           throws RuntimeException {
     String userId = authentication.getName();
     logger.info("Retrieving user searches authenticated user with id: " + userId);
@@ -98,7 +100,7 @@ public class SavedSearchController {
     logger.info("Retrieved " + searchResults.size() + " saved searches for user id " + userId);
 
     return new JsonApiSuccessResponse.Builder()
-      .setStatus(HttpStatus.OK)
+      .setStatus(HttpStatus.OK, response)
       .setData(generateListJsonApiData(searchResults)).build();
   }
 
@@ -106,7 +108,8 @@ public class SavedSearchController {
   @ApiOperation(value = "Add user search")
   @PostMapping(value = "/saved-search", produces = "application/json")
   public JsonApiResponse create(@RequestBody SavedSearch savedSearch,
-                                final @AuthenticationPrincipal Authentication authentication) {
+                                final @AuthenticationPrincipal Authentication authentication,
+                                HttpServletResponse response) {
     logger.info("Received saved-search POST request");
     String userId = authentication.getName();
     savedSearch.setUserId(userId);
@@ -119,7 +122,7 @@ public class SavedSearchController {
     result.add(item);
 
     return new JsonApiSuccessResponse.Builder()
-      .setStatus(HttpStatus.CREATED)
+      .setStatus(HttpStatus.CREATED, response)
       .setData(generateListJsonApiData(result)).build();
   }
 
@@ -128,7 +131,8 @@ public class SavedSearchController {
   @ApiOperation(value = "Update user saved search")
   @PutMapping(value = "/saved-search/{id}", produces = "application/json")
   public JsonApiResponse update(@PathVariable(value = "id") String id,
-                                @Valid @RequestBody SavedSearch savedSearchDetails)
+                                @Valid @RequestBody SavedSearch savedSearchDetails,
+                                HttpServletResponse response)
     throws ResourceNotFoundException {
     logger.info("Received saved-search PUT request");
     SavedSearch savedSearch = savedSearchRepository.findById(id)
@@ -146,7 +150,7 @@ public class SavedSearchController {
     result.add(updatedSavedSearch);
 
     return new JsonApiSuccessResponse.Builder()
-      .setStatus(HttpStatus.OK)
+      .setStatus(HttpStatus.OK, response)
       .setData(generateListJsonApiData(result)).build();
   }
 
@@ -155,7 +159,8 @@ public class SavedSearchController {
   @ApiOperation(value = "Delete saved search")
   @DeleteMapping(value = "/saved-search/{id}", produces = "application/json")
   public JsonApiResponse delete(@PathVariable(value = "id") String id,
-                                final @AuthenticationPrincipal Authentication authentication)
+                                final @AuthenticationPrincipal Authentication authentication,
+                                HttpServletResponse response)
     throws ResourceNotFoundException {
     logger.info("Received saved-search DELETE request");
     SavedSearch savedSearch = savedSearchRepository.findById(id)
@@ -163,11 +168,12 @@ public class SavedSearchController {
     logger.info("Deleting saved-search with id: " + id);
     savedSearchRepository.delete(savedSearch);
     logger.info("Delete complete for search with id: " + id);
-    Map<String, Boolean> response = new HashMap<>();
-    response.put("deleted", Boolean.TRUE);
+    Map<String, Boolean> result = new HashMap<>();
+    result.put("deleted", Boolean.TRUE);
 
     return new JsonApiSuccessResponse.Builder()
-      .setMeta(new JsonApiMeta.Builder().setNonStandardMetadata(response).build()).build();
+      .setMeta(new JsonApiMeta.Builder().setNonStandardMetadata(result).build())
+      .setStatus(HttpStatus.OK, response).build();
   }
 
   /**
