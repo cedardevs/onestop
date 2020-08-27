@@ -9,13 +9,13 @@ import org.springframework.http.HttpStatus;
 public class JsonApiErrorResponse extends JsonApiResponse {
 
   String id;
-  //  JsonLinks links;
   HttpStatus status;
   String code;
   String title;
   String detail;
   JsonApiMeta meta;
   ErrorSource source;
+  // There are lots other optional fields that can be added if needed.
 
   public JsonApiErrorResponse(String id, HttpStatus status, String code, String title, String detail, JsonApiMeta meta, ErrorSource source) {
     this.id = id;
