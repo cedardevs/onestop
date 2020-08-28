@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.hamcrest.Matchers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
@@ -32,6 +33,12 @@ class SavedSearchControllerSpec extends Specification {
         .webAppContextSetup(context)
         .apply(SecurityMockMvcConfigurers.springSecurity())
         .build()
+
+    mvc.perform(MockMvcRequestBuilders
+        .post("/v1/user")
+        .contentType("application/json")
+        .content(('{ "id":"mockMvcUser", "name": "test"}'))
+        .accept(MediaType.APPLICATION_JSON))
   }
   // Run before all the tests:
   def setupSpec() {
@@ -43,40 +50,6 @@ class SavedSearchControllerSpec extends Specification {
     postgres.stop()
   }
 
-  def "saved search denied"() {
-    when: 'we are a not authorized'
-    def postSearch = mvc.perform(MockMvcRequestBuilders
-        .post("/v1/saved-search")
-        .contentType("application/json")
-        .content(('{ "userId": "u1", "name": "test", "value": "value" }'))
-        .accept(MediaType.APPLICATION_JSON))
-
-    then:
-    postSearch.andExpect(MockMvcResultMatchers.status().isForbidden())
-    postSearch.andReturn().getResponse().getContentAsString() == """{"meta":null,"id":null,"status":"UNAUTHORIZED","code":"Unauthorized","title":null,"detail":null,"source":null}"""
-  }
-
-  @WithMockUser(username = "mockMvcUser", roles = "PUBLIC")
-  def "public user not authorized to admin getAll endpoint"() {
-    when: 'We make a request to a endpoint beyond our scope'
-    def getResults = mvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/all")
-        .accept(MediaType.APPLICATION_JSON))
-
-    then: 'we get 403'
-    getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
-  }
-
-  @WithMockUser(username = "mockMvcUser", roles = "PUBLIC")
-  def "public user not authorized to admin getByUserId endpoint"() {
-    when: 'We make a request to a endpoint beyond our scope'
-    def getResults = mvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/user/{id}", "valid-uuid")
-        .accept(MediaType.APPLICATION_JSON))
-
-    then: 'we get 403'
-    getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
-  }
 
   @WithMockUser(username = "mockMvcUser", roles = "ADMIN")
   def "admin user authorized to admin getAll endpoint"() {
@@ -89,11 +62,11 @@ class SavedSearchControllerSpec extends Specification {
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
-  @WithMockUser(username = "mockMvcUser", roles = "ADMIN")
+  @WithMockUser(username = "mockMvcAdmin", roles = "ADMIN")
   def "admin user authorized to admin getByUserId endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/user/{id}", "valid-uuid")
+        .get("/v1/saved-search/user/{id}", "mockMvcUser")
         .accept(MediaType.APPLICATION_JSON))
 
     then: 'we get 200'
@@ -101,18 +74,18 @@ class SavedSearchControllerSpec extends Specification {
   }
 
   @WithMockUser(username = "mockMvcUser", roles = "ADMIN")
-  def "POST and GET save search items, userId is taken from Authentication principal"() {
+  def "POST and GET save search items, user is taken from Authentication principal"() {
     when:
     ResultActions postOneResults = mvc.perform(MockMvcRequestBuilders
         .post("/v1/saved-search")
         .contentType("application/json")
-        .content(('{ "userId": "userOne", "name": "testOne", "value": "valueOne" }'))
+        .content(('{ "name": "testOne", "value": "valueOne" }'))
         .accept(MediaType.APPLICATION_JSON))
 
     ResultActions postTwoResults = mvc.perform(MockMvcRequestBuilders
         .post("/v1/saved-search")
         .contentType("application/json")
-        .content(('{ "userId": "userOne", "name": "testTwo", "value": "valueTwo" }'))
+        .content(('{ "name": "testTwo", "value": "valueTwo" }'))
         .accept(MediaType.APPLICATION_JSON))
 
     then:
@@ -120,13 +93,11 @@ class SavedSearchControllerSpec extends Specification {
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("testOne"))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("valueOne"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.userId").value("mockMvcUser"))
 
     postTwoResults.andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("testTwo"))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("valueTwo"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.userId").value("mockMvcUser"))
 
     when:
     def getResults = mvc.perform(MockMvcRequestBuilders
@@ -136,12 +107,9 @@ class SavedSearchControllerSpec extends Specification {
     then:
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("testOne"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("valueOne"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.userId").value("mockMvcUser")) //userId comes from authentication.getName(), payload is ignored
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].attributes.name").value("testTwo"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].attributes.value").value("valueTwo"))
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[1].attributes.userId").value("mockMvcUser")) //userId comes from authentication.getName(), payload is ignored
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data.length()").value(2))
+        .andExpect((MockMvcResultMatchers.jsonPath("\$.data[*].attributes.name", Matchers.containsInAnyOrder("testOne", "testTwo"))))
+        .andExpect((MockMvcResultMatchers.jsonPath("\$.data[*].attributes.value", Matchers.containsInAnyOrder("valueOne", "valueTwo"))))
   }
 
 }

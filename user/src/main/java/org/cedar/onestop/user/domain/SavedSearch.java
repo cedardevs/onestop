@@ -1,4 +1,4 @@
-package org.cedar.onestop.user.service;
+package org.cedar.onestop.user.domain;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -16,16 +16,16 @@ import java.util.Map;
  */
 
 @Entity
-@Table(name = "savesearch")
+@Table(name = "onestop_search")
 public class SavedSearch {
   @Id
   @GeneratedValue(generator = "uuid")
   @GenericGenerator(name = "uuid", strategy = "uuid2")
   public String id;
 
-  @NotNull
-  @Column(name = "userId", updatable = false )
-  public String userId;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "onestop_user", nullable = false)
+  private OnestopUser user;
 
   @Column(name = "name", nullable = false)
   public String name;
@@ -48,10 +48,15 @@ public class SavedSearch {
   protected SavedSearch() {
   }
 
+
+  protected SavedSearch(OnestopUser user) {
+    this.user = user;
+  }
+
   //constructor is for creating instances.
-  public SavedSearch(String id, String userId, String name, String value, String filter,  Date createdOn, Date lastUpdatedOn) {
+  public SavedSearch(OnestopUser user, String id, String name, String value, String filter,  Date createdOn, Date lastUpdatedOn) {
+    this.user = user;
     this.id = id;
-    this.userId = userId;
     this.name = name;
     this.value = value;
     this.filter = filter;
@@ -60,9 +65,9 @@ public class SavedSearch {
   }
 
   //constructor is for creating instances.
-  public SavedSearch(String id, String userId, String name, String filter, String value) {
+  public SavedSearch(OnestopUser user, String id, String name, String filter, String value) {
+    this.user = user;
     this.id = id;
-    this.userId = userId;
     this.name = name;
     this.filter = filter;
     this.value = value;
@@ -86,12 +91,12 @@ public class SavedSearch {
     this.id = id;
   }
 
-  public String getUserId() {
-    return userId;
+  public void setUser(OnestopUser user){
+    this.user = user;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public OnestopUser getUser() {
+    return user;
   }
 
   public String getName() {
@@ -138,7 +143,6 @@ public class SavedSearch {
   public String toString() {
     return "SaveSearchModel{" +
         "id=" + id +
-        ", userId='" + userId + '\'' +
         ", name='" + name + '\'' +
         ", value='" + value + '\'' +
         ", createdOn='" + createdOn + '\'' +
@@ -150,7 +154,6 @@ public class SavedSearch {
     //TODO should null fields be included?
     Map result = new HashMap();
     result.put("id", id);
-    result.put("userId", userId);
     result.put("name", name);
     result.put("value", value);
     result.put("filter", filter);
