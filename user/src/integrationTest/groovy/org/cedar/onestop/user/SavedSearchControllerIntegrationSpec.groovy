@@ -20,7 +20,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @ActiveProfiles(['integration', 'security'])
 @SpringBootTest(classes = [UserApplication.class], webEnvironment = RANDOM_PORT)
-class SavedSearchControllerSpec extends Specification {
+class SavedSearchControllerIntegrationSpec extends Specification {
   private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
 
   @Autowired
