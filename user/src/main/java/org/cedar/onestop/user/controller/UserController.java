@@ -113,7 +113,7 @@ public class UserController {
                 .setType("roles").build();
         dataList.add(dataItem);
         return new JsonApiSuccessResponse.Builder()
-          .setStatus(HttpStatus.CREATED, response)
+          .setStatus(HttpStatus.OK, response)
           .setData(dataList).build();
     }
 }

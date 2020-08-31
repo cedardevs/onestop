@@ -67,7 +67,7 @@ class OnestopUserControllerSpec extends Specification  {
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    postSearch.andExpect(MockMvcResultMatchers.status().isOk())
+    postSearch.andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value("mockUser"))
 
   }

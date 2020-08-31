@@ -50,7 +50,6 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     postgres.stop()
   }
 
-
   @WithMockUser(username = "mockMvcUser", roles = "ADMIN")
   def "admin user authorized to admin getAll endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
@@ -89,12 +88,12 @@ class SavedSearchControllerIntegrationSpec extends Specification {
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    postOneResults.andExpect(MockMvcResultMatchers.status().isOk())
+    postOneResults.andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("testOne"))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("valueOne"))
 
-    postTwoResults.andExpect(MockMvcResultMatchers.status().isOk())
+    postTwoResults.andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("testTwo"))
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("valueTwo"))

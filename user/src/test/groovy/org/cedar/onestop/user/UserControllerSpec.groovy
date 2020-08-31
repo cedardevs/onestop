@@ -107,7 +107,7 @@ class UserControllerSpec extends Specification {
     then:
     onestopUserRepository.save(_ as OnestopUser) >> new OnestopUser("new_user") //>> new OnestopUser("new_user")
 
-    postSearch.andExpect(MockMvcResultMatchers.status().isOk())
+    postSearch.andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value("new_user"))
 
   }

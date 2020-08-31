@@ -94,7 +94,7 @@ class SavedSearchControllerSpec extends Specification {
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    results.andExpect(MockMvcResultMatchers.status().isOk())
+    results.andExpect(MockMvcResultMatchers.status().isCreated())
     1 * mockUserRepository.findById('new_search_user') >> Optional.of((OnestopUser)mockUser)
     1 * mockSaveSearchRepository.save(_) >> search1
     1 * mockUserRepository.save(mockUser)
