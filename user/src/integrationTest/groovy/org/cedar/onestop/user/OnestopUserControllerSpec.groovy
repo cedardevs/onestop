@@ -72,4 +72,30 @@ class OnestopUserControllerSpec extends Specification  {
 
   }
 
+  @WithMockUser(username = "mockUser", roles = "PUBLIC")
+  def "user is created, search is saved"() {
+    when:
+    def postUser = mvc.perform(MockMvcRequestBuilders
+        .post("/v1/user")
+        .contentType("application/json")
+        .content(('{ "name": "test"}'))
+        .accept(MediaType.APPLICATION_JSON))
+
+    then:
+    postUser.andExpect(MockMvcResultMatchers.status().isCreated())
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value("mockUser"))
+
+    and:
+    def postSearch = mvc.perform(MockMvcRequestBuilders
+        .post("/v1/saved-search")
+        .contentType("application/json")
+        .content(('{ "value": "test/test", "name" : "test search"}'))
+        .accept(MediaType.APPLICATION_JSON))
+
+    then:
+    postSearch.andExpect(MockMvcResultMatchers.status().isCreated())
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.value").value("test/test"))
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.name").value("test search"))
+
+  }
 }
