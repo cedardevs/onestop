@@ -50,41 +50,6 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     postgres.stop()
   }
 
-  def "saved search denied"() {
-    when: 'we are a not authorized'
-    def postSearch = mvc.perform(MockMvcRequestBuilders
-        .post("/v1/saved-search")
-        .contentType("application/json")
-        .content(('{ "userId": "u1", "name": "test", "value": "value" }'))
-        .accept(MediaType.APPLICATION_JSON))
-
-    then:
-    postSearch.andReturn().getResponse().getContentAsString() == """{"meta":null,"id":null,"status":"UNAUTHORIZED","code":"Unauthorized","title":null,"detail":null,"source":null}"""
-    postSearch.andExpect(MockMvcResultMatchers.status().isForbidden())
-  }
-
-  @WithMockUser(username = "mockMvcUser", roles = "PUBLIC")
-  def "public user not authorized to admin getAll endpoint"() {
-    when: 'We make a request to a endpoint beyond our scope'
-    def getResults = mvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/all")
-        .accept(MediaType.APPLICATION_JSON))
-
-    then: 'we get 403'
-    getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
-  }
-
-  @WithMockUser(username = "mockMvcUser", roles = "PUBLIC")
-  def "public user not authorized to admin getByUserId endpoint"() {
-    when: 'We make a request to a endpoint beyond our scope'
-    def getResults = mvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/user/{id}", "valid-uuid")
-        .accept(MediaType.APPLICATION_JSON))
-
-    then: 'we get 403'
-    getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
-  }
-
   @WithMockUser(username = "mockMvcUser", roles = "ADMIN")
   def "admin user authorized to admin getAll endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
