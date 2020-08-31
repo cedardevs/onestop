@@ -55,13 +55,12 @@ public class UserController {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("userId", userId);
         JsonApiData dataItem = new JsonApiData.Builder()
-          .setStatus(HttpStatus.OK, response)
           .setId(userId)
           .setAttributes(data)
           .setType("user").build();
         dataList.add(dataItem);
         return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.OK)
+                .setStatus(HttpStatus.OK, response)
                 .setData(dataList).build();
     }
 
