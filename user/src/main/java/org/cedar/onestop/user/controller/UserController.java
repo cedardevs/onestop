@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @GetMapping(value = "/user", produces = "application/json")
-    public JsonApiResponse getAuthenticatedUser(final @AuthenticationPrincipal Authentication authentication)
+    public JsonApiResponse getAuthenticatedUser(final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
             throws RuntimeException {
         String userId = authentication.getName();
         logger.info("Retrieving user data for authenticated user with id : " + userId);
@@ -54,6 +55,7 @@ public class UserController {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("userId", userId);
         JsonApiData dataItem = new JsonApiData.Builder()
+          .setStatus(HttpStatus.OK, response)
           .setId(userId)
           .setAttributes(data)
           .setType("user").build();
@@ -71,7 +73,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @PostMapping(value = "/user", produces = "application/json")
-    public  JsonApiResponse createUser(@RequestBody OnestopUser user, final @AuthenticationPrincipal Authentication authentication)
+    public  JsonApiResponse createUser(@RequestBody OnestopUser user, final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
             throws RuntimeException {
         String userId = authentication.getName();
         logger.info("Creating new user with id : " + userId);
@@ -79,13 +81,13 @@ public class UserController {
         OnestopUser savedUser = onestopUserRepository.save(user);
         List<JsonApiData> dataList = new ArrayList<>();
         JsonApiData dataItem = new JsonApiData.Builder()
-                .setId(userId)
-                .setAttributes(savedUser.toMap())
-                .setType("user").build();
+          .setId(userId)
+          .setAttributes(savedUser.toMap())
+          .setType("user").build();
         dataList.add(dataItem);
         return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.CREATED)
-                .setData(dataList).build();
+          .setStatus(HttpStatus.CREATED, response)
+          .setData(dataList).build();
     }
 
     @Secured("ROLE_ADMIN")
@@ -96,7 +98,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @GetMapping(value = "/roles/{id}", produces = "application/json")
-    public  JsonApiResponse getUserRoles(@PathVariable(value = "id") String id, final @AuthenticationPrincipal Authentication authentication)
+    public  JsonApiResponse getUserRoles(@PathVariable(value = "id") String id, final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
             throws ResourceNotFoundException {
         logger.info("Retrieving user roles for user id: " + id);
         OnestopUser user = onestopUserRepository.findById(id)
@@ -112,7 +114,7 @@ public class UserController {
                 .setType("roles").build();
         dataList.add(dataItem);
         return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.OK)
-                .setData(dataList).build();
+          .setStatus(HttpStatus.CREATED, response)
+          .setData(dataList).build();
     }
 }

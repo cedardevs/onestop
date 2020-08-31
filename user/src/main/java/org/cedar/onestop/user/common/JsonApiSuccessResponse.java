@@ -2,6 +2,7 @@ package org.cedar.onestop.user.common;
 
 import org.springframework.http.HttpStatus;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 public class JsonApiSuccessResponse extends JsonApiResponse {
@@ -44,8 +45,9 @@ public class JsonApiSuccessResponse extends JsonApiResponse {
       return this;
     }
 
-    public Builder setStatus(HttpStatus status) {
+    public Builder setStatus(HttpStatus status, HttpServletResponse response) {
       this.status = status;
+      response.setStatus(status.value());
       return this;
     }
 
