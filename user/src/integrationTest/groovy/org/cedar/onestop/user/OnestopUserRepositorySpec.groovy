@@ -1,11 +1,13 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.domain.SavedSearch
 import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
 import org.cedar.onestop.user.repository.OnestopRoleRepository
 import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.domain.OnestopRole
 import org.cedar.onestop.user.domain.OnestopPrivilege
 import org.cedar.onestop.user.domain.OnestopUser
+import org.cedar.onestop.user.repository.SavedSearchRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,7 +29,10 @@ class OnestopUserRepositorySpec extends Specification {
   OnestopUserRepository onestopUserRepo
 
   @Autowired
-  private OnestopRoleRepository roleRepository
+  OnestopRoleRepository roleRepository
+
+  @Autowired
+  SavedSearchRepository savedSearchRepository
 
   @Autowired
   private OnestopPrivilegeRepository privilegeRepository
@@ -77,14 +82,14 @@ class OnestopUserRepositorySpec extends Specification {
     getById.getRoles().toString() == roles.toString()
   }
 
-  def "create user with privs and roles"() {
+  def "create a complete user with roles, privileges, and searches"() {
     given: 'two privs, read and write'
     OnestopPrivilege readPrivilege = new OnestopPrivilege("READ")
     privilegeRepository.save(readPrivilege)
     OnestopPrivilege writePrivilege = new OnestopPrivilege("WRITE")
     privilegeRepository.save(writePrivilege)
 
-    and: 'two roles'
+    and: 'two roles - admin can read and write, public can read only'
     OnestopRole adminRole = new OnestopRole("ADMIN")
     List<OnestopPrivilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege)
     adminRole.setPrivileges(adminPrivileges)
@@ -93,7 +98,7 @@ class OnestopUserRepositorySpec extends Specification {
     List<OnestopPrivilege> publicPrivilege = Arrays.asList(readPrivilege)
     publicRole.setPrivileges(publicPrivilege)
 
-    and: 'two users'
+    and: 'two users - an admin and a public user'
     OnestopUser adminUser = new OnestopUser("abc")
     Collection<OnestopRole> adminRoles = Arrays.asList(adminRole)
     adminUser.setRoles(adminRoles)
@@ -120,10 +125,30 @@ class OnestopUserRepositorySpec extends Specification {
     publicUser.getRoles()[0].getName() == savedPublicUser.getRoles()[0].getName()
     publicUser.getRoles()[0].getPrivileges()[0].getName() == savedPublicUser.getRoles()[0].getPrivileges()[0].getName()
 
-    and: 'they both share the read priv'
+    and: 'they both share the read privilege'
     savedAdminUser.getRoles()[0].getPrivileges().contains(readPrivilege)
     savedPublicUser.getRoles()[0].getPrivileges().contains(readPrivilege)
+
+    and: 'the public user does not have the write privilege'
     !savedPublicUser.getRoles()[0].getPrivileges().contains(writePrivilege)
+
+    and:
+    SavedSearch mockSearch = new SavedSearch(user: savedPublicUser, value: "/collection/search")
+    savedSearchRepository.save(mockSearch)
+
+    Set<SavedSearch> mockSearches = [mockSearch]
+    savedPublicUser.setSearches(mockSearches)
+    OnestopUser updatedPublicUser = onestopUserRepo.findById(savedPublicUser.getId()).get()
+
+    then:
+    updatedPublicUser.getSearches()[0] == mockSearch
+
+    and:
+    SavedSearch savedMockSearch = savedSearchRepository.getOne(mockSearch.getId())
+
+    then:
+    savedMockSearch == mockSearch
+    savedMockSearch.getUser() == updatedPublicUser
   }
 }
 
