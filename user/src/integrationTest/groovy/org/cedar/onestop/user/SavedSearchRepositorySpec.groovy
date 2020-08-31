@@ -1,12 +1,15 @@
 package org.cedar.onestop.user
 
-import org.cedar.onestop.user.service.SavedSearch
+import org.cedar.onestop.user.domain.OnestopUser
+import org.cedar.onestop.user.domain.SavedSearch
+import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.repository.SavedSearchRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.containers.PostgreSQLContainer
+import spock.lang.Shared
 import spock.lang.Specification
 
 @DataJpaTest
@@ -18,10 +21,19 @@ class SavedSearchRepositorySpec extends Specification {
   @Autowired
   SavedSearchRepository saveSearchRepository
 
+  @Autowired
+  OnestopUserRepository onestopUserRepo
+
+  @Shared
+  OnestopUser savedUser
+
   private SavedSearch saveSearch
 
   def setup(){
-    saveSearch = new SavedSearch("1", "UserId1", "entryName1","{\"test\":\"test\"}", "value 1")
+    OnestopUser onestopUser = new OnestopUser("mock_user")
+    savedUser = onestopUserRepo.save(onestopUser)
+
+    saveSearch = new SavedSearch(savedUser, "1", "entryName1","{\"test\":\"test\"}", "value 1")
   }
 
   // Run before all the tests:
@@ -36,7 +48,7 @@ class SavedSearchRepositorySpec extends Specification {
 
   def "should Store Each SaveSearch"() {
     given:
-    SavedSearch saveSearch1 = new SavedSearch("2", "UserId2", "entryName2", "{\"test\":\"test\"}","value 1")
+    SavedSearch saveSearch1 = new SavedSearch(savedUser, "2", "entryName2", "{\"test\":\"test\"}","value 1")
     saveSearchRepository.save(saveSearch)
     saveSearchRepository.save(saveSearch1)
 
@@ -63,30 +75,30 @@ class SavedSearchRepositorySpec extends Specification {
     def id = saveSearchRepository.save(saveSearch)
 
     when:
-    List<SavedSearch> getByUserId = saveSearchRepository.findAllByUserId(id.getUserId())
+    List<SavedSearch> getByUserId = saveSearchRepository.findAllByUser(savedUser)
 
     then:
     getByUserId[0].id != null
-    getByUserId[0].userId == "UserId1"
+    getByUserId[0].getUser().getId() == savedUser.getId()
 
   }
 
   def "should have multiple entries for a userId"() {
     given:
-    SavedSearch saveSearch1 = new SavedSearch("2", "UserId2", "entryName2", "{\"test\":\"test\"}", "value 2")
-    SavedSearch saveSearch2 = new SavedSearch("3", "UserId2", "entryName3", "{\"test\":\"test\"}","value 3")
+    SavedSearch saveSearch1 = new SavedSearch(savedUser, "2", "entryName2", "{\"test\":\"test\"}", "value 2")
+    SavedSearch saveSearch2 = new SavedSearch(savedUser, "3", "entryName3", "{\"test\":\"test\"}","value 3")
     iterator()
     saveSearchRepository.save(saveSearch1)
     saveSearchRepository.save(saveSearch2)
 
     when:
-    List<SavedSearch> getByUserId = saveSearchRepository.findAllByUserId("UserId2")
+    List<SavedSearch> getByUserId = saveSearchRepository.findAllByUser(savedUser)
 
     then:
     getByUserId.size() == 2
     getByUserId[0].value == "value 2"
     getByUserId[1].value == "value 3"
-    getByUserId[0].userId == getByUserId[1].userId
+    getByUserId[0].getUser() == getByUserId[1].getUser()
   }
 
   //  static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {

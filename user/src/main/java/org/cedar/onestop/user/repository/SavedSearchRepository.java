@@ -1,6 +1,7 @@
 package org.cedar.onestop.user.repository;
 
-import org.cedar.onestop.user.service.SavedSearch;
+import org.cedar.onestop.user.domain.OnestopUser;
+import org.cedar.onestop.user.domain.SavedSearch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,8 @@ import java.util.List;
  */
 @Repository
 public interface SavedSearchRepository extends JpaRepository<SavedSearch, String> {
-  List<SavedSearch> findAllByUserId(String userId);
+//  List<SavedSearch> findAllByUserId(String userId);
+  List<SavedSearch> findAllByUser(OnestopUser user);
+
   long count();
 }
