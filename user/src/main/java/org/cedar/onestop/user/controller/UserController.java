@@ -60,7 +60,7 @@ public class UserController {
           .setType("user").build();
         dataList.add(dataItem);
         return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.OK, response)
+                .setStatus(HttpStatus.OK.value(), response)
                 .setData(dataList).build();
     }
 
@@ -85,7 +85,7 @@ public class UserController {
           .setType("user").build();
         dataList.add(dataItem);
         return new JsonApiSuccessResponse.Builder()
-          .setStatus(HttpStatus.CREATED, response)
+          .setStatus(HttpStatus.CREATED.value(), response)
           .setData(dataList).build();
     }
 
@@ -113,7 +113,7 @@ public class UserController {
                 .setType("roles").build();
         dataList.add(dataItem);
         return new JsonApiSuccessResponse.Builder()
-          .setStatus(HttpStatus.OK, response)
+          .setStatus(HttpStatus.OK.value(), response)
           .setData(dataList).build();
     }
 }

@@ -9,12 +9,13 @@ public class JsonApiSuccessResponse extends JsonApiResponse {
 
   List<JsonApiData> data;
   JsonApiMeta meta;
-  HttpStatus status;
+  int status;
   // There are lots other optional fields that can be added if needed.
 
-  private JsonApiSuccessResponse( List<JsonApiData> data, JsonApiMeta meta) {
+  private JsonApiSuccessResponse( List<JsonApiData> data, JsonApiMeta meta, int status) {
     this.data = data;
     this.meta = meta;
+    this.status = status;
   }
 
   public List<JsonApiData> getData() {
@@ -25,14 +26,14 @@ public class JsonApiSuccessResponse extends JsonApiResponse {
     return meta;
   }
 
-  public HttpStatus getStatus() {
+  public int getStatus() {
     return status;
   }
 
   static public class Builder {
     List<JsonApiData> data;
     JsonApiMeta meta;
-    HttpStatus status;
+    int status;
     // There are lots other optional fields that can be added if needed.
 
     public Builder setData(List<JsonApiData> data) {
@@ -45,15 +46,15 @@ public class JsonApiSuccessResponse extends JsonApiResponse {
       return this;
     }
 
-    public Builder setStatus(HttpStatus status, HttpServletResponse response) {
+    public Builder setStatus(int status, HttpServletResponse response) {
       this.status = status;
-      response.setStatus(status.value());
+      response.setStatus(status);
       return this;
     }
 
     public JsonApiSuccessResponse build() {
-      if (status != null && (data != null || meta != null)) {
-        return new JsonApiSuccessResponse(data, meta);
+      if (status != 0 && (data != null || meta != null)) {
+        return new JsonApiSuccessResponse(data, meta, status);
       } else {
         throw new NullPointerException("JSON:Successful response must have status and either data or meta set");
       }

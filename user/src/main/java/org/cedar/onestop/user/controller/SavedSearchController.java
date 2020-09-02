@@ -49,7 +49,7 @@ public class SavedSearchController {
         logger.info("Retrieved " + searchResults.size() + " saved searches.");
         logger.debug(searchResults.toString());
         return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.OK, response)
+                .setStatus(HttpStatus.OK.value(), response)
                 .setData(generateListJsonApiData(searchResults)).build();
     }
 
@@ -64,7 +64,7 @@ public class SavedSearchController {
         List<SavedSearch> result = new ArrayList<>();
         result.add(savedSearch);
         return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.OK, response)
+                .setStatus(HttpStatus.OK.value(), response)
                 .setData(generateListJsonApiData(result)).build();
     }
 
@@ -83,7 +83,7 @@ public class SavedSearchController {
         Collection<SavedSearch> searchResults = user.getSearches();
         logger.info("Retrieved " + searchResults.size() + " saved searches for user id " + userId);
         return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.OK, response)
+                .setStatus(HttpStatus.OK.value(), response)
                 .setData(generateListJsonApiData(new ArrayList<>(searchResults))).build();
     }
 
@@ -103,7 +103,7 @@ public class SavedSearchController {
         Set<SavedSearch> searchResults = user.getSearches();
         logger.info("Retrieved " + searchResults.size() + " saved searches for user id " + userId);
         return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.OK, response)
+                .setStatus(HttpStatus.OK.value(), response)
                 .setData(generateListJsonApiData(new ArrayList<>(searchResults))).build();    }
 
     @Secured({"ROLE_PUBLIC", "ROLE_ADMIN"})
@@ -125,7 +125,7 @@ public class SavedSearchController {
         List<SavedSearch> result = new ArrayList<>();
         result.add(item);
         return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.CREATED, response)
+                .setStatus(HttpStatus.CREATED.value(), response)
                 .setData(generateListJsonApiData(result)).build();
     }
 
@@ -149,7 +149,7 @@ public class SavedSearchController {
         List<SavedSearch> result = new ArrayList<>();
         result.add(updatedSavedSearch);
         return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.OK, response)
+                .setStatus(HttpStatus.OK.value(), response)
                 .setData(generateListJsonApiData(result)).build();    }
 
     //todo more to do here so users cannot delete each others request
@@ -168,7 +168,7 @@ public class SavedSearchController {
         Map<String, Boolean> result = new HashMap<>();
         result.put("deleted", Boolean.TRUE);
         return new JsonApiSuccessResponse.Builder()
-            .setStatus(HttpStatus.OK, response)
+            .setStatus(HttpStatus.OK.value(), response)
             .setMeta(new JsonApiMeta.Builder().setNonStandardMetadata(result).build()).build();
     }
 

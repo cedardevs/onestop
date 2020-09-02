@@ -63,7 +63,7 @@ class SavedSearchControllerSpec extends Specification {
       '"createdOn":null}' +
       '}' +
       '],' +
-      '"meta":null,"status":null}'
+      '"meta":null,"status":200}'
 
   def setup(){
     mockUser.setSearches((Set)new ArrayList<SavedSearch>(savedSearches))
@@ -100,7 +100,7 @@ class SavedSearchControllerSpec extends Specification {
     1 * mockUserRepository.save(mockUser)
 
 //    1 * mockSaveSearchRepository.save(_ as SavedSearch) >> new SavedSearch( user, "new_search_user",  "test",  "filter",  "value")
-    results.andReturn().getResponse().getContentAsString() == '{"data":[' +  searchResult1Json + '],"meta":null,"status":null}'
+    results.andReturn().getResponse().getContentAsString() == '{"data":[' +  searchResult1Json + '],"meta":null,"status":201}'
   }
 
   @WithMockUser(username = 'public_getter_by_id', roles = ["PUBLIC"])
@@ -182,7 +182,7 @@ class SavedSearchControllerSpec extends Specification {
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
     1 * mockSaveSearchRepository.findAll() >> []
-    results.andReturn().getResponse().getContentAsString() == """{"data":[],"meta":null,"status":null}"""
+    results.andReturn().getResponse().getContentAsString() == """{"data":[],"meta":null,"status":200}"""
   }
 
   @WithMockUser(roles = ["ADMIN"])
@@ -195,6 +195,6 @@ class SavedSearchControllerSpec extends Specification {
     then:
     1 * mockSaveSearchRepository.findById(_) >> Optional.of((SavedSearch) search1)
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    results.andReturn().getResponse().getContentAsString() == "{\"data\":[" + searchResult1Json + "],\"meta\":null,\"status\":null}"
+    results.andReturn().getResponse().getContentAsString() == "{\"data\":[" + searchResult1Json + "],\"meta\":null,\"status\":200}"
   }
 }
