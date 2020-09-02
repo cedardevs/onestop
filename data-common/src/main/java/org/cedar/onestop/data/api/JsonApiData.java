@@ -1,6 +1,6 @@
 package org.cedar.onestop.data.api;
 
-import java.util.Map;
+import java.util.*;
 
 public class JsonApiData {
   private String id;
@@ -25,8 +25,7 @@ public class JsonApiData {
     return attributes;
   }
 
-
-  static class Builder {
+  public static class Builder {
     private String id;
     private String type;
     private Map<String, Object> attributes;
@@ -54,13 +53,12 @@ public class JsonApiData {
     }
 
     public JsonApiData build() {
-      if(id != null && type != null && attributes != null) {
+      if(id != null && type != null) {
         return new JsonApiData(id, type, attributes);
       }
       else {
         throw new NullPointerException("JSON:API data element must have id, type, and attributes set");
       }
     }
-
   }
 }

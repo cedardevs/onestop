@@ -3,7 +3,7 @@ package org.cedar.onestop.user.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.cedar.onestop.user.common.*;
+import org.cedar.onestop.data.api.*;
 import org.cedar.onestop.user.domain.OnestopUser;
 import org.cedar.onestop.user.repository.OnestopUserRepository;
 import org.cedar.onestop.user.repository.SavedSearchRepository;

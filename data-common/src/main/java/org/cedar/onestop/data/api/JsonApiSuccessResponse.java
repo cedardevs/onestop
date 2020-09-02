@@ -1,6 +1,4 @@
-package org.cedar.onestop.user.common;
-
-import org.springframework.http.HttpStatus;
+package org.cedar.onestop.data.api;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
