@@ -1,5 +1,7 @@
 package org.cedar.onestop.data.api;
 
+import javax.servlet.http.HttpServletResponse;
+
 public class JsonApiErrorResponse extends JsonApiResponse {
 
   String id;
@@ -75,8 +77,9 @@ public class JsonApiErrorResponse extends JsonApiResponse {
      * @param status HttpStatus status code
      * @return
      */
-    public Builder setStatus(int status) {
+    public Builder setStatus(int status, HttpServletResponse response) {
       this.status = status;
+      response.setStatus(status);
       return this;
     }
 
