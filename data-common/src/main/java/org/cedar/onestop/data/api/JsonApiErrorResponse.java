@@ -51,9 +51,14 @@ public class JsonApiErrorResponse extends JsonApiResponse {
     return source;
   }
 
-  private class ErrorSource {
+  public static class ErrorSource {
     String pointer;
     String parameter;
+
+    public ErrorSource(String pointer, String parameter) {
+      this.pointer = pointer;
+      this.parameter = parameter;
+    }
   }
 
   static public class Builder {
