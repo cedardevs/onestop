@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import org.cedar.onestop.user.config.SecurityConfig;
 import org.cedar.onestop.user.repository.OnestopUserRepository;
 import org.cedar.onestop.user.domain.OnestopUser;
 import org.cedar.onestop.user.service.ResourceNotFoundException;
@@ -39,7 +40,7 @@ public class UserController {
         this.onestopUserRepository = onestopUserRepository;
     }
 
-    @Secured({"ROLE_PUBLIC", "ROLE_ADMIN"})
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
     @ApiOperation(value = "Get authenticated user data", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved user data"),
@@ -64,10 +65,10 @@ public class UserController {
                 .setData(dataList).build();
     }
 
-    @Secured({"ROLE_PUBLIC", "ROLE_ADMIN"})
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
     @ApiOperation(value = "Create a user", response = Iterable.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved user data"),
+            @ApiResponse(code = 200, message = "Successfully created a user"),
             @ApiResponse(code = 401, message = "Access denied"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
@@ -89,31 +90,34 @@ public class UserController {
           .setData(dataList).build();
     }
 
-    @Secured("ROLE_ADMIN")
-    @ApiOperation(value = "Get user roles (ADMIN)", response = Iterable.class)
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
+    @ApiOperation(value = "Update user", response = Iterable.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved user roles"),
-            @ApiResponse(code = 401, message = "Access denied"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+      @ApiResponse(code = 200, message = "Successfully created a user"),
+      @ApiResponse(code = 401, message = "Access denied"),
+      @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
-    @GetMapping(value = "/roles/{id}", produces = "application/json")
-    public  JsonApiResponse getUserRoles(@PathVariable(value = "id") String id, final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
-            throws ResourceNotFoundException {
-        logger.info("Retrieving user roles for user id: " + id);
-        OnestopUser user = onestopUserRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Save search not found for this id :: " + id));
-        logger.info("Retrieved " + user.getRoles().size() + " roles for user id: " + id);
-        List<JsonApiData> dataList = new ArrayList<>();
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("roles", user.getRoles());
+    @PutMapping(value = "/user", produces = "application/json")
+    public  JsonApiResponse updateUser(@RequestBody OnestopUser user, final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
+      throws ResourceNotFoundException {
+        String userId = authentication.getName();
+        logger.info("Updating user with id : " + userId);
+        user.setId(userId); // id must come from auth object (provided by the IdP)
+        OnestopUser existingUser = onestopUserRepository.findById(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + userId));
 
+        existingUser.setRoles(user.getRoles());
+        existingUser.setCreatedOn(user.getCreatedOn());
+        existingUser.setLastUpdatedOn(user.getLastUpdatedOn());
+        OnestopUser savedUser = onestopUserRepository.save(existingUser);
+        List<JsonApiData> dataList = new ArrayList<>();
         JsonApiData dataItem = new JsonApiData.Builder()
-                .setId(user.getId())
-                .setAttributes(data)
-                .setType("roles").build();
+          .setId(userId)
+          .setAttributes(savedUser.toMap())
+          .setType("user").build();
         dataList.add(dataItem);
         return new JsonApiSuccessResponse.Builder()
-          .setStatus(HttpStatus.OK, response)
+          .setStatus(HttpStatus.CREATED, response)
           .setData(dataList).build();
     }
 }

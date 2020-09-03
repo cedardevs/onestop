@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.cedar.onestop.user.common.*;
+import org.cedar.onestop.user.config.SecurityConfig;
 import org.cedar.onestop.user.domain.OnestopUser;
 import org.cedar.onestop.user.repository.OnestopUserRepository;
 import org.cedar.onestop.user.repository.SavedSearchRepository;
@@ -87,7 +88,7 @@ public class SavedSearchController {
                 .setData(generateListJsonApiData(new ArrayList<>(searchResults))).build();
     }
 
-    @Secured({"ROLE_PUBLIC", "ROLE_ADMIN"})
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
     @ApiOperation(value = "View all user searches", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
@@ -106,7 +107,7 @@ public class SavedSearchController {
                 .setStatus(HttpStatus.OK, response)
                 .setData(generateListJsonApiData(new ArrayList<>(searchResults))).build();    }
 
-    @Secured({"ROLE_PUBLIC", "ROLE_ADMIN"})
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
     @ApiOperation(value = "Add user search")
     @PostMapping(value = "/saved-search", produces = "application/json")
     public JsonApiResponse create(@RequestBody SavedSearch savedSearch,
@@ -130,7 +131,7 @@ public class SavedSearchController {
     }
 
     //todo use postAuth to prevent changing others
-    @Secured({"ROLE_PUBLIC", "ROLE_ADMIN"})
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
     @ApiOperation(value = "Update user saved search")
     @PutMapping(value = "/saved-search/{id}", produces = "application/json")
     public JsonApiResponse update(@PathVariable(value = "id") String id,
@@ -153,7 +154,7 @@ public class SavedSearchController {
                 .setData(generateListJsonApiData(result)).build();    }
 
     //todo more to do here so users cannot delete each others request
-    @Secured({"ROLE_PUBLIC", "ROLE_ADMIN"})
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
     @ApiOperation(value = "Delete saved search")
     @DeleteMapping(value = "/saved-search/{id}", produces = "application/json")
     public JsonApiResponse delete(@PathVariable(value = "id") String id,
