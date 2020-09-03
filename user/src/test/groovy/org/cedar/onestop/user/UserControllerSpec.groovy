@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.UserController
 import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.domain.OnestopUser
@@ -35,7 +36,7 @@ class UserControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
   }
 
-  @WithMockUser(roles = ["PUBLIC"])
+  @WithMockUser(roles = [SecurityConfig.PUBLIC_PRIVILEGE])
   def "public user can hit user endpoint"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -68,34 +69,7 @@ class UserControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(username = "admin_user_roles", roles = ["ADMIN"])
-  def "admin user can hit role endpoint"() {
-    given:
-    String id = "admin_id"
-    when:
-      def getResults = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/roles/{id}", id)
-        .accept(MediaType.APPLICATION_JSON))
-
-    then:
-    1 * onestopUserRepository.findById(id) >>  Optional.of((OnestopUser) new OnestopUser("admin_id"))
-
-    getResults.andExpect(MockMvcResultMatchers.status().isOk())
-  }
-
-
-  @WithMockUser(username = "role_hacker", roles = ["PUBLIC"])
-  def "public user not authorized to hit role endpoint"() {
-    when:
-    def getResults = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/roles/{id}", "hacker_id")
-        .accept(MediaType.APPLICATION_JSON))
-
-    then:
-    getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
-  }
-
-  @WithMockUser(username = "new_user", roles = ["PUBLIC"])
+  @WithMockUser(username = "new_user", roles = [SecurityConfig.PUBLIC_PRIVILEGE])
   def "user is created"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders

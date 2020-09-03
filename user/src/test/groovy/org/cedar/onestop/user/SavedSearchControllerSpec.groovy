@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.SavedSearchController
 import org.cedar.onestop.user.domain.OnestopUser
 import org.cedar.onestop.user.repository.OnestopUserRepository
@@ -82,7 +83,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == ""
   }
 
-  @WithMockUser(username = 'new_search_user', roles = ["PUBLIC"])
+  @WithMockUser(username = 'new_search_user', roles = [SecurityConfig.PUBLIC_PRIVILEGE])
   def "save search item for authenticated user"() {
     given:
 
@@ -103,7 +104,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == '{"data":[' +  searchResult1Json + '],"meta":null,"status":201}'
   }
 
-  @WithMockUser(username = 'public_getter_by_id', roles = ["PUBLIC"])
+  @WithMockUser(username = 'public_getter_by_id', roles = [SecurityConfig.PUBLIC_PRIVILEGE])
   def "get save searches for authenticated user by id"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -154,7 +155,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == searchResultJsonString
   }
 
-  @WithMockUser(roles = ["PUBLIC"])
+  @WithMockUser(roles = [SecurityConfig.PUBLIC_PRIVILEGE])
   def 'public user denied to protected endpoints'(){
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -172,7 +173,7 @@ class SavedSearchControllerSpec extends Specification {
     result2.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(roles = ["ADMIN"])
+  @WithMockUser(roles = [SecurityConfig.ADMIN_PRIVILEGE])
   def "endpoint 'saved-search/all' returns json api spec response"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -185,7 +186,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == """{"data":[],"meta":null,"status":200}"""
   }
 
-  @WithMockUser(roles = ["ADMIN"])
+  @WithMockUser(roles = [SecurityConfig.ADMIN_PRIVILEGE])
   def "admin can hit saved-search/{id}"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders

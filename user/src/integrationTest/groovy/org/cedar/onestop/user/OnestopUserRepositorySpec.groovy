@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.domain.SavedSearch
 import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
 import org.cedar.onestop.user.repository.OnestopRoleRepository
@@ -67,7 +68,7 @@ class OnestopUserRepositorySpec extends Specification {
 
   def "create user with role"() {
     given:
-    OnestopRole role = new OnestopRole("PUBLIC")
+    OnestopRole role = new OnestopRole(SecurityConfig.PUBLIC_PRIVILEGE)
     roleRepository.save(role)
     HashSet<OnestopRole> roles = [role]
     OnestopUser onestopUser = new OnestopUser("1", roles)
@@ -90,11 +91,11 @@ class OnestopUserRepositorySpec extends Specification {
     privilegeRepository.save(writePrivilege)
 
     and: 'two roles - admin can read and write, public can read only'
-    OnestopRole adminRole = new OnestopRole("ADMIN")
+    OnestopRole adminRole = new OnestopRole(SecurityConfig.ADMIN_PRIVILEGE)
     List<OnestopPrivilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege)
     adminRole.setPrivileges(adminPrivileges)
 
-    OnestopRole publicRole = new OnestopRole("PUBLIC")
+    OnestopRole publicRole = new OnestopRole(SecurityConfig.PUBLIC_PRIVILEGE)
     List<OnestopPrivilege> publicPrivilege = Arrays.asList(readPrivilege)
     publicRole.setPrivileges(publicPrivilege)
 

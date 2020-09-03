@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.SecurityConfig
 import org.hamcrest.Matchers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -18,7 +19,7 @@ import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
-@ActiveProfiles(['integration', 'security'])
+@ActiveProfiles(['integration'])
 @SpringBootTest(classes = [UserApplication.class], webEnvironment = RANDOM_PORT)
 class SavedSearchControllerIntegrationSpec extends Specification {
   private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
@@ -50,7 +51,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     postgres.stop()
   }
 
-  @WithMockUser(username = "mockMvcUser", roles = "ADMIN")
+  @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.ADMIN_PRIVILEGE)
   def "admin user authorized to admin getAll endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
@@ -61,7 +62,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
-  @WithMockUser(username = "mockMvcAdmin", roles = "ADMIN")
+  @WithMockUser(username = "mockMvcAdmin", roles = SecurityConfig.ADMIN_PRIVILEGE)
   def "admin user authorized to admin getByUserId endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
@@ -72,7 +73,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
-  @WithMockUser(username = "mockMvcUser", roles = "ADMIN")
+  @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.PUBLIC_PRIVILEGE)
   def "POST and GET save search items, user is taken from Authentication principal"() {
     when:
     ResultActions postOneResults = mvc.perform(MockMvcRequestBuilders

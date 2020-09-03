@@ -44,13 +44,24 @@ public class OnestopUser {
         this.id = id;
     }
 
-    //constructor is for creating instances.
-    public OnestopUser(String id, HashSet<OnestopRole> roles) {
+    public OnestopUser(OnestopRole role) {
+        this.roles = Arrays.asList(role);
+    }
+
+    public OnestopUser(String id, OnestopRole role) {
+        this.id = id;
+        this.roles = Arrays.asList(role);
+    }
+
+    public OnestopUser(String id, Collection<OnestopRole> roles) {
         this.id = id;
         this.roles = roles;
     }
 
-    //constructor is for creating instances.
+    public OnestopUser(Collection<OnestopRole> roles) {
+        this.roles = roles;
+    }
+
     public OnestopUser(String id, HashSet<OnestopRole> roles, boolean enabled) {
         this.id = id;
         this.roles = roles;
@@ -124,9 +135,17 @@ public class OnestopUser {
     public Map<String, Object> toMap() {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("id", id);
-        result.put("roles", roles.toString());
+        result.put("roles", roleToStringList());
         result.put("createdOn", createdOn);
         result.put("lastUpdatedOn", lastUpdatedOn);
         return result;
+    }
+
+    public List<Map> roleToStringList(){
+        List<Map> roleList = new ArrayList<>();
+        for(int i = 0; i < roles.size(); i++) {
+            roleList.add(((List<OnestopRole>)roles).get(i).toMap());
+        }
+        return roleList;
     }
 }

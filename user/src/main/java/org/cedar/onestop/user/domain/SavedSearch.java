@@ -157,6 +157,7 @@ public class SavedSearch {
     result.put("name", name);
     result.put("value", value);
     result.put("filter", filter);
+    result.put("user", user.toMap());
     result.put("createdOn", createdOn);
     result.put("lastUpdatedOn", lastUpdatedOn);
     return result;
