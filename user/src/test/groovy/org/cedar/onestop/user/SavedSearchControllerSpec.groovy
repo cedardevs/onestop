@@ -49,10 +49,11 @@ class SavedSearchControllerSpec extends Specification {
         '"lastUpdatedOn":null,' +
         '"id":"' + search1.id + '",' +
         '"value":"' + search1.value + '",' +
+        '"user":{"roles":[],"lastUpdatedOn":null,"id":"' + user.id + '","createdOn":null},' +
         '"createdOn":null}' +
         '}'
   @Shared
-  String searchResultJsonString = '{"data":[' + searchResult1Json + ',' +
+  String searchResult2Json = '{"data":[' + searchResult1Json + ',' +
       '{"id":"' + search2.id + '",' +
       '"type":"' + SavedSearchController.type + '",' +
       '"attributes":{' +
@@ -61,6 +62,7 @@ class SavedSearchControllerSpec extends Specification {
       '"lastUpdatedOn":null,' +
       '"id":"' + search2.id + '",' +
       '"value":"' + search2.value + '",' +
+      '"user":{"roles":[],"lastUpdatedOn":null,"id":"' + user.id + '","createdOn":null},' +
       '"createdOn":null}' +
       '}' +
       '],' +
@@ -114,7 +116,7 @@ class SavedSearchControllerSpec extends Specification {
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
     1 * mockUserRepository.findById('public_getter_by_id') >> Optional.of((OnestopUser)mockUser)
-    results.andReturn().getResponse().getContentAsString() == searchResultJsonString
+    results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
 //  def "bad request"() {
@@ -140,7 +142,7 @@ class SavedSearchControllerSpec extends Specification {
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
     1 * mockUserRepository.findById(mockerUserId) >> Optional.of((OnestopUser)mockUser)
-    results.andReturn().getResponse().getContentAsString() == searchResultJsonString
+    results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
   @WithMockUser(roles = ["ADMIN"])
@@ -152,7 +154,7 @@ class SavedSearchControllerSpec extends Specification {
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
     1 * mockSaveSearchRepository.findAll() >> savedSearches
-    results.andReturn().getResponse().getContentAsString() == searchResultJsonString
+    results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
   @WithMockUser(roles = [SecurityConfig.PUBLIC_PRIVILEGE])

@@ -3,10 +3,7 @@ package org.cedar.onestop.user.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.cedar.onestop.user.common.JsonApiData;
-import org.cedar.onestop.user.common.JsonApiMeta;
-import org.cedar.onestop.user.common.JsonApiResponse;
-import org.cedar.onestop.user.common.JsonApiSuccessResponse;
+import org.cedar.onestop.data.api.*;
 import org.cedar.onestop.user.config.SecurityConfig;
 import org.cedar.onestop.user.domain.OnestopRole;
 import org.cedar.onestop.user.domain.OnestopUser;
@@ -64,7 +61,7 @@ public class RoleController {
       .setType("roles").build();
     dataList.add(dataItem);
     return new JsonApiSuccessResponse.Builder()
-      .setStatus(HttpStatus.OK, response)
+      .setStatus(HttpStatus.OK.value(), response)
       .setData(dataList).build();
   }
 
@@ -88,7 +85,7 @@ public class RoleController {
       .setType("role").build();
     dataList.add(dataItem);
     return new JsonApiSuccessResponse.Builder()
-      .setStatus(HttpStatus.CREATED, response)
+      .setStatus(HttpStatus.CREATED.value(), response)
       .setData(dataList).build();
   }
 
@@ -107,7 +104,7 @@ public class RoleController {
     Map<String, Boolean> result = new HashMap<>();
     result.put("deleted", Boolean.TRUE);
     return new JsonApiSuccessResponse.Builder()
-      .setStatus(HttpStatus.OK, response)
+      .setStatus(HttpStatus.OK.value(), response)
       .setMeta(new JsonApiMeta.Builder().setNonStandardMetadata(result).build()).build();
   }
 
