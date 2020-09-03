@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 
 //@Profile("security")
+@Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -18,15 +19,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //  @Value("${spring.security.oauth2.resource.jwt.issuer-uri}")
 //  private String issuer;
 
+  final public static String PUBLIC_PRIVILEGE = "PUBLIC";
+  final public static String ADMIN_PRIVILEGE = "ADMIN";
+
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http
         .sessionManagement()
           .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
-            .csrf()
-            .ignoringAntMatchers("/v1/user", "/v1/saved-search")
-        .and()
+            .csrf().disable()
+//            .ignoringAntMatchers("/v1/user", "/v1/saved-search", "/v1/role")
+//        .and()
         .authorizeRequests()
           .antMatchers("/v2/api-docs")
             .permitAll()
