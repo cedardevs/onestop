@@ -56,7 +56,8 @@ public class SavedSearchController {
     @Secured("ROLE_ADMIN")
     @ApiOperation(value = "Search with an ID (ADMIN)", response = SavedSearch.class)
     @RequestMapping(value = "/saved-search/{id}", method = RequestMethod.GET, produces = "application/json")
-    public JsonApiResponse getById(@PathVariable(value = "id") String id, HttpServletResponse response)
+    public JsonApiResponse getById(@PathVariable(value = "id") String id,
+                                   HttpServletResponse response)
             throws ResourceNotFoundException {
         logger.info("Retrieving saved search for id: " + id);
         SavedSearch savedSearch = savedSearchRepository.findById(id)
@@ -75,7 +76,8 @@ public class SavedSearchController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @GetMapping(value = "/saved-search/user/{userId}", produces = "application/json")
-    public  JsonApiResponse getByUserId(@PathVariable(value = "userId") String userId, HttpServletResponse response)
+    public  JsonApiResponse getByUserId(@PathVariable(value = "userId") String userId,
+                                        HttpServletResponse response)
             throws ResourceNotFoundException {
         logger.info("Retrieving user searches for user id: " + userId);
         OnestopUser user = onestopUserRepo.findById(userId)
@@ -94,7 +96,8 @@ public class SavedSearchController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @GetMapping(value = "/saved-search", produces = "application/json")
-    public JsonApiResponse getAuthenticatedUserById(final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
+    public JsonApiResponse getAuthenticatedUserById(final @AuthenticationPrincipal Authentication authentication,
+                                                    HttpServletResponse response)
             throws ResourceNotFoundException {
         String userId = authentication.getName();
         OnestopUser user = onestopUserRepo.findById(userId)
@@ -110,7 +113,8 @@ public class SavedSearchController {
     @ApiOperation(value = "Add user search")
     @PostMapping(value = "/saved-search", produces = "application/json")
     public JsonApiResponse create(@RequestBody SavedSearch savedSearch,
-                                  final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
+                                  final @AuthenticationPrincipal Authentication authentication,
+                                  HttpServletResponse response)
             throws ResourceNotFoundException{
         logger.info("Received saved-search POST request");
         String userId = authentication.getName();
@@ -134,7 +138,8 @@ public class SavedSearchController {
     @ApiOperation(value = "Update user saved search")
     @PutMapping(value = "/saved-search/{id}", produces = "application/json")
     public JsonApiResponse update(@PathVariable(value = "id") String id,
-                                  @Valid @RequestBody SavedSearch savedSearchDetails, HttpServletResponse response)
+                                  @Valid @RequestBody SavedSearch savedSearchDetails,
+                                  HttpServletResponse response)
             throws ResourceNotFoundException {
         logger.info("Received saved-search PUT request");
         SavedSearch savedSearch = savedSearchRepository.findById(id)
@@ -150,14 +155,16 @@ public class SavedSearchController {
         result.add(updatedSavedSearch);
         return new JsonApiSuccessResponse.Builder()
                 .setStatus(HttpStatus.OK.value(), response)
-                .setData(generateListJsonApiData(result)).build();    }
+                .setData(generateListJsonApiData(result)).build();
+    }
 
     //todo more to do here so users cannot delete each others request
     @Secured({"ROLE_PUBLIC", "ROLE_ADMIN"})
     @ApiOperation(value = "Delete saved search")
     @DeleteMapping(value = "/saved-search/{id}", produces = "application/json")
     public JsonApiResponse delete(@PathVariable(value = "id") String id,
-                                  final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
+                                  final @AuthenticationPrincipal Authentication authentication,
+                                  HttpServletResponse response)
             throws ResourceNotFoundException {
         logger.info("Received saved-search DELETE request");
         SavedSearch savedSearch = savedSearchRepository.findById(id)

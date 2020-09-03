@@ -45,7 +45,8 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @GetMapping(value = "/user", produces = "application/json")
-    public JsonApiResponse getAuthenticatedUser(final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
+    public JsonApiResponse getAuthenticatedUser(final @AuthenticationPrincipal Authentication authentication,
+                                                HttpServletResponse response)
             throws RuntimeException {
         String userId = authentication.getName();
         logger.info("Retrieving user data for authenticated user with id : " + userId);
@@ -70,7 +71,9 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @PostMapping(value = "/user", produces = "application/json")
-    public  JsonApiResponse createUser(@RequestBody OnestopUser user, final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
+    public  JsonApiResponse createUser(@RequestBody OnestopUser user,
+                                       final @AuthenticationPrincipal Authentication authentication,
+                                       HttpServletResponse response)
             throws RuntimeException {
         String userId = authentication.getName();
         logger.info("Creating new user with id : " + userId);
@@ -95,7 +98,8 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @GetMapping(value = "/roles/{id}", produces = "application/json")
-    public  JsonApiResponse getUserRoles(@PathVariable(value = "id") String id, final @AuthenticationPrincipal Authentication authentication, HttpServletResponse response)
+    public  JsonApiResponse getUserRoles(@PathVariable(value = "id") String id,
+                                         HttpServletResponse response)
             throws ResourceNotFoundException {
         logger.info("Retrieving user roles for user id: " + id);
         OnestopUser user = onestopUserRepository.findById(id)
