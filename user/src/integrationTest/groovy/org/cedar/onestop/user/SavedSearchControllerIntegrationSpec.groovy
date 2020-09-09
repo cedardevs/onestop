@@ -51,6 +51,16 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     postgres.stop()
   }
 
+  def "admin user is NOT authorized and gets translated by controller advice"() {
+    when: 'We make a request to a endpoint beyond our scope'
+    def getResults = mvc.perform(MockMvcRequestBuilders
+        .get("/v1/saved-search/all")
+        .accept(MediaType.APPLICATION_JSON))
+
+    then: 'we get the translated controller advice response'
+    getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
+  }
+
   @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.ADMIN_PRIVILEGE)
   def "admin user authorized to admin getAll endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
@@ -66,11 +76,11 @@ class SavedSearchControllerIntegrationSpec extends Specification {
   def "admin user authorized to admin getByUserId endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/user/{id}", "mockMvcUser")
+        .get("/v1/saved-search/user/{id}", "unknownUser")
         .accept(MediaType.APPLICATION_JSON))
 
-    then: 'we get 200'
-    getResults.andExpect(MockMvcResultMatchers.status().isOk())
+    then: 'we get the translated controller advice response'
+    getResults.andExpect(MockMvcResultMatchers.status().isBadRequest())
   }
 
   @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.PUBLIC_PRIVILEGE)

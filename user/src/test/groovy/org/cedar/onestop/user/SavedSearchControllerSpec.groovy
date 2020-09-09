@@ -79,9 +79,7 @@ class SavedSearchControllerSpec extends Specification {
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-    //todo make this work with controller advice - throws org.springframework.security.access.AccessDeniedException
-//    results.andReturn().getResponse().getContentAsString() == """{"meta":null,"id":null,"status":"UNAUTHORIZED","code":"Unauthorized","title":null,"detail":null,"source":null}"""
+    results.andExpect(MockMvcResultMatchers.status().isForbidden())
     results.andReturn().getResponse().getContentAsString() == ""
   }
 

@@ -33,7 +33,7 @@ class UserControllerSpec extends Specification {
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+    results.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
   @WithMockUser(roles = [SecurityConfig.PUBLIC_PRIVILEGE])
