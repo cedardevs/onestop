@@ -21,7 +21,7 @@ dependencies {
   implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
 
   implementation(project(':data-common'))
-  implementation(project(':kafka-common')) /// TODO do I still need "compile"?
+  implementation(project(':kafka-common'))
 
   implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   implementation("org.apache.kafka:kafka-streams:${Versions.KAFKA}")
