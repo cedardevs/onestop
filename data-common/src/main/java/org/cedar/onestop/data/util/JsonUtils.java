@@ -47,6 +47,23 @@ public class JsonUtils {
   }
 
   /**
+   * Converts input Object to JSON string and returns null if object cannot produce valid JSON
+   * @param map Object to convert to JSON String
+   * @return JSON string representation of input object or null if map cannot be interpreted as JSON
+   */
+  public static String toJson(Object obj) {
+    if(obj == null ) {
+      return null;
+    }
+    try {
+      return mapper.writeValueAsString(obj);
+    }
+    catch (JsonProcessingException e) {
+      return null;
+    }
+  }
+
+  /**
    * Converts input Map object to JSON string and returns null if map cannot produce valid JSON
    * @param map Map object to convert to JSON String
    * @return JSON string representation of input map or null if map cannot be interpreted as JSON

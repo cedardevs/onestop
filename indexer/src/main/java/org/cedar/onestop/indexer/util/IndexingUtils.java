@@ -1,7 +1,5 @@
 package org.cedar.onestop.indexer.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
@@ -15,6 +13,8 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.cedar.onestop.data.util.JsonUtils;
+import org.cedar.onestop.data.util.ListUtils;
 
 import java.util.*;
 
@@ -51,7 +51,7 @@ public class IndexingUtils {
         return new ArrayList<>();
       }
     }
-    return requests;
+    return ListUtils.pruneEmptyElements(requests);
   }
 
   public static boolean isTombstone(ParsedRecord value) {
@@ -74,7 +74,6 @@ public class IndexingUtils {
       return new DeleteRequest(indexName).id(input.getKey());
     }
     else {
-      System.out.println("What is the record type and index? "+ recordType +" "+indexName);
       Object formattedRecord = null;
       switch (recordType) {
         case collection:
@@ -85,19 +84,11 @@ public class IndexingUtils {
           formattedRecord = TransformationUtils.reformatFlattenedGranuleForSearch(input.getValue().timestamp(), input.getValue().value());
         } else {
           formattedRecord = TransformationUtils.reformatGranuleForSearch(input.getValue().timestamp(), input.getValue().value());
+        break;
         }
       }
-      ObjectMapper mapper = new ObjectMapper();
-      try {
-        return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(mapper.writeValueAsString(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
-        // return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(org.elasticsearch.common.xcontent.XContentType.JSON, formattedRecord);
-      } catch (JsonProcessingException e) {
-        // TODO DECIDE HOW TO HANDLE THIS ERROR FIXME DO NOT IGNORE THIS SERIOUSLY DO NOT DO IT
-        System.out.println("UNABLE TO MAP OBJECT");
-        System.out.println(e);
-        System.out.println("returning null!!");
-      }
-      return null; // FIXME TODO VERY BAD lol
+      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(JsonUtils.toJson(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
+
     }
   }
 
@@ -107,7 +98,6 @@ public class IndexingUtils {
     }
     else {
       Object formattedRecord = null;
-      // var targetFields = input.getConfig().indexedProperties(indexName).keySet();
       switch (recordType) {
         case collection:
         formattedRecord = TransformationUtils.reformatCollectionForAnalysis(input.getValue().timestamp(), input.getValue().value());
@@ -116,16 +106,8 @@ public class IndexingUtils {
         formattedRecord = TransformationUtils.reformatGranuleForAnalysis(input.getValue().timestamp(), input.getValue().value());
 
       }
-      ObjectMapper mapper = new ObjectMapper();
-      try {
-        return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(mapper.writeValueAsString(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
-      } catch (JsonProcessingException e) {
-        // TODO DECIDE HOW TO HANDLE THIS ERROR FIXME DO NOT IGNORE THIS SERIOUSLY DO NOT DO IT
-        System.out.println("UNABLE TO MAP OBJECT");
-        System.out.println(e);
-        System.out.println("returning null!!");
-      }
-      return null; // FIXME TODO VERY BAD lol
+      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(JsonUtils.toJson(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
+
 
     }
   }
