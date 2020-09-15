@@ -35,10 +35,6 @@ defaultsWithPostgreSQL: &defaultsWithPostgreSQL
       restart: always
       environment:
         - cluster.name: postgres-test
-        - transport.host: localhost
-        - network.host: 127.0.0.1
-        - http.port: 9200
-        - discovery.type: single-node
     - image: pgadmin4
   working_directory: ~/repo
 
