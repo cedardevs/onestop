@@ -26,6 +26,22 @@ defaultsWithElasticsearch: &defaultsWithElasticsearch
         - ES_JAVA_OPTS: "-Xms160m -Xmx320m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
   working_directory: ~/repo
 
+defaultsWithPostgreSQL: &defaultsWithPostgreSQL
+  environment:
+    - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
+  docker:
+    - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
+    - image: postgres
+      restart: always
+      environment:
+        - cluster.name: postgres-test
+        - transport.host: localhost
+        - network.host: 127.0.0.1
+        - http.port: 9200
+        - discovery.type: single-node
+    - image: pgadmin4
+  working_directory: ~/repo
+
 defaultsMachine: &defaultsMachine
   machine:
     docker_layer_caching: true
@@ -201,6 +217,7 @@ jobs:
   user:
     <<: *defaults
     <<: *env
+    <<: *defaultsWithPostgreSQL
     steps:
       - <<: *attachWorkspace
       - run:
