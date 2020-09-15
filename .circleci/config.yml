@@ -200,6 +200,7 @@ jobs:
 
   user:
     <<: *defaults
+    <<: *env
     steps:
       - <<: *attachWorkspace
       - run:
@@ -209,8 +210,8 @@ jobs:
           name: Collect Test Results
           command: |
             mkdir -p ~/tests/junit/
-          find user/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-          find user/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find user/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find user/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
       - store_test_results:
           path: ~/tests
@@ -222,7 +223,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - user/build
+          - user/build
 
   parsalyzer:
     <<: *defaults
