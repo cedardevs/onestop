@@ -31,7 +31,7 @@ defaultsWithPostgreSQL: &defaultsWithPostgreSQL
     - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
   docker:
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
-    - image: circleci/postgres
+    - image: circleci/postgres:9.6-alpine
       restart: always
   working_directory: ~/repo
 
