@@ -335,6 +335,10 @@ workflows:
           requires:
             - checkout
           <<: *jobFilters
+      - user:
+          requires:
+            - checkout
+          <<: *jobFilters
       - finalize:
           requires:
             - client
@@ -342,6 +346,7 @@ workflows:
             - indexer
             - search
             - parsalyzer
+            - user
           <<: *jobFilters
 
   nightly:
