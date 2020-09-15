@@ -33,8 +33,6 @@ defaultsWithPostgreSQL: &defaultsWithPostgreSQL
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
     - image: circleci/postgres
       restart: always
-      environment:
-        - cluster.name: postgres-test
   working_directory: ~/repo
 
 defaultsMachine: &defaultsMachine
