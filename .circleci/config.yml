@@ -208,8 +208,8 @@ jobs:
         - registry/build
 
   user:
-    <<: *defaultsWithPostgreSQL
     <<: *env
+    <<: *defaultsWithPostgreSQL
     steps:
       - <<: *attachWorkspace
       - run:
