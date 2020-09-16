@@ -24,3 +24,10 @@ spring:
             token-uri: http://localhost:9180/dummy-idp-token
             user-info-uri: http://localhost:9180/dummy-idp-userinfo
             user-name-attribute: sub
+
+login-gov:
+  keystore:
+    alias: logingov
+    file: /Users/chris/Projects/CEDARDEVS/onestop/gateway/src/main/resources/logingov.jks
+    password: password
+    type: JKS
