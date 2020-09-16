@@ -214,16 +214,19 @@ jobs:
       - <<: *attachWorkspace
       - run:
           name: Assemble, Check, Report
-          command: ./gradlew --parallel user:assemble user:check -x integrationTest
+          command: ./gradlew --parallel user:clean user:assemble user:check -x integrationTest
       - run:
           name: Waiting for Postgres to be ready
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
+          name: Integration Tests
+          command: ./gradlew user:integrationTest
+      - run:
           name: Collect Test Results
           command: |
             mkdir -p ~/tests/junit/
-            find user/ -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find user/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find user/ -type f -regex ".*/build/test-results/test/*.xml" -exec cp {} ~/tests/junit/ \;
+            find user/ -type f -regex ".*/build/integration-test-results/*.xml" -exec cp {} ~/tests/junit/ \;
           when: always
       - store_test_results:
           path: ~/tests
