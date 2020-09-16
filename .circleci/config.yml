@@ -225,8 +225,8 @@ jobs:
           name: Collect Test Results
           command: |
             mkdir -p ~/tests/junit/
-            find user/ -type f -regex ".*/build/test-results/test/*.xml" -exec cp {} ~/tests/junit/ \;
-            find user/ -type f -regex ".*/build/integration-test-results/*.xml" -exec cp {} ~/tests/junit/ \;
+            find user/ -type f -regex ".*/build/test-results/test/.*xml" -exec cp {} ~/tests/junit/ \;
+            find user/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
       - store_test_results:
           path: ~/tests
