@@ -15,7 +15,8 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude("org.junit.vintage", "junit-vintage-engine")
 	}
-	testImplementation("com.squareup.okhttp3:mockwebserver:4.1.0")
+	testImplementation("com.squareup.okhttp3:mockwebserver:3.14.4")
+	testImplementation("org.jetbrains.kotlin:kotlin-stdlib:1.4.10")
 }
 
 // use JUnit 5 platform
