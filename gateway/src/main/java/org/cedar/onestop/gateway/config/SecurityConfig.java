@@ -34,7 +34,7 @@ public class SecurityConfig {
   @Autowired
   ServerOAuth2AuthorizedClientRepository authorizedClients;
 
-  public static final String API_MATCHER_PATH = "/api/user/**";
+  public static final String API_MATCHER_PATH = "/api/**";
 
   private LoginGovConfiguration loginGovConfiguration;
 //  public KeystoreUtil keystoreUtil;
