@@ -28,6 +28,6 @@ spring:
 login-gov:
   keystore:
     alias: logingov
-    file: /Users/chris/Projects/CEDARDEVS/onestop/gateway/src/main/resources/logingov.jks
+    file: src/test/resources/logingov.jks
     password: password
     type: JKS
