@@ -1,8 +1,10 @@
 package org.cedar.onestop.user.config;
 
+import org.cedar.onestop.user.repository.OnestopPrivilegeRepository;
+import org.cedar.onestop.user.repository.OnestopRoleRepository;
+import org.cedar.onestop.user.repository.OnestopUserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,13 +13,21 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 
 //@Profile("security")
-@Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 //  @Value("${spring.security.oauth2.resource.jwt.issuer-uri}")
 //  private String issuer;
+
+  @Autowired
+  OnestopUserRepository userRepository;
+
+  @Autowired
+  OnestopRoleRepository roleRepository;
+
+  @Autowired
+  OnestopPrivilegeRepository privilegeRepository;
 
   final public static String PUBLIC_PRIVILEGE = "PUBLIC";
   final public static String ADMIN_PRIVILEGE = "ADMIN";
@@ -28,23 +38,45 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionManagement()
           .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
-            .csrf().disable()
-//            .ignoringAntMatchers("/v1/user", "/v1/saved-search", "/v1/role")
-//        .and()
+        .csrf().disable()
         .authorizeRequests()
           .antMatchers("/v2/api-docs")
             .permitAll()
         .and()
         .oauth2ResourceServer()
           .opaqueToken();
-//          .jwt();
+//          .jwt()
+//      .jwtAuthenticationConverter(jwtAuthenticationConverter());
+    ;
   }
+
+
 
   @Bean
   OpaqueTokenIntrospector introspector() {
-    return new UserInfoOpaqueTokenIntrospector();
+    return new UserInfoOpaqueTokenIntrospector(userRepository, roleRepository, privilegeRepository);
   }
 
+//  JwtAuthenticationConverter jwtAuthenticationConverter() {
+//    final JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+//    jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new RoleConverter());
+//    return jwtAuthenticationConverter;
+//  }
+//
+//  //As per: https://docs.spring.io/spring-security/site/docs/5.2.x/reference/html5/#oauth2resourceserver-jwt-claimsetmapping-rename
+//  class UsernameSubClaimAdapter implements Converter<Map<String, Object>, Map<String, Object>> {
+//
+//    private final MappedJwtClaimSetConverter delegate = MappedJwtClaimSetConverter.withDefaults(Collections.emptyMap());
+//
+//    @Override
+//    public Map<String, Object> convert(Map<String, Object> claims) {
+//      Map<String, Object> convertedClaims = this.delegate.convert(claims);
+//      String username = (String) convertedClaims.get("preferred_username");
+//      convertedClaims.put("sub", username);
+//      return convertedClaims;
+//    }
+//
+//  }
 }
 
 //@Profile("!security")
