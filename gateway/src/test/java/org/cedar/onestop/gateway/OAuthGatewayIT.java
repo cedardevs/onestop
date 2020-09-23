@@ -137,9 +137,9 @@ public class OAuthGatewayIT {
         .cookie(SESSION, sessionCookie.getValue())
         .exchange().block();
 
-    // check that client is now successfully logged in and are now redirected back to "/"
+    // check that client is now successfully logged in and are now redirected back
     assertEquals(HttpStatus.FOUND, authResponse.statusCode());
-    assertEquals("/", authResponse.headers().asHttpHeaders().getLocation().toString());
+    assertEquals("/onestop", authResponse.headers().asHttpHeaders().getLocation().toString());
 
     // update the cookie with the new value from the received Set-Cookie header
     sessionCookie = authResponse.cookies().getFirst(SESSION);
