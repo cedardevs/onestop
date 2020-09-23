@@ -2,10 +2,10 @@ package org.cedar.onestop.user
 
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.PrivilegeController
-import org.cedar.onestop.user.controller.UserController
 import org.cedar.onestop.user.domain.OnestopPrivilege
 import org.cedar.onestop.user.domain.OnestopUser
 import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
+import org.cedar.onestop.user.repository.OnestopRoleRepository
 import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,8 +18,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import spock.lang.Shared
 import spock.lang.Specification
 
-import java.util.Optional;
-
 @WebMvcTest(controllers = PrivilegeController.class)
 class PrivilegeControllerSpec extends Specification{
 
@@ -30,10 +28,11 @@ class PrivilegeControllerSpec extends Specification{
   private PrivilegeController privilegeController
 
   @SpringBean
-  private OnestopPrivilegeRepository onestopPrivilegeRepository = Mock()
-
-  @SpringBean
   private OnestopUserRepository onestopUserRepository = Mock()
+  @SpringBean
+  private OnestopRoleRepository onestopRoleRepository = Mock()
+  @SpringBean
+  private OnestopPrivilegeRepository onestopPrivilegeRepository = Mock()
 
   @Shared
   String privilegeId = "auto-generated-uuid"

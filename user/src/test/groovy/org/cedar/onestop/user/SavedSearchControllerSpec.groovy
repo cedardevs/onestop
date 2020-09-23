@@ -3,9 +3,11 @@ package org.cedar.onestop.user
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.SavedSearchController
 import org.cedar.onestop.user.domain.OnestopUser
+import org.cedar.onestop.user.domain.SavedSearch
+import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
+import org.cedar.onestop.user.repository.OnestopRoleRepository
 import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.repository.SavedSearchRepository
-import org.cedar.onestop.user.domain.SavedSearch
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -27,6 +29,10 @@ class SavedSearchControllerSpec extends Specification {
   OnestopUserRepository mockUserRepository = Mock()
   @SpringBean
   SavedSearchRepository mockSaveSearchRepository = Mock()
+  @SpringBean
+  OnestopRoleRepository mockRoleRepository = Mock()
+  @SpringBean
+  OnestopPrivilegeRepository mockPrivilegeRepository = Mock()
   @Shared
   OnestopUser user = new OnestopUser("abc123")
   @Shared

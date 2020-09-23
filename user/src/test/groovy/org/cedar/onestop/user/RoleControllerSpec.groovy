@@ -2,9 +2,9 @@ package org.cedar.onestop.user
 
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.RoleController
-import org.cedar.onestop.user.controller.UserController
 import org.cedar.onestop.user.domain.OnestopRole
 import org.cedar.onestop.user.domain.OnestopUser
+import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
 import org.cedar.onestop.user.repository.OnestopRoleRepository
 import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.spockframework.spring.SpringBean
@@ -28,10 +28,11 @@ class RoleControllerSpec extends Specification{
   private RoleController roleController
 
   @SpringBean
-  private OnestopRoleRepository onestopRoleRepository = Mock()
-
-  @SpringBean
   private OnestopUserRepository onestopUserRepository = Mock()
+  @SpringBean
+  private OnestopRoleRepository onestopRoleRepository = Mock()
+  @SpringBean
+  private OnestopPrivilegeRepository onestopPrivilegeRepository = Mock()
 
   @Shared
   String roleId = "auto-generated-uuid"

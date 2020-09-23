@@ -2,8 +2,10 @@ package org.cedar.onestop.user
 
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.UserController
-import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.domain.OnestopUser
+import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
+import org.cedar.onestop.user.repository.OnestopRoleRepository
+import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -25,6 +27,10 @@ class UserControllerSpec extends Specification {
 
   @SpringBean
   private OnestopUserRepository onestopUserRepository = Mock()
+  @SpringBean
+  private OnestopRoleRepository onestopRoleRepository = Mock()
+  @SpringBean
+  private OnestopPrivilegeRepository onestopPrivilegeRepository = Mock()
 
   def "user controller exists and is protected from unauthenticated users"() {
     when:
