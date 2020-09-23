@@ -31,7 +31,7 @@ public class OnestopRole {
     @UpdateTimestamp
     public Date lastUpdatedOn; ///TODO do we also accept part of the query
 
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
             name = "onestop_roles_privileges",
             joinColumns = @JoinColumn(
@@ -81,10 +81,6 @@ public class OnestopRole {
 
     public Collection<OnestopUser> getUsers() {
         return users;
-    }
-
-    public void setUsers(Collection<OnestopUser> users) {
-        this.users = users;
     }
 
     public Collection<OnestopPrivilege> getPrivileges() {

@@ -24,7 +24,7 @@ public class SavedSearch {
   public String id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "onestop_user", nullable = false)
+  @JoinColumn(name = "user_id", nullable = false)
   private OnestopUser user;
 
   @Column(name = "name", nullable = false)

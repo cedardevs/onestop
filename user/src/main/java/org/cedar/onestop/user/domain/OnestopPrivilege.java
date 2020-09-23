@@ -30,7 +30,7 @@ public class OnestopPrivilege {
     @UpdateTimestamp
     public Date lastUpdatedOn; ///TODO do we also accept part of the query
 
-    @ManyToMany(mappedBy = "privileges")
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "privileges", fetch=FetchType.EAGER)
     private Collection<OnestopRole> roles;
 
     protected OnestopPrivilege(){}
@@ -70,6 +70,6 @@ public class OnestopPrivilege {
     }
 
     public String toString(){
-        return toMap().toString();
+        return name;
     }
 }

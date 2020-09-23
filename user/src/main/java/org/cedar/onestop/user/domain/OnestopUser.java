@@ -2,16 +2,19 @@ package org.cedar.onestop.user.domain;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name="onestop_user")
 public class OnestopUser {
 
     @Id //comes from IdP
-    @Column(name= "user_id")
+    @Column(name= "id")
     public String id;
 
     private boolean enabled = false;
@@ -44,10 +47,6 @@ public class OnestopUser {
         this.id = id;
     }
 
-    public OnestopUser(OnestopRole role) {
-        this.roles = Arrays.asList(role);
-    }
-
     public OnestopUser(String id, OnestopRole role) {
         this.id = id;
         this.roles = Arrays.asList(role);
@@ -56,16 +55,6 @@ public class OnestopUser {
     public OnestopUser(String id, Collection<OnestopRole> roles) {
         this.id = id;
         this.roles = roles;
-    }
-
-    public OnestopUser(Collection<OnestopRole> roles) {
-        this.roles = roles;
-    }
-
-    public OnestopUser(String id, HashSet<OnestopRole> roles, boolean enabled) {
-        this.id = id;
-        this.roles = roles;
-        this.enabled = enabled;
     }
 
     @PrePersist
@@ -121,6 +110,19 @@ public class OnestopUser {
     public void setSearches(Set<SavedSearch> searches) { this.searches = searches; }
 
     public void addSearch(SavedSearch search) { this.searches.add(search); }
+
+    public Collection<OnestopPrivilege> getPrivileges() {
+        Collection<OnestopPrivilege> privileges = new ArrayList<>();
+        roles.forEach(role -> privileges.addAll(role.getPrivileges()));
+        return privileges;
+    }
+
+    public Collection<GrantedAuthority> getPrivilegesAsAuthorities(){
+        return getPrivileges().stream()
+          .map(OnestopPrivilege::toString)
+          .map(SimpleGrantedAuthority::new)
+          .collect(Collectors.toList());
+    }
 
     @Override
     public String toString() {
