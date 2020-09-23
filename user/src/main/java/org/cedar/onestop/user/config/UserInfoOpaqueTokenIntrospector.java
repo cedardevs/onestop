@@ -8,17 +8,13 @@ import org.cedar.onestop.user.domain.OnestopUser;
 import org.cedar.onestop.user.repository.OnestopPrivilegeRepository;
 import org.cedar.onestop.user.repository.OnestopRoleRepository;
 import org.cedar.onestop.user.repository.OnestopUserRepository;
-import org.cedar.onestop.user.service.OnestopUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -76,8 +72,8 @@ public class UserInfoOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
       e.printStackTrace();
       return null;
     }
-    logger.info(attributes.get("sub").toString());
     String id = attributes.get("sub").toString();
+    logger.info("Logging in user: " + attributes.get("sub").toString());
     OnestopUser user = onestopUserRepo.findById(id).orElse(createDefaultUser(id));
     Map<String, Object> userMap = user.toMap();
 
