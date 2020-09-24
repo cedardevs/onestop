@@ -143,6 +143,7 @@ public class OAuthGatewayIT {
 
     // update the cookie with the new value from the received Set-Cookie header
     sessionCookie = authResponse.cookies().getFirst(SESSION);
+    assertNotNull(sessionCookie, "Session cookie from login is null");
 
     // prepare service backend
     service1Mock.enqueue(
@@ -151,7 +152,7 @@ public class OAuthGatewayIT {
             .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .setBody(new ObjectMapper().writeValueAsString(Collections.singletonMap("message", "hello mocked user"))));
 
-    // step 3: call actual service with the session cookie
+    // step 3: call actual service with the received session cookie
     final ClientResponse apiResponse = WebClient.create("http://localhost:9080")
         .get()
         .uri("/api/service1/hello")
