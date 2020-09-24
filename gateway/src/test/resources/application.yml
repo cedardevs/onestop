@@ -1,3 +1,6 @@
+logging.level.org.springframework.security: DEBUG
+logging.level.org.springframework.web: DEBUG
+
 server:
   port: 9080
 
@@ -24,3 +27,10 @@ spring:
             token-uri: http://localhost:9180/dummy-idp-token
             user-info-uri: http://localhost:9180/dummy-idp-userinfo
             user-name-attribute: sub
+
+login-gov:
+  keystore:
+    alias: logingov
+    file: src/test/resources/logingov.jks
+    password: password
+    type: JKS
