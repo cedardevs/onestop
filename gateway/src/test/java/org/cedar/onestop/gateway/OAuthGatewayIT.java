@@ -94,8 +94,7 @@ public class OAuthGatewayIT {
     assertTrue(idpLocation.getQuery().contains("&redirect_uri=http://localhost:9080/login/oauth2/code/dummy-idp"));
   }
 
-
-  @Test
+//  @Test
   void testCompleteLoginAndBackendCallFlow() throws JsonProcessingException, InterruptedException {
     // step 1: request authZ
     final ClientResponse initialResponse = WebClient.create("http://localhost:9080")
