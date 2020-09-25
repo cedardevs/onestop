@@ -129,6 +129,28 @@ profiles:
     deploy:
       helm:
         releases:
+          - name: onestop-indexer
+            chartPath: helm/onestop-indexer
+            values:
+              image: cedardevs/onestop-indexer
+            setValues:
+              debug: true
+              elasticsearch.host: "onestop-dev-es-http"
+              elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
+              elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
+              config: |-
+                ---
+                kafka:
+                  bootstrap:
+                    servers: "PLAINTEXT://onestop-dev-cp-kafka:9092"
+                  schema:
+                    registry:
+                      url: "http://onestop-dev-cp-schema-registry:8081"
+                  commit:
+                    interval:
+                      ms: 1000
+            imageStrategy:
+              helm: {}
           - name: onestop-parsalyzer
             chartPath: helm/onestop-parsalyzer
             values:
