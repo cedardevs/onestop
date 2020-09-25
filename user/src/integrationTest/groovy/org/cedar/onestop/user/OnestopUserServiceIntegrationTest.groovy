@@ -65,7 +65,7 @@ class OnestopUserServiceIntegrationTest extends Specification {
     savedUser.getId() == uuid
     savedUser.getId() == defaultUser.getId()
     savedUser.getRoles().toString() == defaultUser.getRoles().toString()
-    savedUser.getRoles()[1].privToStringList() == "ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE
+    savedUser.getRoles()[1].privToStringList()[1].toString() == "ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE
   }
 
   def 'test orElse'(){
