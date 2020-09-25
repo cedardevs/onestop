@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import org.testcontainers.containers.PostgreSQLContainer
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -22,7 +21,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles(['integration'])
 @SpringBootTest(classes = [UserApplication.class], webEnvironment = RANDOM_PORT)
 class SavedSearchControllerIntegrationSpec extends Specification {
-  private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
 
   @Autowired
   private WebApplicationContext context
@@ -40,15 +38,6 @@ class SavedSearchControllerIntegrationSpec extends Specification {
         .contentType("application/json")
         .content(('{ "id":"mockMvcUser", "name": "test"}'))
         .accept(MediaType.APPLICATION_JSON))
-  }
-  // Run before all the tests:
-  def setupSpec() {
-    postgres.start()
-  }
-
-  // Run after all the tests, even after failures:
-  def cleanupSpec() {
-    postgres.stop()
   }
 
   def "admin user is NOT authorized and gets translated by controller advice"() {

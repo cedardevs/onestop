@@ -1,3 +1,13 @@
+import org.testcontainers.containers.PostgreSQLContainer
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.testcontainers:postgresql:1.13.0"
+  }
+}
+
 sourceCompatibility = 11
 targetCompatibility = 11
 
@@ -72,6 +82,22 @@ sourceSets {
 }
 
 task integrationTest(type: Test) {
+  doFirst {
+    Boolean ci = Boolean.valueOf(System.getenv('CI'))
+    print(" ci="+ci)
+    if (ci) {
+
+    }
+    else {
+      PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer().withDatabaseName("test").withUsername("test").withPassword("test")
+      postgreSQLContainer.start()
+
+      systemProperty 'spring.datasource.url', "jdbc:postgresql://localhost:${postgreSQLContainer.getMappedPort(5432)}/test"
+
+      project.ext.set("postgreSQLContainer", postgreSQLContainer)
+    }
+  }
+
   description = 'Runs the integration tests'
   group = 'verification'
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
@@ -79,11 +105,20 @@ task integrationTest(type: Test) {
   outputs.upToDateWhen { false }
   shouldRunAfter test
 
+  finalizedBy { killPostgresql }
+
   reports.junitXml.destination = file("${buildDir}/integration-test-results")
   reports.html.destination = file("${buildDir}/reports/integrationTests")
 }
 
 check.dependsOn integrationTest
+task killPostgresql {
+  doFirst {
+    if (project.ext.has("postgreSQLContainer")) {
+      project.ext.get("postgreSQLContainer").stop()
+    }
+  }
+}
 
 bootJar {
   classifier = 'all' // add a classifier to distinguish the executable jar
