@@ -5,7 +5,6 @@ import org.cedar.onestop.user.controller.PrivilegeController
 import org.cedar.onestop.user.domain.OnestopPrivilege
 import org.cedar.onestop.user.domain.OnestopUser
 import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
-import org.cedar.onestop.user.repository.OnestopRoleRepository
 import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.service.OnestopUserService
 import org.spockframework.spring.SpringBean
@@ -60,7 +59,7 @@ class PrivilegeControllerSpec extends Specification{
   }
 
 
-  @WithMockUser(username = "privilege_hacker", roles = [SecurityConfig.PUBLIC_PRIVILEGE])
+  @WithMockUser(username = "privilege_hacker", roles = [SecurityConfig.PUBLIC_ROLE])
   def "public user not authorized to hit privilege endpoint"() {
     when:
     def getResults = mockMvc.perform(MockMvcRequestBuilders
@@ -71,7 +70,7 @@ class PrivilegeControllerSpec extends Specification{
     getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(roles = [SecurityConfig.ADMIN_PRIVILEGE])
+  @WithMockUser(roles = [SecurityConfig.ADMIN_ROLE])
   def "privilege is created"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders
@@ -87,7 +86,7 @@ class PrivilegeControllerSpec extends Specification{
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value(privilegeId))
   }
 
-  @WithMockUser(roles = [SecurityConfig.ADMIN_PRIVILEGE])
+  @WithMockUser(roles = [SecurityConfig.ADMIN_ROLE])
   def 'privilege is deleted'(){
     when:
     def deleteResult = mockMvc.perform(MockMvcRequestBuilders.delete("/v1/privilege/{id}", privilegeId))

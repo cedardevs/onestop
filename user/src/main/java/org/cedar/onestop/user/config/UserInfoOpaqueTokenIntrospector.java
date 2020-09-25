@@ -68,32 +68,4 @@ public class UserInfoOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
 
     return principal;
   }
-
-  private Collection<GrantedAuthority> extractAuthorities(Map<String, Object> attributes) {
-
-    String email = (String) attributes.get("email");
-    Boolean emailVerified = (Boolean) attributes.getOrDefault("email_verified", false);
-
-    List<String> adminEmails = Arrays.asList(
-        "christopher.esterlein@noaa.gov"
-    );
-
-    List<String> publicRoles = Arrays.asList("ROLE_PUBLIC");
-    List<String> adminRoles = Arrays.asList("ROLE_PUBLIC", "ROLE_ADMIN");
-
-    Boolean isAdmin = (email != null) && adminEmails.contains(email);
-
-    List<String> effectiveRoles = Arrays.asList();
-
-    if(emailVerified) {
-      if(isAdmin) {
-        effectiveRoles = adminRoles;
-      } else {
-        effectiveRoles = publicRoles;
-      }
-    }
-    return effectiveRoles.stream()
-        .map(SimpleGrantedAuthority::new)
-        .collect(Collectors.toList());
-  }
 }

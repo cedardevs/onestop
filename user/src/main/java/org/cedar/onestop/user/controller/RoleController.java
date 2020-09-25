@@ -7,7 +7,6 @@ import org.cedar.onestop.data.api.*;
 import org.cedar.onestop.user.config.SecurityConfig;
 import org.cedar.onestop.user.domain.OnestopRole;
 import org.cedar.onestop.user.domain.OnestopUser;
-import org.cedar.onestop.user.domain.SavedSearch;
 import org.cedar.onestop.user.repository.OnestopRoleRepository;
 import org.cedar.onestop.user.repository.OnestopUserRepository;
 import org.cedar.onestop.user.service.ResourceNotFoundException;
@@ -37,7 +36,7 @@ public class RoleController {
   @Autowired
   public OnestopRoleRepository onestopRoleRepository;
 
-  @Secured("ROLE_" + SecurityConfig.ADMIN_PRIVILEGE)
+  @Secured("ROLE_" + SecurityConfig.ADMIN_ROLE)
   @ApiOperation(value = "Get user roles (ADMIN)", response = Iterable.class)
   @ApiResponses(value = {
     @ApiResponse(code = 200, message = "Successfully retrieved user roles"),
@@ -65,7 +64,7 @@ public class RoleController {
       .setData(dataList).build();
   }
 
-  @Secured({"ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
+  @Secured({"ROLE_" + SecurityConfig.ADMIN_ROLE})
   @ApiOperation(value = "Create a role", response = Iterable.class)
   @ApiResponses(value = {
     @ApiResponse(code = 200, message = "Successfully created role"),
@@ -89,7 +88,7 @@ public class RoleController {
       .setData(dataList).build();
   }
 
-  @Secured({"ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
+  @Secured({"ROLE_" + SecurityConfig.ADMIN_ROLE})
   @ApiOperation(value = "Delete role")
   @DeleteMapping(value = "/role/{id}", produces = "application/json")
   public JsonApiResponse delete(@PathVariable(value = "id") String id, HttpServletResponse response)

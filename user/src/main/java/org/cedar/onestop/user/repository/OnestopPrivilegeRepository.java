@@ -4,7 +4,9 @@ import org.cedar.onestop.user.domain.OnestopPrivilege;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface OnestopPrivilegeRepository extends JpaRepository<OnestopPrivilege, String> {
-    OnestopPrivilege findByName(String name);
+    Optional<OnestopPrivilege> findByName(String name);
 }

@@ -10,6 +10,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
 //@Profile("security")
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
@@ -18,8 +22,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   OnestopUserService userService;
 
-  final public static String PUBLIC_PRIVILEGE = "PUBLIC";
-  final public static String ADMIN_PRIVILEGE = "ADMIN";
+  final public static String ROLE_PREFIX = "ROLE_";
+  //the role and privilege assigned to new users
+  final public static String PUBLIC_ROLE = "PUBLIC";
+  final public static String CREATE_SAVED_SEARCH = "CREATE_SAVED_SEARCH";
+  final public static List<String> NEW_USER_PRIVILEGES = Arrays.asList(CREATE_SAVED_SEARCH);
+
+  //the role and privileges of the admin user
+  final public static String ADMIN_ROLE = "ADMIN";
+  final public static String CREATE_ROLE = "CREATE_ROLE";
+  final public static String CREATE_PRIVILEGE = "CREATE_PRIVILEGE";
+
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {

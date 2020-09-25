@@ -1,48 +1,31 @@
 package org.cedar.onestop.user
 
 import org.cedar.onestop.user.config.SecurityConfig
+import org.cedar.onestop.user.domain.OnestopPrivilege
+import org.cedar.onestop.user.domain.OnestopRole
 import org.cedar.onestop.user.domain.OnestopUser
-import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
-import org.cedar.onestop.user.repository.OnestopRoleRepository
-import org.cedar.onestop.user.repository.OnestopUserRepository
-import org.cedar.onestop.user.repository.SavedSearchRepository
 import org.cedar.onestop.user.service.OnestopUserService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.containers.PostgreSQLContainer
 import spock.lang.Specification
 
-@DataJpaTest
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("integration")
+@SpringBootTest(classes = [UserApplication.class], webEnvironment = RANDOM_PORT)
 class OnestopUserServiceIntegrationTest extends Specification {
   private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
 
   Logger logger = LoggerFactory.getLogger(OnestopUserServiceIntegrationTest.class)
 
-//  @Autowired
+  @Autowired
   OnestopUserService onestopUserService
-
-  @Autowired
-  OnestopUserRepository onestopUserRepo
-  @Autowired
-  OnestopRoleRepository roleRepository
-  @Autowired
-  OnestopPrivilegeRepository privilegeRepository
-  @Autowired
-  SavedSearchRepository savedSearchRepository
-
-
-  def setup(){
-    onestopUserService = new OnestopUserService()
-    onestopUserRepo.deleteAll()
-    roleRepository.deleteAll()
-    privilegeRepository.deleteAll()
-  }
 
   def setupSpec() {
     postgres.start()
@@ -53,23 +36,33 @@ class OnestopUserServiceIntegrationTest extends Specification {
     postgres.stop()
   }
 
-  def "create user with role"() {
-    given:
-    String uuid = 'abc-123'
-    OnestopUser defaultUser = onestopUserService.findOrCreateUser(uuid)
-
+  def 'create new user privs'(){
     when:
-    OnestopUser savedUser = onestopUserRepo.getOne(defaultUser.getId())
-
+    Collection<OnestopPrivilege> privs = onestopUserService.createPrivilegesIfNotFound()
     then:
-    savedUser.getId() == uuid
-    savedUser.getId() == defaultUser.getId()
-    savedUser.getRoles().toString() == defaultUser.getRoles().toString()
-    savedUser.getRoles()[1].privToStringList()[1].toString() == "ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE
+    privs.toString() == SecurityConfig.NEW_USER_PRIVILEGES.toString()
+    when:
+    OnestopRole role = onestopUserService.createRole(SecurityConfig.PUBLIC_ROLE, privs)
+    then:
+    role.getName() == SecurityConfig.PUBLIC_ROLE
   }
 
-  def 'test orElse'(){
-    String uuid = 'abc-123'
-    onestopUserRepo.findById(uuid).orElse(onestopUserService.createDefaultUser(uuid));
+  def "create new user with default roles and privileges"() {
+    given:
+    String uuid = UUID.randomUUID(); //this comes from login.gov or other IdPs
+
+    when:
+    OnestopUser defaultUser = onestopUserService.findOrCreateUser(uuid)
+    Collection<OnestopRole> roles = defaultUser.getRoles()
+    OnestopRole defaultRole = roles[0]
+    Collection<OnestopPrivilege> privileges = defaultRole.getPrivileges()
+
+    OnestopPrivilege defaultPrivilege = privileges[0]
+
+    then:
+    defaultUser.getId() == uuid
+    roles.size() == 1 //the public role
+    defaultRole.getName() == "ROLE_" + SecurityConfig.PUBLIC_ROLE
+    defaultPrivilege.getName() == SecurityConfig.NEW_USER_PRIVILEGES[0]
   }
 }

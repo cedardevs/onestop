@@ -3,8 +3,6 @@ package org.cedar.onestop.user
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.UserController
 import org.cedar.onestop.user.domain.OnestopUser
-import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
-import org.cedar.onestop.user.repository.OnestopRoleRepository
 import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.service.OnestopUserService
 import org.spockframework.spring.SpringBean
@@ -41,7 +39,7 @@ class UserControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
   }
 
-  @WithMockUser(roles = [SecurityConfig.PUBLIC_PRIVILEGE])
+  @WithMockUser(roles = [SecurityConfig.PUBLIC_ROLE])
   def "public user can hit user endpoint"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -74,7 +72,7 @@ class UserControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(username = "new_user", roles = [SecurityConfig.PUBLIC_PRIVILEGE])
+  @WithMockUser(username = "new_user", roles = [SecurityConfig.PUBLIC_ROLE])
   def "user is created"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders

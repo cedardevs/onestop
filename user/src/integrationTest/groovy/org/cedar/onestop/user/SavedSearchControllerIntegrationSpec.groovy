@@ -51,7 +51,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     postgres.stop()
   }
 
-  @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.ADMIN_PRIVILEGE)
+  @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.ADMIN_ROLE)
   def "admin user authorized to admin getAll endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
@@ -62,7 +62,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
-  @WithMockUser(username = "mockMvcAdmin", roles = SecurityConfig.ADMIN_PRIVILEGE)
+  @WithMockUser(username = "mockMvcAdmin", roles = SecurityConfig.ADMIN_ROLE)
   def "admin user authorized to admin getByUserId endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
@@ -73,7 +73,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
-  @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.PUBLIC_PRIVILEGE)
+  @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.PUBLIC_ROLE)
   def "POST and GET save search items, user is taken from Authentication principal"() {
     when:
     ResultActions postOneResults = mvc.perform(MockMvcRequestBuilders

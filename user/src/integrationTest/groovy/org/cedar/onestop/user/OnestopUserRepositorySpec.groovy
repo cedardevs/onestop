@@ -68,7 +68,7 @@ class OnestopUserRepositorySpec extends Specification {
 
   def "create user with role"() {
     given:
-    OnestopRole role = new OnestopRole(SecurityConfig.PUBLIC_PRIVILEGE)
+    OnestopRole role = new OnestopRole(SecurityConfig.PUBLIC_ROLE)
     roleRepository.save(role)
     HashSet<OnestopRole> roles = [role]
     OnestopUser onestopUser = new OnestopUser("1", roles)
@@ -91,11 +91,11 @@ class OnestopUserRepositorySpec extends Specification {
     privilegeRepository.save(writePrivilege)
 
     and: 'two roles - admin can read and write, public can read only'
-    OnestopRole adminRole = new OnestopRole(SecurityConfig.ADMIN_PRIVILEGE)
+    OnestopRole adminRole = new OnestopRole(SecurityConfig.ADMIN_ROLE)
     List<OnestopPrivilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege)
     adminRole.setPrivileges(adminPrivileges)
 
-    OnestopRole publicRole = new OnestopRole(SecurityConfig.PUBLIC_PRIVILEGE)
+    OnestopRole publicRole = new OnestopRole(SecurityConfig.PUBLIC_ROLE)
     List<OnestopPrivilege> publicPrivilege = Arrays.asList(readPrivilege)
     publicRole.setPrivileges(publicPrivilege)
 

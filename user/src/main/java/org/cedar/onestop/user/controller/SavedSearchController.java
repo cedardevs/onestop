@@ -90,7 +90,7 @@ public class SavedSearchController {
                 .setData(generateListJsonApiData(new ArrayList<>(searchResults))).build();
     }
 
-    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_ROLE, "ROLE_" + SecurityConfig.ADMIN_ROLE})
     @ApiOperation(value = "View all user searches", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
@@ -101,6 +101,7 @@ public class SavedSearchController {
                                                     HttpServletResponse response)
             throws ResourceNotFoundException {
         String userId = authentication.getName();
+        logger.info("Retrieving searches for user: " + userId);
         OnestopUser user = onestopUserRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for requested id :: " + userId));
         logger.info("Retrieving user searches authenticated user with id: " + userId);
@@ -110,7 +111,7 @@ public class SavedSearchController {
                 .setStatus(HttpStatus.OK.value(), response)
                 .setData(generateListJsonApiData(new ArrayList<>(searchResults))).build();    }
 
-    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_ROLE, "ROLE_" + SecurityConfig.ADMIN_ROLE})
     @ApiOperation(value = "Add user search")
     @PostMapping(value = "/saved-search", produces = "application/json")
     public JsonApiResponse create(@RequestBody SavedSearch savedSearch,
@@ -135,7 +136,7 @@ public class SavedSearchController {
     }
 
     //todo use postAuth to prevent changing others
-    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_ROLE, "ROLE_" + SecurityConfig.ADMIN_ROLE})
     @ApiOperation(value = "Update user saved search")
     @PutMapping(value = "/saved-search/{id}", produces = "application/json")
     public JsonApiResponse update(@PathVariable(value = "id") String id,
@@ -160,7 +161,7 @@ public class SavedSearchController {
     }
 
     //todo more to do here so users cannot delete each others request
-    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
+    @Secured({"ROLE_" + SecurityConfig.PUBLIC_ROLE, "ROLE_" + SecurityConfig.ADMIN_ROLE})
     @ApiOperation(value = "Delete saved search")
     @DeleteMapping(value = "/saved-search/{id}", produces = "application/json")
     public JsonApiResponse delete(@PathVariable(value = "id") String id,
