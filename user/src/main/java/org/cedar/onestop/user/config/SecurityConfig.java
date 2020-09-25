@@ -1,8 +1,6 @@
 package org.cedar.onestop.user.config;
 
-import org.cedar.onestop.user.repository.OnestopPrivilegeRepository;
-import org.cedar.onestop.user.repository.OnestopRoleRepository;
-import org.cedar.onestop.user.repository.OnestopUserRepository;
+import org.cedar.onestop.user.service.OnestopUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -17,17 +15,8 @@ import org.springframework.security.oauth2.server.resource.introspection.OpaqueT
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-//  @Value("${spring.security.oauth2.resource.jwt.issuer-uri}")
-//  private String issuer;
-
   @Autowired
-  OnestopUserRepository userRepository;
-
-  @Autowired
-  OnestopRoleRepository roleRepository;
-
-  @Autowired
-  OnestopPrivilegeRepository privilegeRepository;
+  OnestopUserService userService;
 
   final public static String PUBLIC_PRIVILEGE = "PUBLIC";
   final public static String ADMIN_PRIVILEGE = "ADMIN";
@@ -50,11 +39,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     ;
   }
 
-
-
   @Bean
   OpaqueTokenIntrospector introspector() {
-    return new UserInfoOpaqueTokenIntrospector(userRepository, roleRepository, privilegeRepository);
+    return new UserInfoOpaqueTokenIntrospector(userService);
   }
 
 //  JwtAuthenticationConverter jwtAuthenticationConverter() {

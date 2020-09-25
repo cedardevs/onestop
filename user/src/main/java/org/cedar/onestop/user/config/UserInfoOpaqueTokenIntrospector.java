@@ -2,12 +2,8 @@ package org.cedar.onestop.user.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cedar.onestop.user.domain.OnestopPrivilege;
-import org.cedar.onestop.user.domain.OnestopRole;
 import org.cedar.onestop.user.domain.OnestopUser;
-import org.cedar.onestop.user.repository.OnestopPrivilegeRepository;
-import org.cedar.onestop.user.repository.OnestopRoleRepository;
-import org.cedar.onestop.user.repository.OnestopUserRepository;
+import org.cedar.onestop.user.service.OnestopUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +11,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
@@ -29,22 +24,10 @@ public class UserInfoOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
 
   Logger logger = LoggerFactory.getLogger(UserInfoOpaqueTokenIntrospector.class);
 
-//  @Autowired
-//  OnestopUserService userService;
+  OnestopUserService userService;
 
-//  @Autowired
-  OnestopUserRepository onestopUserRepo;
-
-//  @Autowired
-  private OnestopRoleRepository roleRepository;
-
-//  @Autowired
-  private OnestopPrivilegeRepository privilegeRepository;
-
-  public UserInfoOpaqueTokenIntrospector(OnestopUserRepository onestopUserRepo, OnestopRoleRepository roleRepository, OnestopPrivilegeRepository privilegeRepository){
-    this.onestopUserRepo = onestopUserRepo;
-    this.roleRepository = roleRepository;
-    this.privilegeRepository = privilegeRepository;
+  public UserInfoOpaqueTokenIntrospector(OnestopUserService userService){
+    this.userService = userService;
   }
 
   @Override
@@ -74,7 +57,7 @@ public class UserInfoOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
     }
     String id = attributes.get("sub").toString();
     logger.info("Logging in user: " + attributes.get("sub").toString());
-    OnestopUser user = onestopUserRepo.findById(id).orElse(createDefaultUser(id));
+    OnestopUser user = userService.findOrCreateUser(id);
     Map<String, Object> userMap = user.toMap();
 
     logger.info("Populating security context");
@@ -84,37 +67,6 @@ public class UserInfoOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
     OAuth2AuthenticatedPrincipal principal = new DefaultOAuth2AuthenticatedPrincipal(userMap, user.getPrivilegesAsAuthorities());
 
     return principal;
-  }
-
-  private OnestopUser createDefaultUser(String id){
-    String defaultRoleName = "ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE;
-    OnestopPrivilege defaultPrivilege = createPrivilegeIfNotFound(defaultRoleName);
-    OnestopRole defaultRole = createRoleIfNotFound(defaultRoleName, Arrays.asList(defaultPrivilege));
-    OnestopUser defaultUser = new OnestopUser(id, defaultRole);
-    return onestopUserRepo.save(defaultUser);
-  }
-
-  @Transactional
-  OnestopPrivilege createPrivilegeIfNotFound(String name) {
-    OnestopPrivilege privilege = privilegeRepository.findByName(name);
-    if (privilege == null) {
-      privilege = new OnestopPrivilege(UUID.randomUUID().toString(), name);
-      privilegeRepository.save(privilege);
-    }
-    return privilege;
-  }
-
-  @Transactional
-  OnestopRole createRoleIfNotFound(String name, Collection<OnestopPrivilege> privileges) {
-    System.out.println("createRoleIfNotFound");
-    logger.info("createRoleIfNotFound");
-    OnestopRole role = roleRepository.findByName(name);
-    if (role == null) {
-      role = new OnestopRole(UUID.randomUUID().toString(), name);
-      role.setPrivileges(privileges);
-      roleRepository.save(role);
-    }
-    return role;
   }
 
   private Collection<GrantedAuthority> extractAuthorities(Map<String, Object> attributes) {
@@ -144,46 +96,4 @@ public class UserInfoOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
         .map(SimpleGrantedAuthority::new)
         .collect(Collectors.toList());
   }
-
-//  private Collection<GrantedAuthority> extractAuthorities(Map<String, Object> attributes) {
-//
-//    String id = (String) attributes.get("sub");
-//    logger.info("extractAuthorities :: id");
-//    logger.info(id);
-//    OnestopPrivilege defaultPriv = createPrivilegeIfNotFound(SecurityConfig.PUBLIC_PRIVILEGE);
-//    OnestopRole defaultRole = createRoleIfNotFound(SecurityConfig.PUBLIC_PRIVILEGE, Arrays.asList(defaultPriv));
-//    OnestopUser user = onestopUserRepo
-//      .findById(id)
-//      .orElse(
-//        new OnestopUser(id, defaultRole)
-//      );
-//    return user.getRoles().stream()
-//      .map(Object::toString)
-//      .map(SimpleGrantedAuthority::new)
-//      .collect(Collectors.toList());
-//  }
-//
-//  @Transactional
-//  OnestopPrivilege createPrivilegeIfNotFound(String name) {
-//    OnestopPrivilege privilege = privilegeRepository.findByName(name);
-//    if (privilege == null) {
-//      privilege = new OnestopPrivilege(name);
-//      privilegeRepository.save(privilege);
-//    }
-//    return privilege;
-//  }
-//
-//  @Transactional
-//  OnestopRole createRoleIfNotFound(String name, Collection<OnestopPrivilege> privileges) {
-//    System.out.println("createRoleIfNotFound");
-//    logger.info("createRoleIfNotFound");
-//    OnestopRole role = roleRepository.findByName(name);
-//    if (role == null) {
-//      role = new OnestopRole(name);
-//      role.setPrivileges(privileges);
-//      role = roleRepository.save(role);
-//    }
-//    return role;
-//  }
-//
 }
