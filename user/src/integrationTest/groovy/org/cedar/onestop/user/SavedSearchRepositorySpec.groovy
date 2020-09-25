@@ -14,7 +14,7 @@ import spock.lang.Specification
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("integrationTest")
+@ActiveProfiles("integration")
 class SavedSearchRepositorySpec extends Specification {
   private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
 
