@@ -84,9 +84,7 @@ sourceSets {
 task integrationTest(type: Test) {
   doFirst {
     Boolean ci = Boolean.valueOf(System.getenv('CI'))
-    print(" ci="+ci)
     if (ci) {
-      println "CI detected"
       systemProperty 'spring.datasource.url', "jdbc:postgresql://localhost:5432/test"
     }
     else {
