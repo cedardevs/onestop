@@ -86,10 +86,12 @@ task integrationTest(type: Test) {
     Boolean ci = Boolean.valueOf(System.getenv('CI'))
     print(" ci="+ci)
     if (ci) {
-
+      println "CI detected"
+      systemProperty 'spring.datasource.url', "jdbc:postgresql://localhost:5432/test"
     }
     else {
-      PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer().withDatabaseName("test").withUsername("test").withPassword("test")
+      PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer().
+          withDatabaseName("test").withUsername("test").withPassword("test")
       postgreSQLContainer.start()
 
       systemProperty 'spring.datasource.url', "jdbc:postgresql://localhost:${postgreSQLContainer.getMappedPort(5432)}/test"
