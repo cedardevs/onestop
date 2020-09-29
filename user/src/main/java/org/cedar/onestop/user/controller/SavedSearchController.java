@@ -3,13 +3,16 @@ package org.cedar.onestop.user.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.cedar.onestop.data.api.*;
+import org.cedar.onestop.data.api.JsonApiData;
+import org.cedar.onestop.data.api.JsonApiMeta;
+import org.cedar.onestop.data.api.JsonApiResponse;
+import org.cedar.onestop.data.api.JsonApiSuccessResponse;
 import org.cedar.onestop.user.config.SecurityConfig;
 import org.cedar.onestop.user.domain.OnestopUser;
+import org.cedar.onestop.user.domain.SavedSearch;
 import org.cedar.onestop.user.repository.OnestopUserRepository;
 import org.cedar.onestop.user.repository.SavedSearchRepository;
 import org.cedar.onestop.user.service.ResourceNotFoundException;
-import org.cedar.onestop.user.domain.SavedSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +108,7 @@ public class SavedSearchController {
         OnestopUser user = onestopUserRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for requested id :: " + userId));
         logger.info("Retrieving user searches authenticated user with id: " + userId);
-        Set<SavedSearch> searchResults = user.getSearches();
+        List<SavedSearch> searchResults = user.getSearches();
         logger.info("Retrieved " + searchResults.size() + " saved searches for user id " + userId);
         return new JsonApiSuccessResponse.Builder()
                 .setStatus(HttpStatus.OK.value(), response)

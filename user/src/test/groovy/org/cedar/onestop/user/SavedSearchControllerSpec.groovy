@@ -72,7 +72,7 @@ class SavedSearchControllerSpec extends Specification {
       '"meta":null,"status":200}'
 
   def setup(){
-    mockUser.setSearches((Set)new ArrayList<SavedSearch>(savedSearches))
+    mockUser.setSearches(new ArrayList<SavedSearch>(savedSearches))
   }
 
   def "saved search endpoints are protected"() {
@@ -101,7 +101,7 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isCreated())
-    1 * mockUserRepository.findById('new_search_user') >> Optional.of((OnestopUser)mockUser)
+    1 * mockUserRepository.findById('new_search_user') >> Optional.of(mockUser)
     1 * mockSaveSearchRepository.save(_) >> search1
     1 * mockUserRepository.save(mockUser)
 
@@ -118,7 +118,7 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockUserRepository.findById('public_getter_by_id') >> Optional.of((OnestopUser)mockUser)
+    1 * mockUserRepository.findById('public_getter_by_id') >> Optional.of(mockUser)
     results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 

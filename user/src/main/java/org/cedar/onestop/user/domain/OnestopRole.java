@@ -6,113 +6,104 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
-@Table(name="onestop_roles")
+@Table(name = "onestop_roles")
 public class OnestopRole {
 
-    @Id
-    @Column(name= "role_id")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    public String id;
+  @Id
+  @Column(name = "role_id")
+  @GeneratedValue(generator = "uuid")
+  @GenericGenerator(name = "uuid", strategy = "uuid2")
+  public String id;
 
-    @Column(name = "name", nullable = false)
-    public String name;
+  @Column(name = "name", nullable = false, unique = true)
+  public String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Collection<OnestopUser> users;
+  @ManyToMany(mappedBy = "roles")
+  private List<OnestopUser> users;
 
-    @Column(name = "createdOn", updatable = false)
-    @CreationTimestamp
-    public Date createdOn; //TODO do we also accept part of the query
+  @Column(name = "createdOn", updatable = false)
+  @CreationTimestamp
+  public Date createdOn;
 
-    @Column(name = "lastUpdatedOn")
-    @UpdateTimestamp
-    public Date lastUpdatedOn; ///TODO do we also accept part of the query
+  @Column(name = "lastUpdatedOn")
+  @UpdateTimestamp
+  public Date lastUpdatedOn;
 
-    @ManyToMany(fetch=FetchType.EAGER)
-    @JoinTable(
-            name = "onestop_roles_privileges",
-            joinColumns = @JoinColumn(
-                    name = "role_id", referencedColumnName = "role_id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "privilege_id", referencedColumnName = "privilege_id"))
-    private Collection<OnestopPrivilege> privileges;
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "onestop_roles_privileges",
+      joinColumns = @JoinColumn(
+          name = "role_id", referencedColumnName = "role_id"),
+      inverseJoinColumns = @JoinColumn(
+          name = "privilege_id", referencedColumnName = "privilege_id"))
+  private List<OnestopPrivilege> privileges = new ArrayList<>();
 
-    public OnestopRole(){
-    }
+  public OnestopRole() {}
 
-    public OnestopRole(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+  public OnestopRole(String id, String name) {
+    this.id = id;
+    this.name = name;
+  }
 
-    public OnestopRole(String name) {
-        this.name = name;
-    }
+  public OnestopRole(String name) {
+    this.name = name;
+  }
 
-    public OnestopRole(String id, String name, Collection<OnestopPrivilege> privileges) {
-        this.id = id;
-        this.name = name;
-        this.privileges = privileges;
-    }
+  public OnestopRole(String id, String name, List<OnestopPrivilege> privileges) {
+    this.id = id;
+    this.name = name;
+    this.privileges = privileges != null ? privileges : new ArrayList<>();
+  }
 
-    public OnestopRole(String name, Collection<OnestopPrivilege> privileges) {
-        this.name = name;
-        this.privileges = privileges;
-    }
+  public OnestopRole(String name, List<OnestopPrivilege> privileges) {
+    this.name = name;
+    this.privileges = privileges != null ? privileges : new ArrayList<>();
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public Collection<OnestopUser> getUsers() {
-        return users;
-    }
+  public List<OnestopPrivilege> getPrivileges() {
+    return privileges;
+  }
 
-    public Collection<OnestopPrivilege> getPrivileges() {
-        return privileges;
-    }
+  public void setPrivileges(List<OnestopPrivilege> privileges) {
+    this.privileges = privileges != null ? privileges : new ArrayList<>();
+  }
 
-    public void setPrivileges(Collection<OnestopPrivilege> privileges) {
-        this.privileges = privileges;
-    }
+  public Map<String, Object> toMap() {
+    Map<String, Object> result = new HashMap<>();
+    result.put("id", id);
+    result.put("name", name);
+    result.put("privileges", privsToMapList());
+    result.put("createdOn", createdOn);
+    result.put("lastUpdatedOn", lastUpdatedOn);
+    return result;
+  }
 
-    public Map<String, Object> toMap() {
-        Map<String, Object> result = new HashMap<String, Object>();
-        result.put("id", id);
-        result.put("name", name);
-        result.put("privileges", privToStringList());
-        result.put("createdOn", createdOn);
-        result.put("lastUpdatedOn", lastUpdatedOn);
-        return result;
-    }
+  public String toString() {
+    return toMap().toString();
+  }
 
-    public String toString(){
-        return toMap().toString();
-    }
-
-    public List<Map> privToStringList(){
-        List<Map> privList = new ArrayList<>();
-        if(privileges == null){
-            return privList;
-        }
-        for(int i = 0; i < privileges.size(); i++) {
-            privList.add(((List<OnestopPrivilege>)privileges).get(i).toMap());
-        }
-        return privList;
-    }
+  public List<Map<String, Object>> privsToMapList() {
+    return privileges.stream()
+        .map(OnestopPrivilege::toMap)
+        .collect(Collectors.toList());
+  }
 }

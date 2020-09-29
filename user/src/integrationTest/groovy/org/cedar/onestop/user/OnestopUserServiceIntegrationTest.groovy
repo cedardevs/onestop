@@ -36,6 +36,12 @@ class OnestopUserServiceIntegrationTest extends Specification {
     postgres.stop()
   }
 
+  def setup() {
+    onestopUserService.userRepository.deleteAll()
+    onestopUserService.roleRepository.deleteAll()
+    onestopUserService.privilegeRepository.deleteAll()
+  }
+
   def 'create new user privs'(){
     when:
     Collection<OnestopPrivilege> privs = onestopUserService.createPrivilegesIfNotFound()
