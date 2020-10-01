@@ -1,11 +1,9 @@
 package org.cedar.onestop.user
 
 import org.cedar.onestop.user.config.AuthorizationConfiguration
-import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.SavedSearchController
 import org.cedar.onestop.user.domain.OnestopUser
 import org.cedar.onestop.user.domain.SavedSearch
-import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.repository.SavedSearchRepository
 import org.cedar.onestop.user.service.OnestopUserService
 import org.spockframework.spring.SpringBean
@@ -26,9 +24,7 @@ class SavedSearchControllerSpec extends Specification {
   private MockMvc mockMvc
 
   @SpringBean
-  private OnestopUserService onestopUserService = Mock()
-  @SpringBean
-  OnestopUserRepository mockUserRepository = Mock()
+  private OnestopUserService mockUserService = Mock()
   @SpringBean
   SavedSearchRepository mockSaveSearchRepository = Mock()
   @Shared
@@ -102,9 +98,9 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isCreated())
-    1 * mockUserRepository.findById('new_search_user') >> Optional.of(mockUser)
+    1 * mockUserService.findUserById('new_search_user') >> Optional.of(mockUser)
     1 * mockSaveSearchRepository.save(_) >> search1
-    1 * mockUserRepository.save(mockUser)
+//    1 * mockUserService.save(mockUser)
 
 //    1 * mockSaveSearchRepository.save(_ as SavedSearch) >> new SavedSearch( user, "new_search_user",  "test",  "filter",  "value")
     results.andReturn().getResponse().getContentAsString() == '{"data":[' +  searchResult1Json + '],"meta":null,"status":201}'
@@ -119,7 +115,7 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockUserRepository.findById('public_getter_by_id') >> Optional.of(mockUser)
+    1 * mockUserService.findUserById('public_getter_by_id') >> Optional.of(mockUser)
     results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
@@ -145,7 +141,7 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockUserRepository.findById(mockerUserId) >> Optional.of((OnestopUser)mockUser)
+    1 * mockUserService.findUserById(mockerUserId) >> Optional.of(mockUser)
     results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
@@ -201,7 +197,7 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockSaveSearchRepository.findById(_) >> Optional.of((SavedSearch) search1)
+    1 * mockSaveSearchRepository.findById(_) >> Optional.of(search1)
     results.andReturn().getResponse().getContentAsString() == "{\"data\":[" + searchResult1Json + "],\"meta\":null,\"status\":200}"
   }
 
@@ -214,6 +210,6 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockUserRepository.findById(_) >> Optional.of((OnestopUser) mockUser)
+    1 * mockUserService.findUserById(_) >> Optional.of(mockUser)
   }
 }

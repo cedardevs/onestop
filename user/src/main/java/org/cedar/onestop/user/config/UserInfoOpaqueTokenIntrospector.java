@@ -6,27 +6,23 @@ import org.cedar.onestop.user.domain.OnestopUser;
 import org.cedar.onestop.user.service.OnestopUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class UserInfoOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
+  private static final Logger logger = LoggerFactory.getLogger(UserInfoOpaqueTokenIntrospector.class);
 
   private final ObjectMapper mapper = new ObjectMapper();
 
   private final WebClient rest = WebClient.create();
 
-  Logger logger = LoggerFactory.getLogger(UserInfoOpaqueTokenIntrospector.class);
+  private final OnestopUserService userService;
 
-  OnestopUserService userService;
-
-  public UserInfoOpaqueTokenIntrospector(OnestopUserService userService){
+  public UserInfoOpaqueTokenIntrospector(OnestopUserService userService) {
     this.userService = userService;
   }
 
