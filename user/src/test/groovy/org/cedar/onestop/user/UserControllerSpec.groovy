@@ -39,7 +39,7 @@ class UserControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
   }
 
-  @WithMockUser(roles = [SecurityConfig.PUBLIC_ROLE])
+  @WithMockUser(roles = [SecurityConfig.READ_USER_PROFILE])
   def "public user can hit user endpoint"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -50,7 +50,7 @@ class UserControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
-  @WithMockUser(roles = ["ADMIN"])
+  @WithMockUser(roles = [SecurityConfig.READ_USER_PROFILE])
   def "admin user can hit user endpoint"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -72,7 +72,7 @@ class UserControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(username = "new_user", roles = [SecurityConfig.PUBLIC_ROLE])
+  @WithMockUser(username = "new_user", roles = [SecurityConfig.CREATE_USER])
   def "user is created"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders

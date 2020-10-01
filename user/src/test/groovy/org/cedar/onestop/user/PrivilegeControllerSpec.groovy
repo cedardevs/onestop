@@ -43,7 +43,7 @@ class PrivilegeControllerSpec extends Specification{
   @Shared
   OnestopPrivilege mockPrivilege = new OnestopPrivilege(privilegeId, privilegeName)
 
-  @WithMockUser(username = "admin_user_privileges", roles = ["ADMIN"])
+  @WithMockUser(username = "admin_user_privileges", roles = [SecurityConfig.READ_PRIVILEGE_BY_USER_ID])
   def "admin user can hit privilege endpoint"() {
     given:
     String id = "admin_id"
@@ -53,13 +53,12 @@ class PrivilegeControllerSpec extends Specification{
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    1 * onestopUserRepository.findById(id) >>  Optional.of((OnestopUser) new OnestopUser("admin_id"))
-
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
+    1 * onestopUserRepository.findById(id) >>  Optional.of((OnestopUser) new OnestopUser("admin_id"))
   }
 
 
-  @WithMockUser(username = "privilege_hacker", roles = [SecurityConfig.PUBLIC_ROLE])
+  @WithMockUser(username = "privilege_hacker", roles = ["BOGUS_PRIV"])
   def "public user not authorized to hit privilege endpoint"() {
     when:
     def getResults = mockMvc.perform(MockMvcRequestBuilders
@@ -70,7 +69,7 @@ class PrivilegeControllerSpec extends Specification{
     getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(roles = [SecurityConfig.ADMIN_ROLE])
+  @WithMockUser(roles = [SecurityConfig.CREATE_PRIVILEGE])
   def "privilege is created"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders
@@ -80,13 +79,13 @@ class PrivilegeControllerSpec extends Specification{
         .accept(MediaType.APPLICATION_JSON))
 
     then:
+    postSearch.andExpect(MockMvcResultMatchers.status().isCreated())
     1 * onestopPrivilegeRepository.save(_ as OnestopPrivilege) >> new OnestopPrivilege(privilegeId, privilegeName) //>> new OnestopUser("new_user")
 
-    postSearch.andExpect(MockMvcResultMatchers.status().isCreated())
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value(privilegeId))
+    postSearch.andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value(privilegeId))
   }
 
-  @WithMockUser(roles = [SecurityConfig.ADMIN_ROLE])
+  @WithMockUser(roles = [SecurityConfig.DELETE_PRIVILEGE])
   def 'privilege is deleted'(){
     when:
     def deleteResult = mockMvc.perform(MockMvcRequestBuilders.delete("/v1/privilege/{id}", privilegeId))

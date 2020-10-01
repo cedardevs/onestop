@@ -44,7 +44,7 @@ class OnestopUserServiceIntegrationTest extends Specification {
 
   def 'create new user privs'(){
     when:
-    Collection<OnestopPrivilege> privs = onestopUserService.createPrivilegesIfNotFound()
+    Collection<OnestopPrivilege> privs = onestopUserService.createNewUserPrivilegesIfNotFound()
     then:
     privs.toString() == SecurityConfig.NEW_USER_PRIVILEGES.toString()
     when:

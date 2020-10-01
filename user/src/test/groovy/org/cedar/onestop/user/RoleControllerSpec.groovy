@@ -43,7 +43,7 @@ class RoleControllerSpec extends Specification{
   @Shared
   OnestopRole mockRole = new OnestopRole(roleId, roleName)
 
-  @WithMockUser(username = "admin_user_roles", roles = ["ADMIN"])
+  @WithMockUser(username = "admin_user_roles", roles = [SecurityConfig.READ_ROLES_BY_USER_ID])
   def "admin user can hit role endpoint"() {
     given:
     String id = "admin_id"
@@ -59,7 +59,7 @@ class RoleControllerSpec extends Specification{
   }
 
 
-  @WithMockUser(username = "role_hacker", roles = [SecurityConfig.PUBLIC_ROLE])
+  @WithMockUser(username = "role_hacker", roles = ["BOGUS_PRIV"])
   def "public user not authorized to hit role endpoint"() {
     when:
     def getResults = mockMvc.perform(MockMvcRequestBuilders
@@ -70,7 +70,7 @@ class RoleControllerSpec extends Specification{
     getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(roles = [SecurityConfig.ADMIN_ROLE])
+  @WithMockUser(roles = [SecurityConfig.CREATE_ROLE])
   def "role is created"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders
@@ -86,7 +86,7 @@ class RoleControllerSpec extends Specification{
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value(roleId))
   }
 
-  @WithMockUser(roles = [SecurityConfig.ADMIN_ROLE])
+  @WithMockUser(roles = [SecurityConfig.DELETE_ROLE])
   def 'role is deleted'(){
     when:
     def deleteResult = mockMvc.perform(MockMvcRequestBuilders.delete("/v1/role/{id}", roleId))

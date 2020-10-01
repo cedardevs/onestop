@@ -38,7 +38,7 @@ public class UserController {
         this.onestopUserRepository = onestopUserRepository;
     }
 
-    @Secured({"ROLE_" + SecurityConfig.PUBLIC_ROLE, "ROLE_" + SecurityConfig.ADMIN_ROLE})
+    @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.READ_USER_PROFILE})
     @ApiOperation(value = "Get authenticated user data", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved user data"),
@@ -64,7 +64,7 @@ public class UserController {
                 .setData(dataList).build();
     }
 
-    @Secured({"ROLE_" + SecurityConfig.PUBLIC_ROLE, "ROLE_" + SecurityConfig.ADMIN_ROLE})
+    @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.CREATE_USER})
     @ApiOperation(value = "Create a user", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully created a user"),
@@ -91,7 +91,7 @@ public class UserController {
           .setData(dataList).build();
     }
 
-    @Secured({"ROLE_" + SecurityConfig.PUBLIC_ROLE, "ROLE_" + SecurityConfig.ADMIN_ROLE})
+    @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.UPDATE_USER})
     @ApiOperation(value = "Update user", response = Iterable.class)
     @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Successfully created a user"),

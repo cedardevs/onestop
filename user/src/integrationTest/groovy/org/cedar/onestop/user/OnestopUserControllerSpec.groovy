@@ -55,7 +55,7 @@ class OnestopUserControllerSpec extends Specification  {
     postgres.stop()
   }
 
-  @WithMockUser(username = "mockUser", roles = SecurityConfig.PUBLIC_ROLE)
+  @WithMockUser(username = "mockUser", roles = SecurityConfig.CREATE_USER)
   def "user is created"() {
     when:
     def postSearch = mvc.perform(MockMvcRequestBuilders
@@ -70,7 +70,7 @@ class OnestopUserControllerSpec extends Specification  {
 
   }
 
-  @WithMockUser(username = "mockUser", roles = SecurityConfig.PUBLIC_ROLE)
+  @WithMockUser(username = "mockUser", roles = [SecurityConfig.CREATE_USER, SecurityConfig.CREATE_SAVED_SEARCH])
   def "user is created, search is saved"() {
     when:
     def postUser = mvc.perform(MockMvcRequestBuilders
@@ -97,7 +97,7 @@ class OnestopUserControllerSpec extends Specification  {
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.user.id").value("mockUser"))
   }
 
-  @WithMockUser(username = "mockUser", roles = SecurityConfig.ADMIN_ROLE)
+  @WithMockUser(username = "mockUser", roles = [SecurityConfig.CREATE_USER, SecurityConfig.CREATE_ROLE, SecurityConfig.CREATE_PRIVILEGE])
   def "user is created with roles and privileges"() {
     given:
     OnestopPrivilege readPriv = new OnestopPrivilege("read")

@@ -36,7 +36,7 @@ public class RoleController {
   @Autowired
   public OnestopRoleRepository onestopRoleRepository;
 
-  @Secured("ROLE_" + SecurityConfig.ADMIN_ROLE)
+  @Secured(SecurityConfig.ROLE_PREFIX + SecurityConfig.READ_ROLES_BY_USER_ID)
   @ApiOperation(value = "Get user roles (ADMIN)", response = Iterable.class)
   @ApiResponses(value = {
     @ApiResponse(code = 200, message = "Successfully retrieved user roles"),
@@ -64,7 +64,7 @@ public class RoleController {
       .setData(dataList).build();
   }
 
-  @Secured({"ROLE_" + SecurityConfig.ADMIN_ROLE})
+  @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.CREATE_ROLE})
   @ApiOperation(value = "Create a role", response = Iterable.class)
   @ApiResponses(value = {
     @ApiResponse(code = 200, message = "Successfully created role"),
@@ -88,7 +88,7 @@ public class RoleController {
       .setData(dataList).build();
   }
 
-  @Secured({"ROLE_" + SecurityConfig.ADMIN_ROLE})
+  @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.DELETE_ROLE})
   @ApiOperation(value = "Delete role")
   @DeleteMapping(value = "/role/{id}", produces = "application/json")
   public JsonApiResponse delete(@PathVariable(value = "id") String id, HttpServletResponse response)
