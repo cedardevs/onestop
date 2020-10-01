@@ -94,5 +94,10 @@ class OnestopUserServiceIntegrationTest extends Specification {
     defaultRole.getName() == "ROLE_" + AuthorizationConfiguration.ADMIN_ROLE
     defaultPrivilege.getName() == AuthorizationConfiguration.ADMIN_PRIVILEGES[0]
     adminUser.getPrivileges().collect{priv -> priv.toString()} == AuthorizationConfiguration.ADMIN_PRIVILEGES
+
+    and: 'confirm methods are idempotent'
+    then:
+    onestopUserService.createAdminPrivilegesIfNotFound()
+    onestopUserService.createNewUserPrivilegesIfNotFound()
   }
 }

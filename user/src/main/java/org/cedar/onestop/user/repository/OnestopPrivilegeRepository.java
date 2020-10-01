@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface OnestopPrivilegeRepository extends JpaRepository<OnestopPrivilege, String> {
-    Optional<OnestopPrivilege> findByName(String name);
+    Optional<OnestopPrivilege> findOneByName(String name);
 }

@@ -1,7 +1,6 @@
 package org.cedar.onestop.user.service;
 
 import org.cedar.onestop.user.config.AuthorizationConfiguration;
-import org.cedar.onestop.user.config.SecurityConfig;
 import org.cedar.onestop.user.domain.OnestopPrivilege;
 import org.cedar.onestop.user.domain.OnestopRole;
 import org.cedar.onestop.user.domain.OnestopUser;
@@ -80,7 +79,7 @@ public class OnestopUserService {
         return AuthorizationConfiguration.ADMIN_PRIVILEGES
           .stream()
           .map(String::toString)
-          .map(name -> privilegeRepository.findByName(name).orElse(createPrivilege(name)))
+          .map(name -> privilegeRepository.findOneByName(name).orElseGet(() -> createPrivilege(name)))
           .collect(Collectors.toList());
     }
 
@@ -88,7 +87,7 @@ public class OnestopUserService {
         return AuthorizationConfiguration.NEW_USER_PRIVILEGES
           .stream()
           .map(String::toString)
-          .map(name -> privilegeRepository.findByName(name).orElse(createPrivilege(name)))
+          .map(name -> privilegeRepository.findOneByName(name).orElse(createPrivilege(name)))
           .collect(Collectors.toList());
     }
 
