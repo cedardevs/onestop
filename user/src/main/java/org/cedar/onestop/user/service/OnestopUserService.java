@@ -38,13 +38,13 @@ public class OnestopUserService {
     public OnestopUser findOrCreateUser(String id) {
         return userRepository
           .findById(id)
-          .orElse(createDefaultUser(id));
+          .orElseGet(() -> createDefaultUser(id));
     }
 
     public OnestopUser findOrCreateAdminUser(String id) {
         return userRepository
           .findById(id)
-          .orElse(createAdminUser(id));
+          .orElseGet(() -> createAdminUser(id));
     }
 
     public OnestopUser createAdminUser(String id){
@@ -87,7 +87,7 @@ public class OnestopUserService {
         return AuthorizationConfiguration.NEW_USER_PRIVILEGES
           .stream()
           .map(String::toString)
-          .map(name -> privilegeRepository.findOneByName(name).orElse(createPrivilege(name)))
+          .map(name -> privilegeRepository.findOneByName(name).orElseGet(() -> createPrivilege(name)))
           .collect(Collectors.toList());
     }
 
@@ -98,7 +98,7 @@ public class OnestopUserService {
     }
 
     public OnestopRole createRoleIfNotFound(String name, List<OnestopPrivilege> privileges) {
-        return roleRepository.findByName(name).orElse(createRole(name, privileges));
+        return roleRepository.findByName(name).orElseGet(() -> createRole(name, privileges));
     }
 
     public OnestopRole createRole(String name, List<OnestopPrivilege> privileges){
