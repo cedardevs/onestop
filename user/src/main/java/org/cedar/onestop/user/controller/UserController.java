@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import org.cedar.onestop.user.config.AuthorizationConfiguration;
 import org.cedar.onestop.user.config.SecurityConfig;
 import org.cedar.onestop.user.repository.OnestopUserRepository;
 import org.cedar.onestop.user.domain.OnestopUser;
@@ -38,7 +39,7 @@ public class UserController {
         this.onestopUserRepository = onestopUserRepository;
     }
 
-    @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.READ_USER_PROFILE})
+    @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_USER_PROFILE})
     @ApiOperation(value = "Get authenticated user data", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved user data"),
@@ -64,7 +65,7 @@ public class UserController {
                 .setData(dataList).build();
     }
 
-    @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.CREATE_USER})
+    @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.CREATE_USER})
     @ApiOperation(value = "Create a user", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully created a user"),
@@ -91,7 +92,7 @@ public class UserController {
           .setData(dataList).build();
     }
 
-    @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.UPDATE_USER})
+    @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.UPDATE_USER})
     @ApiOperation(value = "Update user", response = Iterable.class)
     @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Successfully created a user"),

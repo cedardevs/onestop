@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.AuthorizationConfiguration
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.SavedSearchController
 import org.cedar.onestop.user.domain.OnestopUser
@@ -88,7 +89,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == ""
   }
 
-  @WithMockUser(username = 'new_search_user', roles = [SecurityConfig.CREATE_SAVED_SEARCH])
+  @WithMockUser(username = 'new_search_user', roles = [AuthorizationConfiguration.CREATE_SAVED_SEARCH])
   def "save search item for authenticated user"() {
     given:
 
@@ -109,7 +110,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == '{"data":[' +  searchResult1Json + '],"meta":null,"status":201}'
   }
 
-  @WithMockUser(username = 'public_getter_by_id', roles = [SecurityConfig.READ_SAVED_SEARCH])
+  @WithMockUser(username = 'public_getter_by_id', roles = [AuthorizationConfiguration.READ_SAVED_SEARCH])
   def "get save searches for authenticated user by id"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -135,7 +136,7 @@ class SavedSearchControllerSpec extends Specification {
 //
 //  }
 
-  @WithMockUser(roles = [SecurityConfig.READ_SAVED_SEARCH_BY_USER_ID])
+  @WithMockUser(roles = [AuthorizationConfiguration.READ_SAVED_SEARCH_BY_USER_ID])
   def "get save searches by user id"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -148,7 +149,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
-  @WithMockUser(roles = [SecurityConfig.LIST_ALL_SAVED_SEARCHES])
+  @WithMockUser(roles = [AuthorizationConfiguration.LIST_ALL_SAVED_SEARCHES])
   def 'admin user can access saved-search/all'(){
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -160,7 +161,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
-  @WithMockUser(roles = [SecurityConfig.PUBLIC_ROLE])
+  @WithMockUser(roles = [AuthorizationConfiguration.PUBLIC_ROLE])
   def 'public user denied to protected endpoints'(){
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -178,7 +179,7 @@ class SavedSearchControllerSpec extends Specification {
     result2.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(roles = [SecurityConfig.LIST_ALL_SAVED_SEARCHES])
+  @WithMockUser(roles = [AuthorizationConfiguration.LIST_ALL_SAVED_SEARCHES])
   def "endpoint 'saved-search/all' returns json api spec response"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -191,7 +192,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == """{"data":[],"meta":null,"status":200}"""
   }
 
-  @WithMockUser(roles = [SecurityConfig.READ_SAVED_SEARCH_BY_ID])
+  @WithMockUser(roles = [AuthorizationConfiguration.READ_SAVED_SEARCH_BY_ID])
   def "admin can hit saved-search/{id}"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -204,7 +205,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == "{\"data\":[" + searchResult1Json + "],\"meta\":null,\"status\":200}"
   }
 
-  @WithMockUser(roles = [SecurityConfig.READ_SAVED_SEARCH_BY_USER_ID])
+  @WithMockUser(roles = [AuthorizationConfiguration.READ_SAVED_SEARCH_BY_USER_ID])
   def "admin can hit saved-search/user/{id}"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders

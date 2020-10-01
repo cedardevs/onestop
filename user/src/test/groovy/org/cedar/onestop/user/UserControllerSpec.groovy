@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.AuthorizationConfiguration
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.UserController
 import org.cedar.onestop.user.domain.OnestopUser
@@ -39,7 +40,7 @@ class UserControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
   }
 
-  @WithMockUser(roles = [SecurityConfig.READ_USER_PROFILE])
+  @WithMockUser(roles = [AuthorizationConfiguration.READ_USER_PROFILE])
   def "public user can hit user endpoint"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -50,7 +51,7 @@ class UserControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
-  @WithMockUser(roles = [SecurityConfig.READ_USER_PROFILE])
+  @WithMockUser(roles = [AuthorizationConfiguration.READ_USER_PROFILE])
   def "admin user can hit user endpoint"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
@@ -72,7 +73,7 @@ class UserControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(username = "new_user", roles = [SecurityConfig.CREATE_USER])
+  @WithMockUser(username = "new_user", roles = [AuthorizationConfiguration.CREATE_USER])
   def "user is created"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders

@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.AuthorizationConfiguration
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.RoleController
 import org.cedar.onestop.user.domain.OnestopRole
@@ -43,7 +44,7 @@ class RoleControllerSpec extends Specification{
   @Shared
   OnestopRole mockRole = new OnestopRole(roleId, roleName)
 
-  @WithMockUser(username = "admin_user_roles", roles = [SecurityConfig.READ_ROLES_BY_USER_ID])
+  @WithMockUser(username = "admin_user_roles", roles = [AuthorizationConfiguration.READ_ROLES_BY_USER_ID])
   def "admin user can hit role endpoint"() {
     given:
     String id = "admin_id"
@@ -70,7 +71,7 @@ class RoleControllerSpec extends Specification{
     getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(roles = [SecurityConfig.CREATE_ROLE])
+  @WithMockUser(roles = [AuthorizationConfiguration.CREATE_ROLE])
   def "role is created"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders
@@ -86,7 +87,7 @@ class RoleControllerSpec extends Specification{
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value(roleId))
   }
 
-  @WithMockUser(roles = [SecurityConfig.DELETE_ROLE])
+  @WithMockUser(roles = [AuthorizationConfiguration.DELETE_ROLE])
   def 'role is deleted'(){
     when:
     def deleteResult = mockMvc.perform(MockMvcRequestBuilders.delete("/v1/role/{id}", roleId))

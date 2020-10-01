@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.AuthorizationConfiguration
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.domain.OnestopPrivilege
 import org.cedar.onestop.user.domain.OnestopRole
@@ -10,9 +11,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.containers.PostgreSQLContainer
 import spock.lang.Specification
+
+import java.util.stream.Collectors
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -46,11 +50,11 @@ class OnestopUserServiceIntegrationTest extends Specification {
     when:
     Collection<OnestopPrivilege> privs = onestopUserService.createNewUserPrivilegesIfNotFound()
     then:
-    privs.toString() == SecurityConfig.NEW_USER_PRIVILEGES.toString()
+    privs.toString() == AuthorizationConfiguration.NEW_USER_PRIVILEGES.toString()
     when:
-    OnestopRole role = onestopUserService.createRole(SecurityConfig.PUBLIC_ROLE, privs)
+    OnestopRole role = onestopUserService.createRole(AuthorizationConfiguration.PUBLIC_ROLE, privs)
     then:
-    role.getName() == SecurityConfig.PUBLIC_ROLE
+    role.getName() == AuthorizationConfiguration.PUBLIC_ROLE
   }
 
   def "create new user with default roles and privileges"() {
@@ -68,7 +72,27 @@ class OnestopUserServiceIntegrationTest extends Specification {
     then:
     defaultUser.getId() == uuid
     roles.size() == 1 //the public role
-    defaultRole.getName() == "ROLE_" + SecurityConfig.PUBLIC_ROLE
-    defaultPrivilege.getName() == SecurityConfig.NEW_USER_PRIVILEGES[0]
+    defaultRole.getName() == "ROLE_" + AuthorizationConfiguration.PUBLIC_ROLE
+    defaultPrivilege.getName() == AuthorizationConfiguration.NEW_USER_PRIVILEGES[0]
+  }
+
+  def "create default admin user with admin roles and privileges"() {
+    given:
+    String uuid = UUID.randomUUID(); //this comes from login.gov or other IdPs
+
+    when:
+    OnestopUser adminUser = onestopUserService.findOrCreateAdminUser(uuid)
+    Collection<OnestopRole> roles = adminUser.getRoles()
+    OnestopRole defaultRole = roles[0]
+    Collection<OnestopPrivilege> privileges = defaultRole.getPrivileges()
+
+    OnestopPrivilege defaultPrivilege = privileges[0]
+
+    then:
+    adminUser.getId() == uuid
+    roles.size() == 1 //the public role
+    defaultRole.getName() == "ROLE_" + AuthorizationConfiguration.ADMIN_ROLE
+    defaultPrivilege.getName() == AuthorizationConfiguration.ADMIN_PRIVILEGES[0]
+    adminUser.getPrivileges().collect{priv -> priv.toString()} == AuthorizationConfiguration.ADMIN_PRIVILEGES
   }
 }

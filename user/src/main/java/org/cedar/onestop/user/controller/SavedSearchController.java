@@ -7,6 +7,7 @@ import org.cedar.onestop.data.api.JsonApiData;
 import org.cedar.onestop.data.api.JsonApiMeta;
 import org.cedar.onestop.data.api.JsonApiResponse;
 import org.cedar.onestop.data.api.JsonApiSuccessResponse;
+import org.cedar.onestop.user.config.AuthorizationConfiguration;
 import org.cedar.onestop.user.config.SecurityConfig;
 import org.cedar.onestop.user.domain.OnestopUser;
 import org.cedar.onestop.user.domain.SavedSearch;
@@ -40,7 +41,7 @@ public class SavedSearchController {
         this.savedSearchRepository = savedSearchRepository;
     }
 
-    @Secured(SecurityConfig.ROLE_PREFIX + SecurityConfig.LIST_ALL_SAVED_SEARCHES)
+    @Secured(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.LIST_ALL_SAVED_SEARCHES)
     @ApiOperation(value = "View all available save searches (ADMIN)", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
@@ -57,7 +58,7 @@ public class SavedSearchController {
                 .setData(generateListJsonApiData(searchResults)).build();
     }
 
-    @Secured(SecurityConfig.ROLE_PREFIX + SecurityConfig.READ_SAVED_SEARCH_BY_ID)
+    @Secured(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_SAVED_SEARCH_BY_ID)
     @ApiOperation(value = "Search with an ID (ADMIN)", response = SavedSearch.class)
     @RequestMapping(value = "/saved-search/{id}", method = RequestMethod.GET, produces = "application/json")
     public JsonApiResponse getById(@PathVariable(value = "id") String id,
@@ -73,7 +74,7 @@ public class SavedSearchController {
                 .setData(generateListJsonApiData(result)).build();
     }
 
-    @Secured(SecurityConfig.ROLE_PREFIX + SecurityConfig.READ_SAVED_SEARCH_BY_USER_ID)
+    @Secured(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_SAVED_SEARCH_BY_USER_ID)
     @ApiOperation(value = "View all available save searches by UserId (ADMIN)", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
@@ -93,7 +94,7 @@ public class SavedSearchController {
                 .setData(generateListJsonApiData(new ArrayList<>(searchResults))).build();
     }
 
-    @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.READ_SAVED_SEARCH})
+    @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_SAVED_SEARCH})
     @ApiOperation(value = "View all user searches", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
@@ -114,7 +115,7 @@ public class SavedSearchController {
                 .setStatus(HttpStatus.OK.value(), response)
                 .setData(generateListJsonApiData(new ArrayList<>(searchResults))).build();    }
 
-    @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.CREATE_SAVED_SEARCH})
+    @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.CREATE_SAVED_SEARCH})
     @ApiOperation(value = "Add user search")
     @PostMapping(value = "/saved-search", produces = "application/json")
     public JsonApiResponse create(@RequestBody SavedSearch savedSearch,
@@ -139,7 +140,7 @@ public class SavedSearchController {
     }
 
     //todo use postAuth to prevent changing others
-    @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.UPDATE_SAVED_SEARCH})
+    @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.UPDATE_SAVED_SEARCH})
     @ApiOperation(value = "Update user saved search")
     @PutMapping(value = "/saved-search/{id}", produces = "application/json")
     public JsonApiResponse update(@PathVariable(value = "id") String id,
@@ -164,7 +165,7 @@ public class SavedSearchController {
     }
 
     //todo more to do here so users cannot delete each others request
-    @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.DELETE_SAVED_SEARCH})
+    @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.DELETE_SAVED_SEARCH})
     @ApiOperation(value = "Delete saved search")
     @DeleteMapping(value = "/saved-search/{id}", produces = "application/json")
     public JsonApiResponse delete(@PathVariable(value = "id") String id,

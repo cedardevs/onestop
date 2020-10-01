@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.AuthorizationConfiguration
 import org.cedar.onestop.user.config.SecurityConfig
 import org.hamcrest.Matchers
 import org.springframework.beans.factory.annotation.Autowired
@@ -51,7 +52,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     postgres.stop()
   }
 
-  @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.LIST_ALL_SAVED_SEARCHES)
+  @WithMockUser(username = "mockMvcUser", roles = AuthorizationConfiguration.LIST_ALL_SAVED_SEARCHES)
   def "admin user authorized to admin getAll endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
@@ -62,7 +63,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
-  @WithMockUser(username = "mockMvcUser", roles = [SecurityConfig.CREATE_USER, SecurityConfig.READ_SAVED_SEARCH_BY_USER_ID])
+  @WithMockUser(username = "mockMvcUser", roles = [AuthorizationConfiguration.CREATE_USER, AuthorizationConfiguration.READ_SAVED_SEARCH_BY_USER_ID])
   def "READ_SAVED_SEARCH_BY_USER_ID allows access to getByUserId endpoint"() {
     setup: 'must have a user to associate the search with'
     mvc.perform(MockMvcRequestBuilders
@@ -80,7 +81,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
-  @WithMockUser(username = "mockMvcUser", roles = [SecurityConfig.CREATE_USER, SecurityConfig.CREATE_SAVED_SEARCH, SecurityConfig.READ_SAVED_SEARCH])
+  @WithMockUser(username = "mockMvcUser", roles = [AuthorizationConfiguration.CREATE_USER, AuthorizationConfiguration.CREATE_SAVED_SEARCH, AuthorizationConfiguration.READ_SAVED_SEARCH])
   def "POST and GET save search items, user is taken from Authentication principal"() {
     setup: 'must have a user to associate the search with'
     mvc.perform(MockMvcRequestBuilders

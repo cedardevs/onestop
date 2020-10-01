@@ -1,5 +1,6 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.AuthorizationConfiguration
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.PrivilegeController
 import org.cedar.onestop.user.domain.OnestopPrivilege
@@ -43,7 +44,7 @@ class PrivilegeControllerSpec extends Specification{
   @Shared
   OnestopPrivilege mockPrivilege = new OnestopPrivilege(privilegeId, privilegeName)
 
-  @WithMockUser(username = "admin_user_privileges", roles = [SecurityConfig.READ_PRIVILEGE_BY_USER_ID])
+  @WithMockUser(username = "admin_user_privileges", roles = [AuthorizationConfiguration.READ_PRIVILEGE_BY_USER_ID])
   def "admin user can hit privilege endpoint"() {
     given:
     String id = "admin_id"
@@ -69,7 +70,7 @@ class PrivilegeControllerSpec extends Specification{
     getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(roles = [SecurityConfig.CREATE_PRIVILEGE])
+  @WithMockUser(roles = [AuthorizationConfiguration.CREATE_PRIVILEGE])
   def "privilege is created"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders
@@ -85,7 +86,7 @@ class PrivilegeControllerSpec extends Specification{
     postSearch.andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value(privilegeId))
   }
 
-  @WithMockUser(roles = [SecurityConfig.DELETE_PRIVILEGE])
+  @WithMockUser(roles = [AuthorizationConfiguration.DELETE_PRIVILEGE])
   def 'privilege is deleted'(){
     when:
     def deleteResult = mockMvc.perform(MockMvcRequestBuilders.delete("/v1/privilege/{id}", privilegeId))

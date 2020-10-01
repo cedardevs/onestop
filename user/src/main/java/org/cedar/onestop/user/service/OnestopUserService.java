@@ -1,5 +1,6 @@
 package org.cedar.onestop.user.service;
 
+import org.cedar.onestop.user.config.AuthorizationConfiguration;
 import org.cedar.onestop.user.config.SecurityConfig;
 import org.cedar.onestop.user.domain.OnestopPrivilege;
 import org.cedar.onestop.user.domain.OnestopRole;
@@ -41,10 +42,30 @@ public class OnestopUserService {
           .orElse(createDefaultUser(id));
     }
 
+    public OnestopUser findOrCreateAdminUser(String id) {
+        return userRepository
+          .findById(id)
+          .orElse(createAdminUser(id));
+    }
+
+    public OnestopUser createAdminUser(String id){
+        logger.info("Creating admin user with id: " + id);
+        String adminRoleName = "ROLE_" + AuthorizationConfiguration.ADMIN_ROLE;
+        List<OnestopPrivilege> adminPrivileges = createAdminPrivilegesIfNotFound();
+        OnestopRole defaultRole = createRoleIfNotFound(adminRoleName, adminPrivileges);
+        OnestopUser defaultUser = new OnestopUser(id);
+        defaultUser.setRoles(Arrays.asList(defaultRole));
+        logger.info(defaultUser.toString());
+        logger.info(defaultUser.getId());
+        if(defaultUser.getId() == null)
+            return null;
+        return userRepository.save(defaultUser);
+    }
+
     public OnestopUser createDefaultUser(String id){
         logger.info("Creating new user with id: " + id);
-        String defaultRoleName = "ROLE_" + SecurityConfig.PUBLIC_ROLE;
-        List<OnestopPrivilege> defaultPrivileges = createPrivilegesIfNotFound();
+        String defaultRoleName = "ROLE_" + AuthorizationConfiguration.PUBLIC_ROLE;
+        List<OnestopPrivilege> defaultPrivileges = createNewUserPrivilegesIfNotFound();
         OnestopRole defaultRole = createRoleIfNotFound(defaultRoleName, defaultPrivileges);
         OnestopUser defaultUser = new OnestopUser(id);
         defaultUser.setRoles(Arrays.asList(defaultRole));
@@ -55,8 +76,16 @@ public class OnestopUserService {
         return userRepository.save(defaultUser);
     }
 
-    public List<OnestopPrivilege> createPrivilegesIfNotFound() {
-        return SecurityConfig.NEW_USER_PRIVILEGES
+    public List<OnestopPrivilege> createAdminPrivilegesIfNotFound() {
+        return AuthorizationConfiguration.ADMIN_PRIVILEGES
+          .stream()
+          .map(String::toString)
+          .map(name -> privilegeRepository.findByName(name).orElse(createPrivilege(name)))
+          .collect(Collectors.toList());
+    }
+
+    public List<OnestopPrivilege> createNewUserPrivilegesIfNotFound() {
+        return AuthorizationConfiguration.NEW_USER_PRIVILEGES
           .stream()
           .map(String::toString)
           .map(name -> privilegeRepository.findByName(name).orElse(createPrivilege(name)))

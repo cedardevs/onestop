@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.cedar.onestop.data.api.*;
+import org.cedar.onestop.user.config.AuthorizationConfiguration;
 import org.cedar.onestop.user.config.SecurityConfig;
 import org.cedar.onestop.user.domain.OnestopPrivilege;
 import org.cedar.onestop.user.domain.OnestopRole;
@@ -34,7 +35,7 @@ public class PrivilegeController {
   @Autowired
   public OnestopPrivilegeRepository onestopPrivilegeRepository;
 
-  @Secured(SecurityConfig.ROLE_PREFIX + SecurityConfig.READ_PRIVILEGE_BY_USER_ID)
+  @Secured(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_PRIVILEGE_BY_USER_ID)
   @ApiOperation(value = "Get user privileges (ADMIN)", response = Iterable.class)
   @ApiResponses(value = {
     @ApiResponse(code = 200, message = "Successfully retrieved user privileges"),
@@ -65,7 +66,7 @@ public class PrivilegeController {
       .setData(dataList).build();
   }
 
-  @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.CREATE_PRIVILEGE})
+  @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.CREATE_PRIVILEGE})
   @ApiOperation(value = "Create a privilege", response = Iterable.class)
   @ApiResponses(value = {
     @ApiResponse(code = 200, message = "Successfully created privilege"),
@@ -89,7 +90,7 @@ public class PrivilegeController {
       .setData(dataList).build();
   }
 
-  @Secured({SecurityConfig.ROLE_PREFIX + SecurityConfig.DELETE_PRIVILEGE})
+  @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.DELETE_PRIVILEGE})
   @ApiOperation(value = "Delete privilege")
   @DeleteMapping(value = "/privilege/{id}", produces = "application/json")
   public JsonApiResponse delete(@PathVariable(value = "id") String id, HttpServletResponse response)
