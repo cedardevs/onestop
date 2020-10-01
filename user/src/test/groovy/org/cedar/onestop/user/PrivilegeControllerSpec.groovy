@@ -1,20 +1,22 @@
 package org.cedar.onestop.user
 
 import org.cedar.onestop.user.config.AuthorizationConfiguration
-import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.PrivilegeController
 import org.cedar.onestop.user.domain.OnestopPrivilege
-import org.cedar.onestop.user.domain.OnestopUser
 import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
+import org.cedar.onestop.user.repository.OnestopRoleRepository
 import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.service.OnestopUserService
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import spock.lang.Shared
 import spock.lang.Specification
@@ -29,11 +31,10 @@ class PrivilegeControllerSpec extends Specification{
   private PrivilegeController privilegeController
 
   @SpringBean
-  private OnestopUserService onestopUserService = Mock()
+  OnestopPrivilegeRepository onestopPrivilegeRepository = Mock()
   @SpringBean
-  private OnestopUserRepository onestopUserRepository = Mock()
-  @SpringBean
-  private OnestopPrivilegeRepository onestopPrivilegeRepository = Mock()
+  OnestopUserService onestopUserService =
+      new OnestopUserService(Mock(OnestopUserRepository), Mock(OnestopRoleRepository), onestopPrivilegeRepository)
 
   @Shared
   String privilegeId = "auto-generated-uuid"
@@ -46,24 +47,57 @@ class PrivilegeControllerSpec extends Specification{
 
   @WithMockUser(username = "admin_user_privileges", roles = [AuthorizationConfiguration.READ_PRIVILEGE_BY_USER_ID])
   def "admin user can hit privilege endpoint"() {
-    given:
-    String id = "admin_id"
+    when:
+    def getResults = mockMvc.perform(MockMvcRequestBuilders
+        .get("/v1/privilege")
+        .accept(MediaType.APPLICATION_JSON))
+
+    then:
+    1 * onestopPrivilegeRepository.findAll(_) >>
+        new PageImpl<OnestopPrivilege>([new OnestopPrivilege(id: 'abc', name: 'yep')])
+
+    getResults.andExpect(MockMvcResultMatchers.status().isOk())
+  }
+
+  @WithMockUser(username = "admin_user_privileges", roles = [AuthorizationConfiguration.READ_PRIVILEGE_BY_USER_ID])
+  def "admin user can get second page of privileges"() {
+    def pageable = PageRequest.of(2, 1)
+
+    when:
+    def getResults = mockMvc.perform(MockMvcRequestBuilders
+        .get("/v1/privilege")
+        .param("page", pageable.getPageNumber().toString())
+        .param("size", pageable.getPageSize().toString())
+        .accept(MediaType.APPLICATION_JSON))
+        .andDo(MockMvcResultHandlers.print())
+
+    then:
+    1 * onestopPrivilegeRepository.findAll(pageable) >>
+        new PageImpl<OnestopPrivilege>([new OnestopPrivilege(id: 'abc', name: 'wow')], pageable, 2)
+
+    getResults.andExpect(MockMvcResultMatchers.status().isOk())
+  }
+
+  @WithMockUser(username = "admin_user_privileges", roles = [AuthorizationConfiguration.READ_PRIVILEGE_BY_USER_ID])
+  def "admin user can retrieve a privilege by id"() {
+    def id = 'abc'
+
     when:
     def getResults = mockMvc.perform(MockMvcRequestBuilders
         .get("/v1/privilege/{id}", id)
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    getResults.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * onestopUserRepository.findById(id) >>  Optional.of((OnestopUser) new OnestopUser("admin_id"))
-  }
+    1 * onestopPrivilegeRepository.findById(_) >> Optional.of(new OnestopPrivilege(id: id, name: 'woo'))
 
+    getResults.andExpect(MockMvcResultMatchers.status().isOk())
+  }
 
   @WithMockUser(username = "privilege_hacker", roles = ["BOGUS_PRIV"])
   def "public user not authorized to hit privilege endpoint"() {
     when:
     def getResults = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/privilege/{id}", "hacker_id")
+        .get("/v1/privilege")
         .accept(MediaType.APPLICATION_JSON))
 
     then:
@@ -93,7 +127,7 @@ class PrivilegeControllerSpec extends Specification{
 
     then:
     deleteResult.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * onestopPrivilegeRepository.findById(_ as String) >> Optional.of((OnestopPrivilege)mockPrivilege)
+    1 * onestopPrivilegeRepository.findById(_ as String) >> Optional.of(mockPrivilege)
     1 * onestopPrivilegeRepository.delete(_ as OnestopPrivilege)
     deleteResult.andExpect(MockMvcResultMatchers.jsonPath("\$.meta.nonStandardMetadata.deleted").value(true))
   }
