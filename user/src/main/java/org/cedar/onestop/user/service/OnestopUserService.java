@@ -10,6 +10,8 @@ import org.cedar.onestop.user.repository.OnestopUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -35,6 +37,14 @@ public class OnestopUserService {
 
   public Optional<OnestopUser> findUserById(String id) {
     return userRepository.findById(id);
+  }
+
+  public Page<OnestopRole> findRolesByUserId(String id, Pageable pageable) {
+    return roleRepository.findByUsersId(id, pageable);
+  }
+
+  public Page<OnestopPrivilege> findPrivilegesByUserId(String id, Pageable pageable) {
+    return privilegeRepository.findByRolesUsersId(id, pageable);
   }
 
   public OnestopUser findOrCreateUser(String id) {
@@ -72,15 +82,15 @@ public class OnestopUserService {
     defaultUser.setRoles(Arrays.asList(defaultRole));
     logger.info(defaultUser.toString());
     logger.info(defaultUser.getId());
-    if (defaultUser.getId() == null)
+    if (defaultUser.getId() == null) {
       return null;
+    }
     return userRepository.save(defaultUser);
   }
 
   public List<OnestopPrivilege> createAdminPrivilegesIfNotFound() {
     return AuthorizationConfiguration.ADMIN_PRIVILEGES
         .stream()
-        .map(String::toString)
         .map(name -> privilegeRepository.findOneByName(name).orElseGet(() -> createPrivilege(name)))
         .collect(Collectors.toList());
   }
@@ -88,8 +98,8 @@ public class OnestopUserService {
   public List<OnestopPrivilege> createNewUserPrivilegesIfNotFound() {
     return AuthorizationConfiguration.NEW_USER_PRIVILEGES
         .stream()
-        .map(String::toString)
-        .map(name -> privilegeRepository.findOneByName(name).orElseGet(() -> createPrivilege(name)))
+        .map(name -> privilegeRepository.findOneByName(name)
+            .orElseGet(() -> createPrivilege(name)))
         .collect(Collectors.toList());
   }
 

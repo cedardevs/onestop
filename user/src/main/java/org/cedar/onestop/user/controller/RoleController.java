@@ -36,7 +36,7 @@ public class RoleController {
   }
 
   @Secured(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_ROLES_BY_USER_ID)
-  @ApiOperation(value = "Get user roles (ADMIN)")
+  @ApiOperation(value = "Get roles (ADMIN)")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Successfully retrieved user roles"),
       @ApiResponse(code = 401, message = "Access denied"),
@@ -58,7 +58,7 @@ public class RoleController {
   }
 
   @Secured(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_ROLES_BY_USER_ID)
-  @ApiOperation(value = "Get user role by id (ADMIN)")
+  @ApiOperation(value = "Get role by id (ADMIN)")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Successfully retrieved user role"),
       @ApiResponse(code = 401, message = "Access denied"),
