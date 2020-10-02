@@ -8,8 +8,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 @Entity
@@ -34,11 +34,11 @@ public class OnestopUser {
 
   @Column(name = "createdOn", updatable = false)
   @CreationTimestamp
-  public Date createdOn;
+  public Instant createdOn;
 
   @Column(name = "lastUpdatedOn")
   @UpdateTimestamp
-  public Date lastUpdatedOn;
+  public Instant lastUpdatedOn;
 
   //constructor will be used by Spring JPA
   public OnestopUser() {
@@ -60,12 +60,12 @@ public class OnestopUser {
 
   @PrePersist
   protected void onCreate() {
-    createdOn = new Date();
+    createdOn = Instant.now();
   }
 
   @PreUpdate
   protected void onUpdate() {
-    lastUpdatedOn = new Date();
+    lastUpdatedOn = Instant.now();
   }
 
   public String getId() {
@@ -76,19 +76,19 @@ public class OnestopUser {
     this.id = id;
   }
 
-  public Date getLastUpdatedOn() {
+  public Instant getLastUpdatedOn() {
     return lastUpdatedOn;
   }
 
-  public void setLastUpdatedOn(Date lastUpdatedOn) {
+  public void setLastUpdatedOn(Instant lastUpdatedOn) {
     this.lastUpdatedOn = lastUpdatedOn;
   }
 
-  public Date getCreatedOn() {
+  public Instant getCreatedOn() {
     return createdOn;
   }
 
-  public void setCreatedOn(Date createdOn) {
+  public void setCreatedOn(Instant createdOn) {
     this.createdOn = createdOn;
   }
 

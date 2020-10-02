@@ -5,7 +5,11 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
@@ -26,11 +30,11 @@ public class OnestopRole {
 
   @Column(name = "createdOn", updatable = false)
   @CreationTimestamp
-  public Date createdOn;
+  public Instant createdOn;
 
   @Column(name = "lastUpdatedOn")
   @UpdateTimestamp
-  public Date lastUpdatedOn;
+  public Instant lastUpdatedOn;
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
@@ -85,6 +89,14 @@ public class OnestopRole {
 
   public void setPrivileges(List<OnestopPrivilege> privileges) {
     this.privileges = privileges != null ? privileges : new ArrayList<>();
+  }
+
+  public Instant getCreatedOn() {
+    return createdOn;
+  }
+
+  public Instant getLastUpdatedOn() {
+    return lastUpdatedOn;
   }
 
   public Map<String, Object> toMap() {

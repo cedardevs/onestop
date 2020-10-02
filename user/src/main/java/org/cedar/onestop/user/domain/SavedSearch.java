@@ -5,7 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,11 +36,11 @@ public class SavedSearch {
 
   @Column(name = "createdOn", updatable = false)
   @CreationTimestamp
-  public Date createdOn;
+  public Instant createdOn;
 
   @Column(name = "lastUpdatedOn")
   @UpdateTimestamp
-  public Date lastUpdatedOn;
+  public Instant lastUpdatedOn;
 
   //constructor will be used by Spring JPA
   protected SavedSearch() {}
@@ -59,12 +59,12 @@ public class SavedSearch {
 
   @PrePersist
   protected void onCreate() {
-    createdOn = new Date();
+    createdOn = Instant.now();
   }
 
   @PreUpdate
   protected void onUpdate() {
-    lastUpdatedOn = new Date();
+    lastUpdatedOn = Instant.now();
   }
 
   public String getId() {
@@ -107,19 +107,19 @@ public class SavedSearch {
     this.filter = filter;
   }
 
-  public Date getLastUpdatedOn() {
+  public Instant getLastUpdatedOn() {
     return lastUpdatedOn;
   }
 
-  public void setLastUpdatedOn(Date lastUpdatedOn) {
+  public void setLastUpdatedOn(Instant lastUpdatedOn) {
     this.lastUpdatedOn = lastUpdatedOn;
   }
 
-  public Date getCreatedOn() {
+  public Instant getCreatedOn() {
     return createdOn;
   }
 
-  public void setCreatedOn(Date createdOn) {
+  public void setCreatedOn(Instant createdOn) {
     this.createdOn = createdOn;
   }
 
