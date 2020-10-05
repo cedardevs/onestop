@@ -5,7 +5,7 @@
         "filename_analyzer": {
           "type": "pattern",
           "pattern": "([^\\p{L}\\d]+)|(?<=[\\p{L}&&[^\\p{Lu}]])(?=\\p{Lu})|(?<=\\p{Lu})(?=\\p{Lu}[\\p{L}&&[^\\p{Lu}]])",
-          "lowercase": true
+          "lowercase": "true"
         }
       }
     }

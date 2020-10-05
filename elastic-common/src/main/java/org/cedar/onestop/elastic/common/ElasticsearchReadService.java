@@ -224,6 +224,49 @@ public class ElasticsearchReadService extends ElasticsearchService {
     return response;
   }
 
+  /**
+   *
+   * @param alias
+   * @return
+   */
+  public Map<String, Object> getIndexSettings(String alias) {
+    String endpoint = "/" + alias + "/_settings";
+    log.debug("GET settings for [ " + alias + " ]");
+
+    var request = new Request("GET", endpoint);
+    var marshalledResponse = performRequest(request);
+
+    var response = new HashMap<String, Object>();
+
+    if(!marshalledResponse.containsKey("error")) {
+      // Actual timestamped name is used in the response, not the alias, but need to drop the "statusCode"
+      List<String> keys = marshalledResponse.keySet().stream()
+          .filter(key -> !key.equals("statusCode"))
+          .collect(Collectors.toList());
+      String indexName = keys.get(0); // Only one key left in response
+
+      var data = new HashMap<String, Object>();
+      data.put("id", alias);
+      data.put("type", "index-map");
+      data.put("attributes", marshalledResponse.get(indexName));
+
+      response.put("data", List.of(data));
+    }
+    else {
+      // FIXME granularity in error response -- could be a variety of errors here, but assuming always "not found" right now
+      var error = new HashMap<String, Object>();
+      error.put("status", HttpStatus.SC_NOT_FOUND);
+      error.put("title", "Index not found");
+      error.put("detail", "Index with alias [ " + alias + " ] does not exist.");
+
+      // FIXME -- put ES-specific info in a meta block?
+
+      response.put("errors", List.of(error));
+    }
+
+    return response;
+  }
+
 
   ////////////////////////////////////////////////////////////
   //                      Searches                          //
