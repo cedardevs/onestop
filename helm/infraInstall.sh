@@ -14,3 +14,8 @@ helm repo add runix https://helm.runix.net
 pushd "$(dirname $0)/onestop"
 helm dependency update
 popd
+
+# update helm dependencies for the dev support chart
+pushd "$(dirname $0)/onestop-dev"
+helm dependency update
+popd
