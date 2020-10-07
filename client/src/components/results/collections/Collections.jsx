@@ -49,15 +49,23 @@ export default function Collections(props){
   } = props
 
   const queryText = props.collectionDetailFilter.queryText
-  const savedId = findSavedId()
+  const [ savedId, setSavedId ] = useState(null)
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
   const [ headingMessage, setHeadingMessage ] = useState(null)
   //used to toggle bookmark button highlight
-  const [ searchSaved, setSearchSaved ] = useState( !!savedId )
+  const [ searchSaved, setSearchSaved ] = useState(false)
   //the element containing hte bookmark button
   const [ bookmarkButton, setBookmark ] = useState(null)
 
+  useEffect(
+    () => {
+      let value = findSavedId()
+      setSavedId (value)
+      setSearchSaved (!!value)
+    },
+    [savedSearches, collectionFilter]
+  )
   function handleSave(){
     const urlToSave = window.location.pathname + window.location.search
     // const queryStringIndex = urlToSave.indexOf('?')
