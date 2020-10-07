@@ -10,7 +10,8 @@ include(
     "kafka-common",
     "parsalyzer",
     "registry",
-    "search"
+    "search",
+    "test-common"
     //"user"
 )
 
