@@ -6,10 +6,11 @@ import Meta from '../../helmet/Meta'
 import CollectionListItem from './CollectionListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {asterisk, SvgIcon} from '../../common/SvgIcon'
-import {decodePathAndQueryString, PAGE_SIZE} from '../../../utils/queryUtils'
+import {encodeQueryString, PAGE_SIZE} from '../../../utils/queryUtils'
 import defaultStyles from '../../../style/defaultStyles'
 import saveIcon from 'fa/bookmark-o.svg'
 import alreadySavedIcon from 'fa/bookmark.svg'
+
 import _ from 'lodash'
 
 const styleCollections = {
@@ -58,14 +59,14 @@ export default function Collections(props){
   const [ bookmarkButton, setBookmark ] = useState(null)
 
   function handleSave(){
-    const urlToSave = window.location.href //todo remove url from saved search
-    const queryStringIndex = urlToSave.indexOf('?')
-    const queryString = urlToSave.slice(queryStringIndex)
-    const decodedSavedSearch = decodePathAndQueryString('', queryString)
+    const urlToSave = window.location.pathname + window.location.search
+    // const queryStringIndex = urlToSave.indexOf('?')
+    // const queryString = urlToSave.slice(queryStringIndex)
+    // const decodedSavedSearch = decodePathAndQueryString('', queryString)
     saveSearch(
         savedSearchUrl,
         urlToSave,
-        decodedSavedSearch.filters.queryText, //todo - the saved search's name should not be the query text
+        collectionFilter.queryText, //todo - the saved search's name should not be the query text
         collectionFilter
     )
   }
@@ -115,7 +116,9 @@ export default function Collections(props){
 
   function findSavedId(){
     for (const [key, value] of Object.entries(savedSearches)) {
-      if (JSON.stringify(collectionFilter) === value.filter) {
+      // TODO could probably just grab the url directly instead of encoding
+      // TODO shouldn't need to split, once we update what we save in the DB
+      if (encodeQueryString(collectionFilter) === value.attributes.value.split('?')[1]) {
         return key
       }
     }

@@ -129,7 +129,7 @@ public class SavedSearchController {
     String userId = authentication.getName();
     OnestopUser user = userService.findUserById(userId)
         .orElseThrow(() -> new ResourceNotFoundException("User not found for requested id :: " + userId));
-    logger.info("Creating search for user with ID: " + userId);
+    logger.info("Creating search for user with ID: " + userId + " with details "+ savedSearch);
     savedSearch.setUser(user);
     SavedSearch item = savedSearchRepository.save(savedSearch);
 //    user.addSearch(item);

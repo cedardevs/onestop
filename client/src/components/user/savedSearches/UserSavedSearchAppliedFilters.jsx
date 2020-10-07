@@ -14,7 +14,10 @@ const UserSavedSearchAppliedFilters = ({collectionFilter}) => {
   //     timeRelationship,
   //   } = collectionFilter
 
-  return <AppliedFilters {...collectionFilter} showAppliedFilters={true} />
+  return (<div>
+    <div>Query: {collectionFilter.queryText}</div>
+    <AppliedFilters {...collectionFilter} showAppliedFilters={true} />
+  </div>)
 }
 
 export default UserSavedSearchAppliedFilters

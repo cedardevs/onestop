@@ -37,8 +37,8 @@ const styleSavedSearch = {
 const UserSavedSearch = props => {
   const {itemId, item, expanded, setExpanded} = useListViewItem(props)
   const {navigateToSearch, deleteSearch} = props
-  const url = item.value
-  const name = item.name ? item.name : item.value
+  const url = item.attributes.value
+  const name = item.attributes.name ? item.attributes.name : item.attributes.value
 
   const title = (
     <h3 key={'UserSavedSearch::title'} style={styleTitle}>
