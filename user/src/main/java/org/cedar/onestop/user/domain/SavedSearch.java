@@ -28,10 +28,10 @@ public class SavedSearch {
   @Column(name = "name", nullable = false)
   public String name;
 
-  @Column(name = "value", nullable = false)
+  @Column(name = "value", nullable = false, length = 2047)
   public String value;
 
-  @Column(name = "filter")
+  @Column(name = "filter", length = 2047)
   public String filter;
 
   @Column(name = "createdOn", updatable = false)
