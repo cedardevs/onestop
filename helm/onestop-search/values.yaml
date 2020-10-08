@@ -21,8 +21,7 @@ service:
 ###############################################################################
 # map of features to enable
 # if the features are not here, they will be disabled
-features:
-  login-gov: false
+
 
 ###############################################################################
 # APPLICATION.YML ADDITIONAL SPRING CONFIG
@@ -101,17 +100,17 @@ env:
 #               (e.g. - [secret] ${name}.VAR_1 => [env] ${prefix}VAR_1="OurLittleSecret")
 #
 #     Note: This conversion is Spring compatible. See: `org.springframework.core.envSystemEnvironmentPropertySource`
-secrets:
-  - type: file
-    name: login-gov-keystore              # k8s secret name
-    path: "/etc/onestop-search/"          # where to mount the secret's file(s)
-  - type: env
-    name: login-gov-keystore-credentials  # k8s secret name
-    prefix: LOGIN_GOV_                    # optional env var prefix to avoid collisions
-    keys:
-      - KEYSTORE_PASSWORD # [secret] login-gov-keystore-credentials.KEYSTORE_PASSWORD => [env] LOGIN_GOV_KEYSTORE_PASSWORD
-      - KEYSTORE_ALIAS    # [secret] login-gov-keystore-credentials.KEYSTORE_ALIAS    => [env] LOGIN_GOV_KEYSTORE_ALIAS
-      - KEY_PASSWORD      # [secret] login-gov-keystore-credentials.KEY_PASSWORD      => [env] LOGIN_GOV_KEY_PASSWORD
+#secrets:
+#  - type: file
+#    name: login-gov-keystore              # k8s secret name
+#    path: "/etc/onestop-search/"          # where to mount the secret's file(s)
+#  - type: env
+#    name: login-gov-keystore-credentials  # k8s secret name
+#    prefix: LOGIN_GOV_                    # optional env var prefix to avoid collisions
+#    keys:
+#      - KEYSTORE_PASSWORD # [secret] login-gov-keystore-credentials.KEYSTORE_PASSWORD => [env] LOGIN_GOV_KEYSTORE_PASSWORD
+#      - KEYSTORE_ALIAS    # [secret] login-gov-keystore-credentials.KEYSTORE_ALIAS    => [env] LOGIN_GOV_KEYSTORE_ALIAS
+#      - KEY_PASSWORD      # [secret] login-gov-keystore-credentials.KEY_PASSWORD      => [env] LOGIN_GOV_KEY_PASSWORD
 
 elasticsearch:
   host: onestop-dev-es-http
@@ -126,10 +125,6 @@ elasticsearch:
       secretKeyRef:
         name: onestop-dev-es-elastic-user
         key: elastic
-
-keystoreFiles:
-  jks:
-    loginGov: "/etc/onestop-search/login-gov-keystore.jks"
 
 ingress:
   enabled: false
