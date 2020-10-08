@@ -160,17 +160,6 @@ class SearchController {
     ObjectMapper converter = new ObjectMapper()
     Map uiConfigMap = converter.convertValue(uiConfig, Map.class)
 
-    // get the active spring profiles which correspond to our feature toggles
-    String[] activeProfiles =  environment.activeProfiles
-
-    // if our 'login-gov' profile is not active,
-    // we should NOT include the 'auth' section of the config,
-    // as the client will think it needs to show a login link, etc.
-    //todo we need this auth config coming through for gateway
-//    if(!activeProfiles.contains('login-gov')) {
-//      uiConfigMap.remove('auth')
-//    }
-
     return uiConfigMap
   }
 
