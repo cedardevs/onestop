@@ -51,6 +51,13 @@ const UserSavedSearch = props => {
   const {navigateToSearch, deleteSearch} = props
   const url = item.attributes.value
   const name = item.attributes.name ? item.attributes.name : item.attributes.value
+  const [decodedSavedSearch, setDecodedSavedSearch] = useState({id: '', filters: {}})
+  useEffect(
+    () => {
+      setDecodedSavedSearch(decodePathAndQueryString('', queryString)) // TODO the use of an empty string for the first param only works for collection searches - it will definitely break for granules
+    }
+    , [queryString]
+  )
 
   const title = (
     <h3 key={'UserSavedSearch::title'} style={styleTitle}>
@@ -115,15 +122,7 @@ const UserSavedSearch = props => {
 
   const queryStringIndex = url.indexOf('?')
   const queryString = url.slice(queryStringIndex)
-  const [decodedSavedSearch, setDecodedSavedSearch] = useState(decodePathAndQueryString('', '')) // TODO the use of an empty string for the first param only works for collection searches - it will definitely break for granules
-  useEffect(
-    () => {
-      setDecodedSavedSearch(decodePathAndQueryString('', queryString))
-    }
-    , [queryString]
-  )
 
-  // console.log('decodedSavedSearch', decodedSavedSearch)
 
   const content = (
     <div style={styleSavedSearch}>

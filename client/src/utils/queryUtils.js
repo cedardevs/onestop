@@ -163,9 +163,6 @@ export const encodeLocationDescriptor = (route, searchParamsState) => {
 }
 
 export const decodePathAndQueryString = (path, queryString) => {
-  console.log(
-    `decodePathAndQueryString => path: ${path}, queryString: ${queryString}`
-  )
   if (queryString.indexOf('?') === 0) {
     queryString = queryString.slice(1)
   }
