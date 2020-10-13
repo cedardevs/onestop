@@ -23,7 +23,7 @@ const UserSavedSearchAppliedFilters = ({collectionFilter}) => {
 
   return (<FlexRow
     items={[<div style={styleQuery}>Query: {"'"}{collectionFilter.queryText}{"'"}</div>,
-    <AppliedFilters {...collectionFilter} showAppliedFilters={true} />]}
+    <AppliedFilters {...collectionFilter} showAppliedFilters={true}  excludeRemoveFilter={true} />]}
   />)
 }
 

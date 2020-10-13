@@ -82,13 +82,14 @@ export default class AppliedFilters extends React.Component {
   //   this.props.submit()
   // }
 
-  buildTextBubbles = () => {
+  buildTextBubbles = (allowRemoveFilter) => {
     const {textFilter, allTermsMustMatch} = this.props
     let bubbles = []
     if (textFilter) {
       let qualifier = allTermsMustMatch ? 'All' : 'Any'
       bubbles.push(
         <AppliedFilterBubble
+          allowRemoveFilter={allowRemoveFilter}
           backgroundColor={Theme.text.backgroundColor}
           borderColor={Theme.text.borderColor}
           text={`Name Matches ${qualifier}: ${textFilter}`}
@@ -100,7 +101,7 @@ export default class AppliedFilters extends React.Component {
     return bubbles
   }
 
-  buildFacetBubbles = () => {
+  buildFacetBubbles = (allowRemoveFilter) => {
     const {selectedFacets} = this.props
     return _.flatMap(selectedFacets, (terms, category) => {
       return _.map(terms, term => {
@@ -114,6 +115,7 @@ export default class AppliedFilters extends React.Component {
 
         return (
           <AppliedFilterBubble
+            allowRemoveFilter={allowRemoveFilter}
             backgroundColor={Theme.facet.backgroundColor}
             borderColor={Theme.facet.borderColor}
             text={name}
@@ -126,7 +128,7 @@ export default class AppliedFilters extends React.Component {
     })
   }
 
-  buildTimeBubbles = () => {
+  buildTimeBubbles = (allowRemoveFilter) => {
     const {
       startDateTime,
       endDateTime,
@@ -139,6 +141,7 @@ export default class AppliedFilters extends React.Component {
     if (startDateTime) {
       timeBubbles.push(
         <AppliedFilterBubble
+          allowRemoveFilter={allowRemoveFilter}
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
           text={`${_.capitalize(timeRelationship)}${timeRelationship ==
@@ -154,6 +157,7 @@ export default class AppliedFilters extends React.Component {
     if (endDateTime) {
       timeBubbles.push(
         <AppliedFilterBubble
+          allowRemoveFilter={allowRemoveFilter}
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
           text={`${_.capitalize(timeRelationship)}${timeRelationship ==
@@ -176,6 +180,7 @@ export default class AppliedFilters extends React.Component {
       )
       timeBubbles.push(
         <AppliedFilterBubble
+          allowRemoveFilter={allowRemoveFilter}
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
           text={startYearText}
@@ -195,6 +200,7 @@ export default class AppliedFilters extends React.Component {
       )
       timeBubbles.push(
         <AppliedFilterBubble
+          allowRemoveFilter={allowRemoveFilter}
           backgroundColor={Theme.time.backgroundColor}
           borderColor={Theme.time.borderColor}
           text={endYearText}
@@ -207,13 +213,14 @@ export default class AppliedFilters extends React.Component {
     return timeBubbles
   }
 
-  buildSpaceBubbles = () => {
+  buildSpaceBubbles = (allowRemoveFilter) => {
     const {bbox, excludeGlobal, geoRelationship} = this.props
     let spaceBubbles = []
     if (bbox) {
       const {west, south, east, north} = bbox
       spaceBubbles.push(
         <AppliedFilterBubble
+          allowRemoveFilter={allowRemoveFilter}
           backgroundColor={Theme.map.backgroundColor}
           borderColor={Theme.map.borderColor}
           text={`${_.capitalize(geoRelationship)}${geoRelationship == 'disjoint'
@@ -228,6 +235,7 @@ export default class AppliedFilters extends React.Component {
     if (excludeGlobal) {
       spaceBubbles.push(
         <AppliedFilterBubble
+          allowRemoveFilter={allowRemoveFilter}
           backgroundColor={Theme.map.backgroundColor}
           borderColor={Theme.map.borderColor}
           text={'Exclude Global Results'}
@@ -241,13 +249,14 @@ export default class AppliedFilters extends React.Component {
   }
 
   render() {
-    const {showAppliedFilters} = this.props
+    const {showAppliedFilters, excludeRemoveFilter} = this.props
+    const allowRemoveFilter = !!!excludeRemoveFilter
 
     const appliedFilters = [
-      ...this.buildTextBubbles(),
-      ...this.buildSpaceBubbles(),
-      ...this.buildTimeBubbles(),
-      ...this.buildFacetBubbles(),
+      ...this.buildTextBubbles(allowRemoveFilter),
+      ...this.buildSpaceBubbles(allowRemoveFilter),
+      ...this.buildTimeBubbles(allowRemoveFilter),
+      ...this.buildFacetBubbles(allowRemoveFilter),
     ]
 
     if (showAppliedFilters && appliedFilters.length !== 0) {
