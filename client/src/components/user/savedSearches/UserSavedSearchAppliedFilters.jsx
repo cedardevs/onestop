@@ -21,10 +21,22 @@ const UserSavedSearchAppliedFilters = ({collectionFilter}) => {
     fontSize: '1.1em',
   }
 
-  return (<FlexRow
-    items={[<div style={styleQuery}>Query: {"'"}{collectionFilter.queryText}{"'"}</div>,
-    <AppliedFilters {...collectionFilter} showAppliedFilters={true}  excludeRemoveFilter={true} />]}
-  />)
+  return (
+    <FlexRow
+      items={[
+        <div style={styleQuery}>
+          Query: {"'"}
+          {collectionFilter.queryText}
+          {"'"}
+        </div>,
+        <AppliedFilters
+          {...collectionFilter}
+          showAppliedFilters={true}
+          excludeRemoveFilter={true}
+        />,
+      ]}
+    />
+  )
 }
 
 export default UserSavedSearchAppliedFilters

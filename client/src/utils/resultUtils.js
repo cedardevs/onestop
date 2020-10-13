@@ -29,7 +29,7 @@ export const mergeGranulesArrayIntoGranulesMap = (
   )
 }
 
-export const searchListToMap = (searchList) => {
+export const searchListToMap = searchList => {
   let index = 0
   let mapSearches = {}
   while (index < searchList.length) {

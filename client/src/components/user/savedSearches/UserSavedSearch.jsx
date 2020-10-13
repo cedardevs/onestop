@@ -50,13 +50,18 @@ const UserSavedSearch = props => {
   const {itemId, item, expanded, setExpanded} = useListViewItem(props)
   const {navigateToSearch, deleteSearch} = props
   const url = item.attributes.value
-  const name = item.attributes.name ? item.attributes.name : item.attributes.value
-  const [decodedSavedSearch, setDecodedSavedSearch] = useState({id: '', filters: {}})
+  const name = item.attributes.name
+    ? item.attributes.name
+    : item.attributes.value
+  const [ decodedSavedSearch, setDecodedSavedSearch ] = useState({
+    id: '',
+    filters: {},
+  })
   useEffect(
     () => {
       setDecodedSavedSearch(decodePathAndQueryString('', queryString)) // TODO the use of an empty string for the first param only works for collection searches - it will definitely break for granules
-    }
-    , [queryString]
+    },
+    [ queryString ]
   )
 
   const title = (
@@ -122,7 +127,6 @@ const UserSavedSearch = props => {
 
   const queryStringIndex = url.indexOf('?')
   const queryString = url.slice(queryStringIndex)
-
 
   const content = (
     <div style={styleSavedSearch}>

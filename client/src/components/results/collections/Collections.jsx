@@ -61,10 +61,10 @@ export default function Collections(props){
   useEffect(
     () => {
       let value = findSavedId()
-      setSavedId (value)
-      setSearchSaved (!!value)
+      setSavedId(value)
+      setSearchSaved(!!value)
     },
-    [savedSearches, collectionFilter]
+    [ savedSearches, collectionFilter ]
   )
   function handleSave(){
     const urlToSave = window.location.pathname + window.location.search
@@ -72,10 +72,10 @@ export default function Collections(props){
     // const queryString = urlToSave.slice(queryStringIndex)
     // const decodedSavedSearch = decodePathAndQueryString('', queryString)
     saveSearch(
-        savedSearchUrl,
-        urlToSave,
-        collectionFilter.queryText, //todo - the saved search's name should not be the query text
-        collectionFilter
+      savedSearchUrl,
+      urlToSave,
+      collectionFilter.queryText, //todo - the saved search's name should not be the query text
+      collectionFilter
     )
   }
 
@@ -85,14 +85,12 @@ export default function Collections(props){
 
   function setBookmarkButton(){
     const savedId = findSavedId()
-    const title = savedId
-        ? 'Delete search'
-        : 'Save search'
+    const title = savedId ? 'Delete search' : 'Save search'
     const text = savedId ? 'Delete' : 'Save'
     const notification = text
     //if we found a matching id, the search was saved previously
     const saveSearchAction = savedId
-        ? [
+      ? [
           {
             text: text,
             title: title,
@@ -105,7 +103,7 @@ export default function Collections(props){
             notification: notification,
           },
         ]
-        : [
+      : [
           {
             text: text,
             title: title,
@@ -123,10 +121,13 @@ export default function Collections(props){
   }
 
   function findSavedId(){
-    for (const [key, value] of Object.entries(savedSearches)) {
+    for (const [ key, value ] of Object.entries(savedSearches)) {
       // TODO could probably just grab the url directly instead of encoding
       // TODO shouldn't need to split, once we update what we save in the DB
-      if (encodeQueryString(collectionFilter) === value.attributes.value.split('?')[1]) {
+      if (
+        encodeQueryString(collectionFilter) ===
+        value.attributes.value.split('?')[1]
+      ) {
         return key
       }
     }
@@ -135,7 +136,7 @@ export default function Collections(props){
 
   useEffect(
     () => {
-      if(isAuthenticatedUser){
+      if (isAuthenticatedUser) {
         setBookmarkButton()
       }
 

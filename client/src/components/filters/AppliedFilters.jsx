@@ -82,7 +82,7 @@ export default class AppliedFilters extends React.Component {
   //   this.props.submit()
   // }
 
-  buildTextBubbles = (allowRemoveFilter) => {
+  buildTextBubbles = allowRemoveFilter => {
     const {textFilter, allTermsMustMatch} = this.props
     let bubbles = []
     if (textFilter) {
@@ -101,7 +101,7 @@ export default class AppliedFilters extends React.Component {
     return bubbles
   }
 
-  buildFacetBubbles = (allowRemoveFilter) => {
+  buildFacetBubbles = allowRemoveFilter => {
     const {selectedFacets} = this.props
     return _.flatMap(selectedFacets, (terms, category) => {
       return _.map(terms, term => {
@@ -128,7 +128,7 @@ export default class AppliedFilters extends React.Component {
     })
   }
 
-  buildTimeBubbles = (allowRemoveFilter) => {
+  buildTimeBubbles = allowRemoveFilter => {
     const {
       startDateTime,
       endDateTime,
@@ -213,7 +213,7 @@ export default class AppliedFilters extends React.Component {
     return timeBubbles
   }
 
-  buildSpaceBubbles = (allowRemoveFilter) => {
+  buildSpaceBubbles = allowRemoveFilter => {
     const {bbox, excludeGlobal, geoRelationship} = this.props
     let spaceBubbles = []
     if (bbox) {
