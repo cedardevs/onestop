@@ -87,6 +87,15 @@ export default class Help extends React.Component {
             engine for environmental data. It is being built by CIRES researchers
             on a grant from the NOAA National Centers for Environmental Information.
           </p>
+          <p>
+            For additional documentation go the
+            <A
+              target="_blank"
+              href="https://cedardevs.github.io/onestop/"
+              style={{color: '#277cb2'}}
+            >github OneStop documentation page
+            </A>.
+          </p>
           <h1 style={styleHelpH1}>How to use this interface:</h1>
           <p>
             To get started searching type a term into the Search Box above and
