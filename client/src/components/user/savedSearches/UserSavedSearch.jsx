@@ -64,6 +64,7 @@ const UserSavedSearch = props => {
     [ queryString ]
   )
 
+  // TODO this isn't the best way to construct URL, for consistency - eg in Chrome it opens a new tab, etc
   const title = (
     <h3 key={'UserSavedSearch::title'} style={styleTitle}>
       {/*{name}*/}
@@ -71,18 +72,6 @@ const UserSavedSearch = props => {
     </h3>
   )
 
-  const navigateToAction = [
-    {
-      text: 'navigateTo',
-      title: 'navigateTo',
-      icon: linkIcon,
-      showText: false,
-      handler: () => {
-        navigateToSearch(JSON.parse(item.attributes.filter))
-      },
-      notification: 'notification',
-    },
-  ]
   const navigateToButton = (
     <Button
       key="navigateTo"
@@ -93,7 +82,7 @@ const UserSavedSearch = props => {
       styleFocus={styleButtonFocus}
       // iconPadding={'0.309em'}
       onClick={() => {
-        navigateToSearch(JSON.parse(item.attributes.filter))
+        navigateToSearch(decodedSavedSearch.filters) // TODO this also will only work for collections, as written
       }}
     />
   )
@@ -143,10 +132,11 @@ const UserSavedSearch = props => {
     </div>
   )
 
+  // TODO compare this item structure to the cart one - bet it's missing something, hence the expand thing being wrong
   return (
     <ListViewItem
       itemId={itemId}
-      item={item}
+      item={{title: item.attributes.name}}
       heading={heading}
       content={content}
       expanded={expanded}

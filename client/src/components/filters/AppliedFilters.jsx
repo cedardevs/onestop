@@ -38,7 +38,6 @@ const styleHidden = {
 
 export default class AppliedFilters extends React.Component {
   constructor(props) {
-    console.log('APPLIED FILTERS props = ', props)
     super(props)
   }
 
