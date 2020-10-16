@@ -24,3 +24,12 @@ pgadmin4:
         "SSLMode": "prefer",
         "MaintenanceDB": "user"
       }
+  ingress:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        proxy_set_header X-Script-Name /pgadmin4;
+    hosts:
+      - host: "localhost"
+        paths:
+          - "/pgadmin4(/|$)(.*)"
