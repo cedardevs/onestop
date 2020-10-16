@@ -17,6 +17,7 @@ const style = (backgroundColor, borderColor, allowRemoveFilter) => {
     borderStyle: 'solid',
     borderWidth: '1px',
     fontSize: '1.1em',
+    color: 'white',
   }
 }
 
@@ -48,21 +49,28 @@ export default class AppliedFilterBubble extends React.Component {
       title,
       allowRemoveFilter,
     } = this.props
-    // TODO arguably when allowRemoveFilter is false, we shouldn't use a button at all, but it's challenging to get the styling consistent then...
-    return (
-      <Button
-        disabled={!allowRemoveFilter}
-        styleDisabled={style(backgroundColor, borderColor, allowRemoveFilter)}
-        style={style(backgroundColor, borderColor, allowRemoveFilter)}
-        styleHover={styleHover(backgroundColor)}
-        styleFocus={allowRemoveFilter ? styleFocus : {}}
-        onClick={allowRemoveFilter ? onUnselect : () => {}}
-        title={_.isEmpty(title) ? `Remove ${text} Filter` : title}
-        icon={allowRemoveFilter ? xIcon : null}
-        iconAfter={allowRemoveFilter}
-        text={text}
-        styleIcon={styleIcon}
-      />
-    )
+
+    if (allowRemoveFilter) {
+      return (
+        <Button
+          style={style(backgroundColor, borderColor, allowRemoveFilter)}
+          styleHover={styleHover(backgroundColor)}
+          styleFocus={styleFocus}
+          onClick={onUnselect}
+          title={_.isEmpty(title) ? `Remove ${text} Filter` : title}
+          icon={xIcon}
+          iconAfter={true}
+          text={text}
+          styleIcon={styleIcon}
+        />
+      )
+    }
+    else {
+      return (
+        <span style={style(backgroundColor, borderColor, allowRemoveFilter)}>
+          {text}
+        </span>
+      )
+    }
   }
 }
