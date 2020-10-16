@@ -20,10 +20,10 @@ public class OnestopRole {
   @Column(name = "role_id")
   @GeneratedValue(generator = "uuid")
   @GenericGenerator(name = "uuid", strategy = "uuid2")
-  public String id;
+  private String id;
 
   @Column(name = "name", nullable = false, unique = true)
-  public String name;
+  private String name;
 
   @ManyToMany(mappedBy = "roles")
   private List<OnestopUser> users;

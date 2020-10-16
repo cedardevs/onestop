@@ -19,28 +19,28 @@ public class SavedSearch {
   @Id
   @GeneratedValue(generator = "uuid")
   @GenericGenerator(name = "uuid", strategy = "uuid2")
-  public String id;
+  private String id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id", nullable = false)
   private OnestopUser user;
 
   @Column(name = "name", nullable = false)
-  public String name;
+  private String name;
 
   @Column(name = "value", nullable = false, length = 2047)
-  public String value;
+  private String value;
 
   @Column(name = "filter", length = 2047)
-  public String filter;
+  private String filter;
 
   @Column(name = "createdOn", updatable = false)
   @CreationTimestamp
-  public Instant createdOn;
+  private Instant createdOn;
 
   @Column(name = "lastUpdatedOn")
   @UpdateTimestamp
-  public Instant lastUpdatedOn;
+  private Instant lastUpdatedOn;
 
   //constructor will be used by Spring JPA
   protected SavedSearch() {}
@@ -57,15 +57,15 @@ public class SavedSearch {
     this.value = value;
   }
 
-  @PrePersist
-  protected void onCreate() {
-    createdOn = Instant.now();
-  }
-
-  @PreUpdate
-  protected void onUpdate() {
-    lastUpdatedOn = Instant.now();
-  }
+//  @PrePersist
+//  protected void onCreate() {
+//    createdOn = Instant.now();
+//  }
+//
+//  @PreUpdate
+//  protected void onUpdate() {
+//    lastUpdatedOn = Instant.now();
+//  }
 
   public String getId() {
     return id;

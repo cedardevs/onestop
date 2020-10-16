@@ -1,7 +1,6 @@
 package org.cedar.onestop.user
 
 import org.cedar.onestop.user.config.AuthorizationConfiguration
-import org.cedar.onestop.user.config.SecurityConfig
 import org.hamcrest.Matchers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -56,7 +55,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
   def "admin user authorized to admin getAll endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/all")
+        .get("/v1/saved-search")
         .accept(MediaType.APPLICATION_JSON))
 
     then: 'we get 200'

@@ -72,10 +72,10 @@ class SavedSearchRepositorySpec extends Specification {
 
   def "Should get by user Identifier"() {
     given:
-    def id = saveSearchRepository.save(saveSearch)
+    def user = saveSearchRepository.save(saveSearch)
 
     when:
-    List<SavedSearch> getByUserId = saveSearchRepository.findAllByUser(savedUser)
+    List<SavedSearch> getByUserId = saveSearchRepository.findByUserId(user.id, null).getContent()
 
     then:
     getByUserId[0].id != null
@@ -92,7 +92,7 @@ class SavedSearchRepositorySpec extends Specification {
     saveSearchRepository.save(saveSearch2)
 
     when:
-    List<SavedSearch> getByUserId = saveSearchRepository.findAllByUser(savedUser)
+    List<SavedSearch> getByUserId = saveSearchRepository.findByUserId(savedUser.id, null).getContent()
 
     then:
     getByUserId.size() == 2

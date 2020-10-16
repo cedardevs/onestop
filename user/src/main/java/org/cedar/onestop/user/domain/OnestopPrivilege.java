@@ -17,18 +17,18 @@ public class OnestopPrivilege {
   @Column(name = "privilege_id")
   @GeneratedValue(generator = "uuid")
   @GenericGenerator(name = "uuid", strategy = "uuid2")
-  public String id;
+  private String id;
 
   @Column(name = "name", nullable = false, unique = true)
   private String name;
 
   @Column(name = "createdOn", updatable = false)
   @CreationTimestamp
-  public Instant createdOn;
+  private Instant createdOn;
 
   @Column(name = "lastUpdatedOn")
   @UpdateTimestamp
-  public Instant lastUpdatedOn;
+  private Instant lastUpdatedOn;
 
   @ManyToMany(cascade = CascadeType.ALL, mappedBy = "privileges", fetch = FetchType.EAGER)
   private List<OnestopRole> roles;

@@ -5,38 +5,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import java.util.List;
+
 @Component
-public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
+public class SetupDataLoader {
   private static final Logger logger = LoggerFactory.getLogger(SetupDataLoader.class);
 
-  boolean alreadySetup = false;
+  private boolean alreadySetup = false;
+
+  private final OnestopUserService userService;
+  private final List<String> adminIds;
 
   @Autowired
-  private OnestopUserService userService;
+  public SetupDataLoader(OnestopUserService userService, @Value("${admins:}") List<String> adminIds) {
+    this.userService = userService;
+    this.adminIds = adminIds;
+  }
 
-  @Value("${admin:null}")
-  private String adminId;
-
-  @Override
+  @PostConstruct
   @Transactional
-  public void onApplicationEvent(ContextRefreshedEvent event) {
-    logger.info("onApplicationEvent");
-    if (alreadySetup)
-      return;
-
-    userService.createAdminPrivilegesIfNotFound();
-    userService.createNewUserPrivilegesIfNotFound();
-
-//    if (adminId != null) {
-//      userService.findOrCreateAdminUser(adminId);
-//    }
-
-    alreadySetup = true;
+  public void createAdmins() {
+    if (!alreadySetup && adminIds != null && !adminIds.isEmpty()) {
+      logger.info("initializing " + adminIds.size() + " configured admin users");
+      adminIds.forEach(id -> userService.createDefaultUser(id, true));
+      alreadySetup = true;
+    }
   }
 
 }

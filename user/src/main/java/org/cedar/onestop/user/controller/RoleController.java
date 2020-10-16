@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,12 +41,12 @@ public class RoleController {
   @ApiOperation(value = "Get roles (ADMIN)")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Successfully retrieved user roles"),
-      @ApiResponse(code = 401, message = "Access denied"),
+      @ApiResponse(code = 401, message = "Authentication required"),
+      @ApiResponse(code = 403, message = "Authenticated user is not authorized to perform this action"),
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @GetMapping(value = "/role", produces = "application/json")
-  public JsonApiResponse getRoles(Pageable pageable, HttpServletResponse response)
-      throws ResourceNotFoundException {
+  public JsonApiResponse getRoles(Pageable pageable, HttpServletResponse response) {
     logger.info("Retrieving roles w/ page params: " + pageable);
     var page = roleRepository.findAll(pageable);
     var total = page.getTotalElements();
@@ -61,7 +63,8 @@ public class RoleController {
   @ApiOperation(value = "Get role by id (ADMIN)")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Successfully retrieved user role"),
-      @ApiResponse(code = 401, message = "Access denied"),
+      @ApiResponse(code = 401, message = "Authentication required"),
+      @ApiResponse(code = 403, message = "Authenticated user is not authorized to perform this action"),
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @GetMapping(value = "/role/{id}", produces = "application/json")
@@ -79,10 +82,11 @@ public class RoleController {
   }
 
   @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.CREATE_ROLE})
-  @ApiOperation(value = "Create a role", response = Iterable.class)
+  @ApiOperation(value = "Create a role")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Successfully created role"),
-      @ApiResponse(code = 401, message = "Access denied"),
+      @ApiResponse(code = 401, message = "Authentication required"),
+      @ApiResponse(code = 403, message = "Authenticated user is not authorized to perform this action"),
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @PostMapping(value = "/role", produces = "application/json")
@@ -119,6 +123,30 @@ public class RoleController {
     return new JsonApiSuccessResponse.Builder()
         .setStatus(HttpStatus.OK.value(), response)
         .setMeta(new JsonApiMeta.Builder().setNonStandardMetadata(result).build()).build();
+  }
+
+  @ApiOperation(value = "Get authenticated user roles")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Successfully retrieved user roles"),
+      @ApiResponse(code = 401, message = "Authentication required"),
+      @ApiResponse(code = 403, message = "Authenticated user is not authorized to perform this action"),
+      @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+  })
+  @GetMapping(value = "/self/role", produces = "application/json")
+  @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_OWN_PROFILE})
+  public JsonApiResponse getAuthenticatedUserRoles(
+      final @AuthenticationPrincipal Authentication authentication,
+      Pageable pageable,
+      HttpServletResponse response)
+      throws RuntimeException {
+    String userId = authentication.getName();
+    logger.info("Retrieving roles for authenticated user with id: " + userId);
+    var result = roleRepository.findByUsersId(userId, pageable).get()
+        .map(u -> new JsonApiData.Builder().setId(u.getId()).setAttributes(u.toMap()).setType("role").build())
+        .collect(Collectors.toList());
+    return new JsonApiSuccessResponse.Builder()
+        .setStatus(HttpStatus.OK.value(), response)
+        .setData(result).build();
   }
 
 }

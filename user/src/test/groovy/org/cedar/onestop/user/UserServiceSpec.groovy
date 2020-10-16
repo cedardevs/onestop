@@ -23,14 +23,15 @@ class UserServiceSpec extends Specification {
 
   def setup() {
     userService = new OnestopUserService(userRepository, roleRepository, privilegeRepository)
+    userService.ensureDefaults()
   }
 
-  def "retrieves roles and privileges by user id"() {
+  def "retrieves user, roles and privileges by user id"() {
     def id = 'test'
-    userService.createDefaultUser(id)
+    userService.save(userService.findOrCreateUser(id))
 
     when:
-    def user = userService.findUserById(id)
+    def user = userService.findById(id)
     def roleNames = userService.findRolesByUserId(id, Pageable.unpaged()).toList()*.name.toSet()
     def privilegeNames = userService.findPrivilegesByUserId(id, Pageable.unpaged()).toList()*.name.toSet()
 

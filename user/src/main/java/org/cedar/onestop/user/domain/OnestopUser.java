@@ -1,5 +1,6 @@
 package org.cedar.onestop.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.cedar.onestop.user.config.AuthorizationConfiguration;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,7 +19,7 @@ public class OnestopUser {
 
   @Id //comes from IdP
   @Column(name = "id")
-  public String id;
+  private String id;
 
   @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinTable(
@@ -26,19 +27,20 @@ public class OnestopUser {
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "role_id")
   )
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private List<OnestopRole> roles = new ArrayList<>();
 
-  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
-      cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<SavedSearch> searches = new ArrayList<>();
 
-  @Column(name = "createdOn", updatable = false)
+  @Column(updatable = false)
   @CreationTimestamp
-  public Instant createdOn;
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private Instant createdOn;
 
-  @Column(name = "lastUpdatedOn")
   @UpdateTimestamp
-  public Instant lastUpdatedOn;
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private Instant lastUpdatedOn;
 
   //constructor will be used by Spring JPA
   public OnestopUser() {
@@ -50,7 +52,7 @@ public class OnestopUser {
 
   public OnestopUser(String id, OnestopRole role) {
     this.id = id;
-    this.roles = role != null ? Arrays.asList(role) : new ArrayList<>();
+    this.roles = role != null ? Collections.singletonList(role) : new ArrayList<>();
   }
 
   public OnestopUser(String id, List<OnestopRole> roles) {
@@ -80,16 +82,8 @@ public class OnestopUser {
     return lastUpdatedOn;
   }
 
-  public void setLastUpdatedOn(Instant lastUpdatedOn) {
-    this.lastUpdatedOn = lastUpdatedOn;
-  }
-
   public Instant getCreatedOn() {
     return createdOn;
-  }
-
-  public void setCreatedOn(Instant createdOn) {
-    this.createdOn = createdOn;
   }
 
   @Nonnull
