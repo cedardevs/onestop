@@ -75,7 +75,7 @@ const UserSavedSearch = props => {
   const navigateToButton = (
     <Button
       key="navigateTo"
-      title="navigate to"
+      title={`navigate to ${item.attributes.name} search`}
       icon={linkIcon}
       style={styleButton}
       styleIcon={styleIcon}
@@ -90,7 +90,7 @@ const UserSavedSearch = props => {
   const deleteSearchButton = (
     <Button
       key="delete"
-      title="delete"
+      title={`delete ${item.attributes.name} search`}
       icon={trashIcon}
       style={styleButton}
       styleIcon={styleIcon}
