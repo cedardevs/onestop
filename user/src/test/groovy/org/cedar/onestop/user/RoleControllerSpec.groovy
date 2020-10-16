@@ -18,7 +18,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
+@Unroll
 @WebMvcTest(controllers = RoleController.class)
 class RoleControllerSpec extends Specification{
 
@@ -123,6 +125,32 @@ class RoleControllerSpec extends Specification{
     1 * onestopRoleRepository.findById(_ as String) >> Optional.of(testRole)
     1 * onestopRoleRepository.delete(_ as OnestopRole)
     deleteResult.andExpect(MockMvcResultMatchers.jsonPath("\$.meta.nonStandardMetadata.deleted").value(true))
+  }
+
+  @WithMockUser(roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
+  def 'public user can get own roles'(){
+    when:
+    def result = mockMvc.perform(MockMvcRequestBuilders.get("/v1/self/role"))
+
+    then:
+    1 * onestopRoleRepository.findByUsersId(_, _) >> new PageImpl<OnestopRole>([testRole])
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value(testRole.id))
+  }
+
+  @WithMockUser(roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
+  def 'public user cannot #action roles'(){
+    expect:
+    mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().is(403))
+
+    where:
+    action  | request
+    'list'  | MockMvcRequestBuilders.get("/v1/role")
+    'create'| MockMvcRequestBuilders.post("/v1/role").content('{}').contentType('application/json')
+    'get'   | MockMvcRequestBuilders.get("/v1/role/$roleId")
+//    'update'| MockMvcRequestBuilders.put("/v1/role/$roleId")
+    'delete'| MockMvcRequestBuilders.delete("/v1/role/$roleId")
   }
 
 }

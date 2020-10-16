@@ -1,7 +1,6 @@
 package org.cedar.onestop.user
 
 import org.cedar.onestop.user.config.AuthorizationConfiguration
-import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.domain.OnestopPrivilege
 import org.cedar.onestop.user.domain.OnestopRole
 import org.cedar.onestop.user.domain.OnestopUser
@@ -11,12 +10,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.containers.PostgreSQLContainer
 import spock.lang.Specification
-
-import java.util.stream.Collectors
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -46,20 +42,36 @@ class OnestopUserServiceIntegrationTest extends Specification {
     onestopUserService.privilegeRepository.deleteAll()
   }
 
-  def 'create new user privs'(){
+  def 'default roles and privs have been created'(){
     when:
-    Collection<OnestopPrivilege> privs = onestopUserService.createNewUserPrivilegesIfNotFound()
+    def defaultRole = onestopUserService.roleRepository
+        .findByName(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.PUBLIC_ROLE)
+        .get()
+    def adminRole = onestopUserService.roleRepository
+        .findByName(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.ADMIN_ROLE)
+        .get()
+
     then:
-    privs.toString() == AuthorizationConfiguration.NEW_USER_PRIVILEGES.toString()
+    defaultRole instanceof OnestopRole
+    defaultRole.privileges*.name as Set == AuthorizationConfiguration.NEW_USER_PRIVILEGES as Set
+    adminRole instanceof OnestopRole
+    adminRole.privileges*.name as Set == AuthorizationConfiguration.ADMIN_PRIVILEGES as Set
+
     when:
-    OnestopRole role = onestopUserService.createRole(AuthorizationConfiguration.PUBLIC_ROLE, privs)
-    then:
-    role.getName() == AuthorizationConfiguration.PUBLIC_ROLE
+    onestopUserService.ensureDefaults()
+
+    then: // default role creation is idempotent
+    defaultRole.id == onestopUserService.roleRepository
+        .findByName(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.PUBLIC_ROLE)
+        .get().id
+    adminRole.id == onestopUserService.roleRepository
+        .findByName(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.ADMIN_ROLE)
+        .get().id
   }
 
   def "create new user with default roles and privileges"() {
     given:
-    String uuid = UUID.randomUUID(); //this comes from login.gov or other IdPs
+    String uuid = UUID.randomUUID() //this comes from login.gov or other IdPs
 
     when:
     OnestopUser defaultUser = onestopUserService.findOrCreateUser(uuid)
@@ -78,7 +90,7 @@ class OnestopUserServiceIntegrationTest extends Specification {
 
   def "create default admin user with admin roles and privileges"() {
     given:
-    String uuid = UUID.randomUUID(); //this comes from login.gov or other IdPs
+    String uuid = UUID.randomUUID() //this comes from login.gov or other IdPs
 
     when:
     OnestopUser adminUser = onestopUserService.findOrCreateAdminUser(uuid)
@@ -94,10 +106,5 @@ class OnestopUserServiceIntegrationTest extends Specification {
     defaultRole.getName() == "ROLE_" + AuthorizationConfiguration.ADMIN_ROLE
     defaultPrivilege.getName() == AuthorizationConfiguration.ADMIN_PRIVILEGES[0]
     adminUser.getPrivileges().collect{priv -> priv.toString()} == AuthorizationConfiguration.ADMIN_PRIVILEGES
-
-    and: 'confirm methods are idempotent'
-    then:
-    onestopUserService.createAdminPrivilegesIfNotFound()
-    onestopUserService.createNewUserPrivilegesIfNotFound()
   }
 }

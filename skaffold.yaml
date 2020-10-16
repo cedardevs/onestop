@@ -116,8 +116,8 @@ build:
     env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
     env.UI_AUTH_LOGINENDPOINT: http://localhost/oauth2/authorization/login-gov
     env.UI_AUTH_LOGOUTENDPOINT: http://localhost/logout
-    env.UI_AUTH_USERPROFILEENDPOINT: http://localhost/api/user/v1/user/
-    env.UI_AUTH_SAVEDSEARCHENDPOINT: http://localhost/api/user/v1/saved-search/
+    env.UI_AUTH_USERPROFILEENDPOINT: http://localhost/api/user/v1/self
+    env.UI_AUTH_SAVEDSEARCHENDPOINT: http://localhost/api/user/v1/self/saved-search
     features.login-gov: "false"
     features.sitemap: "true"
     service.nodePort: "30097"
@@ -132,7 +132,7 @@ build:
   values:
     image: cedardevs/onestop-client
   setValues:
-    apiSearch.endpoint: onestop-search:8080/onestop-search
+    apiSearch.endpoint: onestop-search:8080
     prefixPath: onestop
     service.clusterIP: 10.100.100.3
   imageStrategy:
