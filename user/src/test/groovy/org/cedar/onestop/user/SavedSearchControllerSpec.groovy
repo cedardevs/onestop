@@ -3,9 +3,9 @@ package org.cedar.onestop.user
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.controller.SavedSearchController
 import org.cedar.onestop.user.domain.OnestopUser
+import org.cedar.onestop.user.domain.SavedSearch
 import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.repository.SavedSearchRepository
-import org.cedar.onestop.user.domain.SavedSearch
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -79,7 +79,7 @@ class SavedSearchControllerSpec extends Specification {
         .accept(MediaType.APPLICATION_JSON))
 
     then:
-    results.andExpect(MockMvcResultMatchers.status().isForbidden())
+    results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
     results.andReturn().getResponse().getContentAsString() == ""
   }
 
