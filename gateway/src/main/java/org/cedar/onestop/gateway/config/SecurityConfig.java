@@ -34,20 +34,10 @@ public class SecurityConfig {
   public static final String API_MATCHER_PATH = "/api/**";
 
   private LoginGovConfiguration loginGovConfiguration;
-//  public KeystoreUtil keystoreUtil;
 
   @Autowired
   SecurityConfig(LoginGovConfiguration loginGovConfiguration) {
     this.loginGovConfiguration = loginGovConfiguration;
-//    LoginGovConfiguration.Keystore keystore = loginGovConfiguration.keystore;
-//    this.keystoreUtil = new KeystoreUtil(
-//            keystore.file,
-//            keystore.password,
-//            keystore.alias,
-//            null,
-//            keystore.type
-//    );
-
   }
 
   @Bean
@@ -55,18 +45,11 @@ public class SecurityConfig {
     return new WebClientReactivePrivateKeyJwtTokenResponseClient(webClient, this.loginGovConfiguration);
   }
 
-//  @Bean
   public ServerLogoutSuccessHandler logoutSuccessHandler(String uri) {
     RedirectServerLogoutSuccessHandler successHandler = new RedirectServerLogoutSuccessHandler();
     successHandler.setLogoutSuccessUrl(URI.create(uri));
     return successHandler;
   }
-//  public ServerLogoutFailureHandler logoutSuccessHandler(String uri) {
-//    RedirectServerLogoutSuccessHandler successHandler = new RedirectServerLogoutSuccessHandler();
-//    successHandler.setLogoutSuccessUrl(URI.create(uri));
-//    return successHandler;
-//  }
-
 
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(final ServerHttpSecurity http) {
@@ -82,9 +65,7 @@ public class SecurityConfig {
         .and()
         .oauth2Login()
             .authenticationSuccessHandler(new RedirectServerAuthenticationSuccessHandler("/" + LoginGovConstants.LOGIN_SUCCESS_ENDPOINT))
-//          .authenticationSuccessHandler(new LoginGovAuthenticationSuccessHandler())
-//          .authenticationFailureHandler(new LoginGovAuthenticationFailureHandler())
-            .authenticationFailureHandler(new RedirectServerAuthenticationFailureHandler("/" + LoginGovConstants.LOGIN_FAILURE_ENDPOINT))
+            .authenticationFailureHandler(new OnestopRedirectServerAuthenticationFailureHandler("/" + LoginGovConstants.LOGIN_FAILURE_ENDPOINT))
         .and()
         .logout()
             .logoutUrl("/logout")
