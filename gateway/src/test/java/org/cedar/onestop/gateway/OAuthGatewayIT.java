@@ -11,6 +11,8 @@ import org.cedar.onestop.gateway.config.SecurityConfig;
 import org.junit.After;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,7 +25,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
@@ -34,6 +35,8 @@ public class OAuthGatewayIT {
   private static final MockWebServer service1Mock = new MockWebServer();
   private static final MockWebServer idpMock = new MockWebServer();
   private static final String SESSION = "SESSION";
+
+  Logger logger = LoggerFactory.getLogger(OAuthGatewayIT.class);
 
   @BeforeAll
   static void startMocks() throws IOException {
@@ -128,7 +131,7 @@ public class OAuthGatewayIT {
         new MockResponse()
             .setResponseCode(200)
             .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .setBody(new ObjectMapper().writeValueAsString(Collections.singletonMap("username", "Dummy"))));
+            .setBody(new ObjectMapper().writeValueAsString(Collections.singletonMap("sub", "Dummy"))));
 
 
     // step 2: trigger the server-side code to token exchange call to our idpMock
@@ -156,12 +159,13 @@ public class OAuthGatewayIT {
         .get()
         .uri("/api/service1/hello")
         .cookie(SESSION, sessionCookie.getValue())
+        .accept(MediaType.APPLICATION_JSON)
         .exchange().block();
 
     assertEquals(HttpStatus.OK, apiResponse.statusCode());
-    final Map jsonMap = apiResponse.bodyToMono(Map.class).block();
-    assertNotNull(jsonMap);
-    assertEquals("hello mocked user", jsonMap.get("message"));
+    final String jsonString = apiResponse.bodyToMono(String.class).block();
+    assertNotNull(jsonString);
+    assertEquals("{\"message\":\"hello mocked user\"}", jsonString);
 
     // check if the token was send to our backend service
     RecordedRequest recordedRequest = service1Mock.takeRequest();
