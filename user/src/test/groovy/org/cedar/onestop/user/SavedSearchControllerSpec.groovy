@@ -9,6 +9,8 @@ import org.cedar.onestop.user.service.OnestopUserService
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
@@ -98,7 +100,7 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isCreated())
-    1 * mockUserService.findUserById('new_search_user') >> Optional.of(mockUser)
+    1 * mockUserService.findById('new_search_user') >> Optional.of(mockUser)
     1 * mockSaveSearchRepository.save(_) >> search1
 //    1 * mockUserService.save(mockUser)
 
@@ -110,12 +112,12 @@ class SavedSearchControllerSpec extends Specification {
   def "get save searches for authenticated user by id"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search")
+        .get("/v1/self/saved-search")
         .accept(MediaType.APPLICATION_JSON))
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockUserService.findUserById('public_getter_by_id') >> Optional.of(mockUser)
+    1 * mockSaveSearchRepository.findByUserId('public_getter_by_id', _ as Pageable) >> new PageImpl(savedSearches)
     results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
@@ -141,19 +143,19 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockUserService.findUserById(mockerUserId) >> Optional.of(mockUser)
+    1 * mockUserService.findById(mockerUserId) >> Optional.of(mockUser)
     results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
   @WithMockUser(roles = [AuthorizationConfiguration.LIST_ALL_SAVED_SEARCHES])
-  def 'admin user can access saved-search/all'(){
+  def 'admin user can access saved-search'(){
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/all")
+        .get("/v1/saved-search")
         .accept(MediaType.APPLICATION_JSON))
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockSaveSearchRepository.findAll() >> savedSearches
+    1 * mockSaveSearchRepository.findAll(_ as Pageable) >> new PageImpl(savedSearches)
     results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
@@ -161,7 +163,7 @@ class SavedSearchControllerSpec extends Specification {
   def 'public user denied to protected endpoints'(){
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/all")
+        .get("/v1/saved-search")
         .accept(MediaType.APPLICATION_JSON))
     then:
     results.andExpect(MockMvcResultMatchers.status().isForbidden())
@@ -176,15 +178,15 @@ class SavedSearchControllerSpec extends Specification {
   }
 
   @WithMockUser(roles = [AuthorizationConfiguration.LIST_ALL_SAVED_SEARCHES])
-  def "endpoint 'saved-search/all' returns json api spec response"() {
+  def "endpoint 'saved-search' returns json api spec response"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/all")
+        .get("/v1/saved-search")
         .accept(MediaType.APPLICATION_JSON))
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockSaveSearchRepository.findAll() >> []
+    1 * mockSaveSearchRepository.findAll(_ as Pageable) >> new PageImpl([])
     results.andReturn().getResponse().getContentAsString() == """{"data":[],"meta":null,"status":200}"""
   }
 
@@ -210,6 +212,6 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockUserService.findUserById(_) >> Optional.of(mockUser)
+    1 * mockUserService.findById(_) >> Optional.of(mockUser)
   }
 }

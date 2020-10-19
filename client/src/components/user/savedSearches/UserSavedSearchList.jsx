@@ -28,10 +28,9 @@ const UserSavedSearchList = props => {
     fontFamily: fontFamilySerif(),
     fontSize: '1.2em',
   }
-  const heading =
-      _.isEmpty(searches)
-      ? 'You have no saved searches'
-      : 'Saved Searches'
+  const heading = _.isEmpty(searches)
+    ? 'You have no saved searches'
+    : 'Saved Searches'
   const listHeading = (
     <h2 key="SavedSearch::listHeading" style={styleListHeading}>
       <span role="alert" aria-live="polite">

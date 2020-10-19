@@ -20,7 +20,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
+@Unroll
 @WebMvcTest(controllers = PrivilegeController.class)
 class PrivilegeControllerSpec extends Specification{
 
@@ -130,6 +132,34 @@ class PrivilegeControllerSpec extends Specification{
     1 * onestopPrivilegeRepository.findById(_ as String) >> Optional.of(mockPrivilege)
     1 * onestopPrivilegeRepository.delete(_ as OnestopPrivilege)
     deleteResult.andExpect(MockMvcResultMatchers.jsonPath("\$.meta.nonStandardMetadata.deleted").value(true))
+  }
+
+  @WithMockUser(roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
+  def 'public user can get own privileges'(){
+    def testPrivilege = new OnestopPrivilege('abc', 'yep')
+
+    when:
+    def result = mockMvc.perform(MockMvcRequestBuilders.get("/v1/self/privilege"))
+
+    then:
+    1 * onestopPrivilegeRepository.findByRolesUsersId(_, _) >> new PageImpl<OnestopPrivilege>([testPrivilege])
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value(testPrivilege.id))
+  }
+
+  @WithMockUser(roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
+  def 'public user cannot #action privileges'(){
+    expect:
+    mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().is(403))
+
+    where:
+    action  | request
+    'list'  | MockMvcRequestBuilders.get("/v1/privilege")
+    'create'| MockMvcRequestBuilders.post("/v1/privilege").content(privilegeJsonString).contentType('application/json')
+    'get'   | MockMvcRequestBuilders.get("/v1/privilege/$privilegeId")
+//    'update'| MockMvcRequestBuilders.put("/v1/privilege/$privilegeId")
+    'delete'| MockMvcRequestBuilders.delete("/v1/privilege/$privilegeId")
   }
 
 }

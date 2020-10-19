@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,19 +24,44 @@ import java.util.stream.Collectors;
 public class OnestopUserService {
   private static final Logger logger = LoggerFactory.getLogger(OnestopUserService.class);
 
+  private static final String DEFAULT_ROLE_NAME = AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.PUBLIC_ROLE;
+  private static final String ADMIN_ROLE_NAME = AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.ADMIN_ROLE;
+
   public final OnestopUserRepository userRepository;
   public final OnestopRoleRepository roleRepository;
   public final OnestopPrivilegeRepository privilegeRepository;
 
+  private boolean initialized = false;
+
   @Autowired
-  public OnestopUserService(OnestopUserRepository userRepository, OnestopRoleRepository roleRepository, OnestopPrivilegeRepository privilegeRepository){
+  public OnestopUserService(
+      OnestopUserRepository userRepository,
+      OnestopRoleRepository roleRepository,
+      OnestopPrivilegeRepository privilegeRepository) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.privilegeRepository = privilegeRepository;
   }
 
-  public Optional<OnestopUser> findUserById(String id) {
+  @PostConstruct
+  public void ensureDefaults() {
+    if (!initialized) {
+      createRoleIfNotFound(DEFAULT_ROLE_NAME, createPrivilegesIfNotFound(AuthorizationConfiguration.NEW_USER_PRIVILEGES));
+      createRoleIfNotFound(ADMIN_ROLE_NAME, createPrivilegesIfNotFound(AuthorizationConfiguration.ADMIN_PRIVILEGES));
+      initialized = true;
+    }
+  }
+
+  public Optional<OnestopUser> findById(String id) {
     return userRepository.findById(id);
+  }
+
+  public boolean exists(String id) {
+    return userRepository.existsById(id);
+  }
+
+  public OnestopUser save(OnestopUser user) {
+    return userRepository.save(user);
   }
 
   public Page<OnestopRole> findRolesByUserId(String id, Pageable pageable) {
@@ -48,58 +73,35 @@ public class OnestopUserService {
   }
 
   public OnestopUser findOrCreateUser(String id) {
-        return userRepository
-          .findById(id)
-          .orElseGet(() -> createDefaultUser(id));
-    }
+    return findOrCreateUser(id, false);
+  }
 
-    public OnestopUser findOrCreateAdminUser(String id) {
-        return userRepository
-          .findById(id)
-          .orElseGet(() -> createAdminUser(id));
-    }
+  public OnestopUser findOrCreateUser(String id, boolean isAdmin) {
+    return userRepository
+        .findById(id)
+        .orElseGet(() -> createDefaultUser(id, isAdmin));
+  }
 
-  public OnestopUser createAdminUser(String id){
-    logger.info("Creating admin user with id: " + id);
-    String adminRoleName = "ROLE_" + AuthorizationConfiguration.ADMIN_ROLE;
-    List<OnestopPrivilege> adminPrivileges = createAdminPrivilegesIfNotFound();
-    OnestopRole defaultRole = createRoleIfNotFound(adminRoleName, adminPrivileges);
-    OnestopUser defaultUser = new OnestopUser(id);
-    defaultUser.setRoles(Arrays.asList(defaultRole));
-    logger.info(defaultUser.toString());
-    logger.info(defaultUser.getId());
-    if(defaultUser.getId() == null)
+  public OnestopUser createDefaultUser(String id, boolean isAdmin) {
+    var roleName = isAdmin ? ADMIN_ROLE_NAME : DEFAULT_ROLE_NAME;
+    logger.info("Creating admin user with id: " + id + " and role " + roleName);
+    var role = roleRepository.findByName(roleName)
+        .orElseThrow(() -> new IllegalStateException("Default role " + roleName + " has not been created"));
+    return createUserWithRole(id, role);
+  }
+
+  private OnestopUser createUserWithRole(String id, OnestopRole role) {
+    if (id == null) {
       return null;
+    }
+    OnestopUser defaultUser = new OnestopUser(id, role);
+    logger.info(defaultUser.toString());
     return userRepository.save(defaultUser);
   }
 
-  public OnestopUser createDefaultUser(String id) {
-    logger.info("Creating new user with id: " + id);
-    String defaultRoleName = "ROLE_" + AuthorizationConfiguration.PUBLIC_ROLE;
-    List<OnestopPrivilege> defaultPrivileges = createNewUserPrivilegesIfNotFound();
-    OnestopRole defaultRole = createRoleIfNotFound(defaultRoleName, defaultPrivileges);
-    OnestopUser defaultUser = new OnestopUser(id);
-    defaultUser.setRoles(Arrays.asList(defaultRole));
-    logger.info(defaultUser.toString());
-    logger.info(defaultUser.getId());
-    if (defaultUser.getId() == null) {
-      return null;
-    }
-    return userRepository.save(defaultUser);
-  }
-
-  public List<OnestopPrivilege> createAdminPrivilegesIfNotFound() {
-    return AuthorizationConfiguration.ADMIN_PRIVILEGES
-        .stream()
+  public List<OnestopPrivilege> createPrivilegesIfNotFound(List<String> names) {
+    return names.stream()
         .map(name -> privilegeRepository.findOneByName(name).orElseGet(() -> createPrivilege(name)))
-        .collect(Collectors.toList());
-  }
-
-  public List<OnestopPrivilege> createNewUserPrivilegesIfNotFound() {
-    return AuthorizationConfiguration.NEW_USER_PRIVILEGES
-        .stream()
-        .map(name -> privilegeRepository.findOneByName(name)
-            .orElseGet(() -> createPrivilege(name)))
         .collect(Collectors.toList());
   }
 
