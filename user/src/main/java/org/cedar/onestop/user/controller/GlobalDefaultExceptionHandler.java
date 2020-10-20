@@ -88,14 +88,13 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
    * else the exception's {@link Exception#getMessage() message}
    */
   private static String getReason(Exception ex) {
+    var defaultReason = "An error occurred";
     if (ex.getClass().isAnnotationPresent(ResponseStatus.class)) {
-      return ex.getClass().getAnnotation(ResponseStatus.class).reason();
-    }
-    else if (!Strings.isBlank(ex.getMessage())) {
-      return ex.getMessage();
+      var annotatedReason = ex.getClass().getAnnotation(ResponseStatus.class).reason();
+      return Strings.isBlank(annotatedReason) ? defaultReason : annotatedReason;
     }
     else {
-      return "An error occurred";
+      return Strings.isBlank(ex.getMessage()) ? defaultReason : ex.getMessage();
     }
   }
 }
