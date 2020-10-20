@@ -1,9 +1,11 @@
 package org.cedar.onestop.user.controller;
 
+import org.apache.logging.log4j.util.Strings;
 import org.cedar.onestop.data.api.JsonApiError;
 import org.cedar.onestop.data.api.JsonApiErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.Collections;
-import java.util.Optional;
 
 @ControllerAdvice
 public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
@@ -32,7 +33,7 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
 
   @ExceptionHandler(Exception.class)
   protected ResponseEntity<Object> handleGeneralException(Exception ex, WebRequest request) {
-    log.debug("Handling general exception of type {}: {}", ex.getClass(), ex.getMessage());
+    log.warn("Handling general exception", ex);
     return this.handleExceptionInternal(ex, null, new HttpHeaders(), getHttpStatus(ex), request);
   }
 
@@ -62,11 +63,17 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
    * @return The {@link HttpStatus}
    */
   private static HttpStatus getHttpStatus(Exception ex) {
-    if (ex.getClass().isAnnotationPresent(ResponseStatus.class)) {
-      return ex.getClass().getAnnotation(ResponseStatus.class).code();
+    // check for the ResponseStatus annotation and handle Spring's @AliasFor behavior
+    var mergedAnnotation = AnnotatedElementUtils.getMergedAnnotation(ex.getClass(), ResponseStatus.class);
+    if (mergedAnnotation != null) {
+      var statusCode = mergedAnnotation.value();
+      log.debug("Using status code " + statusCode + " from ResponseStatus annotation");
+      return statusCode;
     }
     else if (ex instanceof HttpStatusCodeException) {
-      return ((HttpStatusCodeException) ex).getStatusCode();
+      var statusCode = ((HttpStatusCodeException) ex).getStatusCode();
+      log.debug("Using status code " + statusCode + " from HttpStatusCodeException");
+      return statusCode;
     }
     else {
       return HttpStatus.INTERNAL_SERVER_ERROR;
@@ -81,8 +88,14 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
    * else the exception's {@link Exception#getMessage() message}
    */
   private static String getReason(Exception ex) {
-    return Optional.ofNullable(ex.getClass().getAnnotation(ResponseStatus.class))
-        .map(ResponseStatus::reason)
-        .orElse(ex.getMessage());
+    if (ex.getClass().isAnnotationPresent(ResponseStatus.class)) {
+      return ex.getClass().getAnnotation(ResponseStatus.class).reason();
+    }
+    else if (!Strings.isBlank(ex.getMessage())) {
+      return ex.getMessage();
+    }
+    else {
+      return "An error occurred";
+    }
   }
 }
