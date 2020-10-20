@@ -1,46 +1,88 @@
 package org.cedar.onestop.user.controller;
 
-import org.cedar.onestop.data.api.*;
-import org.cedar.onestop.user.service.ResourceNotFoundException;
+import org.cedar.onestop.data.api.JsonApiError;
+import org.cedar.onestop.data.api.JsonApiErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.Optional;
 
 @ControllerAdvice
 public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
-
-  @ExceptionHandler(ResourceNotFoundException.class)
-  public JsonApiResponse handleResourceNotFoundException(ResourceNotFoundException ex,
-                                                         HttpServletResponse response) {
-        return new JsonApiErrorResponse.Builder()
-          .setTitle("Resource not found. Exception: "+ex.getMessage())
-          .setStatus(HttpStatus.BAD_REQUEST.value(),response)
-          .setCode("No resource for that id")
-          .build();
-  }
+  private static final Logger log = LoggerFactory.getLogger(GlobalDefaultExceptionHandler.class);
 
   @ExceptionHandler(AccessDeniedException.class)
-  public JsonApiResponse handleAccessDeniedException(AccessDeniedException ex,
-                                                     HttpServletResponse response) {
-    return new JsonApiErrorResponse.Builder()
-      .setTitle("You do not have permission to access this resource. Exception: "+ex.getMessage())
-      .setStatus(HttpStatus.FORBIDDEN.value(), response)
-      .setCode("No resource for that id")
-      .build();
+  public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+    log.debug("Handling AccessDeniedException: {}", ex.getMessage());
+    var status = request.getUserPrincipal() != null ? HttpStatus.FORBIDDEN : HttpStatus.UNAUTHORIZED;
+    return this.handleExceptionInternal(ex, null, new HttpHeaders(), status, request);
   }
 
   @ExceptionHandler(Exception.class)
-  public JsonApiResponse handleException (Exception ex,
-                                          HttpServletResponse response) {
-    return new JsonApiErrorResponse.Builder()
-      .setTitle("Exception: " + ex.getMessage())
-      .setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value(), response)
-      .setCode("Unknown error happened. Error: " + ex.getMessage())
-      .setDetail("Exception: " + ex.getMessage())
-      .build();
+  protected ResponseEntity<Object> handleGeneralException(Exception ex, WebRequest request) {
+    log.debug("Handling general exception of type {}: {}", ex.getClass(), ex.getMessage());
+    return this.handleExceptionInternal(ex, null, new HttpHeaders(), getHttpStatus(ex), request);
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleExceptionInternal(
+      Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    var code = status.value();
+    var title = getReason(ex);
+    var jsonApiError = new JsonApiError.Builder()
+        .setTitle(title)
+        .setStatus(code)
+        .setCode(String.valueOf(code))
+        .setDetail(ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage())
+        .build();
+    var jsonApiResponse = new JsonApiErrorResponse.Builder()
+        .setErrors(Collections.singletonList(jsonApiError))
+        .build();
+    return super.handleExceptionInternal(ex, jsonApiResponse, headers, status, request);
+  }
+
+  /**
+   * Extract the status from an exception based on {@link ResponseStatus} annotation if present,
+   * or the code from a {@link HttpStatusCodeException} if it is an instance of that type, or
+   * {@link HttpStatus#INTERNAL_SERVER_ERROR} by default.
+   *
+   * @param ex The throw exception
+   * @return The {@link HttpStatus}
+   */
+  private static HttpStatus getHttpStatus(Exception ex) {
+    if (ex.getClass().isAnnotationPresent(ResponseStatus.class)) {
+      return ex.getClass().getAnnotation(ResponseStatus.class).code();
+    }
+    else if (ex instanceof HttpStatusCodeException) {
+      return ((HttpStatusCodeException) ex).getStatusCode();
+    }
+    else {
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+  }
+
+  /**
+   * Extract the reason from an exception based on {@link ResponseStatus} annotation if present
+   *
+   * @param ex The throw exception
+   * @return The reason string indicated in the {@link ResponseStatus} annotation,
+   * else the exception's {@link Exception#getMessage() message}
+   */
+  private static String getReason(Exception ex) {
+    return Optional.ofNullable(ex.getClass().getAnnotation(ResponseStatus.class))
+        .map(ResponseStatus::reason)
+        .orElse(ex.getMessage());
   }
 }

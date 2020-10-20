@@ -80,7 +80,7 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-    results.andReturn().getResponse().getContentAsString() == ""
+    results.andExpect(MockMvcResultMatchers.jsonPath("\$.errors").isArray())
   }
 
   @WithMockUser(username = 'new_search_user', roles = [SecurityConfig.PUBLIC_PRIVILEGE])
