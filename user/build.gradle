@@ -4,7 +4,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath "org.testcontainers:postgresql:1.13.0"
+    classpath "org.testcontainers:postgresql:1.15.0-rc2"
   }
 }
 
@@ -55,8 +55,7 @@ dependencies {
   implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
 
-  // alternate DBs for testing
-  testImplementation("org.testcontainers:postgresql:1.14.3")
+  // in memory DB for unit testing
   testImplementation('com.h2database:h2')
 
   // reactive test dependencies
