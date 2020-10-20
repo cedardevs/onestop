@@ -1,12 +1,10 @@
 package org.cedar.onestop.data.api;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.List;
 
 public class JsonApiSuccessResponse extends JsonApiResponse {
 
-  List<JsonApiData> data;
-  JsonApiMeta meta;
   int status;
   // There are lots other optional fields that can be added if needed.
 

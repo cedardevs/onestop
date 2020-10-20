@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import org.testcontainers.containers.PostgreSQLContainer
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -22,7 +21,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles(['integration'])
 @SpringBootTest(classes = [UserApplication.class], webEnvironment = RANDOM_PORT)
 class SavedSearchControllerIntegrationSpec extends Specification {
-  private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
 
   @Autowired
   private WebApplicationContext context
@@ -41,14 +39,15 @@ class SavedSearchControllerIntegrationSpec extends Specification {
         .content(('{ "id":"mockMvcUser", "name": "test"}'))
         .accept(MediaType.APPLICATION_JSON))
   }
-  // Run before all the tests:
-  def setupSpec() {
-    postgres.start()
-  }
 
-  // Run after all the tests, even after failures:
-  def cleanupSpec() {
-    postgres.stop()
+  def "admin user is NOT authorized and gets translated by controller advice"() {
+    when: 'We make a request to a endpoint beyond our scope'
+    def getResults = mvc.perform(MockMvcRequestBuilders
+        .get("/v1/saved-search/all")
+        .accept(MediaType.APPLICATION_JSON))
+
+    then: 'we get the translated controller advice response'
+    getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
   @WithMockUser(username = "mockMvcUser", roles = AuthorizationConfiguration.LIST_ALL_SAVED_SEARCHES)
@@ -73,11 +72,11 @@ class SavedSearchControllerIntegrationSpec extends Specification {
 
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/user/{id}", "mockMvcUser")
+        .get("/v1/saved-search/user/{id}", "unknownUser")
         .accept(MediaType.APPLICATION_JSON))
 
-    then: 'we get 200'
-    getResults.andExpect(MockMvcResultMatchers.status().isOk())
+    then: 'we get the translated controller advice response'
+    getResults.andExpect(MockMvcResultMatchers.status().isBadRequest())
   }
 
   @WithMockUser(username = "mockMvcUser", roles = [AuthorizationConfiguration.CREATE_USER, AuthorizationConfiguration.CREATE_SAVED_SEARCH, AuthorizationConfiguration.READ_SAVED_SEARCH])

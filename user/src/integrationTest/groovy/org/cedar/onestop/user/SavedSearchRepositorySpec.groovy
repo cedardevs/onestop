@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
-import org.testcontainers.containers.PostgreSQLContainer
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -16,7 +15,6 @@ import spock.lang.Specification
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("integration")
 class SavedSearchRepositorySpec extends Specification {
-  private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
 
   @Autowired
   SavedSearchRepository saveSearchRepository
@@ -34,16 +32,6 @@ class SavedSearchRepositorySpec extends Specification {
     savedUser = onestopUserRepo.save(onestopUser)
 
     saveSearch = new SavedSearch(savedUser, "1", "entryName1","{\"test\":\"test\"}", "value 1")
-  }
-
-  // Run before all the tests:
-  def setupSpec() {
-    postgres.start()
-  }
-
-  // Run after all the tests, even after failures:
-  def cleanupSpec() {
-    postgres.stop()
   }
 
   def "should Store Each SaveSearch"() {

@@ -82,9 +82,7 @@ class SavedSearchControllerSpec extends Specification {
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-    //todo make this work with controller advice - throws org.springframework.security.access.AccessDeniedException
-//    results.andReturn().getResponse().getContentAsString() == """{"meta":null,"id":null,"status":"UNAUTHORIZED","code":"Unauthorized","title":null,"detail":null,"source":null}"""
-    results.andReturn().getResponse().getContentAsString() == ""
+    results.andExpect(MockMvcResultMatchers.jsonPath("\$.errors").isArray())
   }
 
   @WithMockUser(username = 'new_search_user', roles = [AuthorizationConfiguration.CREATE_SAVED_SEARCH])
