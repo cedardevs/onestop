@@ -1,10 +1,10 @@
 package org.cedar.onestop.data.api;
 
-import java.util.*;
+import java.util.List;
 
 abstract public class JsonApiResponse {
-  List<JsonApiData> data;
-  List<JsonApiErrorResponse> errors;
-  JsonApiMeta meta;
+  protected List<JsonApiData> data;
+  protected List<JsonApiError> errors;
+  protected JsonApiMeta meta;
 //  List<JsonApiLink> links; ?
 }
