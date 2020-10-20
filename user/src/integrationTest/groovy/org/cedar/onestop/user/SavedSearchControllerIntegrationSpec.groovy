@@ -1,6 +1,6 @@
 package org.cedar.onestop.user
 
-import org.cedar.onestop.user.config.SecurityConfig
+import org.cedar.onestop.user.config.AuthorizationConfiguration
 import org.hamcrest.Matchers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -50,19 +50,26 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.ADMIN_PRIVILEGE)
+  @WithMockUser(username = "mockMvcUser", roles = AuthorizationConfiguration.LIST_ALL_SAVED_SEARCHES)
   def "admin user authorized to admin getAll endpoint"() {
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/all")
+        .get("/v1/saved-search")
         .accept(MediaType.APPLICATION_JSON))
 
     then: 'we get 200'
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
-  @WithMockUser(username = "mockMvcAdmin", roles = SecurityConfig.ADMIN_PRIVILEGE)
-  def "admin user authorized to admin getByUserId endpoint"() {
+  @WithMockUser(username = "mockMvcUser", roles = [AuthorizationConfiguration.CREATE_USER, AuthorizationConfiguration.READ_SAVED_SEARCH_BY_USER_ID])
+  def "READ_SAVED_SEARCH_BY_USER_ID allows access to getByUserId endpoint"() {
+    setup: 'must have a user to associate the search with'
+    mvc.perform(MockMvcRequestBuilders
+        .post("/v1/user")
+        .contentType("application/json")
+        .content(('{ "id":"mockMvcUser", "name": "test"}'))
+        .accept(MediaType.APPLICATION_JSON))
+
     when: 'We make a request to a endpoint beyond our scope'
     def getResults = mvc.perform(MockMvcRequestBuilders
         .get("/v1/saved-search/user/{id}", "unknownUser")
@@ -72,19 +79,26 @@ class SavedSearchControllerIntegrationSpec extends Specification {
     getResults.andExpect(MockMvcResultMatchers.status().isBadRequest())
   }
 
-  @WithMockUser(username = "mockMvcUser", roles = SecurityConfig.PUBLIC_PRIVILEGE)
+  @WithMockUser(username = "mockMvcUser", roles = [AuthorizationConfiguration.CREATE_USER, AuthorizationConfiguration.CREATE_SAVED_SEARCH, AuthorizationConfiguration.READ_SAVED_SEARCH])
   def "POST and GET save search items, user is taken from Authentication principal"() {
+    setup: 'must have a user to associate the search with'
+    mvc.perform(MockMvcRequestBuilders
+        .post("/v1/user")
+        .contentType("application/json")
+        .content(('{ "id":"mockMvcUser", "name": "test"}'))
+        .accept(MediaType.APPLICATION_JSON))
+
     when:
     ResultActions postOneResults = mvc.perform(MockMvcRequestBuilders
         .post("/v1/saved-search")
         .contentType("application/json")
-        .content(('{ "name": "testOne", "value": "valueOne" }'))
+        .content('{ "name": "testOne", "value": "valueOne" }')
         .accept(MediaType.APPLICATION_JSON))
 
     ResultActions postTwoResults = mvc.perform(MockMvcRequestBuilders
         .post("/v1/saved-search")
         .contentType("application/json")
-        .content(('{ "name": "testTwo", "value": "valueTwo" }'))
+        .content('{ "name": "testTwo", "value": "valueTwo" }')
         .accept(MediaType.APPLICATION_JSON))
 
     then:

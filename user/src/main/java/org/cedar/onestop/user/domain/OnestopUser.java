@@ -1,151 +1,153 @@
 package org.cedar.onestop.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.cedar.onestop.user.config.AuthorizationConfiguration;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import javax.annotation.Nonnull;
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
-@Table(name="onestop_user")
+@Table(name = "onestop_user")
 public class OnestopUser {
 
-    @Id //comes from IdP
-    @Column(name= "user_id")
-    public String id;
+  @Id //comes from IdP
+  @Column(name = "id")
+  private String id;
 
-    private boolean enabled = false;
+  @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "onestop_users_roles",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "role_id")
+  )
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private List<OnestopRole> roles = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "onestop_users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Collection<OnestopRole> roles = new HashSet<>();
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<SavedSearch> searches = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    private Set<SavedSearch> searches;
+  @Column(updatable = false)
+  @CreationTimestamp
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private Instant createdOn;
 
-    @Column(name = "createdOn", updatable = false)
-    @CreationTimestamp
-    public Date createdOn; //TODO do we also accept part of the query
+  @UpdateTimestamp
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private Instant lastUpdatedOn;
 
-    @Column(name = "lastUpdatedOn")
-    @UpdateTimestamp
-    public Date lastUpdatedOn; ///TODO do we also accept part of the query
+  //constructor will be used by Spring JPA
+  public OnestopUser() {
+  }
 
-    //constructor will be used by Spring JPA
-    public OnestopUser() {
-    }
+  public OnestopUser(String id) {
+    this.id = id;
+  }
 
-    public OnestopUser(String id) {
-        this.id = id;
-    }
+  public OnestopUser(String id, OnestopRole role) {
+    this.id = id;
+    this.roles = role != null ? Collections.singletonList(role) : new ArrayList<>();
+  }
 
-    public OnestopUser(OnestopRole role) {
-        this.roles = Arrays.asList(role);
-    }
+  public OnestopUser(String id, List<OnestopRole> roles) {
+    this.id = id;
+    this.roles = roles != null ? roles : new ArrayList<>();
+  }
 
-    public OnestopUser(String id, OnestopRole role) {
-        this.id = id;
-        this.roles = Arrays.asList(role);
-    }
+  @PrePersist
+  protected void onCreate() {
+    createdOn = Instant.now();
+  }
 
-    public OnestopUser(String id, Collection<OnestopRole> roles) {
-        this.id = id;
-        this.roles = roles;
-    }
+  @PreUpdate
+  protected void onUpdate() {
+    lastUpdatedOn = Instant.now();
+  }
 
-    public OnestopUser(Collection<OnestopRole> roles) {
-        this.roles = roles;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public OnestopUser(String id, HashSet<OnestopRole> roles, boolean enabled) {
-        this.id = id;
-        this.roles = roles;
-        this.enabled = enabled;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @PrePersist
-    protected void onCreate() {
-        createdOn = new Date();
-    }
+  public Instant getLastUpdatedOn() {
+    return lastUpdatedOn;
+  }
 
-    @PreUpdate
-    protected void onUpdate() {
-        lastUpdatedOn = new Date();
-    }
+  public Instant getCreatedOn() {
+    return createdOn;
+  }
 
-    public String getId() {
-        return id;
-    }
+  @Nonnull
+  public List<OnestopRole> getRoles() {
+    return roles;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setRoles(List<OnestopRole> roles) {
+    this.roles = roles != null ? roles : new ArrayList<>();
+  }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+  public void addRole(OnestopRole role) {
+    this.roles.add(role);
+  }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+  @Nonnull
+  public List<SavedSearch> getSearches() {
+    return searches;
+  }
 
-    public Date getLastUpdatedOn() {
-        return lastUpdatedOn;
-    }
+  public void setSearches(List<SavedSearch> searches) {
+    this.searches = searches != null ? searches : new ArrayList<>();
+  }
 
-    public void setLastUpdatedOn(Date lastUpdatedOn) {
-        this.lastUpdatedOn = lastUpdatedOn;
-    }
+  public void addSearch(SavedSearch search) {
+    this.searches.add(search);
+  }
 
-    public Date getCreatedOn() {
-        return createdOn;
-    }
+  public List<OnestopPrivilege> getPrivileges() {
+    return roles.stream()
+        .flatMap(r -> r.getPrivileges().stream())
+        .collect(Collectors.toList());
+  }
 
-    public void setCreatedOn(Date createdOn) {
-        this.createdOn = createdOn;
-    }
+  public List<GrantedAuthority> getPrivilegesAsAuthorities() {
+    return getPrivileges().stream()
+        .map(OnestopPrivilege::toString)
+        .map(priv -> AuthorizationConfiguration.ROLE_PREFIX + priv)
+        .map(SimpleGrantedAuthority::new)
+        .collect(Collectors.toList());
+  }
 
-    public Collection<OnestopRole> getRoles() { return roles; }
+  @Override
+  public String toString() {
+    return "OnestopUserModel{" +
+        "id=" + id +
+        ", roles='" + roles.toString() + '\'' +
+        ", createdOn='" + createdOn + '\'' +
+        ", lastLogin='" + lastUpdatedOn + '\'' +
+        '}';
+  }
 
-    public void setRoles(Collection<OnestopRole> roles) { this.roles = roles; }
+  public Map<String, Object> toMap() {
+    Map<String, Object> result = new HashMap<>();
+    result.put("id", id);
+    result.put("roles", rolesToMapList());
+    result.put("createdOn", createdOn);
+    result.put("lastUpdatedOn", lastUpdatedOn);
+    return result;
+  }
 
-    public void addRole(OnestopRole role) { this.roles.add(role); }
-
-    public Set<SavedSearch> getSearches() { return searches; }
-
-    public void setSearches(Set<SavedSearch> searches) { this.searches = searches; }
-
-    public void addSearch(SavedSearch search) { this.searches.add(search); }
-
-    @Override
-    public String toString() {
-        return "OnestopUserModel{" +
-                "id=" + id +
-                ", roles='" + roles.toString() + '\'' +
-                ", createdOn='" + createdOn + '\'' +
-                ", lastLogin='" + lastUpdatedOn + '\'' +
-                '}';
-    }
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> result = new HashMap<String, Object>();
-        result.put("id", id);
-        result.put("roles", roleToStringList());
-        result.put("createdOn", createdOn);
-        result.put("lastUpdatedOn", lastUpdatedOn);
-        return result;
-    }
-
-    public List<Map> roleToStringList(){
-        List<Map> roleList = new ArrayList<>();
-        for(int i = 0; i < roles.size(); i++) {
-            roleList.add(((List<OnestopRole>)roles).get(i).toMap());
-        }
-        return roleList;
-    }
+  public List<Map<String, Object>> rolesToMapList() {
+    return roles.stream()
+        .map(OnestopRole::toMap)
+        .collect(Collectors.toList());
+  }
 }

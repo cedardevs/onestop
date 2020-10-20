@@ -2,10 +2,10 @@ package org.cedar.onestop.user
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.cedar.onestop.user.config.AuthorizationConfiguration
 import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.domain.OnestopPrivilege
 import org.cedar.onestop.user.domain.OnestopRole
-import org.cedar.onestop.user.domain.OnestopUser
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,7 +45,7 @@ class OnestopUserControllerSpec extends Specification  {
 
   }
 
-  @WithMockUser(username = "mockUser", roles = SecurityConfig.PUBLIC_PRIVILEGE)
+  @WithMockUser(username = "mockUser", roles = AuthorizationConfiguration.CREATE_USER)
   def "user is created"() {
     when:
     def postSearch = mvc.perform(MockMvcRequestBuilders
@@ -60,7 +60,7 @@ class OnestopUserControllerSpec extends Specification  {
 
   }
 
-  @WithMockUser(username = "mockUser", roles = SecurityConfig.PUBLIC_PRIVILEGE)
+  @WithMockUser(username = "mockUser", roles = [AuthorizationConfiguration.CREATE_USER, AuthorizationConfiguration.CREATE_SAVED_SEARCH])
   def "user is created, search is saved"() {
     when:
     def postUser = mvc.perform(MockMvcRequestBuilders
@@ -87,7 +87,7 @@ class OnestopUserControllerSpec extends Specification  {
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.user.id").value("mockUser"))
   }
 
-  @WithMockUser(username = "mockUser", roles = SecurityConfig.ADMIN_PRIVILEGE)
+  @WithMockUser(username = "mockUser", roles = [AuthorizationConfiguration.CREATE_USER, AuthorizationConfiguration.CREATE_ROLE, AuthorizationConfiguration.CREATE_PRIVILEGE])
   def "user is created with roles and privileges"() {
     given:
     OnestopPrivilege readPriv = new OnestopPrivilege("read")

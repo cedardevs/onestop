@@ -3,124 +3,174 @@ package org.cedar.onestop.user.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-
-import org.cedar.onestop.user.config.SecurityConfig;
-import org.cedar.onestop.user.repository.OnestopUserRepository;
+import org.cedar.onestop.data.api.JsonApiData;
+import org.cedar.onestop.data.api.JsonApiResponse;
+import org.cedar.onestop.data.api.JsonApiSuccessResponse;
+import org.cedar.onestop.user.config.AuthorizationConfiguration;
 import org.cedar.onestop.user.domain.OnestopUser;
+import org.cedar.onestop.user.repository.OnestopUserRepository;
+import org.cedar.onestop.user.service.OnestopUserService;
 import org.cedar.onestop.user.service.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.cedar.onestop.data.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1")
 public class UserController {
+  private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    Logger logger = LoggerFactory.getLogger(UserController.class);
+  private final OnestopUserRepository userRepository;
+  private final OnestopUserService userService;
 
-    @Autowired
-    public OnestopUserRepository onestopUserRepository;
+  @Autowired
+  public UserController(OnestopUserRepository userRepository, OnestopUserService userService) {
+    this.userRepository = userRepository;
+    this.userService = userService;
+  }
 
-    @Autowired
-    public UserController(OnestopUserRepository onestopUserRepository) {
-        this.onestopUserRepository = onestopUserRepository;
-    }
-
-    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
-    @ApiOperation(value = "Get authenticated user data", response = Iterable.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved user data"),
-            @ApiResponse(code = 401, message = "Access denied"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-    })
-    @GetMapping(value = "/user", produces = "application/json")
-    public JsonApiResponse getAuthenticatedUser(final @AuthenticationPrincipal Authentication authentication,
-                                                HttpServletResponse response)
-            throws RuntimeException {
-        String userId = authentication.getName();
-        logger.info("Retrieving user data for authenticated user with id : " + userId);
-        List<JsonApiData> dataList = new ArrayList<>();
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("userId", userId);
-        JsonApiData dataItem = new JsonApiData.Builder()
-          .setId(userId)
-          .setAttributes(data)
-          .setType("user").build();
-        dataList.add(dataItem);
-        return new JsonApiSuccessResponse.Builder()
-                .setStatus(HttpStatus.OK.value(), response)
-                .setData(dataList).build();
-    }
-
-    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
-    @ApiOperation(value = "Create a user", response = Iterable.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully created a user"),
-            @ApiResponse(code = 401, message = "Access denied"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-    })
-    @PostMapping(value = "/user", produces = "application/json")
-    public  JsonApiResponse createUser(@RequestBody OnestopUser user,
-                                       final @AuthenticationPrincipal Authentication authentication,
-                                       HttpServletResponse response)
-            throws RuntimeException {
-        String userId = authentication.getName();
-        logger.info("Creating new user with id : " + userId);
-        user.setId(userId); // id must come from auth object (provided by the IdP)
-        OnestopUser savedUser = onestopUserRepository.save(user);
-        List<JsonApiData> dataList = new ArrayList<>();
-        JsonApiData dataItem = new JsonApiData.Builder()
-          .setId(userId)
-          .setAttributes(savedUser.toMap())
-          .setType("user").build();
-        dataList.add(dataItem);
-        return new JsonApiSuccessResponse.Builder()
-          .setStatus(HttpStatus.CREATED.value(), response)
-          .setData(dataList).build();
-    }
-
-    @Secured({"ROLE_" + SecurityConfig.PUBLIC_PRIVILEGE, "ROLE_" + SecurityConfig.ADMIN_PRIVILEGE})
-    @ApiOperation(value = "Update user", response = Iterable.class)
-    @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Successfully created a user"),
-      @ApiResponse(code = 401, message = "Access denied"),
+  @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_USER})
+  @ApiOperation(value = "Get users (ADMIN)")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Successfully retrieved user data"),
+      @ApiResponse(code = 401, message = "Authentication required"),
+      @ApiResponse(code = 403, message = "Authenticated user is not authorized to perform this action"),
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-    })
-    @PutMapping(value = "/user", produces = "application/json")
-    public  JsonApiResponse updateUser(@RequestBody OnestopUser user,
-                                       final @AuthenticationPrincipal Authentication authentication,
-                                       HttpServletResponse response)
-      throws ResourceNotFoundException {
-        String userId = authentication.getName();
-        logger.info("Updating user with id : " + userId);
-        user.setId(userId); // id must come from auth object (provided by the IdP)
-        OnestopUser existingUser = onestopUserRepository.findById(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + userId));
+  })
+  @GetMapping(value = "/user", produces = "application/json")
+  public JsonApiResponse getUsers(
+      Pageable pageable,
+      HttpServletResponse response)
+      throws RuntimeException {
+    logger.info("Retrieving users with page params: " + pageable);
+    var page = userRepository.findAll(pageable);
+    var results = page.get()
+        .map(it -> new JsonApiData.Builder().setId(it.getId()).setAttributes(it.toMap()).setType("user").build())
+        .collect(Collectors.toList());
+    return new JsonApiSuccessResponse.Builder()
+        .setStatus(HttpStatus.OK.value(), response)
+        .setData(results).build();
+  }
 
-        existingUser.setRoles(user.getRoles());
-        existingUser.setCreatedOn(user.getCreatedOn());
-        existingUser.setLastUpdatedOn(user.getLastUpdatedOn());
-        OnestopUser savedUser = onestopUserRepository.save(existingUser);
-        List<JsonApiData> dataList = new ArrayList<>();
-        JsonApiData dataItem = new JsonApiData.Builder()
-          .setId(userId)
-          .setAttributes(savedUser.toMap())
-          .setType("user").build();
-        dataList.add(dataItem);
-        return new JsonApiSuccessResponse.Builder()
-          .setStatus(HttpStatus.CREATED.value(), response)
-          .setData(dataList).build();
+  @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.CREATE_USER})
+  @ApiOperation(value = "Create a user")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Successfully created a user"),
+      @ApiResponse(code = 401, message = "Authentication required"),
+      @ApiResponse(code = 403, message = "Authenticated user is not authorized to perform this action"),
+      @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+  })
+  @PostMapping(value = "/user", produces = "application/json")
+  public JsonApiResponse createUser(
+      @RequestBody OnestopUser user,
+      HttpServletResponse response)
+      throws RuntimeException {
+    logger.info("Creating new user with data: " + user);
+    var savedUser = userRepository.save(user);
+    var dataItem = new JsonApiData.Builder()
+        .setId(savedUser.getId())
+        .setAttributes(savedUser.toMap())
+        .setType("user").build();
+    return new JsonApiSuccessResponse.Builder()
+        .setStatus(HttpStatus.CREATED.value(), response)
+        .setData(Collections.singletonList(dataItem)).build();
+  }
+
+  @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.UPDATE_USER})
+  @ApiOperation(value = "Update user")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Successfully updated the user"),
+      @ApiResponse(code = 401, message = "Authentication required"),
+      @ApiResponse(code = 403, message = "Authenticated user is not authorized to perform this action"),
+      @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+  })
+  @PutMapping(value = "/user/{id}", produces = "application/json")
+  public JsonApiResponse updateUser(
+      @RequestBody OnestopUser user,
+      @PathVariable String id,
+      HttpServletResponse response)
+      throws ResourceNotFoundException {
+    logger.info("Updating user with id : " + id);
+    if (!userRepository.existsById(id)) {
+      throw new ResourceNotFoundException("Save search not found for requested id: " + id);
     }
+    user.setId(id); // id must come from path
+    var savedUser = userRepository.save(user);
+    var dataItem = new JsonApiData.Builder()
+        .setId(savedUser.getId())
+        .setAttributes(savedUser.toMap())
+        .setType("user").build();
+    return new JsonApiSuccessResponse.Builder()
+        .setStatus(HttpStatus.CREATED.value(), response)
+        .setData(Collections.singletonList(dataItem)).build();
+  }
+
+  @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_OWN_PROFILE})
+  @ApiOperation(value = "Get authenticated user data")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Successfully retrieved user data"),
+      @ApiResponse(code = 401, message = "Authentication required"),
+      @ApiResponse(code = 403, message = "Authenticated user is not authorized to perform this action"),
+      @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+  })
+  @GetMapping(value = "/self", produces = "application/json")
+  public JsonApiResponse getAuthenticatedUser(
+      final @AuthenticationPrincipal Authentication authentication,
+      HttpServletResponse response)
+      throws RuntimeException, ResourceNotFoundException {
+    var userId = authentication.getName();
+    logger.info("Retrieving user data for authenticated user with id : " + userId);
+    var result = userService.findById(userId)
+        .map(u -> new JsonApiData.Builder().setId(u.getId()).setAttributes(u.toMap()).setType("user").build())
+        .map(Arrays::asList)
+        .orElseThrow(() -> new ResourceNotFoundException("No user found for with id: " + userId));
+    return new JsonApiSuccessResponse.Builder()
+        .setStatus(HttpStatus.OK.value(), response)
+        .setData(result).build();
+  }
+
+  @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_OWN_PROFILE})
+  @ApiOperation(value = "Create or update authenticated user")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Successfully updated self"),
+      @ApiResponse(code = 201, message = "Successfully created self"),
+      @ApiResponse(code = 401, message = "Authentication required"),
+      @ApiResponse(code = 403, message = "Authenticated user is not authorized to perform this action"),
+      @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+  })
+  @RequestMapping(value = "/self", method = {RequestMethod.POST, RequestMethod.PUT}, produces = "application/json")
+  @PreAuthorize("#userInput.id == null || #userInput.id == #authentication.name")
+  public JsonApiResponse upsertAuthenticatedUser(
+      @RequestBody(required = false) OnestopUser userInput,
+      @AuthenticationPrincipal Authentication authentication,
+      HttpServletResponse response)
+      throws RuntimeException {
+    var userId = authentication.getName();
+    var userExists = userService.exists(userId);
+    logger.info(userExists ? "Updating " : "Creating new " + "user with id: " + userId);
+    var userData = userInput != null ? userInput : userService.findOrCreateUser(userId);
+    userData.setId(userId); // ensure id matches authentication name (IdP ID)
+    var savedUser = userService.save(userData);
+    logger.info("Saved user: " + savedUser);
+    var dataItem = new JsonApiData.Builder()
+        .setId(userId)
+        .setAttributes(savedUser.toMap())
+        .setType("user").build();
+    return new JsonApiSuccessResponse.Builder()
+        .setStatus(userExists ? HttpStatus.OK.value() : HttpStatus.CREATED.value(), response)
+        .setData(Collections.singletonList(dataItem)).build();
+  }
+
 }

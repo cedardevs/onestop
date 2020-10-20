@@ -1,13 +1,14 @@
 package org.cedar.onestop.user
 
+import org.cedar.onestop.user.config.AuthorizationConfiguration
 import org.cedar.onestop.user.config.SecurityConfig
+import org.cedar.onestop.user.domain.OnestopPrivilege
+import org.cedar.onestop.user.domain.OnestopRole
+import org.cedar.onestop.user.domain.OnestopUser
 import org.cedar.onestop.user.domain.SavedSearch
 import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
 import org.cedar.onestop.user.repository.OnestopRoleRepository
 import org.cedar.onestop.user.repository.OnestopUserRepository
-import org.cedar.onestop.user.domain.OnestopRole
-import org.cedar.onestop.user.domain.OnestopPrivilege
-import org.cedar.onestop.user.domain.OnestopUser
 import org.cedar.onestop.user.repository.SavedSearchRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,7 +20,7 @@ import spock.lang.Specification
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("integrationTest")
+@ActiveProfiles("integration")
 class OnestopUserRepositorySpec extends Specification {
 
   Logger logger = LoggerFactory.getLogger(OnestopUserRepositorySpec.class)
@@ -56,9 +57,9 @@ class OnestopUserRepositorySpec extends Specification {
 
   def "create user with role"() {
     given:
-    OnestopRole role = new OnestopRole(SecurityConfig.PUBLIC_PRIVILEGE)
+    OnestopRole role = new OnestopRole(AuthorizationConfiguration.PUBLIC_ROLE)
     roleRepository.save(role)
-    HashSet<OnestopRole> roles = [role]
+    List<OnestopRole> roles = [role]
     OnestopUser onestopUser = new OnestopUser("1", roles)
     OnestopUser id = onestopUserRepo.save(onestopUser)
 
@@ -79,11 +80,11 @@ class OnestopUserRepositorySpec extends Specification {
     privilegeRepository.save(writePrivilege)
 
     and: 'two roles - admin can read and write, public can read only'
-    OnestopRole adminRole = new OnestopRole(SecurityConfig.ADMIN_PRIVILEGE)
+    OnestopRole adminRole = new OnestopRole(AuthorizationConfiguration.ADMIN_ROLE)
     List<OnestopPrivilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege)
     adminRole.setPrivileges(adminPrivileges)
 
-    OnestopRole publicRole = new OnestopRole(SecurityConfig.PUBLIC_PRIVILEGE)
+    OnestopRole publicRole = new OnestopRole(AuthorizationConfiguration.PUBLIC_ROLE)
     List<OnestopPrivilege> publicPrivilege = Arrays.asList(readPrivilege)
     publicRole.setPrivileges(publicPrivilege)
 
@@ -125,7 +126,7 @@ class OnestopUserRepositorySpec extends Specification {
     SavedSearch mockSearch = new SavedSearch(user: savedPublicUser, value: "/collection/search")
     savedSearchRepository.save(mockSearch)
 
-    Set<SavedSearch> mockSearches = [mockSearch]
+    List<SavedSearch> mockSearches = [mockSearch]
     savedPublicUser.setSearches(mockSearches)
     OnestopUser updatedPublicUser = onestopUserRepo.findById(savedPublicUser.getId()).get()
 

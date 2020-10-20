@@ -1,7 +1,8 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import ListViewItem, {useListViewItem} from '../../common/ui/ListViewItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import FlexRow from '../../common/ui/FlexRow'
+import FlexColumn from '../../common/ui/FlexColumn'
 import {decodePathAndQueryString} from '../../../utils/queryUtils'
 import UserSavedSearchAppliedFilters from './UserSavedSearchAppliedFilters'
 import Button from '../../common/input/Button'
@@ -10,17 +11,28 @@ import trashIcon from 'fa/trash.svg'
 
 const styleTitle = {
   fontFamily: fontFamilySerif(),
-  fontSize: '2em',
+  // fontSize: '2em',
   fontWeight: 'bold',
   overflowWrap: 'break-word',
   wordWrap: 'break-word',
   margin: '0 1.236em 0 0',
 }
 
+const styleIcon = {
+  width: '1em',
+  height: '1em',
+  padding: '0.309em',
+}
+
 const styleButton = {
   padding: '0.309em',
   margin: '0.309em',
   borderRadius: '0.309em',
+}
+
+const styleButtonFocus = {
+  outline: '2px dashed black',
+  outlineOffset: '2px',
 }
 
 const styleHeading = {
@@ -37,8 +49,20 @@ const styleSavedSearch = {
 const UserSavedSearch = props => {
   const {itemId, item, expanded, setExpanded} = useListViewItem(props)
   const {navigateToSearch, deleteSearch} = props
-  const url = item.value
-  const name = item.name ? item.name : item.value
+  const url = item.attributes.value
+  const name = item.attributes.name
+    ? item.attributes.name
+    : item.attributes.value
+  const [ decodedSavedSearch, setDecodedSavedSearch ] = useState({
+    id: '',
+    filters: {},
+  })
+  useEffect(
+    () => {
+      setDecodedSavedSearch(decodePathAndQueryString('', queryString)) // TODO the use of an empty string for the first param only works for collection searches - it will definitely break for granules
+    },
+    [ queryString ]
+  )
 
   const title = (
     <h3 key={'UserSavedSearch::title'} style={styleTitle}>
@@ -54,7 +78,7 @@ const UserSavedSearch = props => {
       icon: linkIcon,
       showText: false,
       handler: () => {
-        navigateToSearch(JSON.parse(item.filter))
+        navigateToSearch(JSON.parse(item.attributes.filter))
       },
       notification: 'notification',
     },
@@ -65,10 +89,11 @@ const UserSavedSearch = props => {
       title="navigate to"
       icon={linkIcon}
       style={styleButton}
-      // styleIcon={styleIcon}
+      styleIcon={styleIcon}
+      styleFocus={styleButtonFocus}
       // iconPadding={'0.309em'}
       onClick={() => {
-        navigateToSearch(JSON.parse(item.filter))
+        navigateToSearch(JSON.parse(item.attributes.filter))
       }}
     />
   )
@@ -79,7 +104,8 @@ const UserSavedSearch = props => {
       title="delete"
       icon={trashIcon}
       style={styleButton}
-      // styleIcon={styleIcon}
+      styleIcon={styleIcon}
+      styleFocus={styleButtonFocus}
       // iconPadding={'0.309em'}
       onClick={() => {
         deleteSearch(itemId)
@@ -89,7 +115,7 @@ const UserSavedSearch = props => {
 
   const actionButtons = (
     <div>
-      <FlexRow items={[ deleteSearchButton, navigateToButton ]} />
+      <FlexColumn items={[ deleteSearchButton, navigateToButton ]} />
     </div>
   )
 
@@ -101,8 +127,6 @@ const UserSavedSearch = props => {
 
   const queryStringIndex = url.indexOf('?')
   const queryString = url.slice(queryStringIndex)
-  const decodedSavedSearch = decodePathAndQueryString('', queryString)
-  // console.log('decodedSavedSearch', decodedSavedSearch)
 
   const content = (
     <div style={styleSavedSearch}>

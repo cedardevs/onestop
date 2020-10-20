@@ -55,8 +55,9 @@ dependencies {
   implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
 
-  // PostgreSQL test container
-  testImplementation("org.testcontainers:postgresql:1.13.0")
+  // alternate DBs for testing
+  testImplementation("org.testcontainers:postgresql:1.14.3")
+  testImplementation('com.h2database:h2')
 
   // reactive test dependencies
 //    testImplementation 'org.springframework.boot.experimental:spring-boot-test-autoconfigure-r2dbc'

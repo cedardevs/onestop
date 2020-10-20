@@ -59,17 +59,16 @@ export const deleteSearch = (savedSearchEndpoint, id) => {
   return dispatch => {
     dispatch(savedSearchRequest())
 
-    return fetch(endpoint, requestOptions)
-      .then(
-        response => {
-          dispatch(savedSearchSuccess(response))
-          dispatch(getSavedSearches(savedSearchEndpoint))
-        },
-        error => {
-          dispatch(savedSearchFailure(error))
-          throw error
-        }
-      )
+    return fetch(endpoint, requestOptions).then(
+      response => {
+        dispatch(savedSearchSuccess(response))
+        dispatch(getSavedSearches(savedSearchEndpoint))
+      },
+      error => {
+        dispatch(savedSearchFailure(error))
+        throw error
+      }
+    )
   }
 }
 

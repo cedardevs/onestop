@@ -1,12 +1,19 @@
 package org.cedar.onestop.user
 
-import org.cedar.onestop.user.config.SecurityConfig
+import org.cedar.onestop.user.config.AuthorizationConfiguration
 import org.cedar.onestop.user.controller.UserController
+import org.cedar.onestop.user.domain.OnestopPrivilege
+import org.cedar.onestop.user.domain.OnestopRole
 import org.cedar.onestop.user.domain.OnestopUser
+import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
+import org.cedar.onestop.user.repository.OnestopRoleRepository
 import org.cedar.onestop.user.repository.OnestopUserRepository
+import org.cedar.onestop.user.service.OnestopUserService
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
@@ -17,6 +24,9 @@ import spock.lang.Specification
 @WebMvcTest(controllers = UserController.class)
 class UserControllerSpec extends Specification {
 
+  static final String PUBLIC_USER_ID = 'public'
+  static final String ADMIN_USER_ID = 'admin'
+
   @Autowired
   private MockMvc mockMvc
 
@@ -24,65 +34,145 @@ class UserControllerSpec extends Specification {
   private UserController userController
 
   @SpringBean
-  private OnestopUserRepository onestopUserRepository = Mock()
+  private OnestopUserRepository mockUserRepository = Mock()
+  @SpringBean
+  private OnestopPrivilegeRepository mockPrivilegeRepository = Mock()
+  @SpringBean
+  private OnestopRoleRepository mockRoleRepository = Mock()
+  @SpringBean
+  private OnestopUserService onestopUserService =
+      new OnestopUserService(mockUserRepository, mockRoleRepository, mockPrivilegeRepository)
 
   def "user controller exists and is protected from unauthenticated users"() {
     when:
-    def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/user/")
-        .accept(MediaType.APPLICATION_JSON))
+    def results = mockMvc.perform(MockMvcRequestBuilders.get("/v1/user/"))
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isUnauthorized())
   }
 
-  @WithMockUser(roles = [SecurityConfig.PUBLIC_PRIVILEGE])
-  def "public user can hit user endpoint"() {
+  @WithMockUser(username = PUBLIC_USER_ID, roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
+  def "public user cannot hit user endpoint"() {
     when:
-    def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/user/")
-        .accept(MediaType.APPLICATION_JSON))
+    def results = mockMvc.perform(MockMvcRequestBuilders.get("/v1/user/"))
 
     then:
-    results.andExpect(MockMvcResultMatchers.status().isOk())
+    results.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(roles = ["ADMIN"])
+  @WithMockUser(username = ADMIN_USER_ID, roles = [AuthorizationConfiguration.READ_USER])
   def "admin user can hit user endpoint"() {
     when:
-    def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/user")
-        .accept(MediaType.APPLICATION_JSON))
+    def results = mockMvc.perform(MockMvcRequestBuilders.get("/v1/user"))
 
     then:
+    1 * mockUserRepository.findAll(_ as Pageable) >> PageImpl.empty()
     results.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
   @WithMockUser(roles = ["RANDO"])
   def "random user can't hit user endpoint"() {
     when:
-    def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/user")
-        .accept(MediaType.APPLICATION_JSON))
+    def results = mockMvc.perform(MockMvcRequestBuilders.get("/v1/user"))
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 
-  @WithMockUser(username = "new_user", roles = [SecurityConfig.PUBLIC_PRIVILEGE])
+  @WithMockUser(username = ADMIN_USER_ID, roles = [AuthorizationConfiguration.CREATE_USER])
   def "user is created"() {
     when:
     def postSearch = mockMvc.perform(MockMvcRequestBuilders
         .post("/v1/user")
         .contentType("application/json")
-        .content(('{ "name": "test"}'))
-        .accept(MediaType.APPLICATION_JSON))
+        .content('{ "name": "test"}'))
 
     then:
-    onestopUserRepository.save(_ as OnestopUser) >> new OnestopUser("new_user") //>> new OnestopUser("new_user")
+    mockUserRepository.save(_ as OnestopUser) >> new OnestopUser("new_user")
 
     postSearch.andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value("new_user"))
+  }
 
+  @WithMockUser(username = PUBLIC_USER_ID, roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
+  def "public user can fetch their own user info"() {
+    when:
+    def results = mockMvc.perform(MockMvcRequestBuilders
+        .get("/v1/self"))
+
+    then:
+    1 * mockUserRepository.findById(PUBLIC_USER_ID) >> Optional.of(new OnestopUser(PUBLIC_USER_ID))
+    results.andExpect(MockMvcResultMatchers.status().isOk())
+  }
+
+  @WithMockUser(username = PUBLIC_USER_ID, roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
+  def "public user can initialize their own info"() {
+    when:
+    def results = mockMvc.perform(MockMvcRequestBuilders
+        .post("/v1/self")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content('{}'))
+
+    then:
+    results.andExpect(MockMvcResultMatchers.status().isCreated())
+
+    1 * mockUserRepository.existsById(PUBLIC_USER_ID) >> false
+    _ * mockRoleRepository.findByName(_) >> Optional.of(Mock(OnestopRole))
+    _ * mockPrivilegeRepository.findOneByName(_) >> Optional.of(Mock(OnestopPrivilege))
+    1 * mockUserRepository.save({ it.id == PUBLIC_USER_ID} ) >> new OnestopUser(PUBLIC_USER_ID)
+  }
+
+  @WithMockUser(username = PUBLIC_USER_ID, roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
+  def "public user can update their own info"() {
+    def existingUser = new OnestopUser(PUBLIC_USER_ID)
+
+    when:
+    def results = mockMvc.perform(MockMvcRequestBuilders
+        .put("/v1/self")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(/{"id": "${PUBLIC_USER_ID}"}/))
+
+    then:
+    results.andExpect(MockMvcResultMatchers.status().isOk())
+
+    1 * mockUserRepository.existsById(PUBLIC_USER_ID) >> true
+    1 * mockUserRepository.save({ it.id == PUBLIC_USER_ID} ) >> existingUser
+  }
+
+  @WithMockUser(username = PUBLIC_USER_ID, roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
+  def "public user cannot edit readonly fields"() {
+    def defaultRole = new OnestopRole('default', 'ROLE_' + AuthorizationConfiguration.ADMIN_ROLE)
+    def existingUser = new OnestopUser(PUBLIC_USER_ID, defaultRole)
+
+    when:
+    def results = mockMvc.perform(MockMvcRequestBuilders
+        .put("/v1/self")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""{
+          "id": "${PUBLIC_USER_ID}",
+          "createdOn": "1234-01-01T00:00:00Z",
+          "lastUpdatedOn": "2345-01-01T00:00:00Z",
+          "roles": [ {"id": "MALICIOUS_ROLE_ATTEMPT"} ]}"""))
+
+    then:
+    results.andExpect(MockMvcResultMatchers.status().isOk())
+
+    1 * mockUserRepository.existsById(PUBLIC_USER_ID) >> true
+    1 * mockUserRepository.save({ OnestopUser it ->
+      println "mock save called with: ${it}"
+      return it.createdOn == null && it.lastUpdatedOn == null && it.roles == []
+    }) >> existingUser
+  }
+
+  @WithMockUser(username = PUBLIC_USER_ID, roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
+  def "public user can only update their own info"() {
+    when:
+    def results = mockMvc.perform(MockMvcRequestBuilders
+        .put("/v1/self")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content('{"id": "SOMEONE_ELSES_ID"}'))
+
+    then:
+    results.andExpect(MockMvcResultMatchers.status().isForbidden())
   }
 }

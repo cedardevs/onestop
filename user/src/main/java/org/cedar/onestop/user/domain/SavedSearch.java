@@ -5,8 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,57 +13,42 @@ import java.util.Map;
  * Domain model class that maps the data stored into save_search table
  * inside database.
  */
-
 @Entity
 @Table(name = "onestop_search")
 public class SavedSearch {
   @Id
   @GeneratedValue(generator = "uuid")
   @GenericGenerator(name = "uuid", strategy = "uuid2")
-  public String id;
+  private String id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "onestop_user", nullable = false)
+  @JoinColumn(name = "user_id", nullable = false)
   private OnestopUser user;
 
   @Column(name = "name", nullable = false)
-  public String name;
+  private String name;
 
-  @Column(name = "value", nullable = false)
-  public String value;
+  @Column(name = "value", nullable = false, length = 2047)
+  private String value;
 
-  @Column(name = "filter")
-  public String filter;
+  @Column(name = "filter", length = 2047)
+  private String filter;
 
   @Column(name = "createdOn", updatable = false)
   @CreationTimestamp
-  public Date createdOn; //TODO do we also accept part of the query
+  private Instant createdOn;
 
   @Column(name = "lastUpdatedOn")
   @UpdateTimestamp
-  public Date lastUpdatedOn; ///TODO do we also accept part of the query
+  private Instant lastUpdatedOn;
 
   //constructor will be used by Spring JPA
-  protected SavedSearch() {
-  }
-
+  protected SavedSearch() {}
 
   protected SavedSearch(OnestopUser user) {
     this.user = user;
   }
 
-  //constructor is for creating instances.
-  public SavedSearch(OnestopUser user, String id, String name, String value, String filter,  Date createdOn, Date lastUpdatedOn) {
-    this.user = user;
-    this.id = id;
-    this.name = name;
-    this.value = value;
-    this.filter = filter;
-    this.createdOn = createdOn;
-    this.lastUpdatedOn = lastUpdatedOn;
-  }
-
-  //constructor is for creating instances.
   public SavedSearch(OnestopUser user, String id, String name, String filter, String value) {
     this.user = user;
     this.id = id;
@@ -73,15 +57,15 @@ public class SavedSearch {
     this.value = value;
   }
 
-  @PrePersist
-  protected void onCreate() {
-    createdOn = new Date();
-  }
-
-  @PreUpdate
-  protected void onUpdate() {
-    lastUpdatedOn = new Date();
-  }
+//  @PrePersist
+//  protected void onCreate() {
+//    createdOn = Instant.now();
+//  }
+//
+//  @PreUpdate
+//  protected void onUpdate() {
+//    lastUpdatedOn = Instant.now();
+//  }
 
   public String getId() {
     return id;
@@ -123,19 +107,19 @@ public class SavedSearch {
     this.filter = filter;
   }
 
-  public Date getLastUpdatedOn() {
+  public Instant getLastUpdatedOn() {
     return lastUpdatedOn;
   }
 
-  public void setLastUpdatedOn(Date lastUpdatedOn) {
+  public void setLastUpdatedOn(Instant lastUpdatedOn) {
     this.lastUpdatedOn = lastUpdatedOn;
   }
 
-  public Date getCreatedOn() {
+  public Instant getCreatedOn() {
     return createdOn;
   }
 
-  public void setCreatedOn(Date createdOn) {
+  public void setCreatedOn(Instant createdOn) {
     this.createdOn = createdOn;
   }
 
@@ -151,8 +135,7 @@ public class SavedSearch {
   }
 
   public Map<String, Object> toMap() {
-    //TODO should null fields be included?
-    Map result = new HashMap();
+    Map<String, Object> result = new HashMap<>();
     result.put("id", id);
     result.put("name", name);
     result.put("value", value);

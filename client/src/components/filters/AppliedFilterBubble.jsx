@@ -3,11 +3,13 @@ import _ from 'lodash'
 import Button from '../common/input/Button'
 import xIcon from 'fa/times.svg'
 
-const style = (backgroundColor, borderColor) => {
+const style = (backgroundColor, borderColor, allowRemoveFilter) => {
   return {
     display: 'inline-flex',
     borderRadius: '0.1em 0.4em',
-    padding: '.25em .1em .25em .5em',
+    padding: allowRemoveFilter
+      ? '.25em .1em .25em .5em'
+      : '.25em .5em .25em .5em',
     marginRight: '0.5em',
     marginBottom: '0.25em',
     background: backgroundColor,
@@ -38,17 +40,26 @@ const styleIcon = {
 
 export default class AppliedFilterBubble extends React.Component {
   render() {
-    const {text, onUnselect, backgroundColor, borderColor, title} = this.props
-
+    const {
+      text,
+      onUnselect,
+      backgroundColor,
+      borderColor,
+      title,
+      allowRemoveFilter,
+    } = this.props
+    // TODO arguably when allowRemoveFilter is false, we shouldn't use a button at all, but it's challenging to get the styling consistent then...
     return (
       <Button
-        style={style(backgroundColor, borderColor)}
+        disabled={!allowRemoveFilter}
+        styleDisabled={style(backgroundColor, borderColor, allowRemoveFilter)}
+        style={style(backgroundColor, borderColor, allowRemoveFilter)}
         styleHover={styleHover(backgroundColor)}
-        styleFocus={styleFocus}
-        onClick={onUnselect}
+        styleFocus={allowRemoveFilter ? styleFocus : {}}
+        onClick={allowRemoveFilter ? onUnselect : () => {}}
         title={_.isEmpty(title) ? `Remove ${text} Filter` : title}
-        icon={xIcon}
-        iconAfter={true}
+        icon={allowRemoveFilter ? xIcon : null}
+        iconAfter={allowRemoveFilter}
         text={text}
         styleIcon={styleIcon}
       />
