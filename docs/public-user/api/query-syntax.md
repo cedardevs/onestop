@@ -1,5 +1,5 @@
-<div align="center"><a href="/onestop/public-user">Public User Navigation Guide Home</a></div>
-<div align="center"><a href="/onestop/public-user/ui/features-in-depth#query-text-box">Return to UI Guide</a> | <a href="/onestop/public-user/api/quickstart">Return to API Guide</a></div>
+<div align="center"><a href="/onestop/docs/public-user">Public User Navigation Guide Home</a></div>
+<div align="center"><a href="/onestop/docs/public-user/ui/features-in-depth#query-text-box">Return to UI Guide</a> | <a href="/onestop/docs/public-user/api/quickstart">Return to API Guide</a></div>
 <hr>
 
 **Estimated Reading Time: 10 minutes**
@@ -38,7 +38,7 @@ The primary goal of the OneStop query is to enable the user to quickly discover 
 
 The current set of default fields, with their corresponding weights, can be found at the bottom of the [Search API's YAML configuration file](https://github.com/cedardevs/onestop/blob/master/search/src/main/resources/application.yml#L38). Please note that a running version of OneStop may not correlate to the latest development version though, so ensure you're looking at the correct tag branch for the version of OneStop you're using. The running version is located at the very bottom of the OneStop site footer. A version ending in "-SNAPSHOT" most often correlates to the `master` branch (where the above link resolves).
 
-![Image showing how to change the branch tag on github](/onestop/images/api/gh-tag-dropdown.png)
+![Image showing how to change the branch tag on github](/onestop/docs/images/api/gh-tag-dropdown.png)
 
 The default behavior of the query also includes some more technical details that are described in detail in the next four sections.
 
@@ -174,4 +174,4 @@ If you're unsure of something pertaining to the query syntax, feel free to searc
 
 
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/features-in-depth#query-text-box">Return to UI Guide</a> | <a href="#query-syntax">Top of Page</a> | <a href="/onestop/public-user/api/quickstart">Return to API Guide</a></div>
+<div align="center"><a href="/onestop/docs/public-user/ui/features-in-depth#query-text-box">Return to UI Guide</a> | <a href="#query-syntax">Top of Page</a> | <a href="/onestop/docs/public-user/api/quickstart">Return to API Guide</a></div>
