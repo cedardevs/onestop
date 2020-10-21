@@ -1,6 +1,6 @@
 import org.cedar.onestop.data.api.JsonApiData
-import org.cedar.onestop.data.api.JsonApiErrorResponse
-import org.cedar.onestop.data.api.JsonApiErrorResponse.ErrorSource
+import org.cedar.onestop.data.api.JsonApiError
+import org.cedar.onestop.data.api.JsonApiError.ErrorSource
 import org.cedar.onestop.data.api.JsonApiMeta
 import org.cedar.onestop.data.api.JsonApiSuccessResponse
 import spock.lang.Ignore
@@ -10,7 +10,7 @@ import spock.lang.Unroll
 
 import javax.servlet.http.HttpServletResponse
 
-class JsonApiErrorResponseSpec extends Specification {
+class JsonApiErrorSpec extends Specification {
   @Shared
   HttpServletResponse httpServletResponse = Mock(HttpServletResponse)
 
@@ -28,7 +28,7 @@ class JsonApiErrorResponseSpec extends Specification {
     ErrorSource errorSource = new ErrorSource('pointer', 'parameter')
 
     when:
-    JsonApiErrorResponse response = new JsonApiErrorResponse.Builder()
+    JsonApiError response = new JsonApiError.Builder()
         .setId(id)
         .setStatus((int)status, httpServletResponse)
         .setMeta(validMeta)

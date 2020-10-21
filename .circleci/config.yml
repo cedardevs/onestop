@@ -26,6 +26,19 @@ defaultsWithElasticsearch: &defaultsWithElasticsearch
         - ES_JAVA_OPTS: "-Xms160m -Xmx320m" # Customize the JVM maximum heap limit (will crash container if too high on Circle)
   working_directory: ~/repo
 
+defaultsWithPostgreSQL: &defaultsWithPostgreSQL
+  environment:
+    - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
+  docker:
+    - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
+    - image: circleci/postgres:9.6.2-alpine
+      restart: always
+      environment:
+        POSTGRES_USER: test
+        POSTGRES_DB: test
+        POSTGRES_URL: "postgres://ubuntu@localhost:5432/test"
+  working_directory: ~/repo
+
 defaultsMachine: &defaultsMachine
   machine:
     docker_layer_caching: true
@@ -198,6 +211,39 @@ jobs:
         paths:
         - registry/build
 
+  user:
+    <<: *env
+    <<: *defaultsWithPostgreSQL
+    steps:
+      - <<: *attachWorkspace
+      - run:
+          name: Assemble, Check, Report
+          command: ./gradlew --parallel user:clean user:assemble user:check -x integrationTest
+      - run:
+          name: Waiting for Postgres to be ready
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Integration Tests
+          command: ./gradlew user:integrationTest
+      - run:
+          name: Collect Test Results
+          command: |
+            mkdir -p ~/tests/junit/
+            find user/ -type f -regex ".*/build/test-results/test/.*xml" -exec cp {} ~/tests/junit/ \;
+            find user/ -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/tests
+      - store_artifacts:
+          path: user/build/reports
+      - deploy:
+          name: Publish Image(s)
+          command: ./gradlew user:jib -Djib.httpTimeout=30000 -Djib.console=plain
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+          - user/build
+
   parsalyzer:
     <<: *defaults
     <<: *env
@@ -308,6 +354,10 @@ workflows:
           requires:
             - checkout
           <<: *jobFilters
+      - user:
+          requires:
+            - checkout
+          <<: *jobFilters
       - finalize:
           requires:
             - client
@@ -315,6 +365,7 @@ workflows:
             - indexer
             - search
             - parsalyzer
+            - user
           <<: *jobFilters
 
   nightly:

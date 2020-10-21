@@ -1,3 +1,6 @@
+logging.level.org.springframework.security: DEBUG
+logging.level.org.springframework.web: DEBUG
+
 server:
   port: 9080
 

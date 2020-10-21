@@ -16,14 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
-import org.testcontainers.containers.PostgreSQLContainer
 import spock.lang.Specification
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("integration")
 class OnestopUserRepositorySpec extends Specification {
-  private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
 
   Logger logger = LoggerFactory.getLogger(OnestopUserRepositorySpec.class)
 
@@ -43,16 +41,6 @@ class OnestopUserRepositorySpec extends Specification {
     onestopUserRepo.deleteAll()
     roleRepository.deleteAll()
     privilegeRepository.deleteAll()
-  }
-
-  // Run before all the tests:
-  def setupSpec() {
-    postgres.start()
-  }
-
-  // Run after all the tests, even after failures:
-  def cleanupSpec() {
-    postgres.stop()
   }
 
   def "create a simple user"() {

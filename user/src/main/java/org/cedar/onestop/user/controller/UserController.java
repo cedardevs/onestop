@@ -104,7 +104,7 @@ public class UserController {
       throws ResourceNotFoundException {
     logger.info("Updating user with id : " + id);
     if (!userRepository.existsById(id)) {
-      throw new ResourceNotFoundException("Save search not found for requested id: " + id);
+      throw new ResourceNotFoundException("User not found with id: " + id);
     }
     user.setId(id); // id must come from path
     var savedUser = userRepository.save(user);
@@ -135,7 +135,7 @@ public class UserController {
     var result = userService.findById(userId)
         .map(u -> new JsonApiData.Builder().setId(u.getId()).setAttributes(u.toMap()).setType("user").build())
         .map(Arrays::asList)
-        .orElseThrow(() -> new ResourceNotFoundException("No user found for with id: " + userId));
+        .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
     return new JsonApiSuccessResponse.Builder()
         .setStatus(HttpStatus.OK.value(), response)
         .setData(result).build();
