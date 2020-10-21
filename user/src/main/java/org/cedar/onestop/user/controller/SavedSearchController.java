@@ -8,7 +8,6 @@ import org.cedar.onestop.data.api.JsonApiMeta;
 import org.cedar.onestop.data.api.JsonApiResponse;
 import org.cedar.onestop.data.api.JsonApiSuccessResponse;
 import org.cedar.onestop.user.config.AuthorizationConfiguration;
-import org.cedar.onestop.user.domain.OnestopUser;
 import org.cedar.onestop.user.domain.SavedSearch;
 import org.cedar.onestop.user.repository.SavedSearchRepository;
 import org.cedar.onestop.user.service.OnestopUserService;
@@ -53,9 +52,13 @@ public class SavedSearchController {
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @GetMapping(value = "/saved-search", produces = "application/json")
-  public JsonApiResponse getAll(Pageable pageable, HttpServletResponse response) {
+  public JsonApiResponse getAll(Pageable pageable,
+                                @RequestParam(required = false) String userId,
+                                HttpServletResponse response) {
     logger.info("Retrieving all saved searches... ");
-    var searchResults = searchRepository.findAll(pageable);
+    var searchResults = userId != null && !userId.isBlank() ?
+        searchRepository.findByUserId(userId, pageable) :
+        searchRepository.findAll(pageable);
     logger.info("Retrieved " + searchResults.getNumber() + " out of " + searchResults.getTotalElements() + "total searches");
     logger.debug(searchResults.toString());
     return new JsonApiSuccessResponse.Builder()
@@ -79,49 +82,6 @@ public class SavedSearchController {
         .setData(generateListJsonApiData(result)).build();
   }
 
-  @Secured(AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_SAVED_SEARCH_BY_USER_ID)
-  @ApiOperation(value = "View all available save searches by UserId (ADMIN)")
-  @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Successfully retrieved list"),
-      @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-  })
-  @GetMapping(value = "/saved-search/user/{userId}", produces = "application/json")
-  public JsonApiResponse getByUserId(@PathVariable(value = "userId") String userId,
-                                     HttpServletResponse response)
-      throws ResourceNotFoundException {
-    logger.info("Retrieving user searches for user id: " + userId);
-    OnestopUser user = userService.findById(userId)
-        .orElseThrow(() -> new ResourceNotFoundException("User not found for requested id :: " + userId));
-    Collection<SavedSearch> searchResults = user.getSearches();
-    logger.info("Retrieved " + searchResults.size() + " saved searches for user id " + userId);
-    return new JsonApiSuccessResponse.Builder()
-        .setStatus(HttpStatus.OK.value(), response)
-        .setData(generateListJsonApiData(new ArrayList<>(searchResults))).build();
-  }
-
-  @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.CREATE_SAVED_SEARCH})
-  @ApiOperation(value = "Add user search")
-  @PostMapping(value = "/saved-search", produces = "application/json")
-  public JsonApiResponse create(@RequestBody SavedSearch savedSearch,
-                                final @AuthenticationPrincipal Authentication authentication,
-                                HttpServletResponse response)
-      throws ResourceNotFoundException {
-    logger.info("Received saved-search POST request");
-    String userId = authentication.getName();
-    OnestopUser user = userService.findById(userId)
-        .orElseThrow(() -> new ResourceNotFoundException("User not found for requested id :: " + userId));
-    logger.info("Creating search for user with ID: " + userId + " with details "+ savedSearch);
-    savedSearch.setUser(user);
-    SavedSearch item = searchRepository.save(savedSearch);
-    logger.info("Created search with ID: " + userId);
-    List<SavedSearch> result = new ArrayList<>();
-    result.add(item);
-    return new JsonApiSuccessResponse.Builder()
-        .setStatus(HttpStatus.CREATED.value(), response)
-        .setData(generateListJsonApiData(result)).build();
-  }
-
-  //todo use postAuth to prevent changing others
   @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.UPDATE_SAVED_SEARCH})
   @ApiOperation(value = "Update user saved search")
   @PutMapping(value = "/saved-search/{id}", produces = "application/json")
@@ -146,7 +106,6 @@ public class SavedSearchController {
         .setData(generateListJsonApiData(result)).build();
   }
 
-  //todo more to do here so users cannot delete each others request
   @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.DELETE_SAVED_SEARCH})
   @ApiOperation(value = "Delete saved search")
   @DeleteMapping(value = "/saved-search/{id}", produces = "application/json")

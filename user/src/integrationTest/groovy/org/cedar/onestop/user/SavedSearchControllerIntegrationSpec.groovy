@@ -76,7 +76,7 @@ class SavedSearchControllerIntegrationSpec extends Specification {
         .accept(MediaType.APPLICATION_JSON))
 
     then: 'we get the translated controller advice response'
-    getResults.andExpect(MockMvcResultMatchers.status().isForbidden())
+    getResults.andExpect(MockMvcResultMatchers.status().isNotFound())
   }
 
   @WithMockUser(username = "mockMvcUser", roles = [AuthorizationConfiguration.READ_OWN_PROFILE, AuthorizationConfiguration.CREATE_SAVED_SEARCH, AuthorizationConfiguration.READ_SAVED_SEARCH])

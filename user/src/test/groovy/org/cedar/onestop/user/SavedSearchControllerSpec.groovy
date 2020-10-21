@@ -91,7 +91,7 @@ class SavedSearchControllerSpec extends Specification {
 
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
-        .post("/v1/saved-search")
+        .post("/v1/self/saved-search")
         .contentType("application/json")
         .content(('{"name": "test", "value": "value" }'))
         .accept(MediaType.APPLICATION_JSON))
@@ -100,9 +100,7 @@ class SavedSearchControllerSpec extends Specification {
     results.andExpect(MockMvcResultMatchers.status().isCreated())
     1 * mockUserService.findById('new_search_user') >> Optional.of(mockUser)
     1 * mockSaveSearchRepository.save(_) >> search1
-//    1 * mockUserService.save(mockUser)
 
-//    1 * mockSaveSearchRepository.save(_ as SavedSearch) >> new SavedSearch( user, "new_search_user",  "test",  "filter",  "value")
     results.andReturn().getResponse().getContentAsString() == '{"data":[' +  searchResult1Json + '],"meta":null,"status":201}'
   }
 
@@ -119,29 +117,16 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
-//  def "bad request"() {
-//    when:
-//    def postSearch = mockMvc.perform(MockMvcRequestBuilders
-//        .post("/v1/saved-search")
-//        .contentType("application/json")
-//        .content(('{"name": "test", "value": "value" }'))
-//        .accept(MediaType.APPLICATION_JSON))
-//
-//    then:
-//    postSearch.andExpect(MockMvcResultMatchers.status().isBadRequest())
-//
-//  }
-
-  @WithMockUser(roles = [AuthorizationConfiguration.READ_SAVED_SEARCH_BY_USER_ID])
+  @WithMockUser(roles = [AuthorizationConfiguration.LIST_ALL_SAVED_SEARCHES])
   def "get save searches by user id"() {
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/user/{userId}", mockerUserId)
+        .get("/v1/saved-search").param("userId", mockerUserId)
         .accept(MediaType.APPLICATION_JSON))
 
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockUserService.findById(mockerUserId) >> Optional.of(mockUser)
+    1 * mockSaveSearchRepository.findByUserId(mockerUserId, _ as Pageable) >> new PageImpl<SavedSearch>([search1, search2])
     results.andReturn().getResponse().getContentAsString() == searchResult2Json
   }
 
@@ -201,15 +186,4 @@ class SavedSearchControllerSpec extends Specification {
     results.andReturn().getResponse().getContentAsString() == "{\"data\":[" + searchResult1Json + "],\"meta\":null,\"status\":200}"
   }
 
-  @WithMockUser(roles = [AuthorizationConfiguration.READ_SAVED_SEARCH_BY_USER_ID])
-  def "admin can hit saved-search/user/{id}"() {
-    when:
-    def results = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/saved-search/user/{id}}", "1-2-3")
-        .accept(MediaType.APPLICATION_JSON))
-
-    then:
-    results.andExpect(MockMvcResultMatchers.status().isOk())
-    1 * mockUserService.findById(_) >> Optional.of(mockUser)
-  }
 }
