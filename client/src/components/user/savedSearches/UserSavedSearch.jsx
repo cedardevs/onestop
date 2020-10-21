@@ -19,15 +19,15 @@ const styleTitle = {
 }
 
 const styleIcon = {
-  width: '1em',
-  height: '1em',
-  padding: '0.309em',
+  width: '1.309em',
+  height: '1.309em',
 }
 
 const styleButton = {
   padding: '0.309em',
-  margin: '0.309em',
+  margin: '0.105em',
   borderRadius: '0.309em',
+  fontSize: '1em',
 }
 
 const styleButtonFocus = {
@@ -44,6 +44,30 @@ const styleSavedSearch = {
   // background: 'green',
   display: 'flex',
   marginBottom: '0.309em',
+}
+
+const styleButtonFunc = color => {
+  return {
+    fontSize: '1em',
+    padding: '0.309em',
+    margin: '0.105em',
+    borderRadius: '0.309em',
+    background: color,
+  }
+}
+
+const styleButtonHover = color => {
+  return {
+    background: `linear-gradient(black, ${color})`,
+  }
+}
+
+const styleButtonFocusFunc = color => {
+  return {
+    background: `linear-gradient(black, ${color})`,
+    outline: '2px dashed black',
+    outlineOffset: '2px',
+  }
 }
 
 const UserSavedSearch = props => {
@@ -80,22 +104,26 @@ const UserSavedSearch = props => {
       style={styleButton}
       styleIcon={styleIcon}
       styleFocus={styleButtonFocus}
-      // iconPadding={'0.309em'}
+      iconPadding={'0.309em'}
       onClick={() => {
         navigateToSearch(decodedSavedSearch.filters) // TODO this also will only work for collections, as written
       }}
     />
   )
 
+  const styleDeleteButton = styleButtonFunc('#851A11')
+  const styleDeleteButtonHover = styleButtonHover('#851A11')
+  const styleDeleteButtonFocus = styleButtonFocusFunc('#851A11')
   const deleteSearchButton = (
     <Button
       key="delete"
       title={`delete ${item.attributes.name} search`}
       icon={trashIcon}
-      style={styleButton}
       styleIcon={styleIcon}
-      styleFocus={styleButtonFocus}
-      // iconPadding={'0.309em'}
+      style={styleDeleteButton}
+      styleHover={styleDeleteButtonHover}
+      styleFocus={styleDeleteButtonFocus}
+      iconPadding={'0.309em'}
       onClick={() => {
         deleteSearch(itemId)
       }}
@@ -104,7 +132,7 @@ const UserSavedSearch = props => {
 
   const actionButtons = (
     <div>
-      <FlexColumn items={[ deleteSearchButton, navigateToButton ]} />
+      <FlexColumn items={[ navigateToButton, deleteSearchButton ]} />
     </div>
   )
 
