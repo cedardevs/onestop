@@ -38,7 +38,7 @@ The primary goal of the OneStop query is to enable the user to quickly discover 
 
 The current set of default fields, with their corresponding weights, can be found at the bottom of the [Search API's YAML configuration file](https://github.com/cedardevs/onestop/blob/master/search/src/main/resources/application.yml#L38). Please note that a running version of OneStop may not correlate to the latest development version though, so ensure you're looking at the correct tag branch for the version of OneStop you're using. The running version is located at the very bottom of the OneStop site footer. A version ending in "-SNAPSHOT" most often correlates to the `master` branch (where the above link resolves).
 
-![Image showing how to change the branch tag on github](/onestop/docs/images/api/gh-tag-dropdown.png)
+![Image showing how to change the branch tag on github](/onestop/images/api/gh-tag-dropdown.png)
 
 The default behavior of the query also includes some more technical details that are described in detail in the next four sections.
 
