@@ -1,0 +1,24 @@
+plugins {
+    id 'java-library'
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+dependencies {
+    def Versions = project.Versions
+
+    implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
+
+    implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
+    api("jakarta.json:jakarta.json-api:${Versions.JSONP}")
+    implementation("org.glassfish:jakarta.json:${Versions.JSONP}")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
+
+    testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+    testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
+}
+
+jar {
+    archiveBaseName.set("${rootProject.name}-${project.name}")
+}

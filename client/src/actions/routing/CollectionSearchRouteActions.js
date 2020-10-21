@@ -59,7 +59,13 @@ const newSearchSuccessHandler = dispatch => {
 
 const pageSuccessHandler = dispatch => {
   return payload => {
-    dispatch(collectionResultsPageReceived(payload.meta.total, payload.data))
+    dispatch(
+      collectionResultsPageReceived(
+        payload.meta.total,
+        payload.data,
+        payload.meta.facets
+      )
+    )
   }
 }
 
@@ -155,7 +161,8 @@ export const submitCollectionSearchWithPage = (offset, max) => {
     return collectionPromise(
       dispatch,
       updatedFilterState,
-      false,
+      offset ==
+        0 /* changes for https://github.com/cedardevs/onestop/issues/1335 are a workaround hotfix - the underlying problem is that PageController appears to be firing off this request when page 1 loads initially. Recommend revisiting that underlying problem and reverting these changes. */,
       pageSuccessHandler
     )
   }

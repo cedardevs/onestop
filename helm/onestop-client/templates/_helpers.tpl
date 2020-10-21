@@ -30,3 +30,23 @@ Create chart name and version as used by the chart label.
 {{- define "onestop-client.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "onestop-client.labels" -}}
+helm.sh/chart: {{ include "onestop-client.chart" . }}
+{{ include "onestop-client.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "onestop-client.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "onestop-client.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

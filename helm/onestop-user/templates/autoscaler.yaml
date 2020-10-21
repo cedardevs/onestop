@@ -1,0 +1,25 @@
+{{ if .Values.autoscaler.enabled -}}
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "onestop-user.fullname" . }}-autoscaler
+  {{- with .Values.autoscaler.annotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: {{ include "onestop-user.name" . }}-autoscaler
+    helm.sh/chart: {{ include "onestop-user.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "onestop-user.fullname" . }}
+  minReplicas: {{ .Values.autoscaler.minReplicas }}
+  maxReplicas: {{ .Values.autoscaler.maxReplicas }}
+{{- with .Values.autoscaler.metrics }}
+  metrics: {{ toYaml . | nindent 2 }}
+{{- end }}
+{{- end }}

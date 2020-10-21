@@ -1,16 +1,22 @@
+plugins {
+  id 'java-library'
+}
+
 sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
   def Versions = project.Versions
 
-  compileOnly("org.slf4j:slf4j-api:1.7.25")
+  implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
 
+  implementation(project(':data-common'))
   implementation("org.apache.kafka:kafka-streams:${Versions.KAFKA}")
   implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
   implementation("org.apache.avro:avro:${Versions.AVRO}")
   implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
   implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
+
 
   // reactor release train BOM governs reactor dependency versions
   implementation(platform("io.projectreactor:reactor-bom:${Versions.REACTOR_BOM}"))

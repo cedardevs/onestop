@@ -18,12 +18,10 @@ object Versions {
     // https://github.com/opencontainers/image-spec/blob/master/annotations.md#annotations
     const val LABEL_SCHEMA: String = "1.0"
 
-    const val MICRONAUT: String = "1.2.10"
-
     const val NODE: String = "10.16.3"
-    const val NPM: String = "6.9.0"
+    const val NPM: String = "6.14.0"
 
-    const val ELASTIC: String = "7.5.2"
+    const val ELASTIC: String = "7.6.2"
     const val CONFLUENT: String = "5.4.0"
     const val KAFKA: String = "2.4.0"
     const val SPRING_KAFKA: String = "2.4.1.RELEASE"
@@ -34,14 +32,16 @@ object Versions {
     const val TEST_CONTAINERS: String = "1.12.2"
     const val OPEN_SAML = "3.4.3"
     const val LOGBACK = "1.2.3"
+    const val SLF4J = "1.7.28"
     const val JAVAX_SERVLET_API = "4.0.1"
     const val JUNIT = "4.12"
     const val AUTH0_JAVA_JWT = "3.4.1"
     const val PAC4J = "3.8.3"
     const val SNAKE_YAML = "1.24"
     const val REACTOR_BOM = "Dysprosium-SR7"
+    const val JSONP = "2.0.0-RC2"
 
-    const val ONESTOP_SCHEMAS: String = "0.5.5"
+    const val ONESTOP_SCHEMAS: String = "0.7.0"
 }
 
 // data classes

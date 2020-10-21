@@ -20,16 +20,6 @@ volume:
   size: 1Gi
   storageClass:
 
-autoscaler:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: ## Required when enabled
-  cpu:
-    ## At least one of the following metrics to scale on is required when enabled
-    ## If both are provided, both will be used to trigger scaling
-    averageValue:
-    averageUtilization: ## Note: utilization is based on resources.requests.cpu and resources.limits.cpu
-
 debug: false
 
 ###############################################################################
@@ -67,7 +57,26 @@ cp-schema-registry: {}
 #  override the full url of the schema registry:
 #  url:
 
-resources: {}
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+
+autoscaler:
+  enabled: false
+#  minReplicas: 1
+#  maxReplicas: 2
+#  annotations: {}
+#  metrics:
+#  - type: Resource
+#    resource:
+#      name: cpu
+#      target:
+#        type: Utilization
+#        averageUtilization: 75
 
 nodeSelector: {}
 

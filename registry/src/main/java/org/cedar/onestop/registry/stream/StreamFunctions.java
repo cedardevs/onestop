@@ -1,10 +1,15 @@
 package org.cedar.onestop.registry.stream;
 
 import groovy.json.JsonOutput;
+import org.apache.avro.specific.SpecificData;
 import org.apache.kafka.streams.kstream.Aggregator;
 import org.apache.kafka.streams.kstream.Initializer;
 import org.apache.kafka.streams.kstream.Reducer;
+import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
+import org.cedar.onestop.data.util.JsonUtils;
+import org.cedar.onestop.data.util.ListUtils;
+import org.cedar.onestop.data.util.MapUtils;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.cedar.schemas.avro.psi.*;
@@ -92,8 +97,8 @@ public class StreamFunctions {
 
     // Note: we always preserve existing events, hence currentState.getEvents() instead of builder.getEvents()
     var currentEvents = currentState != null ? currentState.getEvents() : null;
-    var mergedEvents = DataUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput, failedState));
-    builder.setEvents(DataUtils.truncateList(mergedEvents, eventListLimit, true));
+    var mergedEvents = ListUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput, failedState));
+    builder.setEvents(ListUtils.truncateList(mergedEvents, eventListLimit, true));
     return builder.build();
   };
 
@@ -112,24 +117,24 @@ public class StreamFunctions {
     }
     else {
       assert input != null;
-      var mergedEvents = DataUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false));
+      var mergedEvents = ListUtils.addOrInit(currentState.getEvents(), buildEventRecord(input, false));
       return AggregatedInput.newBuilder(currentState)
           .setDeleted(deleted)
-          .setEvents(DataUtils.truncateList(mergedEvents, eventListLimit, true))
+          .setEvents(ListUtils.truncateList(mergedEvents, eventListLimit, true))
           .build();
     }
   }
 
   public static Map updateRawJson(AggregatedInput.Builder builder, Input input, OperationType operationType) {
     try {
-      var currentMap = DataUtils.parseJsonMap(builder.getRawJson());
-      var inputMap = DataUtils.parseJsonMap(input.getContent());
-      Map mergedMap = new HashMap();
+      var currentMap = JsonUtils.parseJsonAsMapSafe(builder.getRawJson());
+      var inputMap = JsonUtils.parseJsonAsMapSafe(input.getContent());
+      Map mergedMap;
       if(operationType == OperationType.REMOVE) {
-        mergedMap = DataUtils.removeFromMap(currentMap, inputMap);
+        mergedMap = MapUtils.removeFromMap(currentMap, inputMap);
       }
       else {
-        mergedMap = DataUtils.mergeMaps(currentMap, inputMap);
+        mergedMap = MapUtils.mergeMaps(currentMap, inputMap);
       }
       builder.setRawJson(JsonOutput.toJson(mergedMap));
       return mergedMap;
@@ -140,7 +145,7 @@ public class StreamFunctions {
           .setDetail("Failed to parsed json: " + e.getMessage())
           .setSource(StreamsApps.REGISTRY_ID)
           .build();
-      builder.setErrors(DataUtils.addOrInit(builder.getErrors(), error));
+      builder.setErrors(ListUtils.addOrInit(builder.getErrors(), error));
       return null;
     }
   }
@@ -155,4 +160,51 @@ public class StreamFunctions {
         .build();
   }
 
+  /**
+   * A value joiner to combine two parsed records by flattening/denormalizing their Discovery values
+   *
+   * NOTE: This is a simple field-by-field override process, i.e. if a child discovery field has been set
+   * to any non-default value then it will fully replace the value from the parent. This is designed to mimic
+   * the behavior implemented downstream via Elasticsearch update_by_query requests, which are still in use
+   * for bulk updates when a parent collection changes.
+   *
+   * TODO: Revisit this logic if/when we have another approach for bulk flattening on collection changes or
+   * if we rethink our flattening approach in its entirety.
+   */
+  public static ValueJoiner<? super ParsedRecordWithId, ? super ParsedRecord, ParsedRecordWithId> flattenRecords = (child, parent) -> {
+    if (child == null) {
+      return null;
+    }
+    var discoverySchema = Discovery.getClassSchema();
+    // defensive copy of the parent discovery object
+    var parentDiscovery = Optional.ofNullable(parent).map(ParsedRecord::getDiscovery).orElse(Discovery.newBuilder().build());
+    var copyForOverrides = SpecificData.getForClass(Discovery.class).deepCopy(discoverySchema, parentDiscovery);
+    discoverySchema.getFields().forEach(f -> {
+      var childVal = Optional.ofNullable(child)
+          .map(ParsedRecordWithId::getRecord)
+          .map(ParsedRecord::getDiscovery)
+          .map(d -> d.get(f.name()))
+          .orElse(null);
+      if (childVal != null && !childVal.equals(f.defaultVal())) {
+        // override the parent value if a child value exists
+        copyForOverrides.put(f.pos(), childVal);
+      }
+    });
+    // build a new record with the overridden discovery copy
+    var flattenedRecord = ParsedRecord.newBuilder(child.getRecord())
+        .setDiscovery(copyForOverrides)
+        .build();
+    // wrap the flattened record with the child's id
+    return ParsedRecordWithId.newBuilder()
+        .setId(child.getId())
+        .setRecord(flattenedRecord)
+        .build();
+  };
+
+  static ParsedRecordWithId wrapRecordWithId(String id, ParsedRecord record) {
+    return ParsedRecordWithId.newBuilder()
+        .setId(id)
+        .setRecord(record)
+        .build();
+  }
 }

@@ -24,14 +24,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @DirtiesContext
 @ActiveProfiles(["integration"])
 @SpringBootTest(
-    classes = [
-        Application,
-        DefaultApplicationConfig,
-
-        // provides:
-        // - `RestClient` 'restClient' bean via test containers
-        ElasticsearchTestConfig,
-    ],
+    classes = [Application, DefaultApplicationConfig, ElasticsearchTestConfig],
     webEnvironment = RANDOM_PORT,
     properties = ["elasticsearch.index.prefix=search_controller_"]
 )
@@ -114,7 +107,11 @@ class SearchControllerIntegrationTests extends Specification {
     data[0] == [
         type : 'count',
         id   : type,
-        count: count
+        count: count,
+        attributes: [
+            count: count,
+            exactCount: true
+        ]
     ]
 
     where:

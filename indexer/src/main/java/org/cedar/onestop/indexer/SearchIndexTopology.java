@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,7 +56,9 @@ public class SearchIndexTopology {
     streamsBuilder.addStateStore(indexerStoreBuilder);
 
     //----- Indexing Stream --------
-    var inputRecords = streamsBuilder.<String, ParsedRecord>stream(Topics.parsedChangelogTopics(StreamsApps.REGISTRY_ID));
+    var inputTopics = new ArrayList<>(Topics.parsedChangelogTopics(StreamsApps.REGISTRY_ID));
+    inputTopics.add(Topics.flattenedGranuleTopic());
+    var inputRecords = streamsBuilder.<String, ParsedRecord>stream(inputTopics);
     var filledInRecords = inputRecords.mapValues(DefaultParser::fillInDefaults);
     var analyzedRecords = filledInRecords.mapValues(Analyzers::addAnalysis);
     var recordsWithTopic = analyzedRecords.transformValues(TopicIdentifier<ParsedRecord>::new);
@@ -75,17 +78,9 @@ public class SearchIndexTopology {
       var flatteningTopicName = appConfig.get("flattening.topic.name").toString();
 
       //----- Flattening Stream --------
-      var flatteningTriggersFromGranules = successfulBulkResults
-          .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(granuleIndex))
-          .flatMap((k, v) ->
-              getParentIds(v.getRecord())
-                  .map(parentId -> new KeyValue<>(parentId, v.getTimestamp()))
-                  .collect(Collectors.toList())); // stream of collectionId => timestamp of granule to flatten from
-      var flatteningTriggersFromCollections = successfulBulkResults
+      successfulBulkResults
           .filter((k, v) -> v.getIndex() != null && v.getIndex().startsWith(collectionIndex))
-          .mapValues(bulkItemResponse -> 0L); // stream of collectionId => 0, since all granules should be flattened
-
-      flatteningTriggersFromCollections.merge(flatteningTriggersFromGranules)
+          .mapValues(bulkItemResponse -> 0L) // stream of collectionId => 0, since all granules should be flattened
           .peek((k, v) -> log.debug("producing flattening trigger [{} => {}]", k, v))
           // re-partition so all triggers for a given collection go to the same consumer
           .through(flatteningTopicName, Produced.with(Serdes.String(), Serdes.Long()))

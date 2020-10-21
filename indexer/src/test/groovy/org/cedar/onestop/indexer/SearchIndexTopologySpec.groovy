@@ -8,7 +8,8 @@ import org.apache.kafka.streams.TestOutputTopic
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.state.ValueAndTimestamp
-import org.cedar.onestop.elastic.common.FileUtil
+import org.cedar.onestop.data.util.FileUtils
+
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer
 import org.cedar.onestop.indexer.stream.FlatteningConfig
 import org.cedar.onestop.indexer.stream.FlatteningTransformer
@@ -162,48 +163,6 @@ class SearchIndexTopologySpec extends Specification {
     result[testKey1] == 0L
   }
 
-  def "granule triggers flattening for parent from granule update time"() {
-    def testGranId = 'a'
-    def testCollId = 'c'
-    def baseValue = buildTestRecord(validGranulePath)
-    def parentRelationship = Relationship.newBuilder().setId(testCollId).setType(RelationshipType.COLLECTION).build()
-    def testGranValue = ParsedRecord.newBuilder(baseValue).setRelationships([parentRelationship]).build()
-
-    when:
-    granuleInput.pipeInput(testGranId, testGranValue)
-
-    then:
-    1 * mockIndexingTransformer.transform(testGranId, _) >> buildIndexerResult(testGranId, testGranValue, granuleIndex, INDEX)
-
-    and:
-    def result = flatteningTriggersOut.readKeyValuesToMap()
-    result.size() == 1
-    result[testCollId] == publishingStartTime.toEpochMilli()
-  }
-
-  def "granule with multiple parents produces multiple flattening triggers"() {
-    // FIXME questionable behavior -- wouldn't this create two flattened granules with the same ID?
-    def testGranId = 'a'
-    def testCollId1 = 'c1'
-    def testCollId2 = 'c2'
-    def baseValue = buildTestRecord(validGranulePath)
-    def parentRelationship1 = Relationship.newBuilder().setId(testCollId1).setType(RelationshipType.COLLECTION).build()
-    def parentRelationship2 = Relationship.newBuilder().setId(testCollId2).setType(RelationshipType.COLLECTION).build()
-    def testGranValue = ParsedRecord.newBuilder(baseValue).setRelationships([parentRelationship1, parentRelationship2]).build()
-
-    when:
-    granuleInput.pipeInput(testGranId, testGranValue)
-
-    then:
-    1 * mockIndexingTransformer.transform(testGranId, _) >> buildIndexerResult(testGranId, testGranValue, granuleIndex, INDEX)
-
-    and:
-    def result = flatteningTriggersOut.readKeyValuesToMap()
-    result.size() == 2
-    result[testCollId1] == publishingStartTime.toEpochMilli()
-    result[testCollId2] == publishingStartTime.toEpochMilli()
-  }
-
   def "flattening triggers are sent to the flattening transformer"() {
     def id = 'a'
     def timestamp = 1000L
@@ -264,7 +223,7 @@ class SearchIndexTopologySpec extends Specification {
   }
 
   private static buildTestRecord(String resourcePath) {
-    TestUtils.buildRecordFromXML(FileUtil.textFromClasspathFile(resourcePath))
+    TestUtils.buildRecordFromXML(FileUtils.textFromClasspathFile(resourcePath))
   }
 
   private static KeyValue<String, IndexingOutput> buildIndexerResult(String key, ParsedRecord record, String index, OpType opType) {

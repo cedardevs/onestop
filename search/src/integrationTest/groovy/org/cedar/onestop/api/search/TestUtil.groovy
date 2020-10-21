@@ -2,9 +2,9 @@ package org.cedar.onestop.api.search
 
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.search.service.ElasticsearchService
+import org.cedar.onestop.data.util.FileUtils
 import org.cedar.onestop.elastic.common.ElasticsearchVersion
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
-import org.cedar.onestop.elastic.common.FileUtil
 import org.cedar.onestop.elastic.common.RequestUtil
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
@@ -76,7 +76,7 @@ class TestUtil {
     // the alias names configured (including the prefix) and the JSON mappings
     // https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
     String jsonMappingGeneric
-    jsonMappingGeneric = FileUtil.textFromClasspathFile("test/data/generic/${alias}/index.json")
+    jsonMappingGeneric = FileUtils.textFromClasspathFile("test/data/generic/${alias}/index.json")
 
     RequestUtil.resetIndices(alias, jsonMappingGeneric, restClient)
 
@@ -86,7 +86,7 @@ class TestUtil {
       bulkDataFile = "test/data/generic/${alias}/bulkDataES6.txt"
     }
 
-    String bulkData = FileUtil.textFromClasspathFile(bulkDataFile.toString())
+    String bulkData = FileUtils.textFromClasspathFile(bulkDataFile.toString())
     RequestUtil.bulk(alias, bulkData, restClient)
 
     // refresh all indices
@@ -109,7 +109,7 @@ class TestUtil {
       dataset.each { collection, collectionData ->
         // each test collection has an id and a corresponding JSON found in the shared `elastic-common` resources
         String collectionId = collectionData.id
-        String collectionMetadata = FileUtil.textFromClasspathFile("test/data/json/${name}/${collection}.json")
+        String collectionMetadata = FileUtils.textFromClasspathFile("test/data/json/${name}/${collection}.json")
         // load the collection record into the collection index
         log.info("LOADING COLLECTION - test/data/json/${name}/${collection}.json")
         RequestUtil.putSearchCollectionMetadataRecord(collectionId, collectionMetadata, esConfig, restClient)
@@ -119,7 +119,7 @@ class TestUtil {
           // if there are any granules, each has an id and corresponding JSON found in the shared `elastic-common` resources
           String granuleId = granuleData.id
           log.info("LOADING GRANULE - test/data/json/${name}/${collection}.json")
-          String granuleMetadata = FileUtil.textFromClasspathFile("test/data/json/${name}/${granule}.json")
+          String granuleMetadata = FileUtils.textFromClasspathFile("test/data/json/${name}/${granule}.json")
           // load the new granule record into the granule index
           RequestUtil.putSearchGranuleMetadataRecord(granuleId, granuleMetadata, esConfig, restClient)
         }
@@ -128,7 +128,7 @@ class TestUtil {
         collectionData.flattenedGranules.each { flattenedGranule, flattenedGranuleData ->
           // if there are any flattened granules, each has an id and corresponding JSON found in the shared `elastic-common` resources
           String flattenedGranuleId = flattenedGranuleData.id
-          String flattenedGranuleMetadata = FileUtil.textFromClasspathFile("test/data/json/${name}/${flattenedGranule}.json")
+          String flattenedGranuleMetadata = FileUtils.textFromClasspathFile("test/data/json/${name}/${flattenedGranule}.json")
           // load the new flattened granule record into the flattened granule index
           RequestUtil.putSearchFlattenedGranuleMetadataRecord(flattenedGranuleId, flattenedGranuleMetadata, esConfig, restClient)
         }

@@ -1,5 +1,6 @@
 import 'isomorphic-fetch'
 import {apiPath} from '../../utils/urlUtils'
+import {checkForErrors} from '../../utils/responseUtils'
 
 export const fetchSitemap = () => {
   return dispatch => {

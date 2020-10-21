@@ -1,7 +1,9 @@
 package org.cedar.onestop.indexer.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cedar.onestop.data.util.JsonUtils;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
+import org.cedar.onestop.elastic.common.ElasticsearchReadService;
 import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
 import org.cedar.onestop.indexer.stream.FlatteningConfig;
@@ -23,6 +25,8 @@ import org.elasticsearch.client.Cancellable;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.GetMappingsRequest;
+import org.elasticsearch.client.indices.GetMappingsResponse;
 import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
@@ -34,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,14 +52,13 @@ public class ElasticsearchService {
   private final RestHighLevelClient client;
   private final ElasticsearchConfig config;
 
+  private final ElasticsearchReadService esReadService;
+
   public ElasticsearchService(RestHighLevelClient client, ElasticsearchConfig config) {
     this.client = client;
     this.config = config;
-//    int majorVersion = Integer.parseInt(config.version.getNumber().split("\\.")[0]);
-//    int minimumCompatibleMajorVersion = 6;
-//    if (majorVersion < minimumCompatibleMajorVersion) {
-//      throw new IllegalStateException("The indexer service does not work against Elasticsearch < version " + minimumCompatibleMajorVersion);
-//    }
+
+    esReadService = new ElasticsearchReadService(client, config);
   }
 
   public RestHighLevelClient getClient() {
@@ -92,10 +95,28 @@ public class ElasticsearchService {
   private void ensureAliasWithIndex(String alias) throws IOException {
     var aliasExists = checkAliasExists(alias);
     if (aliasExists) {
-      var mapping = getMappingByAlias(alias);
-      putMapping(alias, mapping);
+      String existingMapping = getDeployedMappingByAlias(alias);
+      log.debug("EXISTING " + alias + " MAPPING:\n\n\n" + existingMapping + "\n\n\n");
+      String expectedMapping = getExpectedMappingByAlias(alias);
+      log.debug("EXPECTED MAPPING:\n\n\n" + expectedMapping + "\n\n\n");
+
+      if(existingMapping != null) {
+        List<Map<String, Object>> mappingDiffs = JsonUtils.getJsonDiffList(existingMapping, expectedMapping);
+        log.debug("MAPPING DIFFS:\n\n\n" + mapper.writeValueAsString(mappingDiffs) + "\n\n\n");
+
+        List<String> ops = mappingDiffs.stream().map(e -> (String) e.get("op")).collect(Collectors.toList());
+        // FIXME: WARN if fields added or deleted but continue to startup
+        // FIXME: ERROR if any existing field type or analyzer changes
+        // FIXME -- Strict mappings double check?
+//        if(!ops.isEmpty() && (ops.contains("remove") || ops.contains("replace"))) {
+//          log.error("Indexer has Elasticsearch mapping for [ " + alias + " ] index that replaces or removes fields from the existing mapping.");
+//        }
+
+        putMapping(alias, expectedMapping); // FIXME handle when unacceptable field changes encountered and stop app; log ERROR
+      }
     }
     else {
+      log.debug("\n\nCREATING INDEX " + alias + "\n\n");
       createIndex(alias, true);
     }
   }
@@ -125,8 +146,8 @@ public class ElasticsearchService {
 
   public String createIndex(String aliasName, boolean applyAlias) throws IOException {
     String indexName = newIndexName(aliasName);
-    var jsonIndexMapping = getMappingByAlias(aliasName);
-    var jsonIndexSettings = getIndexSettingsByAlias(aliasName);
+    var jsonIndexMapping = getExpectedMappingByAlias(aliasName);
+    var jsonIndexSettings = getExpectedIndexSettingsByAlias(aliasName);
     var request = new CreateIndexRequest(indexName)
         .mapping(jsonIndexMapping, XContentType.JSON);
     if (applyAlias) {
@@ -171,13 +192,25 @@ public class ElasticsearchService {
     return client.indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT).isAcknowledged();
   }
 
-  private String getMappingByAlias(String alias) throws IOException {
+  private String getExpectedMappingByAlias(String alias) throws IOException {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     return mapper.writeValueAsString((Map) parsedDefinition.get("mappings"));
   }
 
-  private String getIndexSettingsByAlias(String alias) throws IOException {
+  private String getDeployedMappingByAlias(String alias) {
+    Map<String, Object> response = esReadService.getIndexMapping(alias);
+    List data = (List) response.get("data");
+    String mapping = null;
+    if(data != null) {
+      Map attributes = (Map)((Map) data.get(0)).get("attributes");
+      mapping = JsonUtils.toJson((Map) attributes.get("mappings"));
+      log.debug(mapping);
+    }
+    return mapping;
+  }
+
+  private String getExpectedIndexSettingsByAlias(String alias) throws IOException {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     return mapper.writeValueAsString((Map) parsedDefinition.get("settings"));
@@ -210,13 +243,17 @@ public class ElasticsearchService {
   }
 
   public void blockUntilTasksAvailable() throws IOException {
-    while (client.tasks().list(new ListTasksRequest(), RequestOptions.DEFAULT).getTasks().size() >= config.MAX_TASKS) {
+    while (currentRunningTasks() >= config.MAX_TASKS) {
       try {
         sleep(100);
       } catch (InterruptedException e) {
         log.info("blocking for tasks interrupted", e);
       }
     }
+  }
+
+  public Integer currentRunningTasks() throws IOException {
+    return client.tasks().list(new ListTasksRequest(), RequestOptions.DEFAULT).getTasks().size();
   }
 
   public BulkByScrollResponse reindex(ReindexRequest request) throws IOException {

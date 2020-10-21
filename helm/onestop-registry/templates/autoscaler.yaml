@@ -4,11 +4,10 @@ apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "onestop-registry.fullname" . }}-autoscaler
-  labels:
-    app.kubernetes.io/name: {{ include "onestop-registry.name" . }}-autoscaler
-    helm.sh/chart: {{ include "onestop-registry.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- with .Values.autoscaler.annotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+  labels: {{- include "onestop-registry.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -16,21 +15,7 @@ spec:
     name: {{ include "onestop-registry.fullname" . }}
   minReplicas: {{ .Values.autoscaler.minReplicas }}
   maxReplicas: {{ .Values.autoscaler.maxReplicas }}
-  metrics:
-{{- if .Values.autoscaler.cpu.averageValue }}
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: AverageValue
-        averageValue: {{ .Values.autoscaler.cpu.averageValue }}
-{{- end }}
-{{- if .Values.autoscaler.cpu.averageUtilization }}
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.autoscaler.cpu.averageUtilization }}
+{{- with .Values.autoscaler.metrics }}
+  metrics: {{ toYaml . | nindent 2 }}
 {{- end }}
 {{- end }}

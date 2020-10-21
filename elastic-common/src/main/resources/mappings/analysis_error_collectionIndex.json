@@ -2,6 +2,10 @@
   "mappings": {
     "dynamic": "strict",
     "properties": {
+      "stagedDate": {
+        "type": "date",
+        "format": "epoch_millis"
+      },
       "dataAccess": {
         "properties": {
           "dataAccessExists": {
@@ -54,7 +58,7 @@
           "hierarchyLevelNameExists": {
             "type": "boolean"
           },
-          "matchesIdentifiers": {
+          "isGranule": {
             "type": "boolean"
           },
           "parentIdentifierExists": {
@@ -165,7 +169,7 @@
       "errors": {
         "type": "nested",
         "properties": {
-          "applicationSource": {
+          "source": {
             "type": "keyword"
           },
           "title": {

@@ -10,9 +10,9 @@ build:
       jib:
         project: registry
         type: gradle
-    - image: cedardevs/onestop-stream-manager
+    - image: cedardevs/onestop-parsalyzer
       jib:
-        project: stream-manager
+        project: parsalyzer
         type: gradle
     - image: cedardevs/onestop-search
       jib:
@@ -33,6 +33,9 @@ deploy:
           image: cedardevs/onestop-indexer
         setValues:
           debug: true
+          elasticsearch.host: "onestop-dev-es-http"
+          elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
+          elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
           config: |-
             ---
             kafka:
@@ -75,10 +78,10 @@ deploy:
           service.clusterIP: 10.100.100.1
         imageStrategy:
           helm: {}
-      - name: onestop-manager
-        chartPath: helm/onestop-manager
+      - name: onestop-parsalyzer
+        chartPath: helm/onestop-parsalyzer
         values:
-          image: cedardevs/onestop-stream-manager
+          image: cedardevs/onestop-parsalyzer
         setValues:
           debug: true
           config: |-
@@ -105,6 +108,9 @@ deploy:
           service.nodePort: "30097"
           service.type: NodePort
           service.clusterIP: 10.100.100.2
+          elasticsearch.host: "onestop-dev-es-http"
+          elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
+          elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
         imageStrategy:
           helm: {}
       - name: onestop-client
@@ -123,10 +129,10 @@ profiles:
     deploy:
       helm:
         releases:
-          - name: onestop-manager
-            chartPath: helm/onestop-manager
+          - name: onestop-parsalyzer
+            chartPath: helm/onestop-parsalyzer
             values:
-              image: cedardevs/onestop-stream-manager
+              image: cedardevs/onestop-parsalyzer
             setValues:
               debug: true
               config: |-
@@ -186,6 +192,9 @@ profiles:
               features.sitemap: "true"
               service.nodePort: "30097"
               service.type: NodePort
+              elasticsearch.host: "onestop-dev-es-http"
+              elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
+              elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
             imageStrategy:
               helm: {}
           - name: onestop-client

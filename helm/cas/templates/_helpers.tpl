@@ -30,3 +30,23 @@ Create chart name and version as used by the chart label.
 {{- define "cas.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "cas.labels" -}}
+helm.sh/chart: {{ include "cas.chart" . }}
+{{ include "cas.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "cas.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "cas.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
