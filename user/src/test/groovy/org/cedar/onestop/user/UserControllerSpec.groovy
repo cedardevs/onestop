@@ -5,9 +5,6 @@ import org.cedar.onestop.user.controller.UserController
 import org.cedar.onestop.user.domain.OnestopPrivilege
 import org.cedar.onestop.user.domain.OnestopRole
 import org.cedar.onestop.user.domain.OnestopUser
-import org.cedar.onestop.user.repository.OnestopPrivilegeRepository
-import org.cedar.onestop.user.repository.OnestopRoleRepository
-import org.cedar.onestop.user.repository.OnestopUserRepository
 import org.cedar.onestop.user.service.OnestopUserService
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,14 +31,7 @@ class UserControllerSpec extends Specification {
   private UserController userController
 
   @SpringBean
-  private OnestopUserRepository mockUserRepository = Mock()
-  @SpringBean
-  private OnestopPrivilegeRepository mockPrivilegeRepository = Mock()
-  @SpringBean
-  private OnestopRoleRepository mockRoleRepository = Mock()
-  @SpringBean
-  private OnestopUserService onestopUserService =
-      new OnestopUserService(mockUserRepository, mockRoleRepository, mockPrivilegeRepository)
+  private OnestopUserService mockUserService = Mock()
 
   def "user controller exists and is protected from unauthenticated users"() {
     when:
@@ -66,7 +56,7 @@ class UserControllerSpec extends Specification {
     def results = mockMvc.perform(MockMvcRequestBuilders.get("/v1/user"))
 
     then:
-    1 * mockUserRepository.findAll(_ as Pageable) >> PageImpl.empty()
+    1 * mockUserService.findAll(_ as Pageable) >> PageImpl.empty()
     results.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
@@ -88,7 +78,7 @@ class UserControllerSpec extends Specification {
         .content('{ "name": "test"}'))
 
     then:
-    mockUserRepository.save(_ as OnestopUser) >> new OnestopUser("new_user")
+    mockUserService.save(_ as OnestopUser) >> new OnestopUser("new_user")
 
     postSearch.andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value("new_user"))
@@ -101,12 +91,14 @@ class UserControllerSpec extends Specification {
         .get("/v1/self"))
 
     then:
-    1 * mockUserRepository.findById(PUBLIC_USER_ID) >> Optional.of(new OnestopUser(PUBLIC_USER_ID))
+    1 * mockUserService.findById(PUBLIC_USER_ID) >> Optional.of(new OnestopUser(PUBLIC_USER_ID))
     results.andExpect(MockMvcResultMatchers.status().isOk())
   }
 
   @WithMockUser(username = PUBLIC_USER_ID, roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
   def "public user can initialize their own info"() {
+    def testUser = new OnestopUser(PUBLIC_USER_ID, new OnestopRole('public', [new OnestopPrivilege('read')]))
+
     when:
     def results = mockMvc.perform(MockMvcRequestBuilders
         .post("/v1/self")
@@ -116,10 +108,9 @@ class UserControllerSpec extends Specification {
     then:
     results.andExpect(MockMvcResultMatchers.status().isCreated())
 
-    1 * mockUserRepository.existsById(PUBLIC_USER_ID) >> false
-    _ * mockRoleRepository.findByName(_) >> Optional.of(Mock(OnestopRole))
-    _ * mockPrivilegeRepository.findOneByName(_) >> Optional.of(Mock(OnestopPrivilege))
-    1 * mockUserRepository.save({ it.id == PUBLIC_USER_ID} ) >> new OnestopUser(PUBLIC_USER_ID)
+    1 * mockUserService.exists(PUBLIC_USER_ID) >> false
+    1 * mockUserService.findOrCreateUser(PUBLIC_USER_ID) >> testUser
+    1 * mockUserService.save({ it.id == PUBLIC_USER_ID} ) >> testUser
   }
 
   @WithMockUser(username = PUBLIC_USER_ID, roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
@@ -135,8 +126,9 @@ class UserControllerSpec extends Specification {
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
 
-    1 * mockUserRepository.existsById(PUBLIC_USER_ID) >> true
-    1 * mockUserRepository.save({ it.id == PUBLIC_USER_ID} ) >> existingUser
+    1 * mockUserService.exists(PUBLIC_USER_ID) >> true
+    1 * mockUserService.findOrCreateUser(PUBLIC_USER_ID) >> existingUser
+    1 * mockUserService.save({ it.id == PUBLIC_USER_ID} ) >> existingUser
   }
 
   @WithMockUser(username = PUBLIC_USER_ID, roles = [AuthorizationConfiguration.READ_OWN_PROFILE])
@@ -157,10 +149,11 @@ class UserControllerSpec extends Specification {
     then:
     results.andExpect(MockMvcResultMatchers.status().isOk())
 
-    1 * mockUserRepository.existsById(PUBLIC_USER_ID) >> true
-    1 * mockUserRepository.save({ OnestopUser it ->
+    1 * mockUserService.exists(PUBLIC_USER_ID) >> true
+    1 * mockUserService.findOrCreateUser(PUBLIC_USER_ID) >> existingUser
+    1 * mockUserService.save({ OnestopUser it ->
       println "mock save called with: ${it}"
-      return it.createdOn == null && it.lastUpdatedOn == null && it.roles == []
+      return it.createdOn == null && it.lastUpdatedOn == null && it.roles == existingUser.roles
     }) >> existingUser
   }
 

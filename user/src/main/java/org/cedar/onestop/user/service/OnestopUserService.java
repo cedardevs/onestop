@@ -52,6 +52,10 @@ public class OnestopUserService {
     }
   }
 
+  public Page<OnestopUser> findAll(Pageable pageable) {
+    return userRepository.findAll(pageable);
+  }
+
   public Optional<OnestopUser> findById(String id) {
     return userRepository.findById(id);
   }

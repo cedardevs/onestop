@@ -8,7 +8,6 @@ import org.cedar.onestop.data.api.JsonApiResponse;
 import org.cedar.onestop.data.api.JsonApiSuccessResponse;
 import org.cedar.onestop.user.config.AuthorizationConfiguration;
 import org.cedar.onestop.user.domain.OnestopUser;
-import org.cedar.onestop.user.repository.OnestopUserRepository;
 import org.cedar.onestop.user.service.OnestopUserService;
 import org.cedar.onestop.user.service.ResourceNotFoundException;
 import org.slf4j.Logger;
@@ -32,12 +31,10 @@ import java.util.stream.Collectors;
 public class UserController {
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-  private final OnestopUserRepository userRepository;
   private final OnestopUserService userService;
 
   @Autowired
-  public UserController(OnestopUserRepository userRepository, OnestopUserService userService) {
-    this.userRepository = userRepository;
+  public UserController(OnestopUserService userService) {
     this.userService = userService;
   }
 
@@ -55,7 +52,7 @@ public class UserController {
       HttpServletResponse response)
       throws RuntimeException {
     logger.info("Retrieving users with page params: " + pageable);
-    var page = userRepository.findAll(pageable);
+    var page = userService.findAll(pageable);
     var results = page.get()
         .map(it -> new JsonApiData.Builder().setId(it.getId()).setAttributes(it.toMap()).setType("user").build())
         .collect(Collectors.toList());
@@ -78,7 +75,7 @@ public class UserController {
       HttpServletResponse response)
       throws RuntimeException {
     logger.info("Creating new user with data: " + user);
-    var savedUser = userRepository.save(user);
+    var savedUser = userService.save(user);
     var dataItem = new JsonApiData.Builder()
         .setId(savedUser.getId())
         .setAttributes(savedUser.toMap())
@@ -103,11 +100,11 @@ public class UserController {
       HttpServletResponse response)
       throws ResourceNotFoundException {
     logger.info("Updating user with id : " + id);
-    if (!userRepository.existsById(id)) {
+    if (!userService.exists(id)) {
       throw new ResourceNotFoundException("User not found with id: " + id);
     }
     user.setId(id); // id must come from path
-    var savedUser = userRepository.save(user);
+    var savedUser = userService.save(user);
     var dataItem = new JsonApiData.Builder()
         .setId(savedUser.getId())
         .setAttributes(savedUser.toMap())
@@ -151,7 +148,7 @@ public class UserController {
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @RequestMapping(value = "/self", method = {RequestMethod.POST, RequestMethod.PUT}, produces = "application/json")
-  @PreAuthorize("#userInput.id == null || #userInput.id == #authentication.name")
+  @PreAuthorize("#userInput == null || #userInput.id == null || #userInput.id == #authentication.name")
   public JsonApiResponse upsertAuthenticatedUser(
       @RequestBody(required = false) OnestopUser userInput,
       @AuthenticationPrincipal Authentication authentication,
@@ -160,8 +157,9 @@ public class UserController {
     var userId = authentication.getName();
     var userExists = userService.exists(userId);
     logger.info(userExists ? "Updating " : "Creating new " + "user with id: " + userId);
-    var userData = userInput != null ? userInput : userService.findOrCreateUser(userId);
+    var userData = userService.findOrCreateUser(userId);
     userData.setId(userId); // ensure id matches authentication name (IdP ID)
+    // if/when a user can edit additional attributes of their info, set them here
     var savedUser = userService.save(userData);
     logger.info("Saved user: " + savedUser);
     var dataItem = new JsonApiData.Builder()
