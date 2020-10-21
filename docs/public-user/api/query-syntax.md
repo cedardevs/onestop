@@ -5,23 +5,13 @@
 **Estimated Reading Time: 10 minutes**
 
 # Query Syntax
-OneStop query text offers a variety of ways in which to specify exactly what you seek -- whether it be starting out with a high-level broad search or fine-tuning parameters with exact fields and operators. This guide can be approached in two ways: look for answers in the Common Use Cases section, or learn about each feature one at a time in the Features section.
+OneStop query text offers a variety of ways in which to specify exactly what you seek -- whether it be starting out with a high-level broad search or fine-tuning parameters with exact fields and operators.
 
-
-## Table of Contents
-
-
-## Common Use Cases
-- Match An Exact Phrase
-- Search Against A Specific Field
-- Search Fields Requiring An Exact Match With An Inexact Query
-- Specify What Should And Should Not Appear In My Results
-
-
-
-## Features
 OneStop's underlying query is an Elasticsearch [query string query](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-query-string-query.html#query-string-syntax). Much of the Elasticsearch guide information is relevant to OneStop, but below you will find information on default behavior, explanations of the advanced syntax features in relation to the OneStop-specific indices, and exactly what is and is not supported.  All of the following features can be used in combination with each other to adjust the match precision of your query to your results. Introduce some slack by modifying the proximity and fuzziness match levels, or narrow down the specifics with boolean operators and explicit fields.
 
+## Table of Contents
+- [Common Use Cases](#common-use-cases)
+- [Features](#features)
 - [Default Query Behavior](#default-query-behavior)
 - [Terms, Phrases, And Groups](#terms-phrases-and-groups)
 - [Boolean Operators](#boolean-operators)
@@ -32,6 +22,15 @@ OneStop's underlying query is an Elasticsearch [query string query](https://www.
 - [Reserved characters](#reserved-characters)
 - [Wildcards](#wildcards)
 - [Regular Expressions](#regular-expressions)
+
+## Common Use Cases
+- [Match An Exact Phrase](#boolean-operators)
+- [Search Against A Specific Field](#search-by-field-name)
+- [Search Fields Requiring An Exact Match With An Inexact Query](Search Fields Requiring An Exact Match With An Inexact Query)
+- Specify What Should And Should Not Appear In My Results - [Boolean Operators](#boolean-operators), [fuzziness](#fuzziness-matching), and [proximity](#proximity-searches)
+
+## Features
+OneStop's underlying query is an Elasticsearch [query string query](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-query-string-query.html#query-string-syntax). Much of the Elasticsearch guide information is relevant to OneStop, but below you will find information on default behavior, explanations of the advanced syntax features in relation to the OneStop-specific indices, and exactly what is and is not supported.  All of the following features can be used in combination with each other to adjust the match precision of your query to your results. Introduce some slack by modifying the proximity and fuzziness match levels, or narrow down the specifics with boolean operators and explicit fields.
 
 ### Default Query Behavior
 The primary goal of the OneStop query is to enable the user to quickly discover relevant results with nothing more than a simple term or phrase as input. Given that broad goal, the default behavior of the query is to look for *case-insensitive* matches against the most generically informative and universally populated fields of the metadata: primarily `title`, `description`, and `keywords`. These fields have different weights that will affect the overall relevance score of a match with your query text: matches in the `title` hold more weight than those in `keywords`, which holds more weight than those in `description`. This is done based on the assumption that the more succinct a field is, the more critical every word in that field becomes. However, based on user feedback and evolution in metadata parsing, the default fields searched against will always contain more than just these three fields. 
@@ -104,6 +103,7 @@ To search fields, simply precede your query text with the field name and a colon
 - `description:(sonar OR lidar)`
 - `doi:"10.1109/5.771073"`
 
+#### Search Fields Requiring An Exact Match With An Inexact Query
 To search multiple fields at once, just add them to your query string with parentheses around your clauses. Without any boolean operators, keep in mind that you have a default OR between field clauses.
 
 `title:(octopus) description:(sonar OR lidar)`
