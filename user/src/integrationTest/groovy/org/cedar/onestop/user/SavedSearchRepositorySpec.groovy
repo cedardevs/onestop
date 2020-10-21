@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
-import spock.lang.Shared
 import spock.lang.Specification
 
 @DataJpaTest
@@ -22,15 +21,12 @@ class SavedSearchRepositorySpec extends Specification {
   @Autowired
   OnestopUserRepository onestopUserRepo
 
-  @Shared
   OnestopUser savedUser
-
-  private SavedSearch saveSearch
+  SavedSearch saveSearch
 
   def setup(){
     OnestopUser onestopUser = new OnestopUser("mock_user")
     savedUser = onestopUserRepo.save(onestopUser)
-
     saveSearch = new SavedSearch(savedUser, "1", "entryName1","{\"test\":\"test\"}", "value 1")
   }
 
@@ -60,22 +56,21 @@ class SavedSearchRepositorySpec extends Specification {
 
   def "Should get by user Identifier"() {
     given:
-    def user = saveSearchRepository.save(saveSearch)
+    def search = saveSearchRepository.save(saveSearch)
 
     when:
-    List<SavedSearch> getByUserId = saveSearchRepository.findByUserId(user.id, null).getContent()
+    List<SavedSearch> getByUserId = saveSearchRepository.findByUserId(savedUser.id, null).getContent()
 
     then:
-    getByUserId[0].id != null
-    getByUserId[0].getUser().getId() == savedUser.getId()
-
+    getByUserId[0]?.id == search.id
+    getByUserId[0]?.getUser()?.getId() == savedUser.getId()
   }
 
   def "should have multiple entries for a userId"() {
     given:
     SavedSearch saveSearch1 = new SavedSearch(savedUser, "2", "entryName2", "{\"test\":\"test\"}", "value 2")
     SavedSearch saveSearch2 = new SavedSearch(savedUser, "3", "entryName3", "{\"test\":\"test\"}","value 3")
-    iterator()
+
     saveSearchRepository.save(saveSearch1)
     saveSearchRepository.save(saveSearch2)
 
@@ -88,35 +83,6 @@ class SavedSearchRepositorySpec extends Specification {
     getByUserId[1].value == "value 3"
     getByUserId[0].getUser() == getByUserId[1].getUser()
   }
-
-  //  static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-//  @Override
-//  public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-//
-//      TestPropertyValues
-//          .of("spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
-//              "spring.datasource.username=" + postgreSQLContainer.getUsername(),
-//              "spring.datasource.password=" + postgreSQLContainer.getPassword())
-//          .applyTo(configurableApplicationContext.getEnvironment())
-//
-//    }
-//
-//  }
-//    @ClassRule
-//  public static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres")
-//      .withDatabaseName("test")
-//      .withUsername("test")
-//      .withPassword("test")
-//  static class Initializer
-//      implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-//    public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-//      TestPropertyValues.of(
-//          "spring.datasource.url=" + postgres.getJdbcUrl(),
-//          "spring.datasource.username=" + postgres.getUsername(),
-//          "spring.datasource.password=" + postgres.getPassword()
-//      ).applyTo(configurableApplicationContext.getEnvironment())
-//    }
-//  }
 
 }
 

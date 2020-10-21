@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import org.testcontainers.containers.PostgreSQLContainer
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -20,26 +19,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles("integration")
 @SpringBootTest(classes = [UserApplication.class], webEnvironment = RANDOM_PORT)
 class OnestopUserServiceIntegrationTest extends Specification {
-  private static final PostgreSQLContainer postgres = new PostgreSQLContainer()
-
   Logger logger = LoggerFactory.getLogger(OnestopUserServiceIntegrationTest.class)
 
   @Autowired
   OnestopUserService onestopUserService
 
-  def setupSpec() {
-    postgres.start()
-  }
-
-  // Run after all the tests, even after failures:
-  def cleanupSpec() {
-    postgres.stop()
-  }
-
   def setup() {
     onestopUserService.userRepository.deleteAll()
-    onestopUserService.roleRepository.deleteAll()
-    onestopUserService.privilegeRepository.deleteAll()
   }
 
   def 'default roles and privs have been created'(){
@@ -93,7 +79,7 @@ class OnestopUserServiceIntegrationTest extends Specification {
     String uuid = UUID.randomUUID() //this comes from login.gov or other IdPs
 
     when:
-    OnestopUser adminUser = onestopUserService.findOrCreateAdminUser(uuid)
+    OnestopUser adminUser = onestopUserService.findOrCreateUser(uuid, true)
     Collection<OnestopRole> roles = adminUser.getRoles()
     OnestopRole defaultRole = roles[0]
     Collection<OnestopPrivilege> privileges = defaultRole.getPrivileges()

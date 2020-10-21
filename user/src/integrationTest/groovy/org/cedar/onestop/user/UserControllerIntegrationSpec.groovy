@@ -3,7 +3,6 @@ package org.cedar.onestop.user
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.cedar.onestop.user.config.AuthorizationConfiguration
-import org.cedar.onestop.user.config.SecurityConfig
 import org.cedar.onestop.user.domain.OnestopPrivilege
 import org.cedar.onestop.user.domain.OnestopRole
 import org.slf4j.Logger
@@ -26,9 +25,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @ActiveProfiles('integration')
 @SpringBootTest(classes = [UserApplication.class], webEnvironment = RANDOM_PORT)
-class OnestopUserControllerSpec extends Specification  {
+class UserControllerIntegrationSpec extends Specification  {
 
-  Logger logger = LoggerFactory.getLogger(OnestopUserControllerSpec.class)
+  Logger logger = LoggerFactory.getLogger(UserControllerIntegrationSpec.class)
 
   @Autowired
   private WebApplicationContext context
@@ -42,40 +41,36 @@ class OnestopUserControllerSpec extends Specification  {
         .webAppContextSetup(context)
         .apply(SecurityMockMvcConfigurers.springSecurity())
         .build()
-
   }
 
-  @WithMockUser(username = "mockUser", roles = AuthorizationConfiguration.CREATE_USER)
-  def "user is created"() {
-    when:
-    def postSearch = mvc.perform(MockMvcRequestBuilders
-        .post("/v1/user")
-        .contentType("application/json")
-        .content(('{ "name": "test"}'))
-        .accept(MediaType.APPLICATION_JSON))
-
-    then:
-    postSearch.andExpect(MockMvcResultMatchers.status().isCreated())
-        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value("mockUser"))
-
-  }
-
-  @WithMockUser(username = "mockUser", roles = [AuthorizationConfiguration.CREATE_USER, AuthorizationConfiguration.CREATE_SAVED_SEARCH])
-  def "user is created, search is saved"() {
+  @WithMockUser(username = "mockAdmin", roles = AuthorizationConfiguration.CREATE_USER)
+  def "admin can create user"() {
     when:
     def postUser = mvc.perform(MockMvcRequestBuilders
         .post("/v1/user")
         .contentType("application/json")
-        .content(('{ "name": "test"}'))
+        .content(('{"id": "test"}'))
+        .accept(MediaType.APPLICATION_JSON))
+
+    then:
+    postUser.andExpect(MockMvcResultMatchers.status().isCreated())
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value("test"))
+  }
+
+  @WithMockUser(username = "mockUser", roles = [AuthorizationConfiguration.READ_OWN_PROFILE, AuthorizationConfiguration.CREATE_SAVED_SEARCH])
+  def "public user can initialize their own account and save a search"() {
+    when:
+    def postUser = mvc.perform(MockMvcRequestBuilders
+        .post("/v1/self")
         .accept(MediaType.APPLICATION_JSON))
 
     then:
     postUser.andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value("mockUser"))
 
-    and:
+    when:
     def postSearch = mvc.perform(MockMvcRequestBuilders
-        .post("/v1/saved-search")
+        .post("/v1/self/saved-search")
         .contentType("application/json")
         .content(('{ "value": "test/test", "name" : "test search"}'))
         .accept(MediaType.APPLICATION_JSON))
@@ -87,7 +82,7 @@ class OnestopUserControllerSpec extends Specification  {
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].attributes.user.id").value("mockUser"))
   }
 
-  @WithMockUser(username = "mockUser", roles = [AuthorizationConfiguration.CREATE_USER, AuthorizationConfiguration.CREATE_ROLE, AuthorizationConfiguration.CREATE_PRIVILEGE])
+  @WithMockUser(username = "mockAdmin", roles = [AuthorizationConfiguration.CREATE_USER, AuthorizationConfiguration.CREATE_ROLE, AuthorizationConfiguration.CREATE_PRIVILEGE])
   def "user is created with roles and privileges"() {
     given:
     OnestopPrivilege readPriv = new OnestopPrivilege("read")
@@ -146,7 +141,7 @@ class OnestopUserControllerSpec extends Specification  {
     def postUser = mvc.perform(MockMvcRequestBuilders
         .post("/v1/user")
         .contentType("application/json")
-        .content("{\"roles\":[${JsonOutput.toJson(savedRole.toMap())}]}")
+        .content("{\"id\": \"mockUser\", \"roles\":[${JsonOutput.toJson(savedRole.toMap())}]}")
         .accept(MediaType.APPLICATION_JSON))
 
     then:
