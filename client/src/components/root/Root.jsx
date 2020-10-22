@@ -38,6 +38,7 @@ import earth from '../../../img/Earth.jpg'
 import {isBrowserUnsupported} from '../../utils/browserUtils'
 
 import {ProxyContext, useProxy} from '../common/ui/Proxy'
+import UserDashboardContainer from '../user/dashboard/UserDashboardContainer'
 
 const styleBrowserWarning = {
   background: SiteColors.WARNING,
@@ -68,7 +69,8 @@ const BrowserUnsupportedWarning = () => {
           <a style={styleBrowserWarningLink} href={wikiUrl}>
             OneStop Documentation
           </a>
-        </span>.
+        </span>
+        .
       </p>
     </aside>
   )
@@ -148,6 +150,10 @@ const Root = props => {
 
         <Route path={ROUTE.cart.path}>
           <CartContainer />
+        </Route>
+
+        <Route path={ROUTE.userDashboard.path}>
+          <UserDashboardContainer />
         </Route>
 
         <Route path={ROUTE.error.path}>

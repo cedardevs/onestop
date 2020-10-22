@@ -81,7 +81,7 @@ class RegistryIntegrationSpec extends Specification {
     createResponse.statusCode == HttpStatus.OK
 
     when:
-    sleep(200)
+    sleep(1000)
     def retrieveEntity = RequestEntity
         .get("${baseUrl}metadata/granule/common-ingest/${granuleId}".toURI())
         .build()

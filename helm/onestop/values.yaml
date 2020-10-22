@@ -10,3 +10,10 @@ onestop-search:
   enabled: true
 onestop-user:
   enabled: false # TODO - enable when implemented
+
+###############################################################################
+# Nginx Ingress
+###############################################################################
+controller:
+  admissionWebhooks:
+    enabled: false

@@ -11,8 +11,11 @@ include(
     "parsalyzer",
     "registry",
     "search",
-    "test-common"
-    //"user"
+    "test-common",
+    "search",
+    "stream-manager",
+    "user",
+    "gateway"
 )
 
 //plugins {

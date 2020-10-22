@@ -29,6 +29,17 @@ export const mergeGranulesArrayIntoGranulesMap = (
   )
 }
 
+export const searchListToMap = searchList => {
+  let index = 0
+  let mapSearches = {}
+  while (index < searchList.length) {
+    let id = searchList[index].id
+    mapSearches[id] = searchList[index]
+    index++
+  }
+  return mapSearches
+}
+
 export const styleProtocolListItem = {
   display: 'inline-flex',
   marginRight: '0.309em',

@@ -13,17 +13,17 @@ nameOverride: ""
 fullnameOverride: ""
 
 elasticsearch:
-  host: onestop-es-http
+  host: onestop-dev-es-http
   port: "9200"
   ssl:
     enabled: true
-    certSecret: onestop-es-http-certs-public
+    certSecret: onestop-dev-es-http-certs-public
   username:
     value: elastic
   password:
     valueFrom:
       secretKeyRef:
-        name: onestop-es-elastic-user
+        name: onestop-dev-es-elastic-user
         key: elastic
 
 ###############################################################################

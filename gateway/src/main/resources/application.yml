@@ -1,0 +1,48 @@
+---
+logging.level.org.springframework.security: DEBUG
+logging.level.org.springframework.web: DEBUG
+
+server:
+  port: 8080
+
+gateway:
+  routes:
+    user: http://localhost/user
+    onestop: http://localhost/client
+    onestop-search: http://localhost/onestop-search
+
+spring:
+  application:
+    name: gateway
+  security:
+    oauth2:
+      client:
+        registration:
+          login-gov:
+            client-id: "urn:gov:gsa:openidconnect.profiles:sp:sso:noaa:onestop_user_8080"
+#            client-id: \${LOGIN_GOV_CLIENT_ID}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+            scope:
+              - openid
+              - email
+        provider:
+          login-gov:
+            authorization-uri: https://idp.int.identitysandbox.gov/openid_connect/authorize?acr_values=http://idmanagement.gov/ns/assurance/ial/1
+            token-uri: https://idp.int.identitysandbox.gov/api/openid_connect/token
+            user-info-uri: https://idp.int.identitysandbox.gov/api/openid_connect/userinfo
+            jwk-set-uri: https://idp.int.identitysandbox.gov/api/openid_connect/certs
+            user-name-attribute: sub
+
+#login-gov:
+#  keystore:
+#    alias: \${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
+#    file: \${PRIVATE_KEY_JWT_KEYSTORE_FILE}
+#    password: \${PRIVATE_KEY_JWT_KEYSTORE_PASSWORD}
+#    type: \${PRIVATE_KEY_JWT_KEYSTORE_TYPE}
+login-gov:
+  keystore:
+    alias: logingov
+    file: src/main/resources/logingov.jks
+    password: password
+    type: JKS

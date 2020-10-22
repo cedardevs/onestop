@@ -41,7 +41,8 @@ helm.sh/chart: {{ include "onestop-user.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
+{{- end -}}
+
 
 {{/*
 Selector labels
@@ -49,4 +50,23 @@ Selector labels
 {{- define "onestop-user.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "onestop-user.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "onestop-user.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "onestop-user.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Use a common config name variable, rather than appending -config in several places.
+*/}}
+{{- define "onestop-user.configname" -}}
+{{ template "onestop-user.fullname" . }}-config
+{{- end -}}
+

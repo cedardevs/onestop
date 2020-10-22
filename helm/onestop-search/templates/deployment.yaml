@@ -59,7 +59,7 @@ spec:
                         {{- end -}}
                       {{- end -}}
                       {{- join "," $active.profiles }}'
-          # generic env overrides, for spring properities, etc
+          # generic env overrides, for spring properties, etc
           {{- if .Values.env }}
             {{- range $envName,$envVal := .Values.env }}
             - name: {{ $envName }}
@@ -69,30 +69,6 @@ spec:
           {{- if .Values.debug }}
             - name: JAVA_TOOL_OPTIONS
               value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
-          {{- end }}
-          # EXPORT PATHS KEYSTORES (if security feature enabled)
-          {{- if (index .Values "features" "login-gov") }}
-            - name: LOGIN_GOV_KEYSTORE_FILE
-              value: {{ .Values.keystoreFiles.jks.loginGov }}
-          {{- end }}
-          # EXPORT SECRET ENVIRONMENT VARIABLES IN THIS CONTAINER (if security feature enabled)
-          # the general utility here is taking "env" type secrets in our Helm values,
-          # mapping the keys directly to environment variables w/optional prefix,
-          # and uppercasing / replacing problematic '-' and '.' characters with '_'
-          {{- if (index .Values "features" "login-gov") }}
-            {{- range $secret := .Values.secrets }}
-              {{- if eq $secret.type "env" }}
-                {{- range $key := $secret.keys }}
-                  {{- $envPrefix := $secret.prefix | default "" | upper }}
-                  {{- $envKey := $key | upper | replace "." "_" | replace "-" "_" }}
-            - name: {{ $envPrefix }}{{ $envKey }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $secret.name }}
-                  key: {{ $key }}
-                {{- end }}
-              {{- end }}
-            {{- end }}
           {{- end }}
 
           # DEFINE ENVIRONMENT VARIABLES FOR ELASTICSEARCH
@@ -142,18 +118,6 @@ spec:
             - name: config-volume
               mountPath: /etc/conf/
           {{- end }}
-          # MOUNT SECRET FILES IN THIS CONTAINER (if security feature enabled)
-          # if there are multiple containers in the pod,
-          # then each container needs its own volumeMounts block
-          {{- if (index .Values "features" "login-gov") }}
-            {{- range $secret := .Values.secrets }}
-              {{- if eq $secret.type "file" }}
-            - name: {{ $secret.name }}-volume
-              mountPath: {{ $secret.path }}
-              readOnly: true
-              {{- end }}
-            {{- end }}
-          {{- end }}
           # MOUNT PUBLIC CERTS FOR ELASTICSEARCH (ca.crt & tls.crt)
             {{- if .Values.elasticsearch.ssl.certSecret }}
             - name: es-http-certs-public-volume
@@ -167,18 +131,6 @@ spec:
           - name: config-volume
             configMap:
               name: {{ include "onestop-search.configname" . }}
-        {{- end }}
-        # CREATE VOLUME FOR SECRET FILES (if security feature enabled)
-        # secret must be created in the Kubernetes API before it can be used
-        # only 1 `spec.volumes` entry is needed per secret, even if it contains multiple keys
-        {{- if (index .Values "features" "login-gov") }}
-          {{- range $secret := .Values.secrets }}
-            {{- if eq $secret.type "file" }}
-          - name: {{ $secret.name }}-volume
-            secret:
-              secretName: {{ $secret.name }}
-            {{- end }}
-          {{- end }}
         {{- end }}
         # CREATE VOLUME FOR ELASTICSEARCH PUBLIC CERTS
           {{- with .Values.elasticsearch.ssl.certSecret }}
