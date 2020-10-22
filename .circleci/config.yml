@@ -391,10 +391,11 @@ workflows:
       - finalize:
           requires:
             - client
-            - registry
+            - gateway
             - indexer
-            - search
             - parsalyzer
+            - registry
+            - search
             - user
           <<: *jobFilters
 
