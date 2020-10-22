@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
@@ -70,6 +71,22 @@ class RoleControllerSpec extends Specification{
 
     then:
     1 * onestopRoleRepository.findAll(pageable) >> new PageImpl<OnestopRole>([testRole], pageable, 2)
+    getResults.andExpect(MockMvcResultMatchers.status().isOk())
+  }
+
+  @WithMockUser(username = "admin_user_roles", roles = [AuthorizationConfiguration.READ_ROLES_BY_USER_ID])
+  def "admin user can get roles for a single user"() {
+    def userId = 'ABC'
+
+    when:
+    def getResults = mockMvc.perform(MockMvcRequestBuilders
+        .get("/v1/role")
+        .param("userId", userId)
+        .accept(MediaType.APPLICATION_JSON))
+        .andDo(MockMvcResultHandlers.print())
+
+    then:
+    1 * onestopRoleRepository.findByUsersId(userId, _ as Pageable) >> new PageImpl<OnestopRole>([testRole])
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
   }
 

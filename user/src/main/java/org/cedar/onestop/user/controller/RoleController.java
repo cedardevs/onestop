@@ -46,9 +46,13 @@ public class RoleController {
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @GetMapping(value = "/role", produces = "application/json")
-  public JsonApiResponse getRoles(Pageable pageable, HttpServletResponse response) {
+  public JsonApiResponse getRoles(Pageable pageable,
+                                  @RequestParam(required = false) String userId,
+                                  HttpServletResponse response) {
     logger.info("Retrieving roles w/ page params: " + pageable);
-    var page = roleRepository.findAll(pageable);
+    var page = userId != null && !userId.isBlank() ?
+        roleRepository.findByUsersId(userId, pageable) :
+        roleRepository.findAll(pageable);
     var total = page.getTotalElements();
     logger.info("Retrieved " + page.getSize() + " of " + total + " total roles");
     List<JsonApiData> dataList = page.get()
