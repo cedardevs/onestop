@@ -96,27 +96,59 @@ public class ElasticsearchService {
     var aliasExists = checkAliasExists(alias);
     if (aliasExists) {
       String existingMapping = getDeployedMappingByAlias(alias);
-      log.debug("EXISTING " + alias + " MAPPING:\n\n\n" + existingMapping + "\n\n\n");
+      log.debug("EXISTING " + alias + " MAPPING: " + existingMapping);
       String expectedMapping = getExpectedMappingByAlias(alias);
-      log.debug("EXPECTED MAPPING:\n\n\n" + expectedMapping + "\n\n\n");
+      log.debug("EXPECTED " + alias + " MAPPING: " + expectedMapping );
+
+      String existingAnalysis = getDeployedIndexAnalyzersByAlias(alias);
+      log.debug("EXISTING " + alias + " ANALYSIS: " + existingAnalysis);
+      String expectedAnalysis = getExpectedIndexAnalyzersByAlias(alias);
+      log.debug("EXPECTED " + alias + " ANALYSIS: " + expectedAnalysis);
 
       if(existingMapping != null) {
         List<Map<String, Object>> mappingDiffs = JsonUtils.getJsonDiffList(existingMapping, expectedMapping);
-        log.debug("MAPPING DIFFS:\n\n\n" + mapper.writeValueAsString(mappingDiffs) + "\n\n\n");
+
+        mappingDiffs.stream().forEach( e -> {
+          if (e.get("op") == "remove") {
+            log.warn("MAPPING FOR " + alias + " removes " + e.get("path"));
+          } else if (e.get("op") == "add") {
+            log.warn("MAPPING FOR " + alias + " adds " + e.get("path"));
+          } else {
+            log.error("MAPPING FOR " + alias + " " + e.get("op") + " " + e.get("path") + " - this operation cannot be done without reindexing.");
+          }
+        });
+
+        if (existingAnalysis != null) {
+
+          List<Map<String, Object>> settingDiffs = JsonUtils.getJsonDiffList(existingAnalysis, expectedAnalysis);
+          settingDiffs.stream().forEach( e -> {
+            if (e.get("op") == "remove") {
+              log.warn("ANALYSIS FOR " + alias + " removes " + e.get("path"));
+            } else if (e.get("op") == "add") {
+              log.warn("ANALYSIS FOR " + alias + " adds " + e.get("path"));
+            } else {
+              log.error("ANALYSIS FOR " + alias + " " + e.get("op") + " " + e.get("path") + " - this operation cannot be done without reindexing.");
+            }
+          });
+
+          List<String> settingsOps = settingDiffs.stream().map(e -> (String) e.get("op")).collect(Collectors.toList());
+
+          if (!settingsOps.isEmpty() && settingsOps.contains("replace")) {
+            System.exit(1);
+          }
+        }
 
         List<String> ops = mappingDiffs.stream().map(e -> (String) e.get("op")).collect(Collectors.toList());
-        // FIXME: WARN if fields added or deleted but continue to startup
-        // FIXME: ERROR if any existing field type or analyzer changes
+        if (!ops.isEmpty() && ops.contains("replace")) {
+          System.exit(1);
+        }
         // FIXME -- Strict mappings double check?
-//        if(!ops.isEmpty() && (ops.contains("remove") || ops.contains("replace"))) {
-//          log.error("Indexer has Elasticsearch mapping for [ " + alias + " ] index that replaces or removes fields from the existing mapping.");
-//        }
 
-        putMapping(alias, expectedMapping); // FIXME handle when unacceptable field changes encountered and stop app; log ERROR
+        putMapping(alias, expectedMapping);
       }
     }
     else {
-      log.debug("\n\nCREATING INDEX " + alias + "\n\n");
+      log.debug("CREATING INDEX " + alias);
       createIndex(alias, true);
     }
   }
@@ -205,7 +237,6 @@ public class ElasticsearchService {
     if(data != null) {
       Map attributes = (Map)((Map) data.get(0)).get("attributes");
       mapping = JsonUtils.toJson((Map) attributes.get("mappings"));
-      log.debug(mapping);
     }
     return mapping;
   }
@@ -214,6 +245,38 @@ public class ElasticsearchService {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     return mapper.writeValueAsString((Map) parsedDefinition.get("settings"));
+  }
+
+  private String getExpectedIndexAnalyzersByAlias(String alias) throws IOException {
+    var indexDefinition = config.jsonMapping(alias);
+    Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
+    Map settings = (Map) parsedDefinition.get("settings");
+    if (settings == null ) {
+      return null;
+    }
+    return mapper.writeValueAsString((Map)(settings).get("analysis"));
+  }
+
+  private String getDeployedIndexAnalyzersByAlias(String alias) {
+    Map<String, Object> response = esReadService.getIndexSettings(alias);
+    List data = (List) response.get("data");
+    String mapping = null;
+    if(data != null) {
+      Map entry = (Map) data.get(0);
+      if(entry != null) {
+        Map attrs = (Map) entry.get("attributes");
+        if(attrs != null) {
+          Map settings = (Map) attrs.get("settings");
+          if(settings != null) {
+            Map index = (Map) settings.get("index");
+            if(index != null) {
+              mapping = JsonUtils.toJson((Map)index.get("analysis"));
+            }
+          }
+        }
+      }
+    }
+    return mapping;
   }
 
   private String newIndexName(String alias) {

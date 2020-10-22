@@ -11,6 +11,8 @@ include(
     "parsalyzer",
     "registry",
     "search",
+    "test-common",
+    "search",
     "stream-manager",
     "user",
     "gateway"
