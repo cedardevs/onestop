@@ -1,5 +1,6 @@
 package org.cedar.onestop.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -30,10 +31,12 @@ public class OnestopRole {
 
   @Column(name = "createdOn", updatable = false)
   @CreationTimestamp
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   public Instant createdOn;
 
   @Column(name = "lastUpdatedOn")
   @UpdateTimestamp
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   public Instant lastUpdatedOn;
 
   @ManyToMany(fetch = FetchType.EAGER)

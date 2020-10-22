@@ -1,5 +1,6 @@
 package org.cedar.onestop.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -36,10 +37,12 @@ public class SavedSearch {
 
   @Column(name = "createdOn", updatable = false)
   @CreationTimestamp
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Instant createdOn;
 
   @Column(name = "lastUpdatedOn")
   @UpdateTimestamp
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Instant lastUpdatedOn;
 
   //constructor will be used by Spring JPA
@@ -56,16 +59,6 @@ public class SavedSearch {
     this.filter = filter;
     this.value = value;
   }
-
-//  @PrePersist
-//  protected void onCreate() {
-//    createdOn = Instant.now();
-//  }
-//
-//  @PreUpdate
-//  protected void onUpdate() {
-//    lastUpdatedOn = Instant.now();
-//  }
 
   public String getId() {
     return id;
