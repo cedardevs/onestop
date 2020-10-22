@@ -74,7 +74,7 @@ public class SavedSearchController {
       throws ResourceNotFoundException {
     logger.info("Retrieving saved search for id: " + id);
     SavedSearch savedSearch = searchRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("Saved search not found for requested id: " + id));
     List<SavedSearch> result = new ArrayList<>();
     result.add(savedSearch);
     return new JsonApiSuccessResponse.Builder()
@@ -91,7 +91,7 @@ public class SavedSearchController {
       throws ResourceNotFoundException {
     logger.info("Received saved-search PUT request");
     SavedSearch savedSearch = searchRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Save search not found for this id : " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("Saved search not found for this id: " + id));
     logger.info("Updating saved-search with id: " + id);
     savedSearch.setName(savedSearchDetails.getName());
     savedSearch.setValue(savedSearchDetails.getValue());
@@ -115,7 +115,7 @@ public class SavedSearchController {
       throws ResourceNotFoundException {
     logger.info("Received saved-search DELETE request");
     SavedSearch savedSearch = searchRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Save search not found for requested id :: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("Saved search not found for requested id: " + id));
     logger.info("Deleting saved-search with id: " + id);
     searchRepository.delete(savedSearch);
     logger.info("Delete complete for search with id: " + id);
@@ -248,7 +248,7 @@ public class SavedSearchController {
 
   private JsonApiData saveSearch(String userId, SavedSearch searchData) throws ResourceNotFoundException {
     var user = userService.findById(userId)
-        .orElseThrow(() -> new ResourceNotFoundException("User not found for requested id :: " + userId));
+        .orElseThrow(() -> new ResourceNotFoundException("User not found for requested id: " + userId));
     logger.info("Creating search for user with ID: " + userId + " with details " + searchData);
     searchData.setUser(user);
     var item = searchRepository.save(searchData);

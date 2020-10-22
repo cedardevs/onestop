@@ -118,7 +118,7 @@ public class RoleController {
     logger.info("Received role DELETE request");
     logger.info(id);
     OnestopRole role = roleRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Role not found for requested id :: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("Role not found for requested id: " + id));
     logger.info("Deleting role with id: " + role.getId());
     roleRepository.delete(role);
     logger.info("Delete complete for role id: " + id);

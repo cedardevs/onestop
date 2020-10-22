@@ -80,7 +80,7 @@ public class PrivilegeController {
     List<JsonApiData> dataList = result
         .map(r -> new JsonApiData.Builder().setId(r.getId()).setType("privilege").setAttributes(r.toMap()).build())
         .map(Arrays::asList)
-        .orElseThrow(() -> new ResourceNotFoundException("Save search not found for this id :: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("Privilege not found for this id: " + id));
     logger.info("Retrieved privilege w/ id" + id);
     return new JsonApiSuccessResponse.Builder()
         .setStatus(HttpStatus.OK.value(), response)
@@ -119,7 +119,7 @@ public class PrivilegeController {
       throws ResourceNotFoundException {
     logger.info("Received privilege DELETE request for id: " + id);
     OnestopPrivilege privilege = privilegeRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Privilege not found for requested id :: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("Privilege not found for requested id: " + id));
     logger.info("Deleting privilege with id: " + privilege.getId());
     privilegeRepository.delete(privilege);
     logger.info("Delete complete for privilege id: " + id);
