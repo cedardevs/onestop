@@ -61,12 +61,6 @@ dependencies {
   // reactive test dependencies
 //    testImplementation 'org.springframework.boot.experimental:spring-boot-test-autoconfigure-r2dbc'
 //    testImplementation 'io.projectreactor:reactor-test'
-
-  // -- Pac4j Authentication --
-//  implementation "org.pac4j:pac4j-core:4.0.0"
-//  implementation "org.pac4j:spring-webmvc-pac4j:4.0.0"
-//  implementation "org.pac4j:pac4j-oidc:4.0.0"
-//  implementation "org.pac4j:pac4j-cas:4.0.0" // TODO: REMOVE
 }
 
 test {
