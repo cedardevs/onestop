@@ -48,17 +48,29 @@ class PrivilegeControllerSpec extends Specification{
   OnestopPrivilege mockPrivilege = new OnestopPrivilege(privilegeId, privilegeName)
 
   @WithMockUser(username = "admin_user_privileges", roles = [AuthorizationConfiguration.READ_PRIVILEGE_BY_USER_ID])
-  def "admin user can hit privilege endpoint"() {
+  def "admin user can list privileges with #filters"() {
     when:
-    def getResults = mockMvc.perform(MockMvcRequestBuilders
-        .get("/v1/privilege")
-        .accept(MediaType.APPLICATION_JSON))
+    def builder = MockMvcRequestBuilders.get("/v1/privilege").accept(MediaType.APPLICATION_JSON)
+    if (userId) {
+      builder = builder.param("userId", userId)
+    }
+    if (roleId) {
+      builder = builder.param("roleId", roleId)
+    }
+    def getResults = mockMvc.perform(builder)
 
     then:
-    1 * onestopPrivilegeRepository.findAll(_) >>
+    1 * onestopPrivilegeRepository."$repoMethod"(*_) >>
         new PageImpl<OnestopPrivilege>([new OnestopPrivilege(id: 'abc', name: 'yep')])
 
     getResults.andExpect(MockMvcResultMatchers.status().isOk())
+
+    where:
+    filters         | userId  | roleId  | repoMethod
+    "no filter"     | null    | null    | 'findAll'
+    "user"          | 'ABC'   | null    | 'findByRolesUsersId'
+    "role"          | null    | '123'   | 'findByRolesId'
+    "user and role" | 'ABC'   | '123'   | 'findByRolesIdAndRolesUsersId'
   }
 
   @WithMockUser(username = "admin_user_privileges", roles = [AuthorizationConfiguration.READ_PRIVILEGE_BY_USER_ID])

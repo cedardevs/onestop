@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface OnestopPrivilegeRepository extends JpaRepository<OnestopPrivilege, String> {
     Optional<OnestopPrivilege> findOneByName(String name);
     Page<OnestopPrivilege> findByRolesId(String roleId, Pageable pageable);
-    Page<OnestopPrivilege> findByRolesName(String roleName, Pageable pageable);
     Page<OnestopPrivilege> findByRolesUsersId(String userId, Pageable pageable);
+    Page<OnestopPrivilege> findByRolesIdAndRolesUsersId(String roleId, String userId, Pageable pageable);
+
 }

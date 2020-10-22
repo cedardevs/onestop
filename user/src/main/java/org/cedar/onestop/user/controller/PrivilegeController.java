@@ -14,6 +14,7 @@ import org.cedar.onestop.user.service.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -46,12 +47,16 @@ public class PrivilegeController {
       @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
   })
   @GetMapping(value = "/privilege", produces = "application/json")
-  public JsonApiResponse getPrivileges(Pageable pageable, HttpServletResponse response) {
+  public JsonApiResponse getPrivileges(Pageable pageable,
+                                       @RequestParam(required = false) String roleId,
+                                       @RequestParam(required = false) String userId,
+                                       HttpServletResponse response) {
     logger.info("Retrieving privileges w/ page params: " + pageable);
-    var page = privilegeRepository.findAll(pageable);
+    var page = getPrivilegePage(roleId, userId, pageable);
     var total = page.getTotalElements();
     logger.info("Retrieved " + page.getSize() + " of " + total + " total privileges");
-    List<JsonApiData> dataList = page.get()
+    var dataList = page.get()
+        .peek(System.out::println)
         .map(p -> new JsonApiData.Builder().setId(p.getId()).setType("privilege").setAttributes(p.toMap()).build())
         .collect(Collectors.toList());
     return new JsonApiSuccessResponse.Builder()
@@ -147,6 +152,20 @@ public class PrivilegeController {
     return new JsonApiSuccessResponse.Builder()
         .setStatus(HttpStatus.OK.value(), response)
         .setData(result).build();
+  }
+
+  private Page<OnestopPrivilege> getPrivilegePage(String roleId, String userId, Pageable pageable) {
+    var hasRole = roleId != null && !roleId.isBlank();
+    var hasUser = userId != null && !userId.isBlank();
+    if (hasRole && hasUser) {
+      return privilegeRepository.findByRolesIdAndRolesUsersId(roleId, userId, pageable);
+    } else if (hasRole) {
+      return privilegeRepository.findByRolesId(roleId, pageable);
+    } else if (hasUser) {
+      return privilegeRepository.findByRolesUsersId(userId, pageable);
+    } else {
+      return privilegeRepository.findAll(pageable);
+    }
   }
 
 }
