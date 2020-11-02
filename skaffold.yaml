@@ -179,13 +179,58 @@ build:
     debug: "true"
     service.clusterIP: 10.100.100.0
     config: |-
-      ---
+      spring:
+        application:
+          name: gateway
+        cloud:
+          gateway:
+            routes:
+              - id: user_api
+                uri: http://onestop-user:8080/user
+                predicates:
+                  - Path=/api/user/**
+                filters:
+                  - RemoveRequestHeader= Cookie,Set-Cookie
+                  - StripPrefix=1
+                  - TokenRelay=
+              - id: search_route
+                uri: http://onestop-search:8080/
+                predicates:
+                  - Path=/onestop-search/**
+                filters:
+                  - RemoveRequestHeader= Cookie,Set-Cookie #should we remove the cookie for all services?
+                  - StripPrefix=1
+              - id: registry_route
+                uri: http://onestop-registry:8080/
+                predicates:
+                  - Path=/registry/**
+                filters:
+                  - RemoveRequestHeader= Cookie,Set-Cookie #should we remove the cookie for all services?
+                  - StripPrefix=1
+              - id: client_route
+                uri: http://onestop-client/
+                predicates:
+                  - Path=/onestop/**
+              - id: fallback_to_client
+                uri: http://onestop-client/
+                predicates:
+                  - Path=/**
       logging.level.org.springframework.security: DEBUG
       logging.level.org.springframework.web: DEBUG
-      server.servlet.context-path: /api
       gateway:
         routes:
-          user: http://onestop-user:8080/user/
+          onestop-search:
+            host: http://onestop-search:8080/onestop-search
+            secure: false
+            apiPrefix: true
+          user:
+            host: http://onestop-user:8080/user
+            apiPrefix: true
+          onestop:
+            host: http://onestop-client:8080/onestop
+            apiPrefix: false
+            secure: false
+
       login-gov:
         keystore:
           alias: ${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
@@ -249,6 +294,9 @@ profiles:
           - *onestop-gateway
           - *onestop-user
           - *onestop-postgresql
+#          - *onestop-registry
+#          - *onestop-parsalyzer
+#          - *onestop-indexer
           - name: onestop-dev
             chartPath: helm/onestop-dev
             setValues:

@@ -1,22 +1,48 @@
 package org.cedar.onestop.gateway.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.route.RouteDefinition;
+import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
+import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-@Configuration
-@ConfigurationProperties("gateway")
+@Component
 public class GatewayConfig {
 
-  private Map<String, String> routes = new HashMap<>();
+  @Autowired
+  RouteDefinitionLocator routeDefinitionLocator;
 
-  public Map<String, String> getRoutes() {
-    return routes;
+  Logger logger = LoggerFactory.getLogger(GatewayConfig.class);
+
+  private boolean filterSecureRoutes(RouteDefinition routeDefinition){
+    return routeDefinition
+      .getFilters()
+      .stream()
+      .anyMatch(filter -> filter.getName().equals("TokenRelay"));
   }
 
-  public String backend(String service) {
-    return routes.get(service);
+  private List<String> extractPath(RouteDefinition routeDefinition){
+    return routeDefinition
+      .getPredicates()
+      .stream()
+      .flatMap(predicate -> predicate.getArgs().values().stream())
+      .collect(Collectors.toList());
   }
+
+  public String[] parseSecurePaths(){
+    return Objects.requireNonNull(routeDefinitionLocator.getRouteDefinitions()
+      //filter out routes that dont have a token relay filter
+      .filter(this::filterSecureRoutes)
+      .map(this::extractPath)
+      .blockFirst())
+      .stream()
+      .peek(secureRoute -> logger.info("secure route: " + secureRoute))
+      .toArray(String[]::new);
+  }
+
 }

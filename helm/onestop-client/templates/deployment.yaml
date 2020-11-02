@@ -21,6 +21,9 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
           env:
             - name: ONESTOP_PREFIX_PATH
               value: {{ .Values.prefixPath }}

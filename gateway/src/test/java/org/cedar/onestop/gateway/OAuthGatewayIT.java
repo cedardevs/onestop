@@ -6,13 +6,13 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.cedar.onestop.gateway.config.GatewayConfig;
-import org.cedar.onestop.gateway.config.ProxyConfig;
 import org.cedar.onestop.gateway.config.SecurityConfig;
 import org.junit.After;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,11 +25,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
-@SpringBootTest(classes = { GatewayApplication.class, GatewayConfig.class, ProxyConfig.class, SecurityConfig.class}, webEnvironment = DEFINED_PORT)
+@SpringBootTest(classes = { GatewayApplication.class, GatewayConfig.class, SecurityConfig.class}, webEnvironment = DEFINED_PORT)
 public class OAuthGatewayIT {
 
   private static final MockWebServer service1Mock = new MockWebServer();
@@ -48,17 +50,6 @@ public class OAuthGatewayIT {
   static void tearDown() throws IOException {
     service1Mock.shutdown();
     idpMock.shutdown();
-  }
-
-  @Test
-  void serveIndex() {
-    final String indexContent = WebClient.create("http://localhost:9080")
-        .get()
-        .retrieve()
-        .bodyToMono(String.class)
-        .block();
-
-    assertEquals("<!DOCTYPE html>", indexContent.substring(0, 15));
   }
 
   @Test
@@ -97,7 +88,7 @@ public class OAuthGatewayIT {
     assertTrue(idpLocation.getQuery().contains("&redirect_uri=http://localhost:9080/login/oauth2/code/dummy-idp"));
   }
 
-//  @Test
+  @Test
   void testCompleteLoginAndBackendCallFlow() throws JsonProcessingException, InterruptedException {
     // step 1: request authZ
     final ClientResponse initialResponse = WebClient.create("http://localhost:9080")
@@ -141,7 +132,7 @@ public class OAuthGatewayIT {
 
     // check that client is now successfully logged in and are now redirected back
     assertEquals(HttpStatus.FOUND, authResponse.statusCode());
-    assertEquals("/onestop", authResponse.headers().asHttpHeaders().getLocation().toString());
+    assertEquals("/onestop/", authResponse.headers().asHttpHeaders().getLocation().toString());
 
     // update the cookie with the new value from the received Set-Cookie header
     sessionCookie = authResponse.cookies().getFirst(SESSION);
