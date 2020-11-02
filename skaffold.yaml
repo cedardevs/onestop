@@ -179,6 +179,15 @@ build:
     debug: "true"
     service.clusterIP: 10.100.100.0
     config: |-
+      ---
+      logging.level.org.springframework.security: DEBUG
+      logging.level.org.springframework.web: DEBUG
+      login-gov:
+        keystore:
+          alias: ${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
+          file: ${PRIVATE_KEY_JWT_KEYSTORE_FILE}
+          password: ${PRIVATE_KEY_JWT_KEYSTORE_PASSWORD}
+          type: ${PRIVATE_KEY_JWT_KEYSTORE_TYPE}
       spring:
         application:
           name: gateway
@@ -215,28 +224,7 @@ build:
                 uri: http://onestop-client/
                 predicates:
                   - Path=/**
-      logging.level.org.springframework.security: DEBUG
-      logging.level.org.springframework.web: DEBUG
-      gateway:
-        routes:
-          onestop-search:
-            host: http://onestop-search:8080/onestop-search
-            secure: false
-            apiPrefix: true
-          user:
-            host: http://onestop-user:8080/user
-            apiPrefix: true
-          onestop:
-            host: http://onestop-client:8080/onestop
-            apiPrefix: false
-            secure: false
 
-      login-gov:
-        keystore:
-          alias: ${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
-          file: ${PRIVATE_KEY_JWT_KEYSTORE_FILE}
-          password: ${PRIVATE_KEY_JWT_KEYSTORE_PASSWORD}
-          type: ${PRIVATE_KEY_JWT_KEYSTORE_TYPE}
 .onestop-postgresql: &onestop-postgresql
   name: onestop-postgresql
   chartPath: helm/onestop-postgresql
