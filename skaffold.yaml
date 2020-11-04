@@ -194,36 +194,36 @@ build:
         cloud:
           gateway:
             routes:
-              - id: user_api
-                uri: http://onestop-user:8080/user
-                predicates:
-                  - Path=/api/user/**
-                filters:
-                  - RemoveRequestHeader= Cookie,Set-Cookie
-                  - StripPrefix=1
-                  - TokenRelay=
-              - id: search_route
-                uri: http://onestop-search:8080/
-                predicates:
-                  - Path=/onestop-search/**
-                filters:
-                  - RemoveRequestHeader= Cookie,Set-Cookie #should we remove the cookie for all services?
-                  - StripPrefix=1
-              - id: registry_route
-                uri: http://onestop-registry:8080/
-                predicates:
-                  - Path=/registry/**
-                filters:
-                  - RemoveRequestHeader= Cookie,Set-Cookie #should we remove the cookie for all services?
-                  - StripPrefix=1
-              - id: client_route
-                uri: http://onestop-client/
-                predicates:
-                  - Path=/onestop/**
-              - id: fallback_to_client
-                uri: http://onestop-client/
-                predicates:
-                  - Path=/**
+            - id: user_api
+              uri: http://onestop-user:8080/user
+              predicates:
+              - Path=/api/user/**
+              filters:
+              - RemoveRequestHeader=Cookie\,Set-Cookie
+              - StripPrefix=1
+              - TokenRelay=
+            - id: search_route
+              uri: http://onestop-search:8080/
+              predicates:
+              - Path=/onestop-search/**
+              filters:
+              - RemoveRequestHeader=Cookie\,Set-Cookie
+              - StripPrefix=1
+            - id: registry_route
+              uri: http://onestop-registry:8080/
+              predicates:
+              - Path=/registry/**
+              filters:
+              - RemoveRequestHeader=Cookie\,Set-Cookie
+              - StripPrefix=1
+            - id: client_route
+              uri: http://onestop-client/
+              predicates:
+              - Path=/onestop/**
+            - id: fallback_to_client
+              uri: http://onestop-client/
+              predicates:
+              - Path=/**
 
 .onestop-postgresql: &onestop-postgresql
   name: onestop-postgresql
