@@ -41,7 +41,7 @@ public class GatewayConfig {
       .map(this::extractPath)
       .blockFirst())
       .stream()
-      .peek(secureRoute -> logger.info("secure route: " + secureRoute))
+      .peek(secureRoute -> logger.info("Securing route: " + secureRoute))
       .toArray(String[]::new);
   }
 
