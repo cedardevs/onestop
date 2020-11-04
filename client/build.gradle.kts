@@ -46,7 +46,6 @@ task<Tar>("tar") {
 
 // sync files to the client container jib staging directory
 task<Sync>("sync") {
-
     val publish: Publish by project.extra
     val jibExtraDir: String by project.extra
 
@@ -57,21 +56,6 @@ task<Sync>("sync") {
         dependsOn("tar") // can't untar without tar
         from(tarTree(file("${buildDir}/libs/${publish.title}.tar.gz")))
     }
-    // with apachce httpd.conf
-//    into("/srv/www/${publish.title}") {
-//        dependsOn("tar") // can't untar without tar
-//        from(tarTree(file("${buildDir}/libs/${publish.title}.tar.gz")))
-//    }
-
-//    // copy the apache config
-//    into("/usr/local/apache2/conf") {
-//        from(file("docker/httpd.conf"))
-//    }
-
-    // copy the entrypoint script
-//    into("/") {
-//        from(file("docker/entrypoint.sh"))
-//    }
 }
 
 // jib & jibDockerBuild rely on synced files in staging directory
