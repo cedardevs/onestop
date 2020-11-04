@@ -220,6 +220,12 @@ build:
               uri: http://onestop-client/
               predicates:
               - Path=/onestop/**
+            - id: precise_client_path
+              uri: http://onestop-client/
+              predicates:
+              - Path=/onestop
+              filters:
+              - RewritePath=/onestop\, /onestop/
             - id: fallback_to_client
               uri: http://onestop-client/
               predicates:
