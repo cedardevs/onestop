@@ -208,8 +208,8 @@ At a bare minimum, Kafka and the registry should be running to successfully uplo
 ```
 
 When do I need to run this script?
-- Any time a change is made to a `requirements.yaml` file
-- Any time a change is made to one of the OneStop sub charts that needs to be deployed. Make sure to update the chart version appropriately in `helm/onestop/Chart.yaml` before running this script.
+- Anytime a change is made to a `requirements.yaml` file
+- Anytime a change is made to one of the OneStop sub charts that needs to be deployed. Make sure to update the chart version appropriately in `helm/onestop/Chart.yaml` before running this script.
 
 ### Troubleshooting
 Something is really messed up in my environment, what should I do?
