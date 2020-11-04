@@ -215,16 +215,16 @@ build:
               - Path=/registry/**
               filters:
               - StripPrefix=1
-            - id: client_route
-              uri: http://onestop-client/
-              predicates:
-              - Path=/onestop/**
             - id: precise_client_path
               uri: http://onestop-client/
               predicates:
               - Path=/onestop
               filters:
-              - RewritePath=/onestop\, /onestop/
+              - RewritePath=/onestop\,/onestop/
+            - id: client_route
+              uri: http://onestop-client/
+              predicates:
+              - Path=/onestop/**
             - id: fallback_to_client
               uri: http://onestop-client/
               predicates:
