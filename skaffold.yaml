@@ -210,11 +210,10 @@ build:
               - RemoveRequestHeader=Cookie\,Set-Cookie
               - StripPrefix=1
             - id: registry_route
-              uri: http://onestop-registry:8080/
+              uri: http://onestop-registry/
               predicates:
               - Path=/registry/**
               filters:
-              - RemoveRequestHeader=Cookie\,Set-Cookie
               - StripPrefix=1
             - id: client_route
               uri: http://onestop-client/
@@ -288,7 +287,7 @@ profiles:
           - *onestop-gateway
           - *onestop-user
           - *onestop-postgresql
-#          - *onestop-registry
+          - *onestop-registry
 #          - *onestop-parsalyzer
 #          - *onestop-indexer
           - name: onestop-dev
