@@ -8,7 +8,6 @@ Table of Contents
    * [Build](#build)
    * [Run](#run)
    * [Verify Endpoints](#verify-endpoints)
-   * [Upload Test Data](#upload-test-data)
  * [Quick Start (Kubernetes   Helm   Skaffold)](#quick-start-kubernetes--helm--skaffold)
    * [System Requirements](#system-requirements)
    * [If running client via Node](#if-running-client-via-node)
@@ -74,12 +73,6 @@ http://localhost:8097/onestop-search/actuator/info
 # port here is automatically assigned when using webpack-dev-server
 # and seen in the output of `npm run dev`
 http://localhost:<port>/onestop
-```
-
-### Upload Test Data
-```
-# The default port is 30098 which is used for Kubernetes development
-./gradlew uploadTestData --apiAdminPort=8098
 ```
 
 ## Quick Start (Kubernetes + Helm + Skaffold)
@@ -177,18 +170,23 @@ http://localhost/onestop
 
 ### Upload Test Data
 
-We no longer store our test data next to our source code. The amount of data has grown significantly over time and is used a variety of contexts. Because of this we have created the `onesto-test-data` repo with a corresponding upload script to handle populating our system with data.
+We have our test data in its own repo `onestop-test-data` with a corresponding upload script to handle populating the OneStop with data.
 
-#### Clone the test data repo (outside of onestop)
+#### Clone the test data repo
 ```
 git clone git@github.com:cedardevs/onestop-test-data.git
 cd onestop-test-data
 ```
 
-`Usage: ./upload.sh <application> <rootDir> <baseUrl> <username:password>`
+Usage: `./upload.sh <application> <rootDir> <baseUrl> <username:password>`
 
-For example (upload *all* test data collections and granules): 
+
+Examples:
+To load *all* test data collections and granules: 
 `./upload.sh IM . http://localhost/registry`
+
+To load HazardImages data:
+`./upload.sh IM HazardImages localhost/registry`
 
 If the upload is pointing to an instance of the registry API which is secured, then it will be necessary to pass user credentials.
 
