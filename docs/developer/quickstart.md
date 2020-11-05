@@ -2,44 +2,101 @@
 
 Table of Contents
 =================
- * [Quick Start](#quick-start)
-   * [Basic System Requirements](#basic-system-requirements)
-   * [Clone](#clone)
-   * [Build](#build)
-   * [Run](#run)
-   * [Verify Endpoints](#verify-endpoints)
- * [Quick Start (Kubernetes   Helm   Skaffold)](#quick-start-kubernetes--helm--skaffold)
-   * [System Requirements](#system-requirements)
-   * [If running client via Node](#if-running-client-via-node)
-   * [Verify Endpoints](#verify-endpoints-1)
-   * [Upload Test Data](#upload-test-data-1)
-   * [Making Helm Chart Changes](#making-helm-chart-changes)
-   * [Troubleshooting](#troubleshooting)
-   * [Clear Caches](#clear-caches)
-   * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
+ * [Setup](#getting-started)
+   * [Clone OneStop Code](#clone-onestop-code)
+   * [Dependencies](#depedencencies)
+       * [Java >= 8](#java--8)
+       * [Docker](#docker)
+       * [Elasticsearch (not highly recommended)](#elasticsearch-not-typical-path)
+       * [Node](#node)
+       * [Kubernetes](#kubernetes)
+       * [Helm](#helm)
+       * [Skaffold](#skaffold)
+       * [Example Install Steps](#recommended-install-steps)
+       * [Notes](#notes)
+   * [Running Locally](#running-locally)
+       * [Build](#build)
+       * [Run](#run)
+       * [Verify Endpoints](#verify-endpoints)
+       * [If running client via Node](#if-running-client-via-node)
+       * [Upload Test Data](#upload-test-data-1)
+       * [Making Helm Chart Changes](#making-helm-chart-changes)
+       * [Troubleshooting](#troubleshooting)
+       * [Clear Caches](#clear-caches)
+       * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
  * [Feature Toggles](#feature-toggles)
    * [Keystores and Credentials](#keystores-and-credentials)
    * [Spring Profiles](#spring-profiles)
      * [search](#search)
    * [Changing &amp; Overriding Profiles](#changing--overriding-profiles)
 
-## Quick Start
-### Basic System Requirements
-- **Java >= 8** [JDK8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [JDK11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
+## Setup
+### Clone OneStop Code
+`git clone https://github.com/cedardevs/onestop.git`
+
+### Depedencencies
+####Java >= 8
+  - [JDK8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [JDK11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
   - needed by Gradle 5 wrapper and... everything
-- **Docker** [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
+####Docker
+  - [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
   - needed to run test containers in integration tests
-- **Elasticsearch 5.6.14**
+####Elasticsearch (not typical path)
+  - Most of us don't run a local elasticsearch for a few reasons. Primarily because the ES container deletes your data when it shuts down.
+  - version 5.6.14
   - running on port 9200
-  - `brew install elasticsearch@5.6`
-  - `brew services start elasticsearch@5.6`
-- **Node**
+```
+brew install elasticsearch@5.6
+brew services start elasticsearch@5.6
+```
+####Node
   - needed to hot-reload client via `npm` / `webpack-dev-server`
   - `brew install node`
+####Kubernetes
+  - Our team enables Kubernetes with Docker Desktop (see: `Preferences...` > `Kubernetes`)
+  - We highly recommend allocating >= 6.0 GiB to Docker (see: `Preferences...` > `Advanced`)
+  - Some of us get even better performance by allocating even more memory and swap memory
+####Helm
+  - Currently, we are using Helm 3.
+  - Run `helm init` to install tiller onto the cluster (one-time deal, unless upgrading helm)
+####Skaffold
+  - Skaffold is a command line tool that facilitates continuous development for Kubernetes applications; It handles the workflow for building, pushing and deploying your application.
+  - Skaffold uses profiles that are defined in the skaffold.yaml to indicate which components will be started. If you reference that skaffold.yaml you will see a profile of psi. Here's the example:
+  - Example profile usage, noticed the -p:
+  
+`skaffold dev --force=false --status-check=false -p psi`
+####infraInstall script
+  - Run this script at the root of OneStop to install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
 
-### Clone
-`git clone https://github.com/cedardevs/onestop.git`
-### Build
+`./helm/infraInstall.sh`
+  - Note that the `infraInstall.sh` could, theoretically, be accomplished by using the `kubectl` deploy method in Skaffold; however, Skaffold does not yet support multiple deploy types, and we are already leveraging the `jib` deploy method. See [this issue](https://github.com/GoogleContainerTools/skaffold/issues/2875#issuecomment-533737766) to track progress.
+
+
+
+####Recommended Install Steps
+```
+brew install kubernetes-helm
+brew install skaffold
+
+# install tiller onto the cluster (one-time deal, unless upgrading helm)
+helm init
+
+# install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
+./helm/infraInstall.sh
+
+# run (requires having run a `./gradlew build` for the Docker images referenced in skaffold)
+skaffold dev --force=false --status-check=false
+```
+
+**WARNING**: There's a good chance the `integrationTask` gradle task will fail with less powerful machines
+due to elasticsearch being a memory hog. This can often manifest in the build reporting (e.g. - `build/reports/integrationTests/index.html`) misleading errors like this:
+
+`java.lang.NullPointerException: Cannot get property 'took' on null object`
+
+If this resource issue is getting in your way, you can always skip tasks in gradle using the `-x integrationTest` option. Of course, this is only a quick fix, and is not acceptable for validating the success of our continuous integration builds.
+
+### Running Locally
+#### Build
 <details open>
   <summary>
     <code>./gradlew build</code>
@@ -54,7 +111,7 @@ Table of Contents
 </pre>
 </details>
 
-### Run
+#### Run
 ```
 ./gradlew registry:bootrun
 ./gradlew parsalyzer:run
@@ -62,7 +119,7 @@ Table of Contents
 cd client && npm run dev
 ```
 
-### Verify Endpoints
+#### Verify Endpoints
 ```
 # Elasticsearch
 http://localhost:9200/
@@ -75,43 +132,9 @@ http://localhost:8097/onestop-search/actuator/info
 http://localhost:<port>/onestop
 ```
 
-## Quick Start (Kubernetes + Helm + Skaffold)
-### System Requirements
-- [Basic System Requirements](#basic-system-requirements) listed above
-  - *excluding* local Elasticsearch installation
-- Kubernetes
-  - our team enables Kubernetes with Docker Desktop (see: `Preferences...` > `Kubernetes`)
-  - we highly recommend allocating >= 6.0 GiB to Docker (see: `Preferences...` > `Advanced`)
-  - some of us get even better performance by allocating even more memory and swap memory
-- Helm 3
-- Skaffold
-
+#### If running client via Node
 ```
-brew install kubernetes-helm
-brew install skaffold
-
-# install tiller onto the cluster (one-time deal, unless upgrading helm)
-helm init
-
-# install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
-./helm/infraInstall.sh
-
-# run (requires having run a `./gradlew build` for the Docker images referenced in skaffold)
-skaffold dev -f skaffold.yaml
-```
-
-**NOTE**: the `infraInstall.sh` could, theoretically, be accomplished by using the `kubectl` deploy method in Skaffold; however, Skaffold does not yet support multiple deploy types, and we are already leveraging the `jib` deploy method. See [this issue](https://github.com/GoogleContainerTools/skaffold/issues/2875#issuecomment-533737766) to track progress.
-
-**WARNING**: there's a good chance the `integrationTask` gradle task will fail with less powerful machines
-due to elasticsearch being a memory hog. This can often manifest in the build reporting (e.g. - `build/reports/integrationTests/index.html`) misleading errors like this:
-
-`java.lang.NullPointerException: Cannot get property 'took' on null object`
-
-If this resource issue is getting in your way, you can always skip tasks in gradle using the `-x integrationTest` option. Of course, this is only a quick fix, and is not acceptable for validating the success of our continuous integration builds.
-
-### If running client via Node
-```
-# 1) comment out client sections in skaffold.yaml
+# 1) comment out the client section in skaffold.yaml
 
 # 2) tell webpack-dev-server proxy to use the k8s exposed port for the search API
 cd client && npm run kub
@@ -119,8 +142,6 @@ cd client && npm run kub
 # 3) run skaffold without automatic port forwarding
 skaffold dev --port-forward=false -f skaffold.yaml
 ```
-
-### Verify Endpoints
 
 #### Elasticsearch & Kibana Status
 The ECK operator makes it easy to see the state of Elastic CRDs:
