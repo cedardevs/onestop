@@ -32,7 +32,7 @@ public class SecurityConfig {
   ServerOAuth2AuthorizedClientRepository authorizedClients;
 
   @Autowired
-  GatewayConfig config;
+  GatewayConfigUtil configUtil;
 
   private LoginGovConfiguration loginGovConfiguration;
 
@@ -55,7 +55,7 @@ public class SecurityConfig {
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(final ServerHttpSecurity http) {
     // the matcher for all paths that need to be secured (require a logged-in user)
-    final ServerWebExchangeMatcher apiPathMatcher = pathMatchers(config.parseSecurePaths());
+    final ServerWebExchangeMatcher apiPathMatcher = pathMatchers(configUtil.parseSecurePaths());
 
     return http
         .authorizeExchange().matchers(apiPathMatcher).authenticated()

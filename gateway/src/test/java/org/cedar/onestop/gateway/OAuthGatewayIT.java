@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.cedar.onestop.gateway.config.GatewayConfig;
+import org.cedar.onestop.gateway.config.GatewayConfigUtil;
 import org.cedar.onestop.gateway.config.SecurityConfig;
 import org.junit.After;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,13 +24,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
-@SpringBootTest(classes = { GatewayApplication.class, GatewayConfig.class, SecurityConfig.class}, webEnvironment = DEFINED_PORT)
+@SpringBootTest(classes = { GatewayApplication.class, GatewayConfigUtil.class, SecurityConfig.class}, webEnvironment = DEFINED_PORT)
 public class OAuthGatewayIT {
 
   private static final MockWebServer service1Mock = new MockWebServer();

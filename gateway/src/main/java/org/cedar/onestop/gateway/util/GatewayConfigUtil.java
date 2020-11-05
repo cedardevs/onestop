@@ -12,12 +12,12 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-public class GatewayConfig {
+public class GatewayConfigUtil {
 
   @Autowired
   RouteDefinitionLocator routeDefinitionLocator;
 
-  Logger logger = LoggerFactory.getLogger(GatewayConfig.class);
+  Logger logger = LoggerFactory.getLogger(GatewayConfigUtil.class);
 
   private boolean filterSecureRoutes(RouteDefinition routeDefinition){
     return routeDefinition
