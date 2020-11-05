@@ -4,8 +4,8 @@ Table of Contents
 =================
  * [Setup](#getting-started)
    * [Clone OneStop Code](#clone-onestop-code)
-   * [Dependencies](#depedencencies)
-       * [Java >= 8](#java--8)
+   * [Dependencies](#dependencies)
+       * [Java](#java)
        * [Docker](#docker)
        * [Elasticsearch (not highly recommended)](#elasticsearch-not-typical-path)
        * [Node](#node)
@@ -34,8 +34,9 @@ Table of Contents
 ### Clone OneStop Code
 `git clone https://github.com/cedardevs/onestop.git`
 
-### Depedencencies
-####Java >= 8
+### Dependencies
+
+####Java
   - [JDK8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [JDK11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
   - needed by Gradle 5 wrapper and... everything
 ####Docker
