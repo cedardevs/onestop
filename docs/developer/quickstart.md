@@ -17,8 +17,13 @@ Table of Contents
     * [Build](#build)
     * [Run](#run)
     * [Verify Endpoints](#verify-endpoints)
-    * [If running client via Node](#if-running-client-via-node)
-    * [Upload Test Data](#upload-test-data-1)
+        * [If running client via Node](#if-running-client-via-node)
+        * [Elasticsearch & Kibana Status](#elasticsearch--kibana-status)
+        * [Confirm Elasticsearch can be accessed securely within the cluster](#confirm-elasticsearch-can-be-accessed-securely-within-the-cluster)
+        * [Confirm Kibana can be accessed via LoadBalancer](#confirm-kibana-can-be-accessed-via-loadbalancer)
+    * [Upload Test Data](#upload-test-data)
+        *[Clone the test data repo](#clone-the-test-data-repo)
+        *[Usage](#usage)
     * [Making Helm Chart Changes](#making-helm-chart-changes)
     * [Troubleshooting](#troubleshooting)
     * [Clear Caches](#clear-caches)
@@ -132,7 +137,7 @@ http://localhost:8097/onestop-search/actuator/info
 http://localhost:<port>/onestop
 ```
 
-### If running client via Node
+#### If running client via Node
 ```
 # 1) comment out the client section in skaffold.yaml
 
@@ -143,7 +148,7 @@ cd client && npm run kub
 skaffold dev --port-forward=false -f skaffold.yaml
 ```
 
-### Elasticsearch & Kibana Status
+#### Elasticsearch & Kibana Status
 The ECK operator makes it easy to see the state of Elastic CRDs:
 ```
 # a`HEALTH` status of "green" indicates it's ready
@@ -151,7 +156,7 @@ kubectl get elasticsearch
 kubectl get kibana
 ```
 
-### Confirm Elasticsearch can be accessed securely within the cluster
+#### Confirm Elasticsearch can be accessed securely within the cluster
 ```
 # exec into the net-tools utility pod to try to hit elasticsearch within the cluster
 kubectl exec -it $(kubectl get pods -l app=net-tools --no-headers -o custom-columns=":metadata.name") -- /bin/bash
@@ -160,7 +165,7 @@ kubectl exec -it $(kubectl get pods -l app=net-tools --no-headers -o custom-colu
 curl --user "elastic:foamcat" -k https://onestop-es-http:9200/
 ```
 
-### Confirm Kibana can be accessed via LoadBalancer
+#### Confirm Kibana can be accessed via LoadBalancer
 ```
 $ kubectl get svc -l common.k8s.elastic.co/type=kibana
 NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
@@ -193,13 +198,14 @@ http://localhost/onestop
 
 We have our test data in its own repo `onestop-test-data` with a corresponding upload script to handle populating the OneStop with data.
 
-### Clone the test data repo
+#### Clone the test data repo
 ```
 git clone git@github.com:cedardevs/onestop-test-data.git
 cd onestop-test-data
 ```
 
-Usage: `./upload.sh <application> <rootDir> <baseUrl> <username:password>`
+#### Usage
+`./upload.sh <application> <rootDir> <baseUrl> <username:password>`
 
 
 Examples:
