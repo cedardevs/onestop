@@ -2,33 +2,32 @@
 
 Table of Contents
 =================
- * [Setup](#getting-started)
-   * [Clone OneStop Code](#clone-onestop-code)
-   * [Dependencies](#dependencies)
-       * [Java](#java)
-       * [Docker](#docker)
-       * [Elasticsearch (not highly recommended)](#elasticsearch-not-typical-path)
-       * [Node](#node)
-       * [Kubernetes](#kubernetes)
-       * [Helm](#helm)
-       * [Skaffold](#skaffold)
-       * [Example Install Steps](#recommended-install-steps)
-       * [Notes](#notes)
-   * [Running Locally](#running-locally)
-       * [Build](#build)
-       * [Run](#run)
-       * [Verify Endpoints](#verify-endpoints)
-       * [If running client via Node](#if-running-client-via-node)
-       * [Upload Test Data](#upload-test-data-1)
-       * [Making Helm Chart Changes](#making-helm-chart-changes)
-       * [Troubleshooting](#troubleshooting)
-       * [Clear Caches](#clear-caches)
-       * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
- * [Feature Toggles](#feature-toggles)
-   * [Keystores and Credentials](#keystores-and-credentials)
-   * [Spring Profiles](#spring-profiles)
-     * [search](#search)
-   * [Changing &amp; Overriding Profiles](#changing--overriding-profiles)
+* [Setup](#getting-started)
+    * [Clone OneStop Code](#clone-onestop-code)
+    * [Dependencies](#dependencies)
+        * [Java](#java)
+        * [Docker](#docker)
+        * [Elasticsearch (not highly recommended)](#elasticsearch-not-typical-path)
+        * [Node](#node)
+        * [Kubernetes](#kubernetes)
+        * [Helm](#helm)
+        * [Skaffold](#skaffold)
+        * [Example Install Steps](#recommended-install-steps)
+* [Running Locally](#running-locally)
+    * [Build](#build)
+    * [Run](#run)
+    * [Verify Endpoints](#verify-endpoints)
+    * [If running client via Node](#if-running-client-via-node)
+    * [Upload Test Data](#upload-test-data-1)
+    * [Making Helm Chart Changes](#making-helm-chart-changes)
+    * [Troubleshooting](#troubleshooting)
+    * [Clear Caches](#clear-caches)
+    * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
+* [Feature Toggles](#feature-toggles)
+    * [Keystores and Credentials](#keystores-and-credentials)
+    * [Spring Profiles](#spring-profiles)
+        * [search](#search)
+    * [Changing &amp; Overriding Profiles](#changing--overriding-profiles)
 
 ## Setup
 ### Clone OneStop Code
@@ -96,8 +95,8 @@ due to elasticsearch being a memory hog. This can often manifest in the build re
 
 If this resource issue is getting in your way, you can always skip tasks in gradle using the `-x integrationTest` option. Of course, this is only a quick fix, and is not acceptable for validating the success of our continuous integration builds.
 
-### Running Locally
-#### Build
+## Running Locally
+### Build
 <details open>
   <summary>
     <code>./gradlew build</code>
@@ -112,7 +111,7 @@ If this resource issue is getting in your way, you can always skip tasks in grad
 </pre>
 </details>
 
-#### Run
+### Run
 ```
 ./gradlew registry:bootrun
 ./gradlew parsalyzer:run
@@ -120,7 +119,7 @@ If this resource issue is getting in your way, you can always skip tasks in grad
 cd client && npm run dev
 ```
 
-#### Verify Endpoints
+### Verify Endpoints
 ```
 # Elasticsearch
 http://localhost:9200/
@@ -133,7 +132,7 @@ http://localhost:8097/onestop-search/actuator/info
 http://localhost:<port>/onestop
 ```
 
-#### If running client via Node
+### If running client via Node
 ```
 # 1) comment out the client section in skaffold.yaml
 
@@ -144,7 +143,7 @@ cd client && npm run kub
 skaffold dev --port-forward=false -f skaffold.yaml
 ```
 
-#### Elasticsearch & Kibana Status
+### Elasticsearch & Kibana Status
 The ECK operator makes it easy to see the state of Elastic CRDs:
 ```
 # a`HEALTH` status of "green" indicates it's ready
@@ -152,7 +151,7 @@ kubectl get elasticsearch
 kubectl get kibana
 ```
 
-#### Confirm Elasticsearch can be accessed securely within the cluster
+### Confirm Elasticsearch can be accessed securely within the cluster
 ```
 # exec into the net-tools utility pod to try to hit elasticsearch within the cluster
 kubectl exec -it $(kubectl get pods -l app=net-tools --no-headers -o custom-columns=":metadata.name") -- /bin/bash
@@ -161,7 +160,7 @@ kubectl exec -it $(kubectl get pods -l app=net-tools --no-headers -o custom-colu
 curl --user "elastic:foamcat" -k https://onestop-es-http:9200/
 ```
 
-#### Confirm Kibana can be accessed via LoadBalancer
+### Confirm Kibana can be accessed via LoadBalancer
 ```
 $ kubectl get svc -l common.k8s.elastic.co/type=kibana
 NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
@@ -194,7 +193,7 @@ http://localhost/onestop
 
 We have our test data in its own repo `onestop-test-data` with a corresponding upload script to handle populating the OneStop with data.
 
-#### Clone the test data repo
+### Clone the test data repo
 ```
 git clone git@github.com:cedardevs/onestop-test-data.git
 cd onestop-test-data
