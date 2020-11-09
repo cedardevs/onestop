@@ -27,6 +27,11 @@ enum class CI(val label: String, val envBranch: String, val envTag: String) {
       label = "Travis CI",
       envBranch = "TRAVIS_BRANCH",
       envTag = "TRAVIS_TAG"
+  ),
+  CODEBUILD(
+      label = "AWS CodeBuild",
+      envBranch = "CODEBUILD_SOURCE_VERSION",
+      envTag = "CODEBUILD_SOURCE_VERSION"
   )
 }
 
@@ -167,6 +172,7 @@ fun isReleaseBranch(ci: CI): Boolean {
     CI.CIRCLE -> branch.isBlank()        // CircleCI does not set the CIRCLE_BRANCH env var when building tags
     CI.GITLAB -> branch == BRANCH_MASTER // TODO: determine if GitLab has an empty branch env var or sets == 'master' when tag env var is set
     CI.TRAVIS -> branch == BRANCH_MASTER // TODO: determine if Travis has an empty branch env var or sets == 'master' when tag env var is set
+    CI.CODEBUILD -> branch == BRANCH_MASTER // TODO: determine if CodeBuild has an empty branch env var or sets == 'master' when tag env var is set
   }
 }
 
@@ -366,6 +372,7 @@ fun isCI(ci: CI): Boolean {
     CI.CIRCLE -> (System.getenv("CI") ?: "").toBoolean()
     CI.GITLAB -> (System.getenv("CI") ?: "").toBoolean()
     CI.TRAVIS -> (System.getenv("CI") ?: "").toBoolean()
+    CI.CODEBUILD -> (System.getenv("CI") ?: "").toBoolean()
   }
 }
 
