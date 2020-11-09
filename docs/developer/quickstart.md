@@ -28,6 +28,15 @@ Table of Contents
     * [Troubleshooting](#troubleshooting)
     * [Clear Caches](#clear-caches)
     * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
+* [Cleanup](#cleanup)
+    * [Clear Caches](#clear-caches)
+    * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
+         * [Uninstall ECK Operator](#uninstall-eck-operator)
+         * [Ensure Skaffold is not running and has no running resources](#ensure-skaffold-is-not-running-and-has-no-running-resources)
+         * [Delete persistent volume claims (PVCs)](#delete-persistent-volume-claims-pvcs)
+         * [Clean up space on disk from leftover docker containers](#clean-up-space-on-disk-from-leftover-docker-containers)
+         * [Helm cleanup](#helm-cleanup)
+        
 * [Feature Toggles](#feature-toggles)
     * [Keystores and Credentials](#keystores-and-credentials)
     * [Spring Profiles](#spring-profiles)
@@ -75,8 +84,7 @@ brew services start elasticsearch@5.6
 
 `./helm/infraInstall.sh`
   - Note that the `infraInstall.sh` could, theoretically, be accomplished by using the `kubectl` deploy method in Skaffold; however, Skaffold does not yet support multiple deploy types, and we are already leveraging the `jib` deploy method. See [this issue](https://github.com/GoogleContainerTools/skaffold/issues/2875#issuecomment-533737766) to track progress.
-
-
+  - Note: refer [Uninstall ECK Operator](#Uninstall ECK Operator) for cleaning up prior to this if you've run the infraInstall before.
 
 #### Recommended Install Steps
 ```
@@ -241,25 +249,45 @@ When do I need to run this script?
 ### Troubleshooting
 Something is really messed up in my environment, what should I do?
 
-If you find yourself in a weird state, even after freshly cloning the project, you might try some or all of the following techniques to reset your environment before building and running:
+If you find yourself in a weird state, even after freshly cloning the project, you might try some or all of the following [cleanup](#cleanup) techniques to reset your environment before building and running:
 
-##### Clear Caches
+## Cleanup
+### Clear Caches
 ```
 ./gradlew clean
 rm -rf ~/.gradle/caches
 cd client && rm -rf node_modules/
 ```
 
-##### Resetting Kubernetes Tools
+### Common Cleanup Steps
+```
+# Clean up space on disk from leftover docker containers
+docker image prune -a --force --filter "until=12h”
 
-###### Uninstall ECK Operator
+# Clean up leftover helm charts
+rm -rf helm/onestop-dev/charts
+
+# find and remove any requirements.lock files
+find helm/ -name "*.lock"
+
+skaffold get deployments
+# remove all resources skaffold has deployed. This will throw an error if there were no releases to delete
+skaffold delete
+
+# install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
+./helm/infraInstall.sh
+```
+
+### Resetting Kubernetes Tools
+
+#### Uninstall ECK Operator
 This step simply makes removing anything ECK related from your cluster easier, including the CRDs and operator itself.
 
 ```
-./k8s/infraUninstall.sh
+./helm/infraUninstall.sh
 ```
 
-###### Ensure Skaffold is not running and has no running resources
+#### Ensure Skaffold is not running and has no running resources
 ```
 # CTRL-C out of any terminal using skafold and double check running processes with:
 ps aux | grep skaffold
@@ -268,19 +296,19 @@ ps aux | grep skaffold
 skaffold delete
 ```
 
-###### Delete persistent volume claims (PVCs)
+#### Delete persistent volume claims (PVCs)
 If you've upgraded versions or are making big breaking changes, it is generally advised to wipe-out volumes and start fresh.
 **WARNING**: it is advised to only do this after ECK and stateful apps have been taken down.
 ```
 kubectl delete pvc --all
 ```
 
-###### Clean up space on disk from leftover docker containers
+#### Clean up space on disk from leftover docker containers
 ```
 docker image prune -a --force
 ```
 
-###### Helm cleanup
+#### Helm cleanup
 ```
 # list releases
 helm list
