@@ -137,9 +137,10 @@ class Header extends React.Component {
     } = this.props
 
     const {focusingSkipLink} = this.state
-    const userEmail = user && user.profile ? user.profile.email : null
+    const userId = user && user.profile ? user.profile.userId : null
+    const userButtonDisplayed = authEnabled && (user && !user.isFetching)
 
-    const userActionButton = authEnabled ? !user.isAuthenticated ? (
+    const userActionButton = userButtonDisplayed ? !user.isAuthenticated ? (
       <HeaderLink title="Login" to={loginEndpoint} isExternalLink={true} />
     ) : (
       <HeaderLink
@@ -150,9 +151,18 @@ class Header extends React.Component {
       />
     ) : null
 
-    const userListItem = authEnabled ? (
+    const userListItem = userButtonDisplayed ? (
       <li style={styleLinkListItem(false, !cartEnabled)}>{userActionButton}</li>
     ) : null
+
+    const userDashboardItem =
+      userButtonDisplayed && user.isAuthenticated ? (
+        <li style={styleLinkListItem(false, !cartEnabled)}>
+          <HeaderLink title="Dashboard" to="/dashboard">
+            Dashboard
+          </HeaderLink>
+        </li>
+      ) : null
 
     const cartListItem = cartEnabled ? (
       <li style={styleLinkListItem(false, cartEnabled)}>
@@ -160,13 +170,13 @@ class Header extends React.Component {
       </li>
     ) : null
 
-    const welcomeUser = userEmail ? (
+    const welcomeUser = userId ? (
       <FlexRow
         style={styleUserWelcome}
         key="welcomeUser"
         items={[
           <div style={styleUserWelcome} key="emailDisplay">
-            Logged in as {userEmail}
+            Logged in as {userId}
           </div>,
         ]}
       />
@@ -174,6 +184,8 @@ class Header extends React.Component {
 
     const menuContent = (
       <ul style={styleLinkList}>
+        {userDashboardItem}
+        {userListItem}
         <li style={styleLinkListItem(true, false)}>
           <HeaderLink title="About" to="/about">
             About
@@ -184,7 +196,7 @@ class Header extends React.Component {
             Help
           </HeaderLink>
         </li>
-        {userListItem}
+
         {cartListItem}
       </ul>
     )

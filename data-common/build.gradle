@@ -10,6 +10,8 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
 
+    implementation('javax.servlet:javax.servlet-api:4.0.1')
+
     implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
     api("jakarta.json:jakarta.json-api:${Versions.JSONP}")
     implementation("org.glassfish:jakarta.json:${Versions.JSONP}")

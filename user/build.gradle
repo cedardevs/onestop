@@ -1,0 +1,163 @@
+import org.testcontainers.containers.PostgreSQLContainer
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.testcontainers:postgresql:1.15.0-rc2"
+  }
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+configurations {
+  integrationTestImplementation.extendsFrom testImplementation
+  integrationTestRuntime.extendsFrom testRuntime
+  integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+dependencies {
+  compileOnly("org.slf4j:slf4j-api:1.7.25")
+
+  implementation(project(':data-common'))
+
+  implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-security")
+  implementation("org.springframework.security:spring-security-oauth2-jose")
+  implementation("org.springframework.security:spring-security-oauth2-resource-server")
+
+  implementation("org.springframework.boot:spring-boot-starter-actuator")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+  runtimeOnly("org.postgresql:postgresql")
+  implementation("io.springfox:springfox-swagger2:2.9.2")
+  implementation("io.springfox:springfox-swagger-ui:2.9.2")
+
+  implementation('javax.validation:validation-api:2.0.1.Final')
+  implementation ('org.hibernate.validator:hibernate-validator:6.0.2.Final')
+  implementation ('org.hibernate.validator:hibernate-validator-annotation-processor:6.0.2.Final')
+
+  // reactive async dependencies
+  implementation("org.springframework.boot:spring-boot-starter-webflux")
+//  runtimeOnly 'io.r2dbc:r2dbc-postgresql'
+//  compile group: 'org.springframework.data', name: 'spring-data-r2dbc', version: '1.0.0.RELEASE'
+
+  // Spring test frameworks
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.springframework.security:spring-security-test")
+
+  // Spock for tests
+  testImplementation("org.spockframework:spock-spring:${Versions.SPOCK}")
+  testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
+
+  // Groovy for tests
+  implementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+  implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
+
+  // in memory DB for unit testing
+  testImplementation('com.h2database:h2')
+
+  // reactive test dependencies
+//    testImplementation 'org.springframework.boot.experimental:spring-boot-test-autoconfigure-r2dbc'
+//    testImplementation 'io.projectreactor:reactor-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+sourceSets {
+  integrationTest {
+    compileClasspath += sourceSets.main.output + sourceSets.test.output
+    runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+    groovy.srcDir file('src/integrationTest/groovy')
+    resources.srcDir file('src/integrationTest/resources')
+  }
+}
+
+task integrationTest(type: Test) {
+  doFirst {
+    Boolean ci = Boolean.valueOf(System.getenv('CI'))
+    if (ci) {
+      systemProperty 'spring.datasource.url', "jdbc:postgresql://localhost:5432/test"
+    }
+    else {
+      PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer().
+          withDatabaseName("test").withUsername("test").withPassword("test")
+      postgreSQLContainer.start()
+
+      systemProperty 'spring.datasource.url', "jdbc:postgresql://localhost:${postgreSQLContainer.getMappedPort(5432)}/test"
+
+      project.ext.set("postgreSQLContainer", postgreSQLContainer)
+    }
+  }
+
+  description = 'Runs the integration tests'
+  group = 'verification'
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  outputs.upToDateWhen { false }
+  shouldRunAfter test
+
+  finalizedBy { killPostgresql }
+
+  reports.junitXml.destination = file("${buildDir}/integration-test-results")
+  reports.html.destination = file("${buildDir}/reports/integrationTests")
+}
+
+check.dependsOn integrationTest
+task killPostgresql {
+  doFirst {
+    if (project.ext.has("postgreSQLContainer")) {
+      project.ext.get("postgreSQLContainer").stop()
+    }
+  }
+}
+
+bootJar {
+  classifier = 'all' // add a classifier to distinguish the executable jar
+  baseName = "${rootProject.name}-${project.name}"
+  launchScript()
+}
+
+task sourceJar(type: Jar) {
+  classifier = 'sources'
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
+assemble.dependsOn(sourceJar)
+assemble.dependsOn(bootJar)
+
+// Do something silly to ensure federal tasks that are called in Jenkins still effectively call jib
+task BuildDockerImage {
+  group "jib"
+  dependsOn jibDockerBuild
+}
+task PublishDockerImage {
+  group "jib"
+  dependsOn jib
+}
+
+jib {
+  use(PublishingKt) {
+    def publish = project.publish
+
+    from {
+      //base image
+      image = 'gcr.io/distroless/java:11'
+    }
+    to {
+      image = publish.repository()
+      auth {
+        username = publish.username
+        password = publish.password
+      }
+    }
+    container {
+      creationTime = publish.created.toString()
+      labels = publish.ociAnnotations()
+      ports = ['8080']
+    }
+  }
+}

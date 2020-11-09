@@ -13,6 +13,8 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.cedar.onestop.data.util.JsonUtils;
+import org.cedar.onestop.data.util.ListUtils;
 
 import java.util.*;
 
@@ -37,7 +39,7 @@ public class IndexingUtils {
       try {
         if (isValid) {
           var searchIndex = input.getConfig().searchAliasFromType(indexType);
-          requests.add(buildSearchWriteRequest(searchIndex, operation, input));
+          requests.add(buildSearchWriteRequest(searchIndex, operation, input, recordType));
         }
         if (!indexType.equals(ElasticsearchConfig.TYPE_FLATTENED_GRANULE)) {
           var aeIndex = input.getConfig().analysisAndErrorsAliasFromType(indexType);
@@ -49,7 +51,7 @@ public class IndexingUtils {
         return new ArrayList<>();
       }
     }
-    return requests;
+    return ListUtils.pruneEmptyElements(requests);
   }
 
   public static boolean isTombstone(ParsedRecord value) {
@@ -67,15 +69,26 @@ public class IndexingUtils {
     return value == null || value.getErrors().isEmpty();
   }
 
-  public static DocWriteRequest<?> buildSearchWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input) {
+  public static DocWriteRequest<?> buildSearchWriteRequest(String indexName, DocWriteRequest.OpType opType, IndexingInput input, RecordType recordType) {
     if (opType == DELETE) {
       return new DeleteRequest(indexName).id(input.getKey());
     }
     else {
-      var targetFields = input.getConfig().indexedProperties(indexName).keySet();
-      var formattedRecord = new HashMap<>(TransformationUtils.reformatMessageForSearch(input.getValue().value(), targetFields));
-      formattedRecord.put("stagedDate", input.getValue().timestamp());
-      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
+      Object formattedRecord = null;
+      switch (recordType) {
+        case collection:
+        formattedRecord = TransformationUtils.reformatCollectionForSearch(input.getValue().timestamp(), input.getValue().value());
+        break;
+        case granule:
+        if(indexName.contains("flattened")) {
+          formattedRecord = TransformationUtils.reformatFlattenedGranuleForSearch(input.getValue().timestamp(), input.getValue().value());
+        } else {
+          formattedRecord = TransformationUtils.reformatGranuleForSearch(input.getValue().timestamp(), input.getValue().value());
+        break;
+        }
+      }
+      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(JsonUtils.toJson(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
+
     }
   }
 
@@ -84,10 +97,18 @@ public class IndexingUtils {
       return new DeleteRequest(indexName).id(input.getKey());
     }
     else {
-      var targetFields = input.getConfig().indexedProperties(indexName).keySet();
-      var formattedRecord = new HashMap<>(TransformationUtils.reformatMessageForAnalysis(input.getValue().value(), targetFields, recordType));
-      formattedRecord.put("stagedDate", input.getValue().timestamp());
-      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(formattedRecord);
+      Object formattedRecord = null;
+      switch (recordType) {
+        case collection:
+        formattedRecord = TransformationUtils.reformatCollectionForAnalysis(input.getValue().timestamp(), input.getValue().value());
+        break;
+        case granule:
+        formattedRecord = TransformationUtils.reformatGranuleForAnalysis(input.getValue().timestamp(), input.getValue().value());
+
+      }
+      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(JsonUtils.toJson(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
+
+
     }
   }
 

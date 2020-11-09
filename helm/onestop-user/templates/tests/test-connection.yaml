@@ -3,10 +3,7 @@ kind: Pod
 metadata:
   name: "{{ include "onestop-user.fullname" . }}-test-connection"
   labels:
-    app.kubernetes.io/name: {{ include "onestop-user.name" . }}
-    helm.sh/chart: {{ include "onestop-user.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "onestop-user.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test-success
 spec:
@@ -14,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args:  ['{{ include "onestop-user.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "onestop-user.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never

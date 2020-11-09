@@ -1,6 +1,6 @@
 import React from 'react'
 import Button from '../common/input/Button'
-import remove from 'fa/remove.svg'
+import trashIcon from 'fa/trash.svg'
 import email from 'fa/envelope.svg'
 
 const styleButton = color => {
@@ -71,7 +71,7 @@ export default class CartListItemActions extends React.Component {
         styleHover={styleDeleteButtonHover}
         styleFocus={styleDeleteButtonFocus}
         title={`Remove ${item.title}`}
-        icon={remove}
+        icon={trashIcon}
         styleIcon={styleIcon}
         iconPadding={'0.309em'}
         onClick={() => {

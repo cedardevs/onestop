@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql://localhost/test
+    username: test
+    password: test
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    show-sql: true

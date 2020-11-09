@@ -10,8 +10,12 @@ include(
     "kafka-common",
     "parsalyzer",
     "registry",
-    "search"
-    //"user"
+    "search",
+    "test-common",
+    "search",
+    "stream-manager",
+    "user",
+    "gateway"
 )
 
 //plugins {
