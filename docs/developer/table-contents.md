@@ -1,5 +1,5 @@
 ## Table of Contents
-- [Quickstart]() - The basic expected developer setup steps.
+- [Quickstart](/onestop/developer/quickstart.md) - The basic expected developer setup steps.
 - [API Validation](/onestop/developer/api-validation.md) -
 - [API Versioning](/onestop/developer/api-versioning.md) - 
 - [Architectural Background](/onestop/developer/architectural-background.md) - 
