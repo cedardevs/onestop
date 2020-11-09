@@ -50,14 +50,13 @@ Table of Contents
 ### Dependencies
 
 #### Java
-  - [JDK8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [JDK11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
-  - needed by Gradle 5 wrapper and... everything
+  - Minimum Java 11, can get via sdk.
 #### Docker
   - [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
   - needed to run test containers in integration tests
 #### Elasticsearch (not typical path)
   - Most of us don't run a local elasticsearch for a few reasons. Primarily because the ES container deletes your data when it shuts down.
-  - version 5.6.14
+  - Minimum 7
   - running on port 9200
 ```
 brew install elasticsearch@5.6
@@ -76,7 +75,7 @@ brew services start elasticsearch@5.6
 #### Skaffold
   - Skaffold is a command line tool that facilitates continuous development for Kubernetes applications; It handles the workflow for building, pushing and deploying your application.
   - Skaffold uses profiles that are defined in the skaffold.yaml to indicate which components will be started. If you reference that skaffold.yaml you will see a profile of psi. Here's the example:
-  - Example profile usage, noticed the -p:
+  - Example profile usage, notice the -p:
   
 `skaffold dev --force=false --status-check=false -p psi`
 #### infraInstall script
@@ -88,6 +87,7 @@ brew services start elasticsearch@5.6
 
 #### Recommended Install Steps
 ```
+sdk install java
 brew install kubernetes-helm
 brew install skaffold
 
