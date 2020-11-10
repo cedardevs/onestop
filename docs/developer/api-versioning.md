@@ -1,6 +1,6 @@
 # Guidelines to developers regarding API versioning.
 
-For now, the API endpoints are also availble under `/v1`.
+For now, the API endpoints are also available under `/v1`.
 
 We need to make a /v2 version of the API when we make breaking changes, as well as figure out how best to continue supporting previous versions of the API so they can be deprecated gracefully.
 
