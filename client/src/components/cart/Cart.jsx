@@ -6,23 +6,13 @@ import Button from '../common/input/Button'
 import {boxShadow} from '../../style/defaultStyles'
 import {identifyProtocol} from '../../utils/resultUtils'
 import clearIcon from 'fa/ban.svg'
-// import {times, SvgIcon} from '../common/SvgIcon'
 import {fontFamilySerif} from '../../utils/styleUtils'
 import ScriptDownloader from './ScriptDownloader'
 import {FEATURE_CART} from '../../utils/featureUtils'
 import CartListItem from './CartListItem'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 import {Confirmation} from '../common/dialog/OneStopDialog'
-import {
-  useDisclosure,
-  // Modal,
-  // ModalOverlay,
-  // ModalContent,
-  // ModalHeader,
-  // ModalFooter,
-  // ModalBody,
-  // ModalCloseButton,
-} from "@chakra-ui/core";
+import {useDisclosure} from '@chakra-ui/core'
 
 const styleCenterContent = {
   display: 'flex',
@@ -55,17 +45,6 @@ const styleCartActionsTitle = {
   padding: 0,
 }
 
-// const styleButton = {
-//   padding: '0.309em',
-//   margin: '0.105em',
-//   borderRadius: '0.309em',
-//   fontSize: '1em',
-// }
-
-// const styleButtonFocus = {
-//   outline: '2px dashed black',
-//   outlineOffset: '2px',
-// }
 // export default class Cart extends React.Component {
 export default function Cart({
   featuresEnabled,
@@ -84,24 +63,7 @@ export default function Cart({
 
   const [ offset, setOffset ] = useState(0)
   const [ currentPage, setCurrentPage ] = useState(1)
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // const {dialog: dialogEmptyCart, confirmation} = useConfirmation({
-  //   title: `Clear all cart contents.`,
-  //   question: `Are you sure you want remove all items (${Object.keys(
-  //     selectedGranules
-  //   ).length} total)?`,
-  //   yesAction: dialog => {
-  //     deselectAllGranules()
-  //     dialog.hide()
-  //   },
-  //   yesText: 'Empty cart',
-  //   noAction: dialog => {
-  //     dialog.hide()
-  //   },
-  //   noText: 'Never mind',
-  // })
-
+  const {isOpen, onOpen, onClose} = useDisclosure()
 
   //only show granules for this page
   const allowed = Object.keys(selectedGranules).slice(
@@ -189,84 +151,21 @@ export default function Cart({
     cartListCustomActions.push(clearAllAction)
   }
 
-
-// <Modal isOpen={isOpen} onClose={onClose}>
-//   <ModalOverlay />
-//   <ModalContent>
-//     <ModalHeader>Clear all cart contents.</ModalHeader>
-//     <ModalCloseButton />
-//     <ModalBody>
-//       `Are you sure you want remove all items (${Object.keys(
-//         selectedGranules
-//       ).length} total)?`
-//     </ModalBody>
-//
-//     <ModalFooter>
-//       <Button onClick={() => {
-//           deselectAllGranules()
-//           onClose()
-//         }}>
-//         Yes
-//       </Button>
-//       <Button onClick={onClose}>Never mind</Button>
-//     </ModalFooter>
-//   </ModalContent>
-// </Modal>
-// Modal isOpen={isOpen} onClose={onClose} isCentered size="md">
-//   <ModalOverlay backgroundColor='tomato' zIndex={1999}>
-//   <ModalContent  isCentered size="md" >
-//     <ModalHeader>Modal Title</ModalHeader>
-//     <ModalCloseButton />
-//     <ModalBody>
-//       asdfasdf
-//     </ModalBody>
-//
-//     <ModalFooter>
-//       <Button colorScheme="blue" mr={3} onClick={onClose}>
-//         Close
-//       </Button>
-//       <Button variant="ghost">Secondary Action</Button>
-//     </ModalFooter>
-//   </ModalContent>
-//   </ModalOverlay>
-// </Modal>
-// <Modal isOpen={isOpen} onClose={onClose} isCentered >
-//   <ModalOverlay backgroundColor="#5d5d5d94">
-//   <ModalContent maxWidth="28em" borderRadius='0.309em' padding="0.309em">
-//     <ModalHeader><h1>Clear all cart contents.</h1></ModalHeader>
-//   <ModalCloseButton backgroundColor="#00000000" border="none" _focus={styleButtonFocus}><SvgIcon size="1em" path={times} /></ModalCloseButton>
-//     <ModalBody>
-//       Are you sure you want remove all items ({Object.keys(selectedGranules).length} total)?
-//     </ModalBody>
-//
-//     <ModalFooter>
-//
-//       <Button
-//       style={styleButton}
-//       styleFocus={styleButtonFocus}
-//       onClick={onClose}>Never mind</Button>
-//       <Button
-//       style={styleButton}
-//       styleFocus={styleButtonFocus}
-//       onClick={() => {
-//                 deselectAllGranules()
-//                 onClose()
-//               }}>
-//               Yes
-//       </Button>
-//     </ModalFooter>
-//   </ModalContent>
-// </ModalOverlay>
-// </Modal>
-
   return (
     <div style={styleCenterContent}>
       <Meta title="File Access Cart" robots="noindex" />
-      <Confirmation isOpen={isOpen} onClose={onClose} title="Clear all cart contents." question={`Are you sure you want remove all items (${Object.keys(
+
+      <Confirmation
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Clear all cart contents."
+        question={`Are you sure you want remove all items (${Object.keys(
           selectedGranules
-        ).length} total)?`}  yesAction={deselectAllGranules} yesText="Empty cart" noText="Never mind"/>
-
-
+        ).length} total)?`}
+        yesAction={deselectAllGranules}
+        yesText="Empty cart"
+        noText="Never mind"
+      />
 
       <div style={styleCartListWrapper}>
         {cartActionsWrapper}

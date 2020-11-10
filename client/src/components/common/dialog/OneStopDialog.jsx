@@ -9,31 +9,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from "@chakra-ui/core";
-
-// export function useConfirmation({
-//   title,
-//   question,
-//   yesAction,
-//   yesText,
-//   noAction,
-//   noText,
-// }){
-//   const [ dialog, setDialog ] = useState()
-//   return {
-//     dialog,
-//     confirmation: {
-//       dialog,
-//       setDialog,
-//       title,
-//       question,
-//       yesAction,
-//       yesText,
-//       noAction,
-//       noText,
-//     },
-//   }
-// }
+} from '@chakra-ui/core'
 
 const styleButtonFocus = {
   outline: '2px dashed black',
@@ -41,10 +17,10 @@ const styleButtonFocus = {
 }
 
 const styleButton = {
-    padding: '0.309em',
-    margin: '0.105em',
-    borderRadius: '0.309em',
-    fontSize: '1em',
+  padding: '0.309em',
+  margin: '0.105em',
+  borderRadius: '0.309em',
+  fontSize: '1em',
 }
 
 export const Confirmation = ({
@@ -57,48 +33,50 @@ export const Confirmation = ({
   noAction,
   noText,
 }) => {
-  // const {
-  //   isOpen, // from Chakra useDisclosure
-  //   onClose, // from Chakra useDisclosure
-  //   title,
-  //   question,
-  //   yesAction,
-  //   yesText,
-  //   noAction,
-  //   noText,
-  // } = confirmation
-
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered >
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay backgroundColor="#5d5d5d94">
-      <ModalContent maxWidth="28em" borderRadius='0.309em' padding="0.309em">
-        <ModalHeader><h1>{title}</h1></ModalHeader>
-      <ModalCloseButton backgroundColor="#00000000" border="none" _focus={styleButtonFocus}><SvgIcon size="1em" path={times} /></ModalCloseButton>
-        <ModalBody>
-          {question ? question : 'Are you sure?'}
-        </ModalBody>
+        <ModalContent maxWidth="28em" borderRadius="0.309em" padding="0.309em">
+          <ModalHeader>
+            <h1>{title}</h1>
+          </ModalHeader>
+          <ModalCloseButton
+            backgroundColor="#00000000"
+            border="none"
+            _focus={styleButtonFocus}
+          >
+            <SvgIcon size="1em" path={times} />
+          </ModalCloseButton>
+          <ModalBody>{question ? question : 'Are you sure?'}</ModalBody>
 
-        <ModalFooter>
-
-          <Button
-          style={styleButton}
-          styleFocus={styleButtonFocus}
-          onClick={() => {
-            if(noAction) {noAction()}
-            onClose()
-          }}>{noText ? noText : 'No'}</Button>
-          <Button
-          style={styleButton}
-          styleFocus={styleButtonFocus}
-          onClick={() => {
-            if(yesAction) {yesAction()}
-            onClose()
-          }}>
-                  {yesText ? yesText : 'Yes'}
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </ModalOverlay>
+          <ModalFooter>
+            <Button
+              style={styleButton}
+              styleFocus={styleButtonFocus}
+              onClick={() => {
+                if (noAction) {
+                  noAction()
+                }
+                onClose()
+              }}
+            >
+              {noText ? noText : 'No'}
+            </Button>
+            <Button
+              style={styleButton}
+              styleFocus={styleButtonFocus}
+              onClick={() => {
+                if (yesAction) {
+                  yesAction()
+                }
+                onClose()
+              }}
+            >
+              {yesText ? yesText : 'Yes'}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </ModalOverlay>
     </Modal>
   )
 }
