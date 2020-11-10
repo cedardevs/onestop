@@ -16,6 +16,8 @@
     "retire": "retire -p"
   },
   "dependencies": {
+    "@chakra-ui/core": "next",
+    "framer-motion": "latest",
     "connected-react-router": "^6.5.2",
     "detect-browser": "^5.1.0",
     "esri-leaflet": "^2.2.3",
