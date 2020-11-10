@@ -1,119 +1,104 @@
 import React, {useState} from 'react'
-import Dialog from 'react-a11y-dialog'
-import './OneStopDialog.css'
 import {times, SvgIcon} from '../SvgIcon'
 import Button from '../input/Button'
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+} from "@chakra-ui/core";
 
-const dialogClassNames = {
-  base: 'onestop-dialog-base',
-  overlay: 'onestop-dialog-overlay',
-  element: 'onestop-dialog-element',
-  document: 'onestop-dialog-document',
-  title: 'onestop-dialog-title',
-  closeButton: 'onestop-dialog-closeButton',
+// export function useConfirmation({
+//   title,
+//   question,
+//   yesAction,
+//   yesText,
+//   noAction,
+//   noText,
+// }){
+//   const [ dialog, setDialog ] = useState()
+//   return {
+//     dialog,
+//     confirmation: {
+//       dialog,
+//       setDialog,
+//       title,
+//       question,
+//       yesAction,
+//       yesText,
+//       noAction,
+//       noText,
+//     },
+//   }
+// }
+
+const styleButtonFocus = {
+  outline: '2px dashed black',
+  outlineOffset: '2px',
 }
 
-export function useConfirmation({
+const styleButton = {
+    padding: '0.309em',
+    margin: '0.105em',
+    borderRadius: '0.309em',
+    fontSize: '1em',
+}
+
+export const Confirmation = ({
+  isOpen, // from Chakra useDisclosure
+  onClose, // from Chakra useDisclosure
   title,
   question,
   yesAction,
   yesText,
   noAction,
   noText,
-}){
-  const [ dialog, setDialog ] = useState()
-  return {
-    dialog,
-    confirmation: {
-      dialog,
-      setDialog,
-      title,
-      question,
-      yesAction,
-      yesText,
-      noAction,
-      noText,
-    },
-  }
-}
-
-const styleQuestion = {
-  marginBottom: '1.618em',
-}
-
-const styleButtons = {
-  display: 'flex',
-  justifyContent: 'space-evenly',
-}
-
-const styleButtonFocus = {
-  outline: '2px dashed black',
-}
-
-const styleYesButtonHover = {
-  background: 'linear-gradient(#277CB2, #28323E)',
-}
-
-const styleYesButton = {
-  background: '#277CB2',
-  fontSize: '1em',
-}
-
-const styleNoButtonHover = {
-  background: 'linear-gradient(#277CB2, #28323E)',
-}
-
-const styleNoButton = {
-  background: '#277CB2',
-  fontSize: '1em',
-}
-
-export const Confirmation = ({confirmation}) => {
-  const {
-    dialog,
-    setDialog,
-    title,
-    question,
-    yesAction,
-    yesText,
-    noAction,
-    noText,
-  } = confirmation
+}) => {
+  // const {
+  //   isOpen, // from Chakra useDisclosure
+  //   onClose, // from Chakra useDisclosure
+  //   title,
+  //   question,
+  //   yesAction,
+  //   yesText,
+  //   noAction,
+  //   noText,
+  // } = confirmation
 
   return (
-    <Dialog
-      id="my-accessible-dialog"
-      appRoot="#app"
-      dialogRoot="#dialog"
-      dialogRef={dialog => setDialog(dialog)}
-      title={title}
-      classNames={dialogClassNames}
-      closeButtonContent={<SvgIcon
-        size="1.1em"
-        verticalAlign="initial"
-        path={times}
-      />}
-    >
-      <div style={styleQuestion}>{question ? question : 'Are you sure?'}</div>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered >
+      <ModalOverlay backgroundColor="#5d5d5d94">
+      <ModalContent maxWidth="28em" borderRadius='0.309em' padding="0.309em">
+        <ModalHeader><h1>{title}</h1></ModalHeader>
+      <ModalCloseButton backgroundColor="#00000000" border="none" _focus={styleButtonFocus}><SvgIcon size="1em" path={times} /></ModalCloseButton>
+        <ModalBody>
+          {question ? question : 'Are you sure?'}
+        </ModalBody>
 
-      <div style={styleButtons}>
-        <Button
-          onClick={() => (noAction ? noAction(dialog) : undefined)}
-          style={styleNoButton}
+        <ModalFooter>
+
+          <Button
+          style={styleButton}
           styleFocus={styleButtonFocus}
-          styleHover={styleNoButtonHover}
-        >
-          {noText ? noText : 'No'}
-        </Button>
-        <Button
-          onClick={() => (yesAction ? yesAction(dialog) : undefined)}
-          style={styleYesButton}
+          onClick={() => {
+            if(noAction) {noAction()}
+            onClose()
+          }}>{noText ? noText : 'No'}</Button>
+          <Button
+          style={styleButton}
           styleFocus={styleButtonFocus}
-          styleHover={styleYesButtonHover}
-        >
-          {yesText ? yesText : 'Yes'}
-        </Button>
-      </div>
-    </Dialog>
+          onClick={() => {
+            if(yesAction) {yesAction()}
+            onClose()
+          }}>
+                  {yesText ? yesText : 'Yes'}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </ModalOverlay>
+    </Modal>
   )
 }

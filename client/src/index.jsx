@@ -18,11 +18,6 @@ const appDiv = document.createElement('div')
 appDiv.id = 'app'
 document.body.appendChild(appDiv)
 
-// create root DOM element for a11y dialogs
-const dialogDiv = document.createElement('div')
-dialogDiv.id = 'dialog'
-document.body.appendChild(dialogDiv)
-
 // specify the base URL for all relative URLs in the page
 const baseRef = document.createElement('base')
 baseRef.href = getBasePath()
