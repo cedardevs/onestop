@@ -15,6 +15,25 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.cedar.onestop.mapping.analysis.AnalysisErrorGranule;
+import org.cedar.onestop.mapping.analysis.AnalysisErrorCollection;
+import org.cedar.onestop.mapping.analysis.CollectionIdentification;
+import org.cedar.onestop.mapping.analysis.GranuleIdentification;
+import org.cedar.onestop.mapping.analysis.DataAccess;
+import org.cedar.onestop.mapping.analysis.Description;
+import org.cedar.onestop.mapping.analysis.SpatialBounding;
+import org.cedar.onestop.mapping.analysis.Thumbnail;
+import org.cedar.onestop.mapping.analysis.Titles;
+import org.cedar.onestop.mapping.analysis.Error;
+import org.cedar.onestop.mapping.search.SearchObjectWithDates;
+import org.cedar.onestop.mapping.search.SearchObjectWithKeywords;
+import org.cedar.onestop.mapping.search.SearchObjectWithResponsibleParties;
+import org.cedar.onestop.mapping.search.SearchCollection;
+import org.cedar.onestop.mapping.search.SearchGranule;
+import org.cedar.onestop.mapping.search.SearchFlattenedGranule;
+import org.cedar.onestop.mapping.search.ServiceLink;
+import org.cedar.onestop.mapping.search.Checksum;
+
 import static org.cedar.schemas.avro.psi.ValidDescriptor.UNDEFINED;
 import static org.cedar.schemas.avro.psi.ValidDescriptor.VALID;
 
@@ -28,122 +47,286 @@ public class TransformationUtils {
   ///////////////////////////////////////////////////////////////////////////////
   //                     Convert to Indexing Message                           //
   ///////////////////////////////////////////////////////////////////////////////
-  public static Map<String, Object> reformatMessageForAnalysis(ParsedRecord record, Set<String> fields, RecordType recordType) {
-
-    var analysis = record.getAnalysis();
-    var errors = record.getErrors();
-    var analysisMap = AvroUtils.avroToMap(analysis, true);
-    var message = new HashMap<String, Object>();
-
-    fields.forEach(field -> {
-      message.put(field, analysisMap.get(field));
-    });
-    if (fields.contains("internalParentIdentifier")) {
-      analysisMap.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
+  public static org.cedar.onestop.mapping.analysis.TemporalBounding convertTemporalAnalysis(TemporalBoundingAnalysis temporalAnalysis) {
+    // TODO fully resolved import path due to psi & es mapping naming conflict - could resolve with smaller util files
+    org.cedar.onestop.mapping.analysis.TemporalBounding converted = new org.cedar.onestop.mapping.analysis.TemporalBounding();
+    if (temporalAnalysis == null) {
+      return converted;
     }
-    var errorsList = errors.stream()
-        .map(e -> AvroUtils.avroToMap(e))
+    if (temporalAnalysis.getRangeDescriptor() != null) {
+      converted.setRangeDescriptor(temporalAnalysis.getRangeDescriptor().toString());
+    }
+    if (temporalAnalysis.getBeginDescriptor() != null) {
+      converted.setBeginDescriptor(temporalAnalysis.getBeginDescriptor().toString());
+    }
+    if (temporalAnalysis.getEndDescriptor() != null) {
+      converted.setEndDescriptor(temporalAnalysis.getEndDescriptor().toString());
+    }
+    if (temporalAnalysis.getInstantDescriptor() != null) {
+      converted.setInstantDescriptor(temporalAnalysis.getInstantDescriptor().toString());
+    }
+    return converted
+    .withBeginIndexable(temporalAnalysis.getBeginIndexable())
+    .withBeginPrecision(temporalAnalysis.getBeginPrecision())
+    .withBeginUtcDateTimeString(temporalAnalysis.getBeginUtcDateTimeString())
+    .withBeginZoneSpecified(temporalAnalysis.getBeginZoneSpecified())
+    .withEndIndexable(temporalAnalysis.getEndIndexable())
+    .withEndPrecision(temporalAnalysis.getEndPrecision())
+    .withEndUtcDateTimeString(temporalAnalysis.getEndUtcDateTimeString())
+    .withEndZoneSpecified(temporalAnalysis.getEndZoneSpecified())
+    .withInstantIndexable(temporalAnalysis.getInstantIndexable())
+    .withInstantPrecision(temporalAnalysis.getInstantPrecision())
+    .withInstantUtcDateTimeString(temporalAnalysis.getInstantUtcDateTimeString())
+    .withInstantZoneSpecified(temporalAnalysis.getInstantZoneSpecified());
+  }
+
+  public static CollectionIdentification convertCollectionIdentificationAnalysis(IdentificationAnalysis identificationAnalysis) {
+    CollectionIdentification converted = new CollectionIdentification();
+    if (identificationAnalysis == null) {
+      return converted;
+    }
+    return converted
+    .withDoiExists(identificationAnalysis.getDoiExists())
+    .withDoiString(identificationAnalysis.getDoiString())
+    .withFileIdentifierExists(identificationAnalysis.getFileIdentifierExists())
+    .withFileIdentifierString(identificationAnalysis.getFileIdentifierString())
+    .withHierarchyLevelNameExists(identificationAnalysis.getHierarchyLevelNameExists())
+    .withParentIdentifierExists(identificationAnalysis.getParentIdentifierExists());
+     // TODO .withIsGranule() my api docs for analysis might be out of date, not sure where this data is exactly
+  }
+
+  public static GranuleIdentification convertGranuleIdentificationAnalysis(IdentificationAnalysis identificationAnalysis) {
+    GranuleIdentification converted = new GranuleIdentification();
+    if (identificationAnalysis == null) {
+      return converted;
+    }
+    return converted
+    .withDoiExists(identificationAnalysis.getDoiExists())
+    .withDoiString(identificationAnalysis.getDoiString())
+    .withFileIdentifierExists(identificationAnalysis.getFileIdentifierExists())
+    .withFileIdentifierString(identificationAnalysis.getFileIdentifierString())
+    .withHierarchyLevelNameExists(identificationAnalysis.getHierarchyLevelNameExists())
+    .withParentIdentifierExists(identificationAnalysis.getParentIdentifierExists())
+    .withParentIdentifierString(identificationAnalysis.getParentIdentifierString());
+     // TODO .withIsGranule() my api docs for analysis might be out of date, not sure where this data is exactly
+  }
+
+  public static DataAccess convertDataAccess(DataAccessAnalysis dataAccess) {
+    DataAccess converted = new DataAccess();
+    if (dataAccess == null) {
+      return converted;
+    }
+    return converted.withDataAccessExists(dataAccess.getDataAccessExists());
+  }
+
+  public static Description convertDescription(DescriptionAnalysis description) {
+    Description converted = new Description();
+    if (description == null) {
+      return converted;
+    }
+    return converted
+    .withDescriptionCharacters(description.getDescriptionCharacters().shortValue()) // TODO extra logging around this conversion?
+    .withDescriptionExists(description.getDescriptionExists());
+  }
+
+  public static Thumbnail convertThumbnail(ThumbnailAnalysis thumbnail) {
+    Thumbnail converted = new Thumbnail();
+    if (thumbnail == null) {
+      return converted;
+    }
+    return converted.withThumbnailExists(thumbnail.getThumbnailExists());
+  }
+
+  public static Titles convertTitles(TitleAnalysis titles) {
+    Titles converted = new Titles();
+    if (titles == null) {
+      return converted;
+    }
+    return converted.withTitleExists(titles.getTitleExists())
+      .withTitleCharacters(titles.getTitleCharacters().shortValue())// TODO extra logging around this conversion?
+      .withAlternateTitleExists(titles.getAlternateTitleExists())
+      .withAlternateTitleCharacters(titles.getAlternateTitleCharacters().shortValue());// TODO extra logging around this conversion?
+  }
+
+  public static SpatialBounding convertSpatialAnalysis(SpatialBoundingAnalysis spatialAnalysis) {
+    SpatialBounding converted = new SpatialBounding();
+    if (spatialAnalysis == null) {
+      return converted;
+    }
+    return converted
+      .withIsValid(spatialAnalysis.getIsValid())
+      .withSpatialBoundingExists(spatialAnalysis.getSpatialBoundingExists())
+      .withValidationError(spatialAnalysis.getValidationError());
+  }
+
+  public static AnalysisErrorGranule reformatGranuleForAnalysis(long timestamp, ParsedRecord record) {
+
+    Analysis analysis = record.getAnalysis();
+
+    AnalysisErrorGranule message = new AnalysisErrorGranule()
+      .withInternalParentIdentifier(prepareInternalParentIdentifier(record))
+      .withStagedDate(timestamp)
+      .withDataAccess(convertDataAccess(analysis.getDataAccess()))
+      .withDescription(convertDescription(analysis.getDescription()))
+      .withIdentification(convertGranuleIdentificationAnalysis(analysis.getIdentification()))
+      .withSpatialBounding(convertSpatialAnalysis(analysis.getSpatialBounding()))
+      .withTemporalBounding(
+        convertTemporalAnalysis(analysis.getTemporalBounding()))
+      .withThumbnail(convertThumbnail(analysis.getThumbnail()))
+      .withTitles(convertTitles(analysis.getTitles()));
+
+    var errorsList = record.getErrors().stream()
+        .map(e -> new Error()
+          .withTitle(e.getTitle())
+          .withDetail(e.getDetail())
+          .withSource(e.getSource()))
         .collect(Collectors.toList());
-
-    if (fields.contains("errors")) {
-      message.put("errors", errorsList);
-    }
-
-    if (fields.contains("temporalBounding")) {
-      message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
-    }
-    if (fields.contains("identification")) {
-      message.put("identification", prepareIdentification(analysis.getIdentification(), recordType));
-    }
+    message.setErrors(errorsList);
 
     return message;
   }
 
-  public static Map<String, Object> prepareIdentification(IdentificationAnalysis identification, RecordType recordType) {
-    var result = new HashMap<String, Object>();
-    var analysis = AvroUtils.avroToMap(identification); // currently using map because couldn't get it working with IdentificationAnalysis object. Worth revisiting at some point.
+  public static AnalysisErrorCollection reformatCollectionForAnalysis(long timestamp, ParsedRecord record) {
 
-    if (analysis == null) {
-      return result;
-    }
-    result.put("doiExists", analysis.get("doiExists"));
-    result.put("doiString", analysis.get("doiString"));
-    result.put("fileIdentifierExists", analysis.get("fileIdentifierExists"));
-    result.put("fileIdentifierString", analysis.get("fileIdentifierString"));
-    result.put("hierarchyLevelNameExists", analysis.get("hierarchyLevelNameExists"));
-    result.put("isGranule", analysis.get("isGranule"));
-    result.put("parentIdentifierExists", analysis.get("parentIdentifierExists"));
-    if (recordType == RecordType.granule) {
-      result.put("parentIdentifierString", analysis.get("parentIdentifierString"));
-    }
-    return result;
+    Analysis analysis = record.getAnalysis();
+
+    AnalysisErrorCollection message = new AnalysisErrorCollection()
+      .withStagedDate(timestamp)
+      .withDataAccess(convertDataAccess(analysis.getDataAccess()))
+      .withDescription(convertDescription(analysis.getDescription()))
+      .withIdentification(convertCollectionIdentificationAnalysis(analysis.getIdentification()))
+      .withSpatialBounding(convertSpatialAnalysis(analysis.getSpatialBounding()))
+      .withTemporalBounding(
+        convertTemporalAnalysis(analysis.getTemporalBounding()))
+      .withThumbnail(convertThumbnail(analysis.getThumbnail()))
+      .withTitles(convertTitles(analysis.getTitles()));
+
+    var errorsList = record.getErrors().stream()
+        .map(e -> new Error().withTitle(e.getTitle()).withDetail(e.getDetail())) // TODO withSource(??)
+        .collect(Collectors.toList());
+    message.setErrors(errorsList);
+
+    return message;
   }
 
-  public static Map<String, Object> reformatMessageForSearch(ParsedRecord record, Set<String> fields) {
+  public static SearchGranule reformatGranuleForSearch(long timestamp, ParsedRecord record) {
 
     var discovery = record.getDiscovery();
     var analysis = record.getAnalysis();
-    var errors = record.getErrors();
-    var discoveryMap = AvroUtils.avroToMap(discovery, true);
-    var analysisMap = AvroUtils.avroToMap(analysis, true);
-    var message = new HashMap<String, Object>();
 
-    fields.forEach(field -> {
-      message.put(field, discoveryMap.get(field));
-    });
-    var errorsList = errors.stream()
-        .map(e -> AvroUtils.avroToMap(e))
-        .collect(Collectors.toList());
+    SearchGranule message = new SearchGranule()
+    .withStagedDate(timestamp)
+    .withParentIdentifier(discovery.getParentIdentifier())
+    .withFileIdentifier(discovery.getFileIdentifier())
+    .withDoi(discovery.getDoi())
+    .withTitle(discovery.getTitle())
+    .withDescription(discovery.getDescription())
+    .withIsGlobal(discovery.getIsGlobal())
+    .withThumbnail(discovery.getThumbnail())
+    .withSpatialBounding(prepareSpatialBounding(discovery))
+    .withDataFormats(convertDataFormats(discovery))
+    .withDataFormat(prepareDataFormats(discovery))
+    .withLinkProtocol(prepareLinkProtocols(discovery))
+    .withServiceLinkProtocol(prepareServiceLinkProtocols(discovery))
+    .withLinks(convertLinks(discovery.getLinks()))
+    .withServiceLinks(prepareServiceLinks(discovery))
+    .withCiteAsStatements(discovery.getCiteAsStatements())
+    .withChecksums(prepareChecksums(record))
+    .withInternalParentIdentifier(prepareInternalParentIdentifier(record))
+    .withFilename(prepareFilename(record));
+    prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
+    prepareGcmdKeyword(message, discovery);
 
-    if (fields.contains("errors")) {
-      message.put("errors", errorsList);
-    }
-
-    // prepare and apply fields that need to be reformatted for search
-    Map<String, Set<String>> gcmdKeywords = prepareGcmdKeyword(discovery);
-    gcmdKeywords.forEach((key, value) -> {
-      if (fields.contains(key)) {
-        message.put(key, value);
-      }
-    });
-    Map<String, Object> dates = prepareDates(discovery.getTemporalBounding(), analysis.getTemporalBounding());
-    dates.forEach((key, value) -> {
-      if (fields.contains(key)) {
-        message.put(key, value);
-      }
-    });
-    if (fields.contains("temporalBounding")) {
-      message.put("temporalBounding", prepareTemporalBounding(analysis.getTemporalBounding()));
-    }
-    if (fields.contains("dataFormat")) {
-      message.put("dataFormat", prepareDataFormats(discovery));
-    }
-    if (fields.contains("linkProtocol")) {
-      message.put("linkProtocol", prepareLinkProtocols(discovery));
-    }
-    if (fields.contains("serviceLinks")) {
-      message.put("serviceLinks", prepareServiceLinks(discovery));
-    }
-    if (fields.contains("serviceLinkProtocol")) {
-      message.put("serviceLinkProtocol", prepareServiceLinkProtocols(discovery));
-    }
-    Map<String, Set<String>> responsibleParties = prepareResponsibleParties(record);
-    responsibleParties.forEach((key, value) -> {
-      if (fields.contains(key)) {
-        message.put(key, value);
-      }
-    });
-
-    if (fields.contains("internalParentIdentifier")) {
-      message.put("internalParentIdentifier", prepareInternalParentIdentifier(record));
-    }
-    if (fields.contains("filename")) {
-      message.put("filename", prepareFilename(record));
-    }
-    if (fields.contains("checksums")) {
-      message.put("checksums", prepareChecksums(record));
-    }
     return message;
+  }
+
+  public static SearchFlattenedGranule reformatFlattenedGranuleForSearch(long timestamp, ParsedRecord record) {
+    // TODO add unit tests
+    var discovery = record.getDiscovery();
+    var analysis = record.getAnalysis();
+
+    SearchFlattenedGranule message = new SearchFlattenedGranule()
+    .withStagedDate(timestamp)
+    .withParentIdentifier(discovery.getParentIdentifier())
+    .withFileIdentifier(discovery.getFileIdentifier())
+    .withDoi(discovery.getDoi())
+    .withTitle(discovery.getTitle())
+    .withDescription(discovery.getDescription())
+    .withIsGlobal(discovery.getIsGlobal())
+    .withThumbnail(discovery.getThumbnail())
+    .withSpatialBounding(prepareSpatialBounding(discovery))
+    .withDsmmAverage(discovery.getDsmmAverage())
+    .withEdition(discovery.getEdition())
+    .withOrderingInstructions(discovery.getOrderingInstructions())
+    .withAccessFeeStatement(discovery.getAccessFeeStatement())
+    .withLegalConstraints(discovery.getLegalConstraints())
+    .withUseLimitation(discovery.getUseLimitation())
+    .withDataFormats(convertDataFormats(discovery))
+    .withDataFormat(prepareDataFormats(discovery))
+    .withLinkProtocol(prepareLinkProtocols(discovery))
+    .withServiceLinkProtocol(prepareServiceLinkProtocols(discovery))
+    .withLinks(convertLinks(discovery.getLinks()))
+    .withServiceLinks(prepareServiceLinks(discovery))
+    .withCiteAsStatements(discovery.getCiteAsStatements())
+    .withChecksums(prepareChecksums(record))
+    .withInternalParentIdentifier(prepareInternalParentIdentifier(record))
+    .withFilename(prepareFilename(record))
+    .withLargerWorks(convertReferences(discovery.getLargerWorks()))
+    .withCrossReferences(convertReferences(discovery.getCrossReferences()));
+    prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
+    prepareResponsibleParties(message, record);
+    prepareGcmdKeyword(message, discovery);
+
+    return message;
+  }
+
+  public static SearchCollection reformatCollectionForSearch(long timestamp, ParsedRecord record) {
+
+    var discovery = record.getDiscovery();
+    var analysis = record.getAnalysis();
+
+    SearchCollection message = new SearchCollection()
+    .withStagedDate(timestamp)
+    .withParentIdentifier(discovery.getParentIdentifier())
+    .withFileIdentifier(discovery.getFileIdentifier())
+    .withDoi(discovery.getDoi())
+    .withTitle(discovery.getTitle())
+    .withDescription(discovery.getDescription())
+    .withIsGlobal(discovery.getIsGlobal())
+    .withThumbnail(discovery.getThumbnail())
+    .withSpatialBounding(prepareSpatialBounding(discovery))
+    .withDsmmAverage(discovery.getDsmmAverage())
+    .withEdition(discovery.getEdition())
+    .withOrderingInstructions(discovery.getOrderingInstructions())
+    .withAccessFeeStatement(discovery.getAccessFeeStatement())
+    .withLegalConstraints(discovery.getLegalConstraints())
+    .withUseLimitation(discovery.getUseLimitation())
+    .withCiteAsStatements(discovery.getCiteAsStatements())
+    .withDataFormats(convertDataFormats(discovery))
+    .withDataFormat(prepareDataFormats(discovery))
+    .withLinkProtocol(prepareLinkProtocols(discovery))
+    .withServiceLinkProtocol(prepareServiceLinkProtocols(discovery))
+    .withLinks(convertLinks(discovery.getLinks()))
+    .withServiceLinks(prepareServiceLinks(discovery))
+    .withLargerWorks(convertReferences(discovery.getLargerWorks()))
+    .withCrossReferences(convertReferences(discovery.getCrossReferences()));
+    prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
+    prepareResponsibleParties(message, record);
+    prepareGcmdKeyword(message, discovery);
+
+    return message;
+  }
+
+  public static Map<String, Object> prepareSpatialBounding(Discovery discovery) {
+    var discoveryMap = AvroUtils.avroToMap(discovery, true);
+    return (Map<String, Object>)discoveryMap.get("spatialBounding");
+  }
+
+  public static List<org.cedar.onestop.mapping.search.Reference> convertReferences(List<Reference> references) {
+    return references.stream().map(work -> {
+          return new org.cedar.onestop.mapping.search.Reference().withTitle(work.getTitle()).withDate(work.getDate()).withLinks(convertLinks(work.getLinks()));
+        })
+        .collect(Collectors.toList());
   }
 
   ////////////////////////////////
@@ -151,7 +334,6 @@ public class TransformationUtils {
   ////////////////////////////////
   private static String prepareInternalParentIdentifier(ParsedRecord record) {
     return Optional.ofNullable(record)
-        .filter(r -> r.getType() == RecordType.granule)
         .map(ParsedRecord::getRelationships)
         .orElse(Collections.emptyList())
         .stream()
@@ -163,24 +345,21 @@ public class TransformationUtils {
 
   static String prepareFilename(ParsedRecord record) {
     return Optional.ofNullable(record)
-        .filter(r -> r.getType() == RecordType.granule)
         .map(ParsedRecord::getFileInformation)
         .map(FileInformation::getName)
         .orElse(null);
   }
 
-  static List prepareChecksums(ParsedRecord record) {
+  static List<Checksum> prepareChecksums(ParsedRecord record) {
     return Optional.ofNullable(record)
-        .filter(r -> r.getType() == RecordType.granule)
         .map(ParsedRecord::getFileInformation)
         .map(FileInformation::getChecksums)
         .orElse(Collections.emptyList())
         .stream()
         .map(checksumObject -> {
-          var result = new HashMap<>();
-          result.put("algorithm", checksumObject.getAlgorithm());
-          result.put("value", checksumObject.getValue());
-          return result;
+          return new Checksum()
+          .withAlgorithm(checksumObject.getAlgorithm().toString()) // TODO will probably fail if it's null?
+          .withValue(checksumObject.getValue());
         })
         .collect(Collectors.toList());
   }
@@ -188,18 +367,17 @@ public class TransformationUtils {
   ////////////////////////////////
   // Services, Links, Protocols //
   ////////////////////////////////
-  private static List<Map> prepareServiceLinks(Discovery discovery) {
+  private static List<ServiceLink> prepareServiceLinks(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getServices)
         .orElse(Collections.emptyList())
         .stream()
         .map(service -> {
-          var result = new HashMap<>();
-          result.put("title", service.getTitle());
-          result.put("alternateTitle", service.getAlternateTitle());
-          result.put("description", service.getDescription());
-          result.put("links", AvroUtils.avroCollectionToList(new ArrayList<>(getLinksForService(service)), true));
-          return result;
+          return new ServiceLink() // TODO note the class name should probably be ServiceLinks
+            .withTitle(service.getTitle())
+            .withAlternateTitle(service.getAlternateTitle())
+            .withDescription(service.getDescription())
+            .withLinks(convertLinks(getLinksForService(service)));
         })
         .collect(Collectors.toList());
   }
@@ -235,6 +413,19 @@ public class TransformationUtils {
         .collect(Collectors.toSet());
   }
 
+  public static List<org.cedar.onestop.mapping.Link> convertLinks(List<Link> links) {
+    List<org.cedar.onestop.mapping.Link> list = new ArrayList<org.cedar.onestop.mapping.Link>();
+    links.forEach(it -> {
+          list.add( new org.cedar.onestop.mapping.Link()
+            .withLinkName(it.getLinkName())
+            .withLinkProtocol(it.getLinkProtocol())
+            .withLinkUrl(it.getLinkUrl())
+            .withLinkDescription(it.getLinkDescription())
+            .withLinkFunction(it.getLinkFunction()));
+        });
+    return list;
+  }
+
   private static List<Link> getLinksForService(Service service) {
     return Optional.ofNullable(service)
         .map(Service::getOperations)
@@ -255,6 +446,17 @@ public class TransformationUtils {
   ////////////////////////////
   // Data Formats           //
   ////////////////////////////
+  public static List<org.cedar.onestop.mapping.search.DataFormat> convertDataFormats(Discovery discovery) {
+    List<org.cedar.onestop.mapping.search.DataFormat> converted = new ArrayList<org.cedar.onestop.mapping.search.DataFormat>();
+    if (discovery == null || discovery.getDataFormats() == null) {
+      return converted;
+    }
+    discovery.getDataFormats().forEach((it) -> {
+      converted.add(new org.cedar.onestop.mapping.search.DataFormat().withName(it.getName()).withVersion(it.getVersion()));
+    });
+    return converted;
+  }
+
   private static Set<String> prepareDataFormats(Discovery discovery) {
     return Optional.ofNullable(discovery)
         .map(Discovery::getDataFormats)
@@ -294,11 +496,10 @@ public class TransformationUtils {
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
-  private static Map<String, Set<String>> prepareResponsibleParties(ParsedRecord record) {
+  private static void prepareResponsibleParties(SearchObjectWithResponsibleParties search, ParsedRecord record) {
     Set<String> individualNames = new HashSet<>();
     Set<String> organizationNames = new HashSet<>();
     Optional.ofNullable(record)
-        .filter(r -> r.getType() == RecordType.collection)
         .map(ParsedRecord::getDiscovery)
         .map(Discovery::getResponsibleParties)
         .orElse(Collections.emptyList())
@@ -315,10 +516,8 @@ public class TransformationUtils {
             organizationNames.add(organizationName);
           }
         });
-    var result = new HashMap<String, Set<String>>();
-    result.put("individualNames", individualNames);
-    result.put("organizationNames", organizationNames);
-    return result;
+    search.setIndividualNames(individualNames);
+    search.setOrganizationNames(organizationNames);
   }
 
   private static final Set<String> contactRoles = Set.of("pointOfContact", "distributor");
@@ -334,104 +533,72 @@ public class TransformationUtils {
   // Dates                  //
   ////////////////////////////
 
-  private static Map<String, Object> prepareTemporalBounding(TemporalBoundingAnalysis analysis) {
-    var result = new HashMap<String, Object>();
-
-    if (analysis == null) {
-      return result;
-    }
-
-    result.put("beginDescriptor", analysis.getBeginDescriptor());
-    result.put("beginIndexable", analysis.getBeginIndexable());
-    result.put("beginPrecision", analysis.getBeginPrecision());
-    result.put("beginUtcDateTimeString", analysis.getBeginUtcDateTimeString());
-    result.put("beginZoneSpecified", analysis.getBeginZoneSpecified());
-    result.put("endDescriptor", analysis.getEndDescriptor());
-    result.put("endIndexable", analysis.getEndIndexable());
-    result.put("endPrecision", analysis.getEndPrecision());
-    result.put("endUtcDateTimeString", analysis.getEndUtcDateTimeString());
-    result.put("endZoneSpecified", analysis.getEndZoneSpecified());
-    result.put("instantDescriptor", analysis.getInstantDescriptor());
-    result.put("instantIndexable", analysis.getInstantIndexable());
-    result.put("instantPrecision", analysis.getInstantPrecision());
-    result.put("instantUtcDateTimeString", analysis.getInstantUtcDateTimeString());
-    result.put("instantZoneSpecified", analysis.getInstantZoneSpecified());
-    result.put("rangeDescriptor", analysis.getRangeDescriptor());
-    return result;
-  }
-
-  private static Map<String, Object> prepareDatesForInstant(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    var result = new HashMap<String, Object>();
+  private static void prepareDatesForInstant(SearchObjectWithDates search, TemporalBoundingAnalysis analysis) {
 
     if (analysis.getInstantIndexable()) {
       // paleo dates are not indexable, so only add beginDate or endDate to the index if instantIndexable
-      result.put("beginDate", analysis.getInstantUtcDateTimeString());
-      result.put("endDate", analysis.getInstantEndUtcDateTimeString());
+      search.setBeginDate(analysis.getInstantUtcDateTimeString());
+      search.setEndDate(analysis.getInstantEndUtcDateTimeString());
     }
 
-    result.put("beginYear", analysis.getInstantYear());
-    result.put("beginDayOfYear", analysis.getInstantDayOfYear());
-    result.put("beginDayOfMonth", analysis.getInstantDayOfMonth());
-    result.put("beginMonth",  analysis.getInstantMonth());
+    search.setBeginYear(analysis.getInstantYear());
+    search.setBeginDayOfYear(analysis.getInstantDayOfYear() != null ? analysis.getInstantDayOfYear().shortValue():null);
+    search.setBeginDayOfMonth(analysis.getInstantDayOfMonth() != null ? analysis.getInstantDayOfMonth().byteValue():null);
+    search.setBeginMonth(analysis.getInstantMonth() != null ? analysis.getInstantMonth().byteValue():null);
 
-    result.put("endYear", analysis.getInstantYear());
-    result.put("endDayOfYear", analysis.getInstantEndDayOfYear());
-    result.put("endDayOfMonth", analysis.getInstantEndDayOfMonth());
-    result.put("endMonth", analysis.getInstantEndMonth());
+    search.setEndYear(analysis.getInstantYear());
+    search.setEndDayOfYear(analysis.getInstantEndDayOfYear() != null ? analysis.getInstantEndDayOfYear().shortValue():null);
+    search.setEndDayOfMonth(analysis.getInstantEndDayOfMonth() != null ? analysis.getInstantEndDayOfMonth().byteValue():null);
+    search.setEndMonth(analysis.getInstantEndMonth() != null ? analysis.getInstantEndMonth().byteValue():null);
 
-    return result;
   }
 
-  private static Map<String, Object> prepareBeginDate(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    var result = new HashMap<String, Object>();
+  private static void prepareBeginDate(SearchObjectWithDates search, TemporalBoundingAnalysis analysis) {
 
     if (analysis.getBeginDescriptor() == VALID) {
       if (analysis.getBeginIndexable()) {
-        result.put("beginDate", analysis.getBeginUtcDateTimeString());
+        search.setBeginDate(analysis.getBeginUtcDateTimeString());
       }
 
-      result.put("beginYear", analysis.getBeginYear());
-      result.put("beginDayOfYear", analysis.getBeginDayOfYear());
-      result.put("beginDayOfMonth", analysis.getBeginDayOfMonth());
-      result.put("beginMonth", analysis.getBeginMonth());
+      search.setBeginYear(analysis.getBeginYear());
+      search.setBeginDayOfYear(analysis.getBeginDayOfYear() != null? analysis.getBeginDayOfYear().shortValue():null); // TODO every single call to shortValue() or byteValue should get a null check!
+      search.setBeginDayOfMonth(analysis.getBeginDayOfMonth() != null ?analysis.getBeginDayOfMonth().byteValue():null);
+      search.setBeginMonth(analysis.getBeginMonth() != null ? analysis.getBeginMonth() .byteValue():null);
     }
-    return result;
   }
 
-  private static Map<String, Object> prepareEndDate(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    var result = new HashMap<String, Object>();
+  private static void prepareEndDate(SearchObjectWithDates search, TemporalBoundingAnalysis analysis) {
 
     if (analysis.getEndDescriptor() == VALID) {
       if (analysis.getEndIndexable()) {
-        result.put("endDate", analysis.getEndUtcDateTimeString());
+        search.setEndDate(analysis.getEndUtcDateTimeString());
       }
 
-      result.put("endYear", analysis.getEndYear());
-      result.put("endDayOfYear", analysis.getEndDayOfYear());
-      result.put("endDayOfMonth", analysis.getEndDayOfMonth());
-      result.put("endMonth", analysis.getEndMonth());
+      search.setEndYear(analysis.getEndYear());
+      search.setEndDayOfYear(analysis.getEndDayOfYear() != null ? analysis.getEndDayOfYear().shortValue() : null);
+      search.setEndDayOfMonth(analysis.getEndDayOfMonth() != null? analysis.getEndDayOfMonth().byteValue():null);
+      search.setEndMonth(analysis.getEndMonth() != null ? analysis.getEndMonth().byteValue():null); // TODO log potential issues with type conversion?
     }
-    return result;
   }
 
-  private static Map<String, Object> prepareDates(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
-    var result = new HashMap<String, Object>();
-
+  private static void prepareDates(SearchObjectWithDates search, TemporalBoundingAnalysis analysis) {
+    if (analysis == null) {
+      return;
+    }
     // If bounding is actually an instant, set search fields accordingly
     if (analysis.getRangeDescriptor() == TimeRangeDescriptor.INSTANT && analysis.getBeginDescriptor() == UNDEFINED) { // distinguished getting begin and end date that were exactly the same (also described as instant), but in that case need to use prepareBeginDate and prepareEndDate to get data off the correct analysis fields
-      return prepareDatesForInstant(bounding, analysis);
+      prepareDatesForInstant(search, analysis);
     } else {
-      result.putAll(prepareBeginDate(bounding, analysis));
-      result.putAll(prepareEndDate(bounding, analysis));
+      prepareBeginDate(search, analysis);
+      prepareEndDate(search, analysis);
     }
 
-    return result;
   }
 
   ////////////////////////////
   // Keywords               //
   ////////////////////////////
-  private static Map<String, Set<String>> prepareGcmdKeyword(Discovery discovery) {
+  private static void prepareGcmdKeyword(SearchObjectWithKeywords search, Discovery discovery) {
     var allKeywords = new HashSet<String>();
     var groupedKeywords = Optional.ofNullable(discovery)
         .map(Discovery::getKeywords)
@@ -446,8 +613,18 @@ public class TransformationUtils {
         .collect(Collectors.groupingBy(
             keyword -> keyword.category.name(), // group by the category label
             Collectors.mapping(keyword -> keyword.value, Collectors.toSet()))); // map the SingleKeywords to their values then collect them in a Set
-    groupedKeywords.put("keywords", allKeywords);
-    return groupedKeywords;
+
+    search.setKeywords(allKeywords);
+    search.setGcmdScience(groupedKeywords.get("gcmdScience"));
+    search.setGcmdScienceServices(groupedKeywords.get("gcmdScienceServices"));
+    search.setGcmdLocations(groupedKeywords.get("gcmdLocations"));
+    search.setGcmdInstruments(groupedKeywords.get("gcmdInstruments"));
+    search.setGcmdPlatforms(groupedKeywords.get("gcmdPlatforms"));
+    search.setGcmdProjects(groupedKeywords.get("gcmdProjects"));
+    search.setGcmdDataCenters(groupedKeywords.get("gcmdDataCenters"));
+    search.setGcmdHorizontalResolution(groupedKeywords.get("gcmdHorizontalResolution"));
+    search.setGcmdVerticalResolution(groupedKeywords.get("gcmdVerticalResolution"));
+    search.setGcmdTemporalResolution(groupedKeywords.get("gcmdTemporalResolution"));
   }
 
   private enum KeywordCategory {

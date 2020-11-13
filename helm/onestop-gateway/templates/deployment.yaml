@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "onestop-gateway.fullname" . }}
+  labels:
+    {{- include "onestop-gateway.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "onestop-gateway.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "onestop-gateway.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "onestop-gateway.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion | default .Chart.Version }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+            {{- if .Values.debug }}
+            - name: jdwp
+              containerPort: 5005
+            {{- end }}
+          # Configure all key-value pairs in a Secret as container environment variables
+          envFrom:
+            - secretRef:
+                # PRIVATE_KEY_JWT_KEYSTORE_TYPE, PRIVATE_KEY_JWT_KEYSTORE_PASSWORD, PRIVATE_KEY_JWT_KEYSTORE_ALIAS
+                name: onestop-gateway-private-key-jwt-jks-credentials
+          env:
+            - name: PRIVATE_KEY_JWT_KEYSTORE_FILE
+              value: /etc/onestop-gateway/logingov.jks
+            # EXPORT ADDITIONAL CONFIG LOCATION (if config provided)
+            {{- if .Values.config }}
+            # if Helm values have a config section, it will be mounted as a YML file
+            # this tells Spring where the additional config file is mounted
+            - name: SPRING_CONFIG_ADDITIONAL-LOCATION
+              value: /etc/conf/application.yml
+            {{- end }}
+            # EXPORT ACTIVE SPRING PROFILES TO TELL SPRING WHICH FEATURES TO ENABLE
+            # the loop is making a comma delimited list for multi-feature handling
+            - name: SPRING_PROFILES_ACTIVE
+              value: '{{ $active := dict "profiles" (list) -}}
+                        {{- range $feature, $enabled := .Values.features -}}
+                          {{- if $enabled -}}
+                            {{- $noop := $feature | append $active.profiles | set $active "profiles" -}}
+                          {{- end -}}
+                        {{- end -}}
+                        {{- join "," $active.profiles }}'
+            {{- if .Values.env }}
+              # generic env overrides, for spring properties, etc
+              {{- range $envName,$envVal := .Values.env }}
+              - name: {{ $envName }}
+                value: {{ $envVal | quote }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.debug }}
+            - name: JAVA_TOOL_OPTIONS
+              value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: onestop-gateway-private-key-jwt-jks-volume
+              mountPath: /etc/onestop-gateway/
+              readOnly: true
+          # MOUNT ADDITIONAL CONFIG IN THIS CONTAINER (if config provided)
+          # done via ConfigMap and associated volume
+            {{- if .Values.config }}
+            - name: config-volume
+              mountPath: /etc/conf/
+            {{- end }}
+      volumes:
+        - name: onestop-gateway-private-key-jwt-jks-volume
+          secret:
+            # filename is based on key in secret `logingov.jks` which we be placed in the volume mount path
+            secretName: onestop-gateway-private-key-jwt-jks
+        {{- if .Values.config }}
+        # CREATE VOLUME FOR ADDITIONAL CONFIG (if config provided)
+        # additional location for Spring config allows overriding defaults
+        - name: config-volume
+          configMap:
+            name: {{ include "onestop-gateway.configname" . }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

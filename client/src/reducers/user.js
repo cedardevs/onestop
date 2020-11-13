@@ -5,12 +5,19 @@ import {
   USER_PROFILE_FAILURE,
   USER_LOGOUT,
 } from '../actions/UserActions'
+import {
+  SAVED_SEARCH_FAILURE,
+  SAVED_SEARCH_REQUEST,
+  SAVED_SEARCH_SUCCESS,
+} from '../actions/SavedSearchActions'
+import {searchListToMap} from '../utils/resultUtils'
 
 export const initialState = Immutable({
   isAuthenticated: false,
   profile: null,
   expired: false,
   isFetching: false,
+  searches: [],
 })
 
 export const user = (state = initialState, action) => {
@@ -19,9 +26,9 @@ export const user = (state = initialState, action) => {
       return state.setIn([ 'isFetching' ], true, action.item)
 
     case USER_PROFILE_SUCCESS:
-      if (action.payload.email) {
+      if (action.payload.data) {
         return state
-          .setIn([ 'profile' ], action.profile)
+          .setIn([ 'profile' ], action.payload.data)
           .setIn([ 'isFetching' ], false)
           .setIn([ 'isAuthenticated' ], true)
           .setIn([ 'expired' ], false)
@@ -40,6 +47,21 @@ export const user = (state = initialState, action) => {
         .setIn([ 'profile' ], {})
         .setIn([ 'expired' ], true)
         .setIn([ 'isAuthenticated' ], false)
+
+    case SAVED_SEARCH_REQUEST:
+      return state.setIn([ 'isFetchingSearches' ], true, action.item)
+
+    case SAVED_SEARCH_SUCCESS:
+      if (action.payload.data) {
+        return state
+          .setIn([ 'searches' ], searchListToMap(action.payload.data))
+          .setIn([ 'isFetchingSearches' ], false)
+      }
+
+    case SAVED_SEARCH_FAILURE:
+      return state
+        .setIn([ 'error' ], action.error)
+        .setIn([ 'isFetchingSearches' ], false)
     default:
       return state
   }

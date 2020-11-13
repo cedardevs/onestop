@@ -47,6 +47,7 @@ class UiConfig {
     String loginEndpoint
     String logoutEndpoint
     String userProfileEndpoint
+    String savedSearchEndpoint
   }
 
 }

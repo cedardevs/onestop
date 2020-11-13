@@ -66,7 +66,11 @@ const assembleQueries = ({queryText, title, allTermsMustMatch}) => {
 }
 
 const assembleFacetFilters = ({selectedFacets}) => {
-  return _.map(selectedFacets, (v, k) => ({type: 'facet', name: k, values: v}))
+  return _.map(selectedFacets, (v, k) => ({
+    type: 'facet',
+    name: k,
+    values: v,
+  }))
 }
 
 const assembleGeometryFilters = ({bbox, geoRelationship}) => {
@@ -103,7 +107,11 @@ const assembleTemporalFilters = ({
     }
   }
   else if (startDateTime) {
-    return {type: 'datetime', after: startDateTime, relation: timeRelationship}
+    return {
+      type: 'datetime',
+      after: startDateTime,
+      relation: timeRelationship,
+    }
   }
   else if (endDateTime) {
     return {type: 'datetime', before: endDateTime, relation: timeRelationship}

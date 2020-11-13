@@ -32,12 +32,14 @@ object Versions {
   const val TEST_CONTAINERS: String = "1.12.2"
   const val OPEN_SAML = "3.4.3"
   const val LOGBACK = "1.2.3"
+  const val SLF4J = "1.7.28"
   const val JAVAX_SERVLET_API = "4.0.1"
   const val JUNIT = "4.12"
   const val AUTH0_JAVA_JWT = "3.4.1"
   const val PAC4J = "3.8.3"
   const val SNAKE_YAML = "1.24"
   const val REACTOR_BOM = "Dysprosium-SR7"
+  const val JSONP = "2.0.0-RC2"
 
   const val ONESTOP_SCHEMAS: String = "0.7.0"
 }

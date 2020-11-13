@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "onestop-gateway.fullname" . }}
+  labels:
+    {{- include "onestop-gateway.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: {{ .Values.service.securePort }}
+      targetPort: https
+      protocol: TCP
+      name: https
+  selector:
+    {{- include "onestop-gateway.selectorLabels" . | nindent 4 }}

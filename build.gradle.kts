@@ -1,8 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.moowork.gradle.node.npm.NpmTask
 import com.moowork.gradle.node.task.NodeTask
-import java.time.Instant
-import java.time.format.DateTimeFormatter
 
 plugins {
     `kotlin-dsl`
@@ -89,9 +87,9 @@ val authors: List<Author> = listOf(
 description = """
 
 ------------------------------------------------------------
-OneStop is a data discovery system being built by CIRES 
-researchers on a grant from the NOAA National Centers for 
-Environmental Information.  We welcome contributions from 
+OneStop is a data discovery system being built by CIRES
+researchers on a grant from the NOAA National Centers for
+Environmental Information.  We welcome contributions from
 the community!
 ------------------------------------------------------------
 group:   $group
@@ -105,7 +103,7 @@ Gradle version: ${gradle.gradleVersion}
 
 val projectDescriptions: Map<String, String> = mapOf(
         Pair("client", "A browser UI for the OneStop system."),
-        Pair("cli", "A command-line interface to query the OneStop search API."),
+        Pair("data-common", "A Shared project with API response POJOs and utilities for data manipulation"),
         Pair("e2e-tests", "End-to-end test project for the OneStop system."),
         Pair("elastic-common", "A shared project used by OneStop applications interacting with Elastic"),
         Pair("geoportal-search", "An application supporting OpenSearch and CSW search standards against the OneStop system."),
@@ -114,16 +112,19 @@ val projectDescriptions: Map<String, String> = mapOf(
         Pair("registry", "A private API to upload ISO metadata to the OneStop system Kafka event stream."),
         Pair("search", "An read-only API for the OneStop system to query data indexed in Elasticsearch."),
         Pair("parsalyzer", "A Kafka Streams app which picks up from the raw metadata topic, parses into a standard format, analyzes some fields for further insight, and places onto a parsed topic."),
+        Pair("test-common", "A Utility project to test transformations throughout the system."),
         Pair("user", "An API to authenticate and manage public user data of the OneStop system.")
 )
 
 // only apply plugins, configuration, tasks, etc. to projects that need it
-val javaProjects: List<String> = listOf("client", "cli", "indexer", "e2e-tests", "elastic-common", "kafka-common", "search", "registry", "parsalyzer", "user")
-val jibProjects: List<String> = listOf("client", "cli", "indexer", "registry", "search", "parsalyzer", "user")
-val springBootProjects: List<String> = listOf("elastic-common", "search", "registry")
+val javaProjects: List<String> = listOf("client", "data-common", "indexer", "kafka-common", "e2e-tests", "elastic-common", "search", "registry", "parsalyzer", "test-common", "user", "gateway")
+val applicationProjects: List<String> = listOf()
+val libraryProjects: List<String> = listOf("kafka-common", "elastic-common", "data-common") // FIXME elastic?
+val jibProjects: List<String> = listOf("client", "indexer", "registry", "search", "parsalyzer", "user", "gateway")
+val springBootProjects: List<String> = listOf("elastic-common", "search", "registry", "gateway", "user")
 val nodeProjects: List<String> = listOf("client", "registry")
-val micronautProjects: List<String> = listOf("user")
-val goProjects: List<String> = listOf("cli")
+val mappingProjects: List<String> = listOf("elastic-common")
+//val micronautProjects: List<String> = listOf("user")
 
 // allows projects to monitor dependent libraries for known, published vulnerabilities
 dependencyCheck {
@@ -215,6 +216,10 @@ subprojects {
         // apply the spring boot plugin to projects using spring
         apply(plugin = "org.springframework.boot")
     }
+    if (mappingProjects.contains(name)) {
+      tasks.register<ESMappingTask>("esMappingGenerate") {
+      }
+    }
     if (nodeProjects.contains(name)) {
         // apply node gradle plugin to projects using node/npm
         // TODO: revert to original (non-forked) moowork plugin when Gradle 6 issues are resolved
@@ -266,11 +271,6 @@ subprojects {
             set("jibExtraDir", jibExtraDir)
         }
 
-    }
-
-    if(goProjects.contains(name)) {
-        // apply the Gogradle plugin to projects using Go
-        apply(plugin = "com.github.blindpirate.gogradle")
     }
 
     afterEvaluate {
@@ -349,6 +349,4 @@ subprojects {
         }
 
     }
-
-
 }

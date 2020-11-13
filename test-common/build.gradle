@@ -1,0 +1,72 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+}
+
+plugins {
+  id 'application'
+  id 'java-library'
+}
+
+apply plugin: "com.github.johnrengelman.shadow"
+
+mainClassName = 'org.cedar.onestop.transformer.Main'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+configurations {
+  integrationTestCompile.extendsFrom testCompile
+  integrationTestRuntime.extendsFrom testRuntime
+  integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+  integrationTestImplementation.extendsFrom testImplementation
+}
+
+dependencies {
+  def Versions = project.Versions
+
+  compile project(path: ':indexer', configuration: 'shadow')
+  compile project(path: ':parsalyzer', configuration: 'shadow')
+
+  compile implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
+
+  compile api("com.github.cedardevs.schemas:schemas-parse:${Versions.ONESTOP_SCHEMAS}")
+  compile api("com.github.cedardevs.schemas:schemas-analyze:${Versions.ONESTOP_SCHEMAS}")
+  implementation("org.slf4j:slf4j-api:1.7.25")
+  implementation("ch.qos.logback:logback-classic:1.2.3")
+
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}:test")
+  testImplementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}:sources")
+}
+
+sourceSets {
+  integrationTest {
+    compileClasspath += sourceSets.main.output + sourceSets.test.output
+    runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+    groovy.srcDir file('src/integrationTest/groovy')
+    resources.srcDir file('src/integrationTest/resources')
+  }
+}
+
+jar {
+  archivesBaseName = "${rootProject.name}-${project.name}"
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+}
+
+// check http://imperceptiblethoughts.com/shadow/
+shadowJar {
+  archiveBaseName.set("${rootProject.name}-${project.name}")
+  archiveVersion.set("${project.version}")
+  archiveClassifier.set("all")
+}
+
+task sourceJar(type: Jar) {
+  archiveBaseName.set("${rootProject.name}-${project.name}")
+  archiveClassifier.set("sources")
+  from "${projectDir}/src"
+}
+
+assemble.dependsOn(sourceJar)

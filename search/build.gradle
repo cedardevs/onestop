@@ -9,6 +9,7 @@ targetCompatibility = 11
 dependencies {
   def Versions = project.Versions
 
+  implementation(project(':data-common'))
   implementation(project(':elastic-common'))
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
 
@@ -21,14 +22,6 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("org.springframework.boot:spring-boot-devtools")
-  implementation("org.springframework.boot:spring-boot-starter-security")
-
-  implementation("org.springframework.security:spring-security-core")
-  implementation("org.springframework.security:spring-security-config")
-  implementation("org.springframework.security:spring-security-oauth2-client")
-  implementation("org.springframework.security:spring-security-oauth2-jose")
-
-  implementation("com.auth0:java-jwt:${Versions.AUTH0_JAVA_JWT}")
 
   implementation("com.github.java-json-tools:json-schema-validator:2.2.8")
   implementation("org.apache.commons:commons-lang3:3.7")

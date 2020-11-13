@@ -1,7 +1,0 @@
-//PublishDockerImage {
-//  dependsOn BuildDockerImage
-//}
-//
-//assemble { dependsOn BuildDockerImage }
-//build { dependsOn assemble }
-//publish { dependsOn PublishDockerImage }

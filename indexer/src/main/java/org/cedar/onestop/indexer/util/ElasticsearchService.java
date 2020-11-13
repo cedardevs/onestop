@@ -1,7 +1,9 @@
 package org.cedar.onestop.indexer.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cedar.onestop.data.util.JsonUtils;
 import org.cedar.onestop.elastic.common.ElasticsearchConfig;
+import org.cedar.onestop.elastic.common.ElasticsearchReadService;
 import org.cedar.onestop.indexer.stream.BulkIndexingConfig;
 import org.cedar.onestop.indexer.stream.BulkIndexingTransformer;
 import org.cedar.onestop.indexer.stream.FlatteningConfig;
@@ -23,6 +25,8 @@ import org.elasticsearch.client.Cancellable;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.GetMappingsRequest;
+import org.elasticsearch.client.indices.GetMappingsResponse;
 import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
@@ -34,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,9 +52,13 @@ public class ElasticsearchService {
   private final RestHighLevelClient client;
   private final ElasticsearchConfig config;
 
+  private final ElasticsearchReadService esReadService;
+
   public ElasticsearchService(RestHighLevelClient client, ElasticsearchConfig config) {
     this.client = client;
     this.config = config;
+
+    esReadService = new ElasticsearchReadService(client, config);
   }
 
   public RestHighLevelClient getClient() {
@@ -86,10 +95,60 @@ public class ElasticsearchService {
   private void ensureAliasWithIndex(String alias) throws IOException {
     var aliasExists = checkAliasExists(alias);
     if (aliasExists) {
-      var mapping = getMappingByAlias(alias);
-      putMapping(alias, mapping);
+      String existingMapping = getDeployedMappingByAlias(alias);
+      log.debug("EXISTING " + alias + " MAPPING: " + existingMapping);
+      String expectedMapping = getExpectedMappingByAlias(alias);
+      log.debug("EXPECTED " + alias + " MAPPING: " + expectedMapping );
+
+      String existingAnalysis = getDeployedIndexAnalyzersByAlias(alias);
+      log.debug("EXISTING " + alias + " ANALYSIS: " + existingAnalysis);
+      String expectedAnalysis = getExpectedIndexAnalyzersByAlias(alias);
+      log.debug("EXPECTED " + alias + " ANALYSIS: " + expectedAnalysis);
+
+      if(existingMapping != null) {
+        List<Map<String, Object>> mappingDiffs = JsonUtils.getJsonDiffList(existingMapping, expectedMapping);
+
+        mappingDiffs.stream().forEach( e -> {
+          if (e.get("op") == "remove") {
+            log.warn("MAPPING FOR " + alias + " removes " + e.get("path"));
+          } else if (e.get("op") == "add") {
+            log.warn("MAPPING FOR " + alias + " adds " + e.get("path"));
+          } else {
+            log.error("MAPPING FOR " + alias + " " + e.get("op") + " " + e.get("path") + " - this operation cannot be done without reindexing.");
+          }
+        });
+
+        if (existingAnalysis != null) {
+
+          List<Map<String, Object>> settingDiffs = JsonUtils.getJsonDiffList(existingAnalysis, expectedAnalysis);
+          settingDiffs.stream().forEach( e -> {
+            if (e.get("op") == "remove") {
+              log.warn("ANALYSIS FOR " + alias + " removes " + e.get("path"));
+            } else if (e.get("op") == "add") {
+              log.warn("ANALYSIS FOR " + alias + " adds " + e.get("path"));
+            } else {
+              log.error("ANALYSIS FOR " + alias + " " + e.get("op") + " " + e.get("path") + " - this operation cannot be done without reindexing.");
+            }
+          });
+
+          List<String> settingsOps = settingDiffs.stream().map(e -> (String) e.get("op")).collect(Collectors.toList());
+
+          if (!settingsOps.isEmpty() && settingsOps.contains("replace")) {
+            System.exit(1);
+          }
+        }
+
+        List<String> ops = mappingDiffs.stream().map(e -> (String) e.get("op")).collect(Collectors.toList());
+        if (!ops.isEmpty() && ops.contains("replace")) {
+          System.exit(1);
+        }
+        // FIXME -- Strict mappings double check?
+
+        putMapping(alias, expectedMapping);
+      }
     }
     else {
+      log.debug("CREATING INDEX " + alias);
       createIndex(alias, true);
     }
   }
@@ -119,8 +178,8 @@ public class ElasticsearchService {
 
   public String createIndex(String aliasName, boolean applyAlias) throws IOException {
     String indexName = newIndexName(aliasName);
-    var jsonIndexMapping = getMappingByAlias(aliasName);
-    var jsonIndexSettings = getIndexSettingsByAlias(aliasName);
+    var jsonIndexMapping = getExpectedMappingByAlias(aliasName);
+    var jsonIndexSettings = getExpectedIndexSettingsByAlias(aliasName);
     var request = new CreateIndexRequest(indexName)
         .mapping(jsonIndexMapping, XContentType.JSON);
     if (applyAlias) {
@@ -165,16 +224,59 @@ public class ElasticsearchService {
     return client.indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT).isAcknowledged();
   }
 
-  private String getMappingByAlias(String alias) throws IOException {
+  private String getExpectedMappingByAlias(String alias) throws IOException {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     return mapper.writeValueAsString((Map) parsedDefinition.get("mappings"));
   }
 
-  private String getIndexSettingsByAlias(String alias) throws IOException {
+  private String getDeployedMappingByAlias(String alias) {
+    Map<String, Object> response = esReadService.getIndexMapping(alias);
+    List data = (List) response.get("data");
+    String mapping = null;
+    if(data != null) {
+      Map attributes = (Map)((Map) data.get(0)).get("attributes");
+      mapping = JsonUtils.toJson((Map) attributes.get("mappings"));
+    }
+    return mapping;
+  }
+
+  private String getExpectedIndexSettingsByAlias(String alias) throws IOException {
     var indexDefinition = config.jsonMapping(alias);
     Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
     return mapper.writeValueAsString((Map) parsedDefinition.get("settings"));
+  }
+
+  private String getExpectedIndexAnalyzersByAlias(String alias) throws IOException {
+    var indexDefinition = config.jsonMapping(alias);
+    Map parsedDefinition = mapper.readValue(indexDefinition, Map.class);
+    Map settings = (Map) parsedDefinition.get("settings");
+    if (settings == null ) {
+      return null;
+    }
+    return mapper.writeValueAsString((Map)(settings).get("analysis"));
+  }
+
+  private String getDeployedIndexAnalyzersByAlias(String alias) {
+    Map<String, Object> response = esReadService.getIndexSettings(alias);
+    List data = (List) response.get("data");
+    String mapping = null;
+    if(data != null) {
+      Map entry = (Map) data.get(0);
+      if(entry != null) {
+        Map attrs = (Map) entry.get("attributes");
+        if(attrs != null) {
+          Map settings = (Map) attrs.get("settings");
+          if(settings != null) {
+            Map index = (Map) settings.get("index");
+            if(index != null) {
+              mapping = JsonUtils.toJson((Map)index.get("analysis"));
+            }
+          }
+        }
+      }
+    }
+    return mapping;
   }
 
   private String newIndexName(String alias) {
