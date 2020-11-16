@@ -71,7 +71,6 @@ brew services start elasticsearch@5.6
   - Some of us get even better performance by allocating even more memory and swap memory
 #### Helm
   - Currently, we are using Helm 3.
-  - Run `helm init` to install tiller onto the cluster (one-time deal, unless upgrading helm)
 #### Skaffold
   - Skaffold is a command line tool that facilitates continuous development for Kubernetes applications; It handles the workflow for building, pushing and deploying your application.
   - Skaffold uses profiles that are defined in the skaffold.yaml to indicate which components will be started. If you reference that skaffold.yaml you will see a profile of psi. Here's the example:
