@@ -91,9 +91,6 @@ sdk install java
 brew install kubernetes-helm
 brew install skaffold
 
-# install tiller onto the cluster (one-time deal, unless upgrading helm)
-helm init
-
 # install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
 ./helm/infraInstall.sh
 
