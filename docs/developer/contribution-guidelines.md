@@ -27,7 +27,7 @@ Have questions or need help with setup? Open [an issue][github issues] via Githu
 
 ### Running locally
 
-See the [Quickstart](/docs/developer/quickstart.md) deployment overview pages.
+See the [Quickstart](quickstart) deployment overview pages.
 
 ## Coding guidelines
 
@@ -46,7 +46,7 @@ High code coverage numbers are generally good, and we would prefer that our cove
 
 ## Our Use of Branches
 
-See [our branching model guidelines](Internal-Development-Practices#git-workflow) for more information on our internal git/GitHub release workflow.
+See [our branching model guidelines](internal-practices#git-workflow) for more information on our internal git/GitHub release workflow.
 
 
 [license]: https://github.com/cires-ncei/onestop/wiki#legal
