@@ -11,3 +11,4 @@
 - [Hotfix Strategy](/onestop/developer/hotfix-strategy.md) - 
 - [Local GH Pages](/onestop/developer/local-gh-pages.md) - 
 - [Publishing Tags](/onestop/developer/publishing-tags.md) - 
+- [OneStop Client](https://cedardevs.github.io/onestop-clients/) - OneStop client documentation.
