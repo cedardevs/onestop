@@ -3,7 +3,7 @@
 ## Git Workflow
 
   * `master` contains changes being prepped for a release, with tags marking each release. The master branch should be kept in a working state but represents the "bleeding edge" version of the project. 
-  * `release/[version]` contains the existing release paths. These only deviate from the release tagged on the master branch when hotfixes are required. A new release branch should be created for every major version. Minor releases can be merged into their major version branch. Patches should also be merged to their respective branch, but follows a different work flow. Reference [Hotfix Strategy](/docs/developer/hotfix-strategy.md) for more information.  
+  * `release/[version]` contains the existing release paths. These only deviate from the release tagged on the master branch when hotfixes are required. A new release branch should be created for every major version. Minor releases can be merged into their major version branch. Patches should also be merged to their respective branch, but follows a different work flow. Reference [Hotfix Strategy](/onestop/developer/hotfix-strategy) for more information.  
   * temporary branches are used to work on features, until they are reviewed as a pull request and deleted.
 
 ### Versioning: 
@@ -11,11 +11,11 @@
   * To accomplish that, it is important we always increment the minor version after a release. 
   * It's difficult to know if the next release will be a new major version. Theoretically incrementing the major version should be done when the breaking change is introduced (e.g. dropping support for ES5). 
   * But that may not always happen when it should. For that reason it is important we review changes prior to cutting a release and determine if should increment the major version. It is important we avoid merging breaking changes to an existing release branch. 
-  * The patch version is incremented when a patch is applied. See [Hotfix Strategy](/docs/developer/hotfix-strategy.md) documentation for patching. 
+  * The patch version is incremented when a patch is applied. See [Hotfix Strategy](/onestop/developer/hotfix-strategy) documentation for patching. 
   * Find more on version best practices here - https://semver.org/
 
 ### Releases: Tags and Release Branches
-When all the features in master are ready for production, it is time to cut a release. A "release" is either a new major or minor version. For a patch, see the [Hotfix Strategy](/docs/developer/hotfix-strategy.md) documentation. Follow these steps to publish a release:
+When all the features in master are ready for production, it is time to cut a release. A "release" is either a new major or minor version. For a patch, see the [Hotfix Strategy](/onestop/developer/hotfix-strategy) documentation. Follow these steps to publish a release:
 
   1. Run the `manageVersions.sh` script to get the version number throughout the project.
   2. It may not be necessary to increment the version before tagging. After the last release, we bumped the minor version, as *you will* after tagging. 
