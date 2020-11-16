@@ -4,7 +4,7 @@ Table of Contents
 =================
 * [Setup](#getting-started)
     * [Clone OneStop Code](#clone-onestop-code)
-    * [Dependencies](#dependencies)
+    * [Local Requirements](#local-requirements)
         * [Java](#java)
         * [Docker](#docker)
         * [Elasticsearch (not highly recommended)](#elasticsearch-not-typical-path)
@@ -21,9 +21,9 @@ Table of Contents
         * [Elasticsearch & Kibana Status](#elasticsearch--kibana-status)
         * [Confirm Elasticsearch can be accessed securely within the cluster](#confirm-elasticsearch-can-be-accessed-securely-within-the-cluster)
         * [Confirm Kibana can be accessed via LoadBalancer](#confirm-kibana-can-be-accessed-via-loadbalancer)
-    * [Upload Test Data](#upload-test-data)
-        *[Clone the test data repo](#clone-the-test-data-repo)
-        *[Usage](#usage)
+    * [Upload Test Metadata](#upload-test-metadata)
+        *[Upload a Specific Metadata](#upload-a-specific-metadata)
+        *[Use the onestop-test-data Repository](#use-the-onestop-test-data-repository)
     * [Making Helm Chart Changes](#making-helm-chart-changes)
     * [Troubleshooting](#troubleshooting)
     * [Clear Caches](#clear-caches)
@@ -47,7 +47,7 @@ Table of Contents
 ### Clone OneStop Code
 `git clone https://github.com/cedardevs/onestop.git`
 
-### Dependencies
+### Local Requirements
 
 #### Java
   - Minimum Java 11, can get via sdk.
@@ -202,25 +202,35 @@ http://localhost:30000/onestop
 http://localhost/onestop
 ```
 
-### Upload Test Data
+### Upload Test Metadata
 
-We have our test data in its own repo `onestop-test-data` with a corresponding upload script to handle populating the OneStop with data.
+You can either upload your own metadata via a curl to the registry application or use the script in the onestop-test-data repository to upload metadata in that repository.
 
-#### Clone the test data repo
+#### Upload a Specific Metadata
+```bash
+curl -X PUT\
+     -H "Content-Type: application/xml" \
+     http://localhost/registry/metadata/collection \
+     --data-binary @registry/src/test/resources/dscovr_fc1.xml
+```
+
+#### Use the onestop-test-data Repository
+We have some test data in its own repo, `onestop-test-data`, with a corresponding upload script to handle sending data to OneStop. Please refer to the test-data repository's README for more accurate information.
+
 ```
 git clone git@github.com:cedardevs/onestop-test-data.git
 cd onestop-test-data
 ```
 
-#### Usage
 `./upload.sh <application> <rootDir> <baseUrl> <username:password>`
 
 
-Examples:
-To load *all* test data collections and granules: 
+**Examples:**
+
+To load *all* collections and granules test metadata: 
 `./upload.sh IM . http://localhost/registry`
 
-To load HazardImages data:
+To load only HazardImages metadata:  
 `./upload.sh IM HazardImages localhost/registry`
 
 If the upload is pointing to an instance of the registry API which is secured, then it will be necessary to pass user credentials.
@@ -298,6 +308,7 @@ skaffold delete
 
 #### Delete persistent volume claims (PVCs)
 If you've upgraded versions or are making big breaking changes, it is generally advised to wipe-out volumes and start fresh.
+
 **WARNING**: it is advised to only do this after ECK and stateful apps have been taken down.
 ```
 kubectl delete pvc --all
