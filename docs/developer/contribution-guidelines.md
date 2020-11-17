@@ -1,5 +1,14 @@
 # Contribution Guidelines
 
+## Table of Contents
+* [Guidelines](#guidelines)
+    * [Submitting an issue](#submitting-an-issue)
+    * [Submitting a pull request](#submitting-a-pull-request)
+    * [Running locally](#running-locally)
+* [Coding guidelines](#coding-guidelines)
+    * [Code coverage](#code-coverage)
+* [Our Use of Branches](#our-use-of-branches)
+
 We’re so glad you’re thinking about contributing to the OneStop project! If you’re unsure about anything, just ask — or submit your issue or pull request anyway. The worst that can happen is we’ll politely ask you to change something. We appreciate all friendly contributions.
 
 One of our goals is to ensure a welcoming environment for all contributors to our projects.
