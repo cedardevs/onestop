@@ -15,7 +15,7 @@ dependencies:
     repository: "https://kubernetes-charts.storage.googleapis.com/"
     condition: kube-state-metrics.enabled
   - name: metrics-server
-    version: ~2.11.1
+    version: 2.11.3
     repository: "https://kubernetes-charts.storage.googleapis.com"
     condition: metrics-server.enabled
   - name: cas
