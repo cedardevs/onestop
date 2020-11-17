@@ -1,18 +1,14 @@
 package org.cedar.onestop.test.common;
 
 import org.cedar.schemas.avro.psi.ParsedRecord;
-import org.cedar.schemas.avro.psi.Discovery;
 import org.cedar.onestop.indexer.util.TransformationUtils;
 import org.cedar.schemas.avro.psi.RecordType;
-import java.util.Set;
-import java.util.Map;
-import java.util.HashSet;
 import org.cedar.schemas.parse.ISOParser;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.lang.Exception;
 import org.cedar.schemas.analyze.Analyzers;
-import org.cedar.onestop.manager.util.RecordParser;
+import org.cedar.onestop.parsalyzer.util.RecordParser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
