@@ -4,6 +4,7 @@ Table of Contents
 =================
 * [Setup](#getting-started)
     * [Clone OneStop Code](#clone-onestop-code)
+    * [Build Results](#build-results)
     * [Local Requirements](#local-requirements)
         * [Java](#java)
         * [Docker](#docker)
@@ -46,6 +47,9 @@ Table of Contents
 ## Setup
 ### Clone OneStop Code
 `git clone https://github.com/cedardevs/onestop.git`
+
+### Build Results
+When code changes are pushed via git our [CircleCI](https://app.circleci.com/pipelines/github/cedardevs/onestop) gets triggered. Depending on how circle is configured, which is based off .circleci/config.yaml file, a build happens.
 
 ### Local Requirements
 
