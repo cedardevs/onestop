@@ -1,7 +1,6 @@
 # Developer Guide
 
-Table of Contents
-=================
+## Table of Contents
 * [Setup](#getting-started)
     * [Clone OneStop Code](#clone-onestop-code)
     * [Build Results](#build-results)
