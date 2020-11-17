@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react'
-import {fontFamilySerif, fontFamilyMonospace} from '../../../utils/styleUtils'
 import Meta from '../../helmet/Meta'
 import UserSavedSearchList from '../savedSearches/UserSavedSearchList'
 import {boxShadow} from '../../../style/defaultStyles'
+import LoginGovRedirectComponent from '../login/LoginGovRedirectComponent'
+import PropTypes from 'prop-types'
 
 const styleCenterContent = {
   display: 'flex',
   justifyContent: 'center',
+  color: '#222',
 }
 
 const styleDashboardWrapper = {
@@ -21,35 +23,66 @@ const styleDashboardWrapper = {
 
 const UserDashboard = props => {
   const [ savedSearchCount, setSavedSearchCount ] = useState(0)
+  const {
+    user,
+    loginEndpoint,
+    configIsFetching,
+    navigateToSearch,
+    deleteSearch,
+    savedSearches,
+  } = props
+
   useEffect(() => {
     // Update the saved searches when we navigate to this component
     //todo figure out if there is a better way to do this
     if (
-      !props.user.isFetchingSearches &&
-      props.user.searches &&
-      savedSearchCount < props.user.searches.length
+      user.isAuthenticated &&
+      !user.isFetching &&
+      !user.isFetchingSearches &&
+      savedSearches &&
+      savedSearchCount < user.searches.length
     ) {
-      props.getSavedSearches(props.savedSearchEndpoint)
-      setSavedSearchCount(props.user.searches.length)
+      getSavedSearches()
+      setSavedSearchCount(user.searches.length)
     }
   })
 
-  const {navigateToSearch, deleteSearch} = props
-  return (
-    <div style={styleCenterContent}>
-      <div style={styleDashboardWrapper}>
-        <Meta title="User Dashboard for NOAA OneStop" />
-        <section>
-          <UserSavedSearchList
-            navigateToSearch={filter => navigateToSearch(filter)}
-            deleteSearch={id => deleteSearch(props.savedSearchEndpoint, id)}
-            user={props.user}
-            savedSearches={props.savedSearches}
-          />
-        </section>
-      </div>
+  const dashboardElement = (
+    <div style={styleDashboardWrapper}>
+      <Meta title="User Dashboard for NOAA OneStop" />
+      <section>
+        <UserSavedSearchList
+          navigateToSearch={filter => navigateToSearch(filter)}
+          deleteSearch={id => deleteSearch(id)}
+          user={user}
+          savedSearches={savedSearches}
+        />
+      </section>
     </div>
   )
+
+  const dashboardOrRedirect =
+    user && user.isAuthenticated ? (
+      {dashboardElement}
+    ) : (
+      <LoginGovRedirectComponent
+        loginEndpoint={loginEndpoint}
+        configIsFetching={configIsFetching}
+        user={user}
+      />
+    )
+
+  return <div style={styleCenterContent}>{dashboardOrRedirect}</div>
+}
+
+UserDashboard.propTypes = {
+  user: PropTypes.object.isRequired,
+  loginEndpoint: PropTypes.string,
+  configIsFetching: PropTypes.bool.isRequired,
+  savedSearches: PropTypes.array,
+  getSavedSearches: PropTypes.func.isRequired,
+  navigateToSearch: PropTypes.func.isRequired,
+  deleteSearch: PropTypes.func.isRequired,
 }
 
 export default UserDashboard

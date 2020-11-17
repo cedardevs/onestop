@@ -17,6 +17,7 @@ export const initialState = Immutable({
   profile: null,
   expired: false,
   isFetching: false,
+  isFetchingSearches: false,
   searches: [],
 })
 
