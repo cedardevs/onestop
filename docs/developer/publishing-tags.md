@@ -1,5 +1,21 @@
 # Publishing Tags and Releases
+Table of Contents
+=================
+* [Basics](#basics)
+* [Circle CI Configuration](#circle-ci-configuration)
+* [Continuous Integration Automation](#continuous-integration-automation)
+* [Cleanup Container Registry](#cleanup-container-registry)
+* [Release Tags (retain always)](#release-tags-retain-always)
+* [Branch Tags](#branch-tags)
+    * [Active Branch Tags (retain)](#active-branch-tags-retain)
+    * [Inactive Branch Tags (purge)](#inactive-branch-tags-purge)
+* [Local Tags (retain)](#local-tags-retain)
+* [Dangling Tags (purge)](#dangling-tags-purge)
+* [Local Automation](#local-automation)
+* [Gradle Task Considerations](#gradle-task-considerations)
+* [Verifying Image Contents](#verifying-image-contents)
 
+## Basics
 The goals of our tag publishing conventions are to be seamless and consistent. In general, a developer or deployer should only need to do one of the following things to publish the right tag:
 
 - [release]
@@ -66,9 +82,9 @@ Many CI environments, including Circle CI set an environment variable `CI` to fa
 
 Cleanup of the container registry (Docker Hub) is automated without being destructive or confusing about what a published tag represents.
  
-The container registry API for DockerHub can be used to delete tags with the a token obtained from the credentials. The continuous integration environment should attempt to clean up the registry before publishing on every run.
+The container registry API for DockerHub can be used to delete tags with the token obtained from the credentials. The continuous integration environment should attempt to clean up the registry before publishing on every run.
 
-### Release Tags (retain always)        
+## Release Tags (retain always)        
 These tags are identified through regex pattern matching and without the `-SNAPSHOT` suffix:
 ```
 "3.0.0"     [RETAINED] (semantic version and not snapshot)
@@ -76,7 +92,7 @@ These tags are identified through regex pattern matching and without the `-SNAPS
 "2.4.2-RC1" [RETAINED] (semantic version and not snapshot)
 ```
 
-### Branch Tags
+## Branch Tags
 - collect all tags from container registry API that have the `-SNAPSHOT` suffix and NOT the `LOCAL-` prefix
 - retrieve all branches on the origin:
 ```
@@ -85,7 +101,7 @@ $ for branch in `git branch -r | grep -v HEAD`; do echo -e ${branch#"origin/"}; 
 > 123-featureA
 ```
 
-#### Active Branch Tags (retain):
+### Active Branch Tags (retain)
 The prefix before `-SNAPSHOT` can be intuited as the branch name which produced the last published snapshot for this tag:
 
 ```
@@ -93,13 +109,13 @@ The prefix before `-SNAPSHOT` can be intuited as the branch name which produced 
 "123-featureA-SNAPSHOT" [RETAINED] ("123-featureA" exists as branch on remote origin)
 ```
 
-#### Inactive Branch Tags (purge):
+### Inactive Branch Tags (purge)
 Purge any tags associated with a branch name that does not exist in the remote origin (e.g. - ["master", "123-featureA"])
 ```
 "456-featureB-SNAPSHOT" [PURGED] ("456-featureB" does NOT exist as branch on remote origin and not prefixed w/"LOCAL-")
 ```
 
-### Local Tags (retain):
+## Local Tags (retain)
 - collect all tags from container registry API that have the `LOCAL-` prefix
 - use all branches on origin calculated before
 
@@ -107,7 +123,7 @@ Purge any tags associated with a branch name that does not exist in the remote o
 "LOCAL-${branch}-${whoAmI}" [RETAINED] (prefixed w/"LOCAL-")
 ```
          
-### Dangling Tags (purge):
+## Dangling Tags (purge)
 Purge all tags remaining that do NOT meet the following criteria:
 - semantic or semantic derived (e.g. `2.4.2`, `2.4.2-RC1`, `2.4`, `2.4-RC1`, `2`, `2-RC1`, `3-demo`, etc)
 - have `-SNAPSHOT` suffix
