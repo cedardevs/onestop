@@ -1,4 +1,11 @@
+# Internal Practices
 
+## Table of Contents
+* [Git Workflow](#git-workflow)
+    * [Versioning](#versioning)
+    * [Releases: Tags and Release Branches](#releases-tags-and-release-branches)
+    * [Temporary Branches](#temporary-branches)
+* [References](#references)
 
 ## Git Workflow
 
