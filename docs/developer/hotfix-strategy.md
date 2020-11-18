@@ -1,5 +1,10 @@
 # Hotfix Strategy
 
+## Table of Contents
+- [Syncing hotfix to Release and Master branches](#syncing-hotfix-to-release-and-master-branches)
+- [Tagging a hotfix release](#tagging-a-hotfix-release)
+- [Manually publishing with jib](#manually-publishing-with-jib)
+
 ## Syncing hotfix to Release and Master branches
 
 These instructions assume the hotfix is a single commit, with changes that should be applied to both the current release branch and master. The git commands can be altered to handle multiple commits, but this is left as an exercise to the reader. If the change should not be applied, or differs between the two branches, just manually create two separate changes for each branch instead.
