@@ -2,6 +2,15 @@
 
 Developing, updating, and testing docs...
 
+## Table of Contents
+* [Page Standards](#page-standards)
+    * [Estimated Reading Time on pages](#estimated-reading-time-on-pages)
+* [Testing The GitHub Pages Site Locally](#testing-the-github-pages-site-locally)
+    * [Getting Setup](#getting-setup)
+    * [Setup with docker](#setup-with-docker)
+    * [Errors Encountered](#errors-encountered)
+        * [Liquid Error When No One's Using Liquid To Begin With...](#liquid-error-when-no-ones-using-liquid-to-begin-with)
+
 ## Page Standards
 
 ### Estimated Reading Time on pages
