@@ -1,11 +1,11 @@
 # JSON schema validation
 
-The requests to api are validated against a JSON schema.
-
-## Schemas
-
-The larger schema is broken down into [components](/search/schema). The build step merges these into a single schema for the code to reference, however some tests validate against specific components directly in order to keep the tests clear. To see the complete schema, check `search/build/resources/main/onestop-request-schema.json` after running `./gradlew search:build`.
-
+Incoming requests to the Search API get validated against a [JSON Schema](http://json-schema.org/) file.  This file gets generated from `build/resources/open.yaml` by using the file at `search/src/main/groovy/org/cedar/onestop/api/search/controller/JsonValidator.groovy`.
+ 
+To create the yaml file, and skip running tests (sometimes they are problematic), you can do:
+ 
+ `./gradlew search:clean search:build -x test -x integrationTest`
+ 
 ## References
 
 - [JSON Schema](http://json-schema.org/)
