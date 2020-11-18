@@ -1,5 +1,14 @@
 ## Setting Up Local Dev Environment
 
+## Table of Contents
+* [Requirements](#requirements)
+* [Local Development](#local-development)
+* [Recommended Development Cycle using Jib for gradle and Skaffold](#recommended-development-cycle-using-jib-for-gradle-and-skaffold)
+    * [One-off Variant](#one-off-variant)
+* [Accessing Kubernetes Services](#accessing-kubernetes-services)
+* [Persistent Storage](#persistent-storage)
+* [Optional Development Cycle](#optional-development-cycle)
+
 ### Requirements
 Reference the [Quickstart Guide](/onestop/developer/quickstart)
 
