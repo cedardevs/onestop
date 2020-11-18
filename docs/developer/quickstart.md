@@ -406,4 +406,4 @@ spring:
 This structure essentially provides a new application-icam.yml to the application.
 
 <hr>
-<div align="center"><a href="/onestop/internal-developer">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/client">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

@@ -82,3 +82,6 @@ The tags are visible when looking at rendered Markdown but disappear when GitHub
 
 Another tip that sounded good but didn't work (though YMMV):
 >you can add `render_with_liquid: false` in your front matter to disable Liquid entirely for a particular document
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

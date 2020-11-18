@@ -35,4 +35,4 @@ Ideally, these should be done before every commit by the developer.
 `npm run format`
 
 <hr>
-<div align="center"><a href="/onestop/developer/quickstart">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/api-validation">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

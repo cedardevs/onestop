@@ -13,4 +13,4 @@ To create the yaml file, and skip running tests (sometimes they are problematic)
 - [JSON Schema Store](http://json.schemastore.org)
 
 <hr>
-<div align="center"><a href="/onestop/developer/client">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/contribution-guidelines">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

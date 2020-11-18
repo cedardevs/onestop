@@ -197,3 +197,6 @@ We use the [Open Containers Spec](https://github.com/opencontainers/image-spec/b
 The same image annotations can be seen via Kubernetes, using the following command:
 
 `kubectl describe pod ${podName}`
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

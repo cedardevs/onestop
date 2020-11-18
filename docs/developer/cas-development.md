@@ -331,3 +331,6 @@ authorization:
 In other words, if my service redirects to CAS and I login with valid credentials as "casuser", then the `UserDetailsService` set by the `CasAuthenticationProvider` will be what determines how to associate this username to granted authorities. It will see that "casuser" is associated to `ROLE_ADMIN` and the security filter will complete and redirect to my original request.
 
 On the other hand, if I were to login with a different user that is _not_ listed under the "ADMIN" role, then I may get past the CAS login screen and redirect back to the service, but I will be given an "Access Denied" exception and still not be allowed to see the response of my original request.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>
