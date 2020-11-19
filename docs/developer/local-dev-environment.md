@@ -10,7 +10,7 @@
 * [Optional Development Cycle](#optional-development-cycle)
 
 ### Requirements
-Reference the [Quickstart Guide](/onestop/developer/quickstart)
+Reference the [Quickstart Guide](quickstart)
 
 ### Local Development 
 The system uses Skaffold and Jib as a Gradle plugin to help with continuous development and deployment of Kubernetes 
@@ -55,7 +55,7 @@ When using docker desktop, you can access them at:
 http://localhost/registry       # psi-registry
 ```
 
-From there you can do things like upload some metadata to test the system. Please refer to the [quickstart](/onestop/developer/quickstart) guide.
+From there you can do things like upload some metadata to test the system. Please refer to the [quickstart](quickstart) guide.
 
 ### Persistent Storage
 
