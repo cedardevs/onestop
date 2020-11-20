@@ -289,9 +289,7 @@ profiles:
           - *onestop-gateway
           - *onestop-user
           - *onestop-postgresql
-          - *onestop-registry
-#          - *onestop-parsalyzer
-#          - *onestop-indexer
+          - *onestop-ingress
           - name: onestop-dev
             chartPath: helm/onestop-dev
             setValues:
