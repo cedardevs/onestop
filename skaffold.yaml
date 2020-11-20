@@ -182,16 +182,54 @@ build:
       ---
       logging.level.org.springframework.security: DEBUG
       logging.level.org.springframework.web: DEBUG
-      server.servlet.context-path: /api
-      gateway:
-        routes:
-          user: http://onestop-user:8080/user/
       login-gov:
         keystore:
           alias: ${PRIVATE_KEY_JWT_KEYSTORE_ALIAS}
           file: ${PRIVATE_KEY_JWT_KEYSTORE_FILE}
           password: ${PRIVATE_KEY_JWT_KEYSTORE_PASSWORD}
           type: ${PRIVATE_KEY_JWT_KEYSTORE_TYPE}
+      spring:
+        application:
+          name: gateway
+        cloud:
+          gateway:
+            routes:
+            - id: user_api
+              uri: http://onestop-user:8080/user
+              predicates:
+              - Path=/api/user/**
+              filters:
+              - RemoveRequestHeader=Cookie\,Set-Cookie
+              - StripPrefix=1
+              - TokenRelay=
+            - id: search_route
+              uri: http://onestop-search:8080/
+              predicates:
+              - Path=/onestop-search/**
+              filters:
+              - RemoveRequestHeader=Cookie\,Set-Cookie
+              - StripPrefix=1
+            - id: registry_route
+              uri: http://onestop-registry/
+              predicates:
+              - Path=/registry/**
+              filters:
+              - StripPrefix=1
+            - id: precise_client_path
+              uri: http://onestop-client/
+              predicates:
+              - Path=/onestop
+              filters:
+              - RewritePath=/onestop\,/onestop/
+            - id: client_route
+              uri: http://onestop-client/
+              predicates:
+              - Path=/onestop/**
+            - id: fallback_to_client
+              uri: http://onestop-client/
+              predicates:
+              - Path=/**
+
 .onestop-postgresql: &onestop-postgresql
   name: onestop-postgresql
   chartPath: helm/onestop-postgresql
@@ -224,6 +262,7 @@ profiles:
     deploy:
       helm:
         releases:
+          - *onestop-gateway
           - *onestop-parsalyzer
           - *onestop-registry
           - name: onestop-dev
@@ -232,6 +271,7 @@ profiles:
     deploy:
       helm:
         releases:
+          - *onestop-gateway
           - *onestop-search
           - *onestop-client
           - name: onestop-dev
@@ -249,6 +289,9 @@ profiles:
           - *onestop-gateway
           - *onestop-user
           - *onestop-postgresql
+          - *onestop-registry
+#          - *onestop-parsalyzer
+#          - *onestop-indexer
           - name: onestop-dev
             chartPath: helm/onestop-dev
             setValues:

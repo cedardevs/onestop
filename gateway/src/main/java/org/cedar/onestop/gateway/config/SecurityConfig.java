@@ -1,13 +1,13 @@
 package org.cedar.onestop.gateway.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authentication.RedirectServerAuthenticationFailureHandler;
 import org.springframework.security.web.server.authentication.RedirectServerAuthenticationSuccessHandler;
 import org.springframework.security.web.server.authentication.logout.RedirectServerLogoutSuccessHandler;
 import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
@@ -31,7 +31,8 @@ public class SecurityConfig {
   @Autowired
   ServerOAuth2AuthorizedClientRepository authorizedClients;
 
-  public static final String API_MATCHER_PATH = "/api/**";
+  @Autowired
+  GatewayConfigUtil configUtil;
 
   private LoginGovConfiguration loginGovConfiguration;
 
@@ -54,7 +55,7 @@ public class SecurityConfig {
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(final ServerHttpSecurity http) {
     // the matcher for all paths that need to be secured (require a logged-in user)
-    final ServerWebExchangeMatcher apiPathMatcher = pathMatchers(API_MATCHER_PATH);
+    final ServerWebExchangeMatcher apiPathMatcher = pathMatchers(configUtil.parseSecurePaths());
 
     return http
         .authorizeExchange().matchers(apiPathMatcher).authenticated()
@@ -64,14 +65,15 @@ public class SecurityConfig {
         .oauth2Client()
         .and()
         .oauth2Login()
-            .authenticationSuccessHandler(new RedirectServerAuthenticationSuccessHandler("/" + LoginGovConstants.LOGIN_SUCCESS_ENDPOINT))
-            .authenticationFailureHandler(new OnestopRedirectServerAuthenticationFailureHandler("/" + LoginGovConstants.LOGIN_FAILURE_ENDPOINT))
+            .authenticationSuccessHandler(new RedirectServerAuthenticationSuccessHandler(LoginGovConstants.LOGIN_SUCCESS_ENDPOINT))
+            .authenticationFailureHandler(new OnestopRedirectServerAuthenticationFailureHandler(LoginGovConstants.LOGIN_FAILURE_ENDPOINT))
         .and()
         .logout()
-            .logoutUrl("/logout")
-            .logoutSuccessHandler(logoutSuccessHandler("/onestop"))
+            .logoutUrl(LoginGovConstants.LOGOUT_ENDPOINT)
+            .logoutSuccessHandler(logoutSuccessHandler(LoginGovConstants.LOGIN_SUCCESS_ENDPOINT))
         .and()
         .build();
   }
+
 }
 
