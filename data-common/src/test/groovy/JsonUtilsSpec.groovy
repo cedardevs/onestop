@@ -64,7 +64,7 @@ class JsonUtilsSpec extends Specification {
     JsonOutput.toJson(diffList.get(0)) == JsonOutput.toJson([op: "replace", path: "/a", value: 2])
     JsonOutput.toJson(diffList.get(1)) == JsonOutput.toJson([op: "remove", path: "/b"])
     JsonOutput.toJson(diffList.get(2)) == JsonOutput.toJson([op: "replace", path: "/c/f/0", value: "I wasn't here before"])
-    JsonOutput.toJson(diffList.get(3)) == JsonOutput.toJson([op: "add", path:"/c/f/0", value: "Here am I"])
+    JsonOutput.toJson(diffList.get(3)) == JsonOutput.toJson([op: "add", path: "/c/f/0", value: "Here am I"])
     JsonOutput.toJson(diffList.get(4)) == JsonOutput.toJson([op: "add", path: "/g", value: true])
     JsonOutput.toJson(diffList.get(5)) == JsonOutput.toJson([op: "add", path: "/h", value: null])
 
@@ -97,22 +97,20 @@ class JsonUtilsSpec extends Specification {
     result == expected
 
     where:
-    situation | input | expected
-    'null input' | null | [:]
-    '{} input' | '{}' | [:]
-    'empty string input' | '' | [:]
+    situation            | input | expected
+    'null input'         | null  | [:]
+    '{} input'           | '{}'  | [:]
+    'empty string input' | ''    | [:]
   }
 
   def "toJson handles #situation as expected"() {
-    when:
-    def result = JsonUtils.toJson(input)
-
-    then:
-    result == expected
+    expect:
+    JsonUtils.toJson(input) == expected
 
     where:
-    situation | input | expected
-    'null input' | null | ""
-    'empty map input' | [:] | ""
+    situation         | input | expected
+    'null input'      | null  | null
+    'empty map input' | [:]   | '{}'
+    'empty string'    | ''    | '""'
   }
 }

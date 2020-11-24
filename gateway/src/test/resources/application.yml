@@ -1,14 +1,25 @@
-logging.level.org.springframework.security: DEBUG
-logging.level.org.springframework.web: DEBUG
+#logging.level.org.springframework.security: DEBUG
+#logging.level.org.springframework.web: DEBUG
 
 server:
   port: 9080
 
-gateway:
-  routes:
-    service1: http://localhost:9081
+logging.level.org.springframework.security: DEBUG
+logging.level.org.springframework.web: DEBUG
+logging.level.org.cedar.gateway: DEBUG
 
 spring:
+  cloud:
+    gateway:
+      routes:
+        - id: test_route
+          uri: http://localhost:9081
+          predicates:
+            - Path=/api/service1/**
+          filters:
+            - RemoveRequestHeader= Cookie,Set-Cookie #this is what the ProxyConfig used to do
+            - StripPrefix=1
+            - TokenRelay=
   application:
     name: gateway
   security:

@@ -36,15 +36,15 @@ config: |-
     replication-factor: 3
 
 ingress:
-  enabled: true
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "5m"
-    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
-  paths:
-  - "/registry(/|$)(.*)"
-  hosts:
-  - "localhost"
-  tls: []
+  enabled: false
+#  annotations:
+#    nginx.ingress.kubernetes.io/proxy-body-size: "5m"
+#    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+#  paths:
+#  - "/registry(/|$)(.*)"
+#  hosts:
+#  - "localhost"
+#  tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local

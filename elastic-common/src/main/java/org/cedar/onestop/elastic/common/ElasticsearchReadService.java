@@ -307,9 +307,7 @@ public class ElasticsearchReadService extends ElasticsearchService {
    * @return
    */
   public Map<String, Object> getSearchResults(String alias, Map<String, Object> requestBodyMap) {
-    var requestBodyJson = JsonUtils.toJson(requestBodyMap);
-
-    if(requestBodyJson == null) {
+    if(requestBodyMap == null) {
       var response = new HashMap<String, Object>();
       var error = new HashMap<String, Object>();
       error.put("status", HttpStatus.SC_BAD_REQUEST);
@@ -320,6 +318,7 @@ public class ElasticsearchReadService extends ElasticsearchService {
       return response;
     }
 
+    var requestBodyJson = JsonUtils.toJson(requestBodyMap);
     return getSearchResults(alias, requestBodyJson);
   }
 

@@ -48,51 +48,16 @@ public class JsonUtils {
 
   /**
    * Converts input Object to JSON string and returns null if object cannot produce valid JSON
-   * @param map Object to convert to JSON String
+   * @param obj Object to convert to JSON String
    * @return JSON string representation of input object or null if map cannot be interpreted as JSON
    */
   public static String toJson(Object obj) {
-    if(obj == null ) {
-      return null;
-    }
     try {
-      return mapper.writeValueAsString(obj);
+      return obj == null ? null : mapper.writeValueAsString(obj);
     }
     catch (JsonProcessingException e) {
       return null;
     }
-  }
-
-  /**
-   * Converts input Map object to JSON string and returns null if map cannot produce valid JSON
-   * @param map Map object to convert to JSON String
-   * @return JSON string representation of input map or null if map cannot be interpreted as JSON
-   */
-  public static String toJson(Map<String, Object> map) {
-    // FIXME empty map should return "{}" ie empty json
-    if(map == null || map.isEmpty()) {
-      return "";
-    }
-    try {
-      return mapper.writeValueAsString(map);
-    }
-    catch (JsonProcessingException e) {
-      return null;
-    }
-  }
-
-  /**
-   * Converts input Map object to JSON string and throws and exception if map cannot produce valid JSON
-   * @param map Map object to convert to JSON String
-   * @return JSON string representation of input map
-   * @throws JsonProcessingException if input map cannot be interpreted as JSON
-   */
-  public static String toJsonSafe(Map<String, Object> map) throws JsonProcessingException {
-    // FIXME empty map should return "{}" ie empty json
-    if(map == null || map.isEmpty()) {
-      return "";
-    }
-    return mapper.writeValueAsString(map);
   }
 
   /**

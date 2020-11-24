@@ -25,6 +25,7 @@ class SavedSearchRepositorySpec extends Specification {
   SavedSearch saveSearch
 
   def setup(){
+    onestopUserRepo.deleteAll()
     OnestopUser onestopUser = new OnestopUser("mock_user")
     savedUser = onestopUserRepo.save(onestopUser)
     saveSearch = new SavedSearch(savedUser, "1", "entryName1","{\"test\":\"test\"}", "value 1")
