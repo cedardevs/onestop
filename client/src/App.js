@@ -6,6 +6,7 @@ import RootContainer from './components/root/RootContainer'
 import GoogleAnalyticsContainer from './components/analytics/GoogleAnalyticsContainer'
 import {ROUTE, goTo} from './utils/urlUtils'
 import _ from 'lodash'
+import {ChakraProvider} from '@chakra-ui/core'
 
 // this higher-order component is kept separate from index.jsx
 // to parameterize the store and history for tests
@@ -24,18 +25,21 @@ const App = (store, history) => {
     }
     goTo(history, locationDescriptor)
   }
+
   return (
-    <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <div>
-          {isTest ? null : <GoogleAnalyticsContainer />}
-          <Switch>
-            <Route path={ROUTE.sitemap.path} exact onEnter={reload} />
-            <RootContainer />
-          </Switch>
-        </div>
-      </ConnectedRouter>
-    </Provider>
+    <ChakraProvider resetCSS={false} portalZIndex={1999}>
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <div>
+            {isTest ? null : <GoogleAnalyticsContainer />}
+            <Switch>
+              <Route path={ROUTE.sitemap.path} exact onEnter={reload} />
+              <RootContainer />
+            </Switch>
+          </div>
+        </ConnectedRouter>
+      </Provider>
+    </ChakraProvider>
   )
 }
 

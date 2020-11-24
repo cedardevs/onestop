@@ -48,6 +48,7 @@ const warningStyle = warning => {
       boxShadow: boxShadow2,
       alignItems: 'center',
       justifyContent: 'space-between',
+      zIndex: 6,
     }
   }
 }
