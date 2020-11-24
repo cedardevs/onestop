@@ -12,12 +12,11 @@ Note: in the case of providing data via `EX_GeographicBoundingBox` in ISO record
 
 ## Table of Contents
 
-- [Geometries at the Antimeridian](#geometries-at-the-antimeridian)
-  - [Examples](#examples)
-    - [Misinterpretations](#misinterpretations)
-    - [Correction with MultiPolygons (recommended)](#correction-with-multipolygons-recommended)
-    - [Correction with Shifted Longitudes](#correction-with-shifted-longitudes)
-  - [References](#references)
+- [Examples](#examples)
+  - [Misinterpretations](#misinterpretations)
+  - [Correction with MultiPolygons (recommended)](#correction-with-multipolygons-recommended)
+  - [Correction with Shifted Longitudes](#correction-with-shifted-longitudes)
+- [References](#references)
 
 ## Examples
 
