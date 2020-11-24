@@ -27,8 +27,9 @@
   {
     "path": "node_modules/http-proxy",
     "justification": "Uncontrolled Resource Consumption but Not packaged in production code."
+  },
+  {
+    "path": "node_modules/tinycolor2",
+    "justification": "A vulnerable version of jquery crept into demo but is never imported"
   }
-
-
-
 ]

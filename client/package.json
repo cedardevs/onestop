@@ -17,12 +17,12 @@
   },
   "dependencies": {
     "@chakra-ui/core": "next",
-    "framer-motion": "latest",
     "connected-react-router": "^6.5.2",
     "detect-browser": "^5.1.0",
     "esri-leaflet": "^2.2.3",
     "esri-loader": "^2.6.0",
     "file-saver": "^2.0.0",
+    "framer-motion": "latest",
     "history": "^4.7.2",
     "isomorphic-fetch": "^2.2.1",
     "leaflet": "^1.4.0",
