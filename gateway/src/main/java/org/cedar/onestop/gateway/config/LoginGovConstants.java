@@ -4,8 +4,10 @@ class LoginGovConstants {
   static final String LOGIN_GOV_REGISTRATION_ID = "login-gov";
   static final String LOGIN_GOV_CLIENT_ASSERTION_TYPE = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
   static final Long LOGIN_GOV_TOKEN_EXPIRATION_TIME = 3600000L; // 1 hour
-  static final String LOGIN_SUCCESS_ENDPOINT = "onestop";
-  static final String LOGIN_FAILURE_ENDPOINT = "onestop";
+  static final String LOGIN_SUCCESS_ENDPOINT = "/onestop/";
+  static final String LOGIN_FAILURE_ENDPOINT = "/onestop/";
+  static final String LOGOUT_ENDPOINT = "/logout";
+
 
   // AUTHORIZATION
   // https://developers.login.gov/oidc/#authorization

@@ -1,19 +1,41 @@
 ---
 logging.level.org.springframework.security: DEBUG
 logging.level.org.springframework.web: DEBUG
+logging.level.org.cedar.gateway: DEBUG
+
 
 server:
   port: 8080
 
-gateway:
-  routes:
-    user: http://localhost/user
-    onestop: http://localhost/client
-    onestop-search: http://localhost/onestop-search
-
 spring:
   application:
     name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: user_api
+          uri: http://onestop-user:8080/user
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - RemoveRequestHeader= Cookie,Set-Cookie
+            - StripPrefix=1
+            - TokenRelay=
+        - id: search_route
+          uri: http://onestop-search:8080/
+          predicates:
+            - Path=/onestop-search/**
+          filters:
+            - RemoveRequestHeader= Cookie,Set-Cookie #should we remove the cookie for all services?
+            - StripPrefix=1
+        - id: client_route
+          uri: http://onestop-client:8080/
+          predicates:
+            - Path=/onestop/**
+        - id: fallback_to_client
+          uri: http://onestop-client:8080/
+          predicates:
+            - Path=/**
   security:
     oauth2:
       client:

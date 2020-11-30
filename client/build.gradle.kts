@@ -46,26 +46,15 @@ task<Tar>("tar") {
 
 // sync files to the client container jib staging directory
 task<Sync>("sync") {
-
     val publish: Publish by project.extra
     val jibExtraDir: String by project.extra
 
     into(jibExtraDir)
 
     // untar and sync the client src
-    into("/srv/www/${publish.title}") {
+    into("/usr/share/nginx/html/onestop") {
         dependsOn("tar") // can't untar without tar
         from(tarTree(file("${buildDir}/libs/${publish.title}.tar.gz")))
-    }
-
-    // copy the apache config
-    into("/usr/local/apache2/conf") {
-        from(file("docker/httpd.conf"))
-    }
-
-    // copy the entrypoint script
-    into("/") {
-        from(file("docker/entrypoint.sh"))
     }
 }
 
@@ -82,7 +71,7 @@ jib {
 
     from {
         // base image
-        image = "httpd:latest"
+        image = "nginx:1.12-alpine"
     }
     to {
         image = publish.repository()
@@ -95,6 +84,6 @@ jib {
         creationTime = publish.created
         labels = publish.ociAnnotations()
         ports = listOf("80")
-        entrypoint = listOf("sh", "/entrypoint.sh")
+        entrypoint = listOf("nginx", "-g", "daemon off;")
     }
 }
