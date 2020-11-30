@@ -2,7 +2,7 @@
 
 ## Test cases:
 
-The ids of the test cases are indicative of what the result is intended to test.
+The ids of the test cases are indicative of what they intend to test.
 
 - 1-20: test edge cases of set logic for different types of date ranges combined with different query relations
 - p1, p2, etc: test paleo dates.
@@ -75,4 +75,4 @@ disjoint: 7, 19
 Note that no query returns 20, since that is a missing date, not a date range unbounded in both directions
 
 <hr>
-<div align="center"><a href="/onestop/developer/testing/integration-tests/bulk-data">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/testing/integration-tests">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>
