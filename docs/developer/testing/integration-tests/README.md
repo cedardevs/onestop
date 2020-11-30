@@ -1,12 +1,7 @@
 # Integration Tests Documentation
 
-***
-
 ## Table of Contents
-* [System Requirements for Integration Tests](docker-elastic-dependencies.md)
-* [Bulk Data in ES](bulk-data.md)
-* [Time Filter](time-filter.md)
-
-<hr>
-<div align="center"><a href="/onestop/developer">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/testing/integration-tests/docker-elastic-dependencies">Next</a></div>
+* [System Requirements for Integration Tests](docker-elastic-dependencies) - Recommended local settings for running integration tests.
+* [Bulk Data in ES](bulk-data) - How the search API ES integration tests handle a lot of data.
+* [Time Filter](time-filter) - Information on search API time filter integration tests.
 
