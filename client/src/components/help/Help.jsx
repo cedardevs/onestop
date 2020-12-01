@@ -84,8 +84,9 @@ export default class Help extends React.Component {
           <h1 style={styleHelpH1}>What is OneStop:</h1>
           <p>
             OneStop is a distributed, scalable, event-driven database and search
-            engine for environmental data. It is being built by CIRES researchers
-            on a grant from the NOAA National Centers for Environmental Information.
+            engine for environmental data. It is being built by CIRES
+            researchers on a grant from the NOAA National Centers for
+            Environmental Information.
           </p>
           <p>
             For additional documentation go the
@@ -93,7 +94,8 @@ export default class Help extends React.Component {
               target="_blank"
               href="https://cedardevs.github.io/onestop/"
               style={{color: '#277cb2'}}
-            >github OneStop documentation page
+            >
+              github OneStop documentation page
             </A>.
           </p>
           <h1 style={styleHelpH1}>How to use this interface:</h1>
@@ -113,15 +115,13 @@ export default class Help extends React.Component {
 
           <hr style={styleHR} />
 
-          <h2 style={styleHelpH2}>
-            Querying tips:
-          </h2>
+          <h2 style={styleHelpH2}>Querying tips:</h2>
 
           <ul>
             <li>
-              Use the filters menu on the search results page to
-              limit the results to only those that <u>intersect</u> the given
-              constraints. Once a filter has been applied, a tag will be placed above the
+              Use the filters menu on the search results page to limit the
+              results to only those that <u>intersect</u> the given constraints.
+              Once a filter has been applied, a tag will be placed above the
               search results.
             </li>
 
@@ -148,8 +148,8 @@ export default class Help extends React.Component {
               </ul>
               <p>
                 <span className={styleNote}>Note:</span> This means hyphens
-                within search terms will be treated as spaces; use double quotes to
-                search for a term with a hyphen in it.
+                within search terms will be treated as spaces; use double quotes
+                to search for a term with a hyphen in it.
               </p>
             </li>
 
