@@ -1,5 +1,7 @@
 # Release Checklist
 
+**NOTE:** For now our CU sciapps machine/url is obsolete; we are in the process of switching to AWS
+
 ## Table of Contents
 * [Code Verification](#code-verification)
 * [Test Environment](#test-environment)
