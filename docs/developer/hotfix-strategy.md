@@ -1,5 +1,10 @@
 # Hotfix Strategy
 
+## Table of Contents
+- [Syncing hotfix to Release and Master branches](#syncing-hotfix-to-release-and-master-branches)
+- [Tagging a hotfix release](#tagging-a-hotfix-release)
+- [Manually publishing with jib](#manually-publishing-with-jib)
+
 ## Syncing hotfix to Release and Master branches
 
 These instructions assume the hotfix is a single commit, with changes that should be applied to both the current release branch and master. The git commands can be altered to handle multiple commits, but this is left as an exercise to the reader. If the change should not be applied, or differs between the two branches, just manually create two separate changes for each branch instead.
@@ -48,4 +53,4 @@ Write the release notes on GitHub:
 `(export DOCKER_USER=<user>; export DOCKER_PASSWORD=<password>; ./gradlew jib)`
 
 <hr>
-<div align="center"><a href="/onestop/developer/internal-practices">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/testing/onestop-release-checklist">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

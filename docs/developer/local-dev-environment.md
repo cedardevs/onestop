@@ -1,14 +1,16 @@
 ## Setting Up Local Dev Environment
 
-### Requirements
+## Table of Contents
+* [Requirements](#requirements)
+* [Local Development](#local-development)
+* [Recommended Development Cycle using Jib for gradle and Skaffold](#recommended-development-cycle-using-jib-for-gradle-and-skaffold)
+    * [One-off Variant](#one-off-variant)
+* [Accessing Kubernetes Services](#accessing-kubernetes-services)
+* [Persistent Storage](#persistent-storage)
+* [Optional Development Cycle](#optional-development-cycle)
 
-1. Java 8+
-1. Docker
-1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/), configured to point to any...
-1. Kubernetes cluster (e.g. [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/))
-1. [skaffold](https://github.com/GoogleContainerTools/skaffold#installation)
-    - Note: if you already have docker, kubectl, and minikube installed, you only need to do the first step in the linked installation guide
-    - Note: skaffold is also available via homebrew
+### Requirements
+Reference the [Quickstart Guide](quickstart)
 
 ### Local Development 
 The system uses Skaffold and Jib as a Gradle plugin to help with continuous development and deployment of Kubernetes 
@@ -21,9 +23,9 @@ How it works:
 1. Monitors source code and automatically re-deploys when needed
 1. Steams logs from your deployed pods to your local terminal
 
-### Recommended Development Cycle using Jib for gradle and skaffold
-This means that Jib will monitors and catchs any changes made to the source code and trigger a build. 
-This saves a separate docker image and redeploy the application. 
+### Recommended Development Cycle using Jib for gradle and Skaffold
+This means that Jib will monitor and catch any changes made to the source code and trigger a build. 
+This saves a separate docker image and redeploys the application. 
 ```bash
 skaffold dev
 ```
@@ -39,8 +41,10 @@ At this point, modifying a source file in a subproject will:
 
 #### One-off Variant
 
-If you would rather not have gradle and skaffold watching for every change, you can skip the `-t` option and use
-`skaffold run` to deploy the system compiled outputs in the cluster once.
+If you would rather not have gradle and skaffold watching for every change, you can skip the `-t` option.
+* Use `skaffold dev` to build and deploy your app every time your code changes,
+* Use `skaffold run` to build and deploy your app once, similar to a CI/CD pipeline
+
 
 ### Accessing Kubernetes Services
 
@@ -51,18 +55,11 @@ When using docker desktop, you can access them at:
 http://localhost/registry       # psi-registry
 ```
 
-From there you can do things like upload some metadata to test the system:
-
-```bash
-curl -X PUT\
-     -H "Content-Type: application/xml" \
-     http://localhost/registry/metadata/collection \
-     --data-binary @registry/src/test/resources/dscovr_fc1.xml
-```
+From there you can do things like upload some metadata to test the system. Please refer to the [quickstart](quickstart) guide.
 
 ### Persistent Storage
 
-The zookeeper, kafka, and registry deployments are configured to store there data in volumes allocated by
+The zookeeper, kafka, and registry deployments are configured to store their data in volumes allocated by
 persistent volume claims. These claims remain when pods are removed and even when the deployments are deleted.
 You can see the claims and their corresponding volumes them with `kubectl`, like this:
 
@@ -92,7 +89,7 @@ Or, to delete all volume claims in the current namespace:
 ```bash
 kubectl delete pvc --all
 ```
-### optional Development Cycle
+### Optional Development Cycle
 From the root of this repo, you can run gradle task: 
 for the entire project  
 ```bash
@@ -106,3 +103,6 @@ Which will:
 1. Run the unit tests of each subproject
 1. Assemble the executable jar 
 1. Set up a watch on the source code of each subproject which will rerun compilation and tests when they change
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

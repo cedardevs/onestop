@@ -2,6 +2,15 @@
 
 Developing, updating, and testing docs...
 
+## Table of Contents
+* [Page Standards](#page-standards)
+    * [Estimated Reading Time on pages](#estimated-reading-time-on-pages)
+* [Testing The GitHub Pages Site Locally](#testing-the-github-pages-site-locally)
+    * [Getting Setup](#getting-setup)
+    * [Setup with docker](#setup-with-docker)
+    * [Errors Encountered](#errors-encountered)
+        * [Liquid Error When No One's Using Liquid To Begin With...](#liquid-error-when-no-ones-using-liquid-to-begin-with)
+
 ## Page Standards
 
 ### Estimated Reading Time on pages
@@ -73,3 +82,6 @@ The tags are visible when looking at rendered Markdown but disappear when GitHub
 
 Another tip that sounded good but didn't work (though YMMV):
 >you can add `render_with_liquid: false` in your front matter to disable Liquid entirely for a particular document
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>
