@@ -101,35 +101,70 @@ describe('The inputUtils', function(){
         month: '4',
         day: '24',
         time: '16:11:32',
-        output: {year:2000, month: 4, day:24, hour: 16, minute: 11, second: 32},
+        output: {
+          year: 2000,
+          month: 4,
+          day: 24,
+          hour: 16,
+          minute: 11,
+          second: 32,
+        },
       },
       {
         year: '2000',
         month: '4',
         day: '24',
         time: '',
-        output: {year: 2000, month: 4, day: 24, hour: null, minute: null, second: null},
+        output: {
+          year: 2000,
+          month: 4,
+          day: 24,
+          hour: null,
+          minute: null,
+          second: null,
+        },
       },
       {
         year: '2000',
         month: '4',
         day: '',
         time: '',
-        output: {year: 2000, month: 4, day: null, hour: null, minute: null, second: null},
+        output: {
+          year: 2000,
+          month: 4,
+          day: null,
+          hour: null,
+          minute: null,
+          second: null,
+        },
       },
       {
         year: '2000',
         month: '',
         day: '',
         time: '',
-        output: {year: 2000, month: null, day: null, hour: null, minute: null, second: null},
+        output: {
+          year: 2000,
+          month: null,
+          day: null,
+          hour: null,
+          minute: null,
+          second: null,
+        },
       },
       {
         year: 'notayear',
         month: '1.23',
         day: '',
         time: '',
-        output: {year: null, month: null, day: null, hour: null, minute: null, second: null},
+        output: {
+          year: null,
+          month: null,
+          day: null,
+          hour: null,
+          minute: null,
+          second: null,
+        },
       },
     ]
 
@@ -355,7 +390,7 @@ describe('The inputUtils', function(){
           year: {field: 'cannot be in the future', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
-          time: {field: '', required: false}
+          time: {field: '', required: false},
         },
       },
       {
@@ -367,7 +402,7 @@ describe('The inputUtils', function(){
           year: {field: '', required: true},
           month: {field: '', required: false},
           day: {field: '', required: false},
-          time: {field: '', required: false}
+          time: {field: '', required: false},
         },
       },
       {
@@ -379,7 +414,7 @@ describe('The inputUtils', function(){
           year: {field: '', required: true},
           month: {field: '', required: true},
           day: {field: '', required: false},
-          time: {field: '', required: false}
+          time: {field: '', required: false},
         },
       },
       {
@@ -392,7 +427,7 @@ describe('The inputUtils', function(){
           year: {field: 'cannot be in the future', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
-          time: {field: '', required: false}
+          time: {field: '', required: false},
         },
       },
       {
@@ -405,7 +440,7 @@ describe('The inputUtils', function(){
           year: {field: 'cannot be in the future', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
-          time: {field: '', required: false}
+          time: {field: '', required: false},
         },
       },
       {
@@ -418,7 +453,7 @@ describe('The inputUtils', function(){
           year: {field: '', required: false},
           month: {field: 'cannot be in the future', required: false},
           day: {field: '', required: false},
-          time: {field: '', required: false}
+          time: {field: '', required: false},
         },
       },
       {
@@ -431,7 +466,7 @@ describe('The inputUtils', function(){
           year: {field: '', required: false},
           month: {field: 'cannot be in the future', required: false},
           day: {field: '', required: false},
-          time: {field: '', required: false}
+          time: {field: '', required: false},
         },
       },
       {
@@ -444,7 +479,7 @@ describe('The inputUtils', function(){
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: 'cannot be in the future', required: false},
-          time: {field: '', required: false}
+          time: {field: '', required: false},
         },
       },
       {
@@ -456,7 +491,7 @@ describe('The inputUtils', function(){
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: 'invalid', required: false},
-          time: {field: '', required: false}
+          time: {field: '', required: false},
         },
       },
       {
@@ -468,14 +503,16 @@ describe('The inputUtils', function(){
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: 'invalid', required: false},
-          time: {field: '', required: false}
+          time: {field: '', required: false},
         },
       },
     ]
 
     testCases.forEach(c => {
       it(`for input date ${c.year}-${c.month}-${c.day}-${c.time}`, function(){
-        expect(isValidDate(c.year, c.month, c.day, c.time, c.now)).toEqual(c.output)
+        expect(isValidDate(c.year, c.month, c.day, c.time, c.now)).toEqual(
+          c.output
+        )
       })
     })
   })
@@ -510,8 +547,9 @@ describe('The inputUtils', function(){
     ]
 
     testCases.forEach(c => {
-      it(`for input range ${c.start.year}-${c.start.month}-${c.start.day}-${c.start.time} - ${c
-        .end.year}-${c.end.month}-${c.end.day}-${c.end.time}`, function(){
+      it(`for input range ${c.start.year}-${c.start.month}-${c.start.day}-${c
+        .start.time} - ${c.end.year}-${c.end.month}-${c.end.day}-${c.end
+        .time}`, function(){
         expect(isValidDateRange(c.start, c.end)).toBe(c.output) //,
       })
     })

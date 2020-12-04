@@ -27,7 +27,7 @@ export const ymdToDateMap = (year, month, day, time) => {
   const y = textToNumber(year)
   const m = textToNumber(month)
   const d = textToNumber(day)
-  const { hour, minute, second } = textToTime(time);
+  const {hour, minute, second} = textToTime(time)
   return {
     year: _.isInteger(y) ? y : null,
     month: _.isInteger(m) ? m : null,
@@ -182,7 +182,11 @@ export const isValidDate = (year, month, day, time, nowOverride) => {
   }
 
   if (!_.isEmpty(time)) {
-    if (dateMap.hour == null || dateMap.minute == null || dateMap.second == null) {
+    if (
+      dateMap.hour == null ||
+      dateMap.minute == null ||
+      dateMap.second == null
+    ) {
       errors.time.field = 'invalid'
     }
     else if (_.isEmpty(year) || _.isEmpty(month) || _.isEmpty(day)) {

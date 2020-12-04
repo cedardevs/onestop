@@ -266,21 +266,42 @@ describe('The DateTimeEffect hook', () => {
       {
         // scope variables from hook
         const [ start, end ] = hook.current
-        expect(start.asMap).toEqual({year: null, month: null, day: null, hour: null, minute: null, second: null})
+        expect(start.asMap).toEqual({
+          year: null,
+          month: null,
+          day: null,
+          hour: null,
+          minute: null,
+          second: null,
+        })
       }
 
       simulateStartUserInteraction(hook, 'year', '2020')
       {
         // scope variables from hook
         const [ start, end ] = hook.current
-        expect(start.asMap).toEqual({year: 2020, month: null, day: null, hour: null, minute: null, second: null})
+        expect(start.asMap).toEqual({
+          year: 2020,
+          month: null,
+          day: null,
+          hour: null,
+          minute: null,
+          second: null,
+        })
       }
 
       simulateStartUserInteraction(hook, 'month', '0')
       {
         // scope variables from hook
         const [ start, end ] = hook.current
-        expect(start.asMap).toEqual({year: 2020, month: 0, day: null, hour: null, minute: null, second: null})
+        expect(start.asMap).toEqual({
+          year: 2020,
+          month: 0,
+          day: null,
+          hour: null,
+          minute: null,
+          second: null,
+        })
       }
     })
   })
