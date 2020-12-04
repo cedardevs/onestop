@@ -181,6 +181,17 @@ export const isValidDate = (year, month, day, time, nowOverride) => {
     }
   }
 
+  if (!_.isEmpty(time)) {
+    if (dateMap.hour == null || dateMap.minute == null || dateMap.second == null) {
+      errors.time.field = 'invalid'
+    }
+    else if (_.isEmpty(year) || _.isEmpty(month) || _.isEmpty(day)) {
+      errors.year.required = _.isEmpty(year)
+      errors.month.required = _.isEmpty(month)
+      errors.day.required = _.isEmpty(day)
+    }
+  }
+
   return errors
 }
 
