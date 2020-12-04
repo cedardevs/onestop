@@ -100,31 +100,42 @@ describe('The inputUtils', function(){
         year: '2000',
         month: '4',
         day: '24',
-        output: {year: 2000, month: 4, day: 24},
+        time: '16:11:32',
+        output: {year:2000, month: 4, day:24, hour: 16, minute: 11, second: 32},
+      },
+      {
+        year: '2000',
+        month: '4',
+        day: '24',
+        time: '',
+        output: {year: 2000, month: 4, day: 24, hour: null, minute: null, second: null},
       },
       {
         year: '2000',
         month: '4',
         day: '',
-        output: {year: 2000, month: 4, day: null},
+        time: '',
+        output: {year: 2000, month: 4, day: null, hour: null, minute: null, second: null},
       },
       {
         year: '2000',
         month: '',
         day: '',
-        output: {year: 2000, month: null, day: null},
+        time: '',
+        output: {year: 2000, month: null, day: null, hour: null, minute: null, second: null},
       },
       {
         year: 'notayear',
         month: '1.23',
         day: '',
-        output: {year: null, month: null, day: null},
+        time: '',
+        output: {year: null, month: null, day: null, hour: null, minute: null, second: null},
       },
     ]
 
     testCases.forEach(c => {
-      it(`for input date ${c.year}-${c.month}-${c.day}`, function(){
-        expect(ymdToDateMap(c.year, c.month, c.day)).toEqual(c.output)
+      it(`for input date ${c.year}-${c.month}-${c.day}-${c.time}`, function(){
+        expect(ymdToDateMap(c.year, c.month, c.day, c.time)).toEqual(c.output)
       })
     })
   })
@@ -135,242 +146,336 @@ describe('The inputUtils', function(){
         year: '',
         month: '',
         day: '',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false},
         },
       },
       {
         year: '2000',
         month: '',
         day: '',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false},
         },
       },
       {
         year: '2000',
         month: '4',
         day: '',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false},
         },
       },
       {
         year: '2000',
         month: '4',
         day: '24',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false},
+        },
+      },
+      {
+        year: '2000',
+        month: '4',
+        day: '24',
+        time: '16:11:32',
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+          time: {field: '', required: false},
         },
       },
       {
         year: '2000',
         month: '0',
         day: '1',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false},
         },
       },
       {
         year: '2000',
         month: '',
         day: '1',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: '', required: true},
           day: {field: '', required: false},
+          time: {field: '', required: false},
+        },
+      },
+      {
+        year: '2000',
+        month: '',
+        day: '',
+        time: '01:01:01',
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: true},
+          day: {field: '', required: true},
+          time: {field: '', required: false},
         },
       },
       {
         year: 'notayear',
         month: '',
         day: '',
+        time: '',
         output: {
           year: {field: 'invalid', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false},
         },
       },
       {
         year: '1.23',
         month: '',
         day: '',
+        time: '',
         output: {
           year: {field: 'invalid', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false},
         },
       },
       {
         year: '-1',
         month: '-2',
         day: '-3',
+        time: '-4',
         output: {
           year: {field: 'must be greater than zero', required: false},
           month: {field: 'cannot be in the future', required: false},
           day: {field: 'invalid', required: false},
+          time: {field: 'invalid', required: false},
         },
       }, // cannot be in the future is a weird error there
       {
         year: '2000',
         month: 'notamonth',
         day: '',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: 'invalid', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false},
         },
       },
       {
         year: '2000',
         month: '1.23',
         day: '',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: 'invalid', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false},
         },
       },
       {
         year: '2000',
         month: '0',
         day: 'notaday',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: 'invalid', required: false},
+          time: {field: '', required: false},
         },
       },
       {
         year: '2000',
         month: '0',
         day: '1.23',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: 'invalid', required: false},
+          time: {field: '', required: false},
+        },
+      },
+      {
+        year: '2000',
+        month: '1',
+        day: '1',
+        time: 'notatime',
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+          time: {field: 'invalid', required: false},
+        },
+      },
+      {
+        year: '2000',
+        month: '1',
+        day: '1',
+        time: '11.22.33',
+        output: {
+          year: {field: '', required: false},
+          month: {field: '', required: false},
+          day: {field: '', required: false},
+          time: {field: 'invalid', required: false},
         },
       },
       {
         year: '200000000',
         month: '',
         day: '',
+        time: '',
         output: {
           year: {field: 'cannot be in the future', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false}
         },
       },
       {
         year: '',
         month: '4',
         day: '',
+        time: '',
         output: {
           year: {field: '', required: true},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false}
         },
       },
       {
         year: '',
         month: '',
         day: '1',
+        time: '',
         output: {
           year: {field: '', required: true},
           month: {field: '', required: true},
           day: {field: '', required: false},
+          time: {field: '', required: false}
         },
       },
       {
         year: '2001',
         month: '',
         day: '',
-        now: moment(ymdToDateMap('2000', '5', '5')),
+        time: '',
+        now: moment(ymdToDateMap('2000', '5', '5', '00:00:00')),
         output: {
           year: {field: 'cannot be in the future', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false}
         },
       },
       {
         year: '2001',
         month: '6',
         day: '6',
-        now: moment(ymdToDateMap('2000', '5', '5')),
+        time: '',
+        now: moment(ymdToDateMap('2000', '5', '5', '00:00:00')),
         output: {
           year: {field: 'cannot be in the future', required: false},
           month: {field: '', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false}
         },
       },
       {
         year: '2000',
         month: '6',
         day: '',
-        now: moment(ymdToDateMap('2000', '5', '5')),
+        time: '',
+        now: moment(ymdToDateMap('2000', '5', '5', '00:00:00')),
         output: {
           year: {field: '', required: false},
           month: {field: 'cannot be in the future', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false}
         },
       },
       {
         year: '2000',
         month: '6',
         day: '1',
-        now: moment(ymdToDateMap('2000', '5', '5')),
+        time: '',
+        now: moment(ymdToDateMap('2000', '5', '5', '00:00:00')),
         output: {
           year: {field: '', required: false},
           month: {field: 'cannot be in the future', required: false},
           day: {field: '', required: false},
+          time: {field: '', required: false}
         },
       },
       {
         year: '2000',
         month: '5',
         day: '6',
-        now: moment(ymdToDateMap('2000', '5', '5')),
+        time: '',
+        now: moment(ymdToDateMap('2000', '5', '5', '00:00:00')),
         output: {
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: 'cannot be in the future', required: false},
+          time: {field: '', required: false}
         },
       },
       {
         year: '2000',
         month: '1',
         day: '39',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: 'invalid', required: false},
+          time: {field: '', required: false}
         },
       },
       {
         year: '2000',
         month: '1',
         day: '-1',
+        time: '',
         output: {
           year: {field: '', required: false},
           month: {field: '', required: false},
           day: {field: 'invalid', required: false},
+          time: {field: '', required: false}
         },
       },
     ]
 
     testCases.forEach(c => {
-      it(`for input date ${c.year}-${c.month}-${c.day}`, function(){
-        expect(isValidDate(c.year, c.month, c.day, c.now)).toEqual(c.output)
+      it(`for input date ${c.year}-${c.month}-${c.day}-${c.time}`, function(){
+        expect(isValidDate(c.year, c.month, c.day, c.time, c.now)).toEqual(c.output)
       })
     })
   })
@@ -378,35 +483,35 @@ describe('The inputUtils', function(){
   describe('can check date range validity', function(){
     const testCases = [
       {
-        start: {year: null, month: null, day: null},
-        end: {year: null, month: null, day: null},
+        start: {year: null, month: null, day: null, time: null},
+        end: {year: null, month: null, day: null, time: null},
         output: true,
       },
       {
-        start: {year: 2000, month: 4, day: 24},
-        end: {year: null, month: null, day: null},
+        start: {year: 2000, month: 4, day: 24, time: '14:11:32'},
+        end: {year: null, month: null, day: null, time: null},
         output: true,
       },
       {
-        start: {year: null, month: null, day: null},
-        end: {year: 2000, month: 4, day: 24},
+        start: {year: null, month: null, day: null, time: null},
+        end: {year: 2000, month: 4, day: 24, time: '14:11:32'},
         output: true,
       },
       {
-        start: {year: 2000, month: 4, day: 24},
-        end: {year: 2000, month: 4, day: 24},
+        start: {year: 2000, month: 4, day: 24, time: '14:11:32'},
+        end: {year: 2000, month: 4, day: 24, time: '14:11:32'},
         output: true,
       },
       {
-        start: {year: 2000, month: 4, day: 24},
-        end: {year: 2000, month: 0, day: 1},
+        start: {year: 2000, month: 4, day: 24, time: '14:11:32'},
+        end: {year: 2000, month: 0, day: 1, time: '04:11:32'},
         output: false,
       },
     ]
 
     testCases.forEach(c => {
-      it(`for input range ${c.start.year}-${c.start.month}-${c.start.day} - ${c
-        .end.year}-${c.end.month}-${c.end.day}`, function(){
+      it(`for input range ${c.start.year}-${c.start.month}-${c.start.day}-${c.start.time} - ${c
+        .end.year}-${c.end.month}-${c.end.day}-${c.end.time}`, function(){
         expect(isValidDateRange(c.start, c.end)).toBe(c.output) //,
       })
     })

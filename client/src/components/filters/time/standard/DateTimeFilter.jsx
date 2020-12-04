@@ -109,6 +109,13 @@ const DateTimeFilter = ({
               'dateFilterStartDayErrors'
             )
           }
+          timeErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterStartTimeErrors'
+            )
+          }
         />
         <DateFieldset
           name="end"
@@ -132,6 +139,13 @@ const DateTimeFilter = ({
               'dateFilterRangeErrors'
             ) : (
               'dateFilterEndDayErrors'
+            )
+          }
+          timeErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterEndTimeErrors'
             )
           }
         />
@@ -194,6 +208,9 @@ const DateTimeFilter = ({
               <div id="dateFilterStartDayErrors">
                 {renderErrors(start.day.errors)}
               </div>
+              <div id="dateFilterStartTimeErrors">
+                {renderErrors(start.time.errors)}
+              </div>
               <div id="dateFilterEndYearErrors">
                 {renderErrors(end.year.errors)}
               </div>
@@ -202,6 +219,9 @@ const DateTimeFilter = ({
               </div>
               <div id="dateFilterEndDayErrors">
                 {renderErrors(end.day.errors)}
+              </div>
+              <div id="dateFilterEndTimeErrors">
+                {renderErrors(end.time.errors)}
               </div>
               <div id="dateFilterRangeErrors">
                 {!_.isEmpty(errorCumulative) ? errorCumulative : null}

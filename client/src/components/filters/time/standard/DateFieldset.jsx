@@ -7,6 +7,7 @@ import FilterFieldset from '../../FilterFieldset'
 import YearField from './YearField'
 import MonthField from './MonthField'
 import DayField from './DayField'
+import TimeField from './TimeField'
 
 const styleDate = {
   display: 'flex',
@@ -56,6 +57,7 @@ const DateFieldset = ({
   yearErrorId,
   monthErrorId,
   dayErrorId,
+  timeErrorId,
 }) => {
   const legendText = `${_.capitalize(name)} Date:`
 
@@ -95,6 +97,19 @@ const DateFieldset = ({
           errorId={dayErrorId}
           valid={date.day.valid}
           onChange={e => date.day.set(e.target.value)}
+          styleLayout={styleLayout}
+          styleLabel={styleLabel}
+          styleLabelInvalid={styleLabelInvalid}
+          styleRequiredIndicator={styleRequiredIndicator}
+          styleField={styleField}
+        />
+        <TimeField
+          name={name}
+          value={date.time.value}
+          required={date.time.required}
+          errorId={timeErrorId}
+          valid={date.time.valid}
+          onChange={e => date.time.set(e.target.value)}
           styleLayout={styleLayout}
           styleLabel={styleLabel}
           styleLabelInvalid={styleLabelInvalid}
