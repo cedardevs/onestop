@@ -135,7 +135,12 @@ export default class AppliedFilters extends React.Component {
       endYear,
       timeRelationship,
     } = this.props
-    const removeZeroTime = dateTime => dateTime.replace('T00:00:00Z', '')
+    const removeZeroTime = dateTime => {
+      // This removes '00:00:00' and 'Z' and adds a space between date and time
+      const dateParts = dateTime.split('T')
+      const strippedTime = dateParts[1].replace(/00:00:00|Z/g, '')
+      return dateParts[0] + ' ' + strippedTime
+    }
     let timeBubbles = []
     if (startDateTime) {
       timeBubbles.push(
