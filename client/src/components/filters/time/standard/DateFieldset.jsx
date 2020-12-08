@@ -12,6 +12,9 @@ import TimeField from './TimeField'
 const styleDate = {
   display: 'flex',
   flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  maxWidth: '14.727em',
 }
 
 const styleLayout = {
