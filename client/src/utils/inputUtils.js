@@ -125,7 +125,7 @@ export const isValidDate = (year, month, day, time, nowOverride) => {
   let dateMap = ymdToDateMap(year, month, day, time)
 
   const now = nowOverride ? nowOverride : moment()
-  const givenDate = moment(dateMap)
+  const givenDate = moment.utc(dateMap)
 
   if (!_.isEmpty(year)) {
     if (dateMap.year == null) {
@@ -201,8 +201,8 @@ export const isValidDate = (year, month, day, time, nowOverride) => {
 
 export const isValidDateRange = (startMap, endMap) => {
   // No entered date will create a moment for now. Make sure if no data was entered, days are correctly identified as null
-  const start = startMap.year == null ? null : moment(startMap)
-  const end = endMap.year == null ? null : moment(endMap)
+  const start = startMap.year == null ? null : moment.utc(startMap)
+  const end = endMap.year == null ? null : moment.utc(endMap)
 
   // Valid date range can be just start, just end, or a start <= end
   if (start && end) {

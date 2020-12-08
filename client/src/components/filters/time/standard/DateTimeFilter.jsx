@@ -186,8 +186,8 @@ const DateTimeFilter = ({
     <div style={styleFilterPanel}>
       <fieldset style={styleFieldsetBorder}>
         <legend id="timeFilterInstructions">
-          Provide a start date, end date, or both. Day and month are optional.
-          Future dates are not accepted.
+          Provide a start date, end date, or both. Day, month, and time are
+          optional. Future dates are not accepted.
         </legend>
         <FlexColumn
           items={[

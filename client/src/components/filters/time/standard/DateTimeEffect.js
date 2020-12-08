@@ -127,16 +127,18 @@ export function useDatetime(name, dateString){
     // update/reset fields when prop changes
     () => {
       if (dateString != null) {
-        let dateObj = moment(dateString).utc()
+        let dateObj = moment.utc(dateString)
         year.set(dateObj.year().toString())
         month.set(dateObj.month().toString())
         day.set(dateObj.date().toString())
         time.set(
           `${dateObj
             .hour()
-            .toString()}${dateObj
+            .toString()
+            .padStart(2, '0')}:${dateObj
             .minute()
-            .toString()}${dateObj.second().toString()}`
+            .toString()
+            .padStart(2, '0')}:${dateObj.second().toString().padStart(2, '0')}`
         )
       }
       else {
@@ -228,11 +230,11 @@ export function useDateRange(startDateTime, endDateTime){
     // convert (assumed valid) dates into datestrings, required to submit the filter
     let startMap = start.asMap
     let startDateString = !_.every(startMap, _.isNull)
-      ? moment(startMap).utc().startOf('day').format()
+      ? moment.utc(startMap).startOf('second').format()
       : null
     let endMap = end.asMap
     let endDateString = !_.every(endMap, _.isNull)
-      ? moment(endMap).utc().startOf('day').format()
+      ? moment.utc(endMap).startOf('second').format()
       : null
 
     return [ startDateString, endDateString ]
