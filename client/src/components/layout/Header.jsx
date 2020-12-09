@@ -2,7 +2,7 @@ import React from 'react'
 
 const styleHeader = {
   flex: '0 0 auto',
-  zIndex: 2,
+  zIndex: 5,
 }
 
 export default class Header extends React.Component {

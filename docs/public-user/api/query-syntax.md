@@ -2,26 +2,18 @@
 <div align="center"><a href="/onestop/public-user/ui/features-in-depth#query-text-box">Return to UI Guide</a> | <a href="/onestop/public-user/api/quickstart">Return to API Guide</a></div>
 <hr>
 
-**Estimated Reading Time: 10 minutes**
+**Estimated Reading Time: 20 minutes**
 
-# Query Syntax
-OneStop query text offers a variety of ways in which to specify exactly what you seek -- whether it be starting out with a high-level broad search or fine-tuning parameters with exact fields and operators. This guide can be approached in two ways: look for answers in the Common Use Cases section, or learn about each feature one at a time in the Features section.
-
-
-## Table of Contents
-
+# Search Query Syntax
+OneStop's underlying query is an Elasticsearch [query string query](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-query-string-query.html#query-string-syntax). Much of the Elasticsearch guide information is relevant to OneStop, but below you will find information on default behavior, explanations of the advanced syntax features in relation to the OneStop-specific indices, and exactly what is and is not supported.  All of the following search features can be used in combination with each other to adjust the match precision of your results. Some slack can be introduced by modifying the proximity and fuzziness match levels, or narrow down the specifics with boolean operators and explicit fields.
 
 ## Common Use Cases
-- Match An Exact Phrase
-- Search Against A Specific Field
-- Search Fields Requiring An Exact Match With An Inexact Query
-- Specify What Should And Should Not Appear In My Results
+- [Match An Exact Phrase](#boolean-operators)
+- [Search Against A Specific Field](#search-by-field-name)
+- [Search Fields Requiring An Exact Match With An Inexact Query](#search-fields-requiring-an-exact-match-with-an-inexact-query)
+- Specify What Should And Should Not Appear In My Results - [Boolean Operators](#boolean-operators), [fuzziness](#fuzziness-matching), and [proximity](#proximity-searches)
 
-
-
-## Features
-OneStop's underlying query is an Elasticsearch [query string query](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-query-string-query.html#query-string-syntax). Much of the Elasticsearch guide information is relevant to OneStop, but below you will find information on default behavior, explanations of the advanced syntax features in relation to the OneStop-specific indices, and exactly what is and is not supported.  All of the following features can be used in combination with each other to adjust the match precision of your query to your results. Introduce some slack by modifying the proximity and fuzziness match levels, or narrow down the specifics with boolean operators and explicit fields.
-
+## Supported Search Query Features
 - [Default Query Behavior](#default-query-behavior)
 - [Terms, Phrases, And Groups](#terms-phrases-and-groups)
 - [Boolean Operators](#boolean-operators)
@@ -45,7 +37,7 @@ The default behavior of the query also includes some more technical details that
 ### Terms, Phrases, And Groups
 The text in your query can be thought of as a set of terms, phrases, and/or groupings of terms and/or phrases. By default, when you submit a words-only query (without any special characters), every word is treated as an optional term that may or may not appear in a returned document. A search for `sea surface temperature` thus would be a search for `sea` or `surface` or `temperature` (see the next section on [boolean operators](#boolean-operators) for the exact explanation, however, as a minimum match threshold is actually in place).
 
-To group a set of terms, or words, into a phrase that should be treated as a single unit, enclose the words in double quotes. A search for `"sea surface temperature"` will therefore only match records that have that exact phrase (see the [proximity searches](#proximity-searches) section for more details on how to adjust this). 
+To group a set of terms, or words, into a phrase that should be treated as a single unit enclose the words in double quotes. A search for `"sea surface temperature"` will therefore only match records that have that exact phrase (see the [proximity searches](#proximity-searches) section for more details on how to adjust this). 
 
 Finally, groups are denoted by enclosing a component of your query text with parentheses. Grouping is often required for clarity when using many of the following operators, and you will see groups in most examples.
 
@@ -104,6 +96,7 @@ To search fields, simply precede your query text with the field name and a colon
 - `description:(sonar OR lidar)`
 - `doi:"10.1109/5.771073"`
 
+#### Search Fields Requiring An Exact Match With An Inexact Query
 To search multiple fields at once, just add them to your query string with parentheses around your clauses. Without any boolean operators, keep in mind that you have a default OR between field clauses.
 
 `title:(octopus) description:(sonar OR lidar)`

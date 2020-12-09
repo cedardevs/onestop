@@ -4,8 +4,8 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath "org.testcontainers:elasticsearch:1.12.5"
-    classpath "org.testcontainers:kafka:1.12.5"
+    classpath "org.testcontainers:elasticsearch:${Versions.TEST_CONTAINERS}"
+    classpath "org.testcontainers:kafka:${Versions.TEST_CONTAINERS}"
   }
 }
 

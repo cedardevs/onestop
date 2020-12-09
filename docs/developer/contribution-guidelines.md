@@ -1,5 +1,14 @@
 # Contribution Guidelines
 
+## Table of Contents
+* [Guidelines](#guidelines)
+    * [Submitting an issue](#submitting-an-issue)
+    * [Submitting a pull request](#submitting-a-pull-request)
+    * [Running locally](#running-locally)
+* [Coding guidelines](#coding-guidelines)
+    * [Code coverage](#code-coverage)
+* [Our Use of Branches](#our-use-of-branches)
+
 We’re so glad you’re thinking about contributing to the OneStop project! If you’re unsure about anything, just ask — or submit your issue or pull request anyway. The worst that can happen is we’ll politely ask you to change something. We appreciate all friendly contributions.
 
 One of our goals is to ensure a welcoming environment for all contributors to our projects.
@@ -27,7 +36,7 @@ Have questions or need help with setup? Open [an issue][github issues] via Githu
 
 ### Running locally
 
-See the [Quickstart](/docs/developer/quickstart.md) deployment overview pages.
+See the [Quickstart](quickstart) deployment overview pages.
 
 ## Coding guidelines
 
@@ -46,7 +55,7 @@ High code coverage numbers are generally good, and we would prefer that our cove
 
 ## Our Use of Branches
 
-See [our branching model guidelines](Internal-Development-Practices#git-workflow) for more information on our internal git/GitHub release workflow.
+See [our branching model guidelines](internal-practices#git-workflow) for more information on our internal git/GitHub release workflow.
 
 
 [license]: https://github.com/cires-ncei/onestop/wiki#legal
@@ -56,7 +65,5 @@ See [our branching model guidelines](Internal-Development-Practices#git-workflow
 [code coverage]: https://en.wikipedia.org/wiki/Code_coverage
 [code climate]: https://codeclimate.com/
 
-
 <hr>
-<div align="center"><a href="/onestop/developer/api-validation">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/internal-practices">Next</a></div>
-
+<div align="center"><a href="#">Top of Page</a></div>

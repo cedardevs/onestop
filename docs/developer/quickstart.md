@@ -1,45 +1,113 @@
 # Developer Guide
 
-Table of Contents
-=================
- * [Quick Start](#quick-start)
-   * [Basic System Requirements](#basic-system-requirements)
-   * [Clone](#clone)
-   * [Build](#build)
-   * [Run](#run)
-   * [Verify Endpoints](#verify-endpoints)
-   * [Upload Test Data](#upload-test-data)
- * [Quick Start (Kubernetes   Helm   Skaffold)](#quick-start-kubernetes--helm--skaffold)
-   * [System Requirements](#system-requirements)
-   * [If running client via Node](#if-running-client-via-node)
-   * [Verify Endpoints](#verify-endpoints-1)
-   * [Upload Test Data](#upload-test-data-1)
-   * [Making Helm Chart Changes](#making-helm-chart-changes)
-   * [Troubleshooting](#troubleshooting)
-   * [Clear Caches](#clear-caches)
-   * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
- * [Feature Toggles](#feature-toggles)
-   * [Keystores and Credentials](#keystores-and-credentials)
-   * [Spring Profiles](#spring-profiles)
-     * [search](#search)
-   * [Changing &amp; Overriding Profiles](#changing--overriding-profiles)
+## Table of Contents
+* [Setup](#getting-started)
+    * [Clone OneStop Code](#clone-onestop-code)
+    * [Build Results](#build-results)
+    * [Local Requirements](#local-requirements)
+        * [Java](#java)
+        * [Docker](#docker)
+        * [Elasticsearch (not highly recommended)](#elasticsearch-not-typical-path)
+        * [Node](#node)
+        * [Kubernetes](#kubernetes)
+        * [Helm](#helm)
+        * [Skaffold](#skaffold)
+        * [Example Install Steps](#recommended-install-steps)
+* [Running Locally](#running-locally)
+    * [Build](#build)
+    * [Run](#run)
+    * [Verify Endpoints](#verify-endpoints)
+        * [If running client via Node](#if-running-client-via-node)
+        * [Elasticsearch & Kibana Status](#elasticsearch--kibana-status)
+        * [Confirm Elasticsearch can be accessed securely within the cluster](#confirm-elasticsearch-can-be-accessed-securely-within-the-cluster)
+        * [Confirm Kibana can be accessed via LoadBalancer](#confirm-kibana-can-be-accessed-via-loadbalancer)
+    * [Upload Test Metadata](#upload-test-metadata)
+        *[Upload a Specific Metadata](#upload-a-specific-metadata)
+        *[Use the onestop-test-data Repository](#use-the-onestop-test-data-repository)
+    * [Making Helm Chart Changes](#making-helm-chart-changes)
+    * [Troubleshooting](#troubleshooting)
+    * [Clear Caches](#clear-caches)
+    * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
+* [Cleanup](#cleanup)
+    * [Clear Caches](#clear-caches)
+    * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
+         * [Uninstall ECK Operator](#uninstall-eck-operator)
+         * [Ensure Skaffold is not running and has no running resources](#ensure-skaffold-is-not-running-and-has-no-running-resources)
+         * [Delete persistent volume claims (PVCs)](#delete-persistent-volume-claims-pvcs)
+         * [Clean up space on disk from leftover docker containers](#clean-up-space-on-disk-from-leftover-docker-containers)
+         * [Helm cleanup](#helm-cleanup)
+        
+* [Feature Toggles](#feature-toggles)
+    * [Keystores and Credentials](#keystores-and-credentials)
+    * [Spring Profiles](#spring-profiles)
+        * [search](#search)
+    * [Changing &amp; Overriding Profiles](#changing--overriding-profiles)
 
-## Quick Start
-### Basic System Requirements
-- **Java >= 8** [JDK8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [JDK11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
-  - needed by Gradle 5 wrapper and... everything
-- **Docker** [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
+## Setup
+### Clone OneStop Code
+`git clone https://github.com/cedardevs/onestop.git`
+
+### Build Results
+When code changes are pushed via git our [CircleCI](https://app.circleci.com/pipelines/github/cedardevs/onestop) gets triggered. Depending on how circle is configured, which is based off .circleci/config.yaml file, a build happens.
+
+### Local Requirements
+
+#### Java
+  - Minimum Java 11, can get via sdk.
+#### Docker
+  - [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
   - needed to run test containers in integration tests
-- **Elasticsearch 5.6.14**
+#### Elasticsearch (not typical path)
+  - Most of us don't run a local elasticsearch for a few reasons. Primarily because the ES container deletes your data when it shuts down.
+  - Minimum 7
   - running on port 9200
-  - `brew install elasticsearch@5.6`
-  - `brew services start elasticsearch@5.6`
-- **Node**
+```
+brew install elasticsearch@5.6
+brew services start elasticsearch@5.6
+```
+#### Node
   - needed to hot-reload client via `npm` / `webpack-dev-server`
   - `brew install node`
+#### Kubernetes
+  - Our team enables Kubernetes with Docker Desktop (see: `Preferences...` > `Kubernetes` only select enable kubernetes option)
+  - We highly recommend allocating >= 6.0 GiB to Docker (see: `Preferences...` > `Advanced`)
+  - Some of us get even better performance by allocating even more memory and swap memory
+#### Helm
+  - Currently, we are using Helm 3.
+#### Skaffold
+  - Skaffold is a command line tool that facilitates continuous development for Kubernetes applications; It handles the workflow for building, pushing and deploying your application.
+  - Skaffold uses profiles that are defined in the skaffold.yaml to indicate which components will be started. If you reference that skaffold.yaml you will see a profile of psi. Here's the example:
+  - Example profile usage, notice the -p:
+  
+`skaffold dev --force=false --status-check=false -p psi`
+#### infraInstall script
+  - Run this script at the root of OneStop to install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
 
-### Clone
-`git clone https://github.com/cedardevs/onestop.git`
+`./helm/infraInstall.sh`
+  - Note that the `infraInstall.sh` could, theoretically, be accomplished by using the `kubectl` deploy method in Skaffold; however, Skaffold does not yet support multiple deploy types, and we are already leveraging the `jib` deploy method. See [this issue](https://github.com/GoogleContainerTools/skaffold/issues/2875#issuecomment-533737766) to track progress.
+  - Note: refer [Uninstall ECK Operator](#Uninstall ECK Operator) for cleaning up prior to this if you've run the infraInstall before.
+
+#### Recommended Install Steps
+```
+sdk install java
+brew install kubernetes-helm
+brew install skaffold
+
+# install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
+./helm/infraInstall.sh
+
+# run (requires having run a `./gradlew build` for the Docker images referenced in skaffold)
+skaffold dev --force=false --status-check=false
+```
+
+**WARNING**: There's a good chance the `integrationTask` gradle task will fail with less powerful machines
+due to elasticsearch being a memory hog. This can often manifest in the build reporting (e.g. - `build/reports/integrationTests/index.html`) misleading errors like this:
+
+`java.lang.NullPointerException: Cannot get property 'took' on null object`
+
+If this resource issue is getting in your way, you can always skip tasks in gradle using the `-x integrationTest` option. Of course, this is only a quick fix, and is not acceptable for validating the success of our continuous integration builds.
+
+## Running Locally
 ### Build
 <details open>
   <summary>
@@ -76,49 +144,9 @@ http://localhost:8097/onestop-search/actuator/info
 http://localhost:<port>/onestop
 ```
 
-### Upload Test Data
+#### If running client via Node
 ```
-# The default port is 30098 which is used for Kubernetes development
-./gradlew uploadTestData --apiAdminPort=8098
-```
-
-## Quick Start (Kubernetes + Helm + Skaffold)
-### System Requirements
-- [Basic System Requirements](#basic-system-requirements) listed above
-  - *excluding* local Elasticsearch installation
-- Kubernetes
-  - our team enables Kubernetes with Docker Desktop (see: `Preferences...` > `Kubernetes`)
-  - we highly recommend allocating >= 6.0 GiB to Docker (see: `Preferences...` > `Advanced`)
-  - some of us get even better performance by allocating even more memory and swap memory
-- Helm 2 (until Skaffold supports Helm 3)
-- Skaffold
-
-```
-brew install kubernetes-helm
-brew install skaffold
-
-# install tiller onto the cluster (one-time deal, unless upgrading helm)
-helm init
-
-# install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
-./k8s/infraInstall.sh
-
-# run (requires having run a `./gradlew build` for the Docker images referenced in skaffold)
-skaffold dev -f skaffold.yaml
-```
-
-**NOTE**: the `infraInstall.sh` could, theoretically, be accomplished by using the `kubectl` deploy method in Skaffold; however, Skaffold does not yet support multiple deploy types, and we are already leveraging the `jib` deploy method. See [this issue](https://github.com/GoogleContainerTools/skaffold/issues/2875#issuecomment-533737766) to track progress.
-
-**WARNING**: there's a good chance the `integrationTask` gradle task will fail with less powerful machines
-due to elasticsearch being a memory hog. This can often manifest in the build reporting (e.g. - `build/reports/integrationTests/index.html`) misleading errors like this:
-
-`java.lang.NullPointerException: Cannot get property 'took' on null object`
-
-If this resource issue is getting in your way, you can always skip tasks in gradle using the `-x integrationTest` option. Of course, this is only a quick fix, and is not acceptable for validating the success of our continuous integration builds.
-
-### If running client via Node
-```
-# 1) comment out client sections in skaffold.yaml
+# 1) comment out the client section in skaffold.yaml
 
 # 2) tell webpack-dev-server proxy to use the k8s exposed port for the search API
 cd client && npm run kub
@@ -126,8 +154,6 @@ cd client && npm run kub
 # 3) run skaffold without automatic port forwarding
 skaffold dev --port-forward=false -f skaffold.yaml
 ```
-
-### Verify Endpoints
 
 #### Elasticsearch & Kibana Status
 The ECK operator makes it easy to see the state of Elastic CRDs:
@@ -175,20 +201,36 @@ http://localhost:30000/onestop
 http://localhost/onestop
 ```
 
-### Upload Test Data
+### Upload Test Metadata
 
-We no longer store our test data next to our source code. The amount of data has grown significantly over time and is used a variety of contexts. Because of this we have created the `onesto-test-data` repo with a corresponding upload script to handle populating our system with data.
+You can either upload your own metadata via a curl to the registry application or use the script in the onestop-test-data repository to upload metadata in that repository.
 
-#### Clone the test data repo (outside of onestop)
+#### Upload a Specific Metadata
+```bash
+curl -X PUT\
+     -H "Content-Type: application/xml" \
+     http://localhost/registry/metadata/collection \
+     --data-binary @registry/src/test/resources/dscovr_fc1.xml
+```
+
+#### Use the onestop-test-data Repository
+We have some test data in its own repo, `onestop-test-data`, with a corresponding upload script to handle sending data to OneStop. Please refer to the test-data repository's README for more accurate information.
+
 ```
 git clone git@github.com:cedardevs/onestop-test-data.git
 cd onestop-test-data
 ```
 
-`Usage: ./upload.sh <application> <rootDir> <baseUrl> <username:password>`
+`./upload.sh <application> <rootDir> <baseUrl> <username:password>`
 
-For example (upload *all* test data collections and granules): 
+
+**Examples:**
+
+To load *all* collections and granules test metadata: 
 `./upload.sh IM . http://localhost/registry`
+
+To load only HazardImages metadata:  
+`./upload.sh IM HazardImages localhost/registry`
 
 If the upload is pointing to an instance of the registry API which is secured, then it will be necessary to pass user credentials.
 
@@ -210,31 +252,51 @@ At a bare minimum, Kafka and the registry should be running to successfully uplo
 ```
 
 When do I need to run this script?
-- Any time a change is made to a `requirements.yaml` file
-- Any time a change is made to one of the OneStop sub charts that needs to be deployed. Make sure to update the chart version appropriately in `helm/onestop/Chart.yaml` before running this script.
+- Anytime a change is made to a `requirements.yaml` file
+- Anytime a change is made to one of the OneStop sub charts that needs to be deployed. Make sure to update the chart version appropriately in `helm/onestop/Chart.yaml` before running this script.
 
 ### Troubleshooting
 Something is really messed up in my environment, what should I do?
 
-If you find yourself in a weird state, even after freshly cloning the project, you might try some or all of the following techniques to reset your environment before building and running:
+If you find yourself in a weird state, even after freshly cloning the project, you might try some or all of the following [cleanup](#cleanup) techniques to reset your environment before building and running:
 
-##### Clear Caches
+## Cleanup
+### Clear Caches
 ```
 ./gradlew clean
 rm -rf ~/.gradle/caches
 cd client && rm -rf node_modules/
 ```
 
-##### Resetting Kubernetes Tools
+### Common Cleanup Steps
+```
+# Clean up space on disk from leftover docker containers
+docker image prune -a --force --filter "until=12h”
 
-###### Uninstall ECK Operator
+# Clean up leftover helm charts
+rm -rf helm/onestop-dev/charts
+
+# find and remove any requirements.lock files
+find helm/ -name "*.lock"
+
+skaffold get deployments
+# remove all resources skaffold has deployed. This will throw an error if there were no releases to delete
+skaffold delete
+
+# install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
+./helm/infraInstall.sh
+```
+
+### Resetting Kubernetes Tools
+
+#### Uninstall ECK Operator
 This step simply makes removing anything ECK related from your cluster easier, including the CRDs and operator itself.
 
 ```
-./k8s/infraUninstall.sh
+./helm/infraUninstall.sh
 ```
 
-###### Ensure Skaffold is not running and has no running resources
+#### Ensure Skaffold is not running and has no running resources
 ```
 # CTRL-C out of any terminal using skafold and double check running processes with:
 ps aux | grep skaffold
@@ -243,19 +305,20 @@ ps aux | grep skaffold
 skaffold delete
 ```
 
-###### Delete persistent volume claims (PVCs)
+#### Delete persistent volume claims (PVCs)
 If you've upgraded versions or are making big breaking changes, it is generally advised to wipe-out volumes and start fresh.
+
 **WARNING**: it is advised to only do this after ECK and stateful apps have been taken down.
 ```
 kubectl delete pvc --all
 ```
 
-###### Clean up space on disk from leftover docker containers
+#### Clean up space on disk from leftover docker containers
 ```
 docker image prune -a --force
 ```
 
-###### Helm cleanup
+#### Helm cleanup
 ```
 # list releases
 helm list
@@ -343,4 +406,4 @@ spring:
 This structure essentially provides a new application-icam.yml to the application.
 
 <hr>
-<div align="center"><a href="/onestop/internal-developer">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/client">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

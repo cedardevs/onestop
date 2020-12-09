@@ -1,5 +1,25 @@
 # CAS Server Development
 
+## Table of Contents
+* [Overview](#overview)
+* [CAS WAR Overlay](#cas-war-overlay)
+    * [REST Protocol](#rest-protocol)
+    * [JSON Registry](#json-registry)
+    * [Configuring CAS Server for Development](#configuring-cas-server-for-development)
+    * [Registering Services](#registering-services)
+    * [Building Development CAS Server from Overlay](#building-development-cas-server-from-overlay)
+    * [Deploying Development CAS Server with Kubernetes and Helm](#deploying-development-cas-server-with-kubernetes-and-helm)
+        * [Publishing a Custom Docker Image](#publishing-a-custom-docker-image)
+        * [Specifying Docker Image](#specifying-docker-image)
+        * [Modify Kubernertes Deployment](#modify-kubernertes-deployment)
+        * [Modify Kubernetes Ingress](#modify-kubernetes-ingress)
+        * [Feature Toggling Security](#feature-toggling-security)
+* [Spring Boot Configuration](#spring-boot-configuration)
+    * [Dependencies](#dependencies)
+    * [Spring 'cas' Profile Configuration](#spring-cas-profile-configuration)
+    * [Spring Security Filter](#spring-security-filter)
+    * [Configuration-Based Authorization Roles](#configuration-based-authorization-roles)
+    
 ## Overview
 The Inventory Manager ([PSI](https://github.com/cedardevs/psi)) and [OneStop](https://github.com/cedardevs/onestop) projects leverage the [CAS Server](https://apereo.github.io/cas/current/index.html) for authentication.
 
@@ -43,8 +63,8 @@ dependencies {
 ### Configuring CAS Server for Development
 The CAS overlay project's `etc/cas/config/cas.properties` is an important configuration built into the CAS server image. See the example additions to this file below which configure the JSON Registry, Tomcat behind a proxy (we leverage an [NGINX Kubernetes Ingress](https://github.com/kubernetes/ingress-nginx)), and additional endpoints used for development:
 
-# psi-dev-cas is our k8s CAS service reference for internal traffic
 ```
+## psi-dev-cas is our k8s CAS service reference for internal traffic
 cas.server.name=http://psi-dev-cas:8080
 cas.server.prefix=${cas.server.name}/cas
 
@@ -56,9 +76,8 @@ logging.config: file:/etc/cas/config/log4j2.xml
 cas.serviceRegistry.json.location=file:/etc/cas/services
 
 # Deploy Behind a Proxy
-```
 # https://apereo.github.io/2018/11/16/cas60-gettingstarted-overlay/#deploy-behind-a-proxy
-```
+
 server.port=8080
 server.ssl.enabled=false
 cas.server.tomcat.http.enabled=false
@@ -312,3 +331,6 @@ authorization:
 In other words, if my service redirects to CAS and I login with valid credentials as "casuser", then the `UserDetailsService` set by the `CasAuthenticationProvider` will be what determines how to associate this username to granted authorities. It will see that "casuser" is associated to `ROLE_ADMIN` and the security filter will complete and redirect to my original request.
 
 On the other hand, if I were to login with a different user that is _not_ listed under the "ADMIN" role, then I may get past the CAS login screen and redirect back to the service, but I will be given an "Access Denied" exception and still not be allowed to see the response of my original request.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

@@ -1,33 +1,60 @@
-# Release Prep Checklist
+# Release Checklist
+
+**NOTE:** For now our CU sciapps machine/url is obsolete; we are in the process of switching to AWS
+
+## Table of Contents
+* [Code Verification](#code-verification)
+* [Test Environment](#test-environment)
+* [Test Environment Verification](#test-environment-verification)
+* [Browser Support and CSS](#browser-support-and-css)
+* [UI Behavior](#ui-behavior)
+* [Live Docs Pages](#live-docs-pages)
+* [Data we should identify or add to the test set:](#data-we-should-identify-or-add-to-the-test-set)
 
 ## Code Verification
 
-- [ ] Update libraries to latest, if possible
-- [ ] Ensure that included images are compressed in the git repo
-
-### Automated Code Verification
-
-- [ ] Run `retire -p` on client code [Retire JS](https://retirejs.github.io/retire.js/)
-  - This runs as part of the client-checks job in every circle build.
-- [ ] Run `gradlew dependencyCheckAnalyze --info` to do OWASP security check
-  - This runs nightly on the master branch.
-
-## Documentation
-
-- [ ] Review documentation, and that it is still in sync with the project.
-- [ ] Confirm supported browser docs: [Supported Browsers](https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers)
-- [ ] Update the "as of" date in the supported browser docs.
+1. Update libraries to latest, if possible
+1. Run the full build (including tests): `./gradlew build`
+1. Run `gradlew dependencyCheckAnalyze --info` to do OWASP security check
+     - This runs nightly on the master branch.
+1. Ensure that included images are compressed in the git repo
+1. Run `retire -p` on client code [Retire JS](https://retirejs.github.io/retire.js/). This runs as part of the client-checks job in every circle build.
 
 ## Test Environment
 
-1. Deploy the latest master branch code to https://sciapps.colorado.edu (private deployOS playbook)
+1. Deploy the latest master branch code to sciapps demo site https://sciapps.colorado.edu (private deployOS playbook)
 1. Reset the indices and reload the data. (private loadOnestop playbook)
     - [ ] Check the logs, to make sure when ETL runs, 100% of the collections and granules make it into the search index (or document that those that do not are not expected to)
-
-## Manual UI Checks
-
-During all UI checks, make sure to keep an eye on the dev console for unexpected errors or warnings.
-
+1. Upload the test collection with a test id
+    - From project root:
+    ```bash
+    curl -X PUT \
+         -H "Content-Type: application/xml" \
+         -u "credentials:redacted" \
+         https://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000 \
+         --data-binary @registry/src/test/resources/dscovr_fc1.xml
+    ```
+   
+## Test Environment Verification
+1. Retrieve the raw input
+    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
+    - ensure it returns a 200, and the `content` attribute contains the xml file you just uploaded
+1. Retrieve the parsed metadata
+    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000/parsed`
+    - ensure it returns a 200, and that the `discovery` and `analysis` attributes contain values
+1. Delete the record
+    - `curl -X DELETE http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
+1. Retrieve the raw input
+    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
+    - ensure it returns a 404, with an error object explaining that it has been deleted
+1. Retrieve the parsed metadata
+    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000/parsed`
+    - ensure it returns a 404, with an error object explaining that no parsed information exists 
+1. Resurrect the record
+    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000/resurrection`
+1. Retrieve the raw and parsed metadata again
+    - ensure they behave like they initially did, above    
+    
 ## Browser Support and CSS
 
 - Verify CSS works across supported browsers:
@@ -257,17 +284,11 @@ Follow these steps to confirm that core behavior is working as expected, as well
 - [ ] All the collections loaded are listed. Paste one into the address bar to load the details page, to ensure the sitemap links are formatted correctly.
 - [ ] https://sciapps.colorado.edu/onestop-search/openapi.yaml (should auto-download or display the yaml file, depending on browser)
 
-### TBD
 
 #### Data we should identify or add to the test set:
 
 - No time range (in normal fields)
 - Hazard image granules (it is in the test set, add it to the checklist)
 
-#### Future Features?
-
-- Paleo date filtering
-- Time filtering with different relationships
-
 <hr>
-<div align="center"><a href="/onestop/developer/hotfix-strategy">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/testing/integration-tests">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

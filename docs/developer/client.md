@@ -1,6 +1,12 @@
 # OneStop Browser Client
 
-## Getting started
+## Table of Contents
+* [Getting started](#getting-started)
+* [Format JavaScript+CSS with Prettier](#format-javascriptcss-with-prettier)
+* [Dry-run with `--list-different`](#dry-run-with---list-different)
+* [Overwrite files with fixed formatting](#overwrite-files-with-fixed-formatting)
+
+## Getting Started
 This guide focuses on running the OneStop browser client via `Node` for local development. To run the search API (used by the client) and other components, refer to the more expansive [Developer Guide](developer).
 
 1. Clone this repo
@@ -29,4 +35,4 @@ Ideally, these should be done before every commit by the developer.
 `npm run format`
 
 <hr>
-<div align="center"><a href="/onestop/developer/quickstart">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/developer/api-validation">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>
