@@ -1,21 +1,14 @@
 # Developer Guide
 
 ## Table of Contents
-* [Setup](#getting-started)
+* [Install Requirements](#install-requirements)
     * [Clone OneStop Code](#clone-onestop-code)
-    * [Build Results](#build-results)
-    * [Local Requirements](#local-requirements)
-        * [Java](#java)
-        * [Docker](#docker)
-        * [Elasticsearch (not highly recommended)](#elasticsearch-not-typical-path)
-        * [Node](#node)
-        * [Kubernetes](#kubernetes)
-        * [Helm](#helm)
-        * [Skaffold](#skaffold)
-        * [Example Install Steps](#recommended-install-steps)
+    * [Minimum Local Requirements](#minimum-local-requirements)
+    * [Optional Installations](#optional-installations)
 * [Running Locally](#running-locally)
     * [Build](#build)
-    * [Run](#run)
+    * [Run Locally with Skaffold](#run-locally-with-skaffold)
+    * [Run Locally the Hard Way](#run-locally-the-hard-way)
     * [Verify Endpoints](#verify-endpoints)
         * [If running client via Node](#if-running-client-via-node)
         * [Elasticsearch & Kibana Status](#elasticsearch--kibana-status)
@@ -43,87 +36,76 @@
         * [search](#search)
     * [Changing &amp; Overriding Profiles](#changing--overriding-profiles)
 
-## Setup
+## Install Requirements
 ### Clone OneStop Code
 `git clone https://github.com/cedardevs/onestop.git`
 
-### Build Results
-When code changes are pushed via git our [CircleCI](https://app.circleci.com/pipelines/github/cedardevs/onestop) gets triggered. Depending on how circle is configured, which is based off .circleci/config.yaml file, a build happens.
+### Minimum Local Requirements
+ * **[Java](https://www.java.com/)** - Minimum Java 11, can get via sdkman.
+    * Currently 13 does NOT work.
+ * **[Docker](https://www.docker.com/)** - [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
+    - Needed to run test containers in the integration tests
+ * **[Node](https://nodejs.org/)** Latest version
+    - Needed to hot-reload the client via `npm` / `webpack-dev-server`
+ * **[Kubernetes](https://kubernetes.io/)**
+    - Our team enables Kubernetes with Docker Desktop (see: `Preferences...` > `Kubernetes` only select enable kubernetes option)
+    - We highly recommend allocating >= 6.0 GiB to Docker (see: `Preferences...` > `Advanced`)
+    - Some of us get even better performance by allocating even more memory and swap memory
+ * **[Helm](https://helm.sh/)** 3
+ * **[Skaffold](https://skaffold.dev/)**
+ * **infraInstall script**
+    - Run this script at the root of OneStop to install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
 
-### Local Requirements
-
-#### Java
-  - Minimum Java 11, can get via sdk.
-#### Docker
-  - [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
-  - needed to run test containers in integration tests
-#### Elasticsearch (not typical path)
-  - Most of us don't run a local elasticsearch for a few reasons. Primarily because the ES container deletes your data when it shuts down.
-  - Minimum 7
-  - running on port 9200
-```
-brew install elasticsearch@5.6
-brew services start elasticsearch@5.6
-```
-#### Node
-  - needed to hot-reload client via `npm` / `webpack-dev-server`
-  - `brew install node`
-#### Kubernetes
-  - Our team enables Kubernetes with Docker Desktop (see: `Preferences...` > `Kubernetes` only select enable kubernetes option)
-  - We highly recommend allocating >= 6.0 GiB to Docker (see: `Preferences...` > `Advanced`)
-  - Some of us get even better performance by allocating even more memory and swap memory
-#### Helm
-  - Currently, we are using Helm 3.
-#### Skaffold
-  - Skaffold is a command line tool that facilitates continuous development for Kubernetes applications; It handles the workflow for building, pushing and deploying your application.
-  - Skaffold uses profiles that are defined in the skaffold.yaml to indicate which components will be started. If you reference that skaffold.yaml you will see a profile of psi. Here's the example:
-  - Example profile usage, notice the -p:
-  
-`skaffold dev --force=false --status-check=false -p psi`
-#### infraInstall script
-  - Run this script at the root of OneStop to install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
-
-`./helm/infraInstall.sh`
-  - Note that the `infraInstall.sh` could, theoretically, be accomplished by using the `kubectl` deploy method in Skaffold; however, Skaffold does not yet support multiple deploy types, and we are already leveraging the `jib` deploy method. See [this issue](https://github.com/GoogleContainerTools/skaffold/issues/2875#issuecomment-533737766) to track progress.
-  - Note: refer [Uninstall ECK Operator](#Uninstall ECK Operator) for cleaning up prior to this if you've run the infraInstall before.
-
-#### Recommended Install Steps
+        `./helm/infraInstall.sh`
+    - Note: The `infraInstall.sh` could, theoretically, be accomplished by using the `kubectl` deploy method in Skaffold; however, Skaffold does not yet support multiple deploy types, and we are already leveraging the `jib` deploy method. See [this issue](https://github.com/GoogleContainerTools/skaffold/issues/2875#issuecomment-533737766) to track progress.
+    - Note: refer [Uninstall ECK Operator](#Uninstall ECK Operator) for cleaning up prior to this if you've run the infraInstall before.
+#### Example Install Steps
 ```
 sdk install java
 brew install kubernetes-helm
 brew install skaffold
+brew install node
 
 # install Elasticsearch Operator (gives your k8s cluster knowledge of Elastic CRDs) *note below*
 ./helm/infraInstall.sh
-
-# run (requires having run a `./gradlew build` for the Docker images referenced in skaffold)
-skaffold dev --force=false --status-check=false
 ```
 
-**WARNING**: There's a good chance the `integrationTask` gradle task will fail with less powerful machines
-due to elasticsearch being a memory hog. This can often manifest in the build reporting (e.g. - `build/reports/integrationTests/index.html`) misleading errors like this:
-
-`java.lang.NullPointerException: Cannot get property 'took' on null object`
-
-If this resource issue is getting in your way, you can always skip tasks in gradle using the `-x integrationTest` option. Of course, this is only a quick fix, and is not acceptable for validating the success of our continuous integration builds.
+### Optional Installations
+ * **ElasticSearch**
+    - Minimum 7, can use brew to install.
+    - Most of us don't run a local elasticsearch for a few reasons. Primarily because the ES container deletes your data when it shuts down.
+    - running on port 9200
+    ```
+    # Once installed ES can be started this way. Make sure you change the version number as needed to match yours.
+    brew services start elasticsearch@5.6
+    ```
+    
 
 ## Running Locally
 ### Build
-<details open>
-  <summary>
-    <code>./gradlew build</code>
-  </summary>
-  <br/>
-  <p>For individual components:</p>
-<pre>
+Build the whole project with `./gradlew build` or for individual components:
+
+```
 ./gradlew search:build
 ./gradlew client:build
 ./gradlew registry:build
 ./gradlew parsalyzer:build
-</pre>
-</details>
+```
 
-### Run
+### Run Locally with Skaffold
+Requires having run `./gradlew build` for the Docker images referenced in skaffold
+ 
+`skaffold dev --force=false --status-check=false`
+
+Skaffold is a command line tool that facilitates continuous development for Kubernetes applications; It handles the workflow for building, pushing and deploying your application. It uses profiles that are defined in the skaffold.yaml to indicate which components will be started. If you reference that skaffold.yaml you will see a profile of psi. Here's the example:
+
+Example profile usage, notice the -p:
+        
+`skaffold dev --force=false --status-check=false -p psi`
+
+### Run Locally the Hard Way
+You can manually startup each app. as needed (this is what skaffold does and it does the timing and keeping everything running when they fall over).
+
 ```
 ./gradlew registry:bootrun
 ./gradlew parsalyzer:run
