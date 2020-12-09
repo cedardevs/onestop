@@ -2,7 +2,7 @@ import React, {useEffect} from 'react'
 import {withRouter} from 'react-router'
 import {getBasePath} from '../../../utils/urlUtils'
 
-const LoginGovRedirectComponent = props => {
+const LoginRedirectComponent = props => {
   const {loginEndpoint, configIsFetching} = props
   useEffect(() => {
     if (loginEndpoint != null) {
@@ -19,4 +19,4 @@ const LoginGovRedirectComponent = props => {
   )
 }
 
-export default withRouter(LoginGovRedirectComponent)
+export default withRouter(LoginRedirectComponent)

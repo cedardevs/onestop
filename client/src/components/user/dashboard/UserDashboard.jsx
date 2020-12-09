@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import Meta from '../../helmet/Meta'
 import UserSavedSearchList from '../savedSearches/UserSavedSearchList'
 import {boxShadow} from '../../../style/defaultStyles'
-import LoginGovRedirectComponent from '../login/LoginGovRedirectComponent'
+import LoginRedirectComponent from '../login/LoginRedirectComponent'
 import PropTypes from 'prop-types'
 
 const styleCenterContent = {
@@ -65,7 +65,7 @@ const UserDashboard = props => {
     user && user.isAuthenticated ? (
       {dashboardElement}
     ) : (
-      <LoginGovRedirectComponent
+      <LoginRedirectComponent
         loginEndpoint={loginEndpoint}
         configIsFetching={configIsFetching}
         user={user}
