@@ -2,7 +2,37 @@ apiVersion: v1
 entries:
   onestop:
   - apiVersion: v1
-    created: "2020-07-31T08:15:07.618196-06:00"
+    created: "2020-11-16T21:47:55.880758-07:00"
+    dependencies:
+    - name: onestop-client
+      repository: file://../onestop-client
+      version: 3.0.0-beta
+    - name: onestop-indexer
+      repository: file://../onestop-indexer
+      version: 3.0.0-beta
+    - name: onestop-parsalyzer
+      repository: file://../onestop-parsalyzer
+      version: 3.0.0-beta
+    - name: onestop-registry
+      repository: file://../onestop-registry
+      version: 3.0.0-beta
+    - name: onestop-search
+      repository: file://../onestop-search
+      version: 3.0.0-beta
+    - name: onestop-user
+      repository: file://../onestop-user
+      version: 3.0.0-beta
+    - name: onestop-gateway
+      repository: file://../onestop-gateway
+      version: 3.0.0-beta
+    description: A Helm chart for the OneStop system
+    digest: 50790fee0bb27afc36c308421028cf1bfd6344e8d4118c3267acdeedcbeed7dc
+    name: onestop
+    urls:
+    - onestop-3.0.0-beta.tgz
+    version: 3.0.0-beta
+  - apiVersion: v1
+    created: "2020-11-16T21:47:55.877722-07:00"
     dependencies:
     - name: onestop-client
       repository: file://../onestop-client
@@ -30,7 +60,7 @@ entries:
     version: 3.0.0-alpha
   - apiVersion: v1
     appVersion: 2.4.0
-    created: "2020-07-31T08:15:07.614474-06:00"
+    created: "2020-11-16T21:47:55.873623-07:00"
     dependencies:
     - condition: cp.enabled,global.cp.enabled
       name: cp-helm-charts
@@ -63,7 +93,7 @@ entries:
     version: 0.4.0
   - apiVersion: v1
     appVersion: 2.4.0
-    created: "2020-07-31T08:15:07.606836-06:00"
+    created: "2020-11-16T21:47:55.865665-07:00"
     dependencies:
     - condition: cp.enabled,global.cp.enabled
       name: cp-helm-charts
@@ -96,7 +126,7 @@ entries:
     version: 0.3.0
   - apiVersion: v1
     appVersion: 2.2.0
-    created: "2020-07-31T08:15:07.598044-06:00"
+    created: "2020-11-16T21:47:55.856415-07:00"
     dependencies:
     - condition: elasticsearch.enabled,global.elasticsearch.enabled
       name: elasticsearch
@@ -119,7 +149,7 @@ entries:
     version: 0.2.1
   - apiVersion: v1
     appVersion: 2.2.0
-    created: "2020-07-31T08:15:07.594834-06:00"
+    created: "2020-11-16T21:47:55.852646-07:00"
     dependencies:
     - condition: elasticsearch.enabled,global.elasticsearch.enabled
       name: elasticsearch
@@ -142,7 +172,7 @@ entries:
     version: 0.2.0
   - apiVersion: v1
     appVersion: 2.1.0
-    created: "2020-07-31T08:15:07.592406-06:00"
+    created: "2020-11-16T21:47:55.849227-07:00"
     dependencies:
     - name: api-admin
       repository: file://../api-admin
@@ -162,4 +192,4 @@ entries:
     urls:
     - onestop-0.1.0.tgz
     version: 0.1.0
-generated: "2020-07-31T08:15:07.586822-06:00"
+generated: "2020-11-16T21:47:55.843843-07:00"

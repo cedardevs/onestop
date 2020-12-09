@@ -10,12 +10,14 @@ export const initialState = Immutable({
   featured: [],
   featuresEnabled: [],
   headerDropdownMenuFeatureAvailable: false,
+  isFetching: true, //defaults to true because we fetch right away
 })
 
 export const config = (state = initialState, action) => {
   switch (action.type) {
     case SET_CONFIG:
-      return Immutable.merge(state, action.config)
+      const updatedState = Immutable.merge(state, {isFetching: false})
+      return Immutable.merge(updatedState, action.config)
 
     case CLEAR_CONFIG:
       return initialState
