@@ -83,16 +83,9 @@ brew install node
 
 ## Running Locally
 ### Build
-Build the whole project with `./gradlew build` or for individual components:
+Build the whole project with `./gradlew build`
 
-```
-./gradlew search:build
-./gradlew client:build
-./gradlew registry:build
-./gradlew parsalyzer:build
-```
-
-### Run Locally with Skaffold
+### Locally with Skaffold
 Run the skaffold `dev` configuration:
 
 `skaffold dev --force=false --status-check=false`
@@ -103,7 +96,15 @@ Example profile usage, notice the -p:
         
 `skaffold dev --force=false --status-check=false -p psi`
 
-### Run Locally the Hard Way
+### Locally the Hard Way
+If you want to build each component:
+```
+./gradlew search:build
+./gradlew client:build
+./gradlew registry:build
+./gradlew parsalyzer:build
+```
+
 You can manually startup each app. as needed (this is what skaffold does and it does the timing and keeping everything running when they fall over).
 
 ```
@@ -113,7 +114,7 @@ You can manually startup each app. as needed (this is what skaffold does and it 
 cd client && npm run dev
 ```
 
-### Verify Endpoints
+#### Verify Endpoints
 ```
 # Elasticsearch
 http://localhost:9200/
