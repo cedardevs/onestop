@@ -93,8 +93,8 @@ Build the whole project with `./gradlew build` or for individual components:
 ```
 
 ### Run Locally with Skaffold
-Requires having run `./gradlew build` for the Docker images referenced in skaffold
- 
+Run the skaffold `dev` configuration:
+
 `skaffold dev --force=false --status-check=false`
 
 Skaffold is a command line tool that facilitates continuous development for Kubernetes applications; It handles the workflow for building, pushing and deploying your application. It uses profiles that are defined in the skaffold.yaml to indicate which components will be started. If you reference that skaffold.yaml you will see a profile of psi. Here's the example:
