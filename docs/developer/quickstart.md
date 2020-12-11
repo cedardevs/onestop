@@ -4,25 +4,22 @@
 * [Install Requirements](#install-requirements)
     * [Clone OneStop Code](#clone-onestop-code)
     * [Minimum Local Requirements](#minimum-local-requirements)
+        * [Example Install Steps](#example-install-steps)
     * [Optional Installations](#optional-installations)
-* [Running Locally](#running-locally)
-    * [Build](#build)
-    * [Run Locally with Skaffold](#run-locally-with-skaffold)
-    * [Run Locally the Hard Way](#run-locally-the-hard-way)
+* [Running Locally with Skaffold (Recommended way)](#running-locally-with-skaffold-recommended)
+* [Running Locally Hard Way](#running-locally-the-hard-way)
     * [Verify Endpoints](#verify-endpoints)
-        * [If running client via Node](#if-running-client-via-node)
-        * [Elasticsearch & Kibana Status](#elasticsearch--kibana-status)
-        * [Confirm Elasticsearch can be accessed securely within the cluster](#confirm-elasticsearch-can-be-accessed-securely-within-the-cluster)
-        * [Confirm Kibana can be accessed via LoadBalancer](#confirm-kibana-can-be-accessed-via-loadbalancer)
-    * [Upload Test Metadata](#upload-test-metadata)
-        *[Upload a Specific Metadata](#upload-a-specific-metadata)
-        *[Use the onestop-test-data Repository](#use-the-onestop-test-data-repository)
-    * [Making Helm Chart Changes](#making-helm-chart-changes)
-    * [Troubleshooting](#troubleshooting)
-    * [Clear Caches](#clear-caches)
-    * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
+    * [If running client via Node](#if-running-client-via-node)
+    * [Elasticsearch & Kibana Status](#elasticsearch--kibana-status)
+    * [Confirm Kibana can be accessed via LoadBalancer](#confirm-kibana-can-be-accessed-via-loadbalancer)
+* [Troubleshooting](#troubleshooting)
+* [Making Helm Chart Changes](#making-helm-chart-changes) 
+* [Upload Test Metadata](#upload-test-metadata)
+    * [Upload a Specific Metadata](#upload-a-specific-metadata)
+    * [Use the onestop-test-data Repository](#use-the-onestop-test-data-repository)
 * [Cleanup](#cleanup)
     * [Clear Caches](#clear-caches)
+    * [Common Cleanup Steps](#common-cleanup-steps)
     * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
          * [Uninstall ECK Operator](#uninstall-eck-operator)
          * [Ensure Skaffold is not running and has no running resources](#ensure-skaffold-is-not-running-and-has-no-running-resources)
@@ -33,8 +30,6 @@
 * [Feature Toggles](#feature-toggles)
     * [Keystores and Credentials](#keystores-and-credentials)
     * [Spring Profiles](#spring-profiles)
-        * [search](#search)
-    * [Changing &amp; Overriding Profiles](#changing--overriding-profiles)
 
 ## Install Requirements
 ### Clone OneStop Code
@@ -80,13 +75,10 @@ brew install node
     brew services start elasticsearch@5.6
     ```
     
-
-## Running Locally
-### Build
+## Running Locally with Skaffold (Recommended)
 Build the whole project with `./gradlew build`
 
-### Locally with Skaffold
-Run the skaffold `dev` configuration:
+Run using the skaffold `dev` configuration:
 
 `skaffold dev --force=false --status-check=false`
 
@@ -96,7 +88,7 @@ Example profile usage, notice the -p:
         
 `skaffold dev --force=false --status-check=false -p psi`
 
-### Locally the Hard Way
+## Running Locally the Hard Way
 If you want to build each component:
 ```
 ./gradlew search:build
@@ -114,7 +106,7 @@ You can manually startup each app. as needed (this is what skaffold does and it 
 cd client && npm run dev
 ```
 
-#### Verify Endpoints
+### Verify Endpoints
 ```
 # Elasticsearch
 http://localhost:9200/
@@ -127,7 +119,7 @@ http://localhost:8097/onestop-search/actuator/info
 http://localhost:<port>/onestop
 ```
 
-#### If running client via Node
+### If running client via Node
 ```
 # 1) comment out the client section in skaffold.yaml
 
@@ -138,7 +130,7 @@ cd client && npm run kub
 skaffold dev --port-forward=false -f skaffold.yaml
 ```
 
-#### Elasticsearch & Kibana Status
+### Elasticsearch & Kibana Status
 The ECK operator makes it easy to see the state of Elastic CRDs:
 ```
 # a`HEALTH` status of "green" indicates it's ready
@@ -146,7 +138,7 @@ kubectl get elasticsearch
 kubectl get kibana
 ```
 
-#### Confirm Elasticsearch can be accessed securely within the cluster
+### Confirm Elasticsearch can be accessed securely within the cluster
 ```
 # exec into the net-tools utility pod to try to hit elasticsearch within the cluster
 kubectl exec -it $(kubectl get pods -l app=net-tools --no-headers -o custom-columns=":metadata.name") -- /bin/bash
@@ -155,7 +147,7 @@ kubectl exec -it $(kubectl get pods -l app=net-tools --no-headers -o custom-colu
 curl --user "elastic:foamcat" -k https://onestop-es-http:9200/
 ```
 
-#### Confirm Kibana can be accessed via LoadBalancer
+### Confirm Kibana can be accessed via LoadBalancer
 ```
 $ kubectl get svc -l common.k8s.elastic.co/type=kibana
 NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
@@ -184,11 +176,24 @@ http://localhost:30000/onestop
 http://localhost/onestop
 ```
 
-### Upload Test Metadata
+## Troubleshooting
+If you find yourself in a weird state, even after freshly cloning the project, you might try some or all of the [cleanup](#cleanup) techniques to reset your environment before building and running again.
+
+## Making Helm Chart Changes
+```
+# Helm helper script for updates
+./helm/updateRelease.sh
+```
+
+When do I need to run this script?
+- Anytime a change is made to a `requirements.yaml` file
+- Anytime a change is made to one of the OneStop sub charts that needs to be deployed. Make sure to update the chart version appropriately in `helm/onestop/Chart.yaml` before running this script.
+
+## Upload Test Metadata
 
 You can either upload your own metadata via a curl to the registry application or use the script in the onestop-test-data repository to upload metadata in that repository.
 
-#### Upload a Specific Metadata
+### Upload a Specific Metadata
 ```bash
 curl -X PUT\
      -H "Content-Type: application/xml" \
@@ -196,7 +201,7 @@ curl -X PUT\
      --data-binary @registry/src/test/resources/dscovr_fc1.xml
 ```
 
-#### Use the onestop-test-data Repository
+### Use the onestop-test-data Repository
 We have some test data in its own repo, `onestop-test-data`, with a corresponding upload script to handle sending data to OneStop. Please refer to the test-data repository's README for more accurate information.
 
 ```
@@ -227,21 +232,6 @@ In order for data to be published and flow all the way to the OneStop UI, the fo
 ```
 
 At a bare minimum, Kafka and the registry should be running to successfully upload.
-
-### Making Helm Chart Changes
-```
-# Helm helper script for updates
-./helm/updateRelease.sh
-```
-
-When do I need to run this script?
-- Anytime a change is made to a `requirements.yaml` file
-- Anytime a change is made to one of the OneStop sub charts that needs to be deployed. Make sure to update the chart version appropriately in `helm/onestop/Chart.yaml` before running this script.
-
-### Troubleshooting
-Something is really messed up in my environment, what should I do?
-
-If you find yourself in a weird state, even after freshly cloning the project, you might try some or all of the following [cleanup](#cleanup) techniques to reset your environment before building and running:
 
 ## Cleanup
 ### Clear Caches
@@ -355,14 +345,12 @@ OneStop APIs are written in Spring. Currently, the APIs utilize different authen
 
 OneStop leverages these profiles to enact certain feature toggles. The features available to the different APIs are documented below.
 
-##### search
-
 | Spring Profile | Feature Description | Default Value |
 | --- | --- | --- |
 | <pre><code>login-gov</code></pre> | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `onestop-user` service with a PostgreSQL backing DB. | *false* |
 | <pre><code>sitemap</code></pre> | Enables a the `/sitemap.xml` and `/sitemap/{id}.txt` public endpoints. | *false* |
 
-### Changing & Overriding Profiles
+#### Changing & Overriding Profiles
 
 If you are deploying without Kubernetes, Helm, and Skaffold, and running an API directly with `./gradlew search:bootrun` (for example), then you can toggle active profiles with an environment variable:
 
