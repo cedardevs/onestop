@@ -1,8 +1,9 @@
 # Developer Documentation
 
 ## Table of Contents
-- [Contribution Guidelines](contribution-guidelines)
 - [Quickstart](quickstart) - The simplified expected developer setup steps
+- [Quick Tips](quick-tips) - Brief common tips.
+- [Additional Developer Info] - More indepth information on the full stack.
 - [Local Developer Environment](local-dev-environment) - More detail on local developer setup
 - [Internal Practices](internal-practices) - Internal team norms
 - [Architectural Background](architectural-background) - OneStop architecture layout
@@ -14,3 +15,4 @@
 - [Local GH Pages](local-gh-pages) - Documentation guidelines
 - [Publishing Tags](publishing-tags) - Git tagging plus CI related info
 - [OneStop Client](https://cedardevs.github.io/onestop-clients/) - OneStop client documentation
+- [Contribution Guidelines](contribution-guidelines)

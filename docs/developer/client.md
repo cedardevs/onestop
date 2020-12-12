@@ -15,7 +15,7 @@ This guide focuses on running the OneStop browser client via `Node` for local de
     - installs dependencies into `./node_modules`
 1. Run one of the following:
   - `npm run dev` (search API on port 8097)
-  - `npm run kub` (search API on port 30097)
+  - `npm run kub` (search API on port 30097) Run the client with webpack instead of using the client that gets deployed with jib.
   - Starts up `webpack-dev-server` hosting a hot-reload version of the client
   - Starts mocha in watch mode to automatically run the tests as you work
 1. Go to http://localhost:9090/onestop/
