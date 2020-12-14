@@ -1,5 +1,5 @@
 # Quick Tips
-Additional info in the [Indepth Developer](in-depth-developer) docs.
+Try to keep this for brief commonly used tips. Please put more lengthy uncommon information in [additional OneStop information](additional-developer-info) docs.
 
 ## Skaffold Command Options
 * If skaffold pods aren't starting up, and you see an error such as `because first deploy failed: 3/10 deployment(s) failed`:
