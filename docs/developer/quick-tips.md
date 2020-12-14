@@ -24,3 +24,6 @@ If you run `kubectl get pods` and the `Status` column has `CrashLoopBackOff` run
 When do I need to run OneStop `./helm/updateRelease.sh` script?
 - When `requirements.yaml` file is modified.
 - When a OneStop subchart is modified that needs to be deployed. **NOTE:** Make sure to update the chart version appropriately in `helm/onestop/Chart.yaml` **before** running this script.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>
