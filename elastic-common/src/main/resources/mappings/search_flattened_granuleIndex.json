@@ -362,6 +362,13 @@
             }
           }
         }
+      },
+      "filesize": {
+        "type": "long",
+        "index": false
+      },
+      "fileFormat": {
+        "type": "keyword"
       }
     }
   }

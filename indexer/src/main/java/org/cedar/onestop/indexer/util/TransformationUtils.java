@@ -233,7 +233,9 @@ public class TransformationUtils {
     .withCiteAsStatements(discovery.getCiteAsStatements())
     .withChecksums(prepareChecksums(record))
     .withInternalParentIdentifier(prepareInternalParentIdentifier(record))
-    .withFilename(prepareFilename(record));
+    .withFilename(prepareFilename(record))
+    .withFilesize(prepareFilesize(record))
+    .withFileFormat(prepareFileFormat(record));
     prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
     prepareGcmdKeyword(message, discovery);
 
@@ -272,7 +274,9 @@ public class TransformationUtils {
     .withInternalParentIdentifier(prepareInternalParentIdentifier(record))
     .withFilename(prepareFilename(record))
     .withLargerWorks(convertReferences(discovery.getLargerWorks()))
-    .withCrossReferences(convertReferences(discovery.getCrossReferences()));
+    .withCrossReferences(convertReferences(discovery.getCrossReferences()))
+    .withFilesize(prepareFilesize(record))
+    .withFileFormat(prepareFileFormat(record));
     prepareDates(message, analysis != null ? analysis.getTemporalBounding():null);
     prepareResponsibleParties(message, record);
     prepareGcmdKeyword(message, discovery);
@@ -350,6 +354,13 @@ public class TransformationUtils {
         .orElse(null);
   }
 
+  static String prepareFileFormat(ParsedRecord record) {
+    return Optional.ofNullable(record)
+        .map(ParsedRecord::getFileInformation)
+        .map(FileInformation::getFormat)
+        .orElse(null);
+  }
+
   static List<Checksum> prepareChecksums(ParsedRecord record) {
     return Optional.ofNullable(record)
         .map(ParsedRecord::getFileInformation)
@@ -362,6 +373,13 @@ public class TransformationUtils {
           .withValue(checksumObject.getValue());
         })
         .collect(Collectors.toList());
+  }
+
+  static Long prepareFilesize(ParsedRecord record) {
+    return Optional.ofNullable(record)
+        .map(ParsedRecord::getFileInformation)
+        .map(FileInformation::getSize)
+        .orElse(null);
   }
 
   ////////////////////////////////

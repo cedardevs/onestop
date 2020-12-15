@@ -725,6 +725,20 @@ class SearchRequestParserServiceTest extends Specification {
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
+        ],
+        fileFormats: [
+            terms: [
+                field: 'fileFormat',
+                size: Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        linkAccessTypes: [
+            terms: [
+                field: 'links.linkFunction',
+                size: Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
         ]
     ]
 
@@ -824,6 +838,20 @@ class SearchRequestParserServiceTest extends Specification {
             terms       : [
                 field: 'gcmdTemporalResolution',
                 size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        fileFormats: [
+            terms: [
+                field: 'fileFormat',
+                size: Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        linkAccessTypes: [
+            terms: [
+                field: 'links.linkFunction',
+                size: Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ]
