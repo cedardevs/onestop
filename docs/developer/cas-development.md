@@ -1,3 +1,4 @@
+**Estimated Reading Time: 25 minutes**
 # CAS Server Development
 
 ## Table of Contents

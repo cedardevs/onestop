@@ -1,3 +1,4 @@
+**Estimated Reading Time: 5 minutes**
 # JSON schema validation
 
 Incoming requests to the Search API get validated against a [JSON Schema](http://json-schema.org/) file.  This file gets generated from `build/resources/open.yaml` by using the file at `search/src/main/groovy/org/cedar/onestop/api/search/controller/JsonValidator.groovy`.

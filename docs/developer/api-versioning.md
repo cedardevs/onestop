@@ -1,3 +1,4 @@
+**Estimated Reading Time: 5 minutes**
 # Guidelines to developers regarding API versioning.
 
 For now, the API endpoints are also available under `/v1`.

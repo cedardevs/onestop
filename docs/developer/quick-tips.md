@@ -1,3 +1,4 @@
+**Estimated Reading Time: 5 minutes**
 # Quick Tips
 Try to keep this for brief commonly used tips. Please put more lengthy uncommon information in [additional OneStop information](additional-developer-info) docs.
 

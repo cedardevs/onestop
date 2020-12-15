@@ -1,3 +1,4 @@
+**Estimated Reading Time: 25 minutes**
 # Additional Developer Information
 ## Table of Contents
 * [Skaffold](#skaffold)

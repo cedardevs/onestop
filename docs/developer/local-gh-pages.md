@@ -1,3 +1,4 @@
+**Estimated Reading Time: 10 minutes**
 # Documentation
 
 Developing, updating, and testing docs...

@@ -1,3 +1,4 @@
+**Estimated Reading Time: 5 minutes**
 ## Architectural Background
 
 This project embraces the event-streaming paradigm reflected in the [Kappa Architecture](http://www.kappa-architecture.com):

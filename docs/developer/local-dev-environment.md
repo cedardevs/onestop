@@ -1,3 +1,4 @@
+**Estimated Reading Time: 10 minutes**
 ## Setting Up Local Dev Environment
 
 ## Table of Contents

@@ -1,3 +1,4 @@
+**Estimated Reading Time: 5 minutes**
 # Developer Guide
 ## Table of Contents
 * [Setup](#setup)

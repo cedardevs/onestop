@@ -1,3 +1,4 @@
+**Estimated Reading Time: 10 minutes**
 # Contribution Guidelines
 
 ## Table of Contents

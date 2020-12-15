@@ -1,3 +1,4 @@
+**Estimated Reading Time: 10 minutes**
 # Internal Practices
 
 ## Table of Contents

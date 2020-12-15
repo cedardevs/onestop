@@ -1,3 +1,4 @@
+**Estimated Reading Time: 20 minutes**
 # Publishing Tags and Releases
 Table of Contents
 =================

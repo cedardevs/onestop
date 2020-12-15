@@ -1,3 +1,4 @@
+**Estimated Reading Time: 5 minutes**
 # Hotfix Strategy
 
 ## Table of Contents

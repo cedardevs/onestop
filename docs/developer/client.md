@@ -1,3 +1,4 @@
+**Estimated Reading Time: 5 minutes**
 # OneStop Browser Client
 
 ## Table of Contents
