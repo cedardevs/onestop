@@ -1,7 +1,7 @@
 apiVersion: v1
 description: A Helm chart for the OneStop system
 name: onestop
-version: "3.0.0-alpha"
+version: "3.0.0-beta"
 
 dependencies:
   - name: cp-helm-charts
@@ -28,7 +28,11 @@ dependencies:
     version: ~0.1.0
     repository: file://../onestop-search
     conditions: onestop-search.enabled,global.onestop-search.enabled
-  # - name: onestop-user
-  #   version: ~0.1.0
-  #   repository: file://../onestop-user
-  #   conditions: onestop-user.enabled,global.onestop-user.enabled
+  - name: onestop-user
+    version: ~0.1.0
+    repository: file://../onestop-user
+    conditions: onestop-user.enabled,global.onestop-user.enabled
+  - name: onestop-gateway
+    version: ~0.1.0
+    repository: file://../onestop-gateway
+    conditions: onestop-gateway.enabled,global.onestop-gateway.enabled

@@ -9,8 +9,9 @@ onestop-registry:
 onestop-search:
   enabled: true
 onestop-user:
-  enabled: false # TODO - enable when implemented
-
+  enabled: true
+onestop-gateway:
+  enabled: true
 ###############################################################################
 # Nginx Ingress
 ###############################################################################

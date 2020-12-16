@@ -7,9 +7,9 @@ dependencies:
   version: 2.8.14
 - name: metrics-server
   repository: https://kubernetes-charts.storage.googleapis.com
-  version: 2.11.2
+  version: 2.11.3
 - name: cas
   repository: file://../cas
   version: 0.1.0
-digest: sha256:d0dd1ad7b39734dbf269182b926fbaa827959be7a157c6709d8a9001bc94f055
-generated: "2020-10-05T11:02:56.210689-06:00"
+digest: sha256:530a4116575326d405c943f847c98ce406d35ae440499ca79690fe8a8b0982ed
+generated: "2020-11-16T20:30:36.680902-07:00"
