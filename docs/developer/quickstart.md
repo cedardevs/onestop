@@ -14,10 +14,10 @@
 ### Minimum Local Requirements
  * **[Java](https://www.java.com/)** - Minimum Java 11 (13 not supported), can get via sdkman. 
  * **[Docker](https://www.docker.com/)** - [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
+    * **Recommended Settings:** `Docker Desktop > Preferences > Resources`, 6.0 GB Memory and 40 GB disk usage.
  * **[Node](https://nodejs.org/)**
  * **[Kubernetes](https://kubernetes.io/)**
     * **Enable Kubernetes:** `Docker Desktop > Preferences > Kubernetes`. **Note**: Only select the `Enable Kubernetes` option.
-    * **Recommended Settings:** `Docker Desktop > Preferences > Resources`, 6.0 GB Memory and 40 GB disk usage. 
  * **[Helm](https://helm.sh/)** 3
  * **[Skaffold](https://skaffold.dev/)**
  * **infraInstall script**
