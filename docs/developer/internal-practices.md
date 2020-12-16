@@ -15,7 +15,7 @@
   * temporary branches are used to work on features, until they are reviewed as a pull request and deleted.
 
 ### Versioning: 
-  * Ideally the current version indicates what release you're working toward, not what version you are on. [citation stackoverflow issue](https://softwareengineering.stackexchange.com/questions/166215/when-do-you-change-your-major-minor-patch-version-number). This is to avoid new artifacts from colliding with older artifacts built prior to the last tag.
+  * Ideally the current version indicates what release you're working toward, not what version you are on; [citation stackoverflow issue](https://softwareengineering.stackexchange.com/questions/166215/when-do-you-change-your-major-minor-patch-version-number). This is to avoid new artifacts from colliding with older artifacts built prior to the last tag.
   * To accomplish that, it is important we always increment the minor version after a release. 
   * It's difficult to know if the next release will be a new major version. Theoretically incrementing the major version should be done when the breaking change is introduced (e.g. dropping support for ES5). 
   * But that may not always happen when it should. For that reason it is important we review changes prior to cutting a release and determine if should increment the major version. It is important we avoid merging breaking changes to an existing release branch. 

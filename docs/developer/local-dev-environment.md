@@ -5,7 +5,6 @@
 * [Requirements](#requirements)
 * [Local Development](#local-development)
 * [Recommended Development Cycle using Jib for gradle and Skaffold](#recommended-development-cycle-using-jib-for-gradle-and-skaffold)
-    * [One-off Variant](#one-off-variant)
 * [Accessing Kubernetes Services](#accessing-kubernetes-services)
 * [Persistent Storage](#persistent-storage)
 * [Optional Development Cycle](#optional-development-cycle)
@@ -56,7 +55,7 @@ When using docker desktop, you can access them at:
 http://localhost/registry       # psi-registry
 ```
 
-From there you can do things like upload some metadata to test the system. Please refer to the [quickstart](quickstart) guide.
+From there you can do things like [upload test metadata](additional-developer-info#Upload Test Metadata) to test the system. Please refer to the [quickstart](quickstart) guide too.
 
 ## Persistent Storage
 

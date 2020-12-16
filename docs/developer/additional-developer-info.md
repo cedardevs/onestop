@@ -3,15 +3,10 @@
 ## Table of Contents
 * [Skaffold](#skaffold)
 * [infraInstall script](#infrainstall-script)
-* [Cleanup/Troubleshooting](#cleanup)
+* [Cleanup/Troubleshooting](#cleanup-troubleshooting-steps)
     * [Clear Caches](#clear-caches)
     * [Common Cleanup Steps](#common-cleanup-steps)
     * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
-         * [Uninstall ECK Operator](#uninstall-eck-operator)
-         * [Ensure Skaffold is not running and has no running resources](#ensure-skaffold-is-not-running-and-has-no-running-resources)
-         * [Delete persistent volume claims (PVCs)](#delete-persistent-volume-claims-pvcs)
-         * [Clean up space on disk from leftover docker containers](#clean-up-space-on-disk-from-leftover-docker-containers)
-         * [Helm cleanup](#helm-cleanup)
 * [Upload Test Metadata](#upload-test-metadata)
     * [Upload a Specific Metadata](#upload-a-specific-metadata)
     * [Use the onestop-test-data Repository](#use-the-onestop-test-data-repository)
@@ -21,9 +16,9 @@
 * [Gradle](#gradle)
     * [Verify Endpoints](#verify-endpoints)
 * [Running ElasticSearch Locally](#running-elasticsearch-locally)
-* [Elasticsearch & Kibana Status](#elasticsearch--kibana-status)
-* [Confirm Elasticsearch can be accessed securely within the cluster](#confirm-elasticsearch-can-be-accessed-securely-within-the-cluster)
-* [Confirm Kibana can be accessed via LoadBalancer](#confirm-kibana-can-be-accessed-via-loadbalancer)
+    * [Elasticsearch & Kibana Status](#elasticsearch--kibana-status)
+    * [Confirm Elasticsearch can be accessed securely within the cluster](#confirm-elasticsearch-can-be-accessed-securely-within-the-cluster)
+    * [Confirm Kibana can be accessed via LoadBalancer](#confirm-kibana-can-be-accessed-via-loadbalancer)
 
 ## Skaffold
 
@@ -134,6 +129,7 @@ helm dependency update
 
 You can either upload your own metadata via a curl to the registry application or use the script in the onestop-test-data repository to upload metadata in that repository.
 
+If you are an NCEI employee contact someone on the OneStop agile team for more information on what test systems are in place for you to interact with.
 ### Upload a Specific Metadata
 ```bash
 curl -X PUT\
@@ -182,7 +178,7 @@ Turning on security-related features (which use request signing) requires settin
 
 If you are using Kubernetes, the keystores and their credentials need to be converted into Kubernetes secrets.
 
-Due to the sensitive nature of keystores, this is a one-time setup which is done separately by those who have the proper access. If you have access and need to work on features related to security or wish to toggle on security during development, see our [private instructions](https://github.com/cedardevs/help/wiki/local-secure-development-setup).
+Due to the sensitive nature of keystores, this is a one-time setup which is done separately by those who have the proper access. If you have access and need to work on features related to security or wish to toggle on security during development, contact someone on the agile developer team. More information to come.
 
 #### For open source developers who wish to contribute to security-toggled features:
 Due to the static nature of registering public certificates to identity providers like ICAM and login.gov, we have opted not to publish public "debug" keystores and associated metadata with these providers, as those registrations could be clobbered by a variety of unknown, unrelated developers.
@@ -198,8 +194,8 @@ OneStop leverages these profiles to enact certain feature toggles. The features 
 
 | Spring Profile | Feature Description | Default Value |
 | --- | --- | --- |
-| <pre><code>login-gov</code></pre> | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `onestop-user` service with a PostgreSQL backing DB. | *false* |
-| <pre><code>sitemap</code></pre> | Enables a the `/sitemap.xml` and `/sitemap/{id}.txt` public endpoints. | *false* |
+| login-gov | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `onestop-user` service with a PostgreSQL backing DB. | *false* |
+| sitemap | Enables a the `/sitemap.xml` and `/sitemap/{id}.txt` public endpoints. | *false* |
 
 #### Changing & Overriding Profiles
 
@@ -269,7 +265,7 @@ http://localhost:<port>/onestop
     brew services start elasticsearch@5.6
     ```
 
-## Elasticsearch & Kibana Status
+### Elasticsearch & Kibana Status
 The ECK operator makes it easy to see the state of Elastic CRDs:
 ```
 # a`HEALTH` status of "green" indicates it's ready
@@ -277,7 +273,7 @@ kubectl get elasticsearch
 kubectl get kibana
 ```
 
-## Confirm Elasticsearch can be accessed securely within the cluster
+### Confirm Elasticsearch can be accessed securely within the cluster
 ```
 # exec into the net-tools utility pod to try to hit elasticsearch within the cluster
 kubectl exec -it $(kubectl get pods -l app=net-tools --no-headers -o custom-columns=":metadata.name") -- /bin/bash
@@ -286,7 +282,7 @@ kubectl exec -it $(kubectl get pods -l app=net-tools --no-headers -o custom-colu
 curl --user "elastic:foamcat" -k https://onestop-es-http:9200/
 ```
 
-## Confirm Kibana can be accessed via LoadBalancer
+### Confirm Kibana can be accessed via LoadBalancer
 ```
 $ kubectl get svc -l common.k8s.elastic.co/type=kibana
 NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE

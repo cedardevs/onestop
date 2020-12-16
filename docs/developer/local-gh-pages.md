@@ -1,16 +1,16 @@
 **Estimated Reading Time: 10 minutes**
-# Documentation
+# GitHub Pages
 
 Developing, updating, and testing docs...
 
 ## Table of Contents
 * [Page Standards](#page-standards)
     * [Estimated Reading Time on pages](#estimated-reading-time-on-pages)
+    * [Generate a TOC](#generate-a-toc)
 * [Testing The GitHub Pages Site Locally](#testing-the-github-pages-site-locally)
     * [Getting Setup](#getting-setup)
     * [Setup with docker](#setup-with-docker)
     * [Errors Encountered](#errors-encountered)
-        * [Liquid Error When No One's Using Liquid To Begin With...](#liquid-error-when-no-ones-using-liquid-to-begin-with)
 
 ## Page Standards
 
@@ -25,7 +25,7 @@ Once you've finished an article, it might be helpful to add a table of contents 
 ### Getting Setup
 The first course of action you should take to build and test the pages locally is to follow the [official Github documentation](https://help.github.com/en/github/working-with-github-pages/testing-your-github-pages-site-locally-with-jekyll).
 
-Midway through the documentation, it is recommended to use RVM or Homebrew to manage your Ruby installation. If you are using a Mac, the Homebrew route is the way to go -- and will likely require you to modify your PATH (Macs have Ruby pre-installed but it's probably an older version than you want).
+**NOTE:** Midway through the documentation, it is recommended to use RVM or Homebrew to manage your Ruby installation. If you are using a Mac, the Homebrew route is the way to go -- and will likely require you to modify your PATH (Macs have Ruby pre-installed but it's probably an older version than you want). This is because you will probably hit an error that the mac OS installed Ruby doesn't have write permission.
 
 Now you should be able to build and run the site locally, avoiding the need for painful troubleshooting on GitHub (error messages are rare, you've been warned!).
 ```bash
