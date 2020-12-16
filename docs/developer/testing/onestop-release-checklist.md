@@ -1,3 +1,4 @@
+**Estimated Reading Time: 25 minutes**
 # Release Checklist
 
 **NOTE:** For now our CU sciapps machine/url is obsolete; we are in the process of switching to AWS
@@ -285,7 +286,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
 - [ ] https://sciapps.colorado.edu/onestop-search/openapi.yaml (should auto-download or display the yaml file, depending on browser)
 
 
-#### Data we should identify or add to the test set:
+## Data we should identify or add to the test set:
 
 - No time range (in normal fields)
 - Hazard image granules (it is in the test set, add it to the checklist)

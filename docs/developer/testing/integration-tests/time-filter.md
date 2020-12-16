@@ -1,4 +1,9 @@
+**Estimated Reading Time: 10 minutes**
 # Search API Time Filter Integration Tests
+
+## Table of Contents
+* [Test cases](#test-cases)
+* [Structure of query and results chosen](#structure-of-query-and-results-chosen)
 
 ## Test cases:
 
