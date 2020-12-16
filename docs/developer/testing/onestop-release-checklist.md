@@ -19,7 +19,7 @@
 1. Run `gradlew dependencyCheckAnalyze --info` to do OWASP security check
      - This runs nightly on the master branch.
 1. Ensure that included images are compressed in the git repo
-1. Run `retire -p` on client code [Retire JS](https://retirejs.github.io/retire.js/). This runs as part of the client-checks job in every circle build.
+1. Run `retire -p` on the web-client code [Retire JS](https://retirejs.github.io/retire.js/). This runs as part of the client-checks job in every circle build.
 
 ## Test Environment
 

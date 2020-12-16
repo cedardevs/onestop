@@ -7,7 +7,7 @@
 - [Local Developer Environment](local-dev-environment) - More detail on local developer setup
 - [Internal Practices](internal-practices) - Internal team norms
 - [Architectural Background](architectural-background) - OneStop architecture layout
-- [Client](client) - Guide on doing work on the client
+- [Web-Client](client) - Guide on doing work on the web-client
 - [API Validation](api-validation) - Search API validation
 - [API Versioning](api-versioning) - Search API versioning
 - [CAS Development](cas-development) - CAS Authentication

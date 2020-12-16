@@ -1,5 +1,5 @@
 **Estimated Reading Time: 5 minutes**
-# OneStop Browser Client
+# OneStop Web Client
 
 ## Table of Contents
 * [Getting started](#getting-started)
@@ -8,7 +8,7 @@
 * [Overwrite files with fixed formatting](#overwrite-files-with-fixed-formatting)
 
 ## Getting Started
-This guide focuses on running the OneStop browser client via `Node` for local development. To run the search API (used by the client) and other components, refer to the more expansive [Developer Guide](developer).
+This guide focuses on running the OneStop browser web-client via `Node` for local development. To run the search API (used by the client) and other components, refer to the more expansive [Developer Guide](developer).
 
 1. Clone this repo
 1. `cd client`
