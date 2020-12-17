@@ -72,23 +72,24 @@ export function useDatetime(name, dateString){
   const year = useDatePart()
   const month = useDatePart()
   const day = useDatePart()
+  const time = useDatePart()
   // validity of the date, computed from validity of each field. used to display validity for the fieldset.
   const [ valid, setValid ] = useState(true)
   // computed representation of the date in a map format
-  const [ asMap, setAsMap ] = useState(ymdToDateMap('', '', ''))
+  const [ asMap, setAsMap ] = useState(ymdToDateMap('', '', '', ''))
 
   useEffect(
     // keep valid in sync
     () => {
-      setValid(year.valid && month.valid && day.valid)
+      setValid(year.valid && month.valid && day.valid && time.valid)
     },
-    [ year.valid, month.valid, day.valid ]
+    [ year.valid, month.valid, day.valid, time.valid ]
   )
 
   useEffect(
     // validate the date whenever any component of it changes, and update other calculated fields
     () => {
-      const errors = isValidDate(year.value, month.value, day.value)
+      const errors = isValidDate(year.value, month.value, day.value, time.value)
 
       year.errors.setField(
         _.isEmpty(errors.year.field) ? '' : `${name} year ${errors.year.field}.`
@@ -104,10 +105,14 @@ export function useDatetime(name, dateString){
         _.isEmpty(errors.day.field) ? '' : `${name} day ${errors.day.field}.`
       )
       day.setRequired(errors.day.required)
+      time.errors.setField(
+        _.isEmpty(errors.time.field) ? '' : `${name} time ${errors.time.field}.`
+      )
+      time.setRequired(errors.time.required)
 
-      setAsMap(ymdToDateMap(year.value, month.value, day.value))
+      setAsMap(ymdToDateMap(year.value, month.value, day.value, time.value))
     },
-    [ year.value, month.value, day.value ]
+    [ year.value, month.value, day.value, time.value ]
   )
 
   const clear = () => {
@@ -115,16 +120,26 @@ export function useDatetime(name, dateString){
     year.set('')
     month.set('')
     day.set('')
+    time.set('')
   }
 
   useEffect(
     // update/reset fields when prop changes
     () => {
       if (dateString != null) {
-        let dateObj = moment(dateString).utc()
+        let dateObj = moment.utc(dateString)
         year.set(dateObj.year().toString())
         month.set(dateObj.month().toString())
         day.set(dateObj.date().toString())
+        time.set(
+          `${dateObj
+            .hour()
+            .toString()
+            .padStart(2, '0')}:${dateObj
+            .minute()
+            .toString()
+            .padStart(2, '0')}:${dateObj.second().toString().padStart(2, '0')}`
+        )
       }
       else {
         clear()
@@ -138,6 +153,7 @@ export function useDatetime(name, dateString){
       year: year,
       month: month,
       day: day,
+      time: time,
       valid: valid,
       asMap: asMap,
       clear: clear,
@@ -159,11 +175,13 @@ export function useDatetime(name, dateString){
           year.errors.clearFieldsetValidity()
           month.errors.clearFieldsetValidity()
           day.errors.clearFieldsetValidity()
+          time.errors.clearFieldsetValidity()
         }
         else {
           year.errors.setInvalidRange()
           month.errors.setInvalidRange()
           day.errors.setInvalidRange()
+          time.errors.setInvalidRange()
         }
       },
     },
@@ -212,11 +230,11 @@ export function useDateRange(startDateTime, endDateTime){
     // convert (assumed valid) dates into datestrings, required to submit the filter
     let startMap = start.asMap
     let startDateString = !_.every(startMap, _.isNull)
-      ? moment(startMap).utc().startOf('day').format()
+      ? moment.utc(startMap).startOf('second').format()
       : null
     let endMap = end.asMap
     let endDateString = !_.every(endMap, _.isNull)
-      ? moment(endMap).utc().startOf('day').format()
+      ? moment.utc(endMap).startOf('second').format()
       : null
 
     return [ startDateString, endDateString ]

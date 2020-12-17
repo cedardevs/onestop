@@ -220,10 +220,14 @@ export const buildTimePeriodString = (
   endDate,
   endYear
 ) => {
-  const start = beginDate
-    ? beginDate.split('T')[0]
+  const startParts = beginDate ? beginDate.split('T') : undefined
+  const start = startParts
+    ? `${startParts[0]} ${startParts[1].slice(0, -1)}`
     : beginYear ? beginYear : undefined
-  const end = endDate ? endDate.split('T')[0] : endYear ? endYear : 'Present'
+  const endParts = endDate ? endDate.split('T') : undefined
+  const end = endParts
+    ? `${endParts[0]} ${endParts[1].slice(0, -1)}`
+    : endYear ? endYear : 'Present'
 
   return start && end ? `${start} to ${end}` : 'Not Provided'
 }

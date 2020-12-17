@@ -7,10 +7,14 @@ import FilterFieldset from '../../FilterFieldset'
 import YearField from './YearField'
 import MonthField from './MonthField'
 import DayField from './DayField'
+import TimeField from './TimeField'
 
 const styleDate = {
   display: 'flex',
   flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  maxWidth: '14.727em',
 }
 
 const styleLayout = {
@@ -56,6 +60,7 @@ const DateFieldset = ({
   yearErrorId,
   monthErrorId,
   dayErrorId,
+  timeErrorId,
 }) => {
   const legendText = `${_.capitalize(name)} Date:`
 
@@ -101,7 +106,21 @@ const DateFieldset = ({
           styleRequiredIndicator={styleRequiredIndicator}
           styleField={styleField}
         />
-
+      </div>
+      <div style={styleDate}>
+        <TimeField
+          name={name}
+          value={date.time.value}
+          required={date.time.required}
+          errorId={timeErrorId}
+          valid={date.time.valid}
+          onChange={e => date.time.set(e.target.value)}
+          styleLayout={styleLayout}
+          styleLabel={styleLabel}
+          styleLabelInvalid={styleLabelInvalid}
+          styleRequiredIndicator={styleRequiredIndicator}
+          styleField={styleField}
+        />
         <div style={styleLayout}>
           <span />
           <span aria-hidden="true" style={styleInputValidity(date.valid)}>

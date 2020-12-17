@@ -10,8 +10,13 @@ import {
 import history from '../../../history'
 
 const mapStateToProps = state => {
+  const loginEndpoint = state.config.auth
+    ? state.config.auth.loginEndpoint
+    : null
   return {
     user: state.user,
+    loginEndpoint: loginEndpoint,
+    configIsFetching: state.config.isFetching,
     savedSearches: state.user.searches,
     savedSearchEndpoint: state.config.auth
       ? state.config.auth.savedSearchEndpoint
@@ -21,11 +26,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    deleteSearch: (savedSearchEndpoint, id) => {
-      dispatch(deleteSearch(savedSearchEndpoint, id))
+    deleteSearch: id => {
+      dispatch(deleteSearch(ownProps.savedSearchEndpoint, id))
     },
-    getSavedSearches: savedSearchEndpoint => {
-      dispatch(getSavedSearches(savedSearchEndpoint))
+    getSavedSearches: () => {
+      dispatch(getSavedSearches(ownProps.savedSearchEndpoint))
     },
     navigateToSearch: filter => {
       dispatch(submitCollectionSearchWithFilter(history, filter))
