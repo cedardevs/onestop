@@ -36,15 +36,38 @@ class SearchRequestParserService {
   Map createFacetAggregations() {
     def aggregations = [:]
     facetNameMappings.each { name, field ->
-      def agg = [
-          terms: [
-              field: field,
-              size : Integer.MAX_VALUE,
-              order: [
-                  "_term": "asc"
-              ]
-          ]
-      ]
+      def nestedParts = field.split(/\./, 2)
+      def agg
+      if (nestedParts.length == 1) {
+        agg = [
+            terms: [
+                field: field,
+                size : Integer.MAX_VALUE,
+                order: [
+                    "_term": "asc"
+                ]
+            ]
+        ]
+      } else {
+        // The 'foobar' key below can be named anything, but it MUST correspond to the same key in ElasticsearchService::prepareFacets
+        def path = nestedParts[0]
+        agg = [
+            nested: [
+                path: path,
+            ],
+            aggregations: [
+                foobar: [
+                    terms: [
+                        field: field,
+                        size: Integer.MAX_VALUE,
+                        order: [
+                            "_term": "asc"
+                        ]
+                    ]
+                ]
+            ]
+        ]
+      }
       aggregations.put(name, agg)
     }
     return aggregations
@@ -394,9 +417,23 @@ class SearchRequestParserService {
 
   private static Map constructFacetFilter(Map filterRequest) {
     def fieldName = facetNameMappings[filterRequest.name] ?: filterRequest.name
+    def nestedParts = fieldName.split(/\./, 2)
+    if (nestedParts.length == 1) {
+      return [
+          terms: [
+              (fieldName): filterRequest.values
+          ]
+      ]
+    }
+    def path = nestedParts[0];
     return [
-        terms: [
-            (fieldName): filterRequest.values
+        nested: [
+            path : path,
+            query: [
+                terms: [
+                    (fieldName): filterRequest.values
+                ]
+            ]
         ]
     ]
   }

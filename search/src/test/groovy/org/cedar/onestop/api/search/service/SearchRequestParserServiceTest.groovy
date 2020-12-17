@@ -600,6 +600,33 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
+  def 'Facet filter request for a nested field'() {
+    given:
+    def request = '{"filters":[{"type":"facet","name":"linkAccessTypes","values":["download"]}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [:],
+            filter: [
+                [nested: [
+                    path: 'links',
+                    query: [
+                        terms: [
+                            'links.linkFunction': ["download"]
+                            ]
+                        ]
+                ]]
+            ]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
   def 'Fool proof checksum filter'() {
     given:
     def request = '{"filters":[{"type": "checksum", "values": ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"], "algorithm": "SHA1"}, {"type": "checksum", "values": ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"], "algorithm": "SHA1"}]}'
@@ -734,10 +761,17 @@ class SearchRequestParserServiceTest extends Specification {
             ]
         ],
         linkAccessTypes: [
-            terms: [
-                field: 'links.linkFunction',
-                size: Integer.MAX_VALUE,
-                order: ['_term': 'asc']
+            nested: [
+                path: 'links'
+            ],
+            aggregations: [
+                foobar: [
+                    terms: [
+                        field: 'links.linkFunction',
+                        size: Integer.MAX_VALUE,
+                        order: ['_term': 'asc']
+                    ]
+                ]
             ]
         ]
     ]
@@ -849,10 +883,17 @@ class SearchRequestParserServiceTest extends Specification {
             ]
         ],
         linkAccessTypes: [
-            terms: [
-                field: 'links.linkFunction',
-                size: Integer.MAX_VALUE,
-                order: ['_term': 'asc']
+            nested: [
+                path: 'links'
+            ],
+            aggregations: [
+                foobar: [
+                    terms: [
+                        field: 'links.linkFunction',
+                        size: Integer.MAX_VALUE,
+                        order: ['_term': 'asc']
+                    ]
+                ]
             ]
         ]
     ]
