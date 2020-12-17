@@ -3,7 +3,7 @@ import React from 'react'
 import {consolidateStyles} from '../../../../utils/styleUtils'
 
 const styleDay = {
-  width: '1.309em',
+  width: '1.5em',
   margin: 0,
   padding: '0 0.309em',
 }

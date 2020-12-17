@@ -106,6 +106,8 @@ const DateFieldset = ({
           styleRequiredIndicator={styleRequiredIndicator}
           styleField={styleField}
         />
+      </div>
+      <div style={styleDate}>
         <TimeField
           name={name}
           value={date.time.value}
@@ -119,7 +121,6 @@ const DateFieldset = ({
           styleRequiredIndicator={styleRequiredIndicator}
           styleField={styleField}
         />
-
         <div style={styleLayout}>
           <span />
           <span aria-hidden="true" style={styleInputValidity(date.valid)}>
