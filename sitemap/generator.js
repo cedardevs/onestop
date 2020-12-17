@@ -15,6 +15,12 @@ const argv = yargs
         type: 'string',
         required: true
     })
+    .option('pageSize', {
+        alias: 'n',
+        description: 'Number of collections to request at a time',
+        type: 'number',
+        default: 100
+    })
     .help()
     .alias('help', 'h')
     .argv;
@@ -22,6 +28,7 @@ const argv = yargs
 const searchApiBase = argv.api
 const collectionApiUrl = new URL(`${searchApiBase}/search/collection`)
 const webBase = argv.website
+const pageSize = argv.pageSize
 
 const convertCollectionToXml = (baseUrl, collection) => {
     // TODO - format lastmod value as https://www.w3.org/TR/NOTE-datetime
@@ -33,7 +40,7 @@ const convertCollectionToXml = (baseUrl, collection) => {
     </url>`
 }
 
-const getCollectionPage = (apiUrl, stagedDateAfter, beginDateAfter) => {
+const getCollectionPage = (apiUrl, size, stagedDateAfter, beginDateAfter) => {
     console.log(`getting collections from ${collectionApiUrl}`)
 
     let options = {
@@ -43,7 +50,7 @@ const getCollectionPage = (apiUrl, stagedDateAfter, beginDateAfter) => {
             "sort": [{"stagedDate": "asc"}, {"beginDate": "asc"}],
             "search_after": [stagedDateAfter, beginDateAfter],
             "queries": [],
-            "page": {"max": 1000}
+            "page": {"max": size}
         }
     };
     request.post(apiUrl, options, (error, res, body) => {
@@ -62,7 +69,7 @@ const getCollectionPage = (apiUrl, stagedDateAfter, beginDateAfter) => {
     });
 }
 
-getCollectionPage(collectionApiUrl, 0, 0)
+getCollectionPage(collectionApiUrl, pageSize,0, 0)
 // TODO - get stagedDate and beginDate from last item in page
 // TODO - use previous stagedDate and beginDate values to retrive next page
 // TODO - repeat until we have seen all pages
