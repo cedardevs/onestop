@@ -20,8 +20,10 @@ Try to keep this for brief commonly used tips. Please put more lengthy uncommon 
     `--port-forward=false -f skaffold.yaml`
  
 ## Kubectl
-If you run "`kubectl get pods`" and the `Status` column has `CrashLoopBackOff` run "`kubectl describe <pod_name>`" for the pod in question. At the bottom of the text that appears should be `Events`. This section tells you the history of the pod's lifecycle.
+If you run "`kubectl get pods`" and the `status` column has `CrashLoopBackOff` run "`kubectl describe <pod_name>`" for the pod in question. At the bottom of the text that appears should be `Events`. This section tells you the history of the pod's lifecycle.
  
+With "`kubectl get pods`" the `AGE` column indicates which pod is the relevant pod. If you made a code change which triggered a pod to get rebuilt the old pod will still exist while the new pod is being brought up. Then the old pod will eventually be listed as TERMINATING.
+
 ## Making Helm Chart Changes
 When do I need to run OneStop `./helm/updateRelease.sh` script?
 - When `requirements.yaml` file is modified.
