@@ -13,14 +13,28 @@ export const textToNumber = text => {
   return _.isFinite(number) ? number : null
 }
 
-export const ymdToDateMap = (year, month, day) => {
+export const textToTime = text => {
+  const t = text.match(/(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])/)
+
+  return {
+    hour: t != null ? textToNumber(t[1]) : null,
+    minute: t != null ? textToNumber(t[2]) : null,
+    second: t != null ? textToNumber(t[3]) : null,
+  }
+}
+
+export const ymdToDateMap = (year, month, day, time) => {
   const y = textToNumber(year)
   const m = textToNumber(month)
   const d = textToNumber(day)
+  const {hour, minute, second} = textToTime(time)
   return {
     year: _.isInteger(y) ? y : null,
     month: _.isInteger(m) ? m : null,
     day: _.isInteger(d) ? d : null,
+    hour: hour,
+    minute: minute,
+    second: second,
   }
 }
 
@@ -90,22 +104,28 @@ export const isValidYearRange = (start, end) => {
   return textToNumber(start) < textToNumber(end)
 }
 
-export const isValidDate = (year, month, day, nowOverride) => {
+export const isValidDate = (year, month, day, time, nowOverride) => {
   let errors = {
     year: {field: '', required: false},
     month: {field: '', required: false},
     day: {field: '', required: false},
+    time: {field: '', required: false},
   }
 
   // No date given is technically valid (since a complete range is unnecessary)
-  if (_.isEmpty(year) && _.isEmpty(month) && _.isEmpty(day)) {
+  if (
+    _.isEmpty(year) &&
+    _.isEmpty(month) &&
+    _.isEmpty(day) &&
+    _.isEmpty(time)
+  ) {
     return errors
   }
 
-  let dateMap = ymdToDateMap(year, month, day)
+  let dateMap = ymdToDateMap(year, month, day, time)
 
   const now = nowOverride ? nowOverride : moment()
-  const givenDate = moment(dateMap)
+  const givenDate = moment.utc(dateMap)
 
   if (!_.isEmpty(year)) {
     if (dateMap.year == null) {
@@ -161,13 +181,28 @@ export const isValidDate = (year, month, day, nowOverride) => {
     }
   }
 
+  if (!_.isEmpty(time)) {
+    if (
+      dateMap.hour == null ||
+      dateMap.minute == null ||
+      dateMap.second == null
+    ) {
+      errors.time.field = 'invalid'
+    }
+    else if (_.isEmpty(year) || _.isEmpty(month) || _.isEmpty(day)) {
+      errors.year.required = _.isEmpty(year)
+      errors.month.required = _.isEmpty(month)
+      errors.day.required = _.isEmpty(day)
+    }
+  }
+
   return errors
 }
 
 export const isValidDateRange = (startMap, endMap) => {
   // No entered date will create a moment for now. Make sure if no data was entered, days are correctly identified as null
-  const start = startMap.year == null ? null : moment(startMap)
-  const end = endMap.year == null ? null : moment(endMap)
+  const start = startMap.year == null ? null : moment.utc(startMap)
+  const end = endMap.year == null ? null : moment.utc(endMap)
 
   // Valid date range can be just start, just end, or a start <= end
   if (start && end) {

@@ -81,7 +81,7 @@ module.exports = (env) => {
           hot: true,
           proxy: {
             '/onestop-search/*': {
-              target: `${env.URL_API_GATEWAY}/`,
+              target: `${env.URL_API_GATEWAY}`,
               secure: false,
             },
             // '!/onestop/*': {
