@@ -24,6 +24,8 @@ If you run "`kubectl get pods`" and the `status` column has `CrashLoopBackOff` r
  
 With "`kubectl get pods`" the `AGE` column indicates which pod is the relevant pod. If you made a code change which triggered a pod to get rebuilt the old pod will still exist while the new pod is being brought up. Then the old pod will eventually be listed as TERMINATING.
 
+Appending the "`-w`" to "`kubectl get pods`" will tail that command and keep a live update.
+
 ## Making Helm Chart Changes
 When do I need to run OneStop `./helm/updateRelease.sh` script?
 - When `requirements.yaml` file is modified.
