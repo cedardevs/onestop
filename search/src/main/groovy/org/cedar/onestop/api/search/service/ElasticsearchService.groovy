@@ -213,12 +213,18 @@ class ElasticsearchService {
     if (!aggregations) {
       return null
     }
-    def facetNames = DocumentationService.facetNameMappings.keySet()
     def hasFacets = false
     def result = [:]
-    facetNames.each { name ->
+    DocumentationService.facetNameMappings.each { name, field ->
       def topLevelKeywords = topLevelKeywords[name]
-      def buckets = aggregations."$name"?.buckets
+      def buckets
+      def nestedParts = field.split(/\./, 2)
+      if (nestedParts.length == 1) {
+        buckets = aggregations."$name"?.buckets
+      } else {
+        // 'foobar' here can be named anything, but it MUST correspond to the same key in SearchRequestParserService::createFacetAggregations
+        buckets = aggregations."$name"?.foobar?.buckets
+      }
       if (buckets) {
         hasFacets = true
       }

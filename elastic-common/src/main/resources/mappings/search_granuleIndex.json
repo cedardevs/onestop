@@ -167,9 +167,7 @@
             "doc_values": false
           },
           "linkFunction": {
-            "type": "keyword",
-            "index": false,
-            "doc_values": false
+            "type": "keyword"
           }
         }
       },
@@ -238,6 +236,13 @@
             }
           }
         }
+      },
+      "filesize": {
+        "type": "long",
+        "index": false
+      },
+      "fileFormat": {
+        "type": "keyword"
       }
     }
   }

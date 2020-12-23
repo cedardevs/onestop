@@ -545,6 +545,27 @@ class TransformationUtilsSearchSpec extends Specification {
     search.getCiteAsStatements() == ["citations"]
   }
 
+  def "produces filesize for granule record correctly"() {
+    def filesize = 1234567890
+    def record = ParsedRecord.newBuilder(TestUtils.inputAvroRecord)
+            .setType(RecordType.granule)
+            .setFileInformation(FileInformation.newBuilder().setSize(filesize).build())
+            .build()
+
+    expect:
+    TransformationUtils.prepareFilesize(record) == filesize
+  }
+
+  def "populates search - filesize for granule"() {
+    when:
+    FileInformation fileInfo = FileInformation.newBuilder().setSize(1234567890).build()
+    ParsedRecord record = ParsedRecord.newBuilder().setFileInformation(fileInfo).setDiscovery(Discovery.newBuilder().build()).build()
+    def search = TransformationUtils.reformatGranuleForSearch(12341234L, record)
+
+    then:
+    search.getFilesize() == 1234567890
+  }
+
   ////////////////////////////
   // Responsible Parties    //
   ////////////////////////////
