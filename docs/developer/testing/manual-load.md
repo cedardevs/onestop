@@ -1,4 +1,19 @@
+**Estimated Reading Time: 20 minutes**
 # Manually testing transforms and loading using Test-Common
+## Table of Contents
+* [Building and Running](#building-and-running)
+* [Arguments](#arguments)
+* [Steps](#steps)
+    * [parseISO](#parseiso)
+    * [parseAvro](#parseavro)
+    * [analyze](#analyze)
+    * [granuleSearch](#granulesearch)
+    * [collectionSearch](#collectionsearch)
+    * [granuleError](#granuleerror)
+    * [collectionError](#collectionerror)
+* [chaining steps together](#chaining-steps-together)
+* [examples](#examples)
+
 
 The test-common module was designed for manual examination of the transform steps, in order to support developer understanding of what happens in each section of the system, aid crafting test data for integration, and to load Elasticsearch directly instead of requiring the entire stack for local development.
 
@@ -10,7 +25,7 @@ To build, run `./gradlew test-common:shadowJar`, which creates a standalone fatj
 
 To run the utility, `java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main`. It requires arguments to run, and will provide some basic usage information.
 
-## Arguements
+## Arguments
 
 The utility lets you chain together one or more transformation steps on a file.
 
@@ -91,3 +106,6 @@ Note these assume you are running the command from the base onestop project dir,
 `java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseISO analyze ../onestop-test-data/COOPS/granules/CO-OPS.NOS_1820000_201602_D1_v00.xml`
 
 `java -cp test-common/build/libs/onestop-test-common-unspecified-all.jar org.cedar.onestop.test.common.Main parseISO analyze granuleSearch ../onestop-test-data/COOPS/granules/CO-OPS.NOS_1820000_201602_D1_v00.xml > tmp.json`
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

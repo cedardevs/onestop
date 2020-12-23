@@ -1,6 +1,6 @@
+**Estimated Reading Time: 20 minutes**
 # Publishing Tags and Releases
-Table of Contents
-=================
+## Table of Contents
 * [Basics](#basics)
 * [Circle CI Configuration](#circle-ci-configuration)
 * [Continuous Integration Automation](#continuous-integration-automation)

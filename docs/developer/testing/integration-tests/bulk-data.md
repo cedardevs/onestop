@@ -1,3 +1,4 @@
+**Estimated Reading Time: 5 minutes**
 # Bulk Data in Search API's ES Integration Tests
 
 ## Important ES Note

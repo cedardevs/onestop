@@ -53,7 +53,7 @@ What's important to you when using OneStop varies significantly based on what yo
   * You're deploying, upgrading, or maintaining an instance of OneStop in a production setting
 * [External Developer](external-developer.md)
   * You're developing external software that needs to interact with a running OneStop deployment
-* [Internal Developer](internal-developer.md)
+* [Internal Developer](developer)
   * You're contributing to the OneStop code or even just trying to run a local instance on your personal machine
 
 

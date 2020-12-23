@@ -1,3 +1,4 @@
+**Estimated Reading Time: 10 minutes**
 # Contribution Guidelines
 
 ## Table of Contents
@@ -13,7 +14,7 @@ We’re so glad you’re thinking about contributing to the OneStop project! If 
 
 One of our goals is to ensure a welcoming environment for all contributors to our projects.
 
-We encourage you to read this project’s contributing policy (you are here), its [LICENSE][license] and [README][readme].
+We encourage you to read this project’s contributing policy (you are here), its [LICENSE](https://github.com/cedardevs/onestop/blob/master/license.txt) and [README](https://github.com/cedardevs/onestop/blob/master/README.md).
 
 
 ## Guidelines

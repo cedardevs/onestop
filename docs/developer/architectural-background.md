@@ -1,13 +1,14 @@
-## Architectural Background
+**Estimated Reading Time: 5 minutes**
+# Architectural Background
 
-This project embraces the event-streaming paradigm reflected in the [Kappa Architecture](http://www.kappa-architecture.com):
+This project embraces the event-streaming paradigm reflected in the [Kappa Architecture](https://eng.uber.com/kappa-architecture-data-stream-processing/):
 
 1. All state changes are recorded as immutable events in an ordered, distributed log
 1. Business logic is implemented in distributed processing algorithms that operate on the stream of events
 1. Views of the output data are deterministically materialized in appropriate data stores to support querying use cases,
 e.g. an inverted index for searching, a key-value store for random access, etc.
 
-### References: Concepts
+## References: Concepts
 
 - [Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html) - Martin Fowler
 - [Command Query Responsibility Segregation](https://martinfowler.com/bliki/CQRS.html) - Martin Fowler
@@ -18,7 +19,7 @@ e.g. an inverted index for searching, a key-value store for random access, etc.
 - [Why local state is a fundamental primitive in stream processing](https://www.oreilly.com/ideas/why-local-state-is-a-fundamental-primitive-in-stream-processing) - Jay Kreps
 - [Why Avro For Kafka Data?](https://www.confluent.io/blog/avro-kafka-data/) - Jay Kreps
 
-### References: Specifics
+## References: Specifics
 
 - [Introduction to Kafka](https://kafka.apache.org/intro)
 - [Event sourcing, CQRS, stream processing and Apache Kafka: What’s the connection?](https://www.confluent.io/blog/event-sourcing-cqrs-stream-processing-apache-kafka-whats-connection/)
