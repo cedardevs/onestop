@@ -1,20 +1,39 @@
 **Estimated Reading Time: 10 minutes**
 # Internal Practices
+We have several google documents on this topic in Google Drive at `Agile Project> Team Norms`.
 
 ## Table of Contents
 * [Git Workflow](#git-workflow)
+    * [Branches](#branches)
+    * [Temporary Branches and Code Commits](#temporary-branches-and-code-commits)
     * [Versioning](#versioning)
     * [Releases: Tags and Release Branches](#releases-tags-and-release-branches)
-    * [Temporary Branches](#temporary-branches)
 * [References](#references)
 
 ## Git Workflow
 
+### Branches
   * `master` contains changes being prepped for a release, with tags marking each release. The master branch should be kept in a working state but represents the "bleeding edge" version of the project. 
   * `release/[version]` contains the existing release paths. These only deviate from the release tagged on the master branch when hotfixes are required. A new release branch should be created for every major version. Minor releases can be merged into their major version branch. Patches should also be merged to their respective branch, but follows a different work flow. Reference [Hotfix Strategy](hotfix-strategy) for more information.  
-  * temporary branches are used to work on features, until they are reviewed as a pull request and deleted.
+  * 
+### Temporary Branches and Code Commits
+Temporary branches are used to work on features and major changes via the following steps:
+  1. Make a new branch off `master`. As a naming convention, please follow the convention in Google Drive at `Agile Project> Team Norms> Foam Cat Team Norms` document. Do not to use `master` or the `release/` or `hotfix/` prefix:
 
-### Versioning: 
+      ```sh
+      git fetch origin
+      git checkout -b feature/foo origin/master
+      ```
+
+  1. Write code with tests!  
+
+  1. Upon completion move the Github/Zenhub story into the Review column
+  
+  1. [Create a pull request](https://github.com/cedardevs/onestop/compare). Please link with the story via "Linked issues"
+
+  1. **Reviewer** merges the pull request back into the `master` branch and deletes the working branch. Verify story in github/zenhub got moved to Closed column (may have to manually do).
+
+### Versioning:
   * Ideally the current version indicates what release you're working toward, not what version you are on; [citation stackoverflow issue](https://softwareengineering.stackexchange.com/questions/166215/when-do-you-change-your-major-minor-patch-version-number). This is to avoid new artifacts from colliding with older artifacts built prior to the last tag.
   * To accomplish that, it is important we always increment the minor version after a release. 
   * It's difficult to know if the next release will be a new major version. Theoretically incrementing the major version should be done when the breaking change is introduced (e.g. dropping support for ES5). 
@@ -42,22 +61,6 @@ When all the features in master are ready for production, it is time to cut a re
      * [Draft the release][draft release] from the corresponding tag on the `master` branch.
      * Have at least one team member review the release notes.
      * Publish the [release](https://github.com/cedardevs/onestop/releases) on GitHub.
-
-### Temporary Branches
-We introduce new features and major changes with the following steps:
-  1. Make a new branch off `master`. As a naming convention, your branch name can be anything except `master` or with the `release/` or `hotfix/` prefix:
-
-      ```sh
-      git fetch origin
-      git checkout -b feature/foo origin/master
-      ```
-
-  1. Write code, write tests!  
-
-  1. [Create a pull request](https://github.com/cedardevs/onestop/compare) once development is complete and
-    request a review.
-
-  1. Reviewer merges changes back into the `master` branch and deletes working branch.
 
 ### References
 
