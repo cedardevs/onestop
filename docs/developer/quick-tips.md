@@ -3,6 +3,8 @@
 Try to keep this for brief commonly used tips. Please put more lengthy uncommon information in [additional OneStop information](additional-developer-info) docs.
 
 ## Skaffold Command Options
+* If this is not your first time running OneStop, especially if your Docker was updated since your last execution, view the cleanup steps in [additional-developer-info](additional-developer-info).
+
 * If skaffold pods aren't starting up and you see an error such as "*because first deploy failed: 3/10 deployment(s) failed*":
 
     `—-status-check=false`
