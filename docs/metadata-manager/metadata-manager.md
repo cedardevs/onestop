@@ -6,18 +6,18 @@ As a metadata manager working with a OneStop deployment, you will have one or mo
 
 Since this role requires interacting with several components of the OneStop ecosystem, you are encouraged to start with the brief architectural overview to get your bearings. The guide then takes you through your three most common goals as a metadata manager: creating metadata, loading and maintaining your metadata, and troubleshooting within the OneStop system.
 
-Please note that for the Metadata Manager documentation, we are assuming that you will use existing tools to integrate your metadata with OneStop and that you will not be responsible for connecting your own software to the underlying components. If you _do_ need information pertaining to connecting your own software with a OneStop deployment, you can find it in the [External Developer Navigation Guide](external-developer.md).
+Please note that for the Metadata Manager documentation, we are assuming that you will use existing tools to integrate your metadata with OneStop and that you will not be responsible for connecting your own software to the underlying components. If you _do_ need information pertaining to connecting your own software with a OneStop deployment, you can find it in the [External Developer Navigation Guide](../external-developer.md).
 
 Take a look at our navigational suggestions below and go directly to what you need, or simply click the `Next` link at the bottom of the page to start at the top and work your way down.
 
 ## Table of Contents
-* [Architectural Overview](metadata-manager/architectural-overview.md)
+* [Architectural Overview](architectural-overview.md)
 * Creating Metadata:
-  - [Supported Metadata Formats](metadata-manager/metadata-formats.md)
-  - [Subject Matter Expert (SME) Scripts](metadata-manager/sme-scripts.md)
+  - [Supported Metadata Formats](metadata-formats.md)
+  - [Subject Matter Expert (SME) Scripts](sme-scripts.md)
 * Loading and Maintaining Metadata:
-  - [NOAA Tools Overview (External to OneStop)](metadata-manager/v3/setup-datastream-pipeline.md)
-  - [The Registry API Guide](metadata-manager/v3/onestop-metadata-loading.md)
+  - [NOAA Tools Overview (External to OneStop)](v3/setup-datastream-pipeline.md)
+  - [The Registry API Guide](v3/onestop-metadata-loading.md)
 * Troubleshooting:
   - Ingest To Discoverability: Best Practices
   - Registry Analysis
