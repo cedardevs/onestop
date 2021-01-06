@@ -296,3 +296,9 @@ profiles:
               cp-kafka.enabled: "false"
               cp-schema-registry.enabled: "false"
               cp-zookeeper.enabled: "false"
+
+  - name: postgres
+    deploy:
+      helm:
+        releases:
+          - *onestop-postgresql
