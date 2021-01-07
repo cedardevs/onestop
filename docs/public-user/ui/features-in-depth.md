@@ -41,7 +41,7 @@ Once you've begun searching, however, the query box migrates to the site header.
 
 Entering text in the query box will always start a new search on OneStop, resetting any filters you may have added in an existing search. The text entered for your query can be a simple term or phrase, but can also support a much richer syntax allowing for a very precise request.
 
-Check out our guide on [Query Syntax](../../public-user/api/query-syntax) for thorough coverage of available options.
+Check out our guide on [Query Syntax](../../api/query-syntax) for thorough coverage of available options.
 
 ### Popular Topics and Featured Data Sets
 Both of these features found on the landing page pre-populate a query for the user. The Popular Topics are simple high level categories from which to explore and discover data. On the other hand, Featured Data Sets queries are tailored to match a specific collection or set of collections. The Featured Data Sets are customizable by the site administrator and are therefore subject to change.

@@ -6,7 +6,7 @@ The project consists of two Java-based microservices, backed by a Kafka cluster.
 
 #### Purpose
 
-The [registry](/registry-api) hosts the public API of the system and stores its persistent state. Specifically, it
+The [registry](/onestop/api/registry-api) hosts the public API of the system and stores its persistent state. Specifically, it
 serves several basic purposes:
 
 1. Receive metadata input via HTTP and send them to the appropriate Kafka topics
