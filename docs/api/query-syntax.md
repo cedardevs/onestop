@@ -10,7 +10,9 @@ OneStop's underlying query is an Elasticsearch [query string query](https://www.
 ## Common Use Cases
 - [Match An Exact Phrase](#boolean-operators)
 - [Search Against A Specific Field](#search-by-field-name)
-- [Search Fields Requiring An Exact Match With An Inexact Query](#search-fields-requiring-an-exact-match-with-an-inexact-query)
+- [Search Fields Requiring An Exact Match With An Inexact Query](#
+
+)
 - Specify What Should And Should Not Appear In My Results - [Boolean Operators](#boolean-operators), [fuzziness](#fuzziness-matching), and [proximity](#proximity-searches)
 
 ## Supported Search Query Features

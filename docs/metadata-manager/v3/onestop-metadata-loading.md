@@ -3,7 +3,7 @@ Metadata can be published into the OneStop Inventory Manager system using the Re
 NOTE: The REST API is also secured via CAS authentication. For more detail see [OneStop Registry Security documentation](../../operator/security/registry-security.md). 
     
 ### Available Methods
-The Registry application has various endpoints that are also described in the [user docs about the REST API](../registry-api.md) and
+The Registry application has various endpoints that are also described in the [user docs about the REST API](../../api/registry-api.md) and
 [OpenAPI Specification documentation](https://sciapps.colorado.edu/registry/openapi.yaml) in detail.
 
 #### URL Parameter Notes: 

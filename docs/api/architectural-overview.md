@@ -29,22 +29,22 @@ Anything grey is external to a OneStop deployment, and represents places where n
 Non-gray elements are all components of a full OneStop deployment. Green elements -- Kafka and Elasticsearch -- are the 3rd party software components that OneStop is built on top of. Only privileged users (like those that are responsible for managing the servers a deployment runs on) should ever access or configure these components directly. Blue components connect to Kafka and Elasticsearch and facilitate many of the workflow steps, however, these components cannot be interacted with directly. Finally, the purple components are access points into the OneStop system by public users (Search API, UI, and CLI) and trusted users responsible for the metadata contained within OneStop (Registry API).
 
 ### Step One: Loading
-![Flowchart: Metadata Managers (person icon) points to Registry API (purple). Automated Metadata publishers (grey) points to Registry API, and Kakfa (green). Registry API also points to Kafka.](images/mm/s1-loading.png)
+![Flowchart: Metadata Managers (person icon) points to Registry API (purple). Automated Metadata publishers (grey) points to Registry API, and Kakfa (green). Registry API also points to Kafka.](../images/mm/s1-loading.png)
 
 Metadata is loaded into OneStop either manually by Metadata Managers via the Registry API, or automated through external software that also communicates to the Registry API or interfaces directly to Kafka by writing to an input topic.
 
 ### Step Two: Transformation
-![Flowchart: Parsalyzer (blue) has arrows to and from Kafka (green). SME functions (grey) also has arrows to and from Kafka.](images/mm/s2-transformation.png)
+![Flowchart: Parsalyzer (blue) has arrows to and from Kafka (green). SME functions (grey) also has arrows to and from Kafka.](../images/mm/s2-transformation.png)
 
 Once metadata lands on the input Kafka topics, automatic processes are triggered to parse it into the Discovery format and analyze individual fields from that format. If a datastream or collection has been setup for it, optional SME functions can be triggered for metadata enhancement prior to parsing and analysis.
 
 ### Step Three: Search Indexing
-![Flowchart: Kakfa (green) points to Indexer (blue) which points to Elasticsearch (Search Indices) (green)](images/mm/s3-search-indexing.png)
+![Flowchart: Kakfa (green) points to Indexer (blue) which points to Elasticsearch (Search Indices) (green)](../images/mm/s3-search-indexing.png)
 
 After metadata has been parsed and analyzed, it is put onto a Kafka topic from which the Indexer reads. The Indexer assesses each record for search readiness, and after successful validation pushes the records into their respective search indices on Elasticsearch. Records that do not pass validation will not be indexed until the errors are resolved.
 
 ### Step Four: Search Access
-![Flowchart: Public Users (person icon), Search CLI (purple), Search UI (purple), and Downstream Consumers (grey) point to Search API (purple), which points to Elasticsearch (Search Indices) (green).](images/mm/s4-search-access.png)
+![Flowchart: Public Users (person icon), Search CLI (purple), Search UI (purple), and Downstream Consumers (grey) point to Search API (purple), which points to Elasticsearch (Search Indices) (green).](../images/mm/s4-search-access.png)
 
 Metadata that passes validation steps and is indexed is now accessible from the Search API. The Search API services requests from the Search UI, Search CLI, and external users and consumers, translating them into Elasticsearch queries against the appropriate search index.
 

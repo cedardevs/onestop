@@ -18,7 +18,7 @@ The API provides three Search endpoints for search and discovery of data. The fo
 
 All three endpoints expect the same request schema format to be used but return data of the type in the URL.
 
-For more detailed information see the full [OpenAPI specification](/search/src/main/resources/static/openapi.yaml).
+For more detailed information see the full [OpenAPI specification](/static/openapi.yaml).
 
 ## Basic Query
 
