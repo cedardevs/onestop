@@ -8,8 +8,13 @@
   - [Supported Metadata Formats](metadata-formats)
   - [Subject Matter Expert (SME) Scripts](sme-scripts)
 * Loading Metadata:
-  - [Upload Test Metadata](../developer/additional-developer-info)
+  - [Upload Test Metadata](../developer/additional-developer-info#upload-test-metadata)
   - [The Registry API Guide](v3/onestop-metadata-loading)
+* Searching Metadata:
+  - [Indexed ISO Metadata Fields](iso-indexing-mapping)
+  - [Search Query Syntax](../api/query-syntax)
+  - [Search Fields Requiring An Exact Match With An Inexact Query](../api/query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query)
+
 * References:
   - [Architectural Overview](architectural-overview)
   - [Public User Documentation](../public-user/)
