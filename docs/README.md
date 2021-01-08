@@ -48,7 +48,7 @@ OneStop has an enormous amount to offer, but it can be difficult to know how and
 What's important to you when using OneStop varies significantly based on what you need to accomplish. Select the role below that most closely represents you to get started.
 * [Public User](public-user)
   * You're using the UI, API, or CLI in order to find data
-* [Metadata Manager](metadata-manager/metadata-manager)
+* [Metadata Manager](metadata-manager/)
   * You're responsible for metadata records that end up in OneStop, and are in search of info on loading, maintaining, or troubleshooting the records
 * [Operator](operator)
   * You're deploying, upgrading, or maintaining an instance of OneStop in a production setting
