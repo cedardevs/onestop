@@ -1,3 +1,4 @@
+const convertCollectionToXml = require('./transformUtils');
 const request = require('request')
 const yargs = require('yargs')
 const fs = require('fs');
@@ -29,19 +30,6 @@ const searchApiBase = argv.api
 const collectionApiUrl = new URL(`${searchApiBase}/search/collection`)
 const webBase = argv.website
 const pageSize = argv.pageSize
-
-const convertCollectionToXml = (baseUrl, collection) => {
-    // TODO - Store lastmod value into variable
-    var stagedDate = collection.attributes.stagedDate;
-    var formattedDate = Unix_TimeStamp(stagedDate);
-
-    return`
-    <url>
-        <loc>${baseUrl}/onestop/collections/details/${collection.id}</loc>
-        <lastmod>${formattedDate}</lastmod>
-        <changefreq>weekly</changefreq>
-    </url>`
-}
 
 const getCollectionPage = (apiUrl, size, stagedDateAfter, beginDateAfter) => {
     console.log(`getting collections from ${collectionApiUrl}`)
@@ -85,16 +73,6 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter, beginDateAfter) => {
     });
 }
 
-//Helper method for convertCollectiontoXML's stagedDate to W3 DateTime format.
-const Unix_TimeStamp = (t) =>{
-     
-    var dt = new Date(t)
-     var n = dt.toISOString();
-
-     return n;
-    
- }
-
 getCollectionPage(collectionApiUrl, pageSize, 0, 0)
 // TODO - get stagedDate and beginDate from last item in page
 // TODO - use previous stagedDate and beginDate values to retrive next page
@@ -125,5 +103,4 @@ getCollectionPage(collectionApiUrl, pageSize, 0, 0)
 
 }                                                 
     
-  */  
- 
+  */
