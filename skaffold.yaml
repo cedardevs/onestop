@@ -157,7 +157,7 @@ build:
       spring:
         datasource:
           url: jdbc:postgresql://onestop-postgresql:5432/user
-          username: onestop
+          username: postgres
           password: foamcat
         jpa:
           database: POSTGRESQL
