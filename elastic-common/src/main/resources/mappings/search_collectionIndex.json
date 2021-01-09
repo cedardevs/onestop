@@ -121,9 +121,7 @@
             "doc_values": false
           },
           "linkUrl": {
-            "type": "keyword",
-            "index": false,
-            "doc_values": false
+            "type": "keyword"
           },
           "linkDescription": {
             "type": "keyword",

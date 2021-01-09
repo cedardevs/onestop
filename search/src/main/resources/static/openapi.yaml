@@ -981,6 +981,7 @@ components:
             oneOf:
               - $ref: "#/components/schemas/textQuery"
               - $ref: "#/components/schemas/granuleNameQuery"
+              - $ref: "#/components/schemas/fieldQuery"
           type: array
         summary:
           default: true
@@ -1241,7 +1242,30 @@ components:
         - value
       title: "Granule Name Query"
       type: object
-
+    fieldQuery:
+      additionalProperties: false
+      description: ""
+      properties:
+        type:
+          description: "Query type."
+          enum:
+            - fieldQuery
+        field:
+          description: ""
+          type: string
+        value:
+          description: ""
+          type: string
+        exactMatch:
+          description: ""
+          type: boolean
+          default: true
+      required:
+        - type
+        - field
+        - value
+      title: "Field Query"
+      type: object
     # Record field schemas
     accessFeeStatement: # TODO is this an array? # TODO description
       type: string

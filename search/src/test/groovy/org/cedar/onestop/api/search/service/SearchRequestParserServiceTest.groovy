@@ -352,6 +352,93 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
+  def 'Test fieldQuery query'() {
+    given:
+    def request = "{\"queries\": [{\"type\": \"fieldQuery\", \"field\": \"${field}\", \"value\": \"${value}\"}]}"
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must: [[
+                function_score: [
+                    query: [
+                        bool: [
+                            must: [[
+                                term: [
+                                    (field): value
+                                ]
+                            ]]
+                        ]
+                    ],
+                    field_value_factor: [
+                        field   : 'dsmmAverage',
+                        modifier: 'log1p',
+                        factor  : 1f,
+                        missing : 0
+                    ],
+                    boost_mode: 'sum'
+                ]
+            ]],
+            filter: [:]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+
+    where:
+    field | value
+    'fileFormat' | 'NetCDF'
+  }
+
+  def 'Test fieldQuery query with nested field'() {
+    given:
+    def request = "{\"queries\": [{\"type\": \"fieldQuery\", \"field\": \"${field}\", \"value\": \"${value}\"}]}"
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must: [[
+                function_score: [
+                    query: [
+                        bool: [
+                            must: [[
+                                nested: [
+                                    path: 'links',
+                                    query: [
+                                        term: [
+                                            (field): value
+                                        ]
+                                    ]
+                                ]
+                            ]]
+                        ]
+                    ],
+                    field_value_factor: [
+                        field   : 'dsmmAverage',
+                        modifier: 'log1p',
+                        factor  : 1f,
+                        missing : 0
+                    ],
+                    boost_mode: 'sum'
+                ]
+            ]],
+            filter: [:]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+
+    where:
+    field | value
+    'links.linkUrl' | 'http://foo.bar.com/csv/baz.csv'
+  }
+
   def 'Default datetime filter request generates expected elasticsearch query'() {
     given:
     def request = '{"filters":[{"type":"datetime","before":"2011-11-11", "after":"2010-10-10"}]}'

@@ -121,6 +121,11 @@ class SearchRequestParserService {
         // Add as individual objects since each request can reference a different field
         allTextQueries.add(constructGranuleNameComponent(it))
       }
+
+      groupedQueries.fieldQuery.each {
+        // As above, add as individual objects since each request can reference a different field
+        allTextQueries.add(constructFieldQueryComponent(it))
+      }
     }
 
     return [[
@@ -480,6 +485,32 @@ class SearchRequestParserService {
             fields: fields,
             operator: operator,
             type: 'cross_fields'
+        ]
+    ]
+  }
+
+  private static Map constructFieldQueryComponent(Map request) {
+    Boolean exactMatch = request.exactMatch != null ? request.exactMatch : true
+    String fieldName = request.field
+    String[] nestedParts = fieldName.split(/\./, 2)
+    String queryType = exactMatch ? 'term' : 'wildcard'
+
+    if (nestedParts.length == 1) {
+      return [
+          (queryType): [
+              (fieldName): request.value
+          ]
+      ]
+    }
+    String path = nestedParts[0]
+    return [
+        nested: [
+            path : path,
+            query: [
+                (queryType): [
+                    (fieldName): request.value
+                ]
+            ]
         ]
     ]
   }
