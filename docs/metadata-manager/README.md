@@ -18,7 +18,7 @@ Since this role requires interacting with several OneStop components, you are en
    
    For a better OneStop discovery experience, please be mindful of what fields are in your metadata compared to the [OneStop indexed fields](iso-indexing-mapping). These indexed fields represent what you can search for via OneStop. While these are not 100% of the available search fields they are the majority.
 
-   - [Search Fields Requiring An Exact Match With An Inexact Query](../api/query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query) - Has information on how to query OneStop for a very useful list of the available search fields.
+   - [Search Fields Requiring An Exact Match With An Inexact Query](../api/search-query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query) - Has information on how to query OneStop for a very useful list of the available search fields.
    
 ## Loading Metadata into OneStop
 There are two ways to upload metadata into the OneStop system:
@@ -39,8 +39,8 @@ On the other hand, you might be directly pushing metadata to OneStop via the Reg
 No matter how your metadata gets into OneStop, however, you'll probably be curious about what you can do to take full advantage of the OneStop search functionality.
 
   - [Indexed ISO Metadata Fields](iso-indexing-mapping)
-  - [Search Query Syntax](../api/query-syntax)
-  - [Search Fields Requiring An Exact Match With An Inexact Query](../api/query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query)
+  - [Search Query Syntax](../api/search-query-syntax)
+  - [Search Fields Requiring An Exact Match With An Inexact Query](../api/search-query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query)
 
 ## References
   - [Architectural Overview](architectural-overview)
