@@ -9,9 +9,9 @@ Since this role requires interacting with several OneStop components, you are en
 ## Table of Contents
 - [Creating Metadata](#creating-metadata)
 - [Loading Metadata into OneStop](#loading-metadata-into-onestop)
-    - [Registry API](#registry-api)
-    - [Kafka](#kafka)
-- [Searching OneStop for Metadata](#searching-onestop-for-metadata)
+    - [Registry API](#registry-api) - CRUD operations (Create, Read, Update, and Delete) on metadata.
+    - [Kafka](#kafka) - Underlying way that Registry communicates when operations happen on metadata.
+- [Searching OneStop for Metadata](#searching-onestop-for-metadata) - How to find your metadata.
 - [References](#references)
 
 ## Creating Metadata
@@ -44,7 +44,8 @@ No matter how your metadata gets into OneStop, however, you'll probably be curio
   - [Search Fields Requiring An Exact Match With An Inexact Query](../api/search-query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query)
 
 ## References
-  - [Architectural Overview](architectural-overview)
+  - [Architectural Overview](architectural-overview) - In-depth overview of the metadata flow and architecture of OneStop.
+  - [OneStop API](/onestop/api/) - How to Create, Read, Update, and Delete(CRUD) metadata and other useful APIs.
   - [Public User Documentation](../public-user/)
   - [External Developer Navigation Guide](../external-developer) - Information pertaining to connecting your own software with a OneStop system.
   - [NOAA NCEI Metadata Homepage](https://ncei.noaa.gov/metadata)
