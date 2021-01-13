@@ -12,4 +12,4 @@ OneStop has a RESTful API to query collection and granule level data that can be
 - [Query Syntax](/onestop/api/search-query-syntax.md) - Commonly used search query syntax.
 - [Geometries at the Antimeridian](/onestop/public-user/api/antimeridian.md) - There are some gotchas about the geometry searches.
 - [Search API Requests](/onestop/api/search-requests.md) - Search API request endpoints.
-- [Search API Responses](/onestop/api/responses.md) - Search responses follow a specific format.
+- [Search API Responses](/onestop/api/search-responses.md) - Search responses follow a specific format.
