@@ -1,6 +1,7 @@
 const convertCollectionToXml = require('./transformUtils');
-const request = require('request')
-const yargs = require('yargs')
+const processBodyData = require('./transformUtils');
+const request = require('request');
+const yargs = require('yargs');
 const fs = require('fs');
 
 const argv = yargs
@@ -31,15 +32,15 @@ const collectionApiUrl = new URL(`${searchApiBase}/search/collection`)
 const webBase = argv.website
 const pageSize = argv.pageSize
 
-const getCollectionPage = (apiUrl, size, stagedDateAfter, beginDateAfter) => {
+const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
     console.log(`getting collections from ${collectionApiUrl}`)
 
     let options = {
         json: true,
         body: {
             "summary": false,
-            "sort": [{"stagedDate": "asc"}, {"beginDate": "asc"}],
-            "search_after": [stagedDateAfter, beginDateAfter],
+            "sort": [{"stagedDate": "asc"}],
+            "search_after": [stagedDateAfter],
             "queries": [],
             "page": {"max": size}
         }
@@ -64,43 +65,40 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter, beginDateAfter) => {
                 </sitemap>
             </sitemapindex>
             */
+           let lastStagedDate = body.data[pageSize-1].attributes.stagedDate;
+           let maxCollectionSize = body.meta.total;
 
-            body.data.forEach((d) => {
-                console.log(convertCollectionToXml(webBase, d))
-            })
+
+           //Helper method for looping through each granual in collection, replaces below code
+           processBodyData(body);
+        // body.data.forEach((d) => {
+        //      console.log(convertCollectionToXml(webBase, d));
+        // })
             console.log('</urlset>')
+
+
+
+
+         //Helper method crawlerCollection() to handle iterating/recursion through collection
+         //Should call getCollectionPage or separate helper method to iterate through all collections
+
+        console.log("\n-- DEBUG LOG --");
+        console.log("LastStagedDate: " + lastStagedDate);
+        console.log("maxCollectionSize: " + maxCollectionSize); //total granuals (body.meta.total)
+        console.log("pageSize: " + pageSize);
+
+
+
+        
         }
     });
 }
 
-getCollectionPage(collectionApiUrl, pageSize, 0, 0)
-// TODO - get stagedDate and beginDate from last item in page
-// TODO - use previous stagedDate and beginDate values to retrive next page
-// TODO - repeat until we have seen all pages
+
+
+getCollectionPage(collectionApiUrl, pageSize, 0);
+
+//TODO - Open/Close <urlset></urlset> at start end rather than each collection
 // TODO - handle need for multiple sitemaps with a <sitemapindex>
 // Sitemap index files may not have more than 50K Urls & no larger than 50MB
 
-
-/* Psuedocode for Crawler, very rough draft
- const collectionCrawler = (stagedDate, beginDate) =>{
-
-    var lastStaged;
-    var lastBegin;
-    while(collection){
-        if(sitemapindex.size>50000 or data full){
-        create new sitemap index
-        assign it to be new base index
-    }
-    convertCollectiontoXML into current sitemap
-    
-
-    if(last item on last page){
-        lastStaged = current.stagedDate;
-        lastBegin = current.beginDate;
-        Either recursively call collectionCrawler(lastStaged, lastBegin);
-        Or change staged/begin so when collection start again we reassign to new pages
-    }
-
-}                                                 
-    
-  */
