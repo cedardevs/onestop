@@ -1,3 +1,6 @@
+<div align="center"><a href="/onestop/public-user">Public User Documentation Home</a></div>
+<hr>
+
 # OneStop CLI tool
 
 The `onestop-cli` tool provides a convenient command line interface for the OneStop search API.
@@ -158,5 +161,6 @@ For complex query and filter structure, refer to the [short hand documentation](
 
 Note: As it is now, you cannot combine the flags with json shorthand. e.g. This will not work - `onestop searchcollection --area="POLYGON(( 22.686768 34.051522, 30.606537 34.051522, 30.606537 41.280903,  22.686768 41.280903, 22.686768 34.051522 ))" --query="satellite" filters[]{ type:datetime, after:2017-01-01T00:00:00Z, before:2017-02-01T00:00:00Z} `
 
+
 <hr>
-<div align="center"><a href="/onestop/public-user">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/cli/scdr-files">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

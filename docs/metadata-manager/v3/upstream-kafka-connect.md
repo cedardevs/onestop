@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/metadata-manager">Metadata Manager Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 15 minutes**
+
 ## Integrating upstream application to the underlying Kafka system
 Metadata can be published into the OneStop system in two different ways, using Registry application [REST API](onestop-metadata-loading.md) or directly 
 integrating upstream applications to the underline OneStop kafka cluster.  
@@ -116,6 +121,5 @@ Kafka connect, which includes source and sink, can also be used to published dat
 see [kafka connect Confluent page](https://docs.confluent.io/current/connect/index.html) for more details. 
 
 <hr>
-<div align="center"><a href="/onestop/metadata-manager/v3/onestop-metadata-loading">Previous</a> | <a href="#integrating-upstream-application-to-the-underlying-kafka-system">Top of Page</a> 
-| <a href="/onestop/">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>
 

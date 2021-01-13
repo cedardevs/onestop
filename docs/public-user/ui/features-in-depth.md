@@ -1,5 +1,4 @@
-<div align="center"><a href="/onestop/public-user">Public User Navigation Guide Home</a></div>
-<div align="center"><a href="/onestop/public-user/ui/quickstart">Previous: UI Quick Start Guide</a> | <a href="/onestop/public-user/ui/keyboard-navigation">Next: UI Keyboard Navigation</a></div>
+<div align="center"><a href="/onestop/public-user">Public User Documentation Home</a></div>
 <hr>
 
 **Estimated Reading Time: 15 minutes**
@@ -241,6 +240,5 @@ An example of file access types shown in the file link type drop-down list:
 
 ![Example of file link type drop-down list](../../images/ui-id/file-link-type-dropdown.png)
 
-
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/quickstart">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/ui/keyboard-navigation">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

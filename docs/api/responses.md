@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/api">OneStop API</a></div>
+<hr>
+
+**Estimated Reading Time: 5 minutes**
+
 # Search API Responses
 
 ## Response Format
@@ -45,3 +50,6 @@ OneStop API responses are built around the [JSON API Specification](http://jsona
   }
 }
 ```
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

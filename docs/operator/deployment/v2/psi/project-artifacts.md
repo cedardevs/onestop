@@ -1,3 +1,5 @@
+**Estimated Reading Time: 15 minutes**
+
 ## Project Artifacts
 
 The project consists of two Java-based microservices, backed by a Kafka cluster.
@@ -169,3 +171,6 @@ kafka:
 ...in an external yaml file and setting `CONFIG_LOCATION` with the location of that file.
 
 > IMPORTANT: Do NOT override the application.id kafka property. The app creates and references its own app id and overriding it may break it.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

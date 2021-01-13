@@ -16,5 +16,3 @@
 * Securing OneStop APIs 
     * [Secure APIs](operator/security/registry-security.md)
 
-<hr>
-<div align="center"><a href="/onestop/">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/operator/deployment/v3/deployment-guide">Next</a></div>

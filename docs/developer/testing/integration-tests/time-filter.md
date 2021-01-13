@@ -1,4 +1,8 @@
+<div align="center"><a href="/onestop/developer/testing/integration-tests/">Integration Tests Documentation Home</a></div>
+<hr>
+
 **Estimated Reading Time: 10 minutes**
+
 # Search API Time Filter Integration Tests
 
 ## Table of Contents

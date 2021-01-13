@@ -1,3 +1,6 @@
+<div align="center"><a href="/onestop/public-user">Public User Documentation Home</a></div>
+<hr>
+
 # Public User API Quick Start Guide
 
 OneStop has a RESTful API to query collection and granule level data that can be accessed via POST/GET. We support several community standards to make data discovery easier and index quite a few searchable fields that a user can specify when doing a query. All endpoints accept a JSON formatted request body and respond with a [JSON API Specification](http://jsonapi.org/) formatted response.

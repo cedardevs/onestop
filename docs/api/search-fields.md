@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/api">OneStop API</a></div>
+<hr>
+
+**Estimated Reading Time: 5 minutes**
+
 # Search Fields
 The table below shows all possible fields for a document returned by the OneStop Search API, along with whether they are searchable, and if so, whether an exact match is required (text fields only). Field names that are **bold** are returned when the search request `summary` flag is `true` (default value). Fields marked with a `G` are only returned for granules. Those marked with a `C` are only returned for collections. All fields are returned for flattened-granules, as a flattened granule is a granule and its collection flattened together. Note that for a returned document, if a field is not present it means it is null/was not given in the original metadata.
 
@@ -79,3 +84,6 @@ The table below shows all possible fields for a document returned by the OneStop
 | orderingInstructions<sup>C</sup>                |      N     	|      -      	|        	|
 | edition<sup>C</sup>                             |      N     	|      -      	|        	|
 | dsmmAverage<sup>C</sup>                         |      Y     	|      -      	|        	|
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

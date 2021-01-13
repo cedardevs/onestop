@@ -1,4 +1,6 @@
 
+**Estimated Reading Time: 5 minutes**
+
 # Feature Toggling
 
 ## Spring Profiles
@@ -104,3 +106,6 @@ The following profiles are active: sitemap
 ## Trending Searches
 
 See [Trending Searches](/docs/operator/deployment/v2/onestop/trending-searches.mdrches.md). Note, however, that this feature is stale.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

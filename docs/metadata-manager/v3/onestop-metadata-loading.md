@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/metadata-manager">Metadata Manager Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 15 minutes**
+
 ## Loading Metadata Into Inventory Manager
 Metadata can be published into the OneStop Inventory Manager system using the Registry application REST API. Use the Registry API `/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload metadata records. The application is equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
 NOTE: The REST API is also secured via CAS authentication. For more detail see [OneStop Registry Security documentation](../../operator/security/registry-security.md). 
@@ -186,5 +191,4 @@ Required Granule fields:
 In the event that only `FileInformation` is received, the default parser may be able to extract rudimentary content for the `fileIdentifier` and `title` fields from filename information. Hierarchy level name will be auto-populated in this case. However, the granule must still have the corresponding collection identified in the `Relationships` JSON block. 
     
 <hr>
-<div align="center"><a href="/onestop/metadata-manager/#Metadata-Manager-Navigation-Guide">Previous</a> | <a href="#loading-metadata-into-psi">Top of Page</a> | <a href="upstream-kafka-connect">Next</a></div>
-
+<div align="center"><a href="#">Top of Page</a></div>

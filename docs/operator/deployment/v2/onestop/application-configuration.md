@@ -1,5 +1,7 @@
 # Configuration and Requirements
 
+**Estimated Reading Time: 15 minutes**
+
 ## APIs
 
 OneStop contains two separate APIs.
@@ -118,3 +120,6 @@ ui:
       searchTerm: +nwlon +ports
       imageUrl: "https://image.url.png"
 ```
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

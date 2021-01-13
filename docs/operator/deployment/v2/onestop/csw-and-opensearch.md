@@ -1,5 +1,7 @@
 # CSW & OpenSearch
 
+**Estimated Reading Time: 5 minutes**
+
 ## Overview
 
 [Catalog Services for the Web](https://en.wikipedia.org/wiki/Catalog_Service_for_the_Web) and [OpenSearch](https://en.wikipedia.org/wiki/OpenSearch) APIs for the records in OneStop are provided via the `geoportal-search` module of the [Geoportal project](https://github.com/Esri/geoportal-server-catalog).
@@ -45,3 +47,6 @@ The following is a list of steps to set up and customize `geoportal-search` to p
 1. Inside the war, modify `WEB-INF/classes/gs/target/elastic/CustomElasticSchema.js` to map searches onto the OneStop index.
     - This is a non-trivial exercise which requires support from ESRI to do correctly. This is we've come up with so far: [CustomElasticSchema.js](https://github.com/cedardevs/onestop/blob/master/geoportal-search/conf/WEB-INF/classes/gs/target/elastic/CustomElasticSchema.js)
 1. Now deploy the exploded war (or re-zip it if you prefer) into your favorite servlet container, e.g. into `$CATALINA_BASE/webapps/geoportal-search` for a Tomcat installation.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

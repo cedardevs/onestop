@@ -1,3 +1,5 @@
+**Estimated Reading Time: 15 minutes**
+
 # Feature Toggling
 Features are written to be *disabled by default*. In order to enable features, set the appropriate profile in the application external configuration file. 
 The environment variable can contain multiple features by using a comma-delimited list. For example, the following could be used on the search API:
@@ -86,4 +88,4 @@ There are two *new* sections to the search API UI config YML.
 ```
 
 <hr>
-<div align="center"><a href="/onestop/operator/deployment/v3/system-requirements">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/operator">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

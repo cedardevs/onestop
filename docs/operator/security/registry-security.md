@@ -1,3 +1,5 @@
+**Estimated Reading Time: 10 minutes**
+
 # OneStop Registry Security
 The OneStop REST API endpoints that use for publishing, updating and removing a record are secured via CAS authentication. 
 
@@ -76,5 +78,4 @@ OneStop Registry is not a UI or browser frontend, and is not intended to be expo
   - https://www.pac4j.org/blog/spring-webmvc-pac4j-vs-spring-security-round-2-rest-apis.html  
 
 <hr>
-<div align="center"><a href="/onestop/operator">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/">Next</a></div>
-
+<div align="center"><a href="#">Top of Page</a></div>

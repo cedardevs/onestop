@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/api">OneStop API</a></div>
+<hr>
+
+**Estimated Reading Time: 20 minutes**
+
 ## Registry Overview
 
 The registry provides a horizontally-scalable API and storage for granule- and collection-level metadata backed by Kafka. 
@@ -190,3 +195,6 @@ Unsuccessful operations will return a response body with the format:
 ```
 
 **NOTE**: This functionality is ONLY available if a record was removed via a `DELETE` request. 
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

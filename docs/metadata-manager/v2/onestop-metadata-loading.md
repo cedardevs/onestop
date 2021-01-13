@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/metadata-manager">Metadata Manager Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 5 minutes**
+
 # Data Load Process
 
 ## Uploading Metadata
@@ -50,3 +55,6 @@ DELETE      | /onestop-admin/metadata?fileIdentifier={value};doi={value}      | 
 - <a href="idfootnote">2</a>: The response to POSTing a record will include an internal ID which is used in these requests.
 - <a href="paramfootnote">3</a>: Records can also be retrieved or deleted by providing the associated fileIdentifier and/or DOI value(s) as request parameters. If fileIdentifier and DOI provided match multiple records, *all found records will be returned or deleted*.
 - <a href="delfootnote">4</a>: Note that DELETEing a collection-level metadata record will result in the deletion of all associated granules too UNLESS there is an included `recursive=false` in the query string (e.g, `DELETE {...}/onestop-admin/metadata/123?recursive=false`). Use of this endpoint for facilitating collection-level metadata updates should be limited to breaking changes that require a re-upload of granules -- such as a fileIdentifier change.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

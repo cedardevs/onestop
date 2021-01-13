@@ -1,3 +1,6 @@
+
+**Estimated Reading Time: 15 minutes**
+
 # Trending Searches Feature Toggle
 
 ## Configuration
@@ -134,3 +137,6 @@ This search does not distinguish between terms used in collection and granule se
 This is expected to have no significant impact for now, since the OneStop UI doesn't depend on searching granules with search terms.
 
 Once the search API is in use for thin portals, or other outside searches supporting other groups, the trending searches could be impacted by how others are using the API, since there's currently no way to determine where the search is coming from.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

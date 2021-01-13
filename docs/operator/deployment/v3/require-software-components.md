@@ -1,3 +1,5 @@
+**Estimated Reading Time: 5 minutes**
+
 ## deployment System Requirements
 The core of the OneStop system are Apache Kafka and Elastic search. 
 Apache Kafka provides a distributed, durable, ordered, streaming event platform
@@ -69,4 +71,4 @@ the data. It also facilitates the evolution of those schemas over time, for exam
 For more detailed information see the [Confluent deployment guide](https://docs.confluent.io/current/schema-registry/docs/deployment.html).
 
 <hr>
-<div align="center"><a href="/onestop/operator/deployment/v3/application-configuration">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/operator/deployment/v3/feature-toggles">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

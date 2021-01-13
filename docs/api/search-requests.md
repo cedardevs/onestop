@@ -1,3 +1,7 @@
+<div align="center"><a href="/onestop/api">OneStop API</a></div>
+<hr>
+
+**Estimated Reading Time: 20 minutes**
 # Search API Requests
 
 ## Table of Contents
@@ -365,3 +369,6 @@ Below is an example querying for granule records referencing a collection identi
 The full metadata for a specific record of any of the three types can be requested using a GET request to the `/onestop-search/{type}/{id}` endpoints, where `{type}` is collection, granule, or flattened-granule, and `{id}` is the "id" value returned in the search results. For collections, a total count of granules connected to that collection is returned in the `meta` portion of the response.
 
 Sending a GET request to any of the `/onestop-search/{type}` endpoints, where no ID is specified, returns information about that type as a whole. At present, this information is limited to the total number of documents of the specified type available to search in OneStop.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

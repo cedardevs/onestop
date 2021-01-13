@@ -1,5 +1,4 @@
-<div align="center"><a href="/onestop/public-user">Public User Navigation Guide Home</a></div>
-<div align="center"><a href="/onestop/public-user/ui/features-in-depth#query-text-box">Return to UI Guide</a> | <a href="/onestop/public-user/api/quickstart">Return to API Guide</a></div>
+<div align="center"><a href="/onestop/api">OneStop API</a></div>
 <hr>
 
 **Estimated Reading Time: 20 minutes**
@@ -169,4 +168,4 @@ If you're unsure of something pertaining to the query syntax, feel free to searc
 
 
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/features-in-depth#query-text-box">Return to UI Guide</a> | <a href="#query-syntax">Top of Page</a> | <a href="/onestop/public-user/api/quickstart">Return to API Guide</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

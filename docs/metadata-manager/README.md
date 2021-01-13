@@ -1,5 +1,6 @@
 <div align="center"><a href="/onestop/">Documentation Home</a></div>
 <hr>
+
 **Estimated Reading Time: 15 minutes**
 
 # Metadata Manager Documentation
@@ -47,3 +48,6 @@ No matter how your metadata gets into OneStop, however, you'll probably be curio
   - [Public User Documentation](../public-user/)
   - [External Developer Navigation Guide](../external-developer) - Information pertaining to connecting your own software with a OneStop system.
   - [NOAA NCEI Metadata Homepage](https://ncei.noaa.gov/metadata)
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

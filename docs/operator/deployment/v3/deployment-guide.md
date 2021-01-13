@@ -1,3 +1,5 @@
+**Estimated Reading Time: 10 minutes**
+
 # Deployment
 There are several ways to deploy the system, corresponding with the several artifacts that it produces.
 
@@ -105,4 +107,4 @@ helm install ./helm/psi
 ```
 
 <hr>
-<div align="center"><a href="/onestop/operator">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/operator/deployment/v3/application-configuration">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>
