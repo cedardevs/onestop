@@ -4,6 +4,12 @@
 **Estimated Reading Time: 5 minutes**
 
 # Search Fields
+
+## Table of Contents
+* [All Record Types](#all-record-types)
+* [Collections and Flattened Granules Only](#collections-and-flattened-granules-only)
+* [Granules Only](#granules-only)
+
 The table below shows all possible fields for a document returned by the OneStop Search API, along with whether they are searchable, and if so, whether an exact match is required (text fields only). Field names that are **bold** are returned when the search request `summary` flag is `true` (default value). Fields marked with a `G` are only returned for granules. Those marked with a `C` are only returned for collections. All fields are returned for flattened-granules, as a flattened granule is a granule and its collection flattened together. Note that for a returned document, if a field is not present it means it is null/was not given in the original metadata.
 
 ## All Record Types
@@ -13,9 +19,6 @@ The table below shows all possible fields for a document returned by the OneStop
 
 
 ## Granules Only
-
-
-
 
 
 |                            Field                | Searchable 	| Exact 	| Notes |

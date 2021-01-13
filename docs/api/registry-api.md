@@ -5,6 +5,14 @@
 
 ## Registry Overview
 
+## Table of Contents
+* [The RESTful Interface](#the-restful-interface)
+    * [Creating And Replacing Documents](#creating-and-replacing-documents)
+    * [Retrieving Documents](#retrieving-documents)
+    * [Updating Existing Documents](#updating-existing-documents)
+    * [Deleting Documents](#deleting-documents)
+    * [Resurrecting Deleted Documents](#resurrecting-deleted-documents)
+
 The registry provides a horizontally-scalable API and storage for granule- and collection-level metadata backed by Kafka. 
 
 Incoming metadata can be in either JSON or ISO-19115 XML format.
