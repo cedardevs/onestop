@@ -6,54 +6,49 @@
 ## Registry Overview
 
 ## Table of Contents
-* [The RESTful Interface](#the-restful-interface)
-    * [Creating And Replacing Documents](#creating-and-replacing-documents)
-    * [Retrieving Documents](#retrieving-documents)
-    * [Updating Existing Documents](#updating-existing-documents)
-    * [Deleting Documents](#deleting-documents)
-    * [Resurrecting Deleted Documents](#resurrecting-deleted-documents)
+* [Endpoint](#endpoint)
+* [Creating And Replacing Documents](#creating-and-replacing-documents)
+* [Retrieving Documents](#retrieving-documents)
+* [Updating Existing Documents](#updating-existing-documents)
+* [Deleting Documents](#deleting-documents)
+* [Resurrecting Deleted Documents](#resurrecting-deleted-documents)
+* [Additional Information](../developer/additional-developer-info#upload-test-metadata)
 
-The registry provides a horizontally-scalable API and storage for granule- and collection-level metadata backed by Kafka. 
-
-Incoming metadata can be in either JSON or ISO-19115 XML format.
+The registry provides a horizontally-scalable API and storage for granule and collection-level metadata backed by Kafka. 
 
 It publishes metadata updates to Kafka, then uses a Kafka Streams app to aggregate those raw metadata events, merging them with previous events to provide a full picture of the metadata for each granule and collection. 
 
+### Endpoint
+Interactions with the Registry API are centered around the endpoint: 
 
-## The RESTful Interface
-Interactions with the registry API are centered around the endpoint: 
+* Old way:
+`{context-path}/metadata/{type}/{source}/{id}`
 
-`{context-path}/metadata/{required-type}/{optional-source}/{optional-id}`
+* New way:
+`{context-path}/api/registry/{type}/{source}/{id}`
+
+    Example: [https://cedardevs.org/onestop/api/registry/metadata/collection/00000000-0000-0000-0000-000000000000](https://cedardevs.org/onestop/api/registry/metadata/collection/00000000-0000-0000-0000-000000000000)
 
 Where:
-* The `context-path` is [explicitly set](/docs/operator/deployment/v2/psi/project-artifacts.md#config) at time of deployment (otherwise `localhost:8080`)
-* The `type` is one of the enum values for the [RecordType](https://github.com/cedardevs/schemas/blob/master/schemas-core/src/main/resources/avro/psi/recordType.avsc) object: 
+* `context-path` is [explicitly set](/onestop/operator/deployment/v2/psi/project-artifacts#config) at time of deployment (otherwise `localhost:8080`)
+* `type` one of the enum values for the [RecordType](https://github.com/cedardevs/schemas/blob/master/schemas-core/src/main/resources/avro/psi/recordType.avsc) object: 
   * `collection` 
   * `granule`
-* The `source` is one of the following:
+* `source` is one of the following:
   * For `collection` types: `comet` or `unknown` (default)
   * For `granule` types: `common-ingest`, `class`, or `unknown`
-* The `id` is a UUID value that can be either auto-generated or manually created.
+* `id` a UUID value that was either auto-generated or manually created.
 
 This API abides by [JSON API specifications](https://jsonapi.org/format/).
-
-Jump to...
-* [Create/Replace](#creating-and-replacing-documents)
-* [Retrieve](#retrieving-documents)
-* [Update](#updating-existing-documents)
-* [Delete](#deleting-documents)
-* [Resurrect](#resurrecting-deleted-documents) 🧟‍♂️🧟‍♀️
 
 **NOTE:** In addition to these user docs about the API, there is also an [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification)
 describing the details of all available endpoints. The specification is hosted by the API itself, at `{context-path}/openapi.yaml`.
 
----
-
 ### Creating And Replacing Documents
-Create and replace documents using `PUT` and `POST` requests. 
+Create and replace documents using `PUT` and `POST` requests via the [endpoint](#endpoint) specified above. 
 * The `type` must be specified
-* Omitting the source will result in the source being set to `unknown`
-* Omitting the `id` will cause PSI to generate a UUID value as the id to be used.
+* Omitting the source will result in the `source` being set to `unknown`
+* Omitting the `id` will cause Registry to generate and use a UUID value as the id.
 
 Successful operations will return a response body with the format:
 ```json
@@ -71,7 +66,7 @@ Unsuccessful operations will return a response body with the format:
 ```
 
 ### Retrieving Documents
-Retrieve stored documents using `GET` and `HEAD` requests. Requests sent to the above base URL will return the original input metadata in [the Input format](https://github.com/cedardevs/schemas/blob/master/src/main/resources/avro/psi/input.avsc). Requests sent to `{baseURL}/parsed` will return in the [ParsedRecord format](https://github.com/cedardevs/schemas/blob/master/src/main/resources/avro/psi/parsedRecord.avsc). The returned object is located in the `data.attributes` key of the returned JSON.
+Retrieve stored documents using `GET` and `HEAD` requests via the [endpoint](#endpoint) specified above. Requests sent will return the original input metadata in [the Input format](https://github.com/cedardevs/schemas/blob/master/src/main/resources/avro/psi/input.avsc). Requests sent to `{baseURL}/parsed` will return in the [ParsedRecord format](https://github.com/cedardevs/schemas/blob/master/src/main/resources/avro/psi/parsedRecord.avsc). The returned object is located in the `data.attributes` key of the returned JSON.
 * The `type` must be specified
 * Omitting the source will result in the source being set to `unknown`
 * The `id` must be specified
@@ -129,9 +124,8 @@ If the document isn't found but the `id` references a [deleted document](#deleti
 }
 ```
 
-
 ### Updating Existing Documents
-If the original input metadata format is JSON, `PATCH` requests can be used to modify or add subsections of the record. Currently, `PATCH` requests will fully replace an existing key-value pair or add a new one to the final merged document. JSON lists and objects sent in a `PATCH` request should therefore be the desired _complete_ element. 
+If the original input metadata format is JSON, `PATCH` requests  via the [endpoint](#endpoint) specified above can be used to modify or add subsections to a record. Currently, `PATCH` requests will fully replace an existing key-value pair or add a new one to the final merged document. JSON lists and objects sent in a `PATCH` request should therefore be the desired _complete_ element. 
 
 XML `PATCH` requests are not supported. 
 
@@ -154,11 +148,10 @@ Unsuccessful operations will return a response body with the format:
 }
 ```
 
-
 ### Deleting Documents
-Removing a document is possible with a `DELETE` request. This will "tombstone" the record in all downstream topics, which deletes it from any sinks connected to PSI (e.g. OneStop). Since PSI is modeled on the Kappa Architecture paradigm (see our [architectural background page](/docs/design/architectural-background.md) for some more info), the event(s) concerning any given record prior to a `DELETE` are still kept and so it is possible to "undo" a `DELETE` with a [resurrection request](#resurrecting-deleted-documents). But...
+Removing a document is possible with a `DELETE` request via the [endpoint](#endpoint) specified above. This will "tombstone" the record in all downstream topics, which deletes it from any sinks connected to PSI (e.g. OneStop). Since Registry is modeled on the Kappa Architecture paradigm (see our [architectural background page](/onestop/api/architectural-overview) for some more info), the event(s) concerning any given record prior to a `DELETE` are still kept and so it is possible to "undo" a `DELETE` with a [resurrection request](#resurrecting-deleted-documents). But...
 
-**WARNING**: Deleting a record via an intentially empty request body (i.e. `""`) on a `PUT` or `POST` is a non-guaranteed and unclean way to purge a metadata record from downstream sinks that cannot be undone through the Registry API. _Don't do it!_
+**WARNING**: Deleting a record via an intentionally empty request body (i.e. `""`) on a `PUT` or `POST` is a non-guaranteed and unclean way to purge a metadata record from downstream sinks that cannot be undone through the Registry API. _Don't do it!_
 
 * The `type` must be specified
 * Omitting the source will result in the source being set to `unknown`
@@ -178,7 +171,6 @@ Unsuccessful operations will return a response body with the format:
   "errors": []
 }
 ```
-
 
 ### Resurrecting Deleted Documents
 A document that has been `DELETE`d can be resurrected with a `GET` request to `{baseUrl}/resurrection`. 
