@@ -21,6 +21,11 @@
 - [Project Overview](#project-overview)
 - [Navigating The Documentation](#navigating-the-documentation)
   - [User Type](#user-types)
+    - [Public User](#public-user)
+    - [Metadata Manager](#metadata-manager)
+    - [Operator](#operator)
+    - [External Developer](#external-developer)
+    - [Internal Developer](#internal-developer)
 - [External Documentation](#external-documentation)
 - [Further Issues or Questions](#further-issues-or-questions)
 
@@ -46,15 +51,15 @@ OneStop has an enormous amount to offer, but it can be difficult to know how and
 
 ### User Types
 What's important to you when using OneStop varies significantly based on what you need to accomplish. Select the role below that most closely represents you to get started.
-* [Public User](public-user)
+* #### [Public User](public-user)
   * You're using the UI, API, or CLI in order to find data
-* [Metadata Manager](metadata-manager/)
+* #### [Metadata Manager](metadata-manager/)
   * You're responsible for metadata records that end up in OneStop, and are in search of info on loading, maintaining, or troubleshooting the records
-* [Operator](operator)
+* #### [Operator](operator)
   * You're deploying, upgrading, or maintaining an instance of OneStop in a production setting
-* [External Developer](external-developer)
+* #### [External Developer](external-developer)
   * You're developing external software that needs to interact with a running OneStop deployment
-* [Internal Developer](developer)
+* #### [Internal Developer](developer)
   * You're contributing to the OneStop code or even just trying to run a local instance on your personal machine
 
 
