@@ -3,7 +3,7 @@
 
 # Public User API Quick Start Guide
 
-OneStop has a RESTful API to query collection and granule level data that can be accessed via POST/GET. We support several community standards to make data discovery easier and index quite a few searchable fields that a user can specify when doing a query. All endpoints accept a JSON formatted request body and respond with a [JSON API Specification](http://jsonapi.org/) formatted response.
+OneStop has a RESTful [Search API](/onestop/api) to query collection and granule level data that can be accessed via POST/GET. We support several community standards to make data discovery easier and index quite a few searchable fields that a user can specify when doing a query. All endpoints accept a JSON formatted request body and respond with a [JSON API Specification](http://jsonapi.org/) formatted response.
 
 ## Table of Contents
 
