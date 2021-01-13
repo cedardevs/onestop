@@ -38,7 +38,7 @@ The project is composed of four high level "components":
 * A state-of-the-art browser-based User Interface (UI) that has accessibility built into every feature, and,
 * A command line interface (CLI) enabling more efficient script and algorithm execution when reliant on information retrieved from the Search API
 
-If you're interested in learning about the finer details of the "components" described above, head over to our [Architectural Overview](api/architectural-overview.md) page to begin your deep-dive journey.
+If you're interested in learning about the finer details of the "components" described above, head over to our [Architectural Overview](api/architectural-overview) page to begin your deep-dive journey.
 
 You can check out OneStop in action while exploring NOAA's Earth science data offerings at [NOAA's OneStop](https://data.noaa.gov/onestop/) search portal. If the latest features in progress are what you're after, however, take a peek at our [test host](https://sciapps.colorado.edu/onestop/). *Keep in mind the latter could be broken at any time as it represents what's currently under development.*
 
