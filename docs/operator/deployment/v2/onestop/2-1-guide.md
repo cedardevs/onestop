@@ -96,7 +96,7 @@ https://sciapps.colorado.edu/onestop/collections/details/AWoDH-ikve2FB-bXY1r2
 ...
 ```
 
-See [Feature Toggles](/docs/operator/deployment/v2/onestop/feature-toggles.mdggles.md) for more information about enabling sitemaps correctly.
+See [Feature Toggles](/onestop/operator/deployment/v2/onestop/feature-toggles) for more information about enabling sitemaps correctly.
 
 ##### Onestop Client Configuration
 

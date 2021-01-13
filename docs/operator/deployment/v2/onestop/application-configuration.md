@@ -30,7 +30,8 @@ Additionally, since the code is a single page application, contained in a single
 
 For example, if you are hosting the client using `httpd` and the Search API application is running on the same host on port 8097, you could add the following to your `httpd.conf`:
 
-```<LocationMatch ^/onestop/(?!api).* >
+```
+<LocationMatch ^/onestop/(?!api).* >
   RewriteEngine on
   # RewriteRule ^/onestop/(.*) /$1
 
@@ -56,7 +57,7 @@ For example, if you are hosting the client using `httpd` and the Search API appl
 </Location>
 ```
 
-Note that the Metadata API application has other endpoints, e.g. for uploading metadata and triggering indexing,
+**Note:** The Metadata API application has other endpoints, e.g. for uploading metadata and triggering indexing,
 but that these endpoints are potentially destructive and should likely not be exposed to the public.
 
 
@@ -65,11 +66,11 @@ Configuring OneStop to run for development, testing, and production purposes is 
 
 Since OneStop is a Spring Boot application, it can easily take advantage of this externalized configuration. Spring will look for properties files, YAML files, environment variables, and command-line arguments in the order specified [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html). The compiled OneStop API applications include an application.yml file ([Search API's default config values](/application.yml) and [Metadata API's default config values](/application.yml)) that contains the default values. However, if Spring encounters additional configuration parameters in its step-through of specified locations, any or all of these parameters can be overwritten or added to. Likewise, previously unspecified values may be added.
 
-The [2.1 Deployment Guide](/docs/operator/deployment/v2/onestop/2-1-guide.md) has a more in-depth discussion of configuration values around feature toggles.
+The [2.1 Deployment Guide](/onestop/operator/deployment/v2/onestop/2-1-guide) has a more in-depth discussion of configuration values around feature toggles.
 
 ## Running Locally
 
-See [Quickstart](/docs/developer/quickstart.md).
+See [Quickstart](/onestop/developer/quickstart).
 
 ## Running on a Server
 Wherever you choose to put your configuration values, it is important that some of the default values be replaced and otherwise optional parameters be provided before deploying OneStop to a production environment. Let's go through the categories:
