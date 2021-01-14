@@ -1,6 +1,9 @@
-# OneStop 2.1 Deployment Notes
+<div align="center"><a href="/onestop/operator">Operator Documentation Home</a></div>
+<hr>
 
 **Estimated Reading Time: 15 minutes**
+
+# OneStop 2.1 Deployment Notes
 
 ## Migrating from 2.0 to 2.1
 

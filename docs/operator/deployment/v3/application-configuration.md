@@ -1,3 +1,6 @@
+<div align="center"><a href="/onestop/operator">Operator Documentation Home</a></div>
+<hr>
+
 **Estimated Reading Time: 5 minutes**
 
 # Configuration 
@@ -14,9 +17,6 @@ The system supports different mechanism to configure applications, such as Envir
 ## APIs
 
 ## Client
-
-```
-
 
 <hr>
 <div align="center"><a href="#">Top of Page</a></div>
