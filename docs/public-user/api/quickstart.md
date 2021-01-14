@@ -7,9 +7,9 @@ OneStop has a RESTful [Search API](/onestop/api) to query collection and granule
 
 ## Table of Contents
 
-- [Community Standards](/onestop/public-user/api/community-standards.md) - OneStop supports searching using the Open Geospatial Consortium's (OGC), [Catalog Services for the Web](http://www.opengeospatial.org/standards/cat) (CSW) API, and the [OpenSearch](http://www.opensearch.org) specification.
-- [Search Fields](/onestop/api/search-fields.md) - All the possible returned fields via a search.
-- [Query Syntax](/onestop/api/search-query-syntax.md) - Commonly used search query syntax.
-- [Geometries at the Antimeridian](/onestop/public-user/api/antimeridian.md) - There are some gotchas about the geometry searches.
-- [Search API Requests](/onestop/api/search-requests.md) - Search API request endpoints.
-- [Search API Responses](/onestop/api/search-responses.md) - Search responses follow a specific format.
+- [Community Standards](/onestop/public-user/api/community-standards) - OneStop supports searching using the Open Geospatial Consortium's (OGC), [Catalog Services for the Web](http://www.opengeospatial.org/standards/cat) (CSW) API, and the [OpenSearch](http://www.opensearch.org) specification.
+- [Search Fields](/onestop/api/search-fields) - All the possible returned fields via a search.
+- [Query Syntax](/onestop/api/search-query-syntax) - Commonly used search query syntax.
+- [Geometries at the Antimeridian](/onestop/public-user/api/antimeridian) - There are some gotchas about the geometry searches.
+- [Search API Requests](/onestop/api/search-requests) - Search API request endpoints.
+- [Search API Responses](/onestop/api/search-responses) - Search responses follow a specific format.

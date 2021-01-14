@@ -15,7 +15,7 @@
 * [Kafka connects](#kafka-connects)
 
 ## Integrating upstream application to the underlying Kafka system
-Metadata can be published into the OneStop system in two different ways, using Registry application [REST API](onestop-metadata-loading.md) or directly 
+Metadata can be published into the OneStop system in two different ways, using Registry application [REST API](onestop-metadata-loading) or directly 
 integrating upstream applications to the underline OneStop kafka cluster.  
 This guide will take a look at some approaches for integrating upstream applications and Kafka, and look at some examples regarding the tools Kafka supports.
 

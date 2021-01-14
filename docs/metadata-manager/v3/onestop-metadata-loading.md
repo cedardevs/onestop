@@ -5,10 +5,10 @@
 
 ## Loading Metadata Into Inventory Manager
 Metadata can be published into the OneStop Inventory Manager system using the Registry application REST API. Use the Registry API `/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload metadata records. The application is equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
-NOTE: The REST API is also secured via CAS authentication. For more detail see [OneStop Registry Security documentation](../../operator/security/registry-security.md). 
+NOTE: The REST API is also secured via CAS authentication. For more detail see [OneStop Registry Security documentation](../../operator/security/registry-security). 
     
 ### Available Methods
-The Registry application has various endpoints that are also described in the [user docs about the REST API](../../api/registry-api.md) and
+The Registry application has various endpoints that are also described in the [user docs about the REST API](../../api/registry-api) and
 [OpenAPI Specification documentation](https://sciapps.colorado.edu/registry/openapi.yaml) in detail.
 
 #### URL Parameter Notes: 

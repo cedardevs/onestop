@@ -4,7 +4,7 @@
 **Estimated Reading Time: 15 minutes**
 
 # UI Features In Depth
-While it's entirely possible to narrow your search on OneStop down with just a few steps, as demonstrated in the previous [quick start guide](quickstart.md), many features enable very precise queries to be submitted.
+While it's entirely possible to narrow your search on OneStop down with just a few steps, as demonstrated in the previous [quick start guide](quickstart), many features enable very precise queries to be submitted.
 
 The goal for this guide is to explain all the functionality available on the UI. Features are described in the order they are encountered -- from the landing page, through collection results, to file (granule) downloading.
 
