@@ -1244,20 +1244,29 @@ components:
       type: object
     fieldQuery:
       additionalProperties: false
-      description: ""
+      description: "Query by specific fields and their values. This is *not* a Lucene text search, and only includes fields that are not appropriate for a full text search. If the \"exactMatch\" parameter is set to false, you may include the wildcard characters '*' or '?' in the \"value\" parameter. "
       properties:
         type:
           description: "Query type."
           enum:
             - fieldQuery
         field:
-          description: ""
-          type: string
+          description: "The field name to search on. This supports one level of nesting, e.g. \"links.linkUrl\". Note: you cannot perform this query on Lucene text fields such as \"filename\" or \"title\". For those cases, use the \"granuleName\" or \"queryText\" queries instead."
+          enum:
+            - checksums.algorithm
+            - checksums.value
+            - doi
+            - links.linkUrl
+            - links.linkFunction
+            - links.linkProtocol
+            - fileFormat
+            - dataFormats.name
+            - dataFormats.version
         value:
-          description: ""
+          description: "Text to search on for the provided field. If \"exactMatch\" is false, this can include the wildcard characters '*' or '?'."
           type: string
         exactMatch:
-          description: ""
+          description: "Controls the matching type of the provided \"value\" text. Defaults to true, meaning it will only return results that match the \"value\" exactly. If false, you can include the wildcard characters '*' or '?' to match against a pattern."
           type: boolean
           default: true
       required:

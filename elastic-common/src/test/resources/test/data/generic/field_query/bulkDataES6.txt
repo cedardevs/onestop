@@ -1,0 +1,10 @@
+{ "index": { "_index": "field_query", "_type": "_doc", "_id": "1" } }
+{ "fileFormat": "NetCDF", "dataFormats": [{ "version": "4", "name": "NETCDF" }], "links":[{"linkFunction":"download","linkUrl":"s3://noaa-goes16/1111.nc","linkName":"Amazon S3","linkProtocol":"HTTPS"}] }
+{ "index": { "_index": "field_query", "_type": "_doc", "_id": "2" } }
+{ "fileFormat": "NetCDF", "dataFormats": [{ "version": "4", "name": "NETCDF" }], "links":[{"linkFunction":"download","linkUrl":"s3://noaa-goes16/2222.nc","linkName":"Amazon S3","linkProtocol":"HTTPS"}] }
+{ "index": { "_index": "field_query", "_type": "_doc", "_id": "3" } }
+{ "fileFormat": "NetCDF", "dataFormats": [{ "version": "4", "name": "NETCDF" }], "links":[{"linkFunction":"download","linkUrl":"s3://noaa-goes16/3333.nc","linkName":"Amazon S3","linkProtocol":"HTTPS"}] }
+{ "index": { "_index": "field_query", "_type": "_doc", "_id": "4" } }
+{ "fileFormat": "NetCDF", "dataFormats": [{ "version": "4", "name": "NETCDF" }], "links":[{"linkFunction":"download","linkUrl":"s3://noaa-goes16/4444.nc","linkName":"Amazon S3","linkProtocol":"HTTPS"}] }
+{ "index": { "_index": "field_query", "_type": "_doc", "_id": "5" } }
+{ "fileFormat": "NetCDF", "dataFormats": [{ "version": "4", "name": "NETCDF" }], "links":[{"linkFunction":"download","linkUrl":"s3://noaa-goes16/5555.nc","linkName":"Amazon S3","linkProtocol":"HTTPS"}] }
