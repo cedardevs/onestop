@@ -56,6 +56,9 @@ task<Sync>("sync") {
         dependsOn("tar") // can't untar without tar
         from(tarTree(file("${buildDir}/libs/${publish.title}.tar.gz")))
     }
+    into("/etc/nginx/conf.d") {
+        from(file("${projectDir}/conf.d"))
+    }
 }
 
 // jib & jibDockerBuild rely on synced files in staging directory
