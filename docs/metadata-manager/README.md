@@ -15,11 +15,16 @@ Since this role requires interacting with several OneStop components, you are en
 - [References](#references)
 
 ## Creating Metadata
-   - [Supported Metadata Formats](metadata-formats)
-   
-   For a better OneStop discovery experience, please be mindful of what fields are in your metadata compared to the [OneStop indexed fields](iso-indexing-mapping). These indexed fields represent what you can search for via OneStop. While these are not 100% of the available search fields they are the majority.
+Incoming metadata can be in either JSON or ISO-19115-2 XML format.
 
-   - [Search Fields Requiring An Exact Match With An Inexact Query](../api/search-query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query) - Has information on how to query OneStop for a very useful list of the available search fields.
+* [XML template](https://data.noaa.gov/waf/templates/iso_u/xml/ncei_template-clean.xml)
+* [Metadata guide](https://drive.google.com/file/d/1RqI3pqYr1vLCjj--7mklkNoclOwOrpDD/view)
+
+Questions specific to these documents should be directed to NCEI Metadata WG at ncei.metadata@noaa.gov.
+
+For a better OneStop discovery experience, please be mindful of what fields are in your metadata compared to the [OneStop indexed fields](iso-indexing-mapping). These indexed fields represent what you can search for via OneStop. While these are not 100% of the available search fields they are the majority.
+
+For information on querying OneStop and a list of its search fields look at [Search Fields Requiring An Exact Match With An Inexact Query](../api/search-query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query)
    
 ## Loading Metadata into OneStop
 There are two ways to upload metadata into the OneStop system:
