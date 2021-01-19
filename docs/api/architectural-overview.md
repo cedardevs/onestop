@@ -1,7 +1,7 @@
 <div align="center"><a href="/onestop/">Documentation Home</a></div>
 <hr>
 
-**Estimated Reading Time: 5 minutes**
+**Estimated Reading Time: 15 minutes**
 # Architectural Background
 
 ## Table of Contents
@@ -26,7 +26,7 @@ The flow of metadata through OneStop can be summarized in 4 conceptual steps: lo
 
 Anything grey is external to a OneStop deployment, and represents places where non-required externally developed tools could connect to OneStop. Examples are tools migrating metadata into OneStop, subject matter expert scripts that can be triggered from within the OneStop workflow to enhance received metadata, and custom user interfaces using the Search API.
 
-Non-gray elements are all components of a full OneStop deployment. Green elements -- Kafka and Elasticsearch -- are the 3rd party software components that OneStop is built on top of. Only privileged users (like those that are responsible for managing the servers a deployment runs on) should ever access or configure these components directly. Blue components connect to Kafka and Elasticsearch and facilitate many of the workflow steps, however, these components cannot be interacted with directly. Finally, the purple components are access points into the OneStop system by public users (Search API, UI, and CLI) and trusted users responsible for the metadata contained within OneStop (Registry API).
+Non-gray elements are all components of a full OneStop deployment. Green elements -- Kafka and Elasticsearch -- are the 3rd party software components that OneStop is built on top of. Only privileged users (like those that are responsible for managing the servers a deployment runs on) should ever access or configure these components directly. Blue components connect to Kafka and Elasticsearch and facilitate many of the workflow steps, however, these components cannot be interacted with directly. Finally, the purple components are access points into the OneStop system by public users (Search API, UI, and CLI) and trusted users responsible for the metadata contained within OneStop ([Registry API](registry-api)).
 
 ### Step One: Loading
 ![Flowchart: Metadata Managers (person icon) points to Registry API (purple). Automated Metadata publishers (grey) points to Registry API, and Kakfa (green). Registry API also points to Kafka.](../images/mm/s1-loading.png)
@@ -46,10 +46,14 @@ After metadata has been parsed and analyzed, it is put onto a Kafka topic from w
 ### Step Four: Search Access
 ![Flowchart: Public Users (person icon), Search CLI (purple), Search UI (purple), and Downstream Consumers (grey) point to Search API (purple), which points to Elasticsearch (Search Indices) (green).](../images/mm/s4-search-access.png)
 
-Metadata that passes validation steps and is indexed is now accessible from the Search API. The Search API services requests from the Search UI, Search CLI, and external users and consumers, translating them into Elasticsearch queries against the appropriate search index.
+Metadata that passes validation steps and is indexed is now accessible from the [Search API](search-api). The [Search API](search-api) services requests from the Search UI, Search CLI, and external users and consumers, translating them into Elasticsearch queries against the appropriate search index.
+
+More info on the [Search API](search-api)
 
 ## Metadata CRUD: The Registry API
-Your metadata might arrive into OneStop in a variety of ways, but once it gets added to the system the Registry API is the front door for basic CRUD operations (Create, Read, Update, Delete). However, depending on the external tool, if any, used to connect your data with OneStop, you may only ever need to familiarize yourself with read operations. That being said, the Registry is a straightforward RESTful API application, so operations are performed with HTTP requests -- `GET` (read), `POST` (create), `PUT` (update), `PATCH` (also for updating), and `DELETE`. The functionality of the Registry is covered in depth at a later point in the [Registry API guide](v3/onestop-metadata-loading.md).
+Your metadata might arrive into OneStop in a variety of ways, but once it gets added to the system the [Registry API](registry-api) is the front door for basic CRUD operations (Create, Read, Update, Delete). However, depending on the external tool, if any, used to connect your data with OneStop, you may only ever need to familiarize yourself with read operations. That being said, the Registry is a straightforward RESTful API application, so operations are performed with HTTP requests -- `GET` (read), `POST` (create), `PUT` (update), `PATCH` (also for updating), and `DELETE`. The functionality of the Registry is covered in depth at a later point in the [metadata loading guide](/onestop/metadata-manager/v3/onestop-metadata-loading).
+
+More Info on the [Registry API](registry-api)
 
 ## Metadata Storage: Kafka
 The core of the metadata storage is [Apache Kafka](https://kafka.apache.org/intro). Kafka is an open-source distributed stream-processing software platform that enables data to be transported, stored, and transformed in real-time. Kafka can be scaled horizontally, even across data centers, while simultaneously processing and storing data quickly and compactly. While it is true that OneStop stores metadata in Kafka, the use of it is not limited there. Metadata movement to/from external systems, parsing, analysis, and transformation is all facilitated by Kafka. As a metadata manager, chances are very slim you'll interact directly with Kafka, but knowing it's there gives confidence your metadata is being securely, durably, and efficiently stored.
