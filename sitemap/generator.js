@@ -1,8 +1,9 @@
 const convertCollectionToXml = require('./transformUtils');
-const processBodyData = require('./transformUtils');
+//const downloadString = require('./transformUtils');
 const request = require('request');
 const yargs = require('yargs');
 const fs = require('fs');
+const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
 
 const argv = yargs
     .option('api', {
@@ -65,15 +66,30 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                 </sitemap>
             </sitemapindex>
             */
+           //TODO - Error check for body.data. If not there body.error expected. If body.data is there check
+           // For body.data length > 0
+           //Throw error and exit
            let lastStagedDate = body.data[pageSize-1].attributes.stagedDate;
            let maxCollectionSize = body.meta.total;
 
 
            //Helper method for looping through each granual in collection, replaces below code
-           processBodyData(body);
-        // body.data.forEach((d) => {
-        //      console.log(convertCollectionToXml(webBase, d));
-        // })
+           
+           
+            //processBodyData(body, maxCollectionSize);
+            var bodyDataString = ``;
+  
+
+            //console.log(body);
+                if(maxCollectionSize > 0){
+                body.data.forEach((d) => {
+                  bodyDataString += convertCollectionToXml(webBase, d);
+                   // console.log("Conv collec" + convertCollectionToXml(webBase, d));
+                   // console.log("bodyDataString: " + bodyDataString);
+                  })
+                }
+            console.log("\n ---- bodyDataString ---- \n" + bodyDataString + "\n ---- bodyDataString ---- \n");
+
             console.log('</urlset>')
 
 
@@ -86,6 +102,7 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
         console.log("LastStagedDate: " + lastStagedDate);
         console.log("maxCollectionSize: " + maxCollectionSize); //total granuals (body.meta.total)
         console.log("pageSize: " + pageSize);
+        //console.log()
 
 
 
