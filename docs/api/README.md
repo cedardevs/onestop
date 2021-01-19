@@ -5,9 +5,5 @@
 
 ## Table of Contents
 - [Architectural Overview](architectural-overview) - In-depth overview of the metadata flow and architecture of OneStop.
-- [Registry API](registry-api) - CRUD operations (Create, Read, Update, and Delete) on metadata.
-- Search API
-    - [Search Requests](search-requests) - What requests can be done on the Search endpoints.
-    - [Search Query Syntax](search-query-syntax) - In-depth on the ElasticSearch query syntax used by our Search API.
-    - [Search Fields](search-fields) - Search fields you can reference in a search query.
-    - [Search Responses](search-responses) - Format of the search response.
+- [Registry API](registry-api) - If you need to upload metadata to OneStop or do any CRUD operations (Create, Read, Update, and Delete) Registry API is one way to do this. 
+- [Search API](search-api) - Search OneStop for metadata via the Search API.
