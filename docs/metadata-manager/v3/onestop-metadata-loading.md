@@ -3,20 +3,30 @@
 
 **Estimated Reading Time: 15 minutes**
 
-## Loading Metadata Into Inventory Manager
-Metadata can be published into the OneStop Inventory Manager system using the Registry application REST API. Use the Registry API `/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload metadata records. The application is equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
-NOTE: The REST API is also secured via CAS authentication. For more detail see [OneStop Registry Security documentation](../../operator/security/registry-security). 
+# Loading Metadata Into Inventory Manager
+
+Metadata can be published into the OneStop Inventory Manager system using the [Registry](/onestop/api/registry-api) application REST API. Use the Registry API `/registry/metadata/${type}/${source}/${UUID}` resource endpoint to upload metadata records. The application is equipped with a RESTful interface that allows full CRUD control of metadata records stored by the system.   
+NOTE: The Registry REST API is secured via CAS authentication. For more detail see [OneStop Registry Security documentation](/onestop/operator/security/registry-security). 
+
+## Table of Contents
+* [Available Methods](#available-methods)
+    * [URL Parameter Notes](#url-parameter-notes)
+    * [HTTP Methods](#http-methods)
+    * [Uploading an XML Collection record](#uploading-an-xml-collection-record)
+    * [Uploading an XML Granule record](#uploading-an-xml-granule-record)
+    * [Uploading a JSON record](#uploading-a-json-record)
+    * [OneStop Required Fields](#onestop-required-fields)
     
 ### Available Methods
-The Registry application has various endpoints that are also described in the [user docs about the REST API](../../api/registry-api) and
+The Registry application has various endpoints that are also described in the [Registry API](/onestop/api/registry-api) and
 [OpenAPI Specification documentation](https://sciapps.colorado.edu/registry/openapi.yaml) in detail.
 
-#### URL Parameter Notes: 
-- Types: The type of record. This is currently either `collection` or `granule`. **This URL parameter is REQUIRED.**
+#### URL Parameter Notes 
+- Type: The type of record. This is currently either `collection` or `granule`. **This URL parameter is REQUIRED.**
 - Source: The name of an external system which produced this record, example: `comet` for collection and `common-ingest` for granules. This can be omitted when POSTing and is set to `unknown` in this case.
 - Id: A valid universally unique identifier (UUID) which is a 128-bit number that identifies a unique record. Not including this value with POSTing will result in an automatically generated UUID for the received record. 
 
-#### HTTP Methods:
+#### HTTP Methods 
 
 - Create a new Collection/Granule record 
 
@@ -55,7 +65,7 @@ HTTP Method | Endpoint                                       | Body             
 GET         | /metadata/${type}/${source}/${id}/resurrection | (none)            | resurrect a metadata record 
  
 
-#### Uploading an XML Collection record: 
+#### Uploading an XML Collection record 
 Example: Uploading a COLLECTION type XML file from a source COMET with uuid 11111111-1111-2222-3333-44444444: 
 ```
 curl -iu <username:password> -v -X PUT -H "content-type: application/xml" http://data-dev.ncei.noaa.gov/psi-registry/ 
@@ -76,7 +86,7 @@ Unsuccessful operations will return a response body with an error message format
 }
 ```
 
-#### Uploading an XML Granule record: 
+#### Uploading an XML Granule record 
 When uploading granules in XML format, it is imperative to follow-up with a **PATCH** request containing the JSON `Relationships` indicating the associated collection UUID so that the granule is correctly linked to its collection downstream in the OneStop Search API/UI:
 ```
 {
@@ -89,7 +99,7 @@ When uploading granules in XML format, it is imperative to follow-up with a **PA
 }
 ```
 
-#### Uploading a JSON record: 
+#### Uploading a JSON record 
 All metadata input in JSON format should contain `FileLocation`. If the input metadata is a granule, `Relationships` are required to indicate the UUID of the associated collection. Optionally, to ensure optimal discoverabilty and access in the OneStop Search API and UI, `FileInformation` and `Discovery` should be included as well.   
 
 **NOTE**: When submitting content to OneStop Inventory Manager via the Registry REST API, the request body can contain any or all of the following content (links direct to the associated Avro schemas describing the accepted content):

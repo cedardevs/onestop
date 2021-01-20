@@ -30,7 +30,8 @@ For information on querying OneStop and a list of its search fields look at [Sea
 There are two ways to upload metadata into the OneStop system:
 
 ### Registry API
-  - [Upload Test Metadata](../developer/additional-developer-info#upload-test-metadata)
+  - [Loading Metadata into OneStop](v3/onestop-metadata-loading)
+  - [Upload Test Metadata](/onestop/developer/additional-developer-info#upload-test-metadata)
   - [The Registry API Guide](v3/onestop-metadata-loading)
   - [Registry API](../api/registry-api) - More detail about the Registry API.
   
