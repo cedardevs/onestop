@@ -3,7 +3,7 @@
 
 **Estimated Reading Time: 20 minutes**
 
-## Registry Overview
+# Registry Overview
 
 ## Table of Contents
 * [Endpoint](#endpoint)
