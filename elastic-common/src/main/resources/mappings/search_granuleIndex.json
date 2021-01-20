@@ -152,9 +152,7 @@
             "doc_values": false
           },
           "linkProtocol": {
-            "type": "keyword",
-            "index": false,
-            "doc_values": false
+            "type": "keyword"
           },
           "linkUrl": {
             "type": "keyword"

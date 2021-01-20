@@ -757,10 +757,17 @@ class SearchRequestParserServiceTest extends Specification {
             ]
         ],
         linkProtocols     : [
-            terms         : [
-                field: 'linkProtocol',
-                size : Integer.MAX_VALUE,
-                order: ['_term': 'asc']
+            nested: [
+                path: 'links'
+            ],
+            aggregations: [
+                foobar: [
+                    terms: [
+                        field: 'links.linkProtocol',
+                        size: Integer.MAX_VALUE,
+                        order: ['_term': 'asc']
+                    ]
+                ]
             ]
         ],
         serviceLinkProtocols: [
@@ -879,10 +886,17 @@ class SearchRequestParserServiceTest extends Specification {
           ]
         ],
         linkProtocols     : [
-            terms         : [
-                field: 'linkProtocol',
-                size : Integer.MAX_VALUE,
-                order: ['_term': 'asc']
+            nested: [
+                path: 'links'
+            ],
+            aggregations: [
+                foobar: [
+                    terms: [
+                        field: 'links.linkProtocol',
+                        size: Integer.MAX_VALUE,
+                        order: ['_term': 'asc']
+                    ]
+                ]
             ]
         ],
         serviceLinkProtocols: [
