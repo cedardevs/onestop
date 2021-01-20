@@ -64,6 +64,7 @@ This field must be present.
 ***
 
 ### `parentIdentifier`
+It is a best practice for this to be the collection id as it is in OneStop for this granule.
 Either path is ingested, in this order:
 > /gmi:MI_Metadata/gmd:parentIdentifier/gmx:Anchor[1] 
 
