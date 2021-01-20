@@ -157,7 +157,7 @@ build:
       spring:
         datasource:
           url: jdbc:postgresql://onestop-postgresql:5432/user
-          username: onestop
+          username: postgres
           password: foamcat
         jpa:
           database: POSTGRESQL
@@ -296,3 +296,9 @@ profiles:
               cp-kafka.enabled: "false"
               cp-schema-registry.enabled: "false"
               cp-zookeeper.enabled: "false"
+
+  - name: postgres
+    deploy:
+      helm:
+        releases:
+          - *onestop-postgresql

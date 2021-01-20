@@ -3,8 +3,8 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:9999/user
-    username: onestop
+    url: jdbc:postgresql://localhost:5432/user
+    username: postgres
     password: foamcat
     initialization-mode: always
     continue-on-error: false
