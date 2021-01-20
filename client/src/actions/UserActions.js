@@ -41,10 +41,15 @@ export const getUser = (
     return fetch(userProfileEndpoint, requestOptions)
       .then(response => response.json())
       .then(
-        response => {
-          dispatch(userProfileSuccess(response))
-          if (savedSearchEndpoint) {
-            dispatch(getSavedSearches(savedSearchEndpoint))
+        body => {
+          if (body.hasOwnProperty("data")) {
+            dispatch(userProfileSuccess(body))
+            if (savedSearchEndpoint) {
+              dispatch(getSavedSearches(savedSearchEndpoint))
+            }
+          }
+          else {
+            dispatch(userProfileFailure(body))
           }
         },
         error => {
@@ -56,5 +61,9 @@ export const getUser = (
 }
 
 export const logoutUser = () => {
-  return {type: USER_LOGOUT}
+  // TODO - make this work... or cusomize form?
+  return fetch("/onestop/logout", {method:"POST"})
+      .then(response => {
+        dispatch({type: USER_LOGOUT})
+      })
 }

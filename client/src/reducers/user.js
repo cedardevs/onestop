@@ -35,7 +35,9 @@ export const user = (state = initialState, action) => {
           .setIn([ 'expired' ], false)
       }
       else {
-        return state.setIn([ 'expired' ], true)
+        return state
+            .setIn([ 'isFetching' ], false)
+            .setIn([ 'expired' ], true)
       }
 
     case USER_PROFILE_FAILURE:

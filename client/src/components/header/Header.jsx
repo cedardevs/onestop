@@ -145,10 +145,11 @@ class Header extends React.Component {
     ) : (
       <HeaderLink
         title="Logout"
-        to={logoutEndpoint}
-        isExternalLink={true}
-        onClick={() => logoutUser()}
-      />
+        // to="/logout"
+        // isExternalLink={true}
+        onClick={() => logoutUser()}>
+        Logout
+      </HeaderLink>
     ) : null
 
     const userListItem = userButtonDisplayed ? (

@@ -22,6 +22,12 @@ tasks.getByName("test") {
 
 tasks.getByName("assemble") {
     dependsOn("npm_run_build")
+    dependsOn("tar")
+    dependsOn("jibDockerBuild")
+}
+
+tasks.getByName("npm_run_build") {
+    inputs.dir("${projectDir}/src")
 }
 
 tasks.getByName("jar") {
@@ -33,7 +39,7 @@ tasks.getByName("jar") {
 task<Tar>("tar") {
     val publish: Publish by project.extra
 
-    dependsOn("assemble")
+    dependsOn("npm_run_build")
 
     from(file("${buildDir}/webpack"))
     compression = Compression.GZIP
@@ -48,6 +54,8 @@ task<Tar>("tar") {
 task<Sync>("sync") {
     val publish: Publish by project.extra
     val jibExtraDir: String by project.extra
+
+    dependsOn("tar")
 
     into(jibExtraDir)
 
