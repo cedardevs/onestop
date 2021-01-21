@@ -20,7 +20,12 @@ export const userProfileFailure = error => {
     error: error,
   }
 }
-export const USER_LOGOUT = 'USER_LOGOUT'
+export const USER_LOGGED_OUT = 'USER_LOGGED_OUT'
+export const loggedOut = () => {
+  return {
+    type: USER_LOGGED_OUT
+  }
+}
 
 export const getUser = (
   userProfileEndpoint,
@@ -61,9 +66,10 @@ export const getUser = (
 }
 
 export const logoutUser = () => {
-  // TODO - make this work... or cusomize form?
-  return fetch("/onestop/logout", {method:"POST"})
+  return dispatch => {
+    return fetch("/onestop/logout", {method:"POST"})
       .then(response => {
-        dispatch({type: USER_LOGOUT})
+        dispatch(loggedOut())
       })
+  }
 }

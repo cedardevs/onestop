@@ -1,5 +1,5 @@
 import React from 'react'
-import {Route, Switch} from 'react-router'
+import {Route} from 'react-router'
 
 import CollectionSearchContainer from '../filters/collections/CollectionSearchContainer'
 import Logo from './Logo'
@@ -12,6 +12,7 @@ import {fontFamilySerif} from '../../utils/styleUtils'
 import FlexRow from '../common/ui/FlexRow'
 
 import HeaderCartLinkContainer from './HeaderCartLinkContainer'
+import Link from "../common/link/Link";
 
 const styleWrapper = {
   position: 'relative',
@@ -94,6 +95,19 @@ const styleSkipLinkFocus = {
   background: 'transparent',
 }
 
+const styleLink = {
+  textDecoration: 'none',
+  color: '#d7d7d7',
+  fontWeight: 300,
+  transition: 'color 0.3s ease',
+  paddingRight: '0.309em',
+  paddingLeft: '0.309em',
+}
+
+const styleLinkHover = {
+  color: '#21ABE2',
+}
+
 const styleSkipLinkHover = {
   color: '#277cb2',
   background: 'transparent',
@@ -143,13 +157,16 @@ class Header extends React.Component {
     const userActionButton = userButtonDisplayed ? !user.isAuthenticated ? (
       <HeaderLink title="Login" to={loginEndpoint} isExternalLink={true} />
     ) : (
-      <HeaderLink
-        title="Logout"
-        // to="/logout"
-        // isExternalLink={true}
-        onClick={() => logoutUser()}>
+      // <HeaderLink
+      //   title="Logout"
+      //   to={logoutEndpoint}
+      //   isExternalLink={true}
+      //   onClick={() => logoutUser()}
+      // />
+      // TODO - switch back to router-based HeaderLink after customizing logout view?
+      <Link title="Logout" onClick={() => logoutUser()} style={styleLink} styleHover={styleLinkHover}>
         Logout
-      </HeaderLink>
+      </Link>
     ) : null
 
     const userListItem = userButtonDisplayed ? (
