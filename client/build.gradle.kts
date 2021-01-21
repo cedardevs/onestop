@@ -60,7 +60,7 @@ task<Sync>("sync") {
     into(jibExtraDir)
 
     // untar and sync the client src
-    into("/usr/share/nginx/html/onestop") {
+    into("/usr/share/nginx/html") {
         dependsOn("tar") // can't untar without tar
         from(tarTree(file("${buildDir}/libs/${publish.title}.tar.gz")))
     }
