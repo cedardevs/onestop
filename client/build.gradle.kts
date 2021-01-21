@@ -22,8 +22,6 @@ tasks.getByName("test") {
 
 tasks.getByName("assemble") {
     dependsOn("npm_run_build")
-    dependsOn("tar")
-    dependsOn("jibDockerBuild")
 }
 
 tasks.getByName("npm_run_build") {
