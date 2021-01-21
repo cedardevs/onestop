@@ -63,7 +63,7 @@ const UserDashboard = props => {
 
   const dashboardOrRedirect =
     user && user.isAuthenticated ? (
-      {dashboardElement}
+      dashboardElement
     ) : (
       <LoginRedirectComponent
         loginEndpoint={loginEndpoint}
