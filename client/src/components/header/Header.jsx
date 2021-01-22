@@ -163,8 +163,8 @@ class Header extends React.Component {
       //   isExternalLink={true}
       //   onClick={() => logoutUser()}
       // />
-      // TODO - switch back to router-based HeaderLink after customizing logout view?
-      <Link title="Logout" onClick={() => logoutUser()} style={styleLink} styleHover={styleLinkHover}>
+      // TODO - switch back to router-based HeaderLink after customizing logout view? see #1448
+      <Link title="Logout" onClick={() => logoutUser(logoutEndpoint)} style={styleLink} styleHover={styleLinkHover}>
         Logout
       </Link>
     ) : null

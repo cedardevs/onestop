@@ -65,9 +65,9 @@ export const getUser = (
   }
 }
 
-export const logoutUser = () => {
+export const logoutUser = (userLogoutEndpoint) => {
   return dispatch => {
-    return fetch("/onestop/logout", {method:"POST"})
+    return fetch(userLogoutEndpoint, {method:"POST"})
       .then(response => {
         dispatch(loggedOut())
       })
