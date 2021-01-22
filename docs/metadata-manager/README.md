@@ -11,7 +11,7 @@ Since this role requires interacting with several OneStop components, you are en
 - [Loading Metadata into OneStop](#loading-metadata-into-onestop)
     - [Registry API](#registry-api) - CRUD operations (Create, Read, Update, and Delete) on metadata.
     - [Kafka](#kafka) - Underlying way that Registry communicates when operations happen on metadata.
-- [Searching OneStop for Metadata](#searching-onestop-for-metadata) - How to find your metadata.
+- [Searching OneStop for Metadata](#searching-onestop-for-metadata) - How to find your metadata within OneStop.
 - [References](#references)
 
 ## Creating Metadata
@@ -22,19 +22,17 @@ Incoming metadata can be in either JSON or ISO-19115-2 XML format.
 
 Questions specific to these documents should be directed to NCEI Metadata WG at ncei.metadata@noaa.gov.
 
-For a better OneStop discovery experience, please be mindful of what fields are in your metadata compared to the [OneStop indexed fields](iso-indexing-mapping). These indexed fields represent what you can search for via OneStop. While these are not 100% of the available search fields they are the majority.
+For a better OneStop discovery experience, please be mindful of what fields are in your metadata. Since you probably want to search for you metadata later it would be wise to look in [Searching OneStop for Metadata](#searching-onestop-for-metadata). This can give you insight of what metadata fields you want to include, so you can search and find your metadata later.
 
-For information on querying OneStop and a list of its search fields look at [Search Fields Requiring An Exact Match With An Inexact Query](../api/search-query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query)
-   
 ## Loading Metadata into OneStop
 There are two ways to upload metadata into the OneStop system:
 
-### Registry API
-  - [Loading Metadata into OneStop](v3/onestop-metadata-loading)
-  - [Upload Test Metadata](/onestop/developer/additional-developer-info#upload-test-metadata)
-  - [The Registry API Guide](v3/onestop-metadata-loading)
-  - [Registry API](../api/registry-api) - More detail about the Registry API.
-  
+### [Registry API](/onestop/api/registry-api)
+Metadata can be published into the OneStop system via the [Registry API](/onestop/api/registry-api). The Registry application has a RESTful interface that allows for CRUD (Create, Read, Update, and Delete) actions on metadata.   
+Keep in mind the Registry REST API is secured via CAS authentication, more detail within the [OneStop Registry Security documentation](/onestop/operator/security/registry-security). 
+
+There's a little more information in [Upload Test Metadata](/onestop/developer/additional-developer-info#upload-test-metadata)
+ 
 ### Kafka
   - [Kafka Connect](v3/upstream-kafka-connect)
 
@@ -47,7 +45,7 @@ No matter how your metadata gets into OneStop, however, you'll probably be curio
 
   - [Indexed ISO Metadata Fields](iso-indexing-mapping)
   - [Search Query Syntax](../api/search-query-syntax)
-  - [Search Fields Requiring An Exact Match With An Inexact Query](../api/search-query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query)
+  - [Search Fields Requiring An Exact Match With An Inexact Query](../api/search-query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query) - This lists an endpoint 
 
 ## References
   - [Architectural Overview](architectural-overview) - In-depth overview of the metadata flow and architecture of OneStop.
