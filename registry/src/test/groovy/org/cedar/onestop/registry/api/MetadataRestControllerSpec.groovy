@@ -22,6 +22,7 @@ class MetadataRestControllerSpec extends Specification {
   static final testAggInput = AggregatedInput.newBuilder()
       .setType(RecordType.collection)
       .setRawJson('{"hello":"world"}')
+      .setRawXml('<?xml version="1.0" encoding="UTF-8"?><fileIdentifier>foo:bar:baz</fileIdentifier>')
       .setInitialSource('test')
       .build()
   static final testParsed = ParsedRecord.newBuilder().setType(RecordType.collection).build()
@@ -131,6 +132,34 @@ class MetadataRestControllerSpec extends Specification {
     result.data.type == testType.toString()
     result.data.attributes == testParsed
     result.errors == null
+  }
+
+  def 'returns raw XML with default source'() {
+    def path = "/metadata/${testType}/${testId}"
+    def request = buildMockRequest(path)
+
+    when:
+    def result = controller.retrieveRaxXml(testType.toString(), testId, request, mockResponse)
+
+    then:
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
+
+    and:
+    result == testAggInput.rawXml
+  }
+
+  def 'returns raw XML with explicit source'() {
+    def path = "/metadata/${testType}/${testSource}/${testId}"
+    def request = buildMockRequest(path)
+
+    when:
+    def result = controller.retrieveRaxXml(testType.toString(), testSource, testId, request, mockResponse)
+
+    then:
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
+
+    and:
+    result == testAggInput.rawXml
   }
 
   def 'handles nonexistent input'() {
