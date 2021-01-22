@@ -1,3 +1,6 @@
+<div align="center"><a href="/onestop/public-user">Public User Documentation Home</a></div>
+<hr>
+
 # Other CLI tools
 
 `scdr-files` was added as a subcommand to demonstrate how the OneStop API can be used to replace existing CLI tools while maintaining their programatic interface.
@@ -40,4 +43,4 @@ Text Query -
 `cli scdr-files --query "parentIdentifier:/.*NDBC-COOPS/"`
 
 <hr>
-<div align="center"><a href="/onestop/public-user/cli/quickstart">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

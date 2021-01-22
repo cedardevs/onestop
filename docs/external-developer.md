@@ -5,4 +5,4 @@
 
 Coming soon...
 
-  - [Integrating upstream applications with kafka](metadata-manager/v3/upstream-kafka-connect.md)
+  - [Integrating upstream applications with kafka](metadata-manager/v3/upstream-kafka-connect)
