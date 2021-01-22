@@ -30,13 +30,6 @@ spring:
         filters:
         - RemoveRequestHeader=Cookie\,Set-Cookie
         - StripPrefix=3
-      - id: search_legacy
-        uri: http://onestop-search:8080/
-        predicates:
-        - Path=/onestop-search/**
-        filters:
-        - RemoveRequestHeader=Cookie\,Set-Cookie
-        - StripPrefix=1
       - id: registry
         uri: http://onestop-registry/
         predicates:
