@@ -19,7 +19,8 @@ public class DocumentationService {
       "endYear",
       "links",
       "citeAsStatements",
-      "serviceLinks"
+      "serviceLinks",
+      "filesize"
   );
 
   static {
@@ -36,6 +37,8 @@ public class DocumentationService {
     facetNameMappings.put("horizontalResolution", "gcmdHorizontalResolution");
     facetNameMappings.put("verticalResolution"  , "gcmdVerticalResolution");
     facetNameMappings.put("temporalResolution"  , "gcmdTemporalResolution");
+    facetNameMappings.put("fileFormats"         , "fileFormat");
+    facetNameMappings.put("linkAccessTypes"     , "links.linkFunction");
 
     filterableFields.put("beginDate"                , "dateTimeFilter");
     filterableFields.put("endDate"                  , "dateTimeFilter");

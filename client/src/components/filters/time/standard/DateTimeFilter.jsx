@@ -109,6 +109,13 @@ const DateTimeFilter = ({
               'dateFilterStartDayErrors'
             )
           }
+          timeErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterStartTimeErrors'
+            )
+          }
         />
         <DateFieldset
           name="end"
@@ -132,6 +139,13 @@ const DateTimeFilter = ({
               'dateFilterRangeErrors'
             ) : (
               'dateFilterEndDayErrors'
+            )
+          }
+          timeErrorId={
+            !_.isEmpty(errorCumulative) ? (
+              'dateFilterRangeErrors'
+            ) : (
+              'dateFilterEndTimeErrors'
             )
           }
         />
@@ -172,8 +186,9 @@ const DateTimeFilter = ({
     <div style={styleFilterPanel}>
       <fieldset style={styleFieldsetBorder}>
         <legend id="timeFilterInstructions">
-          Provide a start date, end date, or both. Day and month are optional.
-          Future dates are not accepted.
+          Provide a start date, end date, or both. Day, month, and time are
+          optional. Future dates are not accepted. Time should be a 24 hour
+          format.
         </legend>
         <FlexColumn
           items={[
@@ -194,6 +209,9 @@ const DateTimeFilter = ({
               <div id="dateFilterStartDayErrors">
                 {renderErrors(start.day.errors)}
               </div>
+              <div id="dateFilterStartTimeErrors">
+                {renderErrors(start.time.errors)}
+              </div>
               <div id="dateFilterEndYearErrors">
                 {renderErrors(end.year.errors)}
               </div>
@@ -202,6 +220,9 @@ const DateTimeFilter = ({
               </div>
               <div id="dateFilterEndDayErrors">
                 {renderErrors(end.day.errors)}
+              </div>
+              <div id="dateFilterEndTimeErrors">
+                {renderErrors(end.time.errors)}
               </div>
               <div id="dateFilterRangeErrors">
                 {!_.isEmpty(errorCumulative) ? errorCumulative : null}

@@ -2,13 +2,13 @@ import React from 'react'
 
 import {consolidateStyles} from '../../../../utils/styleUtils'
 
-const styleDay = {
-  width: '1.5em',
+const styleTime = {
+  width: '5.236em',
   margin: 0,
   padding: '0 0.309em',
 }
 
-const DayField = props => {
+const TimeField = props => {
   const {
     name,
     required,
@@ -23,12 +23,12 @@ const DayField = props => {
     errorId,
   } = props
   const styleFieldApplied = {
-    ...styleDay,
+    ...styleTime,
     ...styleField,
   }
 
-  const id = `${name}DateDay`
-  const label = `day ${name}`
+  const id = `${name}DateTime`
+  const label = `time ${name}`
 
   return (
     <div style={styleLayout}>
@@ -36,24 +36,24 @@ const DayField = props => {
         style={consolidateStyles(styleLabel, valid ? null : styleLabelInvalid)}
         htmlFor={id}
       >
-        Day{required ? <span style={styleRequiredIndicator}>*</span> : null}
+        Time{required ? <span style={styleRequiredIndicator}>*</span> : null}
       </label>
       <input
         type="text"
         id={id}
         name={id}
-        placeholder="DD"
-        aria-placeholder="D D"
+        placeholder="HH:MM:SS"
+        aria-placeholder="H H : M M : S S"
         value={value}
         aria-invalid={!valid}
         aria-required={required}
         aria-errormessage={errorId}
         onChange={onChange}
-        maxLength="2"
+        maxLength="8"
         style={styleFieldApplied}
         aria-label={label}
       />
     </div>
   )
 }
-export default DayField
+export default TimeField

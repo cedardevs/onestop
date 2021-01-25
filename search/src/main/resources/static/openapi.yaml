@@ -1079,14 +1079,15 @@ components:
       type: object
     facetFilter:
       additionalProperties: false
-      description: "Filters results based on given terms (data formats, link protocols, service link protocols, GCMD keywords) where returned results MUST have the specified term values. Multiple facetFilter objects will be combined with logical AND; multiple values in a single facetFilter object will be combined with the logical OR."
+      description: "Filters results based on given terms (data formats, link protocols, service link protocols, link functions, GCMD keywords) where returned results MUST have the specified term values. Multiple facetFilter objects will be combined with logical AND; multiple values in a single facetFilter object will be combined with the logical OR."
       properties:
         name:
-          description: "One of the following: 'dataFormats', 'linkProtocols', 'serviceLinkProtocols', or GCMD keyword categories ('science', 'services', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'horizontalResolution', 'verticalResolution', 'temporalResolution')."
+          description: "One of the following: 'dataFormats', 'linkProtocols', 'serviceLinkProtocols', 'linkAccessTypes' or GCMD keyword categories ('science', 'services', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'horizontalResolution', 'verticalResolution', 'temporalResolution')."
           enum:
             - dataFormats
             - linkProtocols
             - serviceLinkProtocols
+            - linkAccessTypes
             - science
             - services
             - locations

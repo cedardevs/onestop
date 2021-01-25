@@ -1,3 +1,4 @@
+**Estimated Reading Time: 25 minutes**
 # Release Checklist
 
 **NOTE:** For now our CU sciapps machine/url is obsolete; we are in the process of switching to AWS
@@ -18,7 +19,7 @@
 1. Run `gradlew dependencyCheckAnalyze --info` to do OWASP security check
      - This runs nightly on the master branch.
 1. Ensure that included images are compressed in the git repo
-1. Run `retire -p` on client code [Retire JS](https://retirejs.github.io/retire.js/). This runs as part of the client-checks job in every circle build.
+1. Run `retire -p` on the web-client code [Retire JS](https://retirejs.github.io/retire.js/). This runs as part of the client-checks job in every circle build.
 
 ## Test Environment
 
@@ -285,7 +286,7 @@ Follow these steps to confirm that core behavior is working as expected, as well
 - [ ] https://sciapps.colorado.edu/onestop-search/openapi.yaml (should auto-download or display the yaml file, depending on browser)
 
 
-#### Data we should identify or add to the test set:
+## Data we should identify or add to the test set:
 
 - No time range (in normal fields)
 - Hazard image granules (it is in the test set, add it to the checklist)

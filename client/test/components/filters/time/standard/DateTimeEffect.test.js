@@ -62,14 +62,16 @@ describe('The DateTimeEffect hook', () => {
         expect(date.year.value).toEqual('')
         expect(date.month.value).toEqual('')
         expect(date.day.value).toEqual('')
+        expect(date.time.value).toEqual('')
       })
 
       test('with a date', () => {
-        const hook = initDate('default', '2010-02-13T14:32:12')
+        const hook = initDate('default', '2010-02-13T14:32:12Z')
         let date = getDate(hook)
         expect(date.year.value).toEqual('2010')
         expect(date.month.value).toEqual('1') // 0 - 11 internally
         expect(date.day.value).toEqual('13')
+        expect(date.time.value).toEqual('14:32:12')
       })
 
       describe('DO NOT DO THIS', () => {
@@ -81,6 +83,7 @@ describe('The DateTimeEffect hook', () => {
           expect(date.year.value).toEqual('NaN')
           expect(date.month.value).toEqual('NaN')
           expect(date.day.value).toEqual('NaN')
+          expect(date.time.value).toEqual('NaN:NaN:NaN')
         })
       })
     })
@@ -94,20 +97,24 @@ describe('The DateTimeEffect hook', () => {
         expect(start.year.value).toEqual('')
         expect(start.month.value).toEqual('')
         expect(start.day.value).toEqual('')
+        expect(start.time.value).toEqual('')
         expect(end.year.value).toEqual('')
         expect(end.month.value).toEqual('')
         expect(end.day.value).toEqual('')
+        expect(end.time.value).toEqual('')
       })
 
       test('with a date', () => {
-        const hook = initDateRange('2001-02-03', '2004-05-06')
+        const hook = initDateRange('2001-02-03T14:32:15', '2004-05-06T17:43:21')
         let [ start, end ] = hook.current
         expect(start.year.value).toEqual('2001')
         expect(start.month.value).toEqual('1') // 0 - 11 internally
         expect(start.day.value).toEqual('3')
+        expect(start.time.value).toEqual('14:32:15')
         expect(end.year.value).toEqual('2004')
         expect(end.month.value).toEqual('4') // 0 - 11 internally
         expect(end.day.value).toEqual('6')
+        expect(end.time.value).toEqual('17:43:21')
       })
     })
   })
@@ -127,19 +134,21 @@ describe('The DateTimeEffect hook', () => {
       expect(date.year.value).toEqual('')
       expect(date.month.value).toEqual('')
       expect(date.day.value).toEqual('')
+      expect(date.time.value).toEqual('')
 
       // simulate external change to variable + rerender
-      initialValue = '2001-01-01'
+      initialValue = '2001-01-01T11:12:13'
       rerender()
 
       date = getDate(result)
       expect(date.year.value).toEqual('2001')
       expect(date.month.value).toEqual('0')
       expect(date.day.value).toEqual('1')
+      expect(date.time.value).toEqual('11:12:13')
     })
 
     test('external update clears errors', () => {
-      let initialValue = '2001-01-01'
+      let initialValue = '2001-01-01T11:12:13'
 
       // including rerender in the result seems to make things more fragile but is needed to test external changes to variable used to init the hook
       // note naming the variable 'result' as 'hook' makes everything break for no reason
@@ -152,6 +161,7 @@ describe('The DateTimeEffect hook', () => {
       expect(date.year.valid).toBeTruthy()
       expect(date.month.value).toEqual('0')
       expect(date.day.value).toEqual('1')
+      expect(date.time.value).toEqual('11:12:13')
 
       act(() => {
         const d = getDate(result)
@@ -172,6 +182,7 @@ describe('The DateTimeEffect hook', () => {
       expect(date.year.value).toEqual('')
       expect(date.month.value).toEqual('')
       expect(date.day.value).toEqual('')
+      expect(date.time.value).toEqual('')
     })
 
     test('does not bother with group validation if there are individual errors', () => {
@@ -266,21 +277,42 @@ describe('The DateTimeEffect hook', () => {
       {
         // scope variables from hook
         const [ start, end ] = hook.current
-        expect(start.asMap).toEqual({year: null, month: null, day: null})
+        expect(start.asMap).toEqual({
+          year: null,
+          month: null,
+          day: null,
+          hour: null,
+          minute: null,
+          second: null,
+        })
       }
 
       simulateStartUserInteraction(hook, 'year', '2020')
       {
         // scope variables from hook
         const [ start, end ] = hook.current
-        expect(start.asMap).toEqual({year: 2020, month: null, day: null})
+        expect(start.asMap).toEqual({
+          year: 2020,
+          month: null,
+          day: null,
+          hour: null,
+          minute: null,
+          second: null,
+        })
       }
 
       simulateStartUserInteraction(hook, 'month', '0')
       {
         // scope variables from hook
         const [ start, end ] = hook.current
-        expect(start.asMap).toEqual({year: 2020, month: 0, day: null})
+        expect(start.asMap).toEqual({
+          year: 2020,
+          month: 0,
+          day: null,
+          hour: null,
+          minute: null,
+          second: null,
+        })
       }
     })
   })

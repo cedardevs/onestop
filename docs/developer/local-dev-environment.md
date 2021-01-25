@@ -1,18 +1,18 @@
-## Setting Up Local Dev Environment
+**Estimated Reading Time: 10 minutes**
+# Setting Up Local Dev Environment
 
 ## Table of Contents
 * [Requirements](#requirements)
 * [Local Development](#local-development)
 * [Recommended Development Cycle using Jib for gradle and Skaffold](#recommended-development-cycle-using-jib-for-gradle-and-skaffold)
-    * [One-off Variant](#one-off-variant)
 * [Accessing Kubernetes Services](#accessing-kubernetes-services)
 * [Persistent Storage](#persistent-storage)
 * [Optional Development Cycle](#optional-development-cycle)
 
-### Requirements
+## Requirements
 Reference the [Quickstart Guide](quickstart)
 
-### Local Development 
+## Local Development 
 The system uses Skaffold and Jib as a Gradle plugin to help with continuous development and deployment of Kubernetes 
 applications.
 
@@ -23,7 +23,7 @@ How it works:
 1. Monitors source code and automatically re-deploys when needed
 1. Steams logs from your deployed pods to your local terminal
 
-### Recommended Development Cycle using Jib for gradle and Skaffold
+## Recommended Development Cycle using Jib for gradle and Skaffold
 This means that Jib will monitor and catch any changes made to the source code and trigger a build. 
 This saves a separate docker image and redeploys the application. 
 ```bash
@@ -39,14 +39,14 @@ At this point, modifying a source file in a subproject will:
 1. Build its docker image
 1. Deploy its objects to the cluster
 
-#### One-off Variant
+### One-off Variant
 
 If you would rather not have gradle and skaffold watching for every change, you can skip the `-t` option.
 * Use `skaffold dev` to build and deploy your app every time your code changes,
 * Use `skaffold run` to build and deploy your app once, similar to a CI/CD pipeline
 
 
-### Accessing Kubernetes Services
+## Accessing Kubernetes Services
 
 The registry api is exposed through ambassador via a LoadBalancer service.
 When using docker desktop, you can access them at:
@@ -55,9 +55,9 @@ When using docker desktop, you can access them at:
 http://localhost/registry       # psi-registry
 ```
 
-From there you can do things like upload some metadata to test the system. Please refer to the [quickstart](quickstart) guide.
+From there you can do things like [upload test metadata](additional-developer-info#Upload Test Metadata) to test the system. Please refer to the [quickstart](quickstart) guide too.
 
-### Persistent Storage
+## Persistent Storage
 
 The zookeeper, kafka, and registry deployments are configured to store their data in volumes allocated by
 persistent volume claims. These claims remain when pods are removed and even when the deployments are deleted.
@@ -89,7 +89,7 @@ Or, to delete all volume claims in the current namespace:
 ```bash
 kubectl delete pvc --all
 ```
-### Optional Development Cycle
+## Optional Development Cycle
 From the root of this repo, you can run gradle task: 
 for the entire project  
 ```bash

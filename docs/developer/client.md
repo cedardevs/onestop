@@ -1,4 +1,5 @@
-# OneStop Browser Client
+**Estimated Reading Time: 5 minutes**
+# OneStop Web Client
 
 ## Table of Contents
 * [Getting started](#getting-started)
@@ -7,7 +8,7 @@
 * [Overwrite files with fixed formatting](#overwrite-files-with-fixed-formatting)
 
 ## Getting Started
-This guide focuses on running the OneStop browser client via `Node` for local development. To run the search API (used by the client) and other components, refer to the more expansive [Developer Guide](developer).
+This guide focuses on running the OneStop browser web-client via `Node` for local development. To run the search API (used by the client) and other components, refer to the more expansive [Developer Guide](developer).
 
 1. Clone this repo
 1. `cd client`
@@ -15,7 +16,7 @@ This guide focuses on running the OneStop browser client via `Node` for local de
     - installs dependencies into `./node_modules`
 1. Run one of the following:
   - `npm run dev` (search API on port 8097)
-  - `npm run kub` (search API on port 30097)
+  - `npm run kub` (search API on port 30097) Run the client with webpack instead of using the client that gets deployed with jib.
   - Starts up `webpack-dev-server` hosting a hot-reload version of the client
   - Starts mocha in watch mode to automatically run the tests as you work
 1. Go to http://localhost:9090/onestop/

@@ -1,16 +1,17 @@
 ###############################################################################
-# POSTGRES (for user api)
+# POSTGRES (for user api)  DEV ONLY! Override and encrypt these in production
 ###############################################################################
 postgresql:
   postgresqlDatabase: user
-  postgresqlUsername: onestop
+  postgresqlUsername: postgres
   postgresqlPassword: foamcat
+  postgresqlPostgresPassword: foamcat
 ###############################################################################
 # PGADMIN (for user api postgres)
 ###############################################################################
 pgadmin4:
   env:
-    email: onestop
+    email: postgres
     password: foamcat
   serverDefinitions:
     enabled: true
@@ -19,10 +20,19 @@ pgadmin4:
         "Name": "User API Database",
         "Group": "Servers",
         "Port": 5432,
-        "Username": "onestop",
+        "Username": "postgres",
         "Host": "onestop-postgresql",
         "SSLMode": "prefer",
         "MaintenanceDB": "user"
+      },
+      "2": {
+        "Name": "Development-Sandbox",
+        "Group": "Servers",
+        "Port": 5432,
+        "Username": "postgres",
+        "Host": "onestop-postgresql",
+        "SSLMode": "prefer",
+        "MaintenanceDB": "postgres"
       }
   ingress:
     enabled: true
