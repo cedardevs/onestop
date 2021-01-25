@@ -25,7 +25,7 @@ spec:
         node.data: true
         node.ingest: true
         node.store.allow_mmap: false
-        repositories.url.allowed_urls: ["https://*.s3.us-east-2.amazonaws.com/*"]
+        repositories.url.allowed_urls: ["https://*.s3.amazonaws.com/*"]
       podTemplate:
         spec:
           initContainers:
