@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/operator">Operator Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 5 minutes**
+
 ## Required Software Components
 
 The core of the PSI system is Apache Kafka. It provides a distributed, durable, ordered, streaming event platform
@@ -73,3 +78,6 @@ the data. It also facilitates the evolution of those schemas over time, for exam
     - Receives requests from PSI Registry, PSI Stream Manager, and any other downstream data consumers.
 
 For more detailed information see the [Confluent deployment guide](https://docs.confluent.io/current/schema-registry/docs/deployment.html).
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

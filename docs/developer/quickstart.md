@@ -1,3 +1,6 @@
+<div align="center"><a href="/onestop/developer">Developer Documentation Home</a></div>
+<hr>
+
 **Estimated Reading Time: 5 minutes**
 # Developer Guide
 ## Table of Contents
@@ -32,6 +35,9 @@ Run the command below to startup OneStop via the skaffold **`dev`** configuratio
 
 `skaffold dev`
 
+If you are running this for the first time it may fail to download all the images at once. Try re-executing `skaffold dev` a few times.
+You can also try `skaffold dev --status-check=false`. View the [quick-tips](quick-tips) for more options.
+
 ### Verify OneStop Starts Up
 Estimate startup time is ~13 minutes, ~18 minutes if this is a fresh startup and it has to download images.
 
@@ -41,7 +47,7 @@ Estimate startup time is ~13 minutes, ~18 minutes if this is a fresh startup and
     * `Status` column should be Running. CrashLoopBackOff indicates the pod failed to start.
 1. Browse to [OneStop](http://localhost/onestop)
 
-View [Quick Tips](quick-tips.md) for troubleshooting information.
+View [Quick Tips](quick-tips) for troubleshooting information.
 
 <hr>
 <div align="center"><a href="#">Top of Page</a></div>
