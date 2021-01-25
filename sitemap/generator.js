@@ -1,9 +1,13 @@
-const convertCollectionToXml = require('./transformUtils');
-//const downloadString = require('./transformUtils');
+//const convertCollectionToXml = require('./transformUtils');
+const processBodyData = require('./transformUtils');
 const request = require('request');
 const yargs = require('yargs');
 const fs = require('fs');
 const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
+
+'use strict';
+var rootCas= require('ssl-root-cas').create();
+require('https').globalAgent.options.ca = rootCas;
 
 const argv = yargs
     .option('api', {
@@ -46,6 +50,7 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
             "page": {"max": size}
         }
     };
+
     request.post(apiUrl, options, (error, res, body) => {
         if (error) {
             return console.log(error)
@@ -54,33 +59,22 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
         if (!error && res.statusCode === 200) {
             console.log('<?xml version="1.0" encoding="UTF-8"?>')
             console.log('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
-            /* Example sitemap index formula.
-            <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-                <sitemap>
-                    <loc>http://www.data.noaa.gov.com/sitemap1.xml.gz</loc>
-                    <lastmod>YYYY-MM-DDThh:mm:ssTZD</lastmod>
-                </sitemap>
-                <sitemap>
-                    <loc>http://www.data.noaa.gov.com/sitemap2.xml.gz</loc>
-                    <lastmod>YYYY-MM-DDThh:mm:ssTZD</lastmod>
-                </sitemap>
-            </sitemapindex>
-            */
+
            //TODO - Error check for body.data. If not there body.error expected. If body.data is there check
            // For body.data length > 0
            //Throw error and exit
            let lastStagedDate = body.data[pageSize-1].attributes.stagedDate;
            let maxCollectionSize = body.meta.total;
+           
 
 
            //Helper method for looping through each granual in collection, replaces below code
            
-           
-            //processBodyData(body, maxCollectionSize);
-            var bodyDataString = ``;
+           //Base case
+            var bodyDataString = processBodyData(body, maxCollectionSize, 'default');
   
 
-            //console.log(body);
+            /*  //processBodyData manual code
                 if(maxCollectionSize > 0){
                 body.data.forEach((d) => {
                   bodyDataString += convertCollectionToXml(webBase, d);
@@ -88,8 +82,9 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                    // console.log("bodyDataString: " + bodyDataString);
                   })
                 }
-            console.log("\n ---- bodyDataString ---- \n" + bodyDataString + "\n ---- bodyDataString ---- \n");
+             */
 
+            console.log("\n ---- bodyDataString ---- \n" + bodyDataString + "\n ---- bodyDataString ---- \n");
             console.log('</urlset>')
 
 
@@ -102,7 +97,12 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
         console.log("LastStagedDate: " + lastStagedDate);
         console.log("maxCollectionSize: " + maxCollectionSize); //total granuals (body.meta.total)
         console.log("pageSize: " + pageSize);
-        //console.log()
+        console.log("----BODY----\n");
+        //Debug, print out all granuals
+        // body.data.forEach((d) => {
+        //     console.log(d);
+        //     })
+
 
 
 
@@ -115,7 +115,33 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
 
 getCollectionPage(collectionApiUrl, pageSize, 0);
 
+    /*
+        1. Post Request & receive body
+            - Know what each request looks like at each stage, inputs vs outputs
+            - Send request, get response back, update options, resend request, update options, etc until end of data
+        2. Process Body & loop (Choose Loop vs Recursion)
+        3. Take lastStagedDate
+        4. Call getCollectionPage with new lastStagedDate (pagination/search after)
+        5. Method to update query option "search_after"
+        6. Stop when Data is empty & Close XML
+            -Sitemap Index Logic
+            -File compression
+        7. Write output to XML file & JSON file
+    */
+
 //TODO - Open/Close <urlset></urlset> at start end rather than each collection
 // TODO - handle need for multiple sitemaps with a <sitemapindex>
 // Sitemap index files may not have more than 50K Urls & no larger than 50MB
 
+            /* Example sitemap index formula.
+            <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                <sitemap>
+                    <loc>http://www.data.noaa.gov.com/sitemap1.xml.gz</loc>
+                    <lastmod>YYYY-MM-DDThh:mm:ssTZD</lastmod>
+                </sitemap>
+                <sitemap>
+                    <loc>http://www.data.noaa.gov.com/sitemap2.xml.gz</loc>
+                    <lastmod>YYYY-MM-DDThh:mm:ssTZD</lastmod>
+                </sitemap>
+            </sitemapindex>
+            */

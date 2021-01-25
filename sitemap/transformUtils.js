@@ -1,8 +1,7 @@
 const webBase = "http://localhost/onestop";
 
 const convertCollectionToXml = (baseUrl, collection) => {
-//module.exports.convertCollectionToXml = (baseUrl, collection) => {
-//function convertCollectionToXml(baseUrl, collection){
+
   var stagedDate = collection.attributes.stagedDate;
   var formattedDate = Unix_TimeStamp(stagedDate);
 
@@ -23,66 +22,47 @@ const Unix_TimeStamp = (t) =>{
   return n;
 
 }
-/*
-function downloadString(text, fileType, fileName) {
-    var blob = new Blob([text], { type: fileType });
-
-    var a = document.createElement('a');
-    a.download = fileName;
-    a.href = URL.createObjectURL(blob);
-    a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
-    }
-module.exports = downloadString;
-*/
-
-module.exports =  convertCollectionToXml;
 
 
-/*
-//Helper method for getCollectionPage's pagination
-//cC needs to call getCollectionPage on the lastStagedDate of the previous collection
-//It cannot infinitely loop and needs to continue until every granual of the collection is processed
-const collectionCrawler = (lastStagedDate, loopCount, maxCollectionSize, pageSize, collectionApiUrl) => {
-  console.log("CollectionCrawler");
+//Processes granuals and converts to XML.
+const processBodyData = (body, maxCollectionSize, choice) => {
 
-  var totalProcessed = pageSize * loopCount;
-  if(totalProcessed < maxCollectionSize){
-     getCollectionPage(collectionApiUrl, pageSize, lastStagedDate);
-      
-  } 
-}*/
+  var bodyDataString = "";
+  if(maxCollectionSize <= 0){
+    choice = 'empty';
+  }
+  if(body == null || body == undefined || choice == undefined){
+    choice = 'nullError';
+  }
 
-//Helper method for processing body
-/*
-const processBodyData = (body, maxCollectionSize) => {
-//module.exports.processBodyData = (body, maxCollectionSize) => {
-//function processBodyData(body, maxCollectionSize){
-  var bodyDataString = ``;
-  
+  /*'Choice' flag dictates what will execute
+    Error checking with 'empty' & 'nullError' flags, 'Test' for transformUtils.test.js
+  */
+  switch (choice){
+    case 'empty':
+      console.log("Body is empty");
+      break;
 
-  //console.log(body);
-      if(maxCollectionSize > 0){
-      body.data.forEach((d) => {
-        bodyDataString += convertCollectionToXml(webBase, d);
-          console.log("Conv collec" + convertCollectionToXml(webBase, d));
-          console.log("bodyDataString: " + bodyDataString);
-        })
+    case 'nullError':
+     // console.log("Body is null or Error Thrown");
+      break;
+
+    case 'test':
+      for(var i = 0; i < maxCollectionSize; i++){
+        bodyDataString += convertCollectionToXml(webBase, body[i]);
       }
-   
-};
-*/
-/*
-module.exports = {
-  convertCollectionToXml,
-  processBodyData
-}*/
-//module.exports = processBodyData;
+      return bodyDataString;
 
 
-//TODO
-//module.exports = collectionCrawler;
+    default:
+      //console.log("Default case");
+        body.data.forEach((d) => {
+          bodyDataString += convertCollectionToXml(webBase, d);
+          })
+         
+  }
+
+    return bodyDataString;
+}
+
+module.exports = processBodyData;
