@@ -56,11 +56,13 @@ const devEntryPoints = [
 const prodEntryPoints = ['babel-polyfill', './index.jsx']
 
 module.exports = (env) => {
-  basePlugins.push(new webpack.DefinePlugin({
-    'process.env': {
-      URL_API_GATEWAY: JSON.stringify(env.URL_API_GATEWAY),
-    }
-  }))
+  if (env !== undefined) {
+    basePlugins.push(new webpack.DefinePlugin({
+      'process.env': {
+        URL_API_GATEWAY: JSON.stringify(env.URL_API_GATEWAY),
+      }
+    }))
+  }
   return smp.wrap({
     entry: isProd ? prodEntryPoints : devEntryPoints,
     output: {
