@@ -10,7 +10,7 @@ import VideoTray from './VideoTray'
 import ReactDOM from 'react-dom'
 import {granuleDownloadableLinks} from '../../../utils/cartUtils'
 import {FEATURE_CART} from '../../../utils/featureUtils'
-import {getApiGatewayPath} from "../../../utils/urlUtils"
+import {getApiGatewayPath} from '../../../utils/urlUtils'
 import Checkbox from '../../common/input/Checkbox'
 
 const pattern = require('../../../../img/topography.png')
@@ -88,17 +88,26 @@ export default function GranuleItem(props){
   ) : null
 
   const isApiGatewayDefined = getApiGatewayPath() !== undefined
-  const xmlLink = isApiGatewayDefined ?
+  const xmlLink = isApiGatewayDefined ? (
     <a
-      href={new URL('registry/metadata/granule/' + itemId + '/raw/xml', getApiGatewayPath()).toString()}
+      href={new URL(
+        'registry/metadata/granule/' + itemId + '/raw/xml',
+        getApiGatewayPath()
+      ).toString()}
       target={'_blank'}
-    >XML</a> :
+    >
+      XML
+    </a>
+  ) : (
     <span>Not available</span>
+  )
 
-  const metadataLinks = <div key={'GranuleListItem::metadataLinks'}>
-    <h4 style={styleContentHeadingTop}>Metadata Access:</h4>
-    {xmlLink}
-  </div>
+  const metadataLinks = (
+    <div key={'GranuleListItem::metadataLinks'}>
+      <h4 style={styleContentHeadingTop}>Metadata Access:</h4>
+      {xmlLink}
+    </div>
+  )
 
   const timePeriod = (
     <div key={'GranuleListItem::timePeriod'}>

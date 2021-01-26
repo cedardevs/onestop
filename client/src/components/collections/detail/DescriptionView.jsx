@@ -212,18 +212,23 @@ export default class DescriptionView extends React.Component {
     )
 
     const isApiGatewayDefined = getApiGatewayPath() !== undefined
-    const xmlLink = isApiGatewayDefined ?
+    const xmlLink = isApiGatewayDefined ? (
       <a
-        href={new URL('registry/metadata/collection/' + itemUuid + '/raw/xml', getApiGatewayPath()).toString()}
+        href={new URL(
+          'registry/metadata/collection/' + itemUuid + '/raw/xml',
+          getApiGatewayPath()
+        ).toString()}
         target={'_blank'}
-      >Download full XML metadata here</a> :
+      >
+        Download full XML metadata here
+      </a>
+    ) : (
       <span>Not available</span>
+    )
 
     const metadataContent = (
       <div style={styleContentPadding}>
-        <div style={styleMetadataSummary}>
-          {xmlLink}
-        </div>
+        <div style={styleMetadataSummary}>{xmlLink}</div>
       </div>
     )
 
