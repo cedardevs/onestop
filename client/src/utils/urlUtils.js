@@ -8,6 +8,10 @@ export const apiPath = () => {
   return getBasePath().replace(/\/$/, '') + '-search'
 }
 
+export const getApiGatewayPath = () => {
+  return process.env.URL_API_GATEWAY
+}
+
 // makes urls protocol-relative and url-encodes quotes
 export const processUrl = url => {
   if (typeof url === 'string') {
