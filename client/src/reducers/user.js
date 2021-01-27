@@ -1,15 +1,11 @@
 import Immutable from 'seamless-immutable'
 import {
+  USER_LOGGED_OUT,
+  USER_PROFILE_FAILURE,
   USER_PROFILE_REQUEST,
   USER_PROFILE_SUCCESS,
-  USER_PROFILE_FAILURE,
-  USER_LOGOUT,
 } from '../actions/UserActions'
-import {
-  SAVED_SEARCH_FAILURE,
-  SAVED_SEARCH_REQUEST,
-  SAVED_SEARCH_SUCCESS,
-} from '../actions/SavedSearchActions'
+import {SAVED_SEARCH_FAILURE, SAVED_SEARCH_REQUEST, SAVED_SEARCH_SUCCESS,} from '../actions/SavedSearchActions'
 import {searchListToMap} from '../utils/resultUtils'
 
 export const initialState = Immutable({
@@ -35,7 +31,9 @@ export const user = (state = initialState, action) => {
           .setIn([ 'expired' ], false)
       }
       else {
-        return state.setIn([ 'expired' ], true)
+        return state
+            .setIn([ 'isFetching' ], false)
+            .setIn([ 'expired' ], true)
       }
 
     case USER_PROFILE_FAILURE:
@@ -43,7 +41,7 @@ export const user = (state = initialState, action) => {
         .setIn([ 'error' ], action.error)
         .setIn([ 'isFetching' ], false)
 
-    case USER_LOGOUT:
+    case USER_LOGGED_OUT:
       return state
         .setIn([ 'profile' ], {})
         .setIn([ 'expired' ], true)

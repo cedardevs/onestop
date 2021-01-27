@@ -39,7 +39,10 @@
   - Getting an overview of what’s in psi/onestop (counts, errors, quality)
   - Kibana Dashboards
 - Command Line Tool
-
+* Troubleshooting:
+  - Ingest To Discoverability: Best Practices
+  - Registry Analysis
+  - Kibana Dashboards
 ### Thin Portal Creator
 - How/What/Why
 - Reference to power user guide?

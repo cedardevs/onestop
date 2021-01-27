@@ -1,3 +1,7 @@
+<div align="center"><a href="/onestop/operator">Operator Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 5 minutes**
 
 # Feature Toggling
 
@@ -103,4 +107,7 @@ The following profiles are active: sitemap
 
 ## Trending Searches
 
-See [Trending Searches](/docs/operator/deployment/v2/onestop/trending-searches.mdrches.md). Note, however, that this feature is stale.
+See [Trending Searches](/onestop/operator/deployment/v2/onestop/trending-searches). Note, however, that this feature is stale.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

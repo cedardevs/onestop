@@ -1,3 +1,6 @@
+<div align="center"><a href="/onestop/public-user">Public User Documentation Home</a></div>
+<hr>
+
 **Estimated Reading Time: 5 minutes**
 
 # Geometries at the Antimeridian
