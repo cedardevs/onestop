@@ -20,6 +20,21 @@ spec:
       {{- if .Values.debug }}
       shareProcessNamespace: true
       {{- end }}
+      {{ if .Values.elasticsearch.snapshot.enabled -}}
+      initContainers:
+        - name: restore-es-snapshot
+          image: centos:7
+          env:
+            - name: SECRET_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: onestop-dev-es-elastic-user
+                  key: elastic
+          command:
+            - "/bin/bash"
+            - "-c"
+            - "curl -s -i -k -XPUT -u elastic:$(SECRET_PASSWORD) -H \"Content-type: application/json\" https://onestop-dev-es-http:9200/_snapshot/{{- .Values.elasticsearch.snapshot.repo}} -d '{\"type\":\"url\", \"settings\": {\"readonly\":true, \"url\": \"{{- .Values.elasticsearch.snapshot.bucket}}/\"}}' && curl -s -i -k -XPOST -u elastic:$(SECRET_PASSWORD) -H \"Content-type: application/json\" https://onestop-dev-es-http:9200/_snapshot/{{- .Values.elasticsearch.snapshot.repo}}/{{- .Values.elasticsearch.snapshot.name}}/_restore"
+      {{- end }}
       containers:
         {{- if .Values.debug }}
         - name: debug
