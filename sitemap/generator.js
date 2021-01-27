@@ -1,13 +1,10 @@
-//const convertCollectionToXml = require('./transformUtils');
 const processBodyData = require('./transformUtils');
 const request = require('request');
 const yargs = require('yargs');
 const fs = require('fs');
-const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
+//const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
+//const { cpuUsage } = require('process');
 
-'use strict';
-var rootCas= require('ssl-root-cas').create();
-require('https').globalAgent.options.ca = rootCas;
 
 const argv = yargs
     .option('api', {
@@ -36,6 +33,9 @@ const searchApiBase = argv.api
 const collectionApiUrl = new URL(`${searchApiBase}/search/collection`)
 const webBase = argv.website
 const pageSize = argv.pageSize
+var sitemapTotal = "";
+var collCount = 0;
+var keepGoing = true;
 
 const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
     console.log(`getting collections from ${collectionApiUrl}`)
@@ -56,57 +56,49 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
             return console.log(error)
         }
 
-        if (!error && res.statusCode === 200) {
-            console.log('<?xml version="1.0" encoding="UTF-8"?>')
-            console.log('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
-
-           //TODO - Error check for body.data. If not there body.error expected. If body.data is there check
-           // For body.data length > 0
-           //Throw error and exit
-           let lastStagedDate = body.data[pageSize-1].attributes.stagedDate;
-           let maxCollectionSize = body.meta.total;
+        if (!error && res.statusCode === 200 && keepGoing == true) {
+            //Error checking for body
+            if(body.meta.total == 0 || body == undefined || body == null){
+                throw("error");
+            }
            
+            let maxCollectionSize = body.meta.total;
+
+            //collCount keeps track of our progress through the entire collection
+            collCount += body.data.length;
+            console.log("collCount: " + collCount);
+
+            //TODO - Update options
+            //TODO - Write to a file
 
 
-           //Helper method for looping through each granual in collection, replaces below code
-           
-           //Base case
-            var bodyDataString = processBodyData(body, maxCollectionSize, 'default');
-  
+            //Simple boolean checks for helper recursion & end of file
+            if(keepGoing == true){
+                crawlerCollection(body, maxCollectionSize);
+            }
+            //Once finish processing the entire collection, print the sitemap
+            if(keepGoing == false){ 
+                console.log("\n-----SITEMAP FILE-----");
+                console.log('<?xml version="1.0" encoding="UTF-8"?>')
+                console.log('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+                console.log(sitemapTotal);
+                console.log('</urlset>');
+                console.log("-----SITEMAP FILE-----\n");
 
-            /*  //processBodyData manual code
-                if(maxCollectionSize > 0){
-                body.data.forEach((d) => {
-                  bodyDataString += convertCollectionToXml(webBase, d);
-                   // console.log("Conv collec" + convertCollectionToXml(webBase, d));
-                   // console.log("bodyDataString: " + bodyDataString);
-                  })
-                }
-             */
-
-            console.log("\n ---- bodyDataString ---- \n" + bodyDataString + "\n ---- bodyDataString ---- \n");
-            console.log('</urlset>')
-
-
-
-
-         //Helper method crawlerCollection() to handle iterating/recursion through collection
-         //Should call getCollectionPage or separate helper method to iterate through all collections
-
-        console.log("\n-- DEBUG LOG --");
-        console.log("LastStagedDate: " + lastStagedDate);
-        console.log("maxCollectionSize: " + maxCollectionSize); //total granuals (body.meta.total)
-        console.log("pageSize: " + pageSize);
-        console.log("----BODY----\n");
-        //Debug, print out all granuals
-        // body.data.forEach((d) => {
-        //     console.log(d);
-        //     })
-
-
-
-
-        
+                /*
+                //Useful debugging commands
+                console.log("\n-- DEBUG LOG --\n");
+                console.log("LastStagedDate: " + lastStagedDate);
+                console.log("maxCollectionSize: " + maxCollectionSize);
+                console.log("pageSize: " + pageSize);
+                console.log("body.length: " + body.data.length);
+                */
+                // Debug command to print out all test data granuals
+                // body.data.forEach((d) => {
+                // console.log(d);
+                // })
+                
+            }
         }
     });
 }
@@ -114,6 +106,24 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
 
 
 getCollectionPage(collectionApiUrl, pageSize, 0);
+
+//Helper method to handle recursion for getCollectionPage
+function crawlerCollection(body, maxCollectionSize) {
+
+    let lastStagedDate = body.data[body.data.length-1].attributes.stagedDate;
+    var bodyDataString = processBodyData(body, maxCollectionSize, 'default');
+    sitemapTotal += bodyDataString;
+
+    //Recursion base case, checking for last page
+    if(body.data.length > 0 && body.data.length < pageSize){
+        sitemapTotal += processBodyData(body, maxCollectionSize, 'default');
+        keepGoing = false;
+     } else if(body.data.length > 0){
+         return getCollectionPage(collectionApiUrl, pageSize, lastStagedDate);
+     }
+
+}
+
 
     /*
         1. Post Request & receive body
@@ -129,7 +139,6 @@ getCollectionPage(collectionApiUrl, pageSize, 0);
         7. Write output to XML file & JSON file
     */
 
-//TODO - Open/Close <urlset></urlset> at start end rather than each collection
 // TODO - handle need for multiple sitemaps with a <sitemapindex>
 // Sitemap index files may not have more than 50K Urls & no larger than 50MB
 

@@ -155,11 +155,10 @@ test('Check for lastStagedDate after looping through a collection', () => {
 });
 
 const processBodyData = require('./transformUtils');
+const convertCollectionToXml = require('./transformUtils')
 //TODO
 /*
 test('Pipe generated sitemap xml into a file', () => {
 
 });
 */
-const convertCollectionToXml = require('./transformUtils')
-//const processBodyData = require('./transformUtils')
