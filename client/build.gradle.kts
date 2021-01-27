@@ -24,6 +24,10 @@ tasks.getByName("assemble") {
     dependsOn("npm_run_build")
 }
 
+tasks.getByName("npm_run_build") {
+    inputs.dir("${projectDir}/src")
+}
+
 tasks.getByName("jar") {
     // even though we use the `java` plugin because of the `jib` plugin
     // the node project does not need to generate a jar file (it creates a tar)
@@ -33,7 +37,7 @@ tasks.getByName("jar") {
 task<Tar>("tar") {
     val publish: Publish by project.extra
 
-    dependsOn("assemble")
+    dependsOn("npm_run_build")
 
     from(file("${buildDir}/webpack"))
     compression = Compression.GZIP
@@ -49,12 +53,17 @@ task<Sync>("sync") {
     val publish: Publish by project.extra
     val jibExtraDir: String by project.extra
 
+    dependsOn("tar")
+
     into(jibExtraDir)
 
     // untar and sync the client src
-    into("/usr/share/nginx/html/onestop") {
+    into("/usr/share/nginx/html") {
         dependsOn("tar") // can't untar without tar
         from(tarTree(file("${buildDir}/libs/${publish.title}.tar.gz")))
+    }
+    into("/etc/nginx/conf.d") {
+        from(file("${projectDir}/conf.d"))
     }
 }
 
