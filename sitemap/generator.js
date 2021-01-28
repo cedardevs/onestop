@@ -68,35 +68,35 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
             collCount += body.data.length;
             console.log("collCount: " + collCount);
 
-            //TODO - Update options
-            //TODO - Write to a file
-
-
             //Simple boolean checks for helper recursion & end of file
             if(keepGoing == true){
                 crawlerCollection(body, maxCollectionSize);
             }
-            //Once finish processing the entire collection, print the sitemap
+
+            //Once finished processing the entire collection, print the sitemap
+            //TODO - Write to a file
             if(keepGoing == false){ 
                 console.log("\n-----SITEMAP FILE-----");
                 console.log('<?xml version="1.0" encoding="UTF-8"?>')
                 console.log('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
-                console.log(sitemapTotal);
+                //console.log(sitemapTotal);
                 console.log('</urlset>');
                 console.log("-----SITEMAP FILE-----\n");
 
-                /*
+
+            /*
                 //Useful debugging commands
+                let lastStagedDate = body.data[body.data.length-1].attributes.stagedDate;
                 console.log("\n-- DEBUG LOG --\n");
                 console.log("LastStagedDate: " + lastStagedDate);
                 console.log("maxCollectionSize: " + maxCollectionSize);
                 console.log("pageSize: " + pageSize);
                 console.log("body.length: " + body.data.length);
-                */
-                // Debug command to print out all test data granuals
-                // body.data.forEach((d) => {
-                // console.log(d);
-                // })
+            */
+                // Debug command to print out the page's collection
+                //  body.data.forEach((d) => {
+                //  console.log(d);
+                //  })
                 
             }
         }
@@ -111,14 +111,21 @@ getCollectionPage(collectionApiUrl, pageSize, 0);
 function crawlerCollection(body, maxCollectionSize) {
 
     let lastStagedDate = body.data[body.data.length-1].attributes.stagedDate;
-    var bodyDataString = processBodyData(body, maxCollectionSize, 'default');
+
+    //bodyDataString processes each item in our body and converts it to XML
+    var bodyDataString = processBodyData(body, maxCollectionSize);
     sitemapTotal += bodyDataString;
 
+
     //Recursion base case, checking for last page
+    //Body will be of size 'pageSize' unless on the last page
     if(body.data.length > 0 && body.data.length < pageSize){
-        sitemapTotal += processBodyData(body, maxCollectionSize, 'default');
+        sitemapTotal += processBodyData(body, maxCollectionSize);
         keepGoing = false;
-     } else if(body.data.length > 0){
+     } 
+     
+     //If collection is not empty and not on last page, recursively call gCP() with new lastStagedDate to update options
+     else if(body.data.length > 0){
          return getCollectionPage(collectionApiUrl, pageSize, lastStagedDate);
      }
 

@@ -13,7 +13,7 @@ const convertCollectionToXml = (baseUrl, collection) => {
     </url>`
 };
 
-//Helper method for convertCollectiontoXML's stagedDate to W3 DateTime format.
+//Helper method for convertCollectiontoXML, transforms the collection's stagedDate to W3 DateTime format.
 const Unix_TimeStamp = (t) =>{
 
   var dt = new Date(t)
@@ -25,8 +25,9 @@ const Unix_TimeStamp = (t) =>{
 
 
 //Processes granuals and converts to XML.
-const processBodyData = (body, maxCollectionSize, choice) => {
-
+//TODO - Don't need switch statements as long as we do error checking before our default case
+const processBodyData = (body, maxCollectionSize) => {
+  let choice = "";
   var bodyDataString = "";
   if(maxCollectionSize <= 0){
     choice = 'empty';
@@ -35,8 +36,9 @@ const processBodyData = (body, maxCollectionSize, choice) => {
     choice = 'nullError';
   }
 
-  /*'Choice' flag dictates what will execute
-    Error checking with 'empty' & 'nullError' flags, 'Test' for transformUtils.test.js
+  /*
+    'Choice' flag dictates what will execute
+    Error checking with 'empty' & 'nullError' flags, otherwise 'default'
   */
   switch (choice){
     case 'empty':
@@ -44,21 +46,14 @@ const processBodyData = (body, maxCollectionSize, choice) => {
       break;
 
     case 'nullError':
-     // console.log("Body is null or Error Thrown");
+      //console.log("Body is null or Error Thrown");
       break;
-
-    case 'test':
-      for(var i = 0; i < maxCollectionSize; i++){
-        bodyDataString += convertCollectionToXml(webBase, body[i]);
-      }
-      return bodyDataString;
 
 
     default:
-      //console.log("Default case");
         body.data.forEach((d) => {
           bodyDataString += convertCollectionToXml(webBase, d);
-          })
+          });
          
   }
 
