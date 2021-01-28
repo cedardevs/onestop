@@ -79,7 +79,7 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                 console.log("\n-----SITEMAP FILE-----");
                 console.log('<?xml version="1.0" encoding="UTF-8"?>')
                 console.log('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
-                //console.log(sitemapTotal);
+                console.log(sitemapTotal);
                 console.log('</urlset>');
                 console.log("-----SITEMAP FILE-----\n");
 
@@ -123,7 +123,7 @@ function crawlerCollection(body, maxCollectionSize) {
         sitemapTotal += processBodyData(body, maxCollectionSize);
         keepGoing = false;
      } 
-     
+
      //If collection is not empty and not on last page, recursively call gCP() with new lastStagedDate to update options
      else if(body.data.length > 0){
          return getCollectionPage(collectionApiUrl, pageSize, lastStagedDate);
