@@ -17,12 +17,13 @@ Since this role requires interacting with several OneStop components, you are en
 ## Creating Metadata
 Incoming metadata can be in either JSON or ISO-19115-2 XML format.
 
-* [XML template](https://data.noaa.gov/waf/templates/iso_u/xml/ncei_template-clean.xml)
-* [Metadata guide](https://drive.google.com/file/d/1RqI3pqYr1vLCjj--7mklkNoclOwOrpDD/view)
+* [Collection XML template](https://data.noaa.gov/waf/templates/iso_u/xml/ncei_template-clean.xml)
+* [Collection Metadata Guide](https://drive.google.com/file/d/1RqI3pqYr1vLCjj--7mklkNoclOwOrpDD/view)
 
-Questions specific to these documents should be directed to NCEI Metadata WG at ncei.metadata@noaa.gov.
+Questions specific to these documents should be directed to the NCEI Metadata WG at ncei.metadata@noaa.gov.
 
-For a better OneStop discovery experience, please be mindful of what fields are in your metadata. Since you probably want to search for you metadata later it would be wise to look in [Searching OneStop for Metadata](#searching-onestop-for-metadata). This can give you insight of what metadata fields you want to include, so you can search and find your metadata later.
+For a better OneStop discovery experience, please be mindful of what fields are in your metadata. 
+* [Searching OneStop for Metadata](#searching-onestop-for-metadata)
 
 ## Loading Metadata into OneStop
 There are two ways to upload metadata into the OneStop system:
@@ -37,15 +38,15 @@ There's a little more information in [Upload Test Metadata](/onestop/developer/a
   - [Kafka Connect](v3/upstream-kafka-connect)
 
 ## Searching OneStop for Metadata
-Perhaps you've loaded your metadata through an external tool that pushes its output to OneStop. 
-
-On the other hand, you might be directly pushing metadata to OneStop via the Registry API.
+Perhaps you've loaded your metadata through an external tool that pushes its output to OneStop. On the other hand, you might be directly pushing metadata to OneStop via the Registry API.
 
 No matter how your metadata gets into OneStop, however, you'll probably be curious about what you can do to take full advantage of the OneStop search functionality.
 
   - [Indexed ISO Metadata Fields](iso-indexing-mapping)
   - [Search Query Syntax](../api/search-query-syntax)
   - [Search Fields Requiring An Exact Match With An Inexact Query](../api/search-query-syntax#search-fields-requiring-an-exact-match-with-an-inexact-query) - This lists an endpoint 
+
+For the purpose of search engines be able to find the data in OneStop we iterate over every collection within OneStop and pull out important fields that end up in a sitemap file that search engines such as Google can use as an index for OneStop's content.
 
 ## References
   - [Architectural Overview](architectural-overview) - In-depth overview of the metadata flow and architecture of OneStop.
