@@ -2,8 +2,7 @@ const processBodyData = require('./transformUtils');
 const request = require('request');
 const yargs = require('yargs');
 const fs = require('fs');
-//const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
-//const { cpuUsage } = require('process');
+
 
 
 const argv = yargs
@@ -74,7 +73,7 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
             }
 
             //Once finished processing the entire collection, print the sitemap
-            //TODO - Write to a file
+            //TODO - Write to a file, Memory constraints, must use gzip
             if(keepGoing == false){ 
                 console.log("\n-----SITEMAP FILE-----");
                 console.log('<?xml version="1.0" encoding="UTF-8"?>')
@@ -84,7 +83,7 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                 console.log("-----SITEMAP FILE-----\n");
 
 
-            /*
+            
                 //Useful debugging commands
                 let lastStagedDate = body.data[body.data.length-1].attributes.stagedDate;
                 console.log("\n-- DEBUG LOG --\n");
@@ -92,7 +91,7 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                 console.log("maxCollectionSize: " + maxCollectionSize);
                 console.log("pageSize: " + pageSize);
                 console.log("body.length: " + body.data.length);
-            */
+            
                 // Debug command to print out the page's collection
                 //  body.data.forEach((d) => {
                 //  console.log(d);
@@ -130,6 +129,7 @@ function crawlerCollection(body, maxCollectionSize) {
      }
 
 }
+
 
 
     /*

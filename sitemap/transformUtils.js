@@ -24,7 +24,7 @@ const Unix_TimeStamp = (t) =>{
 }
 
 
-//Processes granuals and converts to XML.
+//Takes in body & if not empty.null will
 //TODO - Don't need switch statements as long as we do error checking before our default case
 const processBodyData = (body, maxCollectionSize) => {
   let choice = "";
