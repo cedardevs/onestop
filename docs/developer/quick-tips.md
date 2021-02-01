@@ -24,6 +24,10 @@ Try to keep this for brief commonly used tips. Please put more lengthy uncommon 
 
     `--port-forward=false -f skaffold.yaml`
  
+* Kubernetes keeps state within its secrets. If this happens you need to do a kubernetes cleanup when you see **"has no deployed releases"** plus if you do a helm `ls -a` it reveals that chart was stuck in **"uninstalling"**
+  
+  [https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#clean-up](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#clean-up)
+
 ## Kubectl
 If you run "`kubectl get pods`" and the `status` column has `CrashLoopBackOff` run "`kubectl describe <pod_name>`" for the pod in question. At the bottom of the text that appears should be `Events`. This section tells you the history of the pod's lifecycle.
  
