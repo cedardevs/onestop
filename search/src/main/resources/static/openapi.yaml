@@ -1076,7 +1076,7 @@ components:
       required:
         - type
         - values
-      title: "Collection Filter"
+      title: "Checksum Filter"
       type: object
     facetFilter:
       additionalProperties: false
