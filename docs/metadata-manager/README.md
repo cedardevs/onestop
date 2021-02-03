@@ -9,6 +9,7 @@ Since this role requires interacting with several OneStop components, you are en
 ## Table of Contents
 - [Creating Metadata](#creating-metadata)
 - [Loading Metadata into OneStop](#loading-metadata-into-onestop)
+    - [OneStop Python Clients](#onestop-python-client) - OneStop clients for interfacing with OneStop.
     - [Registry API](#registry-api) - CRUD operations (Create, Read, Update, and Delete) on metadata.
     - [Kafka](#kafka) - Underlying way that Registry communicates when operations happen on metadata.
 - [Searching OneStop for Metadata](#searching-onestop-for-metadata) - How to find your metadata within OneStop.
@@ -27,7 +28,10 @@ For a better OneStop discovery experience please be mindful of what fields are i
 * [Searching OneStop for Metadata](#searching-onestop-for-metadata)
 
 ## Loading Metadata into OneStop
-If your metadata isn't automatically being loading into OneStop (some applications already automatically send metadata to Onestop), there are two ways to load it into OneStop:
+If your metadata isn't automatically being loading into OneStop (some applications already automatically send metadata to OneStop), there are a few ways to do that:
+
+### OneStop Python Client
+The [OneStop Clients](https://cedardevs.github.io/onestop-clients/) repo has a python client that is useful for searching OneStop for metadata.
 
 ### [Registry API](/onestop/api/registry-api)
 Metadata can be published into OneStop via the [Registry API](/onestop/api/registry-api). The Registry application has a RESTful interface that allows for CRUD (Create, Read, Update, and Delete) actions on metadata.   
