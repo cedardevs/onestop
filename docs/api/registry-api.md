@@ -37,7 +37,7 @@ The Registry API endpoint which you would append to the end of a OneStop deploym
 Where `context-path` is [explicitly set](/onestop/operator/deployment/v2/psi/project-artifacts#config) at time of deployment (otherwise `localhost:8080`)
 
 ### Supported HTTP Methods & Parameters
-The supported HTTP methods, and their parameters, are listed in the [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml). That document is more accurate since it is more likely to be kept up to date when a code change occurs.
+The supported HTTP methods, and their parameters, are listed in the [Swagger generated docs](https://app.swaggerhub.com/apis/cedarbot/OneStop/2.4.0) or the [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml). That document is more accurate since it is more likely to be kept up to date when a code change occurs.
  
 ## Metadata Notes
 For granule metadata you need to include the ***`relationships`*** field, which contains the collection UUID as OneStop knows it:
