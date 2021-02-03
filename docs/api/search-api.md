@@ -5,7 +5,7 @@
 - [Search Fields](search-fields) - Search fields you can reference in a search query.
 - [Search Responses](search-responses) - Format of the search response.
 
-The Search API provides three endpoints for OneStop data discovery. Either a POST (with a correctly formatted **JSON request body**) or GET request  will work. All three endpoints expect the same request schema format to be used but return data of the type in the URL.
+The Search API provides endpoints for OneStop data discovery. Either a POST (with a correctly formatted **JSON request body**) or GET request  will work. All three endpoints expect the same request schema format to be used but return data of the type in the URL.
 
 Examples:
 
