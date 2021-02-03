@@ -139,7 +139,7 @@ class MetadataRestControllerSpec extends Specification {
     def request = buildMockRequest(path)
 
     when:
-    def result = controller.retrieveRaxXml(testType.toString(), testId, request, mockResponse)
+    def result = controller.retrieveRawXml(testType.toString(), testId, request, mockResponse)
 
     then:
     1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
@@ -153,7 +153,7 @@ class MetadataRestControllerSpec extends Specification {
     def request = buildMockRequest(path)
 
     when:
-    def result = controller.retrieveRaxXml(testType.toString(), testSource, testId, request, mockResponse)
+    def result = controller.retrieveRawXml(testType.toString(), testSource, testId, request, mockResponse)
 
     then:
     1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput

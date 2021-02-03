@@ -159,16 +159,16 @@ class MetadataRestController {
   }
 
   @RequestMapping(path = '/metadata/{type}/{id}/raw/xml', method = [GET, HEAD], produces = 'application/xml')
-  String retrieveRaxXml(
+  String retrieveRawXml(
       @PathVariable String type,
       @PathVariable String id,
       HttpServletRequest request,
       HttpServletResponse response) throws Exception {
-    retrieveRaxXml(type, Topics.DEFAULT_SOURCE, id, request, response)
+    retrieveRawXml(type, Topics.DEFAULT_SOURCE, id, request, response)
   }
 
   @RequestMapping(path = '/metadata/{type}/{source}/{id}/raw/xml', method = [GET, HEAD], produces = 'application/xml')
-  String retrieveRaxXml(
+  String retrieveRawXml(
       @PathVariable String type,
       @PathVariable String source,
       @PathVariable String id,
