@@ -1,7 +1,7 @@
 <div align="center"><a href="/onestop/">Documentation Home</a></div>
 <hr>
 
-**Estimated Reading Time: 15 minutes**
+**Estimated Reading Time: 25 minutes**
 
 # Metadata Manager Documentation
 Since this role requires interacting with several OneStop components, you are encouraged to start with the brief [architectural overview](architectural-overview) to get your bearings.
@@ -15,21 +15,22 @@ Since this role requires interacting with several OneStop components, you are en
 - [References](#references)
 
 ## Creating Metadata
-Incoming metadata can be in either JSON or ISO-19115-2 XML format.
+
+If you need to create your metadata manually here are some useful, external, guides and templates for metadata. Questions specific to these documents should be directed to the NCEI Metadata WG at ncei.metadata@noaa.gov.
 
 * [Collection XML template](https://data.noaa.gov/waf/templates/iso_u/xml/ncei_template-clean.xml)
 * [Collection Metadata Guide](https://drive.google.com/file/d/1RqI3pqYr1vLCjj--7mklkNoclOwOrpDD/view)
 
-Questions specific to these documents should be directed to the NCEI Metadata WG at ncei.metadata@noaa.gov.
+Keep in mind that however your data is getting into OneStop it supports the metadata formats of either JSON or ISO-19115-2 XML.
 
-For a better OneStop discovery experience, please be mindful of what fields are in your metadata. 
+For a better OneStop discovery experience please be mindful of what fields are in your metadata. 
 * [Searching OneStop for Metadata](#searching-onestop-for-metadata)
 
 ## Loading Metadata into OneStop
-There are two ways to upload metadata into the OneStop system:
+If your metadata isn't automatically being loading into OneStop (some applications already automatically send metadata to Onestop), there are two ways to load it into OneStop:
 
 ### [Registry API](/onestop/api/registry-api)
-Metadata can be published into the OneStop system via the [Registry API](/onestop/api/registry-api). The Registry application has a RESTful interface that allows for CRUD (Create, Read, Update, and Delete) actions on metadata.   
+Metadata can be published into OneStop via the [Registry API](/onestop/api/registry-api). The Registry application has a RESTful interface that allows for CRUD (Create, Read, Update, and Delete) actions on metadata.   
 Keep in mind the Registry REST API is secured via CAS authentication, more detail within the [OneStop Registry Security documentation](/onestop/operator/security/registry-security). 
 
 There's a little more information in [Upload Test Metadata](/onestop/developer/additional-developer-info#upload-test-metadata)
@@ -50,9 +51,9 @@ For the purpose of search engines be able to find the data in OneStop we iterate
 
 ## References
   - [Architectural Overview](architectural-overview) - In-depth overview of the metadata flow and architecture of OneStop.
-  - [OneStop API](/onestop/api/) - How to Create, Read, Update, and Delete(CRUD) metadata and other useful APIs.
+  - [OneStop API](/onestop/api/) - All the OneStop available APIs(Application Program Interfaces). For example: Create, Read, Update, and Delete(CRUD) metadata.
   - [Public User Documentation](../public-user/)
-  - [External Developer Navigation Guide](../external-developer) - Information pertaining to connecting your own software with a OneStop system.
+  - [External Developer Navigation Guide](../external-developer) - Information pertaining to programmatically sending data from your software to OneStop.
   - [NOAA NCEI Metadata Homepage](https://ncei.noaa.gov/metadata)
 
 <hr>
