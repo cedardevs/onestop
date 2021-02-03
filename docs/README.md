@@ -47,7 +47,7 @@ You can check out OneStop in action while exploring NOAA's Earth science data of
 
 
 ## Navigating The Documentation
-OneStop has an enormous amount to offer, but it can be difficult to know how and where to get started with a project that has so many moving parts.  With that in mind, we have laid out some navigational paths through our documentation based on the user type and project component.
+OneStop has an enormous amount to offer, but it can be difficult to know how and where to get started with a project that has so many moving parts.  With that in mind, we have laid out some navigational paths through our documentation based on the user type and project component. Additional information on the OneStop can be found in the [Architectural Overview](api/architectural-overview).
 
 ### User Types
 What's important to you when using OneStop varies significantly based on what you need to accomplish. Select the role below that most closely represents you to get started.
