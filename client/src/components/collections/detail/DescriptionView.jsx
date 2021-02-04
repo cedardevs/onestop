@@ -215,7 +215,7 @@ export default class DescriptionView extends React.Component {
     const xmlLink = isApiGatewayDefined ? (
       <a
         href={new URL(
-          'registry/metadata/collection/' + itemUuid + '/raw/xml',
+          'registry/metadata/collection/' + itemUuid + '/xml',
           getApiGatewayPath()
         ).toString()}
         target={'_blank'}

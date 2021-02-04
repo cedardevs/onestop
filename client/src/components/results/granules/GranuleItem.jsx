@@ -91,7 +91,7 @@ export default function GranuleItem(props){
   const xmlLink = isApiGatewayDefined ? (
     <a
       href={new URL(
-        'registry/metadata/granule/' + itemId + '/raw/xml',
+        'registry/metadata/granule/' + itemId + '/xml',
         getApiGatewayPath()
       ).toString()}
       target={'_blank'}

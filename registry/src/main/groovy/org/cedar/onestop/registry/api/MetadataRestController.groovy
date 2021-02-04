@@ -158,7 +158,7 @@ class MetadataRestController {
     }
   }
 
-  @RequestMapping(path = '/metadata/{type}/{id}/raw/xml', method = [GET, HEAD], produces = 'application/xml')
+  @RequestMapping(path = '/metadata/{type}/{id}/xml', method = [GET, HEAD], produces = ['application/xml', 'application/json'])
   String retrieveRawXml(
       @PathVariable String type,
       @PathVariable String id,
@@ -167,23 +167,50 @@ class MetadataRestController {
     retrieveRawXml(type, Topics.DEFAULT_SOURCE, id, request, response)
   }
 
-  @RequestMapping(path = '/metadata/{type}/{source}/{id}/raw/xml', method = [GET, HEAD], produces = 'application/xml')
+  @RequestMapping(path = '/metadata/{type}/{source}/{id}/xml', method = [GET, HEAD], produces = ['application/xml', 'application/json'])
   String retrieveRawXml(
       @PathVariable String type,
       @PathVariable String source,
       @PathVariable String id,
       HttpServletRequest request,
       HttpServletResponse response) throws Exception {
+    if (!UUIDValidator.isValid(id)) {
+      return UUIDValidator.uuidErrorMsg(id)
+    }
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def result = metadataStore.retrieveInput(recordType, source, id)
-    return result.rawXml
+    def links = buildLinks(request, type, source, id)
+    links.self = links.remove('xml')
+
+    if (result) {
+      if (result?.errors?.size() > 0) {
+        return [
+            links : links,
+            errors: result.errors
+        ]
+      } else {
+        return result.rawXml
+      }
+    }
+
+    response.status = HttpStatus.NOT_FOUND.value()
+    return [
+        errors: [
+            [
+                status: HttpStatus.NOT_FOUND.value(),
+                title : HttpStatus.NOT_FOUND.toString(),
+                detail: "No parsed values exist for ${type} with id [${id}] from source [${source}]" as String
+            ]
+        ]
+    ]
   }
 
   private Map buildLinks(HttpServletRequest request, String type, String source, String id) {
     def root = apiLinkGenerator.getApiRoot(request)
     return [
         input : "${root}/metadata/${type}/${source}/${id}" as String,
-        parsed: "${root}/metadata/${type}/${source}/${id}/parsed" as String
+        parsed: "${root}/metadata/${type}/${source}/${id}/parsed" as String,
+        xml: "${root}/metadata/${type}/${source}/${id}/xml" as String
     ]
   }
 
