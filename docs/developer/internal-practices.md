@@ -9,18 +9,20 @@
 * [References](#references)
 
 ## Git Workflow
-
-  * `master` contains changes being prepped for a release, with tags marking each release. The master branch should be kept in a working state but represents the "bleeding edge" version of the project. 
+About the use of branches:
+  * `master` contains changes being prepped for a release, with tags marking each release. The master branch should be kept in a working state but represents the "bleeding edge" version of the project. By "working" we mean it compiles, passes tests and results in a deployable artifact.
   * `release/[version]` contains the existing release paths. These only deviate from the release tagged on the master branch when hotfixes are required. A new release branch should be created for every major version. Minor releases can be merged into their major version branch. Patches should also be merged to their respective branch, but follows a different work flow. Reference [Hotfix Strategy](hotfix-strategy) for more information.  
-  * temporary branches are used to work on features, until they are reviewed as a pull request and deleted.
+  * Temporary branches are used to work on features, until they are reviewed as a pull request and
+    deleted.
 
 ### Versioning: 
+Our version numbers follow the pattern of `<major>.<minor>.<patch>`:
   * Ideally the current version indicates what release you're working toward, not what version you are on; [citation stackoverflow issue](https://softwareengineering.stackexchange.com/questions/166215/when-do-you-change-your-major-minor-patch-version-number). This is to avoid new artifacts from colliding with older artifacts built prior to the last tag.
   * To accomplish that, it is important we always increment the minor version after a release. 
   * It's difficult to know if the next release will be a new major version. Theoretically incrementing the major version should be done when the breaking change is introduced (e.g. dropping support for ES5). 
   * But that may not always happen when it should. For that reason it is important we review changes prior to cutting a release and determine if should increment the major version. It is important we avoid merging breaking changes to an existing release branch. 
   * The patch version is incremented when a patch is applied. See [Hotfix Strategy](hotfix-strategy) documentation for patching. 
-  * Find more on version best practices here - https://semver.org/
+  * Find more on versioning best practices here - https://semver.org/
 
 ### Releases: Tags and Release Branches
 When all the features in master are ready for production, it is time to cut a release. A "release" is either a new major or minor version. For a patch, see the [Hotfix Strategy](hotfix-strategy) documentation. Follow these steps to publish a release:
@@ -28,17 +30,17 @@ When all the features in master are ready for production, it is time to cut a re
   1. Run the `manageVersions.sh` script to get the version number throughout the project.
   2. It may not be necessary to increment the version before tagging. After the last release, we bumped the minor version, as *you will* after tagging. 
   3. It is only necessary to "bump the version" if this release is determined to be a new major version. If the changes in master broke backward compatibility, bump the major version, review changes and commit.
-  4. If the version number was incremented, make a PR to master to have a reviewer ensure proper semantic version. If not, proceed to the next step. 
-  5. After branch is merged to master, tag master. The tag needs to match the version and prefixed with a "v", e.g. "vMajor.minor.path"
+  4. If the version number was incremented, make a PR (git Pull Request) to master to have a reviewer ensure proper semantic version. If not, proceed to the next step. 
+  5. After merging the branch to master, tag master. The tag needs to match the version and be prefixed with a "v", e.g. "**v**Major.minor.patch" --> `v2.13.1`.
      ```
      git tag <tag>
      git push origin <tag>
      ```
   6. If this is a new major version, create a branch from that commit named for this version `release/[version]`, e.g. `release/3.x`.
   7. If this is a minor version, create a PR into the release branch. 
-  8. IMPORTANT: On master, increment the minor version number using `manageVersions.sh`, commit to directly to master (small change, no need for PR).
+  8. IMPORTANT: On master, increment the minor version number using `manageVersions.sh`, commit to directly to master (this is a small change, so no need for a PR).
   9. Write the release notes on GitHub:
-     * pushing that tag should have created a new release in the "releases" tab on github.
+     * Pushing that tag should have created a new release in the "releases" tab on github.
      * [Draft the release][draft release] from the corresponding tag on the `master` branch.
      * Have at least one team member review the release notes.
      * Publish the [release](https://github.com/cedardevs/onestop/releases) on GitHub.
@@ -51,13 +53,16 @@ We introduce new features and major changes with the following steps:
       git fetch origin
       git checkout -b feature/foo origin/master
       ```
+     If the work is related to an issue, the branch is typically named `<issue#>-short-description`, 
+     for example "1404-dev_docs_pass2", where the description is derived from the issue title. 
+     Spaces are not allowed in branch names, so either hyphens or underscores can be used in their place.
 
   1. Write code, write tests!  
 
   1. [Create a pull request](https://github.com/cedardevs/onestop/compare) once development is complete and
     request a review.
 
-  1. Reviewer merges changes back into the `master` branch and deletes working branch.
+  1. The reviewer merges changes back into the `master` branch and deletes the working branch.
 
 ### References
 
