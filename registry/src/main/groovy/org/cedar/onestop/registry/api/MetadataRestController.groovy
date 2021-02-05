@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -163,7 +164,7 @@ class MetadataRestController {
       @PathVariable String type,
       @PathVariable String id,
       HttpServletRequest request,
-      HttpServletResponse response) throws Exception {
+      HttpServletResponse response) throws ResponseStatusException {
     retrieveRawXml(type, Topics.DEFAULT_SOURCE, id, request, response)
   }
 
@@ -173,10 +174,9 @@ class MetadataRestController {
       @PathVariable String source,
       @PathVariable String id,
       HttpServletRequest request,
-      HttpServletResponse response) throws Exception {
+      HttpServletResponse response) throws ResponseStatusException {
     if (!UUIDValidator.isValid(id)) {
-      response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
-      return
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid UUID String (ensure lowercase): " + id)
     }
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def result = metadataStore.retrieveInput(recordType, source, id)
@@ -185,8 +185,7 @@ class MetadataRestController {
       return result.rawXml
     }
 
-    response.status = HttpStatus.NOT_FOUND.value()
-    return
+    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No input exists for ${type} with id [${id}] from source [${source}]" as String)
   }
 
   private Map buildLinks(HttpServletRequest request, String type, String source, String id) {
