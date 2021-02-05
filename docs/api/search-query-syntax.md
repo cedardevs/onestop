@@ -1,10 +1,26 @@
-<div align="center"><a href="/onestop/public-user">Public User Navigation Guide Home</a></div>
-<div align="center"><a href="/onestop/public-user/ui/features-in-depth#query-text-box">Return to UI Guide</a> | <a href="/onestop/public-user/api/quickstart">Return to API Guide</a></div>
+<div align="center"><a href="/onestop/api">OneStop API</a></div>
 <hr>
 
 **Estimated Reading Time: 20 minutes**
 
 # Search Query Syntax
+
+## Table of Contents
+* [Common Use Cases](#common-use-cases)
+* [Supported Search Query Features](#supported-search-query-features)
+    * [Default Query Behavior](#default-query-behavior)
+    * [Terms, Phrases, And Groups](#terms-phrases-and-groups)
+    * [Boolean Operators](#boolean-operators)
+    * [Fuzziness Matching](#fuzziness-matching)
+    * [Proximity Searches](#proximity-searches)
+    * [Boosting Search Clause Relevance](#boosting-search-clause-relevance)
+    * [Search By Field Name](#search-by-field-name)
+        * [Search Fields Requiring An Exact Match With An Inexact Query](#search-fields-requiring-an-exact-match-with-an-inexact-query)
+    * [Reserved characters](#reserved-characters)
+    * [Wildcards](#wildcards)
+    * [Regular Expressions](#regular-expressions)
+* [Requesting Help](#requesting-help)
+
 OneStop's underlying query is an Elasticsearch [query string query](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-query-string-query.html#query-string-syntax). Much of the Elasticsearch guide information is relevant to OneStop, but below you will find information on default behavior, explanations of the advanced syntax features in relation to the OneStop-specific indices, and exactly what is and is not supported.  All of the following search features can be used in combination with each other to adjust the match precision of your results. Some slack can be introduced by modifying the proximity and fuzziness match levels, or narrow down the specifics with boolean operators and explicit fields.
 
 ## Common Use Cases
@@ -167,4 +183,4 @@ If you're unsure of something pertaining to the query syntax, feel free to searc
 
 
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/features-in-depth#query-text-box">Return to UI Guide</a> | <a href="#query-syntax">Top of Page</a> | <a href="/onestop/public-user/api/quickstart">Return to API Guide</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

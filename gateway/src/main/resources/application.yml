@@ -10,32 +10,38 @@ server:
 spring:
   application:
     name: gateway
+  webflux:
+    base-path: /onestop
   cloud:
     gateway:
       routes:
-        - id: user_api
-          uri: http://onestop-user:8080/user
-          predicates:
-            - Path=/api/user/**
-          filters:
-            - RemoveRequestHeader= Cookie,Set-Cookie
-            - StripPrefix=1
-            - TokenRelay=
-        - id: search_route
-          uri: http://onestop-search:8080/
-          predicates:
-            - Path=/onestop-search/**
-          filters:
-            - RemoveRequestHeader= Cookie,Set-Cookie #should we remove the cookie for all services?
-            - StripPrefix=1
-        - id: client_route
-          uri: http://onestop-client:8080/
-          predicates:
-            - Path=/onestop/**
-        - id: fallback_to_client
-          uri: http://onestop-client:8080/
-          predicates:
-            - Path=/**
+      - id: user
+        uri: http://onestop-user:8080/
+        predicates:
+        - Path=/onestop/api/user/**
+        filters:
+        - RemoveRequestHeader=Cookie\,Set-Cookie
+        - StripPrefix=3
+        - TokenRelay=
+      - id: search
+        uri: http://onestop-search:8080/
+        predicates:
+        - Path=/onestop/api/search/**
+        filters:
+        - RemoveRequestHeader=Cookie\,Set-Cookie
+        - StripPrefix=3
+      - id: registry
+        uri: http://onestop-registry/
+        predicates:
+        - Path=/onestop/api/registry/**
+        filters:
+        - StripPrefix=3
+      - id: client
+        uri: http://onestop-client/
+        predicates:
+        - Path=/onestop/**
+        filters:
+        - StripPrefix=1
   security:
     oauth2:
       client:

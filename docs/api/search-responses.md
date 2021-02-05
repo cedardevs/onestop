@@ -1,7 +1,15 @@
+<div align="center"><a href="/onestop/api">OneStop API</a></div>
+<hr>
+
+**Estimated Reading Time: 5 minutes**
+
 # Search API Responses
 
+## Table of Contents
+* [Response Format](#response-format)
+
 ## Response Format
-OneStop API responses are built around the [JSON API Specification](http://jsonapi.org/). Successful responses (with facets requested) are formatted as such, where the fields within the `attributes` object are specified [here](search-fields.md):
+OneStop API responses are built around the [JSON API Specification](http://jsonapi.org/). Successful responses (with facets requested) are formatted as such, where the fields within the `attributes` object are specified [here](search-fields):
 ``` json
  {  
  "data": [
@@ -45,3 +53,6 @@ OneStop API responses are built around the [JSON API Specification](http://jsona
   }
 }
 ```
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>
