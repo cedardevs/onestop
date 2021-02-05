@@ -965,6 +965,7 @@ components:
               - $ref: "#/components/schemas/dateTimeFilter"
               - $ref: "#/components/schemas/yearFilter"
               - $ref: "#/components/schemas/facetFilter"
+              - $ref: "#/components/schemas/fieldFilter"
               - $ref: "#/components/schemas/geometryFilter"
               - $ref: "#/components/schemas/collectionFilter"
               - $ref: "#/components/schemas/excludeGlobalFilter"
@@ -981,7 +982,6 @@ components:
             oneOf:
               - $ref: "#/components/schemas/textQuery"
               - $ref: "#/components/schemas/granuleNameQuery"
-              - $ref: "#/components/schemas/fieldQuery"
           type: array
         summary:
           default: true
@@ -1054,7 +1054,7 @@ components:
       type: object
     checksumFilter:
       additionalProperties: false
-      description: "Filter granules by specific checksum(s)."
+      description: "Filter granules by specific checksum(s) and algorithm."
       properties:
         type:
           description: "Filter type."
@@ -1114,6 +1114,52 @@ components:
         - name
         - values
       title: "Facet Filter"
+      type: object
+    fieldFilter:
+      additionalProperties: false
+      description: "Filter by specific fields and their values. This is *not* a Lucene text search, and only includes fields that are not appropriate for a full text search. If the \"exactMatch\" parameter is set to false, you may include the wildcard characters '*' or '?' in the \"value\" parameter. "
+      properties:
+        type:
+          description: "Filter type."
+          enum:
+            - field
+        name:
+          description: "The field name to search on. This supports one level of nesting, e.g. \"links.linkUrl\". Note: you cannot perform this query on Lucene text fields such as \"filename\" or \"title\". For those cases, use the \"granuleName\" or \"queryText\" queries instead."
+          enum:
+            - fileIdentifier
+            - parentIdentifier
+            - doi
+            - gcmdScience
+            - gcmdScienceServices
+            - gcmdLocations
+            - gcmdInstruments
+            - gcmdPlatforms
+            - gcmdProjects
+            - gcmdDataCenters
+            - gcmdHorizontalResolution
+            - gcmdVerticalResolution
+            - gcmdTemporalResolution
+            - dataFormats.name
+            - dataFormats.version
+            - checksums.algorithm
+            - checksums.value
+            - links.linkName
+            - links.linkUrl
+            - links.linkFunction
+            - links.linkProtocol
+            - fileFormat
+        value:
+          description: "Text to filter with for the provided field. If \"exactMatch\" is false, this can include the wildcard characters '*' or '?'."
+          type: string
+        exactMatch:
+          description: "Controls the matching type of the provided \"value\" text. Defaults to true, meaning it will only return results that match the \"value\" exactly. If false, you can include the wildcard characters '*' or '?' to match against a pattern."
+          type: boolean
+          default: true
+      required:
+        - type
+        - name
+        - value
+      title: "Field Query"
       type: object
     geometryFilter:
       additionalProperties: false
@@ -1241,39 +1287,6 @@ components:
         - type
         - value
       title: "Granule Name Query"
-      type: object
-    fieldQuery:
-      additionalProperties: false
-      description: "Query by specific fields and their values. This is *not* a Lucene text search, and only includes fields that are not appropriate for a full text search. If the \"exactMatch\" parameter is set to false, you may include the wildcard characters '*' or '?' in the \"value\" parameter. "
-      properties:
-        type:
-          description: "Query type."
-          enum:
-            - fieldQuery
-        field:
-          description: "The field name to search on. This supports one level of nesting, e.g. \"links.linkUrl\". Note: you cannot perform this query on Lucene text fields such as \"filename\" or \"title\". For those cases, use the \"granuleName\" or \"queryText\" queries instead."
-          enum:
-            - checksums.algorithm
-            - checksums.value
-            - doi
-            - links.linkUrl
-            - links.linkFunction
-            - links.linkProtocol
-            - fileFormat
-            - dataFormats.name
-            - dataFormats.version
-        value:
-          description: "Text to search on for the provided field. If \"exactMatch\" is false, this can include the wildcard characters '*' or '?'."
-          type: string
-        exactMatch:
-          description: "Controls the matching type of the provided \"value\" text. Defaults to true, meaning it will only return results that match the \"value\" exactly. If false, you can include the wildcard characters '*' or '?' to match against a pattern."
-          type: boolean
-          default: true
-      required:
-        - type
-        - field
-        - value
-      title: "Field Query"
       type: object
     # Record field schemas
     accessFeeStatement: # TODO is this an array? # TODO description

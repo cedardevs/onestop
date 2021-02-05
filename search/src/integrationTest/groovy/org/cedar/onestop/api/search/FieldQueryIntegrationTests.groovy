@@ -21,36 +21,38 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 )
 @Unroll
 class FieldQueryIntegrationTests extends Specification {
-    static private final String FIELD_QUERY_ALIAS = 'field_query'
+  static private final String FIELD_QUERY_ALIAS = 'field_query'
 
-    @Autowired
-    RestHighLevelClient restHighLevelClient
+  @Autowired
+  RestHighLevelClient restHighLevelClient
 
-    @Autowired
-    ElasticsearchService esService
+  @Autowired
+  ElasticsearchService esService
 
-    void setup() {
-        TestUtil.resetLoadAndRefreshGenericTestIndex(FIELD_QUERY_ALIAS, restHighLevelClient, esService)
-    }
+  void setup() {
+    TestUtil.resetLoadAndRefreshGenericTestIndex(FIELD_QUERY_ALIAS, restHighLevelClient, esService)
+  }
 
-    def 'Can search by nested field'() {
-        // Null spatial boundings should not be excluded
-        given:
-        def requestParams = [
-            queries: [[
-                          type : 'fieldQuery',
-                          field: 'links.linkUrl',
-                          value: 's3://noaa-goes16/1111.nc'
-                      ]],
-            summary: false
-        ]
+  def 'Can search by nested field'() {
+    // Null spatial boundings should not be excluded
+    given:
+    def requestParams = [
+        filters: [
+            [
+                type : 'field',
+                name : 'links.linkUrl',
+                value: 's3://noaa-goes16/1111.nc'
+            ]
+        ],
+        summary: false
+    ]
 
-        when:
-        def queryResponse = esService.searchFromRequest(requestParams, FIELD_QUERY_ALIAS)
+    when:
+    def queryResponse = esService.searchFromRequest(requestParams, FIELD_QUERY_ALIAS)
 
-        then:
-        def actualMatchingIds = queryResponse.data.collect { it.id }
-        actualMatchingIds.size() == 1
-        actualMatchingIds.contains('1')
-    }
+    then:
+    def actualMatchingIds = queryResponse.data.collect { it.id }
+    actualMatchingIds.size() == 1
+    actualMatchingIds.contains('1')
+  }
 }

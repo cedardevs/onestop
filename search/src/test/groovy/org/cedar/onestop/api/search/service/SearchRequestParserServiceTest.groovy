@@ -30,24 +30,24 @@ class SearchRequestParserServiceTest extends Specification {
     yearFilters.size() == 1
 
     where:
-    type | relation | relative
-    'year' | 'intersects' | 'after'
-    'year' | 'intersects' | 'before'
-    'year' | 'disjoint' | 'after'
-    'year' | 'disjoint' | 'before'
-    'year' | 'contains' | 'after'
-    'year' | 'contains' | 'before'
-    'year' | 'within' | 'after'
-    'year' | 'within' | 'before'
+    type       | relation     | relative
+    'year'     | 'intersects' | 'after'
+    'year'     | 'intersects' | 'before'
+    'year'     | 'disjoint'   | 'after'
+    'year'     | 'disjoint'   | 'before'
+    'year'     | 'contains'   | 'after'
+    'year'     | 'contains'   | 'before'
+    'year'     | 'within'     | 'after'
+    'year'     | 'within'     | 'before'
 
     'datetime' | 'intersects' | 'after'
     'datetime' | 'intersects' | 'before'
-    'datetime' | 'disjoint' | 'after'
-    'datetime' | 'disjoint' | 'before'
-    'datetime' | 'contains' | 'after'
-    'datetime' | 'contains' | 'before'
-    'datetime' | 'within' | 'after'
-    'datetime' | 'within' | 'before'
+    'datetime' | 'disjoint'   | 'after'
+    'datetime' | 'disjoint'   | 'before'
+    'datetime' | 'contains'   | 'after'
+    'datetime' | 'contains'   | 'before'
+    'datetime' | 'within'     | 'after'
+    'datetime' | 'within'     | 'before'
   }
 
   def "Request with #label creates empty elasticsearch request"() {
@@ -217,10 +217,10 @@ class SearchRequestParserServiceTest extends Specification {
                             bool: [
                                 must: [[
                                            multi_match: [
-                                               query: "ghrsst goes",
-                                               fields: expectedFields,
+                                               query   : "ghrsst goes",
+                                               fields  : expectedFields,
                                                operator: expectedOperator,
-                                               type: 'cross_fields'
+                                               type    : 'cross_fields'
                                            ]]]]
                         ],
                         field_value_factor: [
@@ -241,12 +241,12 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
 
     where:
-    desc | request | expectedOperator | expectedFields
-    'defaults for field and allTermsMustMatch' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes"}]}' | 'OR' | ['title', 'fileIdentifier', 'filename']
-    'declared single field value' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "field": "title" }]}' | 'OR' | ['title']
-    'declared "all" field value' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "field": "all" }]}' | 'OR' | ['title', 'fileIdentifier', 'filename']
-    'allTermsMustMatch is false' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": false }]}' | 'OR' | ['title', 'fileIdentifier', 'filename']
-    'allTermsMustMatch is true' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": true }]}' | 'AND' | ['title', 'fileIdentifier', 'filename']
+    desc                                       | request                                                                                      | expectedOperator | expectedFields
+    'defaults for field and allTermsMustMatch' | '{"queries":[{"type": "granuleName", "value": "ghrsst goes"}]}'                              | 'OR'             | ['title', 'fileIdentifier', 'filename']
+    'declared single field value'              | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "field": "title" }]}'           | 'OR'             | ['title']
+    'declared "all" field value'               | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "field": "all" }]}'             | 'OR'             | ['title', 'fileIdentifier', 'filename']
+    'allTermsMustMatch is false'               | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": false }]}' | 'OR'             | ['title', 'fileIdentifier', 'filename']
+    'allTermsMustMatch is true'                | '{"queries":[{"type": "granuleName", "value": "ghrsst goes", "allTermsMustMatch": true }]}'  | 'AND'            | ['title', 'fileIdentifier', 'filename']
   }
 
   def 'Multiple granuleName objects build right request'() {
@@ -352,36 +352,23 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
-  def 'Test fieldQuery query'() {
+  def 'Test field filter'() {
     given:
-    def request = "{\"queries\": [{\"type\": \"fieldQuery\", \"field\": \"${field}\", \"value\": \"${value}\"}]}"
+    def request = """{"filters": [{"type": "field", "name": "$field", "value": "$value"}]}"""
     def params = slurper.parseText(request)
 
     when:
     def queryResult = requestParser.parseSearchQuery(params)
     def expectedQuery = [
         bool: [
-            must: [[
-                function_score: [
-                    query: [
-                        bool: [
-                            must: [[
-                                term: [
-                                    (field): value
-                                ]
-                            ]]
-                        ]
-                    ],
-                    field_value_factor: [
-                        field   : 'dsmmAverage',
-                        modifier: 'log1p',
-                        factor  : 1f,
-                        missing : 0
-                    ],
-                    boost_mode: 'sum'
+            must  : [:],
+            filter: [
+                [
+                    term: [
+                        (field): value
+                    ]
                 ]
-            ]],
-            filter: [:]
+            ]
         ]
     ]
 
@@ -389,45 +376,27 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
 
     where:
-    field | value
+    field        | value
     'fileFormat' | 'NetCDF'
   }
 
-  def 'Test fieldQuery query with nested field'() {
+  def 'Test field filter with wildcard'() {
     given:
-    def request = "{\"queries\": [{\"type\": \"fieldQuery\", \"field\": \"${field}\", \"value\": \"${value}\"}]}"
+    def request = """{"filters": [{"type": "field", "name": "$field", "value": "$value", "exactMatch": false}]}"""
     def params = slurper.parseText(request)
 
     when:
     def queryResult = requestParser.parseSearchQuery(params)
     def expectedQuery = [
         bool: [
-            must: [[
-                function_score: [
-                    query: [
-                        bool: [
-                            must: [[
-                                nested: [
-                                    path: 'links',
-                                    query: [
-                                        term: [
-                                            (field): value
-                                        ]
-                                    ]
-                                ]
-                            ]]
-                        ]
-                    ],
-                    field_value_factor: [
-                        field   : 'dsmmAverage',
-                        modifier: 'log1p',
-                        factor  : 1f,
-                        missing : 0
-                    ],
-                    boost_mode: 'sum'
+            must  : [:],
+            filter: [
+                [
+                    wildcard: [
+                        (field): value
+                    ]
                 ]
-            ]],
-            filter: [:]
+            ]
         ]
     ]
 
@@ -435,7 +404,40 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
 
     where:
-    field | value
+    field        | value
+    'fileFormat' | 'Net*'
+  }
+
+  def 'Test field filter with nested field'() {
+    given:
+    def request = """{"filters": [{"type": "field", "name": "${field}", "value": "${value}"}]}"""
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [:],
+            filter: [
+                [
+                    nested: [
+                        path : 'links',
+                        query: [
+                            term: [
+                                (field): value
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+
+    then:
+    queryResult == expectedQuery
+
+    where:
+    field           | value
     'links.linkUrl' | 'http://foo.bar.com/csv/baz.csv'
   }
 
@@ -450,33 +452,33 @@ class SearchRequestParserServiceTest extends Specification {
         bool: [
             must  : [:],
             filter: [
-                [[ bool: [
+                [[bool: [
                     minimum_should_match: 1,
-                    should: [
-                        [ bool: [
+                    should              : [
+                        [bool: [
                             must: [
-                                [ range: [ beginDate: [ lte: '2011-11-11' ]] ],
-                                [ range: [ endDate: [ gte: '2010-10-10' ]] ]
+                                [range: [beginDate: [lte: '2011-11-11']]],
+                                [range: [endDate: [gte: '2010-10-10']]]
                             ]
-                        ] ],
-                        [ bool: [
-                            must: [
-                                [ range: [ endDate: [ gte: '2010-10-10' ]] ]
+                        ]],
+                        [bool: [
+                            must    : [
+                                [range: [endDate: [gte: '2010-10-10']]]
                             ],
                             must_not: [
-                                [ exists: [ field: 'beginDate' ] ]
+                                [exists: [field: 'beginDate']]
                             ]
-                        ] ],
-                        [ bool: [
-                            must: [
-                                [ range: [ beginDate: [ lte: '2011-11-11' ]] ]
+                        ]],
+                        [bool: [
+                            must    : [
+                                [range: [beginDate: [lte: '2011-11-11']]]
                             ],
                             must_not: [
-                                [ exists: [ field: 'endDate' ] ]
+                                [exists: [field: 'endDate']]
                             ]
-                        ] ]
+                        ]]
                     ]
-                ] ]]
+                ]]]
             ]
         ]
     ]
@@ -655,26 +657,26 @@ class SearchRequestParserServiceTest extends Specification {
             must  : [:],
             filter: [
                 [
-                  "nested":[
-                    "path":"checksums",
-                    "query":[
-                      "bool" : [
-                        "must" : [
-                            [ "terms" : ["checksums.algorithm" : ["SHA1"]] ],
-                            [ "terms" : ["checksums.value" : ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"]] ]
+                    "nested": [
+                        "path" : "checksums",
+                        "query": [
+                            "bool": [
+                                "must": [
+                                    ["terms": ["checksums.algorithm": ["SHA1"]]],
+                                    ["terms": ["checksums.value": ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"]]]
+                                ]
+                            ]
                         ]
-                      ]
                     ]
-                  ]
                 ],
                 [
-                    "nested":[
-                        "path":"checksums",
-                        "query":[
-                            "bool" : [
-                                "must" : [
-                                    [ "terms" : ["checksums.algorithm" : ["MD5"]] ],
-                                    [ "terms" : ["checksums.value" : ["970cfb0cffbe6ec4547b7df61af8987126a9cae8"]] ]
+                    "nested": [
+                        "path" : "checksums",
+                        "query": [
+                            "bool": [
+                                "must": [
+                                    ["terms": ["checksums.algorithm": ["MD5"]]],
+                                    ["terms": ["checksums.value": ["970cfb0cffbe6ec4547b7df61af8987126a9cae8"]]]
                                 ]
                             ]
                         ]
@@ -699,12 +701,12 @@ class SearchRequestParserServiceTest extends Specification {
             must  : [:],
             filter: [
                 [nested: [
-                    path: 'links',
+                    path : 'links',
                     query: [
                         terms: [
                             'links.linkFunction': ["download"]
-                            ]
                         ]
+                    ]
                 ]]
             ]
         ]
@@ -726,13 +728,13 @@ class SearchRequestParserServiceTest extends Specification {
             must  : [:],
             filter: [
                 [
-                    "nested":[
-                        "path":"checksums",
-                        "query":[
-                            "bool" : [
-                                "must" : [
-                                    [ "terms" : ["checksums.algorithm" : ["SHA1"]] ],
-                                    [ "terms" : ["checksums.value" : ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"]] ]
+                    "nested": [
+                        "path" : "checksums",
+                        "query": [
+                            "bool": [
+                                "must": [
+                                    ["terms": ["checksums.algorithm": ["SHA1"]]],
+                                    ["terms": ["checksums.value": ["387cfb0cffbe6ec4547b7df61af8987126a9cae8"]]]
                                 ]
                             ]
                         ]
@@ -749,77 +751,77 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def aggsResult = requestParser.createFacetAggregations()
     def expectedAggs = [
-        dataFormats   : [
-            terms         : [
+        dataFormats         : [
+            terms: [
                 field: 'dataFormat',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        linkProtocols     : [
-            nested: [
+        linkProtocols       : [
+            nested      : [
                 path: 'links'
             ],
             aggregations: [
                 foobar: [
                     terms: [
                         field: 'links.linkProtocol',
-                        size: Integer.MAX_VALUE,
+                        size : Integer.MAX_VALUE,
                         order: ['_term': 'asc']
                     ]
                 ]
             ]
         ],
         serviceLinkProtocols: [
-            terms         : [
+            terms: [
                 field: 'serviceLinkProtocol',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        science       : [
+        science             : [
             terms: [
                 field: 'gcmdScience',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        services       : [
+        services            : [
             terms: [
                 field: 'gcmdScienceServices',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        locations       : [
+        locations           : [
             terms: [
                 field: 'gcmdLocations',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        instruments   : [
+        instruments         : [
             terms: [
                 field: 'gcmdInstruments',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        platforms     : [
+        platforms           : [
             terms: [
                 field: 'gcmdPlatforms',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        projects      : [
+        projects            : [
             terms: [
                 field: 'gcmdProjects',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        dataCenters   : [
+        dataCenters         : [
             terms: [
                 field: 'gcmdDataCenters',
                 size : Integer.MAX_VALUE,
@@ -833,36 +835,36 @@ class SearchRequestParserServiceTest extends Specification {
                 order: ['_term': 'asc']
             ]
         ],
-        verticalResolution: [
+        verticalResolution  : [
             terms: [
                 field: 'gcmdVerticalResolution',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        temporalResolution: [
+        temporalResolution  : [
             terms: [
                 field: 'gcmdTemporalResolution',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        fileFormats: [
+        fileFormats         : [
             terms: [
                 field: 'fileFormat',
-                size: Integer.MAX_VALUE,
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        linkAccessTypes: [
-            nested: [
+        linkAccessTypes     : [
+            nested      : [
                 path: 'links'
             ],
             aggregations: [
                 foobar: [
                     terms: [
                         field: 'links.linkFunction',
-                        size: Integer.MAX_VALUE,
+                        size : Integer.MAX_VALUE,
                         order: ['_term': 'asc']
                     ]
                 ]
@@ -878,120 +880,120 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def aggsResult = requestParser.createFacetAggregations()
     def expectedAggs = [
-        dataFormats   : [
-          terms         : [
-            field: 'dataFormat',
-            size : Integer.MAX_VALUE,
-            order: ['_term': 'asc']
-          ]
+        dataFormats         : [
+            terms: [
+                field: 'dataFormat',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
         ],
-        linkProtocols     : [
-            nested: [
+        linkProtocols       : [
+            nested      : [
                 path: 'links'
             ],
             aggregations: [
                 foobar: [
                     terms: [
                         field: 'links.linkProtocol',
-                        size: Integer.MAX_VALUE,
+                        size : Integer.MAX_VALUE,
                         order: ['_term': 'asc']
                     ]
                 ]
             ]
         ],
         serviceLinkProtocols: [
-            terms         : [
+            terms: [
                 field: 'serviceLinkProtocol',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        science       : [
-            terms       : [
+        science             : [
+            terms: [
                 field: 'gcmdScience',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        services       : [
-            terms       : [
+        services            : [
+            terms: [
                 field: 'gcmdScienceServices',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        locations       : [
+        locations           : [
             terms: [
                 field: 'gcmdLocations',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        instruments   : [
-            terms       : [
+        instruments         : [
+            terms: [
                 field: 'gcmdInstruments',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        platforms     : [
-            terms       : [
+        platforms           : [
+            terms: [
                 field: 'gcmdPlatforms',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        projects      : [
-            terms       : [
+        projects            : [
+            terms: [
                 field: 'gcmdProjects',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        dataCenters   : [
-            terms       : [
+        dataCenters         : [
+            terms: [
                 field: 'gcmdDataCenters',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
         horizontalResolution: [
-            terms       : [
+            terms: [
                 field: 'gcmdHorizontalResolution',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        verticalResolution: [
-            terms       : [
+        verticalResolution  : [
+            terms: [
                 field: 'gcmdVerticalResolution',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        temporalResolution: [
-            terms       : [
+        temporalResolution  : [
+            terms: [
                 field: 'gcmdTemporalResolution',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        fileFormats: [
+        fileFormats         : [
             terms: [
                 field: 'fileFormat',
-                size: Integer.MAX_VALUE,
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
-        linkAccessTypes: [
-            nested: [
+        linkAccessTypes     : [
+            nested      : [
                 path: 'links'
             ],
             aggregations: [
                 foobar: [
                     terms: [
                         field: 'links.linkFunction',
-                        size: Integer.MAX_VALUE,
+                        size : Integer.MAX_VALUE,
                         order: ['_term': 'asc']
                     ]
                 ]
