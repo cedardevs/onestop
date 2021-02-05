@@ -67,22 +67,29 @@ test('generate sitemap xml to handle a response with 1 item', () => {
   const isoStagedDate = "2021-01-21T22:59:57.516Z";
   const coll1Array = [collection1];
   const granual1Collection = {"data" : coll1Array};
-  
+  /*
   const sitemap = `
     <url>
         <loc>${baseUrl}/onestop/collections/details/${id}</loc>
         <lastmod>${isoStagedDate}</lastmod>
         <changefreq>weekly</changefreq>
     </url>`
+*/
 
-  var expectedSitemap = processBodyData(granual1Collection, collSize, 'default');
-  expect(expectedSitemap).toBe(sitemap);
+ const collObject = { "url": `${baseUrl}/collections/details/${id}`,
+                      "changefreq": `daily`, 
+                      "lastmod": `${isoStagedDate}`};
+                  
+ const listForLibrary = [collObject];
+  var expectedSitemap = processBodyData(granual1Collection, collSize);
+  expect(expectedSitemap).toStrictEqual(listForLibrary);
 });
 
-test('generate sitemap xml for multiple collections', () => {
+test('generate sitemap objects for multiple collections', () => {
   //Mocked sitemap. processBodyData has two functions inside of it
   //processBodyData -> convertCollectionToXML -> Unix_TimeStamp
-  //This test also confirms that convertCollectionToXML & Unix_TimeStamp work properly
+  //This test also confirms that convertCollectionToObject & Unix_TimeStamp work properly
+  /*
   const sitemap = `
     <url>
         <loc>${baseUrl}/onestop/collections/details/${dataItems[0].id}</loc>
@@ -99,10 +106,24 @@ test('generate sitemap xml for multiple collections', () => {
         <lastmod>2033-09-25T14:06:37.949Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>`
+    */
+
+   const collObject1 = { "url": `${baseUrl}/collections/details/${dataItems[0].id}`,
+                      "changefreq": `daily`, 
+                      "lastmod": `2021-01-21T22:59:57.516Z`};
+
+   const collObject2  = { "url": `${baseUrl}/collections/details/${dataItems[1].id}`,
+                      "changefreq": `daily`, 
+                      "lastmod": `2021-01-21T22:59:54.444Z`};
+   const collObject3 =  {"url": `${baseUrl}/collections/details/${dataItems[2].id}`,
+                        "changefreq": `daily`, 
+                        "lastmod": `2033-09-25T14:06:37.949Z`};
+                  
+ const listForLibrary = [collObject1, collObject2, collObject3];
 
     var sitemapCompiled = processBodyData(responseBody, dataItems.length, 'default');
 
-  expect(sitemapCompiled).toBe(sitemap);
+  expect(sitemapCompiled).toStrictEqual(listForLibrary);
 });
 
 
@@ -129,6 +150,7 @@ test('get the lastStagedDate after looping through dataItems', () => {
 
 const processBodyData = require('./transformUtils');
 const convertCollectionToXml = require('./transformUtils')
+const convertCollectionToObject = require('./transformUtils')
 
 
 //TODO - Future tests to work on

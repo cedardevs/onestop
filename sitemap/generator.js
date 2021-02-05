@@ -32,8 +32,9 @@ const searchApiBase = argv.api
 const collectionApiUrl = new URL(`${searchApiBase}/search/collection`)
 const webBase = argv.website
 const pageSize = argv.pageSize
-var sitemapTotal = "";
+var sitemapTotal = [];
 var collCount = 0;
+var i = 0;
 var keepGoing = true;
 
 const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
@@ -83,7 +84,7 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                 console.log("-----SITEMAP FILE-----\n");
 
 
-            
+                /*
                 //Useful debugging commands
                 let lastStagedDate = body.data[body.data.length-1].attributes.stagedDate;
                 console.log("\n-- DEBUG LOG --\n");
@@ -91,7 +92,7 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                 console.log("maxCollectionSize: " + maxCollectionSize);
                 console.log("pageSize: " + pageSize);
                 console.log("body.length: " + body.data.length);
-            
+                */
                 // Debug command to print out the page's collection
                 //  body.data.forEach((d) => {
                 //  console.log(d);
@@ -113,13 +114,13 @@ function crawlerCollection(body, maxCollectionSize) {
 
     //bodyDataString processes each item in our body and converts it to XML
     var bodyDataString = processBodyData(body, maxCollectionSize);
-    sitemapTotal += bodyDataString;
+    sitemapTotal[i++] = bodyDataString;
 
 
     //Recursion base case, checking for last page
     //Body will be of size 'pageSize' unless on the last page
     if(body.data.length > 0 && body.data.length < pageSize){
-        sitemapTotal += processBodyData(body, maxCollectionSize);
+        sitemapTotal[i] = processBodyData(body, maxCollectionSize);
         keepGoing = false;
      } 
 

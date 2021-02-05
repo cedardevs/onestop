@@ -13,6 +13,22 @@ const convertCollectionToXml = (baseUrl, collection) => {
     </url>`
 };
 
+//Converted method of convertCollectionXML, we use this to create the object list
+const convertCollectionToObject = (baseUrl, collection) => {
+
+  var stagedDate = collection.attributes.stagedDate;
+  var formattedDate = Unix_TimeStamp(stagedDate);
+  var collObject = { url: `${baseUrl}/collections/details/${collection.id}`,
+                    changefreq: `daily`, 
+                    lastmod: `${formattedDate}`};
+
+
+  // const object = { url: `/onestop/collections/details/${id}, changefreq: 'daily', lastmod: ${isoStagedDate}`};
+
+
+  return collObject;
+};
+
 //Helper method for convertCollectiontoXML, transforms the collection's stagedDate to W3 DateTime format.
 const Unix_TimeStamp = (t) =>{
 
@@ -28,7 +44,9 @@ const Unix_TimeStamp = (t) =>{
 //TODO - Don't need switch statements as long as we do error checking before our default case
 const processBodyData = (body, maxCollectionSize) => {
   let choice = "";
-  var bodyDataString = "";
+
+  var bodyDataObject = [];
+  var i = 0;
   if(maxCollectionSize <= 0){
     choice = 'empty';
   }
@@ -52,12 +70,12 @@ const processBodyData = (body, maxCollectionSize) => {
 
     default:
         body.data.forEach((d) => {
-          bodyDataString += convertCollectionToXml(webBase, d);
+          bodyDataObject[i++] = convertCollectionToObject(webBase, d);
           });
          
   }
 
-    return bodyDataString;
+    return bodyDataObject;
 }
 
 module.exports = processBodyData;
