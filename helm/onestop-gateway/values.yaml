@@ -43,14 +43,14 @@ service:
 
 ingress:
   enabled: true
-  annotations: {}
-#    kubernetes.io/ingress.class: "nginx"
-#    nginx.ingress.kubernetes.io/enable-rewrite-log: "true"
-#    nginx.ingress.kubernetes.io/rewrite-target: /api/$1
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1/$3
+    nginx.ingress.kubernetes.io/proxy-body-size: "5m"
   hosts:
     - host: "localhost"
       paths:
-        - /
+        - /(onestop)(/|$)(.*)
+        - /(onestop-search)(/|$)(.*)
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:

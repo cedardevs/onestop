@@ -1,11 +1,10 @@
-<div align="center"><a href="/onestop/public-user">Public User Navigation Guide Home</a></div>
-<div align="center"><a href="/onestop/public-user/ui/quickstart">Previous: UI Quick Start Guide</a> | <a href="/onestop/public-user/ui/keyboard-navigation">Next: UI Keyboard Navigation</a></div>
+<div align="center"><a href="/onestop/public-user">Public User Documentation Home</a></div>
 <hr>
 
 **Estimated Reading Time: 15 minutes**
 
 # UI Features In Depth
-While it's entirely possible to narrow your search on OneStop down with just a few steps, as demonstrated in the previous [quick start guide](quickstart.md), many features enable very precise queries to be submitted.
+While it's entirely possible to narrow your search on OneStop down with just a few steps, as demonstrated in the previous [quick start guide](quickstart), many features enable very precise queries to be submitted.
 
 The goal for this guide is to explain all the functionality available on the UI. Features are described in the order they are encountered -- from the landing page, through collection results, to file (granule) downloading.
 
@@ -41,7 +40,7 @@ Once you've begun searching, however, the query box migrates to the site header.
 
 Entering text in the query box will always start a new search on OneStop, resetting any filters you may have added in an existing search. The text entered for your query can be a simple term or phrase, but can also support a much richer syntax allowing for a very precise request.
 
-Check out our guide on [Query Syntax](../../public-user/api/query-syntax) for thorough coverage of available options.
+Check out our guide on [Query Syntax](../../api/search-query-syntax) for thorough coverage of available options.
 
 ### Popular Topics and Featured Data Sets
 Both of these features found on the landing page pre-populate a query for the user. The Popular Topics are simple high level categories from which to explore and discover data. On the other hand, Featured Data Sets queries are tailored to match a specific collection or set of collections. The Featured Data Sets are customizable by the site administrator and are therefore subject to change.
@@ -241,6 +240,5 @@ An example of file access types shown in the file link type drop-down list:
 
 ![Example of file link type drop-down list](../../images/ui-id/file-link-type-dropdown.png)
 
-
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/quickstart">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/ui/keyboard-navigation">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

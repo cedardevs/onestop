@@ -1,5 +1,4 @@
-<div align="center"><a href="/onestop/public-user">Public User Navigation Guide Home</a></div>
-<div align="center"><a href="/onestop/public-user/ui/features-in-depth">Previous: UI Features In Depth</a> | <a href="/onestop/public-user/ui/accessibility">Next: Site Accessibility Overview</a></div>
+<div align="center"><a href="/onestop/public-user">Public User Documentation Home</a></div>
 <hr>
 
 **Estimated Reading Time:**
@@ -27,4 +26,4 @@ If you encounter issues being able to focus via the keyboard on a Mac while usin
 For more context on this issue, see this [Stack Overflow post](https://stackoverflow.com/questions/11704828/how-to-allow-keyboard-focus-of-links-in-firefox#answer-11713537)
 
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/features-in-depth">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/ui/accessibility">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>

@@ -1,5 +1,21 @@
+<div align="center"><a href="/onestop/metadata-manager">Metadata Manager Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 15 minutes**
+
+# Upstream Connecting via Kafka
+
+## Table of Contents
+* [Integrating upstream application to the underlying Kafka system](#integrating-upstream-application-to-the-underlying-kafka-system)
+* [Features](#features)
+    * [Apache NiFi](#apache-nifi)
+    * [Nifi as a Producer](#nifi-as-a-producer)
+    * [Nifi as bidirectional Data Flows](#nifi-as-bidirectional-data-flows)
+* [kafka producer](#kafka-producer)
+* [Kafka connects](#kafka-connects)
+
 ## Integrating upstream application to the underlying Kafka system
-Metadata can be published into the OneStop system in two different ways, using Registry application [REST API](onestop-metadata-loading.md) or directly 
+Metadata can be published into the OneStop system in two different ways, using Registry application [REST API](onestop-metadata-loading) or directly 
 integrating upstream applications to the underline OneStop kafka cluster.  
 This guide will take a look at some approaches for integrating upstream applications and Kafka, and look at some examples regarding the tools Kafka supports.
 
@@ -116,6 +132,5 @@ Kafka connect, which includes source and sink, can also be used to published dat
 see [kafka connect Confluent page](https://docs.confluent.io/current/connect/index.html) for more details. 
 
 <hr>
-<div align="center"><a href="/onestop/metadata-manager/v3/onestop-metadata-loading">Previous</a> | <a href="#integrating-upstream-application-to-the-underlying-kafka-system">Top of Page</a> 
-| <a href="/onestop/">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>
 

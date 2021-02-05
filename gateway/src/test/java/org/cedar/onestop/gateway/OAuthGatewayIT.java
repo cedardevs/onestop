@@ -25,6 +25,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 
+import static org.cedar.onestop.gateway.config.LoginGovConstants.LOGIN_SUCCESS_ENDPOINT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
@@ -129,7 +130,7 @@ public class OAuthGatewayIT {
 
     // check that client is now successfully logged in and are now redirected back
     assertEquals(HttpStatus.FOUND, authResponse.statusCode());
-    assertEquals("/onestop/", authResponse.headers().asHttpHeaders().getLocation().toString());
+    assertEquals(LOGIN_SUCCESS_ENDPOINT, authResponse.headers().asHttpHeaders().getLocation().toString());
 
     // update the cookie with the new value from the received Set-Cookie header
     sessionCookie = authResponse.cookies().getFirst(SESSION);

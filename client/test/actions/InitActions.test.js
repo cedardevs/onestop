@@ -5,7 +5,7 @@ import history from '../../src/history'
 import {loadDetails} from '../../src/actions/InitActions'
 
 describe('init action', function(){
-  const BASE_URL = '/onestop-search'
+  const BASE_URL = '/onestop/api/search'
   const resetStore = () => ({type: RESET_STORE})
   beforeEach(async () => {
     // reset store to initial conditions

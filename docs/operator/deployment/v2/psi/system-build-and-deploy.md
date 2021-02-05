@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/operator">Operator Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 10 minutes**
+
 ## Build
 
 Requires: Java 8+
@@ -128,3 +133,6 @@ helm install ./helm/psi
 > ```bash
 > kubectl create secret docker-registry regcred --docker-server=... --docker-username=... --docker-password=... --docker-email=...
 > ```
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

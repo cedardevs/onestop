@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/operator">Operator Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 15 minutes**
+
 # OneStop 2.1 Deployment Notes
 
 ## Migrating from 2.0 to 2.1
@@ -94,7 +99,7 @@ https://sciapps.colorado.edu/onestop/collections/details/AWoDH-ikve2FB-bXY1r2
 ...
 ```
 
-See [Feature Toggles](/docs/operator/deployment/v2/onestop/feature-toggles.mdggles.md) for more information about enabling sitemaps correctly.
+See [Feature Toggles](/onestop/operator/deployment/v2/onestop/feature-toggles) for more information about enabling sitemaps correctly.
 
 ##### Onestop Client Configuration
 
@@ -116,3 +121,6 @@ The OneStop client hits the `/uiConfig` endpoint of the search API in order to i
 * Ideally, authentication and authorization will be delegated to a service like CAS so that we can make our application security configurations more consistent and worry less about maintaining custom security filters for different identity providers like ICAM and login.gov.
 * "banner" in UI config will be named "disclaimer" for clarity
 * And there’s always more...
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>
