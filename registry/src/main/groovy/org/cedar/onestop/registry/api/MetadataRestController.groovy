@@ -158,7 +158,7 @@ class MetadataRestController {
     }
   }
 
-  @RequestMapping(path = '/metadata/{type}/{id}/xml', method = [GET, HEAD], produces = ['application/xml', 'application/json'])
+  @RequestMapping(path = '/metadata/{type}/{id}/raw/xml', method = [GET, HEAD], produces = 'application/xml')
   String retrieveRawXml(
       @PathVariable String type,
       @PathVariable String id,
@@ -167,7 +167,7 @@ class MetadataRestController {
     retrieveRawXml(type, Topics.DEFAULT_SOURCE, id, request, response)
   }
 
-  @RequestMapping(path = '/metadata/{type}/{source}/{id}/xml', method = [GET, HEAD], produces = ['application/xml', 'application/json'])
+  @RequestMapping(path = '/metadata/{type}/{source}/{id}/raw/xml', method = [GET, HEAD], produces = 'application/xml')
   String retrieveRawXml(
       @PathVariable String type,
       @PathVariable String source,
@@ -175,34 +175,18 @@ class MetadataRestController {
       HttpServletRequest request,
       HttpServletResponse response) throws Exception {
     if (!UUIDValidator.isValid(id)) {
-      return UUIDValidator.uuidErrorMsg(id)
+      response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
+      return
     }
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def result = metadataStore.retrieveInput(recordType, source, id)
-    def links = buildLinks(request, type, source, id)
-    links.self = links.remove('xml')
 
-    if (result) {
-      if (result?.errors?.size() > 0) {
-        return [
-            links : links,
-            errors: result.errors
-        ]
-      } else {
-        return result.rawXml
-      }
+    if (result?.rawXml) {
+      return result.rawXml
     }
 
     response.status = HttpStatus.NOT_FOUND.value()
-    return [
-        errors: [
-            [
-                status: HttpStatus.NOT_FOUND.value(),
-                title : HttpStatus.NOT_FOUND.toString(),
-                detail: "No parsed values exist for ${type} with id [${id}] from source [${source}]" as String
-            ]
-        ]
-    ]
+    return
   }
 
   private Map buildLinks(HttpServletRequest request, String type, String source, String id) {
