@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/metadata-manager">Metadata Manager Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 25 minutes**
+
 # Indexed ISO Metadata Fields
 All of the following fields are indexed for every data type (collection and granule). Click the links for more information on each field (i.e., XPaths used for parsing, explanations of created fields, sub-fields in instances where the listed field is actually an object, etc.).
 * [stagedDate](#stageddate)
@@ -59,6 +64,7 @@ This field must be present.
 ***
 
 ### `parentIdentifier`
+It is a best practice for this to be the collection id as it is in OneStop for this granule.
 Either path is ingested, in this order:
 > /gmi:MI_Metadata/gmd:parentIdentifier/gmx:Anchor[1] 
 
@@ -496,3 +502,6 @@ Sub-fields in the table below are relative to the above path.
 | links.linkUrl                     | .//srv:SV_OperationMetadata//gmd:CI_OnlineResource/gmd:linkage/gmd:URL[1] |
 | links.linkDescription             | .//srv:SV_OperationMetadata//gmd:CI_OnlineResource/gmd:description/gco:CharacterString[1] |
 | links.linkFunction                | .//srv:SV_OperationMetadata//gmd:CI_OnlineResource/gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue[1] |
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

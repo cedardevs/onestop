@@ -42,7 +42,7 @@ const mockHistory = {
 }
 
 describe('granule search actions', function(){
-  const BASE_URL = '/onestop-search'
+  const BASE_URL = '/onestop/api/search'
   const resetStore = () => ({type: RESET_STORE})
   const mockFacets = {
     mock: 'has facets',

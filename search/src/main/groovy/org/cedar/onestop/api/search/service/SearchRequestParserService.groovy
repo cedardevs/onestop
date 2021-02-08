@@ -26,7 +26,6 @@ class SearchRequestParserService {
     def requestQuery = [
         bool: [
             must  : assembleScoringContext(params.queries) ?: [:],
-
             filter: assembleFilteringContext(params.filters) ?: [:]
         ]
     ]
@@ -166,6 +165,11 @@ class SearchRequestParserService {
     // Facet filters:
     groupedFilters.facet.each {
       allFilters.add(constructFacetFilter(it))
+    }
+
+    // Field filters:
+    groupedFilters.field.each {
+      allFilters.add(constructFieldFilter(it))
     }
 
     // checksum filters:
@@ -416,8 +420,8 @@ class SearchRequestParserService {
   }
 
   private static Map constructFacetFilter(Map filterRequest) {
-    def fieldName = facetNameMappings[filterRequest.name] ?: filterRequest.name
-    def nestedParts = fieldName.split(/\./, 2)
+    String fieldName = facetNameMappings[filterRequest.name as String] ?: filterRequest.name
+    String[] nestedParts = fieldName.split(/\./, 2)
     if (nestedParts.length == 1) {
       return [
           terms: [
@@ -425,13 +429,38 @@ class SearchRequestParserService {
           ]
       ]
     }
-    def path = nestedParts[0];
+    def path = nestedParts[0]
     return [
         nested: [
             path : path,
             query: [
                 terms: [
                     (fieldName): filterRequest.values
+                ]
+            ]
+        ]
+    ]
+  }
+
+  private static Map constructFieldFilter(Map filterRequest) {
+    String fieldName = filterRequest.name
+    String[] nestedParts = fieldName.split(/\./, 2)
+    Boolean exactMatch = filterRequest.exactMatch != null ? filterRequest.exactMatch : true
+    String queryType = exactMatch ? 'term' : 'wildcard'
+    if (nestedParts.length == 1) {
+      return [
+          (queryType): [
+              (fieldName): filterRequest.value
+          ]
+      ]
+    }
+    def path = nestedParts[0]
+    return [
+        nested: [
+            path : path,
+            query: [
+                (queryType): [
+                    (fieldName): filterRequest.value
                 ]
             ]
         ]
@@ -483,4 +512,5 @@ class SearchRequestParserService {
         ]
     ]
   }
+
 }

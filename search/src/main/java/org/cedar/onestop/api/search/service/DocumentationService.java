@@ -25,7 +25,7 @@ public class DocumentationService {
 
   static {
     facetNameMappings.put("dataFormats"         , "dataFormat");
-    facetNameMappings.put("linkProtocols"       , "linkProtocol");
+    facetNameMappings.put("linkProtocols"       , "links.linkProtocol");
     facetNameMappings.put("serviceLinkProtocols", "serviceLinkProtocol");
     facetNameMappings.put("science"             , "gcmdScience");
     facetNameMappings.put("services"            , "gcmdScienceServices");

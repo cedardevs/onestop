@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/operator">Operator Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 15 minutes**
+
 ## Project Artifacts
 
 The project consists of two Java-based microservices, backed by a Kafka cluster.
@@ -6,7 +11,7 @@ The project consists of two Java-based microservices, backed by a Kafka cluster.
 
 #### Purpose
 
-The [registry](/registry-api) hosts the public API of the system and stores its persistent state. Specifically, it
+The [registry](/onestop/api/registry-api) hosts the public API of the system and stores its persistent state. Specifically, it
 serves several basic purposes:
 
 1. Receive metadata input via HTTP and send them to the appropriate Kafka topics
@@ -169,3 +174,6 @@ kafka:
 ...in an external yaml file and setting `CONFIG_LOCATION` with the location of that file.
 
 > IMPORTANT: Do NOT override the application.id kafka property. The app creates and references its own app id and overriding it may break it.
+
+<hr>
+<div align="center"><a href="#">Top of Page</a></div>

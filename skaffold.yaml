@@ -112,13 +112,13 @@ build:
     elasticsearch.host: "onestop-dev-es-http"
     elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
     elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
-    env.SITEMAP_API_PATH: https://sciapps.colorado.edu/onestop-search
-    env.SITEMAP_CLIENT_PATH: https://sciapps.colorado.edu/onestop
-    env.UI_AUTH_LOGINENDPOINT: http://localhost/oauth2/authorization/login-gov
-    env.UI_AUTH_LOGOUTENDPOINT: http://localhost/logout
-    env.UI_AUTH_USERPROFILEENDPOINT: http://localhost/api/user/v1/self
-    env.UI_AUTH_SAVEDSEARCHENDPOINT: http://localhost/api/user/v1/self/saved-search
-    features.login-gov: "false"
+    env.SITEMAP_API_PATH: http://localhost/onestop/api/search
+    env.SITEMAP_CLIENT_PATH: http://localhost/onestop
+    env.UI_AUTH_LOGINENDPOINT: http://localhost/onestop/oauth2/authorization/login-gov
+    env.UI_AUTH_LOGOUTENDPOINT: http://localhost/onestop/logout
+    env.UI_AUTH_USERPROFILEENDPOINT: http://localhost/onestop/api/user/v1/self
+    env.UI_AUTH_SAVEDSEARCHENDPOINT: http://localhost/onestop/api/user/v1/self/saved-search
+    features.login-gov: "true"
     features.sitemap: "true"
     service.nodePort: "30097"
     service.clusterIP: 10.100.100.2
@@ -151,13 +151,13 @@ build:
     service.clusterIP: 10.100.100.4
     config: |-
       ---
-      server.servlet.context-path: /user
       logging.level.org.springframework.security: DEBUG
       logging.level.org.springframework.web: DEBUG
+      logging.level.org.springframework.jdbc: DEBUG
       spring:
         datasource:
           url: jdbc:postgresql://onestop-postgresql:5432/user
-          username: onestop
+          username: postgres
           password: foamcat
         jpa:
           database: POSTGRESQL
@@ -188,47 +188,6 @@ build:
           file: ${PRIVATE_KEY_JWT_KEYSTORE_FILE}
           password: ${PRIVATE_KEY_JWT_KEYSTORE_PASSWORD}
           type: ${PRIVATE_KEY_JWT_KEYSTORE_TYPE}
-      spring:
-        application:
-          name: gateway
-        cloud:
-          gateway:
-            routes:
-            - id: user_api
-              uri: http://onestop-user:8080/user
-              predicates:
-              - Path=/api/user/**
-              filters:
-              - RemoveRequestHeader=Cookie\,Set-Cookie
-              - StripPrefix=1
-              - TokenRelay=
-            - id: search_route
-              uri: http://onestop-search:8080/
-              predicates:
-              - Path=/onestop-search/**
-              filters:
-              - RemoveRequestHeader=Cookie\,Set-Cookie
-              - StripPrefix=1
-            - id: registry_route
-              uri: http://onestop-registry/
-              predicates:
-              - Path=/registry/**
-              filters:
-              - StripPrefix=1
-            - id: precise_client_path
-              uri: http://onestop-client/
-              predicates:
-              - Path=/onestop
-              filters:
-              - RewritePath=/onestop\,/onestop/
-            - id: client_route
-              uri: http://onestop-client/
-              predicates:
-              - Path=/onestop/**
-            - id: fallback_to_client
-              uri: http://onestop-client/
-              predicates:
-              - Path=/**
 
 .onestop-postgresql: &onestop-postgresql
   name: onestop-postgresql
@@ -296,3 +255,9 @@ profiles:
               cp-kafka.enabled: "false"
               cp-schema-registry.enabled: "false"
               cp-zookeeper.enabled: "false"
+
+  - name: postgres
+    deploy:
+      helm:
+        releases:
+          - *onestop-postgresql
