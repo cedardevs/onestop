@@ -5,7 +5,11 @@ import {
   USER_PROFILE_REQUEST,
   USER_PROFILE_SUCCESS,
 } from '../actions/UserActions'
-import {SAVED_SEARCH_FAILURE, SAVED_SEARCH_REQUEST, SAVED_SEARCH_SUCCESS,} from '../actions/SavedSearchActions'
+import {
+  SAVED_SEARCH_FAILURE,
+  SAVED_SEARCH_REQUEST,
+  SAVED_SEARCH_SUCCESS,
+} from '../actions/SavedSearchActions'
 import {searchListToMap} from '../utils/resultUtils'
 
 export const initialState = Immutable({
@@ -31,9 +35,7 @@ export const user = (state = initialState, action) => {
           .setIn([ 'expired' ], false)
       }
       else {
-        return state
-            .setIn([ 'isFetching' ], false)
-            .setIn([ 'expired' ], true)
+        return state.setIn([ 'isFetching' ], false).setIn([ 'expired' ], true)
       }
 
     case USER_PROFILE_FAILURE:

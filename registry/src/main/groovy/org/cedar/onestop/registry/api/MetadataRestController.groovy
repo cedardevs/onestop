@@ -193,7 +193,7 @@ class MetadataRestController {
     return [
         input : "${root}/metadata/${type}/${source}/${id}" as String,
         parsed: "${root}/metadata/${type}/${source}/${id}/parsed" as String,
-        xml: "${root}/metadata/${type}/${source}/${id}/xml" as String
+        xml: "${root}/metadata/${type}/${source}/${id}/raw/xml" as String
     ]
   }
 

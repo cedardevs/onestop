@@ -1,5 +1,5 @@
 import React from 'react'
-import {processUrl, getApiGatewayPath} from '../../../utils/urlUtils'
+import {processUrl, getApiRegistryPath} from '../../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
 import GranulesSummaryContainer from './GranulesSummaryContainer'
 import Expandable from '../../common/ui/Expandable'
@@ -211,19 +211,15 @@ export default class DescriptionView extends React.Component {
       />
     )
 
-    const isApiGatewayDefined = getApiGatewayPath() !== undefined
-    const xmlLink = isApiGatewayDefined ? (
+    const xmlLink = (
       <a
-        href={new URL(
-          'registry/metadata/collection/' + itemUuid + '/raw/xml',
-          getApiGatewayPath()
-        ).toString()}
+        href={
+          getApiRegistryPath() + '/metadata/collection/' + itemUuid + '/raw/xml'
+        }
         target={'_blank'}
       >
         Download full XML metadata here
       </a>
-    ) : (
-      <span>Not available</span>
     )
 
     const metadataContent = (
