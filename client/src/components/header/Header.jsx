@@ -12,7 +12,7 @@ import {fontFamilySerif} from '../../utils/styleUtils'
 import FlexRow from '../common/ui/FlexRow'
 
 import HeaderCartLinkContainer from './HeaderCartLinkContainer'
-import Link from "../common/link/Link";
+import Link from '../common/link/Link'
 
 const styleWrapper = {
   position: 'relative',
@@ -164,7 +164,12 @@ class Header extends React.Component {
       //   onClick={() => logoutUser()}
       // />
       // TODO - switch back to router-based HeaderLink after customizing logout view? see #1448
-      <Link title="Logout" onClick={() => logoutUser(logoutEndpoint)} style={styleLink} styleHover={styleLinkHover}>
+      <Link
+        title="Logout"
+        onClick={() => logoutUser(logoutEndpoint)}
+        style={styleLink}
+        styleHover={styleLinkHover}
+      >
         Logout
       </Link>
     ) : null

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -158,11 +159,41 @@ class MetadataRestController {
     }
   }
 
+  @RequestMapping(path = '/metadata/{type}/{id}/raw/xml', method = [GET, HEAD], produces = 'application/xml')
+  String retrieveRawXml(
+      @PathVariable String type,
+      @PathVariable String id,
+      HttpServletRequest request,
+      HttpServletResponse response) throws ResponseStatusException {
+    retrieveRawXml(type, Topics.DEFAULT_SOURCE, id, request, response)
+  }
+
+  @RequestMapping(path = '/metadata/{type}/{source}/{id}/raw/xml', method = [GET, HEAD], produces = 'application/xml')
+  String retrieveRawXml(
+      @PathVariable String type,
+      @PathVariable String source,
+      @PathVariable String id,
+      HttpServletRequest request,
+      HttpServletResponse response) throws ResponseStatusException {
+    if (!UUIDValidator.isValid(id)) {
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid UUID String (ensure lowercase): " + id)
+    }
+    RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
+    def result = metadataStore.retrieveInput(recordType, source, id)
+
+    if (result?.rawXml) {
+      return result.rawXml
+    }
+
+    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No input exists for ${type} with id [${id}] from source [${source}]" as String)
+  }
+
   private Map buildLinks(HttpServletRequest request, String type, String source, String id) {
     def root = apiLinkGenerator.getApiRoot(request)
     return [
         input : "${root}/metadata/${type}/${source}/${id}" as String,
-        parsed: "${root}/metadata/${type}/${source}/${id}/parsed" as String
+        parsed: "${root}/metadata/${type}/${source}/${id}/parsed" as String,
+        xml: "${root}/metadata/${type}/${source}/${id}/raw/xml" as String
     ]
   }
 

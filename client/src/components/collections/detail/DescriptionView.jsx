@@ -1,5 +1,5 @@
 import React from 'react'
-import {processUrl} from '../../../utils/urlUtils'
+import {processUrl, getApiRegistryPath} from '../../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
 import GranulesSummaryContainer from './GranulesSummaryContainer'
 import Expandable from '../../common/ui/Expandable'
@@ -83,6 +83,10 @@ const styleIdentifierLast = {
   margin: 0,
 }
 
+const styleMetadataSummary = {
+  textAlign: 'center',
+}
+
 export default class DescriptionView extends React.Component {
   constructor(props) {
     super(props)
@@ -90,6 +94,7 @@ export default class DescriptionView extends React.Component {
       filesExpandable: true,
       citationExpandable: false,
       identifiersExpandable: false,
+      metadataExpandable: false,
     }
   }
 
@@ -206,6 +211,39 @@ export default class DescriptionView extends React.Component {
       />
     )
 
+    const xmlLink = (
+      <a
+        href={
+          getApiRegistryPath() + '/metadata/collection/' + itemUuid + '/raw/xml'
+        }
+        target={'_blank'}
+      >
+        Download full XML metadata here
+      </a>
+    )
+
+    const metadataContent = (
+      <div style={styleContentPadding}>
+        <div style={styleMetadataSummary}>{xmlLink}</div>
+      </div>
+    )
+
+    const metadataExpandable = (
+      <Expandable
+        styleFocus={styleExpandableFocused}
+        styleWrapper={styleExpandableWrapper}
+        showArrow={true}
+        heading={<h2 style={styleExpandableH2}>Metadata Access</h2>}
+        styleHeading={styleExpandableHeading}
+        content={metadataContent}
+        styleContent={styleExpandableContent}
+        borderRadius={'1em'}
+        value="metadataExpandable"
+        open={this.state.metadataExpandable}
+        onToggle={this.handleExpandableToggle}
+      />
+    )
+
     const collectionImage = this.renderCollectionImage(thumbnail, geometry)
     const imageAndDescription = (
       <div style={styleDescriptionWrapper}>
@@ -219,6 +257,7 @@ export default class DescriptionView extends React.Component {
     const expandableInformation = (
       <div>
         {filesExpandable}
+        {metadataExpandable}
         {citationExpandable}
         {identifiersExpandable}
       </div>
