@@ -1,3 +1,6 @@
+<div align="center"><a href="/onestop/developer">Developer Documentation Home</a></div>
+<hr>
+
 **Estimated Reading Time: 10 minutes**
 # Contribution Guidelines
 

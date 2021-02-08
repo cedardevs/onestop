@@ -1,3 +1,8 @@
+<div align="center"><a href="/onestop/public-user">Public User Documentation Home</a></div>
+<hr>
+
+**Estimated Reading Time: 5 minutes**
+
 # Community Standards
 
 In addition to the OneStop API, which is based on the [JSON API](http://jsonapi.org/) Standard, OneStop also supports the [Open Geospatial Consortium's](https://www.ogc.org/) (OGC) service standard, [Catalog Services for the Web](http://www.opengeospatial.org/standards/cat) (CSW) API, and the [OpenSearch](http://www.opensearch.org) specification.

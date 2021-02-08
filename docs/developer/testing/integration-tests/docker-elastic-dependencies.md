@@ -1,3 +1,6 @@
+<div align="center"><a href="/onestop/developer/testing/integration-tests/">Integration Tests Documentation Home</a></div>
+<hr>
+
 **Estimated Reading Time: 5 minutes**
 # System Requirements for Integration Tests
 

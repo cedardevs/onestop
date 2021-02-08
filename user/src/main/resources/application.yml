@@ -3,8 +3,8 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:9999/user
-    username: onestop
+    url: jdbc:postgresql://localhost:5432/user
+    username: postgres
     password: foamcat
     initialization-mode: always
     continue-on-error: false
@@ -18,11 +18,6 @@ spring:
     hibernate: # Hibernate ddl auto (create, create-drop, validate, update)
       ddl-auto: create-drop
     generate-ddl: false
-
-
-logging.level.org.springframework.security: DEBUG
-logging.level.org.springframework.web: DEBUG
-logging.level.org.springframework.jdbc: DEBUG
 
 #  spring.datasource.initialize=true
 #  spring.datasource.schema=classpath:/schema.sql

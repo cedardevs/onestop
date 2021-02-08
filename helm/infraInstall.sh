@@ -19,3 +19,12 @@ popd
 pushd "$(dirname $0)/onestop-dev"
 helm dependency update
 popd
+
+#not sure we need this, but seems to help people
+pushd "$(dirname $0)/onestop-postgresql"
+helm dependency update
+popd
+
+pushd "$(dirname $0)/onestop-ingress"
+helm dependency update
+popd

@@ -1,5 +1,4 @@
-<div align="center"><a href="/onestop/public-user">Public User Navigation Guide Home</a></div>
-<div align="center"><a href="/onestop/public-user/ui/keyboard-navigation">Previous: UI Keyboard Navigation</a> | <a href="/onestop/public-user/api/quickstart">Next: API Quick Start</a></div>
+<div align="center"><a href="/onestop/public-user">Public User Documentation Home</a></div>
 <hr>
 
 **Estimated Reading Time:**
@@ -17,4 +16,4 @@ coming ..
 1. [soon](/onestop/)
 
 <hr>
-<div align="center"><a href="/onestop/public-user/ui/keyboard-navigation">Previous</a> | <a href="#">Top of Page</a> | <a href="/onestop/public-user/api/quickstart">Next</a></div>
+<div align="center"><a href="#">Top of Page</a></div>
