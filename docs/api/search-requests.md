@@ -20,13 +20,14 @@
 
 <hr>
 
-The API provides three Search endpoints for search and discovery of data. The following are some examples of well-formatted queries for interacting with the OneStop `/onestop-search/search/collection`, `/onestop-search/search/granule`, and `/onestop-search/search/flattened-granule` (version 2.1+) resource endpoints.
+The API provides Search endpoints for search and discovery of metadata.
 
-* Either a POST or GET request with a correctly formatted **JSON request body** will work.
+In general:
+* A POST or GET request with a correctly formatted **JSON request body** works.
 
-* All three endpoints expect the same request schema format to be used but return data of the type in the URL.
+* All endpoints expect the same request schema format to be used but return data of the type in the URL.
 
-For more detailed information see the full [OpenAPI specification](/static/openapi.yaml).
+[Swagger generated docs](https://app.swaggerhub.com/apis/cedarbot/OneStop/2.4.0) - Details on the OneStop Search endpoints and parameters.
 
 ## Basic Query
 
