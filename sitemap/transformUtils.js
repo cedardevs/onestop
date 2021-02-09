@@ -42,39 +42,25 @@ const Unix_TimeStamp = (t) =>{
 
 //Takes in body & if not empty.null will
 //TODO - Don't need switch statements as long as we do error checking before our default case
+//TODO - Return a list in style of exampleList. Pipe that -> Readable(sitemapTotal)
+//TODO - Refactor switch and get actual null error or empty body checks
 const processBodyData = (body, maxCollectionSize) => {
-  let choice = "";
-
   var bodyDataObject = [];
   var i = 0;
-  if(maxCollectionSize <= 0){
-    choice = 'empty';
+
+  //Truthy check if(body), will evaluate to true if value is not null,undefined, NaN, empty string, 0, or false
+  if ( body ) {
+    body.data.forEach((d) => {
+      //console.log(convertCollectionToObject(webBase, d));
+      bodyDataObject[i++] = convertCollectionToObject(webBase, d);
+      });
+  } else {
+    if(maxCollectionSize <= 0){
+      console.log("processBodyData maxCollectionSize error");
+    }
+    console.log("processBodyData body check error");
   }
-  if(body == null || body == undefined || choice == undefined){
-    choice = 'nullError';
-  }
-
-  /*
-    'Choice' flag dictates what will execute
-    Error checking with 'empty' & 'nullError' flags, otherwise 'default'
-  */
-  switch (choice){
-    case 'empty':
-      console.log("Body is empty");
-      break;
-
-    case 'nullError':
-      //console.log("Body is null or Error Thrown");
-      break;
-
-
-    default:
-        body.data.forEach((d) => {
-          bodyDataObject[i++] = convertCollectionToObject(webBase, d);
-          });
-         
-  }
-
+  
     return bodyDataObject;
 }
 

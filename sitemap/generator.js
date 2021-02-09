@@ -2,8 +2,7 @@ const processBodyData = require('./transformUtils');
 const request = require('request');
 const yargs = require('yargs');
 const fs = require('fs');
-
-
+const sitemapIndex = require('./sitemapIndex')
 
 const argv = yargs
     .option('api', {
@@ -34,12 +33,10 @@ const webBase = argv.website
 const pageSize = argv.pageSize
 var sitemapTotal = [];
 var collCount = 0;
-var i = 0;
 var keepGoing = true;
 
 const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
     console.log(`getting collections from ${collectionApiUrl}`)
-
     let options = {
         json: true,
         body: {
@@ -58,12 +55,12 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
 
         if (!error && res.statusCode === 200 && keepGoing == true) {
             //Error checking for body
+            //TODO - Refactor with TRUTHY
             if(body.meta.total == 0 || body == undefined || body == null){
                 throw("error");
             }
-           
-            let maxCollectionSize = body.meta.total;
 
+            let maxCollectionSize = body.meta.total;
             //collCount keeps track of our progress through the entire collection
             collCount += body.data.length;
             console.log("collCount: " + collCount);
@@ -74,15 +71,17 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
             }
 
             //Once finished processing the entire collection, print the sitemap
-            //TODO - Write to a file, Memory constraints, must use gzip
             if(keepGoing == false){ 
-                console.log("\n-----SITEMAP FILE-----");
-                console.log('<?xml version="1.0" encoding="UTF-8"?>')
-                console.log('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
-                console.log(sitemapTotal);
-                console.log('</urlset>');
-                console.log("-----SITEMAP FILE-----\n");
+                //Flatten sitemapTotal to be one array
+                sitemapTotal = sitemapTotal.flat();
 
+
+               // console.log("\n-----SITEMAP FILE-----");
+               // console.log('<?xml version="1.0" encoding="UTF-8"?>')
+               // console.log('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+               // console.log(sitemapTotal);
+               // console.log('</urlset>');
+               // console
 
                 /*
                 //Useful debugging commands
@@ -93,43 +92,50 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                 console.log("pageSize: " + pageSize);
                 console.log("body.length: " + body.data.length);
                 */
+               
                 // Debug command to print out the page's collection
                 //  body.data.forEach((d) => {
                 //  console.log(d);
                 //  })
                 
             }
+            return sitemapTotal;
+
         }
     });
 }
 
+var links = getCollectionPage(collectionApiUrl, pageSize, 0);
+console.log("Links: " + links);
+sitemapIndex.linksProcess(links);
 
 
-getCollectionPage(collectionApiUrl, pageSize, 0);
+
 
 //Helper method to handle recursion for getCollectionPage
 function crawlerCollection(body, maxCollectionSize) {
-
+    var i = 0;
     let lastStagedDate = body.data[body.data.length-1].attributes.stagedDate;
-
-    //bodyDataString processes each item in our body and converts it to XML
-    var bodyDataString = processBodyData(body, maxCollectionSize);
-    sitemapTotal[i++] = bodyDataString;
-
 
     //Recursion base case, checking for last page
     //Body will be of size 'pageSize' unless on the last page
     if(body.data.length > 0 && body.data.length < pageSize){
         sitemapTotal[i] = processBodyData(body, maxCollectionSize);
         keepGoing = false;
-     } 
-
+     }
      //If collection is not empty and not on last page, recursively call gCP() with new lastStagedDate to update options
      else if(body.data.length > 0){
-         return getCollectionPage(collectionApiUrl, pageSize, lastStagedDate);
-     }
+        var bodyDataObject = processBodyData(body, maxCollectionSize);
+        sitemapTotal[i++] = bodyDataObject;
+        return getCollectionPage(collectionApiUrl, pageSize, lastStagedDate);
+    }
 
+    //bodyDataObject processes each item in our body and converts it to XML
 }
+
+
+//module.exports.getCollectionPage = getCollectionPage;
+//export crawlerCollection(){
 
 
 

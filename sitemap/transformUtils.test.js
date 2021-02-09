@@ -89,24 +89,6 @@ test('generate sitemap objects for multiple collections', () => {
   //Mocked sitemap. processBodyData has two functions inside of it
   //processBodyData -> convertCollectionToXML -> Unix_TimeStamp
   //This test also confirms that convertCollectionToObject & Unix_TimeStamp work properly
-  /*
-  const sitemap = `
-    <url>
-        <loc>${baseUrl}/onestop/collections/details/${dataItems[0].id}</loc>
-        <lastmod>2021-01-21T22:59:57.516Z</lastmod>
-        <changefreq>weekly</changefreq>
-    </url>
-    <url>
-        <loc>${baseUrl}/onestop/collections/details/${dataItems[1].id}</loc>
-        <lastmod>2021-01-21T22:59:54.444Z</lastmod>
-        <changefreq>weekly</changefreq>
-    </url>
-    <url>
-        <loc>${baseUrl}/onestop/collections/details/${dataItems[2].id}</loc>
-        <lastmod>2033-09-25T14:06:37.949Z</lastmod>
-        <changefreq>weekly</changefreq>
-    </url>`
-    */
 
    const collObject1 = { "url": `${baseUrl}/collections/details/${dataItems[0].id}`,
                       "changefreq": `daily`, 
