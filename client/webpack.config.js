@@ -18,7 +18,7 @@ const basePlugins = [
     inject: false,
     template: require('html-webpack-template'),
     lang: 'en-US',
-  }),
+  })
 ]
 
 const devPlugins = [

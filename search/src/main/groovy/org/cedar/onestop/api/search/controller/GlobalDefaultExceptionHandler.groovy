@@ -16,32 +16,31 @@ class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(value = [Exception.class])
   protected ResponseEntity<Object> handleExceptions(Exception ex, WebRequest request) {
-
-    Integer status = null
-    String title = null
-    String detail = null
+    int intStatus
+    Map error = [:]
 
     if (ex instanceof ResponseException) {
-      status = ex.response.statusLine.statusCode
+      intStatus = ex.response.statusLine.statusCode
+      error.status = intStatus
 
-      if (status >= 400 && status < 500) {
-        title = 'Request Parsing Error'
-        detail = 'There was an error with your request, please revise and try again.'
+      if (intStatus >= 400 && intStatus < 500) {
+        error.title = 'Request Parsing Error'
+        error.detail = 'There was an error with your request, please revise and try again.'
       }
-      if (status >= 500) {
-        title = 'Internal Error'
-        detail = 'There was an error on our end, please try again later.'
+      if (intStatus >= 500) {
+        error.title = 'Internal Error'
+        error.detail = 'There was an error on our end, please try again later.'
       }
+    }
+    else {
+      intStatus = 500
+      error.status = 500
+      error.title = 'Sorry, something has gone wrong'
+      error.detail = 'Looks like something isn\'t working right now, please try again later'
     }
 
     def result = [
-      errors: [
-        [
-          status: status ?: 500,
-          title : title ?: "Sorry, something has gone wrong",
-          detail: detail ?: "Looks like something isn't working right now, please try again later"
-        ]
-      ],
+      errors: [error],
       meta: [
         timestamp: System.currentTimeMillis(),
         request: request?.getDescription(false),
@@ -49,7 +48,7 @@ class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
       ]
     ]
 
-    return super.handleExceptionInternal(ex, result, new HttpHeaders(), HttpStatus.valueOf(status), request)
+    return super.handleExceptionInternal(ex, result, new HttpHeaders(), HttpStatus.valueOf(intStatus), request)
   }
 
   @Override
