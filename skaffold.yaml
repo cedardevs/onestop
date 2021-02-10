@@ -76,6 +76,9 @@ build:
         roles:
           ROLE_ADMIN:
             - casuser
+      api:
+        root:
+          url: http://localhost/onestop/api/registry
     debug: "true"
     features.cas: "false"
     kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
@@ -123,6 +126,11 @@ build:
     service.nodePort: "30097"
     service.clusterIP: 10.100.100.2
     service.type: NodePort
+    config: |-
+      ---
+      api:
+        root:
+          url: http://localhost/onestop/api/registry
   imageStrategy:
     helm: {}
 .onestop-client: &onestop-client
@@ -210,10 +218,8 @@ deploy:
       - *onestop-parsalyzer
       - *onestop-search
       - *onestop-client
-      - *onestop-user
       - *onestop-gateway
       - *onestop-ingress
-      - *onestop-postgresql
       - name: onestop-dev
         chartPath: helm/onestop-dev
 profiles:
@@ -222,8 +228,9 @@ profiles:
       helm:
         releases:
           - *onestop-gateway
-          - *onestop-parsalyzer
           - *onestop-registry
+          - *onestop-ingress
+          - *onestop-search
           - name: onestop-dev
             chartPath: helm/onestop-dev
   - name: os
