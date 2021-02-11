@@ -130,7 +130,7 @@ build:
       ---
       api:
         root:
-          url: http://localhost/onestop/api/registry
+          url: http://localhost/onestop/api/search
   imageStrategy:
     helm: {}
 .onestop-client: &onestop-client
