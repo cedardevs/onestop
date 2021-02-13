@@ -63,7 +63,6 @@ test('access collection3 type inside responseBody', () => {
 
 test('generate sitemap xml to handle a response with 1 item', () => {
   const id = '0561ce74-bc07-4dd4-bf22-8c73befe9497';
-  const collSize = 1;
   const isoStagedDate = "2021-01-21T22:59:57.516Z";
   const coll1Array = [collection1];
   const granual1Collection = {"data" : coll1Array};
@@ -81,7 +80,7 @@ test('generate sitemap xml to handle a response with 1 item', () => {
                       "lastmod": `${isoStagedDate}`};
                   
  const listForLibrary = [collObject];
-  var expectedSitemap = processBodyData(granual1Collection, collSize);
+  var expectedSitemap = processBodyData(granual1Collection);
   expect(expectedSitemap).toStrictEqual(listForLibrary);
 });
 
@@ -103,7 +102,7 @@ test('generate sitemap objects for multiple collections', () => {
                   
  const listForLibrary = [collObject1, collObject2, collObject3];
 
-    var sitemapCompiled = processBodyData(responseBody, dataItems.length, 'default');
+    var sitemapCompiled = processBodyData(responseBody);
 
   expect(sitemapCompiled).toStrictEqual(listForLibrary);
 });

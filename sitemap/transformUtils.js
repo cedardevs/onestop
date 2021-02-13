@@ -44,7 +44,7 @@ const Unix_TimeStamp = (t) =>{
 //TODO - Don't need switch statements as long as we do error checking before our default case
 //TODO - Return a list in style of exampleList. Pipe that -> Readable(sitemapTotal)
 //TODO - Refactor switch and get actual null error or empty body checks
-const processBodyData = (body, maxCollectionSize) => {
+const processBodyData = (body) => {
   var bodyDataObject = [];
   var i = 0;
 
@@ -55,9 +55,6 @@ const processBodyData = (body, maxCollectionSize) => {
       bodyDataObject[i++] = convertCollectionToObject(webBase, d);
       });
   } else {
-    if(maxCollectionSize <= 0){
-      console.log("processBodyData maxCollectionSize error");
-    }
     console.log("processBodyData body check error");
   }
   

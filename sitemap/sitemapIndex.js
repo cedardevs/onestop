@@ -9,9 +9,7 @@ const {
   streamToPromise
 } = require('sitemap');
 const { example } = require('yargs');
-const sitemapTotal = require('./generator');
 const { get } = require('request');
-const generator = require('./generator');
 
 const exampleList = [{
   url: 'http://localhost/onestop/collections/details/0561ce74-bc07-4dd4-bf22-8c73befe9497',
@@ -49,14 +47,14 @@ const linkInfo = { url: '/page-1', changefreq: 'daily', priority: 0.3 };
 
 const linksProcess = (links) => {
 
-  console.log("Links: " + links);
+  //console.log("Links 2: " + links);
   Readable.from(links).pipe(sms) // available as of node 10.17.0
 }
 
-module.exports.linksProcess = linksProcess;
+module.exports = linksProcess;
 
 const sms = new SitemapAndIndexStream({
-  limit: 2, // defaults to 45k
+  limit: 60, // defaults to 45k
   // SitemapAndIndexStream will call this user provided function every time
   // it needs to create a new sitemap file. You merely need to return a stream
   // for it to write the sitemap urls to and the expected url where that sitemap will be hosted
@@ -108,6 +106,6 @@ sms
 
 
 //Debug testing for piping
-console.log("sitemapTotal: " + sitemapTotal);
+//console.log("sitemapTotal: " + sitemapTotal);
 
 //console.log("getCollectionPage sitemapIndex: " + getCollectionPage);
