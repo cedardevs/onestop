@@ -27,11 +27,11 @@ If you ever get a 401 Authorization Required add this to your curl and file in t
 ## Registry OneStop Endpoint
 The Registry API endpoint which you would append to the end of a OneStop deployment:
 
-* Old way:
+* Old endpoint:
 `{context-path}/metadata/{type}/{source}/{id}`
 
-* New way:
-`{context-path}/api/registry/{type}/{source}/{id}`
+* New endpoint:
+`{context-path}/api/registry/metadata/{type}/{source}/{id}`
 
 Where `context-path` is [explicitly set](/onestop/operator/deployment/v2/psi/project-artifacts#config) at time of deployment (otherwise `localhost:8080`)
 
