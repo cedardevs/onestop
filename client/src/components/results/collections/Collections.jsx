@@ -7,11 +7,11 @@ import CollectionListItem from './CollectionListItem'
 import {fontFamilySerif} from '../../../utils/styleUtils'
 import {asterisk, SvgIcon} from '../../common/SvgIcon'
 import {encodeQueryString, PAGE_SIZE} from '../../../utils/queryUtils'
-import defaultStyles from '../../../style/defaultStyles'
+import defaultStyles, {FilterColors} from '../../../style/defaultStyles'
 import saveIcon from 'fa/bookmark-o.svg'
 import alreadySavedIcon from 'fa/bookmark.svg'
-
-import _ from 'lodash'
+import ModalFormUncontrolled from '../../common/dialog/ModalFormUncontrolled'
+import {useDisclosure} from '@chakra-ui/core'
 
 const styleCollections = {
   color: '#222',
@@ -29,6 +29,16 @@ const styleShowMore = {
 const styleShowMoreFocus = {
   outline: '2px dashed #5C87AC',
   outlineOffset: '.118em',
+}
+
+const styleTextInput = {
+  color: FilterColors.TEXT,
+  height: '100%',
+  margin: 0,
+  padding: '0 0.309em',
+  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
+  borderRadius: '0.309em',
+  width: '10em',
 }
 
 export default function Collections(props){
@@ -57,6 +67,7 @@ export default function Collections(props){
   const [ searchSaved, setSearchSaved ] = useState(false)
   //the element containing hte bookmark button
   const [ bookmarkButton, setBookmark ] = useState(null)
+  const {isOpen, onOpen, onClose} = useDisclosure()
 
   useEffect(
     () => {
@@ -66,17 +77,12 @@ export default function Collections(props){
     },
     [ savedSearches, collectionFilter ]
   )
-  function handleSave(){
+  function handleSave(saveName){
     const urlToSave = window.location.pathname + window.location.search
     // const queryStringIndex = urlToSave.indexOf('?')
     // const queryString = urlToSave.slice(queryStringIndex)
     // const decodedSavedSearch = decodePathAndQueryString('', queryString)
-    saveSearch(
-      savedSearchUrl,
-      urlToSave,
-      collectionFilter.queryText, //todo - the saved search's name should not be the query text
-      collectionFilter
-    )
+    saveSearch(savedSearchUrl, urlToSave, saveName, collectionFilter)
   }
 
   function handleDelete(){
@@ -97,8 +103,7 @@ export default function Collections(props){
             icon: alreadySavedIcon,
             showText: false,
             handler: () => {
-              handleDelete()
-              setSearchSaved(!searchSaved)
+              onOpen()
             },
             notification: notification,
           },
@@ -110,8 +115,7 @@ export default function Collections(props){
             icon: saveIcon,
             showText: false,
             handler: () => {
-              handleSave()
-              setSearchSaved(!searchSaved)
+              onOpen()
             },
             notification: notification,
           },
@@ -193,12 +197,48 @@ export default function Collections(props){
     }
   }
 
+  const onSubmit = React.useCallback(
+    formData => {
+      const savedId = findSavedId()
+      if (savedId) {
+        handleDelete()
+      }
+      else {
+        handleSave(formData.get('searchName'))
+      }
+      setSearchSaved(!searchSaved)
+    },
+    [ savedSearches ]
+  )
+
+  const formInputs = [
+    {
+      label: 'Search name:',
+      id: 'searchName',
+      name: 'searchName',
+      type: 'text',
+      style: styleTextInput,
+    },
+  ]
+
+  const modalQuestion = `Do you want to ${savedId ? 'delete' : 'save'} this search?`
+
   return (
     <div style={styleCollections}>
       <Meta
         title={'Collection Search Results for ' + queryText}
         formatTitle={true}
         robots="noindex"
+      />
+      <ModalFormUncontrolled
+        isOpen={isOpen}
+        onClose={onClose}
+        title={'Save search'}
+        question={modalQuestion}
+        submitText={savedId ? 'Delete' : 'Save'}
+        cancelText={'Cancel'}
+        inputs={formInputs}
+        onSubmit={onSubmit}
       />
       <ListView
         totalRecords={totalHits}
