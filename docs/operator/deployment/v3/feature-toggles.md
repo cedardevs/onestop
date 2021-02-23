@@ -42,9 +42,9 @@ Unfortunately, we don’t currently have a way to dynamically determine where th
 
 | ENV | SITEMAP_CLIENT_PATH | SITEMAP_API_PATH |
 | --- | --- | --- |
-| DEV | https://sciapps.colorado.edu/onestop | https://sciapps.colorado.edu/onestop-search
-| TEST | https://<testClientHost>/onestop | https://<testSearchHost>/onestop-search |
-| PROD | https://<prodClientHost>/onestop | https://<prodSearchHost>/onestop-search |
+| DEV | https://cedardevs.org/onestop | https://cedardevs.org/onestop-search
+| TEST | https://`<testClientHost>`/onestop | https://<testSearchHost>/onestop-search |
+| PROD | https://`<prodClientHost>`/onestop | https://<prodSearchHost>/onestop-search |
 
 > Note: Sitemap is a new feature and we haven’t had the ability to see how it performs at scale. We’ve only been able to see it run on the order of 10K entries versus the millions of entries or more we would encounter in production.
 >
