@@ -48,19 +48,24 @@ export default function ModalFormUncontrolled({
   )
 
   const formInputs = inputs.map(inp => {
-    const label = inp.label ? <label htmlFor={inp.id}>{inp.label}</label> : null
+    const label = inp.label ? <label key={`${inp.name}::label`} htmlFor={inp.id}>{inp.label}</label> : null
+    const extraProps = inp.extraProps || {}
 
     return (
       <FlexRow
         rowId={`${inp.name}Row`}
+        key={`${inp.name}::row`}
         style={{justifyContent: 'center'}}
         items={[
           label,
           <input
+            key={`${inp.name}::input`}
             id={inp.id}
             name={inp.name}
             type={inp.type}
             style={inp.style || {}}
+            value={inp.initialValue}
+            {...extraProps}
           />,
         ]}
       />
@@ -87,17 +92,20 @@ export default function ModalFormUncontrolled({
             <form role="form" onSubmit={submitForm} style={{width: '100%'}}>
               {formInputs}
               <FlexRow
-                rowId={'modalFormActionButtons'}
+                rowId='modalFormActionButtons'
+                key='modalFormActionButtons'
                 style={{justifyContent: 'center'}}
                 items={[
                   <Button
                     role="button"
+                    key='modalFormActionButtons::submit'
                     text={submitText || 'Save'}
                     style={styleButton}
                     styleFocus={styleButtonFocus}
                   />,
                   <Button
                     role="button"
+                    key='modalFormActionButtons::cancel'
                     text={cancelText || 'Cancel'}
                     style={styleButton}
                     styleFocus={styleButtonFocus}
