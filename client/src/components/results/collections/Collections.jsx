@@ -221,7 +221,9 @@ export default function Collections(props){
     },
   ]
 
-  const modalQuestion = `Do you want to ${savedId ? 'delete' : 'save'} this search?`
+  const modalTitle = `Do you want to ${savedId
+    ? 'delete'
+    : 'save'} this search?`
 
   return (
     <div style={styleCollections}>
@@ -233,8 +235,7 @@ export default function Collections(props){
       <ModalFormUncontrolled
         isOpen={isOpen}
         onClose={onClose}
-        title={'Save search'}
-        question={modalQuestion}
+        title={modalTitle}
         submitText={savedId ? 'Delete' : 'Save'}
         cancelText={'Cancel'}
         inputs={formInputs}

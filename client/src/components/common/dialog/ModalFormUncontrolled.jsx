@@ -29,7 +29,6 @@ export default function ModalFormUncontrolled({
   onClose, // from Chakra useDisclosure
   onSubmit,
   onCancel,
-  question,
   submitText,
   cancelText,
   title,
@@ -48,14 +47,21 @@ export default function ModalFormUncontrolled({
   )
 
   const formInputs = inputs.map(inp => {
-    const label = inp.label ? <label key={`${inp.name}::label`} htmlFor={inp.id}>{inp.label}</label> : null
+    const label = inp.label ? (
+      <label
+        key={`${inp.name}::label`}
+        htmlFor={inp.id}
+        style={{marginRight: '0.5em'}}
+      >
+        {inp.label}
+      </label>
+    ) : null
     const extraProps = inp.extraProps || {}
 
     return (
       <FlexRow
         rowId={`${inp.name}Row`}
         key={`${inp.name}::row`}
-        style={{justifyContent: 'center'}}
         items={[
           label,
           <input
@@ -86,26 +92,24 @@ export default function ModalFormUncontrolled({
           >
             <SvgIcon size="1em" path={times} />
           </ModalCloseButton>
-          <ModalBody>{question}</ModalBody>
+          <form role="form" onSubmit={submitForm}>
+            <ModalBody>{formInputs}</ModalBody>
 
-          <ModalFooter>
-            <form role="form" onSubmit={submitForm} style={{width: '100%'}}>
-              {formInputs}
+            <ModalFooter>
               <FlexRow
-                rowId='modalFormActionButtons'
-                key='modalFormActionButtons'
-                style={{justifyContent: 'center'}}
+                rowId="modalFormActionButtons"
+                key="modalFormActionButtons"
                 items={[
                   <Button
                     role="button"
-                    key='modalFormActionButtons::submit'
+                    key="modalFormActionButtons::submit"
                     text={submitText || 'Save'}
                     style={styleButton}
                     styleFocus={styleButtonFocus}
                   />,
                   <Button
                     role="button"
-                    key='modalFormActionButtons::cancel'
+                    key="modalFormActionButtons::cancel"
                     text={cancelText || 'Cancel'}
                     style={styleButton}
                     styleFocus={styleButtonFocus}
@@ -118,8 +122,8 @@ export default function ModalFormUncontrolled({
                   />,
                 ]}
               />
-            </form>
-          </ModalFooter>
+            </ModalFooter>
+          </form>
         </ModalContent>
       </ModalOverlay>
     </Modal>
