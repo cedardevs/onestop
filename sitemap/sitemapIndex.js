@@ -8,9 +8,47 @@ const {
   lineSeparatedURLsToSitemapOptions,
   streamToPromise
 } = require('sitemap');
-const { example } = require('yargs');
-const { get } = require('request');
 
+
+
+const linksProcess = (links) => {
+
+  //console.log("Links 2: " + links);
+  Readable.from(links).pipe(sms) // available as of node 10.17.0
+}
+
+module.exports = linksProcess;
+
+const sms = new SitemapAndIndexStream({
+  limit: 60, // defaults to 45k
+  // SitemapAndIndexStream will call this user provided function every time
+  // it needs to create a new sitemap file. You merely need to return a stream
+  // for it to write the sitemap urls to and the expected url where that sitemap will be hosted
+  hostname: 'https://cedardevs.org',
+  getSitemapStream: (i) => {
+    const sitemapStream = new SitemapStream({ hostname: 'https://cedardevs.org' });
+    const path = `./sitemap-${i}.xml`;
+
+    sitemapStream
+      .pipe(createGzip()) // compress the output of the sitemap
+      .pipe(createWriteStream(resolve(path + '.gz'))); // write it to sitemap-NUMBER.xml
+
+    return [new URL(path, `https://cedardevs.org/subdir/${path}`).toString(), sitemapStream];
+  },
+});
+
+
+
+
+
+// or reading straight from an in-memory array
+sms
+.pipe(createGzip())
+.pipe(createWriteStream(resolve('./sitemap-index.xml.gz')));
+
+
+
+/*
 const exampleList = [{
   url: 'http://localhost/onestop/collections/details/0561ce74-bc07-4dd4-bf22-8c73befe9497',
   changefreq: 'daily',
@@ -41,71 +79,4 @@ const exampleList = [{
   changefreq: 'daily',
   lastmod: '2021-01-21T22:59:57.848Z'
 }];
-
-
-const linkInfo = { url: '/page-1', changefreq: 'daily', priority: 0.3 };
-
-const linksProcess = (links) => {
-
-  //console.log("Links 2: " + links);
-  Readable.from(links).pipe(sms) // available as of node 10.17.0
-}
-
-module.exports = linksProcess;
-
-const sms = new SitemapAndIndexStream({
-  limit: 60, // defaults to 45k
-  // SitemapAndIndexStream will call this user provided function every time
-  // it needs to create a new sitemap file. You merely need to return a stream
-  // for it to write the sitemap urls to and the expected url where that sitemap will be hosted
-  hostname: 'https://cedardevs.org',
-  getSitemapStream: (i) => {
-    const sitemapStream = new SitemapStream({ hostname: 'https://cedardevs.org' });
-    const path = `./sitemap-${i}.xml`;
-
-    sitemapStream
-      .pipe(createGzip()) // compress the output of the sitemap
-      .pipe(createWriteStream(resolve(path + '.gz'))); // write it to sitemap-NUMBER.xml
-
-    return [new URL(path, `https://cedardevs.org/subdir/${path}`).toString(), sitemapStream];
-  },
-  /*
-  //Trim XML namespace at start of file
-  xlmns: {
-    news: true,
-    xhtml: true,
-    image: false,
-    video: false,
-  },
-  */
-});
-
-
- // Readable.from(generator.sitemapTotal).pipe(sms);
-//getCollectionPage.forEach(item => sms.write(item))
-  //sms.end();
-// when reading from a file
-// lineSeparatedURLsToSitemapOptions(
-//   createReadStream('./testSitemapObject2.txt')
-// )
-
-// .pipe(sms)
-// .pipe(createGzip())
-// .pipe(createWriteStream(resolve('./sitemap-index.xml.gz')));
-
-
-
-// or reading straight from an in-memory array
-sms
-.pipe(createGzip())
-.pipe(createWriteStream(resolve('./sitemap-index.xml.gz')));
-
-
-//sitemapTotal.forEach(item => sms.write(item + '\n'));
-//sms.end(); // necessary to let it know you've got nothing else to write
-
-
-//Debug testing for piping
-//console.log("sitemapTotal: " + sitemapTotal);
-
-//console.log("getCollectionPage sitemapIndex: " + getCollectionPage);
+*/
