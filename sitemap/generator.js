@@ -4,6 +4,8 @@ const fs = require('fs');
 const linksProcess = require('./sitemapIndex');
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
+const https = require('https');
+
 
 const argv = yargs
     .option('api', {
@@ -29,26 +31,19 @@ const argv = yargs
     .argv;
 
 
-
+//TODO - When pulling from cedar devs update API URL new path
+//cedardevs.org/onestop/api/search
 const searchApiBase = argv.api
 const collectionApiUrl = new URL(`${searchApiBase}/search/collection`)
 const webBase = argv.website
 const pageSize = argv.pageSize
 
-/*
-axiosRetry(axios, {
-    retries: 4,
-    shouldResetTimeout: true,
-    retryCondition: (_error) => true
-});
-*/
 
 
 const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
 
     var sitemapTotal = [];
     var collCount = 0, maxCollectionSize = 0, counter = 0;
-    var keepGoing = true;
     var lastStagedDate;
 
     console.log(`getting collections from ${collectionApiUrl}`)
@@ -71,34 +66,38 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
         }
     };
 
-   async function newPage(){
-        axios(options)
+   function newPage(updateOptions){
+        axios(updateOptions)
         .then((response)=>{
             if(response.status == 200){
-                console.log('\n' + "--Flag 200--");
+                console.log('\n' + "--Status 200--");
+
                 let body = response.data;
+
+                if((body) && body.data.length > 0){
                 lastStagedDate = body.data[body.data.length-1].attributes.stagedDate;
                 maxCollectionSize = body.meta.total;
-
+                }
             
                 //collCount keeps track of our progress through the entire collection
                 console.log("lastStageDate: " + lastStagedDate);
                 console.log("Max Collection Size: " + maxCollectionSize);
                 console.log("collCount: " + collCount);
-                console.log("keepGoing: " + keepGoing);
 
                 //Calculate how many times we need to iterate
                 var totalPages = Math.ceil(maxCollectionSize/pageSize);
                 collCount += body.data.length;
 
-                if(counter > totalPages){ //Already done, exit
+
+                //TODO - Body.data.list == empty -> done
+                if(counter > totalPages || body.data.length == 0){ //Already done, exit
+                    console.log('\n' + "---Sitemap XML files generated---");
                     return;
                 }
                 else if(counter == totalPages){ //End case
-                    console.log("---FALSE FLAG PASS---");
                     //Flatten sitemapTotal to be one array
                     sitemapTotal = sitemapTotal.flat();
-                    //console.log(sitemapTotal);
+                    
                     //Pipe sitemapTotal to sitemapIndex.js
                     linksProcess(sitemapTotal);
                     counter++;
@@ -109,18 +108,18 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                     sitemapTotal.push(bodyDataObject); 
                     
                 
-                    console.log("search_before: " + options.data.search_after);
-                    options.data.search_after = lastStagedDate
-                    console.log("search_after: " + options.data.search_after);
-                    
+                    //console.log("search_before: " + options.data.search_after);
+                    options.data.search_after = [lastStagedDate];
+                    //console.log("search_after: " + options.data.search_after);                    
                     counter++;
-                    newPage();
+                    console.log("Counter: " + counter);
+                    newPage(options);
                     
 
 
                 }
 
-                
+                return sitemapTotal;
             }
         }).catch(function (error) {
             if (error.response) {
@@ -141,7 +140,8 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
     }
 
 
-    
+    newPage(options);
+
  
 
 }

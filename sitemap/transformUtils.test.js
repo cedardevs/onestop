@@ -130,29 +130,6 @@ test('get the lastStagedDate after looping through dataItems', () => {
 });
 
 const processBodyData = require('./transformUtils');
-const convertCollectionToXml = require('./transformUtils')
-const convertCollectionToObject = require('./transformUtils')
 
 
-//TODO - Future tests to work on
-/*
-test('Pipe generated sitemap xml into a file', () => {
-
-});
-
-test('Pipe generated sitemap xml into a gzip file', () => {
-
-});
-
-test('check if collection is Null/Empty/Undefined', () => {
-
-});
-
-test('check if responseBody is Null/Empty/Undefined', () => {
-
-});
-
-test('check if collection.attributes is Null/Empty/Undefined', () => {
-
-});
-*/
+//TODO - Future tests

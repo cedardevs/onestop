@@ -13,7 +13,7 @@ const convertCollectionToXml = (baseUrl, collection) => {
     </url>`
 };
 
-//Converted method of convertCollectionXML, we use this to create the object list
+//Create object list in the format sitemapIndex.js prefers
 const convertCollectionToObject = (baseUrl, collection) => {
 
   var stagedDate = collection.attributes.stagedDate;
@@ -21,10 +21,6 @@ const convertCollectionToObject = (baseUrl, collection) => {
   var collObject = { url: `${baseUrl}/collections/details/${collection.id}`,
                     changefreq: `daily`, 
                     lastmod: `${formattedDate}`};
-
-
-  // const object = { url: `/onestop/collections/details/${id}, changefreq: 'daily', lastmod: ${isoStagedDate}`};
-
 
   return collObject;
 };
@@ -40,10 +36,8 @@ const Unix_TimeStamp = (t) =>{
 }
 
 
-//Takes in body & if not empty.null will
-//TODO - Don't need switch statements as long as we do error checking before our default case
-//TODO - Return a list in style of exampleList. Pipe that -> Readable(sitemapTotal)
-//TODO - Refactor switch and get actual null error or empty body checks
+//Call order: Generator.js->processBodyData. processBodyData -> convertCollectionToObject -> Unix_Timestamp
+//Returns an object formatted list of the body input
 const processBodyData = (body) => {
   var bodyDataObject = [];
   var i = 0;
