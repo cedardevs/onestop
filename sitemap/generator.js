@@ -38,8 +38,6 @@ const collectionApiUrl = new URL(`${searchApiBase}/search/collection`)
 const webBase = argv.website
 const pageSize = argv.pageSize
 
-
-
 const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
 
     var sitemapTotal = [];
@@ -55,7 +53,7 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
         json: true,
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'        
+            'Content-Type': 'application/json'
         },
         data: {
             "summary": false,
@@ -68,17 +66,17 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
 
    function newPage(updateOptions){
         axios(updateOptions)
-        .then((response)=>{
+        .then((response) => {
             if(response.status == 200){
                 console.log('\n' + "--Status 200--");
 
                 let body = response.data;
 
                 if((body) && body.data.length > 0){
-                lastStagedDate = body.data[body.data.length-1].attributes.stagedDate;
-                maxCollectionSize = body.meta.total;
+                  lastStagedDate = body.data[body.data.length-1].attributes.stagedDate;
+                  maxCollectionSize = body.meta.total;
                 }
-            
+
                 //collCount keeps track of our progress through the entire collection
                 console.log("lastStageDate: " + lastStagedDate);
                 console.log("Max Collection Size: " + maxCollectionSize);
@@ -88,7 +86,6 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                 var totalPages = Math.ceil(maxCollectionSize/pageSize);
                 collCount += body.data.length;
 
-
                 //TODO - Body.data.list == empty -> done
                 if(counter > totalPages || body.data.length == 0){ //Already done, exit
                     console.log('\n' + "---Sitemap XML files generated---");
@@ -97,26 +94,22 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
                 else if(counter == totalPages){ //End case
                     //Flatten sitemapTotal to be one array
                     sitemapTotal = sitemapTotal.flat();
-                    
+
                     //Pipe sitemapTotal to sitemapIndex.js
                     linksProcess(sitemapTotal);
                     counter++;
-                    
+
                 } else { //Recursion
 
                     var bodyDataObject = processBodyData(body);
-                    sitemapTotal.push(bodyDataObject); 
-                    
-                
+                    sitemapTotal.push(bodyDataObject);
+
                     //console.log("search_before: " + options.data.search_after);
                     options.data.search_after = [lastStagedDate];
-                    //console.log("search_after: " + options.data.search_after);                    
+                    //console.log("search_after: " + options.data.search_after);
                     counter++;
                     console.log("Counter: " + counter);
                     newPage(options);
-                    
-
-
                 }
 
                 return sitemapTotal;
@@ -134,29 +127,18 @@ const getCollectionPage = (apiUrl, size, stagedDateAfter) => {
               // Something happened in setting up the request that triggered an Error
               console.log('Error', error.message);
             }
-        
           });
           //return sitemapTotal;
     }
 
-
     newPage(options);
-
- 
-
 }
-
-
-
-
-
 
 getCollectionPage(collectionApiUrl, pageSize, 0);
 
-
 async function recursiveCrawl(body, sitemapTotal, options, counter, newPage){
                     var bodyDataObject = processBodyData(body);
-                    sitemapTotal.push(bodyDataObject); 
+                    sitemapTotal.push(bodyDataObject);
                     options.data.search_after = lastStagedDate
                     counter++;
     return newPage();
@@ -169,7 +151,7 @@ function crawlerCollection(body) {
 
     //Store the processed paged body into bodyDataObject
     var bodyDataObject = processBodyData(body);
-    sitemapTotal.push(bodyDataObject); 
+    sitemapTotal.push(bodyDataObject);
 
 
     //Recursion base case, checking for last page to end keepGoing
@@ -183,11 +165,7 @@ function crawlerCollection(body) {
      else if(body.data.length > 0){
         return getCollectionPage(collectionApiUrl, pageSize, lastStagedDate);
     }
-
-
 }
-
-
 
     // OLD WORKING CODE - Deprecated Fetch library
     // request.post(apiUrl, options, (error, res, body) => {
@@ -211,7 +189,7 @@ function crawlerCollection(body) {
     //         }
 
     //         //Once finished processing the entire collection, print the sitemap
-    //         if(keepGoing == false){ 
+    //         if(keepGoing == false){
 
     //             //Flatten sitemapTotal to be one array
     //             sitemapTotal = sitemapTotal.flat();
@@ -232,10 +210,10 @@ function crawlerCollection(body) {
     //             //  body.data.forEach((d) => {
     //             //  console.log(d);
     //             //  })
-                
+
     //         }
     //     }
-        
+
     // });
 
     // return sitemapTotal;
@@ -253,4 +231,3 @@ function crawlerCollection(body) {
             -File compression
         7. Write output to XML file & JSON file
     */
-
