@@ -7,9 +7,11 @@ import org.cedar.schemas.avro.psi.ErrorEvent
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.web.server.ResponseStatusException
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletResponse
@@ -22,6 +24,7 @@ class MetadataRestControllerSpec extends Specification {
   static final testAggInput = AggregatedInput.newBuilder()
       .setType(RecordType.collection)
       .setRawJson('{"hello":"world"}')
+      .setRawXml('<?xml version="1.0" encoding="UTF-8"?><fileIdentifier>foo:bar:baz</fileIdentifier>')
       .setInitialSource('test')
       .build()
   static final testParsed = ParsedRecord.newBuilder().setType(RecordType.collection).build()
@@ -51,6 +54,33 @@ class MetadataRestControllerSpec extends Specification {
     then:
     result.status == 500
     result.content == ["errors":["title":"Invalid UUID String (ensure lowercase): 8834CFD3-3B71-40B8-B037-315607A30C42"]]
+  }
+
+  def 'validate an incoming UUID string for raw XML'() throws Exception {
+    def id = "abc"
+    def path = "/metadata/${testType}/${id}/raw/xml"
+    def request = buildMockRequest(path)
+
+    when:
+    controller.retrieveRawXml(testType.toString(), id, request, mockResponse)
+
+    then:
+    ResponseStatusException e = thrown()
+    e.message == "500 INTERNAL_SERVER_ERROR \"Invalid UUID String (ensure lowercase): " + id + '"'
+    e.status == HttpStatus.INTERNAL_SERVER_ERROR
+  }
+
+  def 'validate an incoming UUID string with uppercase A-Z for raw xml'() throws Exception {
+    def id = "8834CFD3-3B71-40B8-B037-315607A30C42"
+    def path = "/metadata/${testType}/${id}/raw/xml"
+    def request = buildMockRequest(path)
+
+    when:
+    controller.retrieveRawXml(testType.toString(), id, request, mockResponse)
+
+    then:
+    Exception e = thrown()
+    e.message == "500 INTERNAL_SERVER_ERROR \"Invalid UUID String (ensure lowercase): " + id + '"'
   }
 
   def 'returns input with default source'() {
@@ -133,6 +163,34 @@ class MetadataRestControllerSpec extends Specification {
     result.errors == null
   }
 
+  def 'returns raw XML with default source'() {
+    def path = "/metadata/${testType}/${testId}/raw/xml"
+    def request = buildMockRequest(path)
+
+    when:
+    def result = controller.retrieveRawXml(testType.toString(), testId, request, mockResponse)
+
+    then:
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
+
+    and:
+    result == testAggInput.rawXml
+  }
+
+  def 'returns raw XML with explicit source'() {
+    def path = "/metadata/${testType}/${testSource}/${testId}/raw/xml"
+    def request = buildMockRequest(path)
+
+    when:
+    def result = controller.retrieveRawXml(testType.toString(), testSource, testId, request, mockResponse)
+
+    then:
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
+
+    and:
+    result == testAggInput.rawXml
+  }
+
   def 'handles nonexistent input'() {
     def path = "/metadata/${testType}/${testId}"
     def request = buildMockRequest(path)
@@ -177,6 +235,22 @@ class MetadataRestControllerSpec extends Specification {
     result.errors[0].title instanceof String
     result.errors[0].detail instanceof String
     mockResponse.status == 404
+  }
+
+  def 'handles nonexistent raw XML'() {
+    def path = "/metadata/${testType}/${testId}"
+    def request = buildMockRequest(path)
+
+    when:
+    controller.retrieveRawXml(testType.toString(), testId, request, mockResponse)
+
+    then:
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> null
+
+    and:
+    ResponseStatusException e = thrown()
+    e.message == "404 NOT_FOUND \"No input exists for collection with id [${testId}] from source [${testSource}]\""
+    e.status == HttpStatus.NOT_FOUND
   }
 
   def 'handles parsed with errors'() {
@@ -231,7 +305,6 @@ class MetadataRestControllerSpec extends Specification {
     result.errors[0].detail instanceof String
     mockResponse.status == 404
   }
-
 
   private MockHttpServletRequest buildMockRequest(String path) {
     def request = new MockHttpServletRequest()

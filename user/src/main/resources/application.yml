@@ -19,11 +19,6 @@ spring:
       ddl-auto: create-drop
     generate-ddl: false
 
-
-logging.level.org.springframework.security: DEBUG
-logging.level.org.springframework.web: DEBUG
-logging.level.org.springframework.jdbc: DEBUG
-
 #  spring.datasource.initialize=true
 #  spring.datasource.schema=classpath:/schema.sql
 #  spring.datasource.continue-on-error=true

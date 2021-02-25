@@ -7,7 +7,6 @@
 
 ## Table of Contents
 * [Registry OneStop Endpoint](#registry-onestop-endpoint)
-    * [Supported HTTP Methods & Parameters](#supported-http-methods--parameters)
 * [Metadata Notes](#metadata-notes)
     * [JSON Records](#json-records)
 * [Creating And Replacing a Record](#creating-and-replacing-a-record)
@@ -28,17 +27,16 @@ If you ever get a 401 Authorization Required add this to your curl and file in t
 ## Registry OneStop Endpoint
 The Registry API endpoint which you would append to the end of a OneStop deployment:
 
-* Old way:
+* Old endpoint:
 `{context-path}/metadata/{type}/{source}/{id}`
 
-* New way:
-`{context-path}/api/registry/{type}/{source}/{id}`
+* New endpoint:
+`{context-path}/api/registry/metadata/{type}/{source}/{id}`
 
 Where `context-path` is [explicitly set](/onestop/operator/deployment/v2/psi/project-artifacts#config) at time of deployment (otherwise `localhost:8080`)
 
-### Supported HTTP Methods & Parameters
-The supported HTTP methods, and their parameters, are listed in the [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml). That document is more accurate since it is more likely to be kept up to date when a code change occurs.
- 
+[OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml) - Details on the OneStop Registry endpoints and parameters.
+
 ## Metadata Notes
 For granule metadata you need to include the ***`relationships`*** field, which contains the collection UUID as OneStop knows it:
 
@@ -144,8 +142,6 @@ Example Input JSON:
 
 Create a record using a `POST`, or create or replace records using a `PUT`, via the [endpoint](#registry-onestop-endpoint) specified above. 
 
-Visit [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml) for what URL parameters are acceptable.
-
 ### Example
 
 Where:
@@ -177,8 +173,6 @@ curl -X PUT \
 ## Read a Collection/Granule Record 
 
 Retrieve a stored record using `GET` and `HEAD` requests via the [endpoint](#registry-onestop-endpoint) specified above. Requests sent will return the original input metadata in [the Input format](https://github.com/cedardevs/schemas/blob/master/src/main/resources/avro/psi/input.avsc). Requests sent to `{baseURL}/parsed` will return in the [ParsedRecord format](https://github.com/cedardevs/schemas/blob/master/src/main/resources/avro/psi/parsedRecord.avsc). The returned object is located in the `data.attributes` key of the returned JSON.
-
-Visit [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml) for what URL parameters are acceptable.
 
 ### Example
 
@@ -248,8 +242,6 @@ curl  \
 ## Updating an Existing Record
 If the original input metadata format is JSON, `PATCH` requests via the [endpoint](#registry-onestop-endpoint) specified above can be used to modify or add subsections to a record. Currently, `PATCH` requests will fully replace an existing key-value pair or add a new one to the final merged record. JSON lists and objects sent in a `PATCH` request should therefore be the desired _complete_ element.
 
-Visit [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml) for endpoint and parameter variations.
-
 A patch will need to be performed if you upload a granule metadata without the relationships field. See [Metadata Notes](#metadata-notes) section. 
 
 XML `PATCH` requests are not supported. 
@@ -289,8 +281,6 @@ Removing a record is possible with a `DELETE` request via the [endpoint](#regist
 
 **WARNING**: Deleting a record via an intentionally empty request body (i.e. `""`) on a `PUT` or `POST` is a non-guaranteed and unclean way to purge a metadata record from downstream sinks that cannot be undone through the Registry API. _Don't do it!_
 
-Visit [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml) for what URL parameters are acceptable.
-
 ### Example
 Where:
 
@@ -320,8 +310,6 @@ curl -X DELETE \
 
 ## Resurrecting a Deleted Record
 A record which has been `DELETE`d can be resurrected with a `GET` request to `{baseUrl}/resurrection`. 
-
-Visit [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml) for what URL parameters are acceptable.
 
 ### Example
 Where:
@@ -353,8 +341,8 @@ curl \
 **NOTE**: This functionality is ONLY available if a record was removed via a `DELETE` request. 
 
 ## External Resources
+* [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml) - Details on the OneStop Registry endpoints and parameters.
 * [Additional HTTP Endpoints](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)
-* [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification) - Describes the details of all available endpoints.
 * [JSON API specifications](https://jsonapi.org/format/) - Information on JSON responses.
 
 <hr>

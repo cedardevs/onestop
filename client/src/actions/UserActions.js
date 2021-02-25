@@ -20,7 +20,12 @@ export const userProfileFailure = error => {
     error: error,
   }
 }
-export const USER_LOGOUT = 'USER_LOGOUT'
+export const USER_LOGGED_OUT = 'USER_LOGGED_OUT'
+export const loggedOut = () => {
+  return {
+    type: USER_LOGGED_OUT,
+  }
+}
 
 export const getUser = (
   userProfileEndpoint,
@@ -41,10 +46,15 @@ export const getUser = (
     return fetch(userProfileEndpoint, requestOptions)
       .then(response => response.json())
       .then(
-        response => {
-          dispatch(userProfileSuccess(response))
-          if (savedSearchEndpoint) {
-            dispatch(getSavedSearches(savedSearchEndpoint))
+        body => {
+          if (body.hasOwnProperty('data')) {
+            dispatch(userProfileSuccess(body))
+            if (savedSearchEndpoint) {
+              dispatch(getSavedSearches(savedSearchEndpoint))
+            }
+          }
+          else {
+            dispatch(userProfileFailure(body))
           }
         },
         error => {
@@ -55,6 +65,10 @@ export const getUser = (
   }
 }
 
-export const logoutUser = () => {
-  return {type: USER_LOGOUT}
+export const logoutUser = userLogoutEndpoint => {
+  return dispatch => {
+    return fetch(userLogoutEndpoint, {method: 'POST'}).then(response => {
+      dispatch(loggedOut())
+    })
+  }
 }

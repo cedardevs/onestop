@@ -5,7 +5,11 @@ export const getBasePath = () => {
 }
 
 export const apiPath = () => {
-  return getBasePath().replace(/\/$/, '') + '-search'
+  return getBasePath().replace(/\/$/, '') + '/api/search'
+}
+
+export const getApiRegistryPath = () => {
+  return getBasePath().replace(/\/$/, '') + '/api/registry'
 }
 
 // makes urls protocol-relative and url-encodes quotes

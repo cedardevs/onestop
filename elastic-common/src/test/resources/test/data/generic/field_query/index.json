@@ -1,0 +1,47 @@
+{
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "fileFormat": {
+        "type": "keyword"
+      },
+      "dataFormats": {
+        "type": "nested",
+        "properties": {
+          "name": {
+            "type": "keyword"
+          },
+          "version": {
+            "type": "keyword"
+          }
+        }
+      },
+      "links": {
+        "type": "nested",
+        "properties": {
+          "linkName": {
+            "type": "keyword",
+            "index": false,
+            "doc_values": false
+          },
+          "linkProtocol": {
+            "type": "keyword",
+            "index": false,
+            "doc_values": false
+          },
+          "linkUrl": {
+            "type": "keyword"
+          },
+          "linkDescription": {
+            "type": "keyword",
+            "index": false,
+            "doc_values": false
+          },
+          "linkFunction": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}

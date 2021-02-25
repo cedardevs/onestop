@@ -38,7 +38,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     goHome: () => dispatch(showHome(ownProps.history)),
-    logoutUser: () => dispatch(logoutUser()),
+    logoutUser: endpoint => dispatch(logoutUser(endpoint)),
   }
 }
 
