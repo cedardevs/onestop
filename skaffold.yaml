@@ -218,8 +218,10 @@ deploy:
       - *onestop-parsalyzer
       - *onestop-search
       - *onestop-client
+      - *onestop-user
       - *onestop-gateway
       - *onestop-ingress
+      - *onestop-postgresql
       - name: onestop-dev
         chartPath: helm/onestop-dev
 profiles:
@@ -228,9 +230,8 @@ profiles:
       helm:
         releases:
           - *onestop-gateway
+          - *onestop-parsalyzer
           - *onestop-registry
-          - *onestop-ingress
-          - *onestop-search
           - name: onestop-dev
             chartPath: helm/onestop-dev
   - name: os
