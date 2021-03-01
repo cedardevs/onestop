@@ -2,7 +2,7 @@
 name: Epic Template
 about: For big chunks of work with one common objective.
 title: 'EPIC: {name}'
-labels: Epic
+labels: ''
 assignees: ''
 
 ---
