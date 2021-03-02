@@ -9,10 +9,7 @@ const {
   streamToPromise
 } = require('sitemap');
 
-
-
 const linksProcess = (links) => {
-
   //console.log("Links 2: " + links);
   Readable.from(links).pipe(sms) // available as of node 10.17.0
 }
@@ -37,16 +34,10 @@ const sms = new SitemapAndIndexStream({
   },
 });
 
-
-
-
-
 // or reading straight from an in-memory array
 sms
 .pipe(createGzip())
 .pipe(createWriteStream(resolve('./sitemap-index.xml.gz')));
-
-
 
 /*
 const exampleList = [{
