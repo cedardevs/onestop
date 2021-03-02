@@ -54,7 +54,7 @@ For example, if you are hosting the client using `httpd` and the Search API appl
 </LocationMatch>
 
 <Location /onestop-search >
-  ProxyPass http://localhost:8097/onestop-search
+  ProxyPass http://localhost/onestop/api/search
   RequestHeader set X-Forwarded-Proto https
   RequestHeader set X-Forwarded-Port 443
   ProxyPreserveHost On
@@ -80,7 +80,7 @@ See [Quickstart](/onestop/developer/quickstart).
 Wherever you choose to put your configuration values, it is important that some of the default values be replaced and otherwise optional parameters be provided before deploying OneStop to a production environment. Let's go through the categories:
 
 ### Server Values
-Use to modify the port and context path that the app uses when executed directly. These are used when running `./gradlew springboot` locally, or as a self-executing jar with embedded Tomcat. They are ignored by deployment in an external Tomcat, which uses the WAR name to determine the context-path instead. Defaults result in http://localhost:8097/onestop-search for the search API.
+Use to modify the port and context path that the app uses when executed directly. These are used when running `./gradlew springboot` locally, or as a self-executing jar with embedded Tomcat. They are ignored by deployment in an external Tomcat, which uses the WAR name to determine the context-path instead. Defaults result in http://localhost/onestop/api/search for the search API.
 
 ### Elasticsearch Values
 
