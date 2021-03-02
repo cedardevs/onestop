@@ -268,7 +268,7 @@ cas:
 ```
 # Federal development
 cas:
-  service: 'https://data.noaa.gov/onestop/registry/login/cas'
+  service: 'https://data.noaa.gov/onestop/api/registry/login/cas'
   serverUrlPrefix: 'https://data.noaa.gov/cas'
   loginUrl: 'https://data.noaa.gov/cas/login'
   logoutSuccessUrl: 'https://data.noaa.gov/cas/logout'
