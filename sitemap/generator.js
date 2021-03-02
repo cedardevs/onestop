@@ -38,49 +38,31 @@ const collectionApiUrl = new URL(`${searchApiBase}/search/collection`)
 const webBase = argv.website
 const pageSize = argv.pageSize
 
-const pageApi = (apiUrl, size, stagedDateAfter) => {
-
-  var sitemapTotal = [];
-  var collCount = 0, maxCollectionSize = 0, counter = 0;
-  var lastStagedDate;
-
-  console.log(`getting collections from ${collectionApiUrl}`)
-  const stringURL = apiUrl.toString();
-  //TODO - Double check if I need stringURL or can just pass apiURL once sitemapxml works
-  let options = {
-    url: stringURL,
-    method: 'POST',
-    json: true,
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    data: {
-      "summary": false,
-      "sort": [{"stagedDate": "asc"}],
-      "search_after": [stagedDateAfter],
-      "queries": [],
-      "page": {"max": size}
-    }
-  };
-
-  // collectionList = getPage(options, []);
-  // linksProcess(getPage(options, []));
-  // await getPage(options, []).then((value) => console.log(value));
-
-  getPage(options, []).then((listOfLinks) => linksProcess(listOfLinks));
+let options = {
+  url: collectionApiUrl.toString(),
+  method: 'POST',
+  json: true,
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  },
+  data: {
+    "summary": false,
+    "sort": [{"stagedDate": "asc"}],
+    "search_after": [0],
+    "queries": [],
+    "page": {"max": pageSize}
+  }
 };
 
-let getPage = async function(options, collectionList){
+//recursively pages API
+let pageApi = async function(options, collectionList){
   console.log("Requesting page for data after: " + options.data.search_after[0]);
   await axios(options)
       .then((response) => {
         console.log("Response status: " + response.status);
         if (response.status == 200) {
-          //console.log('\n' + "--Status 200--");
-
           let body = response.data;
-
           //If we got data back, process it and then keep going until we dont have anymore data
           // TODO catch body.error
           if (body && body.data.length > 0) {
@@ -91,13 +73,12 @@ let getPage = async function(options, collectionList){
             //create the data structure we need for the sitemap tool
             var bodyDataObjectList = processBodyData(body);
             //add it to the list
-            // collectionList.concat(bodyDataObjectList);
             collectionList = [...collectionList, ...bodyDataObjectList];
             console.log("Received " + body.data.length + " items, continue paging...");
             //get the next page
-            collectionList = getPage(options, collectionList)
+            collectionList = pageApi(options, collectionList)
           } else {
-            console.log("No more data. Generating sitemap");
+            console.log("No more data. Generating sitemap...");
           }
         }
       })
@@ -108,4 +89,5 @@ let getPage = async function(options, collectionList){
     return collectionList;
 }
 
-pageApi(collectionApiUrl, pageSize, 0);
+//page the api, create sitemap
+pageApi(options, []).then((listOfLinks) => linksProcess(listOfLinks));
