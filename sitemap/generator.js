@@ -65,12 +65,15 @@ const pageApi = (apiUrl, size, stagedDateAfter) => {
   };
 
   // collectionList = getPage(options, []);
-  linksProcess(getPage(options, []));
+  // linksProcess(getPage(options, []));
+  // await getPage(options, []).then((value) => console.log(value));
+
+  getPage(options, []).then((listOfLinks) => linksProcess(listOfLinks));
 };
 
-function getPage(options, collectionList) {
-  console.log("Requesting page");
-  axios(options)
+let getPage = async function(options, collectionList){
+  console.log("Requesting page for data after: " + options.data.search_after[0]);
+  await axios(options)
       .then((response) => {
         console.log("Response status: " + response.status);
         if (response.status == 200) {
@@ -88,17 +91,13 @@ function getPage(options, collectionList) {
             //create the data structure we need for the sitemap tool
             var bodyDataObjectList = processBodyData(body);
             //add it to the list
-            collectionList.push(bodyDataObjectList);
+            // collectionList.concat(bodyDataObjectList);
+            collectionList = [...collectionList, ...bodyDataObjectList];
             console.log("Received " + body.data.length + " items, continue paging...");
             //get the next page
             collectionList = getPage(options, collectionList)
           } else {
             console.log("No more data. Generating sitemap");
-            //we created a list of lists, gotta flatten it
-            // collectionList = collectionList.flat();
-            //Pipe sitemapTotal to sitemapIndex.js
-            // linksProcess(sitemapTotal);
-            return collectionList;
           }
         }
       })
@@ -106,7 +105,7 @@ function getPage(options, collectionList) {
         console.log("ERROR");
         console.log(error);
       });
-  return collectionList;
+    return collectionList;
 }
 
 pageApi(collectionApiUrl, pageSize, 0);
