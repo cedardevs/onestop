@@ -123,6 +123,8 @@ Information on all fields for a running version of OneStop can be acquired by se
 
 `$ curl https://data.noaa.gov/onestop-search/docs/attributes/collection`
 
+Example: `https://cedardevs.org/onestop/api/search/docs/attributes/granule`
+
 ### Reserved characters
 Since we pass the query straight through to elasticsearch, there are some special characters that elasticsearch treats differently. 
 If you wish for elasticsearch query to ignore these characters then surround your query in double quotes.

@@ -10,6 +10,7 @@ import VideoTray from './VideoTray'
 import ReactDOM from 'react-dom'
 import {granuleDownloadableLinks} from '../../../utils/cartUtils'
 import {FEATURE_CART} from '../../../utils/featureUtils'
+import {getApiRegistryPath} from '../../../utils/urlUtils'
 import Checkbox from '../../common/input/Checkbox'
 
 const pattern = require('../../../../img/topography.png')
@@ -86,6 +87,24 @@ export default function GranuleItem(props){
     </div>
   ) : null
 
+  const xmlLink = (
+    <a
+      href={
+        getApiRegistryPath() + '/metadata/granule/' + itemId + '/raw/xml'
+      }
+      target={'_blank'}
+    >
+      XML
+    </a>
+  )
+
+  const metadataLinks = (
+    <div key={'GranuleListItem::metadataLinks'}>
+      <h4 style={styleContentHeadingTop}>Metadata Access:</h4>
+      {xmlLink}
+    </div>
+  )
+
   const timePeriod = (
     <div key={'GranuleListItem::timePeriod'}>
       <h4 style={styleContentHeading}>Time Period:</h4>
@@ -119,7 +138,7 @@ export default function GranuleItem(props){
     <FlexColumn
       key={'GranuleListItem::right'}
       style={styleRight}
-      items={[ accessLinks, timePeriod, boundingCoordinates ]}
+      items={[ accessLinks, metadataLinks, timePeriod, boundingCoordinates ]}
     />
   )
 

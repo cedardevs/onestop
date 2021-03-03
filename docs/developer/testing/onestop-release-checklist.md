@@ -35,27 +35,29 @@
     curl -X PUT \
          -H "Content-Type: application/xml" \
          -u "credentials:redacted" \
-         https://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000 \
+         https://cedardevs.org/onestop/api/registry/metadata/collection/00000000-0000-0000-0000-000000000000 \
          --data-binary @registry/src/test/resources/dscovr_fc1.xml
     ```
    
 ## Test Environment Verification
+Reference [Registry API](/onestop/api/registry-api) for examples.
+
 1. Retrieve the raw input
-    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
+    - `curl https://cedardevs.org/onestop/api/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
     - ensure it returns a 200, and the `content` attribute contains the xml file you just uploaded
 1. Retrieve the parsed metadata
-    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000/parsed`
+    - `curl https://cedardev.org/onestop/api/registry/metadata/collection/00000000-0000-0000-0000-000000000000/parsed`
     - ensure it returns a 200, and that the `discovery` and `analysis` attributes contain values
 1. Delete the record
-    - `curl -X DELETE http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
+    - `curl -X DELETE https://cedardev.org/onestop/api/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
 1. Retrieve the raw input
-    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
+    - `curl https://cedardev.org/onestop/api/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
     - ensure it returns a 404, with an error object explaining that it has been deleted
 1. Retrieve the parsed metadata
-    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000/parsed`
+    - `curl https://cedardev.org/onestop/api/registry/metadata/collection/00000000-0000-0000-0000-000000000000/parsed`
     - ensure it returns a 404, with an error object explaining that no parsed information exists 
 1. Resurrect the record
-    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000/resurrection`
+    - `curl https://cedardev.org/onestop/api/registry/metadata/collection/00000000-0000-0000-0000-000000000000/resurrection`
 1. Retrieve the raw and parsed metadata again
     - ensure they behave like they initially did, above    
     
