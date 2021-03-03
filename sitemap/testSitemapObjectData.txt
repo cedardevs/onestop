@@ -1,0 +1,10 @@
+'http://localhost/onestop/collections/details/0561ce74-bc07-4dd4-bf22-8c73befe9497',
+'http://localhost/onestop/collections/details/15665e2a-dc84-482c-8e58-14d7d24b8f54',
+'http://localhost/onestop/collections/details/dac3dbdf-fe19-4b86-aeb1-2fef83a26f51',
+'http://localhost/onestop/collections/details/41633d5a-d8b3-482a-92ff-8ca6833c63d8',
+'http://localhost/onestop/collections/details/150f59f9-7827-4eca-9156-6ae5c1640308',
+'http://localhost/onestop/collections/details/62e7d363-0540-40ed-b89e-4a5e33a28ff2',
+'http://localhost/onestop/collections/details/2ea3c187-e415-4cbb-b2b4-2799128b4985',
+'http://localhost/onestop/collections/details/03712003-bded-437f-9076-4d0c32cad118',
+'http://localhost/onestop/collections/details/cacb52da-421d-4dde-b89c-b47f78c29bf9',
+'http://localhost/onestop/collections/details/5bf1fce7-67fd-4b76-b66c-0c8ad032a99b'

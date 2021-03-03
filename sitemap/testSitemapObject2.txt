@@ -1,0 +1,732 @@
+[
+    {
+      url: 'http://localhost/onestop/collections/details/0561ce74-bc07-4dd4-bf22-8c73befe9497',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:57.516Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/15665e2a-dc84-482c-8e58-14d7d24b8f54',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:57.591Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/dac3dbdf-fe19-4b86-aeb1-2fef83a26f51',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:57.652Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/41633d5a-d8b3-482a-92ff-8ca6833c63d8',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:57.719Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/150f59f9-7827-4eca-9156-6ae5c1640308',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:57.779Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/62e7d363-0540-40ed-b89e-4a5e33a28ff2',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:57.848Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/2ea3c187-e415-4cbb-b2b4-2799128b4985',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:57.921Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/03712003-bded-437f-9076-4d0c32cad118',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:57.993Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/cacb52da-421d-4dde-b89c-b47f78c29bf9',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.056Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/5bf1fce7-67fd-4b76-b66c-0c8ad032a99b',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.118Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/6b90c043-95f7-4720-bafe-a7a619f0a58e',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.184Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/179247b6-b868-49ce-98aa-26c41aed9699',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.257Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/4d777a5d-aac6-45d2-9005-415aed229492',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.336Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/92eec04a-79c6-4a8b-aa49-88443a6828c9',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.402Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/409f2421-9849-449b-8a6e-5c8c231dfc5b',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.462Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/49674961-9dff-4524-b4f4-0140774644b5',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.522Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/86459e25-2a50-44f6-8e8d-bed4a9e138ae',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.588Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/3a487221-4fba-4ef0-b699-895590491fa0',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.662Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/d3c19870-5419-4392-a6f9-c4d641cbe365',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.720Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/050a52be-f9e9-4628-8022-0b8244987f41',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.790Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/cda4922c-1484-43a0-926e-ee755ac5085f',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.861Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/8f8d7069-03c8-4cc8-95cb-c5ec0ff44718',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:58.933Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/20eaf62f-03d8-40b4-bcb5-69075fa56f5e',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.014Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/1f0a7453-4e4a-41ae-9226-09fbebc44a65',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.088Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/7c42cbb4-9cd2-4e95-9d48-807be3ef9812',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.157Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/4fbf7fb0-341e-4861-a195-15851b52a43f',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.239Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/e03dcf18-cdee-41a9-8b1c-33d12ca18aee',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.331Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/68def18a-5e5b-4051-bdec-38a763e3a5cb',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.437Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/0ff1552d-b458-464d-8361-0b9d7c215f1a',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.503Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/47a88ffc-34f6-4147-9e61-8a9e2ae282fe',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.574Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/16bbfb64-095a-459e-b925-283c8992d0d6',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.669Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/9ddefe76-ed1b-4b50-9298-16ef2225476d',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.755Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/50ca2926-7473-48a6-b9f8-35b9cff177fd',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.852Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/55f8552f-2e95-49e1-8c0d-7f5fed0ba9a4',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T22:59:59.937Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/e589e402-860e-41ae-aebb-3ecfbcc6fec0',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T23:00:00.053Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/8b383531-ff00-4e52-b281-642ac13138d1',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T23:00:00.163Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/338e1d3b-8071-4a38-959d-055cf7137bd5',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T23:00:00.323Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/7378074b-0087-41e2-aaf9-898004650177',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T23:00:00.392Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/b9e76b4a-aed6-45d7-88a9-c13aad638f87',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T23:00:00.456Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/11ad882d-9503-4b35-83cf-fea18a067f9f',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T23:00:00.778Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/075a3799-d02d-488b-b9de-a265e8905655',
+      changefreq: 'daily',
+      lastmod: '2021-01-21T23:00:00.864Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/26abdad2-8e51-465d-bd40-902bf30d6162',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:33.859Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/a9b41f03-0557-46fe-90d2-534753fa0ffd',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:33.908Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/bf508785-4181-4654-a827-0ee39763d745',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:33.967Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/b47d5521-3c73-4d4e-a7a2-fce0002febf4',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.014Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/21b30a97-5929-4ff5-a76b-52c69b7b6d4b',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.097Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/1b8569c7-64cb-44ad-8be5-9c978be92e75',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.143Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/15d754b8-bacb-476c-9fdb-55a62d635447',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.182Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/da3786ce-270a-4447-b3c9-11c9a0a2bfb9',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.240Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/08043e8f-59d1-4a80-be97-456056d97baf',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.320Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/8c223821-c4ee-4d3d-b1a6-7506a67a9cf0',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.377Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/3f928a74-7458-4147-b9d9-9b36f63edc21',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.432Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/be99e927-4b49-48ff-b946-74a326b53380',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.486Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/79fb44ad-da03-4627-b7c4-76f755bb06a2',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.545Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/652860ed-f6ae-4228-af7e-eb7b265ea5f9',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.585Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/41589892-9d8a-4cbb-b5b7-4e8284f8b42a',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.635Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/319a19fd-64bd-48bf-aa10-2a2374a5fada',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.671Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/1b6cf405-7148-4c04-b14f-911f72e7cb33',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.716Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/f758d260-e875-4b69-8db3-a03a87286107',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.759Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/f7d5e3b3-84b8-43a7-989d-beae26b5cc63',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.800Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/f21d934b-75af-40ab-b20a-3ca9e211d8af',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.846Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/a00fca01-d1e1-4d17-bdd3-40abf69172fc',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.904Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/7fbc5b7a-e35e-4cdf-a225-8e0d6a8cb725',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.946Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/91237e2b-bd1e-498e-a7fc-daa9b786e9e9',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:34.993Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/efa43b8c-f796-4e5a-b8c9-0967d479abea',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.035Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/46865431-afb4-4e72-9162-0b8f30d74162',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.076Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/7c96a9c8-105f-4d1f-a2de-c409ceafd9b1',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.112Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/8d5cc65b-abb7-415e-8b59-deb9fea09179',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.149Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/e2baa864-5e7b-497b-bf08-23666f1032b9',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.188Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/893ebf03-fdeb-448b-a4ed-958138c642dc',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.262Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/79322f32-992c-42de-843e-34085939e4d4',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.305Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/bc352811-1206-4b56-9db4-a6b997d31dc9',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.345Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/20fd5ff3-2cbb-4139-8506-6596417159ef',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.389Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/535971a7-7116-40b9-9289-b350f2531c0b',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.430Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/7c9513f5-d6f9-4022-986b-b90a08d1a07e',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.480Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/1f83f0ec-0f32-4387-b3d3-a1078c7b8999',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.599Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/7bd76df4-a76f-4247-a39b-c911efe64b0e',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.659Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/37e96c7c-7549-408e-8ac1-4da9486a59b2',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.762Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/88782ef2-e25f-4b44-96ad-f86fab391e39',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.823Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/8f2968f6-af2b-4c99-9494-6ed7f2f2f5d9',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:35.913Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/27e4c06b-90ab-49b3-ae62-abd112548623',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.021Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/a951efc5-312f-4ba3-82e2-31bf2566c1ac',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.067Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/6a24fc6f-9bde-4f18-9d96-34bf419251f3',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.109Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/39a8bc12-8145-46a0-ad00-f06bc49e9014',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.155Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/79ce425a-cd3e-4ae7-85f7-a1529e727e50',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.199Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/5ae3ebc4-2824-44c6-b64b-cdcf7975754d',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.250Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/61a37c73-4ef6-4576-be24-5849bdce71b9',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.314Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/b0d6f21e-a9c0-4ca4-9ae4-e77c7fcfd7d5',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.359Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/41f6d3b8-05e1-4641-bd19-3b346222ea2b',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.398Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/ee62994b-d9ce-42a2-a086-102e6a6b4f44',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.441Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/3b8c018a-b41f-46d4-af7a-1c5805c5764b',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.499Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/99457345-25b7-412b-8635-8eb4c348ed36',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:36.726Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/fdb56230-87f4-49f2-ab83-104cfd073177',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:48.905Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/55555555-5555-5555-5555-555555555555',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:57.908Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/66666666-6666-6666-6666-666666666666',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:58.014Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/77777777-7777-7777-7777-777777777777',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:58.156Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/88888888-8888-8888-8888-888888888888',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:58.335Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/99999999-9999-9999-9999-999999999999',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:58.414Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:58.487Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:58.626Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/cccccccc-cccc-cccc-cccc-cccccccccccc',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:58.674Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/dddddddd-dddd-dddd-dddd-dddddddddddd',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:58.727Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:58.811Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/ffffffff-ffff-ffff-ffff-ffffffffffff',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:59.014Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/11111111-1111-1111-1111-222222222222',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:59.124Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/11111111-1111-1111-1111-333333333333',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:58:59.214Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/4bfb3711-aa01-4f17-a12d-d4c678f929f0',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:59:07.658Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/5bf390f4-ff0c-44ce-8066-dbf82938bf4b',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:59:07.701Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/a2263f2c-adf9-4223-9b40-10642439d2c9',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:59:07.751Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/ac7c3365-5bda-4111-8bed-92c305e779ae',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:59:08.397Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/0d65b2a0-1331-4f96-b1d9-0fe835ea0b83',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:59:08.434Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/dd7a3b7b-66a7-406b-bf79-410059543bda',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:59:08.474Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/e5d5c7e2-aab0-46d4-bcb9-829442046986',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:59:08.521Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/2c7cc7f5-b8b7-4d78-9c1e-9487ad6c674a',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:59:08.620Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/dbec5f22-9e9a-48a7-b8ea-d2046a77f58a',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:59:08.666Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/e188fefb-2f1f-4ae7-9eb4-3c1780537f5d',
+      changefreq: 'daily',
+      lastmod: '2021-01-22T21:59:08.760Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/936ea7ea-17fd-4735-8756-ab9bab770fca',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:12:50.845Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/6dcedeeb-4334-4f6a-b789-e2a83abd96d1',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:12:51.216Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/022d9d11-3412-4bdd-900f-0cc849413586',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:12:51.422Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/2e265bb4-7701-410d-acca-effa50e20005',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:12:51.535Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/f4b49344-09a9-48df-adcc-0d03e404d14a',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:12:51.723Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/2d1e267e-a0cc-4adc-b5b3-700e4557ad52',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:12:51.830Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/f16538fb-bade-4e2a-a428-f2e547a32f3c',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:12:51.918Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/e5ceaa2a-84b9-402a-9d48-de83e1203e85',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:12:52.031Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/96e21488-487e-495a-abf3-c53d820bd844',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:12:52.130Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/1736262d-9bb3-4381-a7b6-696cd9579572',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.374Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/178d46ed-0abc-4ec5-a138-39a8a6ee9848',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.420Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/97dbe034-d544-4f12-95af-38cebef96b5d',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.487Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/351cd13c-ba0a-4a36-8c17-7dede9406518',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.540Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/fca80472-dc74-45af-b1e5-240dfd56f6ba',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.619Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/51a1acc3-d304-4e1a-b9c7-6ff9aedf24da',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.682Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/527c9d2d-0059-4594-81d9-0909da8c9ba2',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.737Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/04fa6e98-9c32-491b-93ea-cfde2bd105a9',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.835Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/0f1bf7d1-5c53-446c-b32a-422336d7c5e0',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.898Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/741eea48-5736-4b5f-9935-222aad67be65',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.981Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/d578aa02-183d-4cc8-b9e0-56743923723d',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:21.079Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/0fad03df-0805-434a-86a6-7dc42d68480e',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:21.196Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/0fad03df-0805-434a-86a6-7dc42d68480f',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:21.312Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/51a1acc3-d304-4e1a-b9c7-6ff9aedf24da',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.682Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/527c9d2d-0059-4594-81d9-0909da8c9ba2',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.737Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/04fa6e98-9c32-491b-93ea-cfde2bd105a9',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.835Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/0f1bf7d1-5c53-446c-b32a-422336d7c5e0',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.898Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/741eea48-5736-4b5f-9935-222aad67be65',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:20.981Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/d578aa02-183d-4cc8-b9e0-56743923723d',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:21.079Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/0fad03df-0805-434a-86a6-7dc42d68480e',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:21.196Z'
+    },
+    {
+      url: 'http://localhost/onestop/collections/details/0fad03df-0805-434a-86a6-7dc42d68480f',
+      changefreq: 'daily',
+      lastmod: '2021-01-27T01:13:21.312Z'
+    }
+  ]
