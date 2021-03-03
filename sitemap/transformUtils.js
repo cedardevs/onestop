@@ -5,7 +5,7 @@ const convertCollectionToXml = (baseUrl, collection) => {
   var stagedDate = collection.attributes.stagedDate;
   var formattedDate = Unix_TimeStamp(stagedDate);
 
-  return`
+  return `
     <url>
         <loc>${baseUrl}/onestop/collections/details/${collection.id}</loc>
         <lastmod>${formattedDate}</lastmod>
@@ -18,15 +18,17 @@ const convertCollectionToObject = (baseUrl, collection) => {
 
   var stagedDate = collection.attributes.stagedDate;
   var formattedDate = Unix_TimeStamp(stagedDate);
-  var collObject = { url: `${baseUrl}/collections/details/${collection.id}`,
-                    changefreq: `daily`, 
-                    lastmod: `${formattedDate}`};
+  var collObject = {
+    url: `${baseUrl}/collections/details/${collection.id}`,
+    changefreq: `daily`,
+    lastmod: `${formattedDate}`
+  };
 
   return collObject;
 };
 
 //Helper method for convertCollectiontoXML, transforms the collection's stagedDate to W3 DateTime format.
-const Unix_TimeStamp = (t) =>{
+const Unix_TimeStamp = (t) => {
 
   var dt = new Date(t)
   var n = dt.toISOString();
@@ -43,16 +45,15 @@ const processBodyData = (body) => {
   var i = 0;
 
   //Truthy check if(body), will evaluate to true if value is not null,undefined, NaN, empty string, 0, or false
-  if ( body ) {
+  if (body) {
     body.data.forEach((d) => {
-      //console.log(convertCollectionToObject(webBase, d));
       bodyDataObject[i++] = convertCollectionToObject(webBase, d);
-      });
+    });
   } else {
     console.log("processBodyData body check error");
   }
-  
-    return bodyDataObject;
+
+  return bodyDataObject;
 }
 
 module.exports = processBodyData;
