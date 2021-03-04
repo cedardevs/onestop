@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useCallback} from 'react'
 import PropTypes from 'prop-types'
 import CollectionGridItem from './CollectionGridItem'
 import ListView from '../../common/ui/ListView'
@@ -22,14 +22,14 @@ const styleListHeading = {
   fontSize: '1.2em',
 }
 
-const styleShowMore = {
+/*const styleShowMore = {
   margin: '1em auto 1.618em auto',
 }
 
 const styleShowMoreFocus = {
   outline: '2px dashed #5C87AC',
   outlineOffset: '.118em',
-}
+}*/
 
 const styleTextInput = {
   color: FilterColors.TEXT,
@@ -64,8 +64,8 @@ export default function Collections(props){
   const [ currentPage, setCurrentPage ] = useState(1)
   const [ headingMessage, setHeadingMessage ] = useState(null)
   //used to toggle bookmark button highlight
-  const [ searchSaved, setSearchSaved ] = useState(false)
-  //the element containing hte bookmark button
+  const [ , setSearchSaved ] = useState(false)
+  //the element containing the bookmark button
   const [ bookmarkButton, setBookmark ] = useState(null)
   const {isOpen, onOpen, onClose} = useDisclosure()
 
@@ -77,16 +77,16 @@ export default function Collections(props){
     },
     [ savedSearches, collectionFilter ]
   )
-  function handleSave(saveName){
+  function handleSave(name){
     const urlToSave = window.location.pathname + window.location.search
     // const queryStringIndex = urlToSave.indexOf('?')
     // const queryString = urlToSave.slice(queryStringIndex)
     // const decodedSavedSearch = decodePathAndQueryString('', queryString)
-    saveSearch(savedSearchUrl, urlToSave, saveName, collectionFilter)
+    saveSearch(savedSearchUrl, urlToSave, name, collectionFilter)
   }
 
-  function handleDelete(){
-    deleteSearch(savedSearchUrl, savedId)
+  function handleDelete(id){
+    deleteSearch(savedSearchUrl, id)
   }
 
   function setBookmarkButton(){
@@ -124,19 +124,22 @@ export default function Collections(props){
     setBookmark(saveSearchAction)
   }
 
-  function findSavedId(){
-    for (const [ key, value ] of Object.entries(savedSearches)) {
-      // TODO could probably just grab the url directly instead of encoding
-      // TODO shouldn't need to split, once we update what we save in the DB
-      if (
-        encodeQueryString(collectionFilter) ===
-        value.attributes.value.split('?')[1]
-      ) {
-        return key
+  const findSavedId = useCallback(
+    () => {
+      for (const [ key, value ] of Object.entries(savedSearches)) {
+        // TODO could probably just grab the url directly instead of encoding
+        // TODO shouldn't need to split, once we update what we save in the DB
+        if (
+          encodeQueryString(collectionFilter) ===
+          value.attributes.value.split('?')[1]
+        ) {
+          return key
+        }
       }
-    }
-    return null
-  }
+      return null
+    },
+    [ savedSearches, collectionFilter ]
+  )
 
   useEffect(
     () => {
@@ -157,8 +160,8 @@ export default function Collections(props){
         )
       }
       else if (totalHits > 0) {
-        var size = Object.keys(results).length
-        var thru = (
+        const size = Object.keys(results).length
+        const thru = (
           <span>
             <span aria-hidden="true">-</span>
             <span style={defaultStyles.hideOffscreen}>to</span>
@@ -197,29 +200,31 @@ export default function Collections(props){
     }
   }
 
-  const onSubmit = React.useCallback(
+  const onSubmit = useCallback(
     formData => {
       const savedId = findSavedId()
       if (savedId) {
-        handleDelete()
+        handleDelete(savedId)
       }
       else {
         handleSave(formData.get('searchName'))
       }
-      setSearchSaved(!searchSaved)
+      setSearchSaved(prevSaved => !prevSaved)
     },
-    [ savedSearches ]
+    [ findSavedId ]
   )
 
-  const formInputs = [
-    {
-      label: 'Search name:',
-      id: 'searchName',
-      name: 'searchName',
-      type: 'text',
-      style: styleTextInput,
-    },
-  ]
+  const formInputs = savedId
+    ? []
+    : [
+        {
+          label: 'Search name:',
+          id: 'searchName',
+          name: 'searchName',
+          type: 'text',
+          style: styleTextInput,
+        },
+      ]
 
   const modalTitle = `Do you want to ${savedId
     ? 'delete'

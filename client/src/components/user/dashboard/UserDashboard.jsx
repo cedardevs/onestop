@@ -30,6 +30,7 @@ const UserDashboard = props => {
     navigateToSearch,
     deleteSearch,
     savedSearches,
+    getSavedSearches,
   } = props
 
   useEffect(() => {

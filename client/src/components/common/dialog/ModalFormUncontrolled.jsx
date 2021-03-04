@@ -101,6 +101,7 @@ export default function ModalFormUncontrolled({
                 key="modalFormActionButtons"
                 items={[
                   <Button
+                    type="submit"
                     role="button"
                     key="modalFormActionButtons::submit"
                     text={submitText || 'Save'}
@@ -108,6 +109,7 @@ export default function ModalFormUncontrolled({
                     styleFocus={styleButtonFocus}
                   />,
                   <Button
+                    type="button"
                     role="button"
                     key="modalFormActionButtons::cancel"
                     text={cancelText || 'Cancel'}
