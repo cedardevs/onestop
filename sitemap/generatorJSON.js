@@ -91,14 +91,53 @@ async function pageApi (axiosOptions, collectionList) {
         }
       }
     })
-    //TODO - Future story more error handling
     .catch(function (error) {
       console.log("ERROR")
       console.log(error)
-      //outStream.close()
     })
   return collectionList
 }
 
-//const outStream = fs.createWriteStream(path.resolve(fileName), { autoClose: false })
-pageApi(axiosOptions, []).then((list) => console.dir(list))
+const collectionToOpenDataMapping = {
+  title: "title",
+  description: "description",
+  keyword: "keywords",
+  identifier: "id",
+  distribution: "links",
+  landingPage: (collection) => `${webBase}/collections/details/${collection.id}`,
+  /*modified: "2013-10-01",
+  publisher: {
+    "@type": "org:Organization",
+    "name": "Department of Defense"
+  },
+  contactPoint: {"@type": "vcard:Contact", "fn": "Aaron Graves", "hasEmail": "mailto:aaron.graves@whs.mil"},
+  accessLevel: "public",
+  license: "http://www.usa.gov/publicdomain/label/1.0/",
+  spatial: "Worldwide",
+  temporal: "2000-01-01/2000-12-31",
+  language: ["en-US"],
+  bureauCode: ["007:05"],
+  programCode: ["007:053"]*/
+}
+
+
+function transformCollectionAttributes(collections) {
+  return collections
+}
+
+function transformCollectionsToCatalog(collections) {
+  const dataset = transformCollectionAttributes(collections)
+  return {
+    conformsTo: "https://project-open-data.cio.gov/v1.1/schema",
+    describedBy: "https://project-open-data.cio.gov/v1.1/schema/catalog.json",
+    "@context": "https://project-open-data.cio.gov/v1.1/schema/data.jsonld",
+    "@type": "dcat:Catalog",
+    dataset: dataset,
+  }
+}
+
+pageApi(axiosOptions, []).then(
+  (list) => {
+    const catalog = transformCollectionsToCatalog(list)
+    fs.writeFileSync(path.resolve(fileName), JSON.stringify(catalog, null, 2))
+})
