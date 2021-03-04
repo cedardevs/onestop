@@ -2,6 +2,10 @@ tasks.getByName("jibDockerBuild") {
     dependsOn("npm_install")
 }
 
+tasks.getByName("build"){
+    dependsOn("jibDockerBuild")
+}
+
 jib {
     val publish: Publish by project.extra
     val jibExtraDir: String by project.extra

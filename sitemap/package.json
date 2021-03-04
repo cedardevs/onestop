@@ -1,22 +1,23 @@
 {
-  "name": "sitemap",
-  "version": "0.0.1",
-  "description": "Generates sitemap files for all collections in the catalog",
+  "name": "onestop-sitemap",
+  "version": "0.0.0",
+  "description": "An express server to host the sitemap index and open data json.",
   "main": "index.js",
   "scripts": {
     "test": "jest"
   },
   "keywords": [],
-  "author": "",
+  "author": "Coalition for Earth Data Applications and Research <cedar.cires@colorado.edu> (https://github.com/cedardevs)",
   "license": "GPL-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cedardevs/onestop.git"
+    "url": "https://github.com/cedardevs/onestop.git",
+    "directory": "sitemap"
   },
   "bugs": {
     "url": "https://github.com/cedardevs/onestop/issues"
   },
-  "homepage": "https://github.com/cedardevs/onestop#readme",
+  "homepage": "https://github.com/cedardevs/onestop",
   "dependencies": {
     "axios": "^0.21.1",
     "axios-retry": "^3.1.9",
