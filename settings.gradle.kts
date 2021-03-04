@@ -15,7 +15,8 @@ include(
     "search",
     "stream-manager",
     "user",
-    "gateway"
+    "gateway",
+    "sitemap"
 )
 
 //plugins {
