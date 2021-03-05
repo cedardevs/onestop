@@ -142,15 +142,11 @@ curl -X PUT\
 ```
 
 ### Use the onestop-test-data Repository
-We have some test data in its own repo, `onestop-test-data`, with a corresponding upload script to handle sending data to OneStop. Please refer to the test-data repository's README for more accurate information.
+In the [onestop-test-data repo](https://github.com/cedardevs/onestop-test-data) there is an upload script and test collection and granule metadata. You can use the upload script to POST metadata to OneStop. If you need to POST metadata external to that repo you can follow the readme and create the expected directory structure and manifest file. Please refer to the repo's README for more information.
 
 ```
 git clone git@github.com:cedardevs/onestop-test-data.git
-cd onestop-test-data
 ```
-
-`./upload.sh <application> <rootDir> <baseUrl> <username:password>`
-
 
 **Examples:**
 

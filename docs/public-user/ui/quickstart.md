@@ -15,7 +15,7 @@ The UI leverages a modern build process and features, the output of which has be
 This quick start guide is meant for a true beginner to the website's functionality, and will only briefly touch on features -- the goal is to demonstrate the user experience from start to finish. If you're interested in a specific feature, we've covered them all in depth on the next page, [UI Features In Depth](/onestop/public-user/ui/features-in-depth).
 
 ## Walkthrough
-In terms of the UI, the best way to get started is really just to dive right in! You can follow along with the steps on the official [NOAA deployment site](https://data.noaa.gov/onestop/) or our [development deployment](https://sciapps.colorado.edu/onestop). Keep in mind that result ordering and counts may not match exactly to what is shown in the guide images.
+In terms of the UI, the best way to get started is really just to dive right in! You can follow along with the steps on the official [NOAA deployment site](https://data.noaa.gov/onestop/) or our [development deployment](https://cedardevs.org/onestop). Keep in mind that result ordering and counts may not match exactly to what is shown in the guide images.
 
 ### Step One: The Initial Search Query
 From the landing page, there are 3 ways to populate the initial text query:
