@@ -7,8 +7,8 @@
 ## Table of Contents
 * [Code Verification](#code-verification)
 * [Test Environment](#test-environment)
-    [Setup](#setup)
-    [Verification](#verification)
+  * [Setup](#setup)
+  * [Verification](#verification)
 * [Browser Support and CSS](#browser-support-and-css)
 * [UI Behavior](#ui-behavior)
 * [Live Docs Pages](#live-docs-pages)
