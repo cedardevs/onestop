@@ -8,14 +8,13 @@ tasks.getByName("build"){
 
 jib {
     val publish: Publish by project.extra
-    val jibExtraDir: String by project.extra
-    //copy src
-    //copy node_modules
-    extraDirectories.setPaths(File(jibExtraDir))
+
+    extraDirectories.setPaths(mutableListOf(File("../sitemap")))
 
     from {
         // base image
-        image = "gcr.io/distroless/nodejs:14"
+        //distroless didnt have node
+        image = "node"
     }
     to {
         image = publish.repository()
@@ -28,6 +27,8 @@ jib {
         creationTime = publish.created
         labels = publish.ociAnnotations()
         //fire up express server (and maybe also kick off generator.js)
-        entrypoint = listOf("node", "server.js")
+//        entrypoint = listOf("node", "src/generator.js")
+        entrypoint = listOf("tail", "-f", "/dev/null")
+
     }
 }
