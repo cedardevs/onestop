@@ -4,7 +4,8 @@
   "description": "Generates sitemap files for all collections in the catalog",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "json": "node src/generatorJSON.js"
   },
   "keywords": [],
   "author": "",
