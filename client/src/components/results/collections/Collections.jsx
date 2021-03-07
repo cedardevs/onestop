@@ -91,33 +91,31 @@ export default function Collections(props){
 
   function setBookmarkButton(){
     const savedId = findSavedId()
-    const title = savedId ? 'Delete search' : 'Save search'
-    const text = savedId ? 'Delete' : 'Save'
-    const notification = text
+
     //if we found a matching id, the search was saved previously
-    const saveSearchAction = savedId
-      ? [
+    const saveSearchAction = savedId ?
+      [
           {
-            text: text,
-            title: title,
+            text: 'Delete',
+            title: 'Delete search',
             icon: alreadySavedIcon,
             showText: false,
             handler: () => {
               onOpen()
             },
-            notification: notification,
+            notification: 'Delete',
           },
         ]
       : [
           {
-            text: text,
-            title: title,
+            text: 'Save',
+            title: 'Save search',
             icon: saveIcon,
             showText: false,
             handler: () => {
               onOpen()
             },
-            notification: notification,
+            notification: 'Save',
           },
         ]
 
