@@ -1,4 +1,4 @@
-const { createReadStream, createWriteStream} = require('fs');
+const { createReadStream, createWriteStream, fstat} = require('fs');
 const { resolve } = require('path');
 const { createGzip } = require('zlib')
 const { Readable } = require('stream')
@@ -16,6 +16,7 @@ const linksProcess = (links) => {
 
 module.exports = linksProcess;
 
+
 const sms = new SitemapAndIndexStream({
   limit: 50, // defaults to 45k
   // SitemapAndIndexStream will call this user provided function every time
@@ -26,7 +27,9 @@ const sms = new SitemapAndIndexStream({
     const sitemapStream = new SitemapStream({
       hostname: 'https://cedardevs.org'
     });
-    const path = `./sitemap-${i}.xml`;
+
+
+    const path = `./public/sitemap-${i}.xml`;
 
     sitemapStream
       .pipe(createGzip()) // compress the output of the sitemap
@@ -39,7 +42,7 @@ const sms = new SitemapAndIndexStream({
 // or reading straight from an in-memory array
 sms
   .pipe(createGzip())
-  .pipe(createWriteStream(resolve('./sitemap-index.xml.gz')));
+  .pipe(createWriteStream(resolve('./public/sitemap-index.xml.gz')));
 
 /*  Format passed into the sitemap library to generate sitemap files
 const exampleList = [{

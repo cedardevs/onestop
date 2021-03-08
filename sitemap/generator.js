@@ -5,19 +5,21 @@ const linksProcess = require('./sitemapIndex');
 const axios = require('axios');
 const https = require('https');
 
-
+/*
 const argv = yargs
   .option('api', {
     alias: 'a',
     description: 'Base URL for the catalog search api, e.g. http://localhost/onestop-search',
     type: 'string',
-    required: true
+    required: true,
+    default: 'localhost/onestop/api/search'
   })
   .option('website', {
     alias: 'w',
     description: 'Base URL for the catalog web page, e.g. http://localhost/onestop',
     type: 'string',
-    required: true
+    required: true,
+    default: 'localhost/onestop'
   })
   .option('pageSize', {
     alias: 'n',
@@ -28,14 +30,14 @@ const argv = yargs
   .help()
   .alias('help', 'h')
   .argv;
-
+*/
 
 //TODO - When pulling from cedar devs update API URL new path
 //cedardevs.org/onestop/api/search
-const searchApiBase = argv.api
+const searchApiBase =  'http://localhost/onestop/api/search' //argv.api ? argv.api : 'localhost/onestop/api/search'
 const collectionApiUrl = new URL(`${searchApiBase}/search/collection`)
-const webBase = argv.website
-const pageSize = argv.pageSize
+const webBase = 'http://localhost/onestop' //argv.website ? argv.website : 'localhost/onestop'
+const pageSize = 10 //argv.pageSize
 
 let options = {
   url: collectionApiUrl.toString(),
@@ -94,4 +96,9 @@ let pageApi = async function (options, collectionList) {
 }
 
 //page the api, create sitemap
-pageApi(options, []).then((listOfLinks) => linksProcess(listOfLinks));
+
+
+let generateSitemap = function(){
+    pageApi(options, []).then((listOfLinks) => linksProcess(listOfLinks));
+}
+module.exports = generateSitemap;
