@@ -75,7 +75,7 @@ The docker image has a built in config containing the example config above.
 
 Add `--verbose` to get more complete output. For example, to see what server is being used by default.
 
-### Run against a test or local API
+### Run against a test or local [Search API](onestop/api/search-api)
 
 Add the `--server` flag:
 - `--server=data.noaa.gov/onestop/api/search/`

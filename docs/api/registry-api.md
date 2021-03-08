@@ -18,13 +18,15 @@
 
 The registry provides a horizontally-scalable API and storage for granule and collection-level metadata backed by Kafka. It publishes metadata updates to Kafka, then uses a Kafka Streams app to aggregate those raw metadata events, merging them with previous events to provide a full picture of the metadata for each granule and collection. 
 
-Among the HTTP Methods below there are additional [HTTP Methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)
 
-If you ever get a 401 Authorization Required add this to your curl and file in the username and password with valid credentials. 
+
+## Registry OneStop Endpoint
+The supported endpoints and parameters can be found at the Registry's [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml). There are also the default supported [HTTP Methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)
+
+**NOTE:** If you ever get a 401 Authorization Required add this to your curl and file in the username and password with valid credentials. 
 
 `-u '<username>:<password>'`
 
-## Registry OneStop Endpoint
 The Registry API endpoint which you would append to the end of a OneStop deployment:
 
 * Old endpoint:
@@ -35,7 +37,6 @@ The Registry API endpoint which you would append to the end of a OneStop deploym
 
 Where `context-path` is [explicitly set](/onestop/operator/deployment/v2/psi/project-artifacts#config) at time of deployment (otherwise `localhost:8080`)
 
-[OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml) - Details on the OneStop Registry endpoints and parameters.
 
 ## Metadata Notes
 For granule metadata you need to include the ***`relationships`*** field, which contains the collection UUID as OneStop knows it:

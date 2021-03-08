@@ -19,4 +19,4 @@
 - [Publishing Tags](publishing-tags) - Git tagging plus CI related info
 - [OneStop Client](https://cedardevs.github.io/onestop-clients/) - OneStop client documentation
 - [Contribution Guidelines](contribution-guidelines)
-- [Testing](testing) - Information on writing and running tests, especially for releases.
+- [Testing](testing) - Information on writing and running tests, especially for releases (release checklist).

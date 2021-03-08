@@ -70,27 +70,29 @@ The idea of the prefix path is for our stack to be deployed (in the future) to a
 
 
 ### Search Engine Optimization (sitemap.xml)
-To improve SEO, we’ve added endpoints to the search API to retrieve a `sitemap.xml` that can be seen by the client in the browser.
+To improve SEO, we’ve added endpoints to the [Search API](/onestop/api/search-api) to retrieve a `sitemap.xml` that can be seen by the client in the browser.
 
 
-For example, a browser should resolve this link:
-https://sciapps.colorado.edu/onestop/sitemap.xml
+For example, a browser should be able to resolve this link:
+https://cedardevs.org/onestop/api/search/sitemap.xml
 
 
 To an XML with references to one or more sitemap files:
 ```
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <sitemap>
-      <loc>https://sciapps.colorado.edu/onestop-search/sitemap/AWon1qKrfrc1sUL9qn1j.txt</loc>
+      <loc>https://cedardevs.org/onestop-search/sitemap/AWon1qKrfrc1sUL9qn1j.txt</loc>
       <lastmod>2019-04-16T20:28:58.378Z</lastmod>
     </sitemap>
 </sitemapindex>
 ```
 
-The sitemap reference should resolve also:
-https://sciapps.colorado.edu/onestop-search/sitemap/AWon1qKrfrc1sUL9qn1j.txt
+The `loc` reference within the sitemap should resolve to a file containing a list of urls which each should resolve.
 
- To a file containing a list of references which can resolve to unique content on OneStop:
+The example above being:
+https://cedardevs.org/onestop-search/sitemap/AWon1qKrfrc1sUL9qn1j.txt
+
+With references such as:
  ```
 https://sciapps.colorado.edu/onestop/collections/details/AWoDH_Psve2FB-bXY1sh
 https://sciapps.colorado.edu/onestop/collections/details/AWoDH-jbve2FB-bXY1r3

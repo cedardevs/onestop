@@ -26,9 +26,7 @@ Cas profile ensures that the OneStop publishing service only accept queries sent
 
 | Spring Profile | Feature Description | Default Value |
 | --- | --- | --- |
-| login-gov |Enables a Spring security filter to enable OpenId authentication via login.gov. This also triggers the uiConfig endpoint to show an auth section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new user service with a PostgreSQL backing DB.
-
-Requires a configured ICAM keystore and credentials at runtime! We don’t expect this feature to be enabled in 2.1 production, and the production environment would need to create and configure its own keystore as well as register its public key and other Service Provider (SP) metadata to login.gov. | false |
+| login&#8209;gov |Enables a Spring security filter to enable OpenId authentication via login.gov. This also triggers the uiConfig endpoint to show an auth section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new user service with a PostgreSQL backing DB.<br />Requires a configured ICAM keystore and credentials at runtime! We don’t expect this feature to be enabled in 2.1 production, and the production environment would need to create and configure its own keystore as well as register its public key and other Service Provider (SP) metadata to login.gov. | false |
 | sitemap | Enables a the /sitemap.xml and /sitemap/{id}.txt public endpoints. | false |
 
 ### Sitemap (Additional Config Required)
@@ -42,9 +40,9 @@ Unfortunately, we don’t currently have a way to dynamically determine where th
 
 | ENV | SITEMAP_CLIENT_PATH | SITEMAP_API_PATH |
 | --- | --- | --- |
-| DEV | https://sciapps.colorado.edu/onestop | https://sciapps.colorado.edu/onestop-search
-| TEST | https://<testClientHost>/onestop | https://<testSearchHost>/onestop-search |
-| PROD | https://<prodClientHost>/onestop | https://<prodSearchHost>/onestop-search |
+| DEV | https://cedardevs.org/onestop | https://cedardevs.org/onestop-search
+| TEST | https://`<testClientHost>`/onestop | https://`<testSearchHost>`/onestop-search |
+| PROD | https://`<prodClientHost>`/onestop | https://`<prodSearchHost>`/onestop-search |
 
 > Note: Sitemap is a new feature and we haven’t had the ability to see how it performs at scale. We’ve only been able to see it run on the order of 10K entries versus the millions of entries or more we would encounter in production.
 >
