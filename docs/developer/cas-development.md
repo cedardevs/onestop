@@ -101,8 +101,7 @@ If the JSON Registry is included and and configured properly, the `etc/cas/servi
 
 For development CAS, we loosely define our `serviceId` regex to be anything starting with `^http`, so that we don't need to worry about CAS denying new development services or changing endpoints.
 
-Ideally (in production -- if and when they decide to use a more strict registration enforcement), `serviceId` here should match the `service` in the client's CAS configuration. A separate registration and ids would be needed for a service deployed to a different environment. For example, if you were developing and testing authentication on `sciapps.colorado.edu`, you might use `"serviceId" : "^http://sciapps.colorado.edu/registry/login/cas".
-
+Ideally (in production -- if and when they decide to use a more strict registration enforcement), `serviceId` here should match the `service` in the client's CAS configuration. A separate registration and ids would be needed for a service deployed to a different environment.
 
 ### Building Development CAS Server from Overlay
 ```
