@@ -93,29 +93,29 @@ export default function Collections(props){
     const savedId = findSavedId()
 
     //if we found a matching id, the search was saved previously
-    const saveSearchAction = savedId ?
-      [
+    const saveSearchAction = savedId
+      ? [
           {
             text: 'Delete',
             title: 'Delete search',
+            notification: 'Delete',
             icon: alreadySavedIcon,
             showText: false,
             handler: () => {
               onOpen()
             },
-            notification: 'Delete',
           },
         ]
       : [
           {
             text: 'Save',
             title: 'Save search',
+            notification: 'Save',
             icon: saveIcon,
             showText: false,
             handler: () => {
               onOpen()
             },
-            notification: 'Save',
           },
         ]
 
@@ -221,6 +221,8 @@ export default function Collections(props){
           name: 'searchName',
           type: 'text',
           style: styleTextInput,
+          initialValue: queryText,
+          required: true,
         },
       ]
 

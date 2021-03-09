@@ -11,6 +11,7 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/core'
+import {SiteColors} from '../../../style/defaultStyles'
 
 const styleButtonFocus = {
   outline: '2px dashed black',
@@ -22,6 +23,10 @@ const styleButton = {
   margin: '0.105em',
   borderRadius: '0.309em',
   fontSize: '1em',
+}
+
+const styleRequiredIndicator = {
+  color: `${SiteColors.WARNING}`,
 }
 
 export default function ModalFormUncontrolled({
@@ -38,6 +43,9 @@ export default function ModalFormUncontrolled({
     event => {
       event.preventDefault()
       const form = event.currentTarget
+      if (!form.reportValidity()) {
+        return
+      }
       if (onSubmit && form) {
         onSubmit(new FormData(form))
       }
@@ -47,6 +55,14 @@ export default function ModalFormUncontrolled({
   )
 
   const formInputs = inputs.map(inp => {
+    // extraProps is intended for misc. html attributes, but *not* something like `onChange`
+    const extraProps = inp.extraProps || {}
+
+    // build an object for the 'required' props because they are a boolean HTML attribute
+    const requiredProps = inp.required
+      ? {required: true, 'aria-required': true}
+      : {}
+
     const label = inp.label ? (
       <label
         key={`${inp.name}::label`}
@@ -54,9 +70,9 @@ export default function ModalFormUncontrolled({
         style={{marginRight: '0.5em'}}
       >
         {inp.label}
+        {inp.required ? <span style={styleRequiredIndicator}>*</span> : null}
       </label>
     ) : null
-    const extraProps = inp.extraProps || {}
 
     return (
       <FlexRow
@@ -70,8 +86,9 @@ export default function ModalFormUncontrolled({
             name={inp.name}
             type={inp.type}
             style={inp.style || {}}
-            value={inp.initialValue}
+            defaultValue={inp.initialValue}
             {...extraProps}
+            {...requiredProps}
           />,
         ]}
       />
@@ -115,7 +132,8 @@ export default function ModalFormUncontrolled({
                     text={cancelText || 'Cancel'}
                     style={styleButton}
                     styleFocus={styleButtonFocus}
-                    onClick={() => {
+                    onClick={event => {
+                      event.preventDefault()
                       if (onCancel) {
                         onCancel()
                       }
