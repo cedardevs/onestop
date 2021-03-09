@@ -76,6 +76,9 @@ build:
         roles:
           ROLE_ADMIN:
             - casuser
+      api:
+        root:
+          url: http://localhost/onestop/api/registry
     debug: "true"
     features.cas: "false"
     kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
@@ -123,6 +126,11 @@ build:
     service.nodePort: "30097"
     service.clusterIP: 10.100.100.2
     service.type: NodePort
+    config: |-
+      ---
+      api:
+        root:
+          url: http://localhost/onestop/api/search
   imageStrategy:
     helm: {}
 .onestop-client: &onestop-client

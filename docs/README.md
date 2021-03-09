@@ -20,6 +20,7 @@
 
 - [Project Overview](#project-overview)
 - [Navigating The Documentation](#navigating-the-documentation)
+  - [API Documentation](api/)
   - [User Type](#user-types)
     - [Public User](#public-user)
     - [Metadata Manager](#metadata-manager)
@@ -38,16 +39,24 @@ The project is composed of four high level "components":
 * A state-of-the-art browser-based User Interface (UI) that has accessibility built into every feature, and,
 * A command line interface (CLI) enabling more efficient script and algorithm execution when reliant on information retrieved from the Search API
 
-If you're interested in learning about the finer details of the "components" described above, head over to our [Architectural Overview](api/architectural-overview) page to begin your deep-dive journey.
+With these RESTful APIs:
+* [Registry API](api/registry-api)
+* [Search API](api/search-api)
 
-You can check out OneStop in action while exploring NOAA's Earth science data offerings at [NOAA's OneStop](https://data.noaa.gov/onestop/) search portal. If the latest features in progress are what you're after, however, take a peek at our [test host](https://sciapps.colorado.edu/onestop/). *Keep in mind the latter could be broken at any time as it represents what's currently under development.*
+If you're interested in learning about the finer details of the "components" described above, head over to our [API](api/) page or the [Architectural Overview](api/architectural-overview) to begin your deep-dive journey.
+
+You can check out OneStop in action while exploring NOAA's Earth science data offerings at [NOAA's OneStop](https://data.noaa.gov/onestop/) search portal. If the latest features in progress are what you're after, however, take a peek at our [test host](https://cedardevs.org/onestop). *Keep in mind the latter could be broken at any time as it represents what's currently under development.*
 
 ![OneStop UI Landing Page](images/onestop-landing-page.png)
 
 
 
 ## Navigating The Documentation
-OneStop has an enormous amount to offer, but it can be difficult to know how and where to get started with a project that has so many moving parts.  With that in mind, we have laid out some navigational paths through our documentation based on the user type and project component.
+OneStop has an enormous amount to offer, but it can be difficult to know how and where to get started with a project that has so many moving parts.  With that in mind, we have laid out some navigational paths through our documentation based on the user type and project component. 
+
+Visit the [API Documentation](api/) for information on the OneStop RESTful interfaces.
+
+Additional information on the OneStop can be found in the [Architectural Overview](api/architectural-overview).
 
 ### User Types
 What's important to you when using OneStop varies significantly based on what you need to accomplish. Select the role below that most closely represents you to get started.

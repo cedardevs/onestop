@@ -4,12 +4,11 @@
 **Estimated Reading Time: 25 minutes**
 # Release Checklist
 
-**NOTE:** For now our CU sciapps machine/url is obsolete; we are in the process of switching to AWS
-
 ## Table of Contents
 * [Code Verification](#code-verification)
 * [Test Environment](#test-environment)
-* [Test Environment Verification](#test-environment-verification)
+  * [Setup](#setup)
+  * [Verification](#verification)
 * [Browser Support and CSS](#browser-support-and-css)
 * [UI Behavior](#ui-behavior)
 * [Live Docs Pages](#live-docs-pages)
@@ -26,39 +25,32 @@
 
 ## Test Environment
 
-1. Deploy the latest master branch code to sciapps demo site https://sciapps.colorado.edu (private deployOS playbook)
-1. Reset the indices and reload the data. (private loadOnestop playbook)
-    - [ ] Check the logs, to make sure when ETL runs, 100% of the collections and granules make it into the search index (or document that those that do not are not expected to)
-1. Upload the test collection with a test id
-    - From project root:
-    ```bash
-    curl -X PUT \
-         -H "Content-Type: application/xml" \
-         -u "credentials:redacted" \
-         https://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000 \
-         --data-binary @registry/src/test/resources/dscovr_fc1.xml
-    ```
+### Setup
+
+1. Deploy the latest master branch code to cedardevs demo site https://cedardevs.org/onestop
+1. Reset the indices and reload the data.
+    - Check the logs, to make sure when ETL runs, 100% of the collections and granules make it into the search index (or document that those that do not are not expected to)
    
-## Test Environment Verification
-1. Retrieve the raw input
-    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
+### Verification
+
+Reference [Registry API](/onestop/api/registry-api) for examples.
+
+1. Upload a test collection and granule.
+    - You can do this from a [onestop-test-data repo](https://github.com/cedardevs/onestop-test-data) or curl and Post to the [Registry API](/onestop/api/registry-api)
+1. Retrieve the raw input from registry
     - ensure it returns a 200, and the `content` attribute contains the xml file you just uploaded
 1. Retrieve the parsed metadata
-    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000/parsed`
     - ensure it returns a 200, and that the `discovery` and `analysis` attributes contain values
 1. Delete the record
-    - `curl -X DELETE http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
 1. Retrieve the raw input
-    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000`
     - ensure it returns a 404, with an error object explaining that it has been deleted
 1. Retrieve the parsed metadata
-    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000/parsed`
     - ensure it returns a 404, with an error object explaining that no parsed information exists 
 1. Resurrect the record
-    - `curl http://sciapps.colorado.edu/registry/metadata/collection/00000000-0000-0000-0000-000000000000/resurrection`
 1. Retrieve the raw and parsed metadata again
     - ensure they behave like they initially did, above    
-    
+1. Verify in the OneStop UI you can find the details page for the collection and granule.
+
 ## Browser Support and CSS
 
 - Verify CSS works across supported browsers:
@@ -283,10 +275,10 @@ Follow these steps to confirm that core behavior is working as expected, as well
 
 ## Live Docs Pages
 
-- [ ] https://sciapps.colorado.edu/onestop/sitemap.xml
+- [ ] https://cedardevs.org/onestop/sitemap.xml
 - [ ] At least one submap URL is listed. Paste it into the address bar.
 - [ ] All the collections loaded are listed. Paste one into the address bar to load the details page, to ensure the sitemap links are formatted correctly.
-- [ ] https://sciapps.colorado.edu/onestop-search/openapi.yaml (should auto-download or display the yaml file, depending on browser)
+- [ ] https://cedardevs.org/onestop/api/search/openapi.yaml (should auto-download or display the yaml file, depending on the browser)
 
 
 ## Data we should identify or add to the test set:
