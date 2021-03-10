@@ -55,7 +55,7 @@ The registry api is exposed through ambassador via a LoadBalancer service.
 When using docker desktop, you can access them at:
 
 ```
-http://localhost/registry       # psi-registry
+http://localhost/onestop/api/registry       # psi-registry
 ```
 
 From there you can do things like [upload test metadata](additional-developer-info#Upload Test Metadata) to test the system. Please refer to the [quickstart](quickstart) guide too.

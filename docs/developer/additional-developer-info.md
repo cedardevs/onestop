@@ -11,8 +11,8 @@
     * [Common Cleanup Steps](#common-cleanup-steps)
     * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
 * [Upload Test Metadata](#upload-test-metadata)
-    * [Upload a Specific Metadata](#upload-a-specific-metadata)
     * [Use the onestop-test-data Repository](#use-the-onestop-test-data-repository)
+    * [Manually Upload a Specific Metadata](#upload-a-specific-metadata)
 * [Feature Toggles](#feature-toggles)
     * [Keystores and Credentials](#keystores-and-credentials)
     * [Spring Profiles](#spring-profiles)
@@ -100,18 +100,13 @@ docker image prune -a --force
 ```
 
 #### Helm cleanup
+Delete each and every release listed by this command:
 ```
 # list releases
 helm list
+```
 
-# delete releases
-helm delete onestop-client --purge
-helm delete onestop-dev --purge
-helm delete onestop-indexer --purge
-helm delete onestop-parsalyzer --purge
-helm delete onestop-registry --purge
-helm delete onestop-search --purge
-
+```
 # find and remove any requirements.lock files
 find helm/ -name "*.lock"
 
@@ -129,32 +124,16 @@ helm dependency update
 ```
 
 ## Upload Test Metadata
-
-You can either upload your own metadata via a curl to the registry application or use the script in the onestop-test-data repository to upload metadata in that repository.
+To upload metadata to OneStop you can use the upload script in the [OneStop-test-data](https://github.com/cedardevs/onestop-test-data) repo or ue a curl to the [Registry API](onestop/api/registry-api).
 
 If you are an NCEI employee contact someone on the OneStop agile team for more information on what test systems are in place for you to interact with.
-### Upload a Specific Metadata
-```bash
-curl -X PUT\
-     -H "Content-Type: application/xml" \
-     http://localhost/registry/metadata/collection \
-     --data-binary @registry/src/test/resources/dscovr_fc1.xml
-```
 
 ### Use the onestop-test-data Repository
-In the [onestop-test-data repo](https://github.com/cedardevs/onestop-test-data) there is an upload script and test collection and granule metadata. You can use the upload script to POST metadata to OneStop. If you need to POST metadata external to that repo you can follow the readme and create the expected directory structure and manifest file. Please refer to the repo's README for more information.
+In the [OneStop-test-data](https://github.com/cedardevs/onestop-test-data) repo there is an upload script and test collection and granule metadata. You can use the upload script to POST metadata to OneStop. If you need to POST metadata external to that repo you can follow the readme and create the expected directory structure and manifest file. Please refer to the repo's README for more information.
 
 ```
 git clone git@github.com:cedardevs/onestop-test-data.git
 ```
-
-**Examples:**
-
-To load *all* collections and granules test metadata: 
-`./upload.sh IM . http://localhost/registry`
-
-To load only HazardImages metadata:  
-`./upload.sh IM HazardImages localhost/registry`
 
 If the upload is pointing to an instance of the registry API which is secured, then it will be necessary to pass user credentials.
 
@@ -168,6 +147,16 @@ In order for data to be published and flow all the way to the OneStop UI, the fo
 ```
 
 At a bare minimum, Kafka and the registry should be running to successfully upload.
+
+### Manually Upload a Specific Metadata
+This is not the suggested way as the [OneStop-test-data](https://github.com/cedardevs/onestop-test-data) repo has a script to do this for you.
+
+```bash
+curl -X PUT\
+     -H "Content-Type: application/xml" \
+     localhost/onestop/api/registry/metadata/collection \
+     --data-binary @registry/src/test/resources/dscovr_fc1.xml
+```
 
 ## Feature Toggles
 By default, security-related features are disabled locally. This is to streamline development because security features require access to keystores with specific credentials needed for identity providers OneStop leverages.
@@ -247,7 +236,7 @@ cd client && npm run dev
 # Elasticsearch
 http://localhost:9200/
 # APIs
-http://localhost:8097/onestop-search/actuator/info
+http://localhost/onestop/api/search/actuator/info
 
 # Client
 # port here is automatically assigned when using webpack-dev-server
@@ -300,7 +289,7 @@ pass: foamcat
 http://localhost:30092/
 
 # APIs
-http://localhost:30097/onestop-search/actuator/info
+http://localhost/onestop/api/search/actuator/info
 
 # Client
 # port here is automatically assigned when using webpack-dev-server

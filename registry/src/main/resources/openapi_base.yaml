@@ -16,11 +16,11 @@ info:
     name: GNU GPL
     url: 'https://www.gnu.org/licenses/gpl-2.0.en.html'
 servers:
-  - url: https://sciapps.colorado.edu/registry
+  - url: https://cedardevs.org/onestop/api/registry
     description: development server
   - url: http://localhost:8080
     description: local standalone
-  - url: http://localhost/registry
+  - url: localhost/onestop/api/registry
     description: local w/ proxy
 security:
   - app_id: []
@@ -359,7 +359,7 @@ components:
               errors:
                 $ref: 'json/schema-definitions.json#/definitions/record:org.cedar.schemas.avro.psi.ErrorEvent'
             example:
-              link:  "http://localhost:8080/registry/metadata/collection/comet/9a0fe56"
+              link:  "localhost/onestop/api/registry/metadata/collection/comet/9a0fe56"
               error:
                 status: 404
                 title: 404 NOT_FOUND
@@ -373,11 +373,11 @@ components:
             parsed:
               format: uri
               type: string
-              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56/parsed"
+              example: "localhost/onestop/api/registry/metadata/collection/comet/9a0fe56/parsed"
             self:
               format: uri
               type: string
-              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56"
+              example: "localhost/onestop/api/registry/metadata/collection/comet/9a0fe56"
         data:
           properties:
             attributes:
@@ -403,11 +403,11 @@ components:
             parsed:
               format: uri
               type: string
-              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56/parsed"
+              example: "localhost/onestop/api/registry/metadata/collection/comet/9a0fe56/parsed"
             self:
               format: uri
               type: string
-              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56"
+              example: "localhost/onestop/api/registry/metadata/collection/comet/9a0fe56"
         data:
           properties:
             attributes:
