@@ -19,7 +19,7 @@ object Versions {
     const val LABEL_SCHEMA: String = "1.0"
 
     const val NODE: String = "10.16.3"
-    const val NPM: String = "6.14.0"
+    const val NPM: String = "7.6.2"
 
     const val ELASTIC: String = "7.6.2"
     const val CONFLUENT: String = "5.4.0"
