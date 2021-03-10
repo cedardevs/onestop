@@ -8,6 +8,10 @@
     "justification": "Improper Neutralization of Input During Web Page Generation: but Not packaged in production code."
   },
   {
+    "path": "node_modules/dompurify",
+    "justification": "Several XSS exploits discovered: but Not packaged in production code."
+  },
+  {
     "path": "node_modules/marked",
     "justification": "Uncontrolled Resource Consumption We do not run server-side JS."
   }
