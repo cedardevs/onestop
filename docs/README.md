@@ -28,6 +28,8 @@
     - [External Developer](#external-developer)
     - [Internal Developer](#internal-developer)
 - [External Documentation](#external-documentation)
+    - [Search API](#search-api)
+    - [Registry API](#registry-api)
 - [Further Issues or Questions](#further-issues-or-questions)
 
 ## Project Overview
@@ -73,8 +75,14 @@ What's important to you when using OneStop varies significantly based on what yo
 
 
 ## External Documentation
-Swagger docs describing the Search API are currently hosted externally from GitHub or running public instances of OneStop.
-* [Swagger API Docs - 2.4.0](https://app.swaggerhub.com/apis/cedarbot/OneStop/2.4.0)
+Our OpenAPI docs are available on SwaggerHub for most of our APIs. They list the supported endpoints and parameters for each API.
+
+### Search API SwaggerHub Docs
+* [3.0.0-RC1](https://app.swaggerhub.com/apis/cedarbot/OneStop-Registry/3.0.0-RC1)
+* [2.4.0](https://app.swaggerhub.com/apis/cedarbot/OneStop/2.4.0)
+
+### Registry API SwaggerHub Docs
+* [3.0.0-RC1](https://app.swaggerhub.com/apis/cedarbot/OneStop-Search/3.0.0-RC1)
 
 ## Further Issues or Questions
 If you have any questions, comments, or have spotted an issue with the code or docs, please open [an issue](https://github.com/cedardevs/feedback/issues) via Github Issues on our Feedback repository. This repository is issue-only and intentionally meant to prevent external feedback from being lost in our day to day tasks.
