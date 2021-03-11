@@ -12,6 +12,10 @@
 * [Browser Support and CSS](#browser-support-and-css)
 * [UI Behavior](#ui-behavior)
 * [Live Docs Pages](#live-docs-pages)
+    * [Generate Registry API OpenAPI Yaml](#generate-registry-api-openapi-yaml)
+    * [Generate Search API OpenAPI Yaml](#generate-search-api-openapi-yaml)
+    * [Update SwaggerHub Docs](#update-swaggerhub-docs)
+* [Sitemap](#sitemap)
 * [Data we should identify or add to the test set:](#data-we-should-identify-or-add-to-the-test-set)
 
 ## Code Verification
@@ -275,11 +279,48 @@ Follow these steps to confirm that core behavior is working as expected, as well
 
 ## Live Docs Pages
 
+OneStop's API has several OpenAPI docs hosted on SwaggerHub. When performing a release you should regenerate these, with appropriate release number, and upload them to SwaggerHub.
+
+Tips:
+- [ ] Verify in each of the OpenAPI yaml templates that the servers and endpoints look correct and up-to-date.
+
+### Generate Registry API OpenAPI Yaml
+
+1. Modify the template: `registry/src/main/resources/openapi_base.yaml`
+    * At minimum change the info.version to this release number (Ex: "3.0.0-RC1")
+1. Execute `./gradlew registry:clean build` to trigger the task that will generate the $buildDir/resources/main/static/openapi.yaml
+1. Open the generated openapi.yaml file and verify the modified fields are correct.
+
+### Generate Search API OpenAPI Yaml
+1. Modify the template: `search/src/main/resources/static/openapi.yaml`
+    * At minimum change the info.version to this release number (Ex: 3.0.0-RC1), noting the lack of quotations.
+1. Execute `./gradlew search:clean build` to trigger the task that will generate the $buildDir/resources/main/static/openapi.yaml
+1. Open the generated openapi.yaml file and verify the modified fields are correct.
+
+### Update SwaggerHub Docs
+
+1. Log into SwaggerHub via credentials listed in the vault encrypted secretpassword file in the [help](https://github.com/cedardevs/help) repository.
+1. Create a new API docs for this release by importing each API's openapi.yaml. If this is unclear SwaggerHub has great tutorials and documentation.
+1. Input fields:
+    * Owner: cedarbot
+    * Visibility: Public
+    * Verify the `Version` field is what we changed it to.
+    * Name: OneStop-Registry
+
+Example of resulting doc URLs:
+
+```
+https://app.swaggerhub.com/apis/cedarbot/OneStop-Registry/3.0.0-RC1
+
+https://app.swaggerhub.com/apis/cedarbot/OneStop-Search/3.0.0-RC1
+```
+
+## Sitemap
+
 - [ ] https://cedardevs.org/onestop/sitemap.xml
 - [ ] At least one submap URL is listed. Paste it into the address bar.
 - [ ] All the collections loaded are listed. Paste one into the address bar to load the details page, to ensure the sitemap links are formatted correctly.
 - [ ] https://cedardevs.org/onestop/api/search/openapi.yaml (should auto-download or display the yaml file, depending on the browser)
-
 
 ## Data we should identify or add to the test set:
 
