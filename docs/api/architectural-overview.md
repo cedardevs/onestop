@@ -1,4 +1,4 @@
-<div align="center"><a href="/onestop/">Documentation Home</a></div>
+<div align="center"><a href="/onestop/api">OneStop API</a></div>
 <hr>
 
 **Estimated Reading Time: 15 minutes**
