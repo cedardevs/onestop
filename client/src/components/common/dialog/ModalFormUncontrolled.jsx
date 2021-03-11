@@ -29,6 +29,36 @@ const styleRequiredIndicator = {
   color: `${SiteColors.WARNING}`,
 }
 
+export function mapInputSpecToReactElements(inputSpec) {
+  const label = inputSpec.label ? (
+    <label
+      key={`${inputSpec.name}::label`}
+      htmlFor={inputSpec.id}
+    >
+      {inputSpec.label}
+      {inputSpec.required ? <span style={styleRequiredIndicator}>*</span> : null}
+    </label>
+  ) : null
+
+  const extraProps = inputSpec.extraProps || {}
+
+  const requiredProps = inputSpec.required
+    ? {required: true, 'aria-required': true}
+    : {}
+
+  const input = <input
+    key={`${inputSpec.name}::input`}
+    id={inputSpec.id}
+    name={inputSpec.name}
+    type={inputSpec.type}
+    style={inputSpec.style || {}}
+    defaultValue={inputSpec.initialValue}
+    {...extraProps}
+    {...requiredProps}
+  />
+  return [label, input]
+}
+
 export default function ModalFormUncontrolled({
   isOpen, // from Chakra useDisclosure
   onClose, // from Chakra useDisclosure
@@ -55,24 +85,7 @@ export default function ModalFormUncontrolled({
   )
 
   const formInputs = inputs.map(inp => {
-    // extraProps is intended for misc. html attributes, but *not* something like `onChange`
-    const extraProps = inp.extraProps || {}
-
-    // build an object for the 'required' props because they are a boolean HTML attribute
-    const requiredProps = inp.required
-      ? {required: true, 'aria-required': true}
-      : {}
-
-    const label = inp.label ? (
-      <label
-        key={`${inp.name}::label`}
-        htmlFor={inp.id}
-        style={{marginRight: '0.5em'}}
-      >
-        {inp.label}
-        {inp.required ? <span style={styleRequiredIndicator}>*</span> : null}
-      </label>
-    ) : null
+    const [label, input] = mapInputSpecToReactElements(inp)
 
     return (
       <FlexRow
@@ -80,16 +93,7 @@ export default function ModalFormUncontrolled({
         key={`${inp.name}::row`}
         items={[
           label,
-          <input
-            key={`${inp.name}::input`}
-            id={inp.id}
-            name={inp.name}
-            type={inp.type}
-            style={inp.style || {}}
-            defaultValue={inp.initialValue}
-            {...extraProps}
-            {...requiredProps}
-          />,
+          input,
         ]}
       />
     )

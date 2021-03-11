@@ -2,7 +2,7 @@ import React from 'react'
 import {mount} from 'enzyme'
 import {useDisclosure, ModalHeader} from '@chakra-ui/core'
 
-import ModalFormUncontrolled from '../../../../src/components/common/dialog/ModalFormUncontrolled'
+import ModalFormUncontrolled, {mapInputSpecToReactElements} from '../../../../src/components/common/dialog/ModalFormUncontrolled'
 
 describe('ModalFormUncontrolled', () => {
   let component = null
@@ -10,7 +10,7 @@ describe('ModalFormUncontrolled', () => {
   const submitText = 'Submit'
   const cancelText = 'Cancel'
   const title = 'This Is A Title'
-  const inputs = [
+  const testInputs = [
     {
       label: 'Text Input1:',
       id: 'textInput1',
@@ -35,6 +35,15 @@ describe('ModalFormUncontrolled', () => {
       initialValue: 'checkValue1',
       extraProps: {checked: true, readOnly: true},
     },
+    {
+      label: 'Required Input1:',
+      id: 'requiredInput1',
+      name: 'requiredInput1',
+      type: 'email',
+      initialValue: 'foo@bar.com',
+      required: true,
+      extraProps: {readOnly: true}
+    }
   ]
 
   const onSubmit = formData => {
@@ -67,7 +76,7 @@ describe('ModalFormUncontrolled', () => {
         submitText,
         cancelText,
         title,
-        inputs,
+        inputs: testInputs,
       }
       return <ModalFormUncontrolled {...props} />
     }
@@ -107,5 +116,16 @@ describe('ModalFormUncontrolled', () => {
     const cancelButton = form.find('button').at(1)
     cancelButton.simulate('click')
     expect(onCancel).toBeCalledTimes(1)
+  })
+
+  it('should output the provided inputs correctly', () => {
+    const form = component.find('form').at(0)
+    const formInputs = form.find('input')
+    expect(formInputs.length).toBe(testInputs.length)
+    for (const input of testInputs) {
+      const [reactLabel, reactInput] = mapInputSpecToReactElements(input)
+      expect(form.containsMatchingElement(reactLabel)).toBeTruthy()
+      expect(form.containsMatchingElement(reactInput)).toBeTruthy()
+    }
   })
 })
