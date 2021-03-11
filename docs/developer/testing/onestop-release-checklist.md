@@ -306,8 +306,9 @@ Tips:
     * Visibility: Public
     * Verify the `Version` field is what we changed it to.
     * Name: OneStop-Registry
+1. Update the OneStop docs to include new URLs. Example locations: [OneStop root readme](/onestop/), within the [API docs](/onestop/api), and any other locations where SwaggerHub is referenced.
 
-Example of resulting doc URLs:
+Example of resulting SwaggerHub doc URLs:
 
 ```
 https://app.swaggerhub.com/apis/cedarbot/OneStop-Registry/3.0.0-RC1
