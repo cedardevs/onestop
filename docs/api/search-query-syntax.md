@@ -119,9 +119,7 @@ To search multiple fields at once, just add them to your query string with paren
 
 For OneStop specifically, there are three different types of fields in the index: free-text searchable fields, exact-match searchable fields, and non-searchable fields. For free-text fields, you can use any of the operators that are in this guide for fine-tuning your search in a case-insensitive manner. On the other hand, exact-match fields _are_ case sensitive and the content of the field must match your query exactly in order for that record to be returned. Usage of [regular expressions](#regular-expressions) enable patterns in lieu of verbatim text for finding exact matches in these types of fields. Finally, non-searchable fields exist to provide additional information about results but have very little benefit for searchability, for example URL strings.
 
-Information on all fields for a running version of OneStop can be acquired by sending a `GET` request to the OneStop Search API endpoint `{host}/docs/attributes/{type}`, for example:
-
-`$ curl https://data.noaa.gov/onestop-search/docs/attributes/collection`
+Information on all fields for a running version of OneStop can be acquired by sending a `GET` request to the OneStop [Search API](search-api) endpoint, for example `{host}/docs/attributes/{type}`
 
 ### Reserved characters
 Since we pass the query straight through to elasticsearch, there are some special characters that elasticsearch treats differently. 

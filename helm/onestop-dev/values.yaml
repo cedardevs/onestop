@@ -102,3 +102,7 @@ metrics-server:
     - --kubelet-insecure-tls
   hostNetwork:
     enabled: true
+
+elasticsearch:
+  snapshot:
+    enabled: false

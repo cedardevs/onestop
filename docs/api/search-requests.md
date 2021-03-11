@@ -16,17 +16,17 @@
 - [Pagination and Summarized Results](#pagination-and-summarized-results)
 - [Putting it All Together](#putting-it-all-together)
 - [Query Granules](#query-granules)
-- [GETting One Record](#getting-one-record)
 
 <hr>
 
-The API provides three Search endpoints for search and discovery of data. The following are some examples of well-formatted queries for interacting with the OneStop `/onestop-search/search/collection`, `/onestop-search/search/granule`, and `/onestop-search/search/flattened-granule` (version 2.1+) resource endpoints.
+The API provides Search endpoints for search and discovery of metadata.
 
-* Either a POST or GET request with a correctly formatted **JSON request body** will work.
+In general:
+* A POST or GET request with a correctly formatted **JSON request body** works.
 
-* All three endpoints expect the same request schema format to be used but return data of the type in the URL.
+* All endpoints expect the same request schema format to be used but return data of the type in the URL.
 
-For more detailed information see the full [OpenAPI specification](/static/openapi.yaml).
+[Swagger generated docs](https://app.swaggerhub.com/apis/cedarbot/OneStop/2.4.0) - Details on the OneStop Search endpoints and parameters.
 
 ## Basic Query
 
@@ -368,11 +368,6 @@ Below is an example querying for granule records referencing a collection identi
   }
 }
 ```
-
-## GETting One record
-The full metadata for a specific record of any of the three types can be requested using a GET request to the `/onestop-search/{type}/{id}` endpoints, where `{type}` is collection, granule, or flattened-granule, and `{id}` is the "id" value returned in the search results. For collections, a total count of granules connected to that collection is returned in the `meta` portion of the response.
-
-Sending a GET request to any of the `/onestop-search/{type}` endpoints, where no ID is specified, returns information about that type as a whole. At present, this information is limited to the total number of documents of the specified type available to search in OneStop.
 
 <hr>
 <div align="center"><a href="#">Top of Page</a></div>

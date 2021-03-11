@@ -8,27 +8,31 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD
 
 import org.cedar.onestop.api.search.service.DocumentationService
+import org.cedar.onestop.api.search.service.ApiRootGenerator
 
 @Slf4j
 @RestController
 class DocumentationController {
 
   private ElasticsearchService elasticsearchService
+  private ApiRootGenerator apiLinkGenerator
 
   @Autowired
-  DocumentationController(ElasticsearchService elasticsearchService) {
+  DocumentationController(ElasticsearchService elasticsearchService, ApiRootGenerator apiLinkGenerator) {
     this.elasticsearchService = elasticsearchService
+    this.apiLinkGenerator = apiLinkGenerator
   }
 
   @RequestMapping(path = "/", method = [GET, HEAD])
-  Map getApiRoot(HttpServletResponse response) {
-    return response.sendRedirect("openapi.yaml")
+  Map getApiRoot(HttpServletRequest request, HttpServletResponse response) {
+    return response.sendRedirect("${apiLinkGenerator.getApiRoot(request)}/openapi.yaml")
   }
 
   @RequestMapping(path = ["/docs/attributes/collection", "/v1/docs/attributes/collection"], method = [GET, HEAD], produces = 'application/json')
