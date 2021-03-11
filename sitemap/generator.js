@@ -35,7 +35,7 @@ const argv = yargs
 //TODO - When pulling from cedar devs update API URL new path
 //cedardevs.org/onestop/api/search
 const searchApiBase =  'http://localhost/onestop/api/search' //argv.api ? argv.api : 'localhost/onestop/api/search'
-const collectionApiUrl = new URL(`${searchApiBase}/search/collection`)
+const collectionApiUrl = new URL(`${searchApiBase}/search/collection`);
 const webBase = 'http://localhost/onestop' //argv.website ? argv.website : 'localhost/onestop'
 const pageSize = 10 //argv.pageSize
 
@@ -84,6 +84,7 @@ let pageApi = async function (options, collectionList) {
           collectionList = pageApi(options, collectionList)
         } else {
           console.log("No more data. Generating sitemap...");
+          options.data.search_after = [0];
         }
       }
     })
