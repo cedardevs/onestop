@@ -4,6 +4,8 @@ const fs = require('fs');
 const linksProcess = require('./sitemapIndex');
 const axios = require('axios');
 const https = require('https');
+require('dotenv').config()
+
 
 /*
 const argv = yargs
@@ -33,11 +35,19 @@ const argv = yargs
 */
 
 //TODO - When pulling from cedar devs update API URL new path
+//
 //cedardevs.org/onestop/api/search
-const searchApiBase =  'http://localhost/onestop/api/search' //argv.api ? argv.api : 'localhost/onestop/api/search'
-const collectionApiUrl = new URL(`${searchApiBase}/search/collection`);
-const webBase = 'http://localhost/onestop' //argv.website ? argv.website : 'localhost/onestop'
+
+//TODO - Take entire collectionApiUrl from env file
+
+const searchAPI = process.env.SEARCH_API_BASE;
+const collectionApiUrl = new URL(`${searchAPI}`);
+const webBase =  process.env.WEB_BASE; //'http://localhost/onestop' //argv.website ? argv.website : 'localhost/onestop'
 const pageSize = 10 //argv.pageSize
+
+
+console.log("Env Search API: " + process.env.SEARCH_API_BASE);
+console.log("Env Web: " + process.env.WEB_BASE);
 
 let options = {
   url: collectionApiUrl.toString(),

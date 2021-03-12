@@ -6,6 +6,7 @@ var CronJob = require('cron').CronJob;
 
 const app = express()
 
+
 //Creates folder to store sitemaps
 if(!fs.existsSync(dir)){
   fs.mkdirSync(dir);
@@ -14,7 +15,7 @@ if(!fs.existsSync(dir)){
 
 //generateSitemap();
 console.log("Before job instantiation");
-const job = new CronJob('0 */2 * * * *', function() {
+const job = new CronJob('0 */1 * * * *', function() {
 	const d = new Date();
 	console.log('Every 2 minutes:', d);
   generateSitemap();
