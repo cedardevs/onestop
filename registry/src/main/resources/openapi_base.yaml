@@ -360,7 +360,6 @@ components:
                 $ref: 'json/schema-definitions.json#/definitions/record:org.cedar.schemas.avro.psi.ErrorEvent'
             example:
               link:  "localhost/onestop/api/registry/metadata/collection/comet/9a0fe56"
-              link:  "localhost/onestop/api/registry/metadata/collection/comet/9a0fe56"
               error:
                 status: 404
                 title: 404 NOT_FOUND
