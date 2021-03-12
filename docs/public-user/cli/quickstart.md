@@ -77,9 +77,9 @@ Add `--verbose` to get more complete output. For example, to see what server is 
 ### Run against a test or local [Search API](onestop/api/search-api)
 
 Add the `--server` flag:
-- `--server=data.noaa.gov/onestop-search/`
-- `--server=https://sciapps.colorado.edu/onestop-search/`
-- `--server=localhost:8080/onestop-search/`
+- `--server=data.noaa.gov/onestop/api/search/`
+- `--server=https://cedardevs.org/onestop/api/search/`
+- `--server=localhost/onestop/api/search/`
 
 ### Get
 

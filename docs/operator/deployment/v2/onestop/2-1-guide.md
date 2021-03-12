@@ -61,8 +61,8 @@ We replace strings in this configuration during our container creation time. Iâ€
 | ENV | ONESTOP_PREFIX_PATH | ONESTOP_SEARCH_API_ENDPOINT |
 | --- | ------------------- | --------------------------- |
 | DEV | onestop | api-search:8080/onestop-search |
-| TEST | onestop | <testSearchProxyHost>:<testSearchProxyPort>/onestop-search |
-| PROD | onestop | <prodSearchProxyHost>:<prodSearchProxyPort>/onestop-search |
+| TEST | onestop | `<testSearchProxyHost>`:`<testSearchProxyPort>`/onestop-search |
+| PROD | onestop | `<prodSearchProxyHost>`:`<prodSearchProxyPort>`/onestop-search |
 
 The idea of the prefix path is for our stack to be deployed (in the future) to an arbitrary endpoint more flexibly and to accommodate multiple instances. For now, making different paths is not a concern for the 2.1 release.
 

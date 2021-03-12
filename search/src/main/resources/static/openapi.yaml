@@ -1,7 +1,7 @@
 openapi: 3.0.0
 servers:
   - url: 'https://data.noaa.gov/onestop/api/search'
-    description: NOAA OneStop
+    description: NOAA OneStop, locked down.
   - url: 'https://cedardevs.org/onestop/api/search'
     description: Development test server (uses test data)
 info:
