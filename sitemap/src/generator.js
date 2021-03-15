@@ -1,5 +1,5 @@
 const yargs = require('yargs')
-const processBodyData = require('./transformUtils')
+const processBodyData = require('./transformUtils').processBodyData
 const linksProcess = require('./sitemapIndex')
 const pageApi = require('./collectionRequest')
 

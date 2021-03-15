@@ -2,6 +2,9 @@ const yargs = require('yargs')
 const fs = require('fs')
 const path = require('path')
 const pageApi = require('./collectionRequest')
+const mime = require('mime-types')
+const _ = require('lodash')
+const Unix_TimeStamp = require('./transformUtils').Unix_TimeStamp
 
 const argv = yargs
   .option('api', {
@@ -64,33 +67,79 @@ const collectionToOpenDataMapping = {
   title: "title",
   description: "description",
   keyword: "keywords",
-  identifier: "id",
-  distribution: "links",
-  landingPage: (collection) => `${webBase}/collections/details/${collection.id}`,
-  /*modified: "2013-10-01",
-  publisher: {
-    "@type": "org:Organization",
-    "name": "Department of Defense"
+  modified: (collection) => Unix_TimeStamp(collection.attributes.stagedDate),
+  identifier: (collection) => {
+    return collection.attributes.doi || collection.id
   },
-  contactPoint: {"@type": "vcard:Contact", "fn": "Aaron Graves", "hasEmail": "mailto:aaron.graves@whs.mil"},
-  accessLevel: "public",
-  license: "http://www.usa.gov/publicdomain/label/1.0/",
-  spatial: "Worldwide",
-  temporal: "2000-01-01/2000-12-31",
-  language: ["en-US"],
-  bureauCode: ["007:05"],
-  programCode: ["007:053"]*/
+  distribution: (collection) => {
+    const links = collection.attributes.links
+    return links.map((link) => {
+      const mediaType = mime.lookup(new URL(link.linkUrl).pathname)
+      const accessFields = (mediaType) ? {
+        downloadURL: link.linkUrl,
+        mediaType
+      } : {
+        accessURL: link.linkUrl
+      }
+
+      return {
+        "@type": "dcat:Distribution",
+        title: link.linkName,
+        description: link.linkDescription,
+        ...accessFields
+      }
+    })
+  },
+  landingPage: (collection) => `${webBase}/collections/details/${collection.id}`,
+  // TODO: spatial mapping
+  spatial: (collection) => {
+    return "Worldwide"
+  },
+  temporal: (collection) => {
+    const endDate = collection.attributes.endDate || new Date().toISOString()
+    return `${collection.attributes.beginDate}/${endDate}`
+  },
+  bureauCode: () => ["006:048"], // NOAA Bureau Code
+  programCode: () => ["006:059"], // NESDIS Program Code
+  accessLevel: () => "public",
+  language: () => ["en-US"],
+  publisher: () => {
+    return {
+      '@type': 'org:Organization',
+      'name': 'Department of Commerce',
+    }
+  },
+  license: () => "http://www.usa.gov/publicdomain/label/1.0/", // or https://creativecommons.org/publicdomain/zero/1.0/ ?
+  // TODO: contact information
+  contactPoint: () => {
+    return {
+      '@type': 'vcard:Contact',
+      'fn': 'Foo Bar',
+      'hasEmail': 'mailto:foo@bar.gov',
+    }
+  }
 }
 
 function processResponseData(body) {
   return transformCollectionAttributes(Array.from(body.data))
 }
 
+/**
+ * `collectionToOpenDataMapping` contains a mapping of Open Data schema attributes and maps those to either
+ * a corresponding attribute name in `collection.attributes`, OR contains a function that takes in the collection object
+ * in order to do more ad-hoc mappings
+ */
 function transformCollectionAttributes(collections) {
-  // TODO: map the keys we get from onestop to the open data schema
-  return collections.map((col) => {
-    const { attributes, id } = col
-    return { id, ...attributes }
+  return collections.map((collection) => {
+    const mappedCollection = {}
+    for (const [openDataAttr, onestopAttr] of _.entries(collectionToOpenDataMapping)) {
+      if (typeof onestopAttr === "function") {
+        mappedCollection[openDataAttr] = onestopAttr(collection)
+      } else {
+        mappedCollection[openDataAttr] = collection.attributes[onestopAttr]
+      }
+    }
+    return mappedCollection
   })
 }
 

@@ -56,4 +56,7 @@ const processBodyData = (body) => {
   return bodyDataObject;
 }
 
-module.exports = processBodyData;
+module.exports = {
+  processBodyData,
+  Unix_TimeStamp
+}
