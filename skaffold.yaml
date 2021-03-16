@@ -76,6 +76,9 @@ build:
         roles:
           ROLE_ADMIN:
             - casuser
+      api:
+        root:
+          url: http://localhost/onestop/api/registry
     debug: "true"
     features.cas: "false"
     kafka.bootstrap.servers: PLAINTEXT://onestop-dev-cp-kafka:9092
@@ -112,6 +115,9 @@ build:
     elasticsearch.host: "onestop-dev-es-http"
     elasticsearch.ssl.certSecret: "onestop-dev-es-http-certs-public"
     elasticsearch.password.valueFrom.secretKeyRef.name: "onestop-dev-es-elastic-user"
+    elasticsearch.snapshot.enabled: true
+    elasticsearch.snapshot.repo: "test-data"
+    elasticsearch.snapshot.bucket: "https://cedar-snapshots.s3.amazonaws.com/elastic-test-data"
     env.SITEMAP_API_PATH: http://localhost/onestop/api/search
     env.SITEMAP_CLIENT_PATH: http://localhost/onestop
     env.UI_AUTH_LOGINENDPOINT: http://localhost/onestop/oauth2/authorization/login-gov
@@ -123,6 +129,11 @@ build:
     service.nodePort: "30097"
     service.clusterIP: 10.100.100.2
     service.type: NodePort
+    config: |-
+      ---
+      api:
+        root:
+          url: http://localhost/onestop/api/search
   imageStrategy:
     helm: {}
 .onestop-client: &onestop-client

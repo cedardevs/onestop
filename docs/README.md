@@ -45,7 +45,7 @@ With these RESTful APIs:
 
 If you're interested in learning about the finer details of the "components" described above, head over to our [API](api/) page or the [Architectural Overview](api/architectural-overview) to begin your deep-dive journey.
 
-You can check out OneStop in action while exploring NOAA's Earth science data offerings at [NOAA's OneStop](https://data.noaa.gov/onestop/) search portal. If the latest features in progress are what you're after, however, take a peek at our [test host](https://sciapps.colorado.edu/onestop/). *Keep in mind the latter could be broken at any time as it represents what's currently under development.*
+You can check out OneStop in action while exploring NOAA's Earth science data offerings at [NOAA's OneStop](https://data.noaa.gov/onestop/) search portal. If the latest features in progress are what you're after, however, take a peek at our [test host](https://cedardevs.org/onestop). *Keep in mind the latter could be broken at any time as it represents what's currently under development.*
 
 ![OneStop UI Landing Page](images/onestop-landing-page.png)
 

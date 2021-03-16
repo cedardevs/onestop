@@ -1,6 +1,4 @@
 ###############################################################################
 # Nginx Ingress
 ###############################################################################
-controller:
-  admissionWebhooks:
-    enabled: false
+controller.admissionWebhooks.enabled: false
