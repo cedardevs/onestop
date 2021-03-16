@@ -18,6 +18,10 @@ build:
       jib:
         project: search
         type: gradle
+    - image: cedardevs/onestop-sitemap
+      jib:
+        project: sitemap
+        type: gradle
     - image: cedardevs/onestop-client
       jib:
         project: client
@@ -148,6 +152,14 @@ build:
     service.clusterIP: 10.100.100.3
   imageStrategy:
     helm: {}
+.onestop-sitemap: &onestop-sitemap
+  name: onestop-sitemap
+  chartPath: helm/onestop-sitemap
+  remote: false
+  values:
+    image: cedardevs/onestop-sitemap
+  imageStrategy:
+    helm: {}
 .onestop-user: &onestop-user
   name: onestop-user
   chartPath: helm/onestop-user
@@ -272,3 +284,18 @@ profiles:
       helm:
         releases:
           - *onestop-postgresql
+<<<<<<< HEAD
+=======
+  - name: sitemap
+    deploy:
+      helm:
+        releases:
+          - *onestop-sitemap
+          - *onestop-search
+          - name: onestop-dev
+            chartPath: helm/onestop-dev
+            setValues:
+              cp-kafka.enabled: "false"
+              cp-schema-registry.enabled: "false"
+              cp-zookeeper.enabled: "false"
+>>>>>>> sitemap-gradle

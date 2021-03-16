@@ -52,6 +52,7 @@ plugins {
     //   run Spring Boot applications, and use the dependency management provided by spring-boot-dependencies
     id("org.springframework.boot").version("2.3.1.RELEASE").apply(false)
 
+    //todo remove this
     // Gogradle plugin
     // https://github.com/gogradle/gogradle
     // - A Gradle Plugin Providing Full Support for Go
@@ -109,16 +110,17 @@ val projectDescriptions: Map<String, String> = mapOf(
         Pair("search", "An read-only API for the OneStop system to query data indexed in Elasticsearch."),
         Pair("parsalyzer", "A Kafka Streams app which picks up from the raw metadata topic, parses into a standard format, analyzes some fields for further insight, and places onto a parsed topic."),
         Pair("test-common", "A Utility project to test transformations throughout the system."),
-        Pair("user", "An API to authenticate and manage public user data of the OneStop system.")
+        Pair("user", "An API to authenticate and manage public user data of the OneStop system."),
+        Pair("sitemap", "An express server to host the sitemap index and open data json.")
 )
 
 // only apply plugins, configuration, tasks, etc. to projects that need it
-val javaProjects: List<String> = listOf("client", "data-common", "indexer", "kafka-common", "e2e-tests", "elastic-common", "search", "registry", "parsalyzer", "test-common", "user", "gateway")
+val javaProjects: List<String> = listOf("client", "data-common", "indexer", "kafka-common", "e2e-tests", "elastic-common", "search", "registry", "parsalyzer", "test-common", "user", "gateway", "sitemap")
 val applicationProjects: List<String> = listOf()
 val libraryProjects: List<String> = listOf("kafka-common", "elastic-common", "data-common") // FIXME elastic?
-val jibProjects: List<String> = listOf("client", "indexer", "registry", "search", "parsalyzer", "user", "gateway")
+val jibProjects: List<String> = listOf("client", "indexer", "registry", "search", "parsalyzer", "user", "gateway", "sitemap")
 val springBootProjects: List<String> = listOf("elastic-common", "search", "registry", "gateway", "user")
-val nodeProjects: List<String> = listOf("client", "registry")
+val nodeProjects: List<String> = listOf("client", "registry", "sitemap")
 val mappingProjects: List<String> = listOf("elastic-common")
 //val micronautProjects: List<String> = listOf("user")
 
