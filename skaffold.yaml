@@ -284,8 +284,6 @@ profiles:
       helm:
         releases:
           - *onestop-postgresql
-<<<<<<< HEAD
-=======
   - name: sitemap
     deploy:
       helm:
@@ -298,4 +296,3 @@ profiles:
               cp-kafka.enabled: "false"
               cp-schema-registry.enabled: "false"
               cp-zookeeper.enabled: "false"
->>>>>>> sitemap-gradle
