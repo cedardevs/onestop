@@ -3,7 +3,6 @@ const yargs = require('yargs');
 const linksProcess = require('./sitemapIndex')
 const axios = require('axios');
 const pageApi = require('./collectionRequest')
-require('dotenv').config()
 
 
 /*
@@ -66,10 +65,8 @@ let options = {
   }
 };
 
-//page the api, create sitemap
-
-
+//Page the api, create sitemap
 let generateSitemap = function(){
-    pageApi(options, []).then((listOfLinks) => linksProcess(listOfLinks));
+    pageApi(options, [], processBodyData).then((listOfLinks) => linksProcess(listOfLinks));
 }
 module.exports = generateSitemap;

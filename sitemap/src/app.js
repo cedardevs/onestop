@@ -1,9 +1,11 @@
+require('dotenv').config({path:'./.env'})
 const express = require('express')
-var fs = require('fs')
 const generateSitemap = require('./generator')
-var dir = './public';
 var CronJob = require('cron').CronJob;
+var fs = require('fs')
+var dir = './public';
 
+console.log(__dirname);
 const app = express()
 
 

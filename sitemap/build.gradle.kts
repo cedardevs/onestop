@@ -2,8 +2,16 @@ tasks.getByName("jibDockerBuild") {
     dependsOn("npm_install")
 }
 
-tasks.getByName("build"){
+tasks.getByName("clean") {
+    dependsOn("npm_run_clean")
+}
+
+tasks.getByName("assemble"){
     dependsOn("jibDockerBuild")
+}
+
+tasks.getByName("npm_run_build") {
+    inputs.dir("${projectDir}/src")
 }
 
 jib {
@@ -14,7 +22,7 @@ jib {
     from {
         // base image
         //distroless didnt have node
-        image = "node"
+        image = "node:15.11.0-alpine3.10"
     }
     to {
         image = publish.repository()
@@ -27,8 +35,7 @@ jib {
         creationTime = publish.created
         labels = publish.ociAnnotations()
         //fire up express server (and maybe also kick off generator.js)
-//        entrypoint = listOf("node", "src/generator.js")
-        entrypoint = listOf("tail", "-f", "/dev/null")
+        entrypoint = listOf("node", "src/app.js")
 
     }
 }

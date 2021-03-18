@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "json": "node src/generatorJSON.js"
+    "json": "node src/generatorJSON.js",
+    "clean": "rm -rf build && rm -rf node_modules"
   },
   "keywords": [],
   "author": "Coalition for Earth Data Applications and Research <cedar.cires@colorado.edu> (https://github.com/cedardevs)",
@@ -25,10 +26,10 @@
     "cron": "^1.8.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "node-fetch": "^2.6.1",
-    "request": "^2.88.2",
     "lodash": "^4.17.19",
     "mime-types": "^2.1.29",
+    "node-fetch": "^2.6.1",
+    "request": "^2.88.2",
     "sitemap": "^6.3.5",
     "yargs": "^16.2.0"
   },
