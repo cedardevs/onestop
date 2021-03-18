@@ -33,8 +33,7 @@ spec:
           command:
             - "/bin/bash"
             - "-c"
-            - "curl -s -i -k -XPUT -u elastic:$(SECRET_PASSWORD) -H \"Content-type: application/json\" https://{{ .Values.elasticsearch.host }}:{{ .Values.elasticsearch.port }}/_snapshot/{{- .Values.elasticsearch.snapshot.repo}} -d '{\"type\":\"url\", \"settings\": {\"readonly\":true, \"url\": \"{{- .Values.elasticsearch.snapshot.bucket}}/\"}}' "
-            - "curl -k -u elastic:$(SECRET_PASSWORD) -H \"Content-type: application/json\" https://{{ .Values.elasticsearch.host }}:{{ .Values.elasticsearch.port }}/_cat/snapshots/{{- .Values.elasticsearch.snapshot.repo}} 2>/dev/null | awk 'NR==1{print $1}' | xargs printf -- https://{{ .Values.elasticsearch.host }}:{{ .Values.elasticsearch.port }}/_snapshot/{{- .Values.elasticsearch.snapshot.repo}}/%s/_restore  | xargs curl -s -i -k -XPOST -u elastic:$(SECRET_PASSWORD) -H \"Content-type: application/json\""
+            - "curl -s -i -k -XPUT -u elastic:$(SECRET_PASSWORD) -H \"Content-type: application/json\" https://{{ .Values.elasticsearch.host }}:{{ .Values.elasticsearch.port }}/_snapshot/{{- .Values.elasticsearch.snapshot.repo}} -d '{\"type\":\"url\", \"settings\": {\"readonly\":true, \"url\": \"{{- .Values.elasticsearch.snapshot.bucket}}/\"}}' && curl -k -u elastic:$(SECRET_PASSWORD) -H \"Content-type: application/json\" https://{{ .Values.elasticsearch.host }}:{{ .Values.elasticsearch.port }}/_cat/snapshots/{{- .Values.elasticsearch.snapshot.repo}} 2>/dev/null | awk 'NR==1{print $1}' | xargs printf -- https://{{ .Values.elasticsearch.host }}:{{ .Values.elasticsearch.port }}/_snapshot/{{- .Values.elasticsearch.snapshot.repo}}/%s/_restore  | xargs curl -s -i -k -XPOST -u elastic:$(SECRET_PASSWORD) -H \"Content-type: application/json\""
 
       {{- end }}
       containers:

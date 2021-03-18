@@ -66,6 +66,10 @@ env:
   ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute
 
 elasticsearch:
+  snapshot:
+    enabled: false
+    repo: "test-data"
+    bucket: "https://cedar-snapshots.s3.amazonaws.com/elastic-test-data"
   host: onestop-dev-es-http
   port: "9200"
   ssl:
