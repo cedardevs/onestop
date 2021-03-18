@@ -1,45 +1,50 @@
-const { createReadStream, createWriteStream} = require('fs');
+const { createReadStream, createWriteStream } = require('fs');
 const { resolve } = require('path');
 const { createGzip } = require('zlib')
 const { Readable } = require('stream')
 const {
   SitemapAndIndexStream,
-  SitemapStream,
-  lineSeparatedURLsToSitemapOptions,
-  streamToPromise
+  SitemapStream
 } = require('sitemap');
 
 const linksProcess = (links) => {
-  //console.log("Links 2: " + links);
+  const sms = new SitemapAndIndexStream({
+    limit: 20, // defaults to 45k
+    // SitemapAndIndexStream will call this user provided function every time
+    // it needs to create a new sitemap file. You merely need to return a stream
+    // for it to write the sitemap urls to and the expected url where that sitemap will be hosted
+    hostname: 'https://cedardevs.org',
+    getSitemapStream: (i) => {
+      const sitemapStream = new SitemapStream({
+        hostname: 'https://cedardevs.org'
+      });
+  
+  
+      const path = `./public/sitemap-${i}.xml`;
+  
+      sitemapStream
+        .pipe(createGzip()) // compress the output of the sitemap
+        .pipe(createWriteStream(resolve(path + '.gz'))); // write it to sitemap-NUMBER.xml
+  
+      return [new URL(path, `https://cedardevs.org/subdir/${path}`).toString(), sitemapStream];
+    },
+  })
+  // or reading straight from an in-memory array
+
+  sms
+  .pipe(createGzip())
+  .pipe(createWriteStream(resolve('./public/sitemap-index.xml.gz')));
+
   Readable.from(links).pipe(sms) // available as of node 10.17.0
+
+  console.log("Sitemaps created");
 }
 
 module.exports = linksProcess;
 
-const sms = new SitemapAndIndexStream({
-  limit: 50, // defaults to 45k
-  // SitemapAndIndexStream will call this user provided function every time
-  // it needs to create a new sitemap file. You merely need to return a stream
-  // for it to write the sitemap urls to and the expected url where that sitemap will be hosted
-  hostname: 'https://cedardevs.org',
-  getSitemapStream: (i) => {
-    const sitemapStream = new SitemapStream({
-      hostname: 'https://cedardevs.org'
-    });
-    const path = `./sitemap-${i}.xml`;
 
-    sitemapStream
-      .pipe(createGzip()) // compress the output of the sitemap
-      .pipe(createWriteStream(resolve(path + '.gz'))); // write it to sitemap-NUMBER.xml
 
-    return [new URL(path, `https://cedardevs.org/subdir/${path}`).toString(), sitemapStream];
-  },
-});
 
-// or reading straight from an in-memory array
-sms
-  .pipe(createGzip())
-  .pipe(createWriteStream(resolve('./sitemap-index.xml.gz')));
 
 /*  Format passed into the sitemap library to generate sitemap files
 const exampleList = [{

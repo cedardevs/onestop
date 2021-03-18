@@ -1,9 +1,8 @@
-const processBodyData = require('./transformUtils');
+const processBodyData = require('./transformUtils').processBodyData
 const yargs = require('yargs');
-const fs = require('fs');
-const linksProcess = require('./sitemapIndex');
+const linksProcess = require('./sitemapIndex')
 const axios = require('axios');
-const https = require('https');
+const pageApi = require('./collectionRequest')
 require('dotenv').config()
 
 
@@ -66,42 +65,6 @@ let options = {
     }
   }
 };
-
-//recursively pages API
-let pageApi = async function (options, collectionList) {
-  console.log("Requesting page for data after: " + options.data.search_after[0]);
-  await axios(options)
-    .then((response) => {
-      console.log("Response status: " + response.status);
-      if (response.status == 200) {
-        let body = response.data;
-        //If we got data back, process it and then keep going until we dont have anymore data
-        // TODO catch body.error. Check if response status is not 200
-        if (body && body.data.length > 0) {
-          //grab the last staged date, we will need it for the subsequent request
-          const lastStagedDate = body.data[body.data.length - 1].attributes.stagedDate;
-          //update the options
-          options.data.search_after = [lastStagedDate];
-          //create the data structure we need for the sitemap tool
-          var bodyDataObjectList = processBodyData(body);
-          //add it to the list
-          collectionList = [...collectionList, ...bodyDataObjectList];
-          console.log("Received " + body.data.length + " items, continue paging...");
-          //get the next page
-          collectionList = pageApi(options, collectionList)
-        } else {
-          console.log("No more data. Generating sitemap...");
-          options.data.search_after = [0];
-        }
-      }
-    })
-    //TODO - Future story more error handling 
-    .catch(function (error) {
-      console.log("ERROR");
-      console.log(error);
-    });
-  return collectionList;
-}
 
 //page the api, create sitemap
 

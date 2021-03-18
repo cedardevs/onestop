@@ -8,7 +8,7 @@ let pageApi = async function (options, collectionList, processFunction) {
       console.log("Response status: " + response.status);
       if (response.status == 200) {
         let body = response.data;
-        //If we got data back, process it and then keep going until we dont have anymore data
+
         // TODO catch body.error. Check if response status is not 200
         if (body && body.data.length > 0) {
           //grab the last staged date, we will need it for the subsequent request
