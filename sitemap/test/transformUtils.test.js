@@ -144,7 +144,7 @@ test('get the lastStagedDate after looping through dataItems', () => {
   expect(lastStagedDate).toBe(lastDate);
 });
 
-const processBodyData = require('./transformUtils');
+const processBodyData = require('../src/transformUtils');
 
 
 //TODO - Future tests

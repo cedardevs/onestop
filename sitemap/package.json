@@ -4,7 +4,8 @@
   "description": "An express server to host the sitemap index and open data json.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "json": "node src/generatorJSON.js"
   },
   "keywords": [],
   "author": "Coalition for Earth Data Applications and Research <cedar.cires@colorado.edu> (https://github.com/cedardevs)",
@@ -26,8 +27,9 @@
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
     "request": "^2.88.2",
+    "lodash": "^4.17.19",
+    "mime-types": "^2.1.29",
     "sitemap": "^6.3.5",
-    "ssl-root-cas": "^1.3.1",
     "yargs": "^16.2.0"
   },
   "devDependencies": {

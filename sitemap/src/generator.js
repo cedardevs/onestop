@@ -34,15 +34,12 @@ const argv = yargs
   .argv;
 */
 
-//TODO - When pulling from cedar devs update API URL new path
-//
-//cedardevs.org/onestop/api/search
-
+//TODO - When pulling from cedar devs update API URL new path "cedardevs.org/onestop/api/search"
 //TODO - Take entire collectionApiUrl from env file
 
 const searchAPI = process.env.SEARCH_API_BASE;
 const collectionApiUrl = new URL(`${searchAPI}`);
-const webBase =  process.env.WEB_BASE; //'http://localhost/onestop' //argv.website ? argv.website : 'localhost/onestop'
+const webBase =  process.env.WEB_BASE; 
 const pageSize = 10 //argv.pageSize
 
 
