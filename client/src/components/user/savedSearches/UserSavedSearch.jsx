@@ -111,8 +111,8 @@ const UserSavedSearch = props => {
     />
   )
 
-  const styleDeleteButton = styleButtonFunc('#851A11')
-  const styleDeleteButtonHover = styleButtonHover('#851A11')
+  const styleDeleteButton = styleButtonFunc('#851a11')
+  const styleDeleteButtonHover = styleButtonHover('#851a11')
   const styleDeleteButtonFocus = styleButtonFocusFunc('#851A11')
   const deleteSearchButton = (
     <Button
