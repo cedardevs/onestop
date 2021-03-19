@@ -27,6 +27,11 @@ job.start();
 
 app.use(express.static(dir));
 
+//Kubernetes health check
+app.get('/', (req, res) => {
+  res.send('Healthy!')
+})
+
 app.listen(3000, async () => {
   console.log('listening')
 });
