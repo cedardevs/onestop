@@ -263,6 +263,21 @@ jobs:
           root: ~/repo
           paths:
             - search/build
+  sitemap:
+    <<: *defaults
+    steps:
+      - <<: *attachWorkspace
+      - run:
+          name: Assemble, Check, Report
+          command: ./gradlew --parallel sitemap:assemble
+      - deploy:
+          name: Publish Image(s)
+          command: ./gradlew sitemap:jib -Djib.httpTimeout=30000 -Djib.console=plain
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - sitemap/build
+            - sitemap/node_modules
 
   user:
     <<: *env
@@ -384,6 +399,10 @@ workflows:
           requires:
             - checkout
           <<: *jobFilters
+      - sitemap:
+          requires:
+            - checkout
+          <<: *jobFilters
       - user:
           requires:
             - checkout
@@ -396,6 +415,7 @@ workflows:
             - parsalyzer
             - registry
             - search
+            - sitemap
             - user
           <<: *jobFilters
 
