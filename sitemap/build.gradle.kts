@@ -7,7 +7,7 @@ tasks.getByName("jibDockerBuild") {
 }
 
 tasks.getByName("assemble"){
-    dependsOn("jibDockerBuild")
+    dependsOn("npm_install")
 }
 
 jib {
