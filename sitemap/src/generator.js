@@ -37,12 +37,9 @@ const argv = yargs
 
 const searchAPI = process.env.SEARCH_API_BASE;
 const collectionApiUrl = new URL(`${searchAPI}`);
-const webBase =  process.env.WEB_BASE; 
 const pageSize = 10 //argv.pageSize
 
-
-console.log("Env Search API: " + process.env.SEARCH_API_BASE);
-console.log("Env Web: " + process.env.WEB_BASE);
+console.log("Generating sitemap for: " + process.env.SEARCH_API_BASE);
 
 let options = {
   url: collectionApiUrl.toString(),
