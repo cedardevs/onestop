@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: registry.hub.docker.com/cedardevs/onestop-sitemap #cedardevs/onestop-sitemap
+  repository: cedardevs/onestop-sitemap
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "LOCAL-726-sitemap-review-cron-vijay" #"latest"
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -39,6 +39,14 @@ securityContext: {}
 service:
   type: ClusterIP
   port: 80
+
+#the port express will be listening on
+containerPort: 3000
+
+#env vars
+search:
+  api:
+    base: "http://onestop-search:8080/onestop/api/search/search/collection"
 
 ingress:
   enabled: false
