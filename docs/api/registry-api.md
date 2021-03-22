@@ -6,6 +6,8 @@
 # Registry Overview
 
 ## Table of Contents
+* [Intro](#intro)
+* [SwaggerHub Generated Documentation](#swaggerhub-generated-documentation)
 * [Registry OneStop Endpoint](#registry-onestop-endpoint)
 * [Metadata Notes](#metadata-notes)
     * [JSON Records](#json-records)
@@ -16,12 +18,17 @@
 * [Resurrecting a Deleted Record](#resurrecting-a-deleted-record)
 * [External Resources](#external-resources)
 
+## Intro
+
 The registry provides a horizontally-scalable API and storage for granule and collection-level metadata backed by Kafka. It publishes metadata updates to Kafka, then uses a Kafka Streams app to aggregate those raw metadata events, merging them with previous events to provide a full picture of the metadata for each granule and collection. 
 
+## SwaggerHub Generated Documentation
+Our OpenAPI documents are available on SwaggerHub. This should list supported endpoints and parameters necessary.
 
+* [3.0.0-RC1](https://app.swaggerhub.com/apis/cedarbot/OneStop-Search/3.0.0-RC1)
 
 ## Registry OneStop Endpoint
-The supported endpoints and parameters can be found at the Registry's [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml). There are also the default supported [HTTP Methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)
+Aside from the OpenApi documents listed above there are also the default supported [HTTP Methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)
 
 **NOTE:** If you ever get a 401 Authorization Required add this to your curl and file in the username and password with valid credentials. 
 
@@ -342,7 +349,8 @@ curl \
 **NOTE**: This functionality is ONLY available if a record was removed via a `DELETE` request. 
 
 ## External Resources
-* [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml) - Details on the OneStop Registry endpoints and parameters.
+* [Swagger API Docs - 3.0.0-RC1](https://app.swaggerhub.com/apis/cedarbot/OneStop-Search/3.0.0-RC1)
+* [OpenAPI documentation](https://cedardevs.org/onestop/api/registry/openapi.yaml) - Details on the OneStop Registry endpoints and parameters. This is the same as the SwaggerHub docs just formatted differently and live, not a snapshot of a release version.
 * [Additional HTTP Endpoints](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)
 * [JSON API specifications](https://jsonapi.org/format/) - Information on JSON responses.
 

@@ -26,7 +26,7 @@ In general:
 
 * All endpoints expect the same request schema format to be used but return data of the type in the URL.
 
-[Swagger generated docs](https://app.swaggerhub.com/apis/cedarbot/OneStop/2.4.0) - Details on the OneStop Search endpoints and parameters.
+[Search API Documentation](search-api#swaggerhub-generated-documentation)
 
 ## Basic Query
 

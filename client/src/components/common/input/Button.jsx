@@ -158,6 +158,7 @@ export default class Button extends React.Component {
       disabled,
       styleDisabled,
       role,
+      type,
     } = this.props
 
     const iconAndText = icon && text
@@ -196,6 +197,7 @@ export default class Button extends React.Component {
         aria-current={ariaCurrent}
         aria-label={title || text}
         disabled={disabled}
+        type={type || 'submit'}
       >
         {icon && !iconAfter && !this.props.children ? (
           <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />

@@ -5,8 +5,7 @@
 
 The `onestop-cli` tool provides a convenient command line interface for the OneStop search API.
 
-Read the [OneStop OpenAPI spec 2.0.0](https://app.swaggerhub.com/apis/cedardevs/one-stop_search_api/2.0.0).
-Or check the [OneStop OpenAPI spec 2.4.0](https://app.swaggerhub.com/apis/cedarbot/OneStop/2.4.0).
+For additional information on our OneStop API's read the [Search API Documentation](search-api#swaggerhub-generated-documentation) or [Registry API Documentation](registry-api#swaggerhub-generated-documentation).
 
 ## Installation
 
