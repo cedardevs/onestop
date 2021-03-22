@@ -10,11 +10,29 @@ tasks.getByName("assemble"){
     dependsOn("npm_install")
 }
 
+task<Sync>("sync") {
+    val jibExtraDir: String by project.extra
+
+    into(jibExtraDir)
+
+    into("/src") {
+        from(file("${projectDir}/src"))
+    }
+    into("/node_modules") {
+        from(file("${projectDir}/node_modules"))
+    }
+}
+
+tasks
+        .matching { task -> task.name.startsWith("jib") }
+        .configureEach { dependsOn("sync") }
+
 jib {
     val publish: Publish by project.extra
+    val jibExtraDir: String by project.extra
 
 //    copy the entire js project until we use webpack
-    extraDirectories.setPaths(mutableListOf(File("../sitemap")))
+    extraDirectories.setPaths(File(jibExtraDir))
 
     from {
         // base image
