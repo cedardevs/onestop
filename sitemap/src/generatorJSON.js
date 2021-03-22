@@ -74,26 +74,33 @@ const collectionToOpenDataMapping = {
   distribution: (collection) => {
     const links = collection.attributes.links
     return links.map((link) => {
-      const mediaType = mime.lookup(new URL(link.linkUrl).pathname)
-      const accessFields = (mediaType) ? {
-        downloadURL: link.linkUrl,
-        mediaType
-      } : {
-        accessURL: link.linkUrl
-      }
+      try {
+        const mediaType = mime.lookup(new URL(link.linkUrl).pathname)
+        const accessFields = (mediaType) ? {
+          downloadURL: link.linkUrl,
+          mediaType
+        } : {
+          accessURL: link.linkUrl
+        }
 
-      return {
-        "@type": "dcat:Distribution",
-        title: link.linkName,
-        description: link.linkDescription,
-        ...accessFields
+        return {
+          "@type": "dcat:Distribution",
+          title: link.linkName,
+          description: link.linkDescription,
+          ...accessFields
+        }
+      } catch (e) {
+        console.error(e)
       }
     })
   },
   landingPage: (collection) => `${webBase}/collections/details/${collection.id}`,
-  // TODO: spatial mapping
   spatial: (collection) => {
-    return "Worldwide"
+    if (collection.attributes.isGlobal || !collection.attributes.spatialBounding) {
+      return "Worldwide"
+    } else {
+      return collection.attributes.spatialBounding.coordinates.toString()
+    }
   },
   temporal: (collection) => {
     const endDate = collection.attributes.endDate || new Date().toISOString()
