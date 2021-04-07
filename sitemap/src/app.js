@@ -9,12 +9,13 @@ const app = express();
 
 //Creates folder to store sitemaps
 if(!fs.existsSync(dir)){
+  console.log("Directory made");
   fs.mkdirSync(dir);
 }
 
 //generateSitemap();
 console.log("Before job instantiation");
-const job = new CronJob('0 */1 * * * *', function() {
+const job = new CronJob('0 */10 * * * *', function() {
 	const d = new Date();
 	console.log('Every 2 minutes:', d);
   generateSitemap();
