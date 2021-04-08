@@ -9,7 +9,7 @@ const {
 
 const linksProcess = (links) => {
   const sms = new SitemapAndIndexStream({
-    limit: 20, // defaults to 45k
+    limit: 50, // defaults to 45k
     // SitemapAndIndexStream will call this user provided function every time
     // it needs to create a new sitemap file. You merely need to return a stream
     // for it to write the sitemap urls to and the expected url where that sitemap will be hosted
@@ -35,7 +35,7 @@ const linksProcess = (links) => {
   .pipe(createGzip())
   .pipe(createWriteStream(resolve('./public/sitemap-index.xml.gz')));
 
-  Readable.from(links).pipe(sms) // available as of node 10.17.0
+  Readable.from(links).pipe(sms) 
 
   console.log("Sitemaps created");
 }

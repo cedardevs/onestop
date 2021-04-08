@@ -40,6 +40,7 @@ const collectionApiUrl = new URL(`${searchAPI}`);
 const pageSize = 10 //argv.pageSize
 
 console.log("Generating sitemap for: " + process.env.SEARCH_API_BASE);
+console.log("collectionApiUrl: " + collectionApiUrl);
 
 let options = {
   url: collectionApiUrl.toString(),
