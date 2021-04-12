@@ -158,6 +158,8 @@ build:
   remote: false
   values:
     image: cedardevs/onestop-sitemap
+  setValues:
+    search.api.base: "https://cedardevs.org/onestop/api/search/search/collection"
   imageStrategy:
     helm: {}
 .onestop-user: &onestop-user

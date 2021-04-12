@@ -1,4 +1,10 @@
 const axios = require('axios')
+'use strict';
+var rootCas = require('ssl-root-cas').create();
+ 
+// default for all https requests
+// (whether using https directly, request, or another module)
+require('https').globalAgent.options.ca = rootCas;
 
 //recursively pages API
 let pageApi = async function (options, collectionList, processFunction) {

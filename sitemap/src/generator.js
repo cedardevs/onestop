@@ -4,7 +4,6 @@ const linksProcess = require('./sitemapIndex')
 const axios = require('axios');
 const pageApi = require('./collectionRequest')
 
-
 /*
 const argv = yargs
   .option('api', {
@@ -31,9 +30,6 @@ const argv = yargs
   .alias('help', 'h')
   .argv;
 */
-
-//TODO - When pulling from cedar devs update API URL new path "cedardevs.org/onestop/api/search"
-//TODO - Take entire collectionApiUrl from env file
 
 const searchAPI = process.env.SEARCH_API_BASE;
 const collectionApiUrl = new URL(`${searchAPI}`);
