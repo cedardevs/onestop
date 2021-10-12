@@ -93,8 +93,8 @@ export default function Collections(props){
     const savedId = findSavedId()
 
     //if we found a matching id, the search was saved previously
-    const saveSearchAction = savedId ?
-      [
+    const saveSearchAction = savedId
+      ? [
           {
             text: 'Delete',
             title: 'Delete search',
