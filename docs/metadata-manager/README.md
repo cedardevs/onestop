@@ -19,7 +19,7 @@ Since this role requires interacting with several OneStop components, you are en
 
 If you need to create your metadata manually here are some useful, external, guides and templates for metadata. Questions specific to these documents should be directed to the NCEI Metadata WG at ncei.metadata@noaa.gov.
 
-* [Collection XML template](https://data.noaa.gov/waf/templates/iso_u/xml/ncei_template-clean.xml)
+* [Collection XML template](https://data.noaa.gov/waf/templates/iso/xml/ncei_template-clean.xml)
 * [Collection Metadata Guide](https://drive.google.com/file/d/1RqI3pqYr1vLCjj--7mklkNoclOwOrpDD/view)
 
 Keep in mind that however your data is getting into OneStop it supports the metadata formats of either JSON or ISO-19115-2 XML.
