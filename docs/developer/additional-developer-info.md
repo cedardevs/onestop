@@ -124,7 +124,7 @@ helm dependency update
 ```
 
 ## Upload Test Metadata
-To upload metadata to OneStop you can use the upload script in the [OneStop-test-data](https://github.com/cedardevs/onestop-test-data) repo or ue a curl to the [Registry API](onestop/api/registry-api).
+To upload metadata to OneStop you can use the upload script in the [OneStop-test-data](https://github.com/cedardevs/onestop-test-data) repo or use a curl to the [Registry API](onestop/api/registry-api).
 
 If you are an NCEI employee contact someone on the OneStop agile team for more information on what test systems are in place for you to interact with.
 
