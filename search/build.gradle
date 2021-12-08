@@ -1,7 +1,7 @@
 plugins {
   // https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
   id "io.forgo.keystoreplugin" version "1.1"
-  id 'war'
+  // id 'war'
 }
 
 sourceCompatibility = 11
@@ -166,16 +166,16 @@ bootJar {
   launchScript()
 }
 
-bootWar {
-  from("${buildDir}/resources/main") {
-    include "onestop-request-schema.json"
-    into "WEB-INF/classes"
-  }
-
-  classifier = 'all' // add a classifier to distinguish the executable jar
-  archiveBaseName = "${rootProject.name}-${project.name}"
-  launchScript()
-}
+//bootWar {
+//  from("${buildDir}/resources/main") {
+//    include "onestop-request-schema.json"
+//    into "WEB-INF/classes"
+//  }
+//
+//  classifier = 'all' // add a classifier to distinguish the executable jar
+//  archiveBaseName = "${rootProject.name}-${project.name}"
+//  launchScript()
+//}
 
 // these environment variables would normally be set by kubernetes objects;
 // however, this is problematic running via gradle tasks (build, test, bootRun...) -- where these environment
