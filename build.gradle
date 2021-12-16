@@ -124,6 +124,12 @@ subprojects {
             details.because 'fixes CVE-2019-0221'
           }
         }
+        if (requested.group == "org.apache.logging.log4j") {
+          if (details.requested.version < '2.16.0') {
+            details.useVersion '2.16.0'
+            details.because 'fixes vulnerability in 2.15.0 and before'
+          }
+        }
       }
     }
 
