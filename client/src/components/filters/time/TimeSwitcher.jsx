@@ -70,11 +70,12 @@ const TimeSwitcher = props => {
     // margin: '0 0.309em',
     // fontSize: '1.05em',} :{}
     const style = {
-      ...{ // default
+      ...{
+        // default
         display: 'inline-block',
         // borderRadius: '0.309em',
         backgroundColor: '#277CB2',
-        padding: '0.309em 0.618em',//'10px 20px',
+        padding: '0.309em 0.618em', //'10px 20px',
         borderWidth: '1px',
         borderStyle: 'solid',
         borderColor: FilterColors.DARK,
@@ -82,15 +83,24 @@ const TimeSwitcher = props => {
         // border: '2px solid #444',
       },
       ...(selected
-        ? focused ? {textDecoration: 'underline' , backgroundColor: FilterColors.DARK} : {backgroundColor: FilterColors.DARK}
-        : {} ),//focused ? {color: 'green'} : {color: 'yellow'}),
-        ...((index<(VIEW_OPTIONS.length-1))? {borderRight:'0'}:{}),
-        ...((index==0)? { borderRadius: '0.309em 0 0 0.309em'} :{}),
-        ...((index==VIEW_OPTIONS.length-1)? {borderRadius: '0 0.309em 0.309em 0'} : {}),
+        ? focused
+          ? {textDecoration: 'underline', backgroundColor: FilterColors.DARK}
+          : {backgroundColor: FilterColors.DARK}
+        : {}), //focused ? {color: 'green'} : {color: 'yellow'}),
+      ...(index < VIEW_OPTIONS.length - 1 ? {borderRight: '0'} : {}),
+      ...(index == 0 ? {borderRadius: '0.309em 0 0 0.309em'} : {}),
+      ...(index == VIEW_OPTIONS.length - 1
+        ? {borderRadius: '0 0.309em 0.309em 0'}
+        : {}),
     } // note: green never shows - you change selection with arrow keys not tab!
     // TODO make sure onBlur junk works correctly for other browsers!
-    console.log('lsadfasdf',FilterColors)
-    console.log(VIEW_OPTIONS.length, index, (index<(VIEW_OPTIONS.length-1)), index>0)
+    console.log('lsadfasdf', FilterColors)
+    console.log(
+      VIEW_OPTIONS.length,
+      index,
+      index < VIEW_OPTIONS.length - 1,
+      index > 0
+    )
     radioButtons.push(
       <div key={`TimeFilter::View::${option.value}`}>
         <label htmlFor={id} style={style}>
@@ -116,17 +126,13 @@ const TimeSwitcher = props => {
   })
 
   const styleSwitcherRadioButtons = {
-  margin: '0.309em auto',
-  padding: '0.309em',
-  justifyContent: 'center', //'space-around',
-}
+    margin: '0.309em auto',
+    padding: '0.309em',
+    justifyContent: 'center', //'space-around',
+  }
   return (
     <div>
-      <FlexRow
-        style={styleSwitcherRadioButtons}
-        items={radioButtons}
-      />{' '}
-      {view}
+      <FlexRow style={styleSwitcherRadioButtons} items={radioButtons} /> {view}
     </div>
   )
 }
