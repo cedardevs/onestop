@@ -30,7 +30,7 @@ subprojects {
     schemasVersion = '0.4.0'
     esVersion = '6.8.2'
     spockVersion = '1.2-groovy-2.5'
-    testContainersVersion = '1.15.7'
+    testContainersVersion = '1.15.3'
     groovyVersion = '2.5.5'
     openSAMLVersion = '3.4.3'
     logbackVersion = '1.2.3'
