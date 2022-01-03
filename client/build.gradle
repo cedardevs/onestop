@@ -53,6 +53,9 @@ task tarResults(type: Tar) {
 
 
   from "${buildDir}/dist"
+  // Set these file/directory permissions so on Prem client can be executed via tomcat.
+  fileMode(0744)
+  dirMode(0755)
   archiveBaseName.set("${rootProject.name}-${project.name}")
   archiveExtension.set("tar.gz")
   archiveVersion.set("")
