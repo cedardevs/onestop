@@ -31,7 +31,7 @@ object Versions {
 
     const val GROOVY: String = "2.5.8"
     const val SPOCK: String = "1.2-groovy-2.5"
-    const val TEST_CONTAINERS: String = "1.12.2"
+    const val TEST_CONTAINERS: String = "1.15.3"
     const val OPEN_SAML = "3.4.3"
     const val LOGBACK = "1.2.3"
     const val JAVAX_SERVLET_API = "4.0.1"
