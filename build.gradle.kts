@@ -387,6 +387,11 @@ subprojects {
                     useVersion("9.0.30")
                     because("Enforce tomcat 9.0.20+ to avoid vulnerabilities CVE-2019-0199, CVE-2019-0232, and CVE-2019-10072")
                 }
+                if (requested.group.startsWith("org.apache.logging.log4j") &&
+                        requested.version!! <= "2.17.0") {
+                    useVersion("2.17.0")
+                    because("Fixes CVE-2021-45105")
+                }
             }
         }
 
