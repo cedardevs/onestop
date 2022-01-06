@@ -13,7 +13,7 @@
     "testFresh": "jest --no-cache --config jest.config.js",
     "build": "npm install && npm test && NODE_ENV=production ./node_modules/.bin/webpack --mode production -p",
     "clean": "rm -rf build && rm -rf coverage",
-    "retire": "retire -p"
+    "retire": "retire -p --exitwith 0"
   },
   "dependencies": {
     "connected-react-router": "^6.5.2",
