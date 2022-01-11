@@ -125,8 +125,8 @@ subprojects {
           }
         }
         if (requested.group == "org.apache.logging.log4j") {
-          if (details.requested.version < '2.17.0') {
-            details.useVersion '2.17.0'
+          if (details.requested.version < '2.17.1') {
+            details.useVersion '2.17.1'
             details.because 'fixes vulnerability in 2.15.0 and before'
           }
         }
