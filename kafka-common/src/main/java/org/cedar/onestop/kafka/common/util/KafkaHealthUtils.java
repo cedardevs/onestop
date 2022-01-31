@@ -8,14 +8,14 @@ import java.util.Collection;
 public class KafkaHealthUtils {
 
   public static Boolean isStreamsAppAlive(KafkaStreams streamsApp) {
-    return streamsApp.state().isRunningOrRebalancing();
+    return streamsApp.state().isRunning();
   }
 
   public static Boolean isStreamsAppReady(KafkaStreams streamsApp) {
     var state = streamsApp.state();
 
     // short-circuit further checks if not running
-    if (!state.isRunningOrRebalancing()) {
+    if (!state.isRunning()) {
       return false;
     }
 
