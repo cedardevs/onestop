@@ -16,7 +16,7 @@ plugins {
     // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/index.html
     // - provides monitoring of the projects dependent libraries;
     //   creating a report of known vulnerable components that are included in the build.
-    id("org.owasp.dependencycheck").version("5.3.0")
+    id("org.owasp.dependencycheck").version("6.5.3")
 
     // Note: The plugins below are not universally `apply(true)`because subprojects only need them conditionally.
 
