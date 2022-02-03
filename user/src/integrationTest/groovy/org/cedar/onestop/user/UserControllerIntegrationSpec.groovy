@@ -57,6 +57,26 @@ class UserControllerIntegrationSpec extends Specification  {
         .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value("test"))
   }
 
+  @WithMockUser(username = "mockMvcUser", roles = AuthorizationConfiguration.READ_OWN_PROFILE)
+  def "user can get their own data"() {
+    setup:
+    mvc.perform(MockMvcRequestBuilders
+        .post("/v1/self")
+        .contentType("application/json")
+        .content(('{ "id":"mockMvcUser"}'))
+        .accept(MediaType.APPLICATION_JSON))
+
+    when:
+    def postUser = mvc.perform(MockMvcRequestBuilders
+        .get("/v1/self")
+        .contentType("application/json")
+        .accept(MediaType.APPLICATION_JSON))
+
+    then:
+    postUser.andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+        .andExpect(MockMvcResultMatchers.jsonPath("\$.data[0].id").value("mockMvcUser"))
+  }
+
   @WithMockUser(username = "mockUser", roles = [AuthorizationConfiguration.READ_OWN_PROFILE, AuthorizationConfiguration.CREATE_SAVED_SEARCH])
   def "public user can initialize their own account and save a search"() {
     when:
