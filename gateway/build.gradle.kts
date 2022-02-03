@@ -8,10 +8,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.security:spring-security-config")
   	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-//	implementation("org.springframework.cloud:spring-cloud-starter-gateway")
+	implementation("org.springframework.cloud:spring-cloud-starter-gateway:3.0.5")
 	implementation("javax.xml.bind:jaxb-api:2.3.1") // Java 9/10 deprecates, 11 removes javax.xml.bind.DatatypeConverter
-	implementation("org.springframework.cloud:spring-cloud-starter-gateway:2.2.6.RELEASE")
-	implementation ("org.springframework.cloud:spring-cloud-starter-security:2.2.4.RELEASE")
 	implementation("com.auth0:java-jwt:${Versions.AUTH0_JAVA_JWT}")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
