@@ -7,8 +7,6 @@ import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.cedar.onestop.elastic.common.ElasticsearchConfig
 import org.elasticsearch.client.Request
-import org.elasticsearch.client.Response
-import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -24,15 +22,15 @@ class ElasticsearchService {
 
   private SearchRequestParserService searchRequestParserService
 
-  private RestClient restClient
+  private RestHighLevelClient restHLClient
   ElasticsearchConfig esConfig
 
   boolean isES6
 
   @Autowired
-  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestHighLevelClient restHighLevelClient, RestClient restClient, ElasticsearchConfig elasticsearchConfig) {
+  ElasticsearchService(SearchRequestParserService searchRequestParserService, RestHighLevelClient restHighLevelClient, ElasticsearchConfig elasticsearchConfig) {
     this.searchRequestParserService = searchRequestParserService
-    this.restClient = restClient
+    this.restHLClient = restHighLevelClient
     this.esConfig = elasticsearchConfig
     this.isES6 = esConfig.version.isMajorVersion(6)
   }
@@ -63,7 +61,7 @@ class ElasticsearchService {
     ]), ContentType.APPLICATION_JSON)
     Request totalCountsRequest = new Request('GET', endpoint)
     totalCountsRequest.entity = requestQuery
-    Response totalCountsResponse = restClient.performRequest(totalCountsRequest)
+    Response totalCountsResponse = restHLClient.getLowLevelClient().performRequest(totalCountsRequest)
     Map parsedResponse = parseSearchResponse(totalCountsResponse)
 
     return [
@@ -101,7 +99,7 @@ class ElasticsearchService {
       HttpEntity granuleRequestQuery = new NStringEntity(JsonOutput.toJson(granuleRequestMap), ContentType.APPLICATION_JSON)
       Request granuleRequest = new Request('GET', granuleEndpoint)
       granuleRequest.entity = granuleRequestQuery
-      Response granuleResponse = restClient.performRequest(granuleRequest)
+      Response granuleResponse = restHLClient.getLowLevelClient().performRequest(granuleRequest)
       Map parsedGranuleResponse = parseSearchResponse(granuleResponse)
       int totalGranulesForCollection = getHitsTotalValue(parsedGranuleResponse, isES6)
       getCollection.meta = [
@@ -128,7 +126,7 @@ class ElasticsearchService {
     String endpoint = "/${alias}/_doc/${id}"
     log.debug("Get by ID against endpoint: ${endpoint}")
     Request idRequest = new Request('GET', endpoint)
-    Response idResponse = restClient.performRequest(idRequest)
+    Response idResponse = restHLClient.getLowLevelClient().performRequest(idRequest)
     Map collectionDocument = parseSearchResponse(idResponse)
     String type = esConfig.typeFromAlias(alias)
     if (collectionDocument.found) {
@@ -170,7 +168,7 @@ class ElasticsearchService {
     log.debug("GET mapping for ${alias}")
 
     def request = new Request('GET', endpoint)
-    def response = restClient.performRequest(request)
+    def response = restHLClient.getLowLevelClient().performRequest(request)
     Map result = parseSearchResponse(response)
 
     if(!result.error) {
@@ -219,7 +217,7 @@ class ElasticsearchService {
     HttpEntity searchRequestQuery = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
     Request searchRequest = new Request('GET', searchEndpoint)
     searchRequest.entity = searchRequestQuery
-    Response searchResponse = restClient.performRequest(searchRequest)
+    Response searchResponse = restHLClient.getLowLevelClient().performRequest(searchRequest)
     Map parsedSearchResponse = parseSearchResponse(searchResponse)
 
     def result = [
@@ -264,7 +262,7 @@ class ElasticsearchService {
     Request searchRequest = new Request('GET', endpoint)
     searchRequest.entity = searchQuery
     log.debug("search request: ${searchRequest.toString()}")
-    Response searchResponse = restClient.performRequest(searchRequest)
+    Response searchResponse = restHLClient.getLowLevelClient().performRequest(searchRequest)
     log.debug("search response: ${searchResponse.toString()}")
     return parseSearchResponse(searchResponse)
   }
