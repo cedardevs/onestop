@@ -46,13 +46,13 @@ plugins {
     // Spring dependency management plugin
     // https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/
     // - A Gradle plugin that provides Maven-like dependency management and exclusions
-    id("io.spring.dependency-management").version("1.0.6.RELEASE").apply(false)
+    id("io.spring.dependency-management").version("1.0.11.RELEASE").apply(false)
 
     // Spring Boot plugin
     // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
     // - A Gradle plugin that allows you to package executable jar or war archives,
     //   run Spring Boot applications, and use the dependency management provided by spring-boot-dependencies
-    id("org.springframework.boot").version("2.4.13").apply(false)
+    id("org.springframework.boot").version("2.5.9").apply(false)
 
     // Gogradle plugin
     // https://github.com/gogradle/gogradle
