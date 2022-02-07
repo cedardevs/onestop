@@ -29,8 +29,8 @@ object Versions {
     const val SPRING_KAFKA: String = "2.4.1.RELEASE"
     const val AVRO: String = "1.9.1"
 
-    const val GROOVY: String = "2.5.8"
-    const val SPOCK: String = "1.2-groovy-2.5"
+    const val GROOVY: String = "3.0.9"
+    const val SPOCK: String = "2.0-M2-groovy-3.0"
     const val TEST_CONTAINERS: String = "1.15.3"
     const val OPEN_SAML = "3.4.3"
     const val LOGBACK = "1.2.3"
