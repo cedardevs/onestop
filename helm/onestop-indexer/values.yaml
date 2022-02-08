@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: cedardevs/onestop-indexer
-  tag: 2.4.4
+  tag: 2.4.5
   pullPolicy: IfNotPresent
 
 nameOverride: ""
