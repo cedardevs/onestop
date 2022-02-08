@@ -392,6 +392,11 @@ subprojects {
                     useVersion("2.17.1")
                     because("Fixes CVE-2021-45105")
                 }
+                if (requested.group.startsWith("org.apache.tomcat.embed") &&
+                        requested.version!! < "9.0.58") {
+                    useVersion("9.0.58")
+                    because("Fixes CVE-2022-23181")
+                }
             }
         }
 
