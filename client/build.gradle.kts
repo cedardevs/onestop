@@ -40,6 +40,8 @@ task<Tar>("tar") {
     dependsOn("npm_run_build")
 
     from(file("${buildDir}/webpack"))
+    setFileMode(744)
+    setDirMode(755)
     compression = Compression.GZIP
     archiveBaseName.set(publish.title)
     archiveExtension.set("tar.gz")
