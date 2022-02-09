@@ -25,7 +25,7 @@ plugins {
     // Jib plugin
     // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin
     // - Jib is a Gradle plugin for building Docker and OCI images for your Java applications.
-    id("com.google.cloud.tools.jib").version("2.2.0").apply(false)
+    id("com.google.cloud.tools.jib").version("2.7.1").apply(false)
 
     // Node plugin
     // https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
