@@ -128,10 +128,9 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.reindexAsync(
-        { it.script.params.defaults.title == 'collection' }, // <-- verify defaults param
-        { actionListener = it } // <-- capture listener
-    ) >> Mock(Cancellable)
+    1 * mockEsService.reindexAsync({ it.script.params.defaults.title == 'collection' }) // <-- verify defaults param
+        >> { actionListener = it } // <-- capture listener
+        >> Mock(Cancellable)
   }
 
   def "successful requests produce successful results"() {
@@ -145,7 +144,9 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.reindexAsync(_, { actionListener = it }) >> Mock(Cancellable) // <- capture listener
+    1 * mockEsService.reindexAsync(_, _)
+        >> { actionListener = it } // <- capture listener
+        >> Mock(Cancellable)
 
     when:
     actionListener.onResponse(buildSuccessBulkByScrollResponse())
@@ -169,7 +170,8 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.reindexAsync(_, { actionListener = it }) // <- capture listener
+    1 * mockEsService.reindexAsync(_, _)
+        >> { actionListener = it } // <- capture listener
 
     when:
     actionListener.onResponse(buildFailBulkByScrollResponse([BulkItemResponse.Failure.PARSER]))
@@ -193,7 +195,9 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.reindexAsync(_, { actionListener = it }) >> Mock(Cancellable) // <-- capture listener
+    1 * mockEsService.reindexAsync(_, _)
+        >> { actionListener = it } // <-- capture listener
+        >> Mock(Cancellable)
 
     when:
     actionListener.onFailure(new IOException())
