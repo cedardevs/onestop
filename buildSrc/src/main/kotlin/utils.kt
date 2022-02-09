@@ -18,8 +18,8 @@ object Versions {
     // https://github.com/opencontainers/image-spec/blob/master/annotations.md#annotations
     const val LABEL_SCHEMA: String = "1.0"
 
-    const val NODE: String = "10.16.3"
-    const val NPM: String = "7.6.2"
+    const val NODE: String = "14.17.0"
+    const val NPM: String = "8.4.1"
 
     const val ELASTIC: String = "7.6.2"
     const val CONFLUENT: String = "5.4.0"
