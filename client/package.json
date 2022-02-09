@@ -12,7 +12,7 @@
     "test": "jest --maxWorkers=2 --config jest.config.js",
     "testFresh": "jest --no-cache --config jest.config.js",
     "build": "npm install && NODE_ENV=production ./node_modules/.bin/webpack --mode production -p",
-    "clean": "rm -rf build && rm -rf coverage",
+    "clean": "rm -rf node_modules && rm -rf build && rm -rf coverage",
     "retire": "retire -p"
   },
   "dependencies": {
