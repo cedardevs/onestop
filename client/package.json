@@ -13,7 +13,10 @@
     "testFresh": "jest --no-cache --config jest.config.js",
     "build": "npm install && NODE_ENV=production ./node_modules/.bin/webpack --mode production -p",
     "clean": "rm -rf node_modules && rm -rf build && rm -rf coverage",
-    "retire": "retire -p"
+    "retire": "retire -p",
+    "dependencies": "npm list -depth=8",
+    "auditFix": "npm audit fix",
+    "audit": "npm audit --trace-deprecation"
   },
   "dependencies": {
     "@chakra-ui/core": "next",
