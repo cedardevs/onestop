@@ -1,6 +1,7 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
+const ESLintPlugin = require('eslint-webpack-plugin')
 
 const path = require('path')
 require('babel-polyfill')
@@ -15,15 +16,13 @@ const smp = new SpeedMeasurePlugin()
 
 const basePlugins = [
   new HtmlWebpackPlugin({
-    inject: false,
-    template: require('html-webpack-template'),
+    inject: true,
     lang: 'en-US',
-  })
+  }),
+  new ESLintPlugin()
 ]
 
 const devPlugins = [
-  // prints more readable module names in the browser console on HMR updates
-  new webpack.NamedModulesPlugin(),
 ]
 
 const prodPlugins = [
@@ -57,6 +56,7 @@ const prodEntryPoints = ['babel-polyfill', './index.jsx']
 
 module.exports = (env) => {
   return smp.wrap({
+    mode: isProd ? 'production' : 'development',
     entry: isProd ? prodEntryPoints : devEntryPoints,
     output: {
       path: path.resolve(__dirname, 'build/webpack'),
@@ -64,11 +64,11 @@ module.exports = (env) => {
       filename: '[name]-[hash].bundle.js',
     },
     context: path.resolve(__dirname, 'src'),
-    devtool: isProd ? false : 'cheap-module-eval-source-map',
+    devtool: isProd ? false : 'cheap-module-source-map',
     devServer: isProd
       ? {}
       : {
-          publicPath: `/${rootPath}/`,
+          devMiddleware: {publicPath: `/${rootPath}/`},
           historyApiFallback: {
             index: `/${rootPath}/`,
           },
@@ -77,7 +77,8 @@ module.exports = (env) => {
           // see: https://github.com/webpack/webpack-dev-server/issues/416#issuecomment-287797086
           host: 'localhost',
           port: 8888,
-          disableHostCheck: true,
+          // This is set to all so we can still use virtualbox for ie and edge testing
+          allowedHosts: ['all'],
           hot: true,
           proxy: {
             '/onestop/api/search/*': {
@@ -93,17 +94,12 @@ module.exports = (env) => {
     module: {
       rules: [
         {
-          enforce: 'pre',
-          test: /\.js$/,
-          use: 'eslint-loader',
-          exclude: /node_modules/,
-        },
-        {
           test: /\.jsx?$/,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
             options: {
+              presets: ['@babel/preset-env'],
               babelrc: true,
               babelrcRoots: ['.', '../'],
             },
@@ -115,9 +111,6 @@ module.exports = (env) => {
           use: [
             {
               loader: 'style-loader',
-              options: {
-                sourceMap: !isProd,
-              },
             },
             {
               loader: 'css-loader',

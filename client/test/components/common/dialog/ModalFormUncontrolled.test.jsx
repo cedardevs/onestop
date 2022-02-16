@@ -1,6 +1,6 @@
 import React from 'react'
 import {mount} from 'enzyme'
-import {useDisclosure, ModalHeader} from '@chakra-ui/core'
+import {useDisclosure, ModalHeader} from '@chakra-ui/react'
 
 import ModalFormUncontrolled from '../../../../src/components/common/dialog/ModalFormUncontrolled'
 

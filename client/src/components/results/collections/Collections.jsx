@@ -11,7 +11,7 @@ import defaultStyles, {FilterColors} from '../../../style/defaultStyles'
 import saveIcon from 'fa/bookmark-o.svg'
 import alreadySavedIcon from 'fa/bookmark.svg'
 import ModalFormUncontrolled from '../../common/dialog/ModalFormUncontrolled'
-import {useDisclosure} from '@chakra-ui/core'
+import {useDisclosure} from '@chakra-ui/react'
 
 const styleCollections = {
   color: '#222',

@@ -6,7 +6,7 @@ import RootContainer from './components/root/RootContainer'
 import GoogleAnalyticsContainer from './components/analytics/GoogleAnalyticsContainer'
 import {ROUTE, goTo} from './utils/urlUtils'
 import _ from 'lodash'
-import {ChakraProvider} from '@chakra-ui/core'
+import {ChakraProvider} from '@chakra-ui/react'
 
 // this higher-order component is kept separate from index.jsx
 // to parameterize the store and history for tests

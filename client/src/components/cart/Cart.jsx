@@ -11,7 +11,7 @@ import {FEATURE_CART} from '../../utils/featureUtils'
 import CartListItem from './CartListItem'
 import {PAGE_SIZE} from '../../utils/queryUtils'
 import {Confirmation} from '../common/dialog/OneStopDialog'
-import {useDisclosure} from '@chakra-ui/core'
+import {useDisclosure} from '@chakra-ui/react'
 
 const styleCenterContent = {
   display: 'flex',

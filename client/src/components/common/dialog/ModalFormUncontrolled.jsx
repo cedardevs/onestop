@@ -10,7 +10,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from '@chakra-ui/core'
+} from '@chakra-ui/react'
 
 const styleButtonFocus = {
   outline: '2px dashed black',
