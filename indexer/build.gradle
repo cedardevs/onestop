@@ -115,7 +115,7 @@ task killElasticsearch {
 }
 
 jar {
-  archivesBaseName = "${rootProject.name}-${project.name}"
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   manifest {
     attributes 'Main-Class': mainClassName
   }

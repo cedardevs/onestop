@@ -46,7 +46,7 @@ dependencies {
 }
 
 jar {
-  baseName = "${rootProject.name}-${project.name}"
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   manifest {
     attributes 'Main-Class': mainClassName
   }
@@ -60,8 +60,8 @@ shadowJar {
 }
 
 task sourceJar(type: Jar) {
-  classifier = 'sources'
-  baseName = "${rootProject.name}-${project.name}"
+  archiveClassifier.set('sources')
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   from "${projectDir}/src"
 }
 

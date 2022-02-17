@@ -59,9 +59,9 @@ plugins {
 
 }
 
-// resolve build dependencies from Bintray jcenter
+// resolve build dependencies from Bintray
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 subprojects {
@@ -135,9 +135,9 @@ dependencyCheck {
 }
 
 allprojects {
-    // resolve all subproject dependencies from Bintray jcenter and jitpack
+    // resolve all subproject dependencies from Bintray and jitpack
     repositories {
-        jcenter()
+        mavenCentral()
         maven(url= "https://repo.spring.io/milestone")
         maven(url = "https://packages.confluent.io/maven/")
         maven(url = "https://jitpack.io")

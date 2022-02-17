@@ -80,14 +80,14 @@ task integrationTest(type: Test) {
 }
 
 bootJar {
-  classifier = 'all' // add a classifier to distinguish the executable jar
-  baseName = "${rootProject.name}-${project.name}"
+  archiveClassifier.set('all') // add a classifier to distinguish the executable jar
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   launchScript()
 }
 
 task sourceJar(type: Jar) {
-  classifier = 'sources'
-  baseName = "${rootProject.name}-${project.name}"
+  archiveClassifier.set('sources')
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   from "${projectDir}/src"
 }
 

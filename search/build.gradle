@@ -161,8 +161,8 @@ bootJar {
     include "onestop-request-schema.json"
     into "WEB-INF/classes"
   }
-  classifier = 'all' // add a classifier to distinguish the executable jar
-  archiveBaseName = "${rootProject.name}-${project.name}"
+  archiveClassifier.set('all') // add a classifier to distinguish the executable jar
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   launchScript()
 }
 
@@ -173,9 +173,9 @@ bootWar {
     into "WEB-INF/classes"
   }
 
-  // This baseName is what the war will be named. Needs to reflect the URL OneStop-search, the context path tomcat will use.
-  archiveBaseName = "${rootProject.name}-${project.name}"
-  baseName = "${rootProject.name}"
+  // This archiveBaseName is what the war will be named. Needs to reflect the URL OneStop-search, the context path tomcat will use.
+  archiveBaseName.set("${rootProject.name}-${project.name}")
+  archiveBaseName.set("${rootProject.name}")
   launchScript()
 }
 
