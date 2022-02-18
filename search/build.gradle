@@ -154,6 +154,14 @@ task integrationTest(type: Test) {
   reports.html.destination = file("${buildDir}/reports/integrationTests")
   environment project.envVars as Map<String, ?>
 }
+// Due to gradle 7 not setting a default duplicate handling strategy, duplicate application*.yml files.
+// https://docs.gradle.org/7.4/dsl/org.gradle.api.tasks.Copy.html#org.gradle.api.tasks.Copy:duplicatesStrategy
+processIntegrationTestResources {
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+test {
+  environment project.envVars as Map<String, ?>
+}
 check.dependsOn integrationTest
 
 bootJar {
