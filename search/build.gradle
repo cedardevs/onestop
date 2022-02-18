@@ -29,7 +29,7 @@ dependencies {
   implementation("org.apache.lucene:lucene-expressions:7.2.1")
   implementation("javax.xml.bind:jaxb-api:2.3.1") // Java 9/10 deprecates, 11 removes javax.xml.bind.DatatypeConverter
 
-  runtime("org.springframework.boot:spring-boot-devtools")
+  runtimeOnly("org.springframework.boot:spring-boot-devtools")
 
   // providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 
@@ -195,10 +195,6 @@ bootRun {
   environment['server.port'] = '8097'
   environment['elasticsearch.host'] = 'localhost'
   environment['elasticsearch.ssl.enabled'] = 'false'
-  environment project.envVars as Map<String, ?>
-}
-
-test {
   environment project.envVars as Map<String, ?>
 }
 
