@@ -1,5 +1,5 @@
 plugins {
-  // https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
+  // Mostly gradle 7 updated locally in buildSrc, https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
   id "io.forgo.keystoreplugin" version "1.1"
   id 'war'
 }
