@@ -132,43 +132,26 @@ module.exports = (env) => {
         },
         {
           test: /\.(jpe?g|png|gif|svg)$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                hash: 'sha512',
-                digestType: 'hex',
-                name: '[hash].[ext]',
-                outputPath: `${assetPath}/img`,
-              },
-            },
-          ],
+          type: 'asset/resource',
+          generator: {
+            filename: `${assetPath}/img/[hash][ext]`,// Don't need period, seems to included in [ext]
+          }
         },
         {
           test: /\.(ico)$/,
           exclude: /node_modules/,
           include: /img/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: '[name].[ext]',
-                outputPath: assetPath,
-              },
-            },
-          ],
+          type: 'asset/resource',
+          generator: {
+            filename: `${assetPath}/[name][ext]`,// Don't need period, seems to included in [ext]
+          }
         },
         {
           test: /\.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: '/[name].[ext]',
-                outputPath: `${assetPath}/fonts`,
-              },
-            },
-          ],
+          type: 'asset/resource',
+          generator: {
+            filename: `${assetPath}/fonts/[name][ext]`,// Don't need period, seems to included in [ext]
+          }
         },
       ],
     },
