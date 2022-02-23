@@ -1,4 +1,5 @@
 module.exports = {
+  testEnvironment: "jsdom",
   verbose: true,
   coverageDirectory: "./build/coverage/",
   collectCoverage: true,
