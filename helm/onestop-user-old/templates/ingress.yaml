@@ -1,7 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "onestop-user.fullname" . -}}
 {{- $ingressPaths := .Values.ingress.paths -}}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
@@ -32,6 +32,7 @@ spec:
         paths:
 	{{- range $ingressPaths }}
           - path: {{ . }}
+            pathType: Exact
             backend:
               serviceName: {{ $fullName }}
               servicePort: http

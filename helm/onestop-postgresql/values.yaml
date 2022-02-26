@@ -42,4 +42,5 @@ pgadmin4:
     hosts:
       - host: "localhost"
         paths:
-          - "/pgadmin4(/|$)(.*)"
+          - path: "/pgadmin4(/|$)(.*)"
+            pathType: ImplementationSpecific
