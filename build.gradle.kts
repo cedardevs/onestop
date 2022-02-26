@@ -296,23 +296,30 @@ subprojects {
                 }
 
                 if (requested.group == "org.bouncycastle" && requested.name == "bcprov-jdk15on") {
-                    if (requested.version!!.startsWith("1.63")) {
-                        useVersion("1.65")
-                        because("fixes vulnerability in 1.63 and before")
+                    if (requested.version!! < "1.70") {
+                        useVersion("1.70")
+                        because("fixes vulnerability in 1.6 before")
                     }
                 }
 
-                if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
-                    if (requested.version!!.startsWith("2.9.") || requested.version!!.startsWith("2.10.") ) {
-                        useVersion("2.10.1")
-                        because("fixes vulnerability in 2.9.9 and before")
-                    }
-                }
+//                if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
+//                    if (requested.version!! < "2.13.1") {
+//                        useVersion("2.13.1")
+//                        because("fixes vulnerability in 2.9.9 and before")
+//                    }
+//                }
 
                 if (requested.group == "com.google.guava" && requested.name == "guava") {
-                    if (requested.version!! <= "27.0.1") {
-                        useVersion("27.0.1-jre")
+                    if (requested.version!! <= "31.0.1") {
+                        useVersion("31.0.1-jre")
                         because("fixes CVE-2018-10237")
+                    }
+                }
+
+                if (requested.group == "org.hibernate.validator" && requested.name == "hibernate-validator") {
+                    if (requested.version!! < "6.1.7") {
+                        useVersion( "6.1.7.Final")
+                        because("fixes vulnerability in 6.1.4-Final and earlier")
                     }
                 }
 
@@ -337,9 +344,14 @@ subprojects {
                 }
                 if (requested.group.startsWith("org.apache.tomcat") &&
                         requested.name.contains("tomcat") &&
-                        requested.version!! <= "9.0.29") {
-                    useVersion("9.0.37")
-                    because("Enforce tomcat 9.0.20+ to avoid vulnerabilities CVE-2019-0199, CVE-2019-0232, and CVE-2019-10072")
+                        requested.version!! < "9.0.58") {
+                    useVersion("9.0.58")
+                    because("Enforce tomcat 9.0.58+ to avoid vulnerabilities CVE-2022-23181")
+                }
+                if (requested.group.startsWith("org.apache.tomcat.embed") &&
+                    requested.version!! < "9.0.58") {
+                    useVersion("9.0.58")
+                    because("Fixes CVE-2022-23181")
                 }
             }
         }
