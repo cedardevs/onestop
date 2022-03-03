@@ -1,4 +1,6 @@
 import org.testcontainers.elasticsearch.ElasticsearchContainer
+import org.testcontainers.utility.DockerImageName
+
 buildscript {
   repositories {
     mavenCentral()
@@ -79,19 +81,19 @@ task integrationTest(type: Test) {
     Boolean ci = Boolean.valueOf(System.getenv('CI'))
     if (ci) {
       // the elasticsearch brought up by CircleCI (see `.circleci/config`) runs on localhost:9200
-      systemProperty 'elasticsearch.host', 'localhost'
       systemProperty 'elasticsearch.port', '9200'
-      systemProperty 'elasticsearch.ssl.enabled', false
     }
     else {
-      def elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:${ Versions.ELASTIC }")
+      DockerImageName ELASTIC_IMAGE = DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch:${ Versions.ELASTIC }")
+      def elasticsearchContainer = new ElasticsearchContainer(ELASTIC_IMAGE)
       elasticsearchContainer.start()
-      systemProperty 'elasticsearch.host', 'localhost'
-      systemProperty 'elasticsearch.port', elasticsearchContainer.getMappedPort(9200)
-      systemProperty 'elasticsearch.ssl.enabled', false
 
+      systemProperty 'elasticsearch.port', elasticsearchContainer.getMappedPort(9200)
       project.ext.set("elasticsearchContainer", elasticsearchContainer)
     }
+
+    systemProperty 'elasticsearch.host', 'localhost'
+    systemProperty 'elasticsearch.ssl.enabled', false
   }
 
   description = 'Runs the integration tests'
