@@ -37,7 +37,7 @@ object Versions {
     const val JUNIT = "4.12"
     const val AUTH0_JAVA_JWT = "3.4.1"
     const val PAC4J = "3.8.3"
-    const val SNAKE_YAML = "1.24"
+    const val SNAKE_YAML = "1.30"
     const val REACTOR_BOM = "Dysprosium-SR7"
     const val JSONP = "2.0.0-RC2"
 
