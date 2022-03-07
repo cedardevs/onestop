@@ -351,7 +351,7 @@ public class ElasticsearchReadService extends ElasticsearchService {
    */
   public Map<String, Object> constructSearchErrorResponse(Map<String, Object> marshalledResponse) {
     // If an error response from elasticsearch //
-    if (marshalledResponse.get("statusCode") != "200") {
+    if (!marshalledResponse.get("statusCode").equals(200)) {
       log.error("Elasticsearch error response: " + marshalledResponse);
 
       Map<String, Object> esError = (Map<String, Object>) marshalledResponse.get("error");
