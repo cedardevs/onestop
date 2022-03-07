@@ -260,40 +260,12 @@ public class ElasticsearchReadService extends ElasticsearchService {
   /**
    *
    * @param alias
-   * @param requestBodyJson
-   * @return
-   */
-  public Map<String, Object> getSearchResults(String alias, String requestBodyJson) {
-    var response = new HashMap<String, Object>();
-
-    if(requestBodyJson == null) {
-      var error = new HashMap<String, Object>();
-      error.put("status", HttpStatus.SC_BAD_REQUEST);
-      error.put("title", "Missing expected Elasticsearch request body");
-      error.put("detail", "Search request body for Elasticsearch request is empty.");
-
-      response.put("errors", List.of(error));
-    }
-
-    else {
-      String endpoint = alias + "/_search";
-      var marshalledResponse = performRequest("GET", endpoint, requestBodyJson);
-      return constructSearchResponse(marshalledResponse);
-    }
-
-    return response;
-
-  }
-
-  /**
-   *
-   * @param alias
    * @param requestBodyMap
    * @return
    */
   public Map<String, Object> getSearchResults(String alias, Map<String, Object> requestBodyMap) {
+    var response = new HashMap<String, Object>();
     if(requestBodyMap == null) {
-      var response = new HashMap<String, Object>();
       var error = new HashMap<String, Object>();
       error.put("status", HttpStatus.SC_BAD_REQUEST);
       error.put("title", "Could not parse Elasticsearch request body");
@@ -304,7 +276,20 @@ public class ElasticsearchReadService extends ElasticsearchService {
     }
 
     var requestBodyJson = JsonUtils.toJson(requestBodyMap);
-    return getSearchResults(alias, requestBodyJson);
+    if(requestBodyJson == null) {
+      var error = new HashMap<String, Object>();
+      error.put("status", HttpStatus.SC_BAD_REQUEST);
+      error.put("title", "Missing expected Elasticsearch request body");
+      error.put("detail", "Search request body for Elasticsearch request is empty.");
+
+      response.put("errors", List.of(error));
+      return response;
+    }
+
+    String endpoint = alias + "/_search";
+    var marshalledResponse = performRequest("GET", endpoint, requestBodyJson);
+
+    return constructSearchResponse(marshalledResponse);
   }
 
   /**
