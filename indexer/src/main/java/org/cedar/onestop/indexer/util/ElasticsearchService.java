@@ -69,16 +69,16 @@ public class ElasticsearchService {
     return config;
   }
 
-  public void initializeCluster() throws IOException {
+  public void initializeCluster() throws Exception {
     ensureIndices();
   }
 
-  private void ensureIndices() throws IOException {
+  private void ensureIndices() throws Exception {
     ensureSearchIndices();
     ensureAnalysisAndErrorsIndices();
   }
 
-  private void ensureSearchIndices() throws IOException {
+  private void ensureSearchIndices() throws Exception {
     ensureAliasWithIndex(config.COLLECTION_SEARCH_INDEX_ALIAS);
     ensureAliasWithIndex(config.GRANULE_SEARCH_INDEX_ALIAS);
     ensureAliasWithIndex(config.FLAT_GRANULE_SEARCH_INDEX_ALIAS);
@@ -87,12 +87,12 @@ public class ElasticsearchService {
     }
   }
 
-  private void ensureAnalysisAndErrorsIndices() throws IOException {
+  private void ensureAnalysisAndErrorsIndices() throws Exception {
     ensureAliasWithIndex(config.COLLECTION_ERROR_AND_ANALYSIS_INDEX_ALIAS);
     ensureAliasWithIndex(config.GRANULE_ERROR_AND_ANALYSIS_INDEX_ALIAS);
   }
 
-  private void ensureAliasWithIndex(String alias) throws IOException {
+  private void ensureAliasWithIndex(String alias) throws Exception {
     var aliasExists = checkAliasExists(alias);
     if (aliasExists) {
       String existingMapping = getDeployedMappingByAlias(alias);
@@ -230,7 +230,7 @@ public class ElasticsearchService {
     return mapper.writeValueAsString((Map) parsedDefinition.get("mappings"));
   }
 
-  private String getDeployedMappingByAlias(String alias) {
+  private String getDeployedMappingByAlias(String alias) throws Exception {
     Map<String, Object> response = esReadService.getIndexMapping(alias);
     List data = (List) response.get("data");
     String mapping = null;
@@ -257,7 +257,7 @@ public class ElasticsearchService {
     return mapper.writeValueAsString((Map)(settings).get("analysis"));
   }
 
-  private String getDeployedIndexAnalyzersByAlias(String alias) {
+  private String getDeployedIndexAnalyzersByAlias(String alias) throws Exception {
     Map<String, Object> response = esReadService.getIndexSettings(alias);
     List data = (List) response.get("data");
     String mapping = null;
