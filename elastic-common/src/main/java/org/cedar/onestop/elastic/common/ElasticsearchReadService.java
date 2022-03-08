@@ -27,7 +27,7 @@ public class ElasticsearchReadService extends ElasticsearchService {
    * @param indexAlias
    * @return
    */
-  public Map<String, Object> getTotalCountInIndex(String indexAlias) {
+  public Map<String, Object> getTotalCountInIndex(String indexAlias) throws Exception {
     String endpoint = "/" + indexAlias + "/_search";
     Map<String, Object> query = new HashMap<>();
     query.put("match_all", new HashMap<>());
@@ -68,7 +68,7 @@ public class ElasticsearchReadService extends ElasticsearchService {
    * @param termValue
    * @return
    */
-  public Map<String, Object> getTotalCountInIndexByTerm(String indexAlias, String termField, String termValue) {
+  public Map<String, Object> getTotalCountInIndexByTerm(String indexAlias, String termField, String termValue) throws Exception {
     String endpoint = "/" + indexAlias + "/_search";
     Map<String, Object> query = new HashMap<>();
     Map<String, Object> term = new HashMap<>();
@@ -158,7 +158,7 @@ public class ElasticsearchReadService extends ElasticsearchService {
    * @param id
    * @return
    */
-  public Map<String, Object> getById(String alias, String id)  {
+  public Map<String, Object> getById(String alias, String id) throws Exception {
     String endpoint = "/" + alias + "/_doc/" + id;
     String type = config.typeFromAlias(alias);
     log.debug("Get by ID (type="+type+") against endpoint: " + endpoint);
@@ -190,7 +190,7 @@ public class ElasticsearchReadService extends ElasticsearchService {
    * @param alias
    * @return
    */
-  public Map<String, Object> getIndexMapping(String alias) {
+  public Map<String, Object> getIndexMapping(String alias) throws Exception {
     String endpoint = "/" + alias + "/_mapping";
     log.debug("GET mapping for [ " + alias + " ]");
 
@@ -224,7 +224,7 @@ public class ElasticsearchReadService extends ElasticsearchService {
    * @param alias
    * @return
    */
-  public Map<String, Object> getIndexSettings(String alias) {
+  public Map<String, Object> getIndexSettings(String alias) throws Exception {
     String endpoint = "/" + alias + "/_settings";
     log.debug("GET settings for [ " + alias + " ]");
 
@@ -263,7 +263,7 @@ public class ElasticsearchReadService extends ElasticsearchService {
    * @param requestBodyMap
    * @return
    */
-  public Map<String, Object> getSearchResults(String alias, Map<String, Object> requestBodyMap) {
+  public Map<String, Object> getSearchResults(String alias, Map<String, Object> requestBodyMap) throws Exception {
     var response = new HashMap<String, Object>();
     if(requestBodyMap == null) {
       var error = new HashMap<String, Object>();
@@ -298,7 +298,7 @@ public class ElasticsearchReadService extends ElasticsearchService {
    * @param marshalledResponse Map of the response with statusCode from ES.
    * @return Map with attributes we expect from our search results or a list of errors.
    */
-  public Map<String, Object> constructSearchResponse(Map<String, Object> marshalledResponse) {
+  public Map<String, Object> constructSearchResponse(Map<String, Object> marshalledResponse) throws Exception {
     var error = constructSearchErrorResponse(marshalledResponse);
     if (error != null) {
       return error;
@@ -329,25 +329,22 @@ public class ElasticsearchReadService extends ElasticsearchService {
   }
 
   /**
-   * If an error in ES search query happened the repsonse will reflect that.
-   * Capture that error and respond with a Map with `errors` attribute having a List of errors, most likely just one.
+   * If an error in ES search query happens then an Exception will be thrown, otherwise returns null.
+   * NOTE: This is only for doing search queries, because other successful ES API commands,
+   * such as inserting, return a status other than 200.
    * @param marshalledResponse Map of the response with statusCode from ES.
-   * @return null if no errors or Map with `errors` attribute having a List of errors
+   * @return null if no ES errors, throws an Exception.
    */
-  public Map<String, Object> constructSearchErrorResponse(Map<String, Object> marshalledResponse) {
+  public Map<String, Object> constructSearchErrorResponse(Map<String, Object> marshalledResponse) throws Exception {
     // If an error response from elasticsearch //
-    if (!marshalledResponse.get("statusCode").equals(200)) {
+    int status = (int)marshalledResponse.get("statusCode");
+    if (status != 200) {
       log.error("Elasticsearch error response: " + marshalledResponse);
 
       Map<String, Object> esError = (Map<String, Object>) marshalledResponse.get("error");
-      var error = new HashMap<String, Object>();
-      error.put("status", marshalledResponse.get("statusCode"));
-      error.put("title", esError.get("type"));
-      error.put("detail", "Elasticsearch error: " + esError.get("reason"));
-
-      var response = new HashMap<String, Object>();
-      response.put("errors", List.of(error));
-      return response;
+      String exceptionMsg = esError != null? esError.get("reason").toString() :
+        "Elasticsearch request returned a status="+status;
+      throw new Exception(exceptionMsg);
     }
     else {
       return null;
