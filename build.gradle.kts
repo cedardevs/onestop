@@ -353,6 +353,14 @@ subprojects {
                     useVersion("9.0.58")
                     because("Fixes CVE-2022-23181")
                 }
+                if (requested.group.startsWith("io.netty.incubator") &&
+                        requested.name == "netty-incubator-codec-native-quic" &&
+                        requested.version!! < "0.0.26.Final") {
+                    useVersion("0.0.26.Final")
+                    because("Fixes CVE-2019-20444, Brought in by reactor-netty, waiting for release of updated reactor-netty" +
+                            " for this commit to take effect: " +
+                            "https://github.com/reactor/reactor-netty/commit/857277287671d5b40708064b3afef1a7ae7b7a47")
+                }
             }
         }
 
