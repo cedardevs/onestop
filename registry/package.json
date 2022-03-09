@@ -7,7 +7,6 @@
     "dependencies": "npm list -depth=8",
     "auditFix": "npm audit fix",
     "audit": "npm audit --trace-deprecation"
-
   },
   "devDependencies": {
     "retire": "^2.2.1",
