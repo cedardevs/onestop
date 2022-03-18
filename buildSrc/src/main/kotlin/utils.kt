@@ -41,7 +41,7 @@ object Versions {
     const val REACTOR_BOM = "Dysprosium-SR7"
     const val JSONP = "2.0.0-RC2"
 
-    const val ONESTOP_SCHEMAS: String = "0.7.0"
+    const val ONESTOP_SCHEMAS: String = "OSIM-20-SNAPSHOT"
 }
 
 // data classes
