@@ -11,7 +11,7 @@ postgresql:
 ###############################################################################
 pgadmin4:
   env:
-    email: postgres
+    email: postgres@none.com
     password: foamcat
   serverDefinitions:
     enabled: true
