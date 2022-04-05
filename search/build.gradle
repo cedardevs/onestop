@@ -165,7 +165,9 @@ bootJar {
   archiveBaseName = "${rootProject.name}-${project.name}"
   launchScript()
 }
+build.dependsOn bootJar
 
+// This is what the Federal On Prem expects, a war.
 bootWar {
   from("${buildDir}/resources/main") {
     include "onestop-request-schema.json"
@@ -176,6 +178,7 @@ bootWar {
   archiveBaseName = "${rootProject.name}-${project.name}"
   launchScript()
 }
+build.dependsOn bootWar
 
 // these environment variables would normally be set by kubernetes objects;
 // however, this is problematic running via gradle tasks (build, test, bootRun...) -- where these environment
