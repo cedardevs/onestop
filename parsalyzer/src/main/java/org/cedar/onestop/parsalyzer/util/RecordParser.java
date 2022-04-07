@@ -131,6 +131,7 @@ public class RecordParser {
       return new ValueWithErrors<>(null, null);
     }
     try {
+      log.debug("Xml sending to ISOParser: "+xml);
       var discovery = AvroUtils.avroToMap(ISOParser.parseXMLMetadataToDiscovery(xml));
       return new ValueWithErrors(Map.of("discovery", discovery), null);
     }
