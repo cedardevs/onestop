@@ -273,21 +273,25 @@ profiles:
         releases:
           - *onestop-postgresql
 
-  - name: es
-    deploy:
-      helm:
-        releases:
-          - name: onestop-dev
-            chartPath: helm/onestop-dev
-
-  - name: search-indexer
+  - name: minus-user
     deploy:
       helm:
         releases:
           - *onestop-indexer
+          - *onestop-registry
+          - *onestop-parsalyzer
           - *onestop-search
           - *onestop-client
-          - *onestop-parsalyzer
+          - *onestop-gateway
+          - *onestop-ingress
+          - name: onestop-dev
+            chartPath: helm/onestop-dev
+
+  - name: search
+    deploy:
+      helm:
+        releases:
+          - *onestop-search
           - *onestop-gateway
           - *onestop-ingress
           - name: onestop-dev
