@@ -10,8 +10,6 @@ server:
 spring:
   application:
     name: gateway
-  webflux:
-    base-path: /onestop
   cloud:
     gateway:
       routes:
