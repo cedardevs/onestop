@@ -11,7 +11,7 @@ import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.Cancellable
 import org.elasticsearch.common.bytes.BytesArray
-import org.elasticsearch.common.unit.TimeValue
+import org.elasticsearch.core.TimeValue
 import org.elasticsearch.common.xcontent.ToXContent
 import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.json.JsonXContent
