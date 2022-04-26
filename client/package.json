@@ -30,7 +30,7 @@
     "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
     "lodash": "^4.17.19",
-    "moment": "^2.23.0",
+    "moment": "^2.29.3",
     "npm": "^8.4.1",
     "prop-types": "^15.6.2",
     "react": "^16.7.0",
@@ -52,7 +52,7 @@
     "redux-thunk": "^2.3.0",
     "redux-watch": "^1.1.1",
     "resize-observer-polyfill": "^1.5.1",
-    "retire": "^3.0.6",
+    "retire": "^3.0.7",
     "seamless-immutable": "^7.1.4"
   },
   "devDependencies": {
