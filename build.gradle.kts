@@ -1,6 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.moowork.gradle.node.npm.NpmTask
 import com.moowork.gradle.node.task.NodeTask
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 
 plugins {
     `kotlin-dsl`
@@ -184,6 +186,16 @@ subprojects {
 
         extra.apply {
             set("Versions", Versions)
+        }
+        tasks.test {
+            useJUnitPlatform()
+            testLogging {
+                events (FAILED, SKIPPED)//STANDARD_ERROR, STANDARD_OUT
+                exceptionFormat = FULL
+                showExceptions = true
+                showCauses = true
+                showStackTraces = true
+            }
         }
     }
     if (jibProjects.contains(name)) {
