@@ -24,6 +24,7 @@ dependencies {
 
   testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
+  testImplementation("org.spockframework:spock-junit4:${Versions.SPOCK}")
   testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
   testImplementation("org.apache.kafka:kafka-streams-test-utils:${Versions.KAFKA}")
   testImplementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}")
