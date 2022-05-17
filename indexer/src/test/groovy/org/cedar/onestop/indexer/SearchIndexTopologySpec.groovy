@@ -229,7 +229,7 @@ class SearchIndexTopologySpec extends Specification {
   private static KeyValue<String, IndexingOutput> buildIndexerResult(String key, ParsedRecord record, String index, OpType opType) {
     def shard = new ShardId(index, "uuid", 0)
     def itemResponse = new IndexResponse(shard, '_doc', key, 0, 0, 0, true)
-    def bulkItemResponse = new BulkItemResponse(0, opType, itemResponse)
+    def bulkItemResponse = new BulkItemResponse(0, opType, itemResponse, null)
     def valueAndTimestamp = ValueAndTimestamp.make(record, publishingStartTime.toEpochMilli())
     def output = new IndexingOutput(valueAndTimestamp, bulkItemResponse)
     return new KeyValue(key, output)
