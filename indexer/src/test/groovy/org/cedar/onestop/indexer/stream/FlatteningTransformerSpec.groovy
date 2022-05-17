@@ -7,6 +7,7 @@ import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
 import org.cedar.onestop.indexer.util.ElasticsearchService
 import org.cedar.onestop.indexer.util.TestUtils
+import org.elasticsearch.action.ActionListener
 import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.Cancellable
@@ -120,7 +121,6 @@ class FlatteningTransformerSpec extends Specification {
   def "flattening requests use the parent collection for defaults"() {
     def testId = 'a'
     def timestamp = 1000L
-    def actionListener
 
     when:
     testTransformer.transform(testId, timestamp)
@@ -128,15 +128,15 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.reindexAsync({ it.script.params.defaults.title == 'collection' }) // <-- verify defaults param
-        >> { actionListener = it } // <-- capture listener
+    1 * mockEsService.reindexAsync({ it.script.params.defaults.title == 'collection' },_) // <-- verify defaults param
+//        >> { actionListener = it } // <-- capture listener
         >> Mock(Cancellable)
   }
 
   def "successful requests produce successful results"() {
     def testId = 'a'
     def timestamp = 1000L
-    def actionListener
+    ActionListener actionListener
 
     when:
     testTransformer.transform(testId, timestamp)
@@ -144,9 +144,10 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.reindexAsync(_, _)
-        >> { actionListener = it } // <- capture listener
-        >> Mock(Cancellable)
+    1 * mockEsService.reindexAsync(_, _) >> { args ->
+      actionListener = args[1] as ActionListener
+      return Mock(Cancellable)
+    }
 
     when:
     actionListener.onResponse(buildSuccessBulkByScrollResponse())
@@ -162,7 +163,7 @@ class FlatteningTransformerSpec extends Specification {
   def "failed requests produce unsuccessful results"() {
     def testId = 'a'
     def timestamp = 1000L
-    def actionListener
+    ActionListener actionListener
 
     when:
     testTransformer.transform(testId, timestamp)
@@ -170,8 +171,10 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.reindexAsync(_, _)
-        >> { actionListener = it } // <- capture listener
+    1 * mockEsService.reindexAsync(_, _) >> { args ->
+      actionListener = args[1] as ActionListener // <- capture listener
+      return null
+    }
 
     when:
     actionListener.onResponse(buildFailBulkByScrollResponse([BulkItemResponse.Failure.PARSER]))
@@ -187,7 +190,7 @@ class FlatteningTransformerSpec extends Specification {
   def "IOExceptions produce unsuccessful results"() {
     def testId = 'a'
     def timestamp = 1000L
-    def actionListener
+    ActionListener actionListener
 
     when:
     testTransformer.transform(testId, timestamp)
@@ -195,9 +198,10 @@ class FlatteningTransformerSpec extends Specification {
 
     then:
     1 * mockEsService.get(_, testId) >> buildGetResponse('test', testId, '{"title": "collection"}')
-    1 * mockEsService.reindexAsync(_, _)
-        >> { actionListener = it } // <-- capture listener
-        >> Mock(Cancellable)
+    1 * mockEsService.reindexAsync(_, _) >> { args ->
+      actionListener = args[1] // <-- capture listener
+      return Mock(Cancellable)
+    }
 
     when:
     actionListener.onFailure(new IOException())
