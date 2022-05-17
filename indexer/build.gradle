@@ -52,6 +52,7 @@ dependencies {
   testImplementation("org.objenesis:objenesis:3.1")
   testImplementation("net.bytebuddy:byte-buddy:1.7.11")
   testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+  testImplementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
   testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
   testImplementation("org.apache.kafka:kafka-streams-test-utils:${Versions.KAFKA}")
   testImplementation("org.springframework.kafka:spring-kafka-test:${Versions.SPRING_KAFKA}")
