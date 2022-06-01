@@ -87,7 +87,7 @@ task integrationTest(type: Test) {
       DockerImageName POSTGRESQL_IMAGE = DockerImageName.parse("postgres")
       PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer(POSTGRESQL_IMAGE).
           withDatabaseName("test").withUsername("test").withPassword("test")
-      postgreSQLContainer.start()
+      postgreSQLContainer.start() // This can fail if already running. run `docker ps` then `docker stop <container id>`.
 
       systemProperty 'spring.datasource.url', "jdbc:postgresql://localhost:${postgreSQLContainer.getMappedPort(5432)}/test"
 

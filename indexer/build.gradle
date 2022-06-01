@@ -87,7 +87,7 @@ task integrationTest(type: Test) {
     else {
       DockerImageName ELASTIC_IMAGE = DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch:${ Versions.ELASTIC }")
       def elasticsearchContainer = new ElasticsearchContainer(ELASTIC_IMAGE)
-      elasticsearchContainer.start()
+      elasticsearchContainer.start() // This can fail if already running. run `docker ps` then `docker stop <container id>`.
 
       systemProperty 'elasticsearch.port', elasticsearchContainer.getMappedPort(9200)
       project.ext.set("elasticsearchContainer", elasticsearchContainer)

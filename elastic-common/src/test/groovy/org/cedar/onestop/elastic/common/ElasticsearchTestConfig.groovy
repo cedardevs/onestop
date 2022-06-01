@@ -23,7 +23,7 @@ class ElasticsearchTestConfig {
   @Bean(name = 'elasticsearchTestContainer', initMethod = 'start', destroyMethod = 'stop')
   ElasticsearchTestContainer elasticsearchTestContainer() {
     String dockerImageName = "docker.elastic.co/elasticsearch/elasticsearch:${elasticsearchVersion}"
-    return new ElasticsearchTestContainer(dockerImageName)
+    return new ElasticsearchTestContainer(dockerImageName)  // This can fail if already running. run `docker ps` then `docker stop <container id>`.
   }
 
   @Profile("!ci")
