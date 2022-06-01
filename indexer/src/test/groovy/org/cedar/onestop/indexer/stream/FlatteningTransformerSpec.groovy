@@ -13,13 +13,13 @@ import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.Cancellable
 import org.elasticsearch.common.bytes.BytesArray
 import org.elasticsearch.core.TimeValue
-import org.elasticsearch.common.xcontent.ToXContent
-import org.elasticsearch.common.xcontent.XContentBuilder
-import org.elasticsearch.common.xcontent.json.JsonXContent
+import org.elasticsearch.xcontent.XContentBuilder
+import org.elasticsearch.xcontent.ToXContent
 import org.elasticsearch.index.get.GetResult
 import org.elasticsearch.index.reindex.BulkByScrollResponse
 import org.elasticsearch.index.reindex.BulkByScrollTask
 import org.elasticsearch.index.seqno.SequenceNumbers
+import org.elasticsearch.xcontent.json.JsonXContent
 import spock.lang.Specification
 
 import java.time.Duration
@@ -282,6 +282,7 @@ class FlatteningTransformerSpec extends Specification {
 
   def buildSuccessBulkByScrollResponse() {
     TimeValue took = new TimeValue(1000)
+    JsonXContent.contentBuilder()
     XContentBuilder builder = JsonXContent.contentBuilder()
     BulkByScrollTask.Status status = new BulkByScrollTask.Status(Arrays.asList(null, null), null)
     status.toXContent(builder, ToXContent.EMPTY_PARAMS)
