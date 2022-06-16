@@ -25,7 +25,7 @@ class TestUtils {
   static inputGranuleRecord = buildRecordFromXML(inputGranuleXml)
 
   public static final esConfig = new ElasticsearchConfig(
-      new ElasticsearchVersion("7.17.2"),
+      new ElasticsearchVersion("7.8.0"),
       "Test-",
       1,
       1,

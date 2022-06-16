@@ -15,7 +15,7 @@ kind: Elasticsearch
 metadata:
   name: {{ include "onestop-dev.fullname" . }}
 spec:
-  version: 7.17.2
+  version: 7.8.0
   nodeSets:
     - name: default
       count: 1
@@ -42,7 +42,7 @@ kind: Kibana
 metadata:
   name: {{ include "onestop-dev.fullname" . }}
 spec:
-  version: 7.17.2
+  version: 7.8.0
   count: 1
   elasticsearchRef:
     name: {{ include "onestop-dev.fullname" . }}

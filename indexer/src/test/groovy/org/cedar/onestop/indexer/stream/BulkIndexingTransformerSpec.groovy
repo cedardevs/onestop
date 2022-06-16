@@ -134,7 +134,7 @@ class BulkIndexingTransformerSpec extends Specification {
     def itemResponses = ids.collect {
       def shard = new ShardId(testSearchIndex, "uuid", 0)
       def itemResponse = new IndexResponse(shard, '_doc', it, 0, 0, 0, true)
-      return new BulkItemResponse(0, opType, itemResponse, null)
+      return new BulkItemResponse(0, opType, itemResponse)
     }
     return new BulkResponse(itemResponses as BulkItemResponse[], 10)
   }

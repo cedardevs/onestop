@@ -18,6 +18,7 @@ dependencies {
   implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
   implementation("org.codehaus.groovy:groovy-xml:${Versions.GROOVY}")
 
+  implementation("org.elasticsearch:elasticsearch:${Versions.ELASTIC}")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}")
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${Versions.ELASTIC}")
   implementation("org.springframework.boot:spring-boot-starter-web")
