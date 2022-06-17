@@ -261,7 +261,7 @@ class JsonValidatorSpec extends Specification {
         """{"type": "granuleName", "value": "abc 123", "field": "title", "allTermsMustMatch": "true"}"""
   }
 
-  def 'valid filter: #component #desc'() {
+  def 'valid filter: #desc'() {
     given:
     def singleQuery = """{ "filters": [ ${request} ] }"""
 

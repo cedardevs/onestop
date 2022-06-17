@@ -1,4 +1,6 @@
 import org.testcontainers.elasticsearch.ElasticsearchContainer
+import org.testcontainers.utility.DockerImageName
+
 buildscript {
   repositories {
     mavenCentral()
@@ -50,6 +52,7 @@ dependencies {
   testImplementation("org.objenesis:objenesis:3.1")
   testImplementation("net.bytebuddy:byte-buddy:1.7.11")
   testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
+  testImplementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
   testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
   testImplementation("org.apache.kafka:kafka-streams-test-utils:${Versions.KAFKA}")
   testImplementation("org.springframework.kafka:spring-kafka-test:${Versions.SPRING_KAFKA}")
@@ -79,19 +82,19 @@ task integrationTest(type: Test) {
     Boolean ci = Boolean.valueOf(System.getenv('CI'))
     if (ci) {
       // the elasticsearch brought up by CircleCI (see `.circleci/config`) runs on localhost:9200
-      systemProperty 'elasticsearch.host', 'localhost'
       systemProperty 'elasticsearch.port', '9200'
-      systemProperty 'elasticsearch.ssl.enabled', false
     }
     else {
-      def elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:${ Versions.ELASTIC }")
-      elasticsearchContainer.start()
-      systemProperty 'elasticsearch.host', 'localhost'
-      systemProperty 'elasticsearch.port', elasticsearchContainer.getMappedPort(9200)
-      systemProperty 'elasticsearch.ssl.enabled', false
+      DockerImageName ELASTIC_IMAGE = DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch:${ Versions.ELASTIC }")
+      def elasticsearchContainer = new ElasticsearchContainer(ELASTIC_IMAGE)
+      elasticsearchContainer.start() // This can fail if already running. run `docker ps` then `docker stop <container id>`.
 
+      systemProperty 'elasticsearch.port', elasticsearchContainer.getMappedPort(9200)
       project.ext.set("elasticsearchContainer", elasticsearchContainer)
     }
+
+    systemProperty 'elasticsearch.host', 'localhost'
+    systemProperty 'elasticsearch.ssl.enabled', false
   }
 
   description = 'Runs the integration tests'
@@ -115,7 +118,7 @@ task killElasticsearch {
 }
 
 jar {
-  archivesBaseName = "${rootProject.name}-${project.name}"
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   manifest {
     attributes 'Main-Class': mainClassName
   }

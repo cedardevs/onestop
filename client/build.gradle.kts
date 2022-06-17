@@ -40,6 +40,8 @@ task<Tar>("tar") {
     dependsOn("npm_run_build")
 
     from(file("${buildDir}/webpack"))
+    fileMode = 484 // u+rwx,go+r,o+r   = 0744 hex = 484 decimal = 0b111100100
+    dirMode =  493 // u+rwx,go+rx,o+rx = 0755 hex = 493 decimal = 0b111101101
     compression = Compression.GZIP
     archiveBaseName.set(publish.title)
     archiveExtension.set("tar.gz")

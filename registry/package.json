@@ -1,8 +1,12 @@
 {
   "name": "schema-deref",
   "scripts": {
-    "build": "speccy resolve build/resources/main/openapi_base.yaml --json-schema > build/resources/main/static/openapi.yaml",
-    "retire": "retire -p"
+    "build": "npm install && speccy resolve build/resources/main/openapi_base.yaml --json-schema > build/resources/main/static/openapi.yaml",
+    "retire": "retire -p --exitwith 0",
+    "clean": "rm -rf node_modules && rm -rf build && rm -rf coverage",
+    "dependencies": "npm list -depth=8",
+    "auditFix": "npm audit fix",
+    "audit": "npm audit --trace-deprecation"
   },
   "devDependencies": {
     "retire": "^2.2.1",

@@ -1,6 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.moowork.gradle.node.npm.NpmTask
 import com.moowork.gradle.node.task.NodeTask
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 
 plugins {
     `kotlin-dsl`
@@ -14,7 +16,7 @@ plugins {
     // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/index.html
     // - provides monitoring of the projects dependent libraries;
     //   creating a report of known vulnerable components that are included in the build.
-    id("org.owasp.dependencycheck").version("5.3.2.1")
+    id("org.owasp.dependencycheck").version("6.5.3")
 
     // Note: The plugins below are not universally `apply(true)`because subprojects only need them conditionally.
 
@@ -25,7 +27,7 @@ plugins {
     // Jib plugin
     // https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin
     // - Jib is a Gradle plugin for building Docker and OCI images for your Java applications.
-    id("com.google.cloud.tools.jib").version("2.2.0").apply(false)
+    id("com.google.cloud.tools.jib").version("2.7.1").apply(false)
 
     // Node plugin
     // https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
@@ -44,13 +46,13 @@ plugins {
     // Spring dependency management plugin
     // https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/
     // - A Gradle plugin that provides Maven-like dependency management and exclusions
-    id("io.spring.dependency-management").version("1.0.9.RELEASE").apply(false)
+    id("io.spring.dependency-management").version("1.0.11.RELEASE").apply(false)
 
     // Spring Boot plugin
     // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
     // - A Gradle plugin that allows you to package executable jar or war archives,
     //   run Spring Boot applications, and use the dependency management provided by spring-boot-dependencies
-    id("org.springframework.boot").version("2.3.1.RELEASE").apply(false)
+    id("org.springframework.boot").version("2.7.0").apply(false)
 
     // Gogradle plugin
     // https://github.com/gogradle/gogradle
@@ -59,9 +61,9 @@ plugins {
 
 }
 
-// resolve build dependencies from Bintray jcenter
+// resolve build dependencies from Bintray
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 subprojects {
@@ -135,9 +137,9 @@ dependencyCheck {
 }
 
 allprojects {
-    // resolve all subproject dependencies from Bintray jcenter and jitpack
+    // resolve all subproject dependencies from Bintray and jitpack
     repositories {
-        jcenter()
+        mavenCentral()
         maven(url= "https://repo.spring.io/milestone")
         maven(url = "https://packages.confluent.io/maven/")
         maven(url = "https://jitpack.io")
@@ -184,6 +186,16 @@ subprojects {
 
         extra.apply {
             set("Versions", Versions)
+        }
+        tasks.test {
+            useJUnitPlatform()
+            testLogging {
+                events (FAILED, SKIPPED)//STANDARD_ERROR, STANDARD_OUT
+                exceptionFormat = FULL
+                showExceptions = true
+                showCauses = true
+                showStackTraces = true
+            }
         }
     }
     if (jibProjects.contains(name)) {
@@ -296,23 +308,30 @@ subprojects {
                 }
 
                 if (requested.group == "org.bouncycastle" && requested.name == "bcprov-jdk15on") {
-                    if (requested.version!!.startsWith("1.63")) {
-                        useVersion("1.65")
-                        because("fixes vulnerability in 1.63 and before")
+                    if (requested.version!! < "1.70") {
+                        useVersion("1.70")
+                        because("fixes vulnerability in 1.6 before")
                     }
                 }
 
-                if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
-                    if (requested.version!!.startsWith("2.9.") || requested.version!!.startsWith("2.10.") ) {
-                        useVersion("2.10.1")
-                        because("fixes vulnerability in 2.9.9 and before")
-                    }
-                }
+//                if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
+//                    if (requested.version!! < "2.13.1") {
+//                        useVersion("2.13.1")
+//                        because("fixes vulnerability in 2.9.9 and before")
+//                    }
+//                }
 
                 if (requested.group == "com.google.guava" && requested.name == "guava") {
-                    if (requested.version!! <= "27.0.1") {
-                        useVersion("27.0.1-jre")
+                    if (requested.version!! <= "31.0.1") {
+                        useVersion("31.0.1-jre")
                         because("fixes CVE-2018-10237")
+                    }
+                }
+
+                if (requested.group == "org.hibernate.validator" && requested.name == "hibernate-validator") {
+                    if (requested.version!! < "6.1.7") {
+                        useVersion( "6.1.7.Final")
+                        because("fixes vulnerability in 6.1.4-Final and earlier")
                     }
                 }
 
@@ -337,9 +356,22 @@ subprojects {
                 }
                 if (requested.group.startsWith("org.apache.tomcat") &&
                         requested.name.contains("tomcat") &&
-                        requested.version!! <= "9.0.29") {
-                    useVersion("9.0.37")
-                    because("Enforce tomcat 9.0.20+ to avoid vulnerabilities CVE-2019-0199, CVE-2019-0232, and CVE-2019-10072")
+                        requested.version!! < "9.0.58") {
+                    useVersion("9.0.58")
+                    because("Enforce tomcat 9.0.58+ to avoid vulnerabilities CVE-2022-23181")
+                }
+                if (requested.group.startsWith("org.apache.tomcat.embed") &&
+                    requested.version!! < "9.0.58") {
+                    useVersion("9.0.58")
+                    because("Fixes CVE-2022-23181")
+                }
+                if (requested.group.startsWith("io.netty.incubator") &&
+                        requested.name == "netty-incubator-codec-native-quic" &&
+                        requested.version!! < "0.0.26.Final") {
+                    useVersion("0.0.26.Final")
+                    because("Fixes CVE-2019-20444, Brought in by reactor-netty, waiting for release of updated reactor-netty" +
+                            " for this commit to take effect: " +
+                            "https://github.com/reactor/reactor-netty/commit/857277287671d5b40708064b3afef1a7ae7b7a47")
                 }
             }
         }

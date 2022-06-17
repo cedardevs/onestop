@@ -11,6 +11,7 @@ import org.elasticsearch.ElasticsearchGenerationException;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.cedar.onestop.data.util.JsonUtils;
@@ -87,7 +88,7 @@ public class IndexingUtils {
         break;
         }
       }
-      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(JsonUtils.toJson(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
+      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(JsonUtils.toJson(formattedRecord).getBytes(), XContentType.JSON);
 
     }
   }
@@ -106,7 +107,7 @@ public class IndexingUtils {
         formattedRecord = TransformationUtils.reformatGranuleForAnalysis(input.getValue().timestamp(), input.getValue().value());
 
       }
-      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(JsonUtils.toJson(formattedRecord).getBytes(), org.elasticsearch.common.xcontent.XContentType.JSON);
+      return new IndexRequest(indexName).opType(opType).id(input.getKey()).source(JsonUtils.toJson(formattedRecord).getBytes(), XContentType.JSON);
 
 
     }

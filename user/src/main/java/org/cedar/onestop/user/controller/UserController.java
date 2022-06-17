@@ -17,8 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -124,7 +123,7 @@ public class UserController {
   })
   @GetMapping(value = "/self", produces = "application/json")
   public JsonApiResponse getAuthenticatedUser(
-      final @AuthenticationPrincipal Authentication authentication,
+      Principal authentication,
       HttpServletResponse response)
       throws RuntimeException, ResourceNotFoundException {
     var userId = authentication.getName();
@@ -151,7 +150,7 @@ public class UserController {
   @PreAuthorize("#userInput == null || #userInput.id == null || #userInput.id == #authentication.name")
   public JsonApiResponse upsertAuthenticatedUser(
       @RequestBody(required = false) OnestopUser userInput,
-      @AuthenticationPrincipal Authentication authentication,
+      Principal authentication,
       HttpServletResponse response)
       throws RuntimeException {
     var userId = authentication.getName();

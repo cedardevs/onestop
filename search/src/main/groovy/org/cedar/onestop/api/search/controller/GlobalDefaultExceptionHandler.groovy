@@ -19,6 +19,8 @@ class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
     int intStatus
     Map error = [:]
 
+    log.error("Exception occurred: ", ex)
+
     if (ex instanceof ResponseException) {
       intStatus = ex.response.statusLine.statusCode
       error.status = intStatus

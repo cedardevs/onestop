@@ -1,5 +1,5 @@
 plugins {
-  // https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
+  // Mostly gradle 7 updated locally in buildSrc, https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
   id "io.forgo.keystoreplugin" version "1.1"
   id 'war'
 }
@@ -18,6 +18,7 @@ dependencies {
   implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
   implementation("org.codehaus.groovy:groovy-xml:${Versions.GROOVY}")
 
+  implementation("org.elasticsearch:elasticsearch:${Versions.ELASTIC}")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}")
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${Versions.ELASTIC}")
   implementation("org.springframework.boot:spring-boot-starter-web")
@@ -29,7 +30,7 @@ dependencies {
   implementation("org.apache.lucene:lucene-expressions:7.2.1")
   implementation("javax.xml.bind:jaxb-api:2.3.1") // Java 9/10 deprecates, 11 removes javax.xml.bind.DatatypeConverter
 
-  runtime("org.springframework.boot:spring-boot-devtools")
+  runtimeOnly("org.springframework.boot:spring-boot-devtools")
 
   // providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 
@@ -154,6 +155,14 @@ task integrationTest(type: Test) {
   reports.html.destination = file("${buildDir}/reports/integrationTests")
   environment project.envVars as Map<String, ?>
 }
+// Due to gradle 7 not setting a default duplicate handling strategy, duplicate application*.yml files.
+// https://docs.gradle.org/7.4/dsl/org.gradle.api.tasks.Copy.html#org.gradle.api.tasks.Copy:duplicatesStrategy
+processIntegrationTestResources {
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+test {
+  environment project.envVars as Map<String, ?>
+}
 check.dependsOn integrationTest
 
 bootJar {
@@ -161,21 +170,25 @@ bootJar {
     include "onestop-request-schema.json"
     into "WEB-INF/classes"
   }
-  classifier = 'all' // add a classifier to distinguish the executable jar
-  archiveBaseName = "${rootProject.name}-${project.name}"
+  archiveClassifier.set('all') // add a classifier to distinguish the executable jar
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   launchScript()
 }
+build.dependsOn bootJar
 
+// This is what the Federal On Prem expects, a war.
 bootWar {
   from("${buildDir}/resources/main") {
-    include "onestop-request-schema.json"
-    into "WEB-INF/classes"
-  }
-
-  classifier = 'all' // add a classifier to distinguish the executable jar
-  archiveBaseName = "${rootProject.name}-${project.name}"
-  launchScript()
+include "onestop-request-schema.json"
+into "WEB-INF/classes"
 }
+
+// This archiveBaseName is what the war will be named. Needs to reflect the URL OneStop-search, the context path tomcat will use.
+archiveBaseName.set("${rootProject.name}-${project.name}")
+archiveBaseName.set("${rootProject.name}")
+launchScript()
+}
+build.dependsOn bootWar
 
 // these environment variables would normally be set by kubernetes objects;
 // however, this is problematic running via gradle tasks (build, test, bootRun...) -- where these environment
@@ -185,10 +198,6 @@ bootRun {
   environment['server.port'] = '8097'
   environment['elasticsearch.host'] = 'localhost'
   environment['elasticsearch.ssl.enabled'] = 'false'
-  environment project.envVars as Map<String, ?>
-}
-
-test {
   environment project.envVars as Map<String, ?>
 }
 

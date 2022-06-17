@@ -18,8 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -140,7 +139,7 @@ public class PrivilegeController {
   @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_OWN_PROFILE})
   @GetMapping("/self/privilege")
   public JsonApiResponse getAuthenticatedUserPrivileges(
-      final @AuthenticationPrincipal Authentication authentication,
+      Principal authentication,
       Pageable pageable,
       HttpServletResponse response)
       throws RuntimeException {

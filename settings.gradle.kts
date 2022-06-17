@@ -5,7 +5,6 @@ include(
     "e2e-tests",
     "elastic-common",
     "data-common",
-    "geoportal-search",
     "indexer",
     "kafka-common",
     "parsalyzer",

@@ -11,7 +11,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 @DirtiesContext
-@ActiveProfiles(["integration", "test", "unit-test"])
+@ActiveProfiles(["integration", "test", "trending-search"])
 @SpringBootTest
 class TrendingSearchServiceWithDefaultBlacklistConfigSpec extends Specification {
 

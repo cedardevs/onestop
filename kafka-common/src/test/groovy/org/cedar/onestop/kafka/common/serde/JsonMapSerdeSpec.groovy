@@ -8,6 +8,8 @@ import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.kstream.Consumed
 import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.kstream.Produced
+//import org.apache.kafka.streams.TestInputTopic
+//import org.apache.kafka.streams.TestOutputTopic
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import spock.lang.Specification
 
@@ -35,22 +37,29 @@ class JsonMapSerdeSpec extends Specification {
   def 'works in a kstream app'() {
     setup:
     def value = [hello: 'world']
+    def inputTopicName = 'test_in'
+    def outputTopicName = 'test_out'
     def collector = []
 
     def builder = new StreamsBuilder()
     builder
-        .stream('test_in', Consumed.with(Serdes.String(), JsonSerdes.Map()))
+        .stream(inputTopicName, Consumed.with(Serdes.String(), JsonSerdes.Map()))
         .peek({ k, v -> collector << v})
-        .to('test_out', Produced.with(Serdes.String(), JsonSerdes.Map()))
+        .to(outputTopicName, Produced.with(Serdes.String(), JsonSerdes.Map()))
 
     def driver = new TopologyTestDriver(builder.build(), buildTestStreamConfig())
+//    TestInputTopic inputTopic = driver.createInputTopic(inputTopicName, Serdes.String().serializer(), serde.serializer())
+//    TestOutputTopic outputTopic = driver.createOutputTopic(outputTopicName, Serdes.String().deserializer(), serde.deserializer())
+
     def consumerFactory = new ConsumerRecordFactory(Serdes.String().serializer(), serde.serializer())
 
     when:
-    driver.pipeInput(consumerFactory.create('test_in', 'A', value))
+//    inputTopic.pipeInput('A', value)
+    driver.pipeInput(consumerFactory.create(inputTopicName, 'A', value))
 
     then:
     collector == [ value ]
+//    outputTopic.readRecord().value() == value
     driver.readOutput('test_out').value() == '{"hello":"world"}'.bytes
   }
 
@@ -68,9 +77,11 @@ class JsonMapSerdeSpec extends Specification {
         .reduce({a, b -> b}, Materialized.as(tableName).withKeySerde(Serdes.String()).withValueSerde(JsonSerdes.Map()))
 
     def driver = new TopologyTestDriver(builder.build(), buildTestStreamConfig())
+//    TestInputTopic inputTopic = driver.createInputTopic(topicName, Serdes.String().serializer(), serde.serializer())
     def consumerFactory = new ConsumerRecordFactory(Serdes.String().serializer(), serde.serializer())
 
     when:
+//    inputTopic.pipeInput(key, value)
     driver.pipeInput(consumerFactory.create(topicName, key, value))
 
     then:

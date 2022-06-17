@@ -122,7 +122,9 @@ class ElasticsearchService {
     def requestBody = buildRequestBody(params)
     def marshalledResponse = esReadService.performRequest('GET', "$index/_search", JsonUtils.toJson(requestBody))
 
-    def searchResponse = esReadService.constructSearchResponse(marshalledResponse);
+    def searchResponse = esReadService.constructSearchResponse(marshalledResponse)
+    if (searchResponse.containsKey('errors')) // This is spelled out in ElasticReadService.constructSearchResponse.
+      return searchResponse
 
     def facets = prepareFacets(marshalledResponse)
     if (facets) {

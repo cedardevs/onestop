@@ -18,8 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -110,7 +109,7 @@ public class SavedSearchController {
   @ApiOperation(value = "Delete saved search")
   @DeleteMapping(value = "/saved-search/{id}", produces = "application/json")
   public JsonApiResponse delete(@PathVariable(value = "id") String id,
-                                final @AuthenticationPrincipal Authentication authentication,
+                                Principal authentication,
                                 HttpServletResponse response)
       throws ResourceNotFoundException {
     logger.info("Received saved-search DELETE request");
@@ -138,7 +137,7 @@ public class SavedSearchController {
   })
   @GetMapping("/self/saved-search")
   public JsonApiResponse getAuthenticatedUserSearches(
-      final @AuthenticationPrincipal Authentication authentication,
+      Principal authentication,
       Pageable pageable,
       HttpServletResponse response)
       throws RuntimeException {
@@ -163,7 +162,7 @@ public class SavedSearchController {
   @PostMapping("/self/saved-search")
   public JsonApiResponse createAuthenticatedUserSearch(
       @RequestBody SavedSearch savedSearch,
-      final @AuthenticationPrincipal Authentication authentication,
+      Principal authentication,
       HttpServletResponse response)
       throws ResourceNotFoundException {
     logger.info("Received saved-search POST request");
@@ -184,7 +183,7 @@ public class SavedSearchController {
   @GetMapping("/self/saved-search/{id}")
   public JsonApiResponse getAuthenticatedUserSearch(
       @PathVariable String id,
-      final @AuthenticationPrincipal Authentication authentication,
+      Principal authentication,
       HttpServletResponse response)
       throws ResourceNotFoundException {
     logger.info("Received saved-search GET request");
@@ -210,7 +209,7 @@ public class SavedSearchController {
   public JsonApiResponse updateAuthenticatedUserSearch(
       @RequestBody SavedSearch savedSearch,
       @PathVariable String id,
-      final @AuthenticationPrincipal Authentication authentication,
+      Principal authentication,
       HttpServletResponse response)
       throws ResourceNotFoundException {
     logger.info("Received saved-search PUT request");
@@ -232,7 +231,7 @@ public class SavedSearchController {
   @DeleteMapping("/self/saved-search/{id}")
   public JsonApiResponse deleteAuthenticatedUserSearch(
       @PathVariable String id,
-      final @AuthenticationPrincipal Authentication authentication,
+      Principal authentication,
       HttpServletResponse response)
       throws ResourceNotFoundException {
     logger.info("Received saved-search DELETE request");

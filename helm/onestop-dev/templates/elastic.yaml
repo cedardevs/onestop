@@ -10,13 +10,12 @@
 # [infraUninstall.sh]
 # https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-uninstalling-eck.html
 
-apiVersion: elasticsearch.k8s.elastic.co/v1beta1
+apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: {{ include "onestop-dev.fullname" . }}
 spec:
-  version: 7.10.2
-  nodes:
+  version: 7.8.0
   nodeSets:
     - name: default
       count: 1
@@ -38,12 +37,12 @@ spec:
 {{/*        thread_pool.snapshot.max: 8*/}}
 
 ---
-apiVersion: kibana.k8s.elastic.co/v1beta1
+apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
   name: {{ include "onestop-dev.fullname" . }}
 spec:
-  version: 7.10.2
+  version: 7.8.0
   count: 1
   elasticsearchRef:
     name: {{ include "onestop-dev.fullname" . }}

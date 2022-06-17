@@ -18,30 +18,30 @@ object Versions {
     // https://github.com/opencontainers/image-spec/blob/master/annotations.md#annotations
     const val LABEL_SCHEMA: String = "1.0"
 
-    const val NODE: String = "10.16.3"
-    const val NPM: String = "7.6.2"
+    const val NODE: String = "14.17.0"
+    const val NPM: String = "8.4.1"
 
-    const val ELASTIC: String = "7.6.2"
+    const val ELASTIC: String = "7.8.0" // When changed update references to ElasticsearchVersion and ./circleci/config.yml. This also used by TestContainers.
     const val CONFLUENT: String = "5.4.0"
     const val KAFKA: String = "2.4.0"
     const val SPRING_KAFKA: String = "2.4.1.RELEASE"
     const val AVRO: String = "1.9.1"
 
-    const val GROOVY: String = "2.5.8"
-    const val SPOCK: String = "1.2-groovy-2.5"
-    const val TEST_CONTAINERS: String = "1.15.1"
+    const val GROOVY: String = "3.0.9"
+    const val SPOCK: String = "2.2-M1-groovy-3.0"
+    const val TEST_CONTAINERS: String = "1.16.3"
     const val OPEN_SAML = "3.4.3"
-    const val LOGBACK = "1.2.3"
+    const val LOGBACK = "1.2.8"
     const val SLF4J = "1.7.28"
     const val JAVAX_SERVLET_API = "4.0.1"
     const val JUNIT = "4.12"
     const val AUTH0_JAVA_JWT = "3.4.1"
     const val PAC4J = "3.8.3"
-    const val SNAKE_YAML = "1.24"
+    const val SNAKE_YAML = "1.30"
     const val REACTOR_BOM = "Dysprosium-SR7"
     const val JSONP = "2.0.0-RC2"
 
-    const val ONESTOP_SCHEMAS: String = "0.7.0"
+    const val ONESTOP_SCHEMAS: String = "0.7.2"
 }
 
 // data classes

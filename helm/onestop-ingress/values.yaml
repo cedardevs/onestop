@@ -2,3 +2,4 @@
 # Nginx Ingress
 ###############################################################################
 controller.admissionWebhooks.enabled: false
+controller.watchIngressWithoutClass: true

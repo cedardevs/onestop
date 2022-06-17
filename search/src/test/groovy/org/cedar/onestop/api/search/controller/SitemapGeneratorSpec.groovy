@@ -13,15 +13,15 @@ class SitemapGeneratorSpec extends Specification {
 
     then:
     simplifyMultilineComparison(xml, """
-      <?xml version="1.0" encoding="UTF-8"?>
-        <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <?xml version="1.0" encoding="UTF-8"?>
+      <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-      <sitemap>
-        <loc>baseUrl/sitemap/AWUByPEUY2tHcYwYu62K.txt</loc>
-        <lastmod>2018-08-03T21:54:29.487Z</lastmod>
-      </sitemap>
+    <sitemap>
+      <loc>baseUrl/sitemap/AWUByPEUY2tHcYwYu62K.txt</loc>
+      <lastmod>2018-08-03T21:54:29.487Z</lastmod>
+    </sitemap>
 
-      </sitemapindex>
+    </sitemapindex>
     """ )
   }
 
@@ -38,27 +38,27 @@ class SitemapGeneratorSpec extends Specification {
 
     then:
     simplifyMultilineComparison(xml, """
-      <?xml version="1.0" encoding="UTF-8"?>
-        <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <?xml version="1.0" encoding="UTF-8"?>
+      <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-      <sitemap>
-        <loc>baseUrl/sitemap/AWUByPEUY2tHcYwYu62K.txt</loc>
-        <lastmod>2018-08-03T21:54:29.487Z</lastmod>
-      </sitemap>
-
-
-      <sitemap>
-        <loc>baseUrl/sitemap/XYZByPEUY2tHcYwYu62K.txt</loc>
-        <lastmod>2018-08-02T18:07:49.487Z</lastmod>
-      </sitemap>
+    <sitemap>
+      <loc>baseUrl/sitemap/AWUByPEUY2tHcYwYu62K.txt</loc>
+      <lastmod>2018-08-03T21:54:29.487Z</lastmod>
+    </sitemap>
 
 
-      <sitemap>
-        <loc>baseUrl/sitemap/123ByPEUY2tHcYwYu62K.txt</loc>
-        <lastmod>2018-08-01T14:21:09.487Z</lastmod>
-      </sitemap>
+    <sitemap>
+      <loc>baseUrl/sitemap/XYZByPEUY2tHcYwYu62K.txt</loc>
+      <lastmod>2018-08-02T18:07:49.487Z</lastmod>
+    </sitemap>
 
-      </sitemapindex>
+
+    <sitemap>
+      <loc>baseUrl/sitemap/123ByPEUY2tHcYwYu62K.txt</loc>
+      <lastmod>2018-08-01T14:21:09.487Z</lastmod>
+    </sitemap>
+
+    </sitemapindex>
     """ )
   }
 

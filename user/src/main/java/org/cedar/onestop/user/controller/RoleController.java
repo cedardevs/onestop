@@ -17,8 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -139,7 +138,7 @@ public class RoleController {
   @GetMapping(value = "/self/role", produces = "application/json")
   @Secured({AuthorizationConfiguration.ROLE_PREFIX + AuthorizationConfiguration.READ_OWN_PROFILE})
   public JsonApiResponse getAuthenticatedUserRoles(
-      final @AuthenticationPrincipal Authentication authentication,
+      Principal authentication,
       Pageable pageable,
       HttpServletResponse response)
       throws RuntimeException {

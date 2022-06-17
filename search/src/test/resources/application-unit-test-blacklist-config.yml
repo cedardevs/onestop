@@ -1,11 +1,4 @@
-
-spring.profiles.include:
-  - trending-search
-  - unit-test-blacklist
-
----
-spring:
-  profiles: unit-test-blacklist
+spring.config.activate.on-profile: unit-test-blacklist-config
 
 trending:
   additionalBlacklistedSearchTerms:

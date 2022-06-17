@@ -24,7 +24,7 @@ class ElasticsearchServiceSpec extends Specification {
   RestClient mockRestClient = Mock(RestClient)
   SearchConfig searchConfig = new SearchConfig()
   SearchRequestParserService searchRequestParserService = new SearchRequestParserService(searchConfig)
-  ElasticsearchVersion esVersion = new ElasticsearchVersion("7.5.2")
+  ElasticsearchVersion esVersion = new ElasticsearchVersion("7.8.0")
   ElasticsearchConfig esConfig = new ElasticsearchConfig(
       esVersion,
       "ElasticsearchServiceSpec-",

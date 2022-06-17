@@ -48,7 +48,7 @@ public class IndexerApp {
     probeServer = new KafkaHealthProbeServer(streamsApp);
   }
 
-  public synchronized void init() throws IOException, ExecutionException, InterruptedException {
+  public synchronized void init() throws Exception {
     if (!initialized) {
       elasticService.initializeCluster();
       initTopics();
@@ -56,7 +56,7 @@ public class IndexerApp {
     initialized = true;
   }
 
-  public void start() throws InterruptedException, ExecutionException, IOException {
+  public void start() throws Exception {
     init();
     KafkaHelpers.onError(streamsApp).thenAcceptAsync(o -> stop());
     streamsApp.start();

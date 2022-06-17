@@ -3,7 +3,8 @@ plugins {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
+    maven { url = uri("https://jcenter.bintray.com") }
 }
 
 dependencies {

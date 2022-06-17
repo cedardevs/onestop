@@ -1,4 +1,6 @@
 import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.utility.DockerImageName
+
 buildscript {
   repositories {
     mavenCentral()
@@ -31,8 +33,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
   runtimeOnly("org.postgresql:postgresql")
-  implementation("io.springfox:springfox-swagger2:2.9.2")
-  implementation("io.springfox:springfox-swagger-ui:2.9.2")
+  implementation("io.springfox:springfox-boot-starter:3.0.0")
+  implementation("com.google.code.findbugs:jsr305:3.0.2")
 
   implementation('javax.validation:validation-api:2.0.1.Final')
   implementation ('org.hibernate.validator:hibernate-validator:6.0.2.Final')
@@ -82,9 +84,10 @@ task integrationTest(type: Test) {
       systemProperty 'spring.datasource.url', "jdbc:postgresql://localhost:5432/test"
     }
     else {
-      PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer().
+      DockerImageName POSTGRESQL_IMAGE = DockerImageName.parse("postgres")
+      PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer(POSTGRESQL_IMAGE).
           withDatabaseName("test").withUsername("test").withPassword("test")
-      postgreSQLContainer.start()
+      postgreSQLContainer.start() // This can fail if already running. run `docker ps` then `docker stop <container id>`.
 
       systemProperty 'spring.datasource.url', "jdbc:postgresql://localhost:${postgreSQLContainer.getMappedPort(5432)}/test"
 
@@ -104,7 +107,11 @@ task integrationTest(type: Test) {
   reports.junitXml.destination = file("${buildDir}/integration-test-results")
   reports.html.destination = file("${buildDir}/reports/integrationTests")
 }
-
+// Due to gradle 7 not setting a default duplicate handling strategy, duplicate application*.yml files.
+// https://docs.gradle.org/7.4/dsl/org.gradle.api.tasks.Copy.html#org.gradle.api.tasks.Copy:duplicatesStrategy
+processIntegrationTestResources {
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
 check.dependsOn integrationTest
 task killPostgresql {
   doFirst {
@@ -115,14 +122,14 @@ task killPostgresql {
 }
 
 bootJar {
-  classifier = 'all' // add a classifier to distinguish the executable jar
-  baseName = "${rootProject.name}-${project.name}"
+  archiveClassifier.set('all') // add a classifier to distinguish the executable jar
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   launchScript()
 }
 
 task sourceJar(type: Jar) {
-  classifier = 'sources'
-  baseName = "${rootProject.name}-${project.name}"
+  archiveClassifier.set('sources')
+  archiveBaseName.set("${rootProject.name}-${project.name}")
   from "${projectDir}/src"
 }
 
