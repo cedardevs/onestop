@@ -754,7 +754,7 @@ class SearchRequestParserServiceTest extends Specification {
         dataFormats         : [
             terms: [
                 field: 'dataFormat',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
@@ -766,7 +766,7 @@ class SearchRequestParserServiceTest extends Specification {
                 foobar: [
                     terms: [
                         field: 'links.linkProtocol',
-                        size : Integer.MAX_VALUE,
+                        size : 10000,
                         order: ['_term': 'asc']
                     ]
                 ]
@@ -775,84 +775,84 @@ class SearchRequestParserServiceTest extends Specification {
         serviceLinkProtocols: [
             terms: [
                 field: 'serviceLinkProtocol',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         science             : [
             terms: [
                 field: 'gcmdScience',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         services            : [
             terms: [
                 field: 'gcmdScienceServices',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         locations           : [
             terms: [
                 field: 'gcmdLocations',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         instruments         : [
             terms: [
                 field: 'gcmdInstruments',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         platforms           : [
             terms: [
                 field: 'gcmdPlatforms',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         projects            : [
             terms: [
                 field: 'gcmdProjects',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         dataCenters         : [
             terms: [
                 field: 'gcmdDataCenters',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         horizontalResolution: [
             terms: [
                 field: 'gcmdHorizontalResolution',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         verticalResolution  : [
             terms: [
                 field: 'gcmdVerticalResolution',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         temporalResolution  : [
             terms: [
                 field: 'gcmdTemporalResolution',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         fileFormats         : [
             terms: [
                 field: 'fileFormat',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
@@ -864,7 +864,7 @@ class SearchRequestParserServiceTest extends Specification {
                 foobar: [
                     terms: [
                         field: 'links.linkFunction',
-                        size : Integer.MAX_VALUE,
+                        size : 10000,
                         order: ['_term': 'asc']
                     ]
                 ]
@@ -883,7 +883,7 @@ class SearchRequestParserServiceTest extends Specification {
         dataFormats         : [
             terms: [
                 field: 'dataFormat',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
@@ -895,7 +895,7 @@ class SearchRequestParserServiceTest extends Specification {
                 foobar: [
                     terms: [
                         field: 'links.linkProtocol',
-                        size : Integer.MAX_VALUE,
+                        size : 10000,
                         order: ['_term': 'asc']
                     ]
                 ]
@@ -904,84 +904,84 @@ class SearchRequestParserServiceTest extends Specification {
         serviceLinkProtocols: [
             terms: [
                 field: 'serviceLinkProtocol',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         science             : [
             terms: [
                 field: 'gcmdScience',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         services            : [
             terms: [
                 field: 'gcmdScienceServices',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         locations           : [
             terms: [
                 field: 'gcmdLocations',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         instruments         : [
             terms: [
                 field: 'gcmdInstruments',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         platforms           : [
             terms: [
                 field: 'gcmdPlatforms',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         projects            : [
             terms: [
                 field: 'gcmdProjects',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         dataCenters         : [
             terms: [
                 field: 'gcmdDataCenters',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         horizontalResolution: [
             terms: [
                 field: 'gcmdHorizontalResolution',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         verticalResolution  : [
             terms: [
                 field: 'gcmdVerticalResolution',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         temporalResolution  : [
             terms: [
                 field: 'gcmdTemporalResolution',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
         fileFormats         : [
             terms: [
                 field: 'fileFormat',
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: ['_term': 'asc']
             ]
         ],
@@ -993,7 +993,7 @@ class SearchRequestParserServiceTest extends Specification {
                 foobar: [
                     terms: [
                         field: 'links.linkFunction',
-                        size : Integer.MAX_VALUE,
+                        size : 10000,
                         order: ['_term': 'asc']
                     ]
                 ]

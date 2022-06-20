@@ -41,7 +41,7 @@ class SearchRequestParserService {
         agg = [
             terms: [
                 field: field,
-                size : Integer.MAX_VALUE,
+                size : 10000,
                 order: [
                     "_term": "asc"
                 ]
@@ -58,7 +58,7 @@ class SearchRequestParserService {
                 foobar: [
                     terms: [
                         field: field,
-                        size: Integer.MAX_VALUE,
+                        size: 10000,
                         order: [
                             "_term": "asc"
                         ]
