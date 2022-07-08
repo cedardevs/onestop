@@ -99,6 +99,8 @@ public class StreamFunctions {
     var currentEvents = currentState != null ? currentState.getEvents() : null;
     var mergedEvents = ListUtils.addOrInit(currentEvents, buildEventRecord(timestampedInput, failedState));
     builder.setEvents(ListUtils.truncateList(mergedEvents, eventListLimit, true));
+    log.debug("Builder: errors {}", builder.getErrors());
+
     return builder.build();
   };
 
@@ -140,9 +142,10 @@ public class StreamFunctions {
       return mergedMap;
     }
     catch (IOException e) {
+      log.error("Exception: ", e);
       var error = ErrorEvent.newBuilder()
           .setTitle("Unable to parse json")
-          .setDetail("Failed to parsed json: " + e.getMessage())
+          .setDetail("Failed to parse json: " + e.getMessage())
           .setSource(StreamsApps.REGISTRY_ID)
           .build();
       builder.setErrors(ListUtils.addOrInit(builder.getErrors(), error));
@@ -202,6 +205,7 @@ public class StreamFunctions {
   };
 
   static ParsedRecordWithId wrapRecordWithId(String id, ParsedRecord record) {
+    log.debug("Wrapping record with id {}", id);
     return ParsedRecordWithId.newBuilder()
         .setId(id)
         .setRecord(record)
