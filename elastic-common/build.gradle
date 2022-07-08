@@ -13,7 +13,7 @@ dependencies {
     implementation(project(':data-common'))
     implementation("org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}")
     implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${Versions.ELASTIC}")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:${Versions.JACKSON_CORE}")
     // implementation 'com.mapbox.mapboxsdk:mapbox-sdk-geojson:5.3.0' // TODO use this with EsMapping.kt and schemas for geojson object?
 
     testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
