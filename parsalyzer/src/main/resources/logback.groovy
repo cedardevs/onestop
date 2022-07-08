@@ -18,9 +18,9 @@ appender("STDOUT", ConsoleAppender) {
 }
 
 logger('org.gradle', INFO)
-logger('org.cedar.psi.manager', DEBUG, ["STDOUT"])
-logger('org.apache.kafka', DEBUG, ["STDOUT"])
-logger('org.codehaus.groovy', DEBUG, ["STDOUT"])
+logger('org.cedar.psi.manager', INFO, ["STDOUT"])
+logger('org.apache.kafka', INFO, ["STDOUT"])
+logger('org.codehaus.groovy', INFO, ["STDOUT"])
 logger("org.gradle", WARN)
 
 root(LOG_LEVEL, ["STDOUT"])
