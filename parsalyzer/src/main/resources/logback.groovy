@@ -7,7 +7,8 @@ def LOG_LEVEL = DEBUG
 
 appender("STDOUT", ConsoleAppender) {
   filter(ThresholdFilter) {
-    level = INFO
+    def threshold = System.getenv("LOGGING_THRESHOLD") ?: System.getProperty("logging.threshold")
+    level = toLevel(threshold, DEBUG)
   }
   encoder(PatternLayoutEncoder) {
     pattern = "%d{yy-MM-dd HH:mm:ss.SSS} %5p - [%t] %-40.40logger{39} : %m%n%ex"
@@ -17,9 +18,9 @@ appender("STDOUT", ConsoleAppender) {
 }
 
 logger('org.gradle', INFO)
-logger('org.cedar.psi.manager', DEBUG, ["STDOUT"])
-logger('org.apache.kafka', DEBUG, ["STDOUT"])
-logger('org.codehaus.groovy', DEBUG, ["STDOUT"])
+logger('org.cedar.psi.manager', INFO, ["STDOUT"])
+logger('org.apache.kafka', INFO, ["STDOUT"])
+logger('org.codehaus.groovy', INFO, ["STDOUT"])
 logger("org.gradle", WARN)
 
 root(LOG_LEVEL, ["STDOUT"])

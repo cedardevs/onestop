@@ -40,8 +40,9 @@ object Versions {
     const val SNAKE_YAML = "1.30"
     const val REACTOR_BOM = "Dysprosium-SR7"
     const val JSONP = "2.0.0-RC2"
+    const val JACKSON_CORE = "2.10.0" // A lot of other dependencies bring this in though.
 
-    const val ONESTOP_SCHEMAS: String = "0.7.2"
+    const val ONESTOP_SCHEMAS: String = "0.7.5"
 }
 
 // data classes

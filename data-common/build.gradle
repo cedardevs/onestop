@@ -15,7 +15,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
     api("jakarta.json:jakarta.json-api:${Versions.JSONP}")
     implementation("org.glassfish:jakarta.json:${Versions.JSONP}")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:${Versions.JACKSON_CORE}")
 
     testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
     testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
