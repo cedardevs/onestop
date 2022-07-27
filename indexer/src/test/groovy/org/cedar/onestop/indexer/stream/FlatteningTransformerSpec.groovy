@@ -12,14 +12,14 @@ import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.client.Cancellable
 import org.elasticsearch.common.bytes.BytesArray
-import org.elasticsearch.common.unit.TimeValue
-import org.elasticsearch.common.xcontent.XContentBuilder
-import org.elasticsearch.common.xcontent.ToXContent
+import org.elasticsearch.core.TimeValue
+import org.elasticsearch.xcontent.XContentBuilder
+import org.elasticsearch.xcontent.ToXContent
 import org.elasticsearch.index.get.GetResult
 import org.elasticsearch.index.reindex.BulkByScrollResponse
 import org.elasticsearch.index.reindex.BulkByScrollTask
 import org.elasticsearch.index.seqno.SequenceNumbers
-import org.elasticsearch.common.xcontent.json.JsonXContent
+import org.elasticsearch.xcontent.json.JsonXContent
 import spock.lang.Specification
 
 import java.time.Duration
