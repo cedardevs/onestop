@@ -15,7 +15,7 @@ defaultsWithElasticsearch: &defaultsWithElasticsearch
     - GRADLE_USER_HOME: /home/circleci/repo/.gradle_home
   docker:
     - image: circleci/openjdk:11-jdk # primary container to issue gradle commands from
-    - image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+    - image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
       environment:
         - cluster.name: elasticsearch-test
         - xpack.security.enabled: false
