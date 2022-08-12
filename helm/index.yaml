@@ -2,7 +2,37 @@ apiVersion: v1
 entries:
   onestop:
   - apiVersion: v1
-    created: "2022-02-25T17:58:02.368371-07:00"
+    created: "2022-08-12T11:04:50.622097-06:00"
+    dependencies:
+    - name: onestop-client
+      repository: file://../onestop-client
+      version: 3.0.0-beta
+    - name: onestop-indexer
+      repository: file://../onestop-indexer
+      version: 3.0.0-beta
+    - name: onestop-parsalyzer
+      repository: file://../onestop-parsalyzer
+      version: 3.0.0-beta
+    - name: onestop-registry
+      repository: file://../onestop-registry
+      version: 3.0.0-beta
+    - name: onestop-search
+      repository: file://../onestop-search
+      version: 3.0.0-beta
+    - name: onestop-user
+      repository: file://../onestop-user
+      version: 3.0.0-beta
+    - name: onestop-gateway
+      repository: file://../onestop-gateway
+      version: 3.0.0-beta
+    description: A Helm chart for the OneStop system
+    digest: ca1baa4cade8e00ecd82f3b5e9dbd83475b3fcaf7df7d8f6040538dcbda54560
+    name: onestop
+    urls:
+    - onestop-3.0.0-beta2.tgz
+    version: 3.0.0-beta2
+  - apiVersion: v1
+    created: "2022-08-12T11:04:50.619179-06:00"
     dependencies:
     - name: onestop-client
       repository: file://../onestop-client
@@ -32,7 +62,7 @@ entries:
     - onestop-3.0.0-beta.tgz
     version: 3.0.0-beta
   - apiVersion: v1
-    created: "2022-02-25T17:58:02.365386-07:00"
+    created: "2022-08-12T11:04:50.614636-06:00"
     dependencies:
     - name: onestop-client
       repository: file://../onestop-client
@@ -60,7 +90,7 @@ entries:
     version: 3.0.0-alpha
   - apiVersion: v1
     appVersion: 2.4.0
-    created: "2022-02-25T17:58:02.361166-07:00"
+    created: "2022-08-12T11:04:50.610147-06:00"
     dependencies:
     - condition: cp.enabled,global.cp.enabled
       name: cp-helm-charts
@@ -93,7 +123,7 @@ entries:
     version: 0.4.0
   - apiVersion: v1
     appVersion: 2.4.0
-    created: "2022-02-25T17:58:02.354165-07:00"
+    created: "2022-08-12T11:04:50.602163-06:00"
     dependencies:
     - condition: cp.enabled,global.cp.enabled
       name: cp-helm-charts
@@ -126,7 +156,7 @@ entries:
     version: 0.3.0
   - apiVersion: v1
     appVersion: 2.2.0
-    created: "2022-02-25T17:58:02.346158-07:00"
+    created: "2022-08-12T11:04:50.592084-06:00"
     dependencies:
     - condition: elasticsearch.enabled,global.elasticsearch.enabled
       name: elasticsearch
@@ -149,7 +179,7 @@ entries:
     version: 0.2.1
   - apiVersion: v1
     appVersion: 2.2.0
-    created: "2022-02-25T17:58:02.343831-07:00"
+    created: "2022-08-12T11:04:50.589429-06:00"
     dependencies:
     - condition: elasticsearch.enabled,global.elasticsearch.enabled
       name: elasticsearch
@@ -172,7 +202,7 @@ entries:
     version: 0.2.0
   - apiVersion: v1
     appVersion: 2.1.0
-    created: "2022-02-25T17:58:02.340656-07:00"
+    created: "2022-08-12T11:04:50.587095-06:00"
     dependencies:
     - name: api-admin
       repository: file://../api-admin
@@ -192,4 +222,4 @@ entries:
     urls:
     - onestop-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-25T17:58:02.337802-07:00"
+generated: "2022-08-12T11:04:50.58395-06:00"
