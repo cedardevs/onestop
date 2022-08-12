@@ -1,7 +1,6 @@
 plugins {
   // Mostly gradle 7 updated locally in buildSrc, https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
   id "io.forgo.keystoreplugin" version "1.1"
-  id 'war'
 }
 
 sourceCompatibility = 11
@@ -18,7 +17,6 @@ dependencies {
   implementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
   implementation("org.codehaus.groovy:groovy-xml:${Versions.GROOVY}")
 
-  implementation("org.elasticsearch:elasticsearch:${Versions.ELASTIC}")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:${Versions.ELASTIC}")
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${Versions.ELASTIC}")
   implementation("org.springframework.boot:spring-boot-starter-web")
@@ -176,20 +174,6 @@ bootJar {
 }
 build.dependsOn bootJar
 
-// This is what the Federal On Prem expects, a war.
-bootWar {
-  from("${buildDir}/resources/main") {
-include "onestop-request-schema.json"
-into "WEB-INF/classes"
-}
-
-// This archiveBaseName is what the war will be named. Needs to reflect the URL OneStop-search, the context path tomcat will use.
-archiveBaseName.set("${rootProject.name}-${project.name}")
-archiveBaseName.set("${rootProject.name}")
-launchScript()
-}
-build.dependsOn bootWar
-
 // these environment variables would normally be set by kubernetes objects;
 // however, this is problematic running via gradle tasks (build, test, bootRun...) -- where these environment
 // variables are not set and can require different values (e.g. - keystore path/file)
@@ -221,7 +205,7 @@ jib {
 
     from {
       // base image
-      image = 'gcr.io/distroless/java:11'
+     image = 'gcr.io/distroless/java:11'
     }
     to {
       image = publish.repository()
