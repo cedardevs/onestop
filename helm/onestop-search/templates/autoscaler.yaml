@@ -1,6 +1,6 @@
 {{ if .Values.autoscaler.enabled -}}
 ---
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "onestop-search.fullname" . }}-autoscaler
