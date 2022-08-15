@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   onestop:
   - apiVersion: v1
-    created: "2022-08-12T11:04:50.622097-06:00"
+    created: "2022-08-15T13:45:06.425408-06:00"
     dependencies:
     - name: onestop-client
       repository: file://../onestop-client
@@ -26,13 +26,13 @@ entries:
       repository: file://../onestop-gateway
       version: 3.0.0-beta
     description: A Helm chart for the OneStop system
-    digest: ca1baa4cade8e00ecd82f3b5e9dbd83475b3fcaf7df7d8f6040538dcbda54560
+    digest: b910633177036f04d7a3bb1cfbe68c496057bcf343380ea4693359bb39845655
     name: onestop
     urls:
     - onestop-3.0.0-beta2.tgz
     version: 3.0.0-beta2
   - apiVersion: v1
-    created: "2022-08-12T11:04:50.619179-06:00"
+    created: "2022-08-15T13:45:06.422087-06:00"
     dependencies:
     - name: onestop-client
       repository: file://../onestop-client
@@ -62,7 +62,7 @@ entries:
     - onestop-3.0.0-beta.tgz
     version: 3.0.0-beta
   - apiVersion: v1
-    created: "2022-08-12T11:04:50.614636-06:00"
+    created: "2022-08-15T13:45:06.418734-06:00"
     dependencies:
     - name: onestop-client
       repository: file://../onestop-client
@@ -90,7 +90,7 @@ entries:
     version: 3.0.0-alpha
   - apiVersion: v1
     appVersion: 2.4.0
-    created: "2022-08-12T11:04:50.610147-06:00"
+    created: "2022-08-15T13:45:06.415137-06:00"
     dependencies:
     - condition: cp.enabled,global.cp.enabled
       name: cp-helm-charts
@@ -123,7 +123,7 @@ entries:
     version: 0.4.0
   - apiVersion: v1
     appVersion: 2.4.0
-    created: "2022-08-12T11:04:50.602163-06:00"
+    created: "2022-08-15T13:45:06.405697-06:00"
     dependencies:
     - condition: cp.enabled,global.cp.enabled
       name: cp-helm-charts
@@ -156,7 +156,7 @@ entries:
     version: 0.3.0
   - apiVersion: v1
     appVersion: 2.2.0
-    created: "2022-08-12T11:04:50.592084-06:00"
+    created: "2022-08-15T13:45:06.394926-06:00"
     dependencies:
     - condition: elasticsearch.enabled,global.elasticsearch.enabled
       name: elasticsearch
@@ -179,7 +179,7 @@ entries:
     version: 0.2.1
   - apiVersion: v1
     appVersion: 2.2.0
-    created: "2022-08-12T11:04:50.589429-06:00"
+    created: "2022-08-15T13:45:06.39231-06:00"
     dependencies:
     - condition: elasticsearch.enabled,global.elasticsearch.enabled
       name: elasticsearch
@@ -202,7 +202,7 @@ entries:
     version: 0.2.0
   - apiVersion: v1
     appVersion: 2.1.0
-    created: "2022-08-12T11:04:50.587095-06:00"
+    created: "2022-08-15T13:45:06.390043-06:00"
     dependencies:
     - name: api-admin
       repository: file://../api-admin
@@ -222,4 +222,4 @@ entries:
     urls:
     - onestop-0.1.0.tgz
     version: 0.1.0
-generated: "2022-08-12T11:04:50.58395-06:00"
+generated: "2022-08-15T13:45:06.38712-06:00"
