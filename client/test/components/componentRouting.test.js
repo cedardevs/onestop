@@ -86,7 +86,7 @@ describe('The home page', () => {
       '//www.noaa.gov/foia-freedom-of-information-act',
       '//www.cio.noaa.gov/services_programs/info_quality.html',
       '//www.noaa.gov/disclaimer.html',
-      '//www.ncdc.noaa.gov/survey',
+      'https://docs.google.com/forms/d/e/1FAIpQLSeYcbKOaK50do35QbgTprXAVSnBDC00eY22HPPA2aRdkbhujg/viewform',
       'mailto:noaa.data.catalog@noaa.gov?Subject=NOAA%20OneStop%20Feedback',
       '//www.commerce.gov/',
       '//www.noaa.gov/',

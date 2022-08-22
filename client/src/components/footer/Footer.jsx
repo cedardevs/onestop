@@ -69,7 +69,7 @@ const links = [
     text: 'Disclaimer',
   },
   {
-    href: '//www.ncdc.noaa.gov/survey',
+    href: 'https://docs.google.com/forms/d/e/1FAIpQLSeYcbKOaK50do35QbgTprXAVSnBDC00eY22HPPA2aRdkbhujg/viewform',
     text: 'Take Our Survey',
   },
   {
