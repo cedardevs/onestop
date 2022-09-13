@@ -123,6 +123,7 @@ val springBootProjects: List<String> = listOf("elastic-common", "search", "regis
 val nodeProjects: List<String> = listOf("client", "registry")
 val mappingProjects: List<String> = listOf("elastic-common")
 //val micronautProjects: List<String> = listOf("user")
+val warProjects: List<String> = listOf("search")
 
 // allows projects to monitor dependent libraries for known, published vulnerabilities
 dependencyCheck {
@@ -281,6 +282,13 @@ subprojects {
 
     }
 
+    if (warProjects.contains(name)) {
+        // If this system property isn't set then resolves to FALSE.
+        var enableSearchWar: Boolean = System.getProperty("enableSearchWar").toBoolean()
+        if (enableSearchWar) {
+            apply(plugin = "war")
+        }
+    }
     afterEvaluate {
         // override versions of dependencies with vulnerabilities
         configurations.all {

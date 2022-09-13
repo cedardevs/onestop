@@ -174,6 +174,24 @@ bootJar {
 }
 build.dependsOn bootJar
 
+// If the war task is enabled then configure it.
+pluginManager.withPlugin('war') {
+  println("Configuring Search's war task")
+  // This is what the Federal On Prem expects, a war.
+  bootWar {
+    from("${buildDir}/resources/main") {
+      include "onestop-request-schema.json"
+      into "WEB-INF/classes"
+    }
+
+    // This archiveBaseName is what the war will be named. Needs to reflect the URL OneStop-search, the context path tomcat will use.
+    archiveBaseName.set("${rootProject.name}-${project.name}")
+    archiveBaseName.set("${rootProject.name}")
+    launchScript()
+  }
+  build.dependsOn bootWar
+}
+
 // these environment variables would normally be set by kubernetes objects;
 // however, this is problematic running via gradle tasks (build, test, bootRun...) -- where these environment
 // variables are not set and can require different values (e.g. - keystore path/file)
@@ -218,6 +236,13 @@ jib {
       creationTime = publish.created.toString()
       labels = publish.ociAnnotations()
       ports = ['8080']
+//      entrypoint = 'INHERIT'
+//      entrypoint = 'java -jar /jetty/start.jar'
+//      appRoot = '/jetty/webapps/ROOT'
+//      appRoot = "/var/lib/jetty/webapps/ROOT"
+//      user = "root" // otherwise we'll get https://github.com/appropriate/docker-jetty/issues/80
+//      appRoot = "/var/lib/jetty/webapps/ROOT"
+//      user = "root" // otherwise we'll get https://github.com/appropriate/docker-jetty/issues/80
     }
   }
 }
