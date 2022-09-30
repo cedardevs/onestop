@@ -23,8 +23,8 @@ object Versions {
 
     const val ELASTIC: String = "7.17.5"
     const val CONFLUENT: String = "5.4.0"
-    const val KAFKA: String = "2.4.0"
-    const val SPRING_KAFKA: String = "2.4.1.RELEASE"
+    const val KAFKA: String = "2.8.2"
+    const val SPRING_KAFKA: String = "2.8.2.RELEASE"
     const val AVRO: String = "1.9.1"
 
     const val GROOVY: String = "3.0.9"
@@ -37,7 +37,7 @@ object Versions {
     const val JAVAX_SERVLET_API = "4.0.1"
     const val JUNIT = "4.12"
     const val AUTH0_JAVA_JWT = "3.4.1"
-    const val PAC4J = "3.8.3"
+    const val PAC4J = "4.5.5"
     const val SNAKE_YAML = "1.30"
     const val REACTOR_BOM = "Dysprosium-SR7"
     const val JSONP = "2.0.0-RC2"
