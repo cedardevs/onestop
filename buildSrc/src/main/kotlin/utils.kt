@@ -21,7 +21,7 @@ object Versions {
     const val NODE: String = "14.17.0"
     const val NPM: String = "8.4.1"
 
-    const val ELASTIC: String = "7.8.0" // When changed update references to ElasticsearchVersion and ./circleci/config.yml. This also used by TestContainers.
+    const val ELASTIC: String = "7.17.5"
     const val CONFLUENT: String = "5.4.0"
     const val KAFKA: String = "2.4.0"
     const val SPRING_KAFKA: String = "2.4.1.RELEASE"
@@ -29,6 +29,7 @@ object Versions {
 
     const val GROOVY: String = "3.0.9"
     const val SPOCK: String = "2.2-M1-groovy-3.0"
+    const val ELASTIC_SERVER: String = "7.17.5" // When changed update references to ElasticsearchVersion and ./circleci/config.yml. This used by TestContainers.
     const val TEST_CONTAINERS: String = "1.16.3"
     const val OPEN_SAML = "3.4.3"
     const val LOGBACK = "1.2.8"

@@ -33,7 +33,7 @@ import org.elasticsearch.index.reindex.ReindexRequest;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.metrics.Max;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
