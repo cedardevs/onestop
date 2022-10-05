@@ -23,9 +23,9 @@ object Versions {
 
     const val ELASTIC: String = "7.17.5"
     const val CONFLUENT: String = "5.4.0"
-    const val KAFKA: String = "2.8.2"
-    const val SPRING_KAFKA: String = "2.8.2.RELEASE"
-    const val AVRO: String = "1.9.1"
+    const val KAFKA: String = "3.0.2"
+    const val SPRING_KAFKA: String = "3.0.2.RELEASE"
+    const val AVRO: String = "1.11.0"
 
     const val GROOVY: String = "3.0.9"
     const val SPOCK: String = "2.2-M1-groovy-3.0"
