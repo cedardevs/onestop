@@ -22,7 +22,7 @@ object Versions {
     const val NPM: String = "8.4.1"
 
     const val ELASTIC: String = "7.17.5"
-    const val CONFLUENT: String = "5.4.0"
+    const val CONFLUENT: String = "7.0.5"
     const val KAFKA: String = "3.0.2"
     const val SPRING_KAFKA: String = "3.0.2.RELEASE"
     const val AVRO: String = "1.11.0"
