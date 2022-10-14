@@ -33,7 +33,7 @@ dependencies {
 
   api("com.github.cedardevs.schemas:schemas-parse:${Versions.ONESTOP_SCHEMAS}")
   api("com.github.cedardevs.schemas:schemas-analyze:${Versions.ONESTOP_SCHEMAS}")
-  implementation("org.slf4j:slf4j-api:1.7.25")
+  implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
   implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
 
   testImplementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}:test")

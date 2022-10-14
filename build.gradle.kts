@@ -309,7 +309,7 @@ subprojects {
                 }
 
                 if (requested.group == "org.apache.logging.log4j" && requested.name == "log4j-api") {
-                    if (requested.version!!.startsWith("2.11.1")) {
+                    if (requested.version!! < "2.11.2") {
                         useVersion("2.13.3")
                         because("fixes vulnerability in 2.11.1 and before")
                     }

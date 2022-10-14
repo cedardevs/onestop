@@ -22,9 +22,9 @@ object Versions {
     const val NPM: String = "8.4.1"
 
     const val ELASTIC: String = "7.17.5"
-    const val CONFLUENT: String = "7.0.5"
-    const val KAFKA: String = "3.0.2"
-    const val SPRING_KAFKA: String = "3.0.2.RELEASE"
+    const val CONFLUENT: String = "7.1.3"
+    const val KAFKA: String = "3.1.2"
+    const val SPRING_KAFKA: String = "3.1.2.RELEASE"
     const val AVRO: String = "1.11.0"
 
     const val GROOVY: String = "3.0.9"
@@ -32,8 +32,8 @@ object Versions {
     const val ELASTIC_SERVER: String = "7.17.5" // When changed update references to ElasticsearchVersion and ./circleci/config.yml. This used by TestContainers.
     const val TEST_CONTAINERS: String = "1.16.3"
     const val OPEN_SAML = "3.4.3"
-    const val LOGBACK = "1.2.8"
-    const val SLF4J = "1.7.28"
+    const val LOGBACK = "1.4.4"
+    const val SLF4J = "2.0.3"
     const val JAVAX_SERVLET_API = "4.0.1"
     const val JUNIT = "4.12"
     const val AUTH0_JAVA_JWT = "3.4.1"
@@ -41,7 +41,7 @@ object Versions {
     const val SNAKE_YAML = "1.30"
     const val REACTOR_BOM = "Dysprosium-SR7"
     const val JSONP = "2.0.0-RC2"
-    const val JACKSON_CORE = "2.10.0" // A lot of other dependencies bring this in though.
+    const val JACKSON_CORE = "2.13.3" // A lot of other dependencies bring this in though.
 
     const val ONESTOP_SCHEMAS: String = "0.7.5"
 }
