@@ -302,15 +302,15 @@ subprojects {
                 }
 
                 if (requested.group == "org.apache.avro" && requested.name == "avro") {
-                    if(requested.version!! < Versions.AVRO) {
+                    if(requested.version!! < "2.0") {
                         useVersion(Versions.AVRO)
                         because("latest avro does not depend on vulnerable jackson-mapper-asl which has not been updated since 2013")
                     }
                 }
 
                 if (requested.group == "org.apache.logging.log4j" && requested.name == "log4j-api") {
-                    if (requested.version!! < "2.11.2") {
-                        useVersion("2.13.3")
+                    if (requested.version!! < "2.13") {
+                        useVersion("2.17.2")
                         because("fixes vulnerability in 2.11.1 and before")
                     }
                 }
@@ -340,6 +340,13 @@ subprojects {
                     if (requested.version!! < "6.1.7") {
                         useVersion( "6.1.7.Final")
                         because("fixes vulnerability in 6.1.4-Final and earlier")
+                    }
+                }
+
+                if (requested.group == "org.apache.commons" && requested.name == "commons-compress") {
+                    if (requested.version!! < "2.0") {
+                        useVersion("1.21")
+                        because("fixes CVE-2021-36090, CVE-2021-35516, CVE-2021-35515, CVE-2021-35517: Crafty ZIPs")
                     }
                 }
 
@@ -381,8 +388,18 @@ subprojects {
                             " for this commit to take effect: " +
                             "https://github.com/reactor/reactor-netty/commit/857277287671d5b40708064b3afef1a7ae7b7a47")
                 }
+                if (requested.group.startsWith("junit") &&
+                        requested.name == "junit" &&
+                        requested.version!! < "4.2") {
+                    useVersion("4.13.2")
+                    because("Fixes CVE-2020-15250: Local information for the test rule TemporaryFolder.")
+                }
             }
         }
 
     }
+}
+
+subprojects {
+    tasks.register<DependencyReportTask>("allDeps") {}
 }

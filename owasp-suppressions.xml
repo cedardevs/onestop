@@ -3,6 +3,14 @@
 
   <suppress>
      <notes><![CDATA[
+     file name: tomcat-embed-core:9.0.63
+     Vunerability is specific to an example in the original project, which is not included in the distribution.
+     ]]></notes>
+     <cve>CVE-2022-34305</cve>
+  </suppress>
+
+  <suppress>
+     <notes><![CDATA[
      file name: lodash:4.17.15
      Vunerability is specific to function zipObjectDeep, which is not used in our code.
      ]]></notes>

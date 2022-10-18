@@ -9,7 +9,7 @@ configurations {
   integrationTestImplementation.extendsFrom testImplementation
   integrationTestRuntime.extendsFrom testRuntime
   integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
-  
+
   schemaDefinitions
 }
 
@@ -33,10 +33,10 @@ dependencies {
   implementation("org.hibernate.validator:hibernate-validator:6.0.2.Final")
 
   // -- CAS Authentication --
-  implementation "org.pac4j:spring-webmvc-pac4j:3.2.0"
-  implementation "org.pac4j:pac4j-cas:3.8.3"
+  implementation "org.pac4j:spring-webmvc-pac4j:4.0.1"
+  implementation "org.pac4j:pac4j-cas:${Versions.PAC4J}"
 
-  //used to copy schema definitions to generate openAPI 
+  //used to copy schema definitions to generate openAPI
   schemaDefinitions ("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
 
   compileOnly("org.springframework.boot:spring-boot-starter-tomcat")

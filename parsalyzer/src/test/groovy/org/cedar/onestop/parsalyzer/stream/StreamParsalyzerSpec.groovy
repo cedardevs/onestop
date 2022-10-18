@@ -48,7 +48,6 @@ class StreamParsalyzerSpec extends Specification {
     TestOutputTopic outputTopic = driver.createOutputTopic(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
 
     when:
-    throw new Exception("${input.getClass()}")
     inputTopic.pipeInput(key, input)
     // driver.pipeInput(inputFactory.create(testChangelog, key, input))
 
