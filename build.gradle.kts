@@ -371,9 +371,10 @@ subprojects {
                 }
                 if (requested.group.startsWith("org.apache.tomcat") &&
                         requested.name.contains("tomcat") &&
-                        requested.version!! < "9.0.58") {
-                    useVersion("9.0.58")
-                    because("Enforce tomcat 9.0.58+ to avoid vulnerabilities CVE-2022-23181")
+                        requested.version!! < "9.0.68") {
+                    useVersion("9.0.68")
+                    because("Enforce tomcat 9.0.58+ to avoid vulnerabilities CVE-2022-23181\n" +
+                            "9.0.68+ to avoid CVE-2022-34305")
                 }
                 if (requested.group.startsWith("org.apache.tomcat.embed") &&
                     requested.version!! < "9.0.58") {
