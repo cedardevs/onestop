@@ -11,7 +11,8 @@ import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.HttpConstants
 import org.pac4j.core.context.WebContext
-import org.pac4j.core.matching.HttpMethodMatcher
+import org.pac4j.core.matching.matcher.HttpMethodMatcher
+import org.pac4j.core.profile.UserProfile
 import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -61,9 +62,9 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
     CasRestBasicAuthClient casRestBasicAuthClient = new CasRestBasicAuthClient()
     casRestBasicAuthClient.setConfiguration(casConfiguration)
     casRestBasicAuthClient.setName(CAS_REST_CLIENT)
-    AuthorizationGenerator<CasRestProfile> authGen = new AuthorizationGenerator<CasRestProfile>() {
+    AuthorizationGenerator authGen = new AuthorizationGenerator() {
       @Override
-      CasRestProfile generate(WebContext context, CasRestProfile profile) {
+      java.util.Optional generate(WebContext context, UserProfile profile) {
         authz().getRoles().each { String role, List<String> authorizedUsers ->
           if (authorizedUsers.contains(profile.id)) {
             profile.addRole(role)

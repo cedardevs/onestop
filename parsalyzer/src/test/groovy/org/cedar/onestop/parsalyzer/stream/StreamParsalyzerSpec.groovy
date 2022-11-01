@@ -53,14 +53,14 @@ class StreamParsalyzerSpec extends Specification {
 
     then:
     // Not found in SME topic
-    smeTopic.readRecord() == null
+    smeTopic.isEmpty()
     // driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     def finalOutput = outputTopic.readRecord()
      // driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     finalOutput != null
-    outputTopic.readRecord() == null
+    outputTopic.isEmpty()
     // driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
@@ -92,7 +92,7 @@ class StreamParsalyzerSpec extends Specification {
     inputTopic.pipeInput(key, deleteInput)
     // driver.pipeInput(inputFactory.create(testChangelog, key, postInput))
     // driver.pipeInput(inputFactory.create(testChangelog, key, deleteInput))
-    smeTopic.readRecord() == null
+    smeTopic.isEmpty()
     // driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
     def originalOutput = outputTopic.readRecord()
      // driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
@@ -201,7 +201,7 @@ class StreamParsalyzerSpec extends Specification {
 
     then:
     // Nothing on sme topic
-    smeTopic.readRecord() == null
+    smeTopic.isEmpty()
     // driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
