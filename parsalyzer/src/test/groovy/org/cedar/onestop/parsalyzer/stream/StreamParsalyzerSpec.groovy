@@ -49,19 +49,15 @@ class StreamParsalyzerSpec extends Specification {
 
     when:
     inputTopic.pipeInput(key, input)
-    // driver.pipeInput(inputFactory.create(testChangelog, key, input))
 
     then:
     // Not found in SME topic
     smeTopic.isEmpty()
-    // driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     def finalOutput = outputTopic.readRecord()
-     // driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     finalOutput != null
     outputTopic.isEmpty()
-    // driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     // Verify some fields
@@ -90,14 +86,9 @@ class StreamParsalyzerSpec extends Specification {
     when:
     inputTopic.pipeInput(key, postInput)
     inputTopic.pipeInput(key, deleteInput)
-    // driver.pipeInput(inputFactory.create(testChangelog, key, postInput))
-    // driver.pipeInput(inputFactory.create(testChangelog, key, deleteInput))
     smeTopic.isEmpty()
-    // driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
     def originalOutput = outputTopic.readRecord()
-     // driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     def updatedOutput = outputTopic.readRecord()
-     // driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
 
     then: 'verify original fields'
     originalOutput != null
@@ -127,17 +118,14 @@ class StreamParsalyzerSpec extends Specification {
 
     when:
     inputTopic.pipeInput(smeKey, smeValue)
-    // driver.pipeInput(inputFactory.create(testChangelog, smeKey, smeValue))
 
     then: // The record is in the SME topic as json
     def smeOutput = smeTopic.readRecord()
-     // driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, STRING_DESERIALIZER)
     smeOutput.key() == smeKey
     smeOutput.value() == JsonOutput.toJson(AvroUtils.avroToMap(smeValue))
 
     and: // And also in the parsed topic as a ParsedRecord
     def parsedOutput = outputTopic.readRecord()
-     // driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     parsedOutput.key() == smeKey
     parsedOutput.value() instanceof ParsedRecord
   }
@@ -159,10 +147,8 @@ class StreamParsalyzerSpec extends Specification {
 
     when:
     // Simulate SME ending up in granule-extractor-to since that's another app's responsibility
-    // driver.pipeInput(inputFactory.create(testChangelog, nonSMEInputKey, nonSMEInputValue))
     inputTopic.pipeInput(nonSMEInputKey, nonSMEInputValue)
     jsonTopic.pipeInput(unparsedKey, unparsedValue)
-    // driver.pipeInput(jsonFactory.create(Topics.fromExtractorTopic(testType), unparsedKey, unparsedValue))
 
     then:
     // Both records are in the parsed topic
@@ -197,12 +183,10 @@ class StreamParsalyzerSpec extends Specification {
 
     when:
     inputTopic.pipeInput(key, value)
-    // driver.pipeInput(inputFactory.create(testChangelog, key, value))
 
     then:
     // Nothing on sme topic
     smeTopic.isEmpty()
-    // driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     // An error has appeared
