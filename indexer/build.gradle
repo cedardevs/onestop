@@ -45,7 +45,7 @@ dependencies {
   implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
   implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
   implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
-  implementation("org.apache.commons:commons-text:1.2")
+  implementation("org.apache.commons:commons-text:1.10")
 
   testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
