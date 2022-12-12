@@ -64,13 +64,13 @@ class SecurityEnabledConfig implements WebMvcConfigurer {
     casRestBasicAuthClient.setName(CAS_REST_CLIENT)
     AuthorizationGenerator authGen = new AuthorizationGenerator() {
       @Override
-      java.util.Optional generate(WebContext context, UserProfile profile) {
+      java.util.Optional<UserProfile> generate(WebContext context, UserProfile profile) {
         authz().getRoles().each { String role, List<String> authorizedUsers ->
           if (authorizedUsers.contains(profile.id)) {
             profile.addRole(role)
           }
         }
-        return profile
+        return java.util.Optional.of(profile)
       }
     }
     casRestBasicAuthClient.addAuthorizationGenerator(authGen)
