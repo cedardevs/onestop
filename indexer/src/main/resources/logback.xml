@@ -1,0 +1,38 @@
+<configuration>
+	<!-- Prep vars -->
+	<property name="THRESHOLD" value="${LOGGING_THRESHOLD:-logging.threshold}"/>
+	<property name="LOG_LEVEL" value="${THRESHOLD:-DEBUG}"/>
+
+	<appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+		<target>System.err</target>
+		<encoder>
+			<pattern>
+				%d{yy-MM-dd HH:mm:ss.SSS} %5p - [%t] %-40.40logger{39} : %m%n%ex
+			</pattern>
+		</encoder>
+		<!-- <filter class="ch.qos.logback.classic.filter.ThresholdFilter"> -->
+		<!-- 	<level>${LOG_LEVEL}</level> -->
+		<!-- </filter> -->
+	</appender>
+
+	<logger name="org.gradle" level="INFO">
+		<appender-ref ref="STDERR"/>
+	</logger>
+	<!-- <logger name="org.gradle" level="WARN"> -->
+	<!-- 	<appender-ref ref="STDERR"/> -->
+	<!-- </logger> -->
+	<logger name="org.cedar.psi.manager" level="INFO">
+		<appender-ref ref="STDERR"/>
+	</logger>
+	<logger name="org.apache.kafka" level="INFO">
+		<appender-ref ref="STDERR"/>
+	</logger>
+	<logger name="org.codehaus.groovy" level="INFO">
+		<appender-ref ref="STDERR"/>
+	</logger>
+
+	<!-- <root level="ALL"> -->
+	<root level="${LOG_LEVEL}">
+		<appender-ref ref="STDERR"/>
+	</root>
+</configuration>
