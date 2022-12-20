@@ -187,6 +187,7 @@ const GeologicTimeFilter = ({
         relation={relation}
         hasStart={!_.isEmpty(start.year)}
         hasEnd={!_.isEmpty(end.year)}
+        idPrefix="geo"
       />
     )
   }
