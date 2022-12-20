@@ -25,6 +25,7 @@ public class TopologyBuilders {
   private static final Logger log = LoggerFactory.getLogger(TopologyBuilders.class);
 
   public static Topology buildTopology(long publishInterval, AdminClient adminClient) throws ExecutionException, InterruptedException {
+    log.debug("begin building topology");
     var builder = new StreamsBuilder();
     var collectionTopology = addTopologyForType(builder, RecordType.collection, publishInterval);
     var granuleTopology = addTopologyForType(builder, RecordType.granule, publishInterval);
@@ -62,6 +63,7 @@ public class TopologyBuilders {
     // pipe legacy changelogs into combined ones
     // TODO - remove in 4.x
     var existingTopics = adminClient.listTopics().names().get();
+    log.debug("existing topics: {}", existingTopics);
     consumeLegacyChangelogs(builder, RecordType.collection, existingTopics);
     consumeLegacyChangelogs(builder, RecordType.granule, existingTopics);
 
@@ -74,10 +76,13 @@ public class TopologyBuilders {
         .stream()
         .filter(existingTopics::contains)
         .collect(Collectors.toList());
+    log.debug("existing legacy changelog topics: {}", legacyChangelogs);
     // pipe them into the new, combined input changelog
     if (legacyChangelogs.size() > 0) {
+      var combinedTopic = Topics.inputChangelogTopicCombined(StreamsApps.REGISTRY_ID, type);
+      log.debug("piping legacy changelog topics ({}) to combined topic ({})", legacyChangelogs, combinedTopic);
       builder.stream(legacyChangelogs)
-          .to(Topics.inputChangelogTopicCombined(StreamsApps.REGISTRY_ID, type));
+          .to(combinedTopic);
     }
   }
 
