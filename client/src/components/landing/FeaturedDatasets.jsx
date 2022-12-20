@@ -468,6 +468,7 @@ const FeaturedDatasets = props => {
         </li>
       )
     })
+    const featuredOList = <ol>{featuredList}</ol>
 
     return (
       <nav
@@ -477,10 +478,7 @@ const FeaturedDatasets = props => {
         <h2 style={styleFeaturedDatasetsLabel} id="featuredDatasets">
           Featured Data Sets
         </h2>
-
-        <ul>
-          <FlexColumn items={[ featuredList ]} />
-        </ul>
+        <FlexColumn items={[ featuredOList ]} />
       </nav>
     )
   }

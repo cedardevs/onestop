@@ -48,9 +48,6 @@ const styleDownloadSteps = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'space-between',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  alignItems: 'center',
   flexWrap: 'wrap',
 }
 
@@ -60,9 +57,6 @@ const styleWarning = {
 }
 
 const styleStep = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignSelf: 'flex-start',
   margin: '0 1em 1em 0',
   width: '30%',
 }
@@ -75,8 +69,8 @@ const styleStepLabel = {
 export default class ScriptDownloaderInfo extends React.Component {
   render() {
     const step1 = (
-      <div style={styleStep}>
-        <li key="links-downloader-info-step1">
+      <li key="links-downloader-info-step1" style={styleStep}>
+        <div>
           <div style={styleStepLabel}>Choose link type</div>
           <div>Link type is described by source and protocol.</div>
           <img
@@ -84,13 +78,13 @@ export default class ScriptDownloaderInfo extends React.Component {
             style={styleStep1Image}
             alt="FTP link type selected with Links button enabled"
           />
-        </li>
-      </div>
+        </div>
+      </li>
     )
 
     const step2 = (
-      <div style={styleStep}>
-        <li key="links-downloader-info-step2">
+      <li key="links-downloader-info-step2" style={styleStep}>
+        <div>
           <div style={styleStepLabel}>Download text file</div>
           <div>
             Use the Links buttons to download the file (e.g. - onestop_ftp.txt)
@@ -103,13 +97,13 @@ export default class ScriptDownloaderInfo extends React.Component {
             <br />
             <br />
           </div>
-        </li>
-      </div>
+        </div>
+      </li>
     )
 
     const step3 = (
-      <div style={styleStep}>
-        <li key="links-downloader-info-step3">
+      <li key="links-downloader-info-step3" style={styleStep}>
+        <div>
           <div style={styleStepLabel}>Use download utility</div>
           <div>
             For example, <span style={styleInlineCode}>wget</span> is a command
@@ -126,8 +120,8 @@ export default class ScriptDownloaderInfo extends React.Component {
             <br />
             &gt;
           </div>
-        </li>
-      </div>
+        </div>
+      </li>
     )
 
     const downloadSteps = (

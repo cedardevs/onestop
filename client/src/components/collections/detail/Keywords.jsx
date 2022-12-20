@@ -118,7 +118,9 @@ class Keywords extends React.Component {
 
         return (
           <div>
-            <div style={styleKeywordsList}>{keywords}</div>
+            <div style={styleKeywordsList}>
+              <ul> {keywords} </ul>
+            </div>
             <button
               type="button"
               style={styleShowMoreButtonMerged}
