@@ -131,6 +131,7 @@ export default class Meta extends React.Component {
           },
         ]}
       >
+        <html lang="en" />
         {jsonLD}
         {searchActionJsonLd}
       </Helmet>

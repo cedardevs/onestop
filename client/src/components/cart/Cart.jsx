@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {LiveAnnouncer, LiveMessage} from 'react-aria-live'
-import Meta from 'react-helmet'
+import Meta from '../helmet/Meta'
 import ListView from '../common/ui/ListView'
 import {boxShadow} from '../../style/defaultStyles'
 import {identifyProtocol} from '../../utils/resultUtils'

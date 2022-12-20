@@ -486,10 +486,11 @@ const TimeLineResult = ({id, result, relation, queryType}) => {
   )
 }
 
-const TimeRelationIllustration = ({relation, hasStart, hasEnd}) => {
+const TimeRelationIllustration = ({relation, hasStart, hasEnd, idPrefix}) => {
   let currentQueryType = 0
   if (hasStart && !hasEnd) currentQueryType = 1
   if (!hasStart && hasEnd) currentQueryType = 2
+  if (!idPrefix) idPrefix = ''
 
   let query = QUERY[currentQueryType]
 
@@ -506,8 +507,8 @@ const TimeRelationIllustration = ({relation, hasStart, hasEnd}) => {
   const outputs = _.map(RESULTS, (result, index) => {
     return (
       <TimeLineResult
-        key={`result${index + 1}`}
-        id={`result${index + 1}`}
+        key={`${idPrefix}result${index + 1}`}
+        id={`${idPrefix}result${index + 1}`}
         result={result}
         relation={relation}
         queryType={currentQueryType}

@@ -90,7 +90,7 @@ const GranuleAccessLink = props => {
         styleFocus={styleBadgeLinkFocused}
       >
         <div
-          id={`ListResult::Link::${url}`}
+          id={`ListResult${itemId}::Link::${url}`}
           style={{
             ...{
               textDecoration: 'underline',

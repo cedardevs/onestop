@@ -16,6 +16,7 @@ const styleTopicsMenu = {
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
+  listStyle: 'none',
   margin: 0,
   padding: 0,
 }
@@ -60,7 +61,11 @@ class TopicsMenu extends React.Component {
       },
     ]
     topics = topics.map((topic, i) => {
-      return <TopicsMenuButton key={i} topic={topic} onClick={this.search} />
+      return (
+        <li>
+          <TopicsMenuButton key={i} topic={topic} onClick={this.search} />
+        </li>
+      )
     })
     return (
       <nav style={styleTopics} aria-labelledby="popularTopics">
