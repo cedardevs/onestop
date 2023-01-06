@@ -60,18 +60,16 @@ public class KafkaBeanConfig {
 
   @Bean
   Properties streamsConfig(Map kafkaProps) {
-    // Filter to only valid config values -- Streams config + possible internal Producer & Consumer config
-    var filteredConfigs = MapUtils.filterMapKeys(KafkaConfigNames.streams, kafkaProps);
-
     log.info("Building kafka streams appConfig for {}", REGISTRY_ID);
     Properties props = new Properties();
     props.put(APPLICATION_ID_CONFIG, REGISTRY_ID);
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
-    props.putAll(filteredConfigs);
 
     // Maintained for backwards compatility
     props.put("max.request.size", MaxRequestSize);
+
+    props.putAll(kafkaProps);
     return props;
   }
 
