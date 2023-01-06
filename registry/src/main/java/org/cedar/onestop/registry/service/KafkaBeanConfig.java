@@ -11,7 +11,6 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.state.HostInfo;
-import org.cedar.onestop.data.util.MapUtils;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.cedar.onestop.kafka.common.util.KafkaHelpers;
