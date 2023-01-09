@@ -4,12 +4,12 @@ import groovy.util.logging.Slf4j;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.streams.errors.LogAndContinueExceptionHandler;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.state.HostInfo;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
@@ -21,15 +21,10 @@ import org.cedar.schemas.avro.psi.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -70,6 +65,7 @@ public class KafkaBeanConfig {
     props.put(APPLICATION_ID_CONFIG, REGISTRY_ID);
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
+    props.put(DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class.getName());
 
     // Maintained for backwards compatility
     props.put("max.request.size", MaxRequestSize);
@@ -138,23 +134,4 @@ public class KafkaBeanConfig {
     });
     return new KafkaProducer<>(configProps);
   }
-
-  @Bean
-  public ConsumerFactory<String, Input> kafkaConsumerFactory(KafkaProperties properties,
-      JsonDeserializer customDeserializer) {
-      log.info("Creating kafkaConsumerFactory with error handling.");
-      props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
-      props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
-      props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, JsonDeserializer.class);
-      return new DefaultKafkaConsumerFactory<>(properties.buildConsumerProperties(),
-          customDeserializer, customDeserializer);
-  }
-
-  // @Bean
-  // public ProducererFactory<Foo, Bar> kafkaProducerFactory(KafkaProperties properties,
-  //     JsonSserializer customSerializer) {
-
-  //     return new DefaultKafkaConsumerFactory<>(properties.buildProducerProperties(),
-  //         customSerializer, customSerializer);
-  // }
 }
