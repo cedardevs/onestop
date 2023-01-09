@@ -17,6 +17,8 @@ import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.registry.stream.TopicInitializer;
 import org.cedar.onestop.registry.stream.TopologyBuilders;
 import org.cedar.schemas.avro.psi.Input;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +38,7 @@ import static org.cedar.onestop.kafka.common.constants.StreamsApps.REGISTRY_ID;
 @Slf4j
 @Configuration
 public class KafkaBeanConfig {
-
+  private static final Logger log = LoggerFactory.getLogger(KafkaBeanConfig.class);
   private static final Map<String, Object> defaults = new LinkedHashMap<>();
 
   @Value("${publishing.interval.ms:300000}")
@@ -57,11 +59,15 @@ public class KafkaBeanConfig {
 
   @Bean
   Properties streamsConfig(Map kafkaProps) {
-    var props = DataUtils.filterProperties(kafkaProps, KafkaConfigNames.streams);
+    log.info("Building kafka streams appConfig for {}", REGISTRY_ID);
+    Properties props = new Properties();
     props.put(APPLICATION_ID_CONFIG, REGISTRY_ID);
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
+
+    // Maintained for backwards compatility
     props.put("max.request.size", MaxRequestSize);
+
     props.putAll(kafkaProps);
     return props;
   }
