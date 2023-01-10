@@ -9,12 +9,12 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.streams.errors.LogAndContinueExceptionHandler;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.state.HostInfo;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.cedar.onestop.kafka.common.util.KafkaHelpers;
+import org.cedar.onestop.kafka.common.util.LogAndContinueExceptionHandler;
 import org.cedar.onestop.registry.stream.TopicInitializer;
 import org.cedar.onestop.registry.stream.TopologyBuilders;
 import org.cedar.schemas.avro.psi.Input;
@@ -92,7 +92,7 @@ public class KafkaBeanConfig {
     topicInitializer.initialize();
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval, adminClient);
     var app = new KafkaStreams(streamsTopology, streamsConfig);
-    // KafkaHelpers.onError(app).thenAcceptAsync(o -> streamsErrorFuture.complete(0));
+    KafkaHelpers.onError(app).thenAcceptAsync(o -> streamsErrorFuture.complete(0));
     return app;
   }
 
