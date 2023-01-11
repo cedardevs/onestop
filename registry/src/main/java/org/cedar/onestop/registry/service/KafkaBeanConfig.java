@@ -15,6 +15,7 @@ import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.kafka.common.util.LogAndContinueExceptionHandler;
+import org.cedar.onestop.kafka.common.util.IgnoreRecordTooLargeHandler;
 import org.cedar.onestop.registry.stream.TopicInitializer;
 import org.cedar.onestop.registry.stream.TopologyBuilders;
 import org.cedar.schemas.avro.psi.Input;
@@ -66,6 +67,7 @@ public class KafkaBeanConfig {
     props.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     props.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
     props.put(DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class.getName());
+    props.put(DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG, IgnoreRecordTooLargeHandler.class.getName());
 
     // Maintained for backwards compatility
     props.put("max.request.size", MaxRequestSize);
