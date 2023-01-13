@@ -220,15 +220,22 @@ export default class Tabs extends React.Component {
     // let tabId = null
     let tabContentId = 'no-tab-content'
     if (data) {
+      let activeTab = data[this.state.activeIndex]
+      let tabId = `${activeTab.title}-${this.state.activeIndex}`
+      tabContent = activeTab.content
+      tabContentId = `${tabId}-content`
+      tabContentLabelledBy = `${tabId}-wrapper`
+
       data.forEach((tab, index) => {
         let active = false
         let tabId = `${tab.title}-${index}`
         let tabPanelId
+        let tabWrapperId
+        // let tabWrapperId = `${tabId}-wrapper`
         if (index === this.state.activeIndex) {
           active = true
-          tabContent = tab.content
-          tabContentLabelledBy = `${tabId}-wrapper`
-          tabPanelId = `${tabId}-content`
+          tabWrapperId = tabContentLabelledBy
+          tabPanelId = tabContentId
         }
         tabButtons.push(
           <TabButton
@@ -237,7 +244,7 @@ export default class Tabs extends React.Component {
             last={index + 1 === data.length}
             title={tab.title}
             tabId={tabId}
-            tabWrapperId={tabContentLabelledBy}
+            tabWrapperId={tabWrapperId}
             tabContentId={tabPanelId}
             value={index}
             active={active}
