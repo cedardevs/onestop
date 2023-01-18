@@ -94,7 +94,7 @@ public class KafkaBeanConfig {
     topicInitializer.initialize();
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval, adminClient);
     var app = new KafkaStreams(streamsTopology, streamsConfig);
-    // KafkaHelpers.onError(app).thenAcceptAsync(o -> streamsErrorFuture.complete(0));
+    KafkaHelpers.onError(app).thenAcceptAsync(o -> streamsErrorFuture.complete(0));
     return app;
   }
 

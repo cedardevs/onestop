@@ -17,11 +17,17 @@ public class IgnoreRecordTooLargeHandler implements ProductionExceptionHandler {
   public ProductionExceptionHandlerResponse handle(final ProducerRecord<byte[], byte[]> record,
                                                    final Exception exception) {
     if (exception instanceof RecordTooLargeException) {
-      log.warn("record too large: " + exception);
+      log.warn("Record too large to publish, " +
+             "topic: {}, partition: {}",
+             record.topic(), record.partition(),
+             exception);
       return ProductionExceptionHandlerResponse.CONTINUE;
     } else {
-      log.warn("other exception: " + exception);
-      return ProductionExceptionHandlerResponse.CONTINUE;
+      log.error("Exception caught while publishing record, " +
+             "topic: {}, partition: {}",
+             record.topic(), record.partition(),
+             exception);
+      return ProductionExceptionHandlerResponse.FAIL;
     }
   }
 

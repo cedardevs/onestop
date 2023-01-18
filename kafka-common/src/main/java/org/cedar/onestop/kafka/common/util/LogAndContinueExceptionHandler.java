@@ -24,7 +24,6 @@ public class LogAndContinueExceptionHandler implements DeserializationExceptionH
              "taskId: {}, topic: {}, partition: {}, offset: {}",
              context.taskId(), record.topic(), record.partition(), record.offset(),
              exception);
-    log.warn("Returning response " + DeserializationHandlerResponse.CONTINUE);
 
     return DeserializationHandlerResponse.CONTINUE;
   }
