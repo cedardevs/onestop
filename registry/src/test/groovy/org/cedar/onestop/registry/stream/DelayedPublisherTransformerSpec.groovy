@@ -11,8 +11,8 @@ import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.kstream.ValueTransformerSupplier
 import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
-import org.apache.kafka.streams.test.ConsumerRecordFactory
-import org.apache.kafka.streams.test.OutputVerifier
+import org.apache.kafka.streams.TestInputTopic
+import org.apache.kafka.streams.TestOutputTopic
 import org.cedar.schemas.avro.psi.Discovery
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.Publishing
@@ -21,6 +21,7 @@ import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -50,13 +51,12 @@ class DelayedPublisherTransformerSpec extends Specification {
       .setTitle("second")
       .build()
 
-  static final consumerFactory = new ConsumerRecordFactory(INPUT_TOPIC,STRING_SERIALIZER,new MockSchemaRegistrySerde().serializer())
-
   DelayedPublisherTransformer transformer
   TopologyTestDriver driver
   KeyValueStore keyStore
   KeyValueStore timeStore
   KeyValueStore lookupStore
+  TestInputTopic inputTopic
 
   def setup() {
     transformer = new DelayedPublisherTransformer(TIME_STORE_NAME, KEY_STORE_NAME, LOOKUP_STORE_NAME, TEST_INTERVAL)
@@ -102,6 +102,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     keyStore = driver.getKeyValueStore(KEY_STORE_NAME)
     timeStore = driver.getKeyValueStore(TIME_STORE_NAME)
     lookupStore = driver.getKeyValueStore(LOOKUP_STORE_NAME)
+    inputTopic = driver.createInputTopic(INPUT_TOPIC, STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
   }
 
   def cleanup() {
@@ -125,7 +126,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
 
     when:
-    sendInput(driver, INPUT_TOPIC, key, value)
+    inputTopic.pipeInput(key, value)
 
     then:
     keyStore.get(key) == futureMillis
@@ -135,7 +136,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
 
-    OutputVerifier.compareKeyValue(output[0], key, null)
+    compareKeyValue(output[0], key, null)
 
   }
 
@@ -167,8 +168,8 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
 
     when:
-    sendInput(driver, INPUT_TOPIC, key1, value1)
-    sendInput(driver, INPUT_TOPIC, key2, value2)
+    inputTopic.pipeInput(key1, value1)
+    inputTopic.pipeInput(key2, value2)
 
     then:
     keyStore.get(key1) == futureMillis
@@ -179,8 +180,8 @@ class DelayedPublisherTransformerSpec extends Specification {
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
-    OutputVerifier.compareKeyValue(output[0], key1, null)
-    OutputVerifier.compareKeyValue(output[1], key2, null)
+    compareKeyValue(output[0], key1, null)
+    compareKeyValue(output[1], key2, null)
     output.size() == 2
   }
 
@@ -228,9 +229,9 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setPublishing(plusTenMessage)
         .build()
     when: // publish messages, and do it out of order
-    sendInput(driver, INPUT_TOPIC, plusSixKey, plusSixValue)
-    sendInput(driver, INPUT_TOPIC, plusTenKey, plusTenValue)
-    sendInput(driver, INPUT_TOPIC, plusFiveKey, plusFiveValue)
+    inputTopic.pipeInput(plusSixKey, plusSixValue)
+    inputTopic.pipeInput(plusTenKey, plusTenValue)
+    inputTopic.pipeInput(plusFiveKey, plusFiveValue)
 
     then: // values and future publish dates are stored
     keyStore.get(plusFiveKey) == plusFiveMillis
@@ -244,7 +245,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(plusTenKey).equals(plusTenValue)
 
     when: // 8 seconds pass
-    driver.advanceWallClockTime(8000)
+    driver.advanceWallClockTime(Duration.ofMillis(8000))
 
     then: // 5- and 6-second messages have triggers removed and state is updated
     keyStore.get(plusFiveKey) == null
@@ -260,11 +261,11 @@ class DelayedPublisherTransformerSpec extends Specification {
     and: // 3 original messages plus 2 republished messages have come out
     def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 5
-    OutputVerifier.compareKeyValue(output[0], plusSixKey, null)
-    OutputVerifier.compareKeyValue(output[1], plusTenKey, null)
-    OutputVerifier.compareKeyValue(output[2], plusFiveKey, null)
-    OutputVerifier.compareKeyValue(output[3], plusFiveKey, plusFiveValue)
-    OutputVerifier.compareKeyValue(output[4], plusSixKey, plusSixValue)
+    compareKeyValue(output[0], plusSixKey, null)
+    compareKeyValue(output[1], plusTenKey, null)
+    compareKeyValue(output[2], plusFiveKey, null)
+    compareKeyValue(output[3], plusFiveKey, plusFiveValue)
+    compareKeyValue(output[4], plusSixKey, plusSixValue)
   }
 
   def 'two values with same future publishing date are republished when time elapses'() {
@@ -291,9 +292,9 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setPublishing(publishing2)
         .build()
     when:
-    sendInput(driver, INPUT_TOPIC, key1, value1)
-    sendInput(driver, INPUT_TOPIC, key2, value2)
-    driver.advanceWallClockTime(10000)
+    inputTopic.pipeInput(key1, value1)
+    inputTopic.pipeInput(key2, value2)
+    driver.advanceWallClockTime(Duration.ofMillis(10000))
 
     then:
     keyStore.get(key1) == null
@@ -304,10 +305,10 @@ class DelayedPublisherTransformerSpec extends Specification {
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
-    OutputVerifier.compareKeyValue(output[0], key1, null)
-    OutputVerifier.compareKeyValue(output[1], key2, null)
-    OutputVerifier.compareKeyValue(output[2], key1, value1)
-    OutputVerifier.compareKeyValue(output[3], key2, value2)
+    compareKeyValue(output[0], key1, null)
+    compareKeyValue(output[1], key2, null)
+    compareKeyValue(output[2], key1, value1)
+    compareKeyValue(output[3], key2, value2)
     output.size() == 4
   }
 
@@ -341,8 +342,8 @@ class DelayedPublisherTransformerSpec extends Specification {
 
 
     when:
-    sendInput(driver, INPUT_TOPIC, key, firstValue)
-    sendInput(driver, INPUT_TOPIC, key, secondValue)
+    inputTopic.pipeInput(key, firstValue)
+    inputTopic.pipeInput(key, secondValue)
 
     then:
     keyStore.get(key) == null
@@ -353,8 +354,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
-    OutputVerifier.compareKeyValue(output[0], key, null)
-    OutputVerifier.compareKeyValue(output[1], key, secondValue)
+    compareKeyValue(output[0], key, null)
+    compareKeyValue(output[1], key, secondValue)
   }
 
   def 'second value with private false removes an already stored publish trigger'() {
@@ -385,8 +386,8 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
 
     when:
-    sendInput(driver, INPUT_TOPIC, key, firstValue)
-    sendInput(driver, INPUT_TOPIC, key, secondValue)
+    inputTopic.pipeInput(key, firstValue)
+    inputTopic.pipeInput(key, secondValue)
 
     then:
     keyStore.get(key) == null
@@ -396,8 +397,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
-    OutputVerifier.compareKeyValue(output[0], key, null)
-    OutputVerifier.compareKeyValue(output[1], key, secondValue)
+    compareKeyValue(output[0], key, null)
+    compareKeyValue(output[1], key, secondValue)
   }
 
   def 'second value with private false removes an already stored trigger when another trigger at that time exists'() {
@@ -428,9 +429,9 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setPublishing(publishing2)
         .build()
     when:
-    sendInput(driver, INPUT_TOPIC, key1, firstValue)
-    sendInput(driver, INPUT_TOPIC, key2, firstValue)
-    sendInput(driver, INPUT_TOPIC, key1, secondValue)
+    inputTopic.pipeInput(key1, firstValue)
+    inputTopic.pipeInput(key2, firstValue)
+    inputTopic.pipeInput(key1, secondValue)
 
     then:
     keyStore.get(key1) == null
@@ -442,9 +443,9 @@ class DelayedPublisherTransformerSpec extends Specification {
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 3
-    OutputVerifier.compareKeyValue(output[0], key1, null)
-    OutputVerifier.compareKeyValue(output[1], key2, null)
-    OutputVerifier.compareKeyValue(output[2], key1, secondValue)
+    compareKeyValue(output[0], key1, null)
+    compareKeyValue(output[1], key2, null)
+    compareKeyValue(output[2], key1, secondValue)
   }
 
   def 'second value with future publishing date arrives after initial delay has elapsed'() {
@@ -475,9 +476,9 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setPublishing(publishing2)
         .build()
     when:
-    sendInput(driver, INPUT_TOPIC, key, firstValue)
-    driver.advanceWallClockTime(500)
-    sendInput(driver, INPUT_TOPIC, key, secondValue)
+    inputTopic.pipeInput(key, firstValue)
+    driver.advanceWallClockTime(Duration.ofMillis(500))
+    inputTopic.pipeInput(key, secondValue)
 
     then:
     keyStore.get(key) == secondMillis
@@ -488,9 +489,9 @@ class DelayedPublisherTransformerSpec extends Specification {
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 3
-    OutputVerifier.compareKeyValue(output[0], key, null)
-    OutputVerifier.compareKeyValue(output[1], key, firstValue)
-    OutputVerifier.compareKeyValue(output[2], key, null)
+    compareKeyValue(output[0], key, null)
+    compareKeyValue(output[1], key, firstValue)
+    compareKeyValue(output[2], key, null)
   }
 
   def 'second value with future publishing date arrives before initial delay has elapsed'() {
@@ -521,9 +522,9 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setPublishing(publishing2)
         .build()
     when: // both messages arrive, then the initial delay elapses
-    sendInput(driver, INPUT_TOPIC, key, firstValue)
-    sendInput(driver, INPUT_TOPIC, key, secondValue)
-    driver.advanceWallClockTime(5000)
+    inputTopic.pipeInput(key, firstValue)
+    inputTopic.pipeInput(key, secondValue)
+    driver.advanceWallClockTime(Duration.ofMillis(5000))
 
     then: // initial publish time is removed, second is still there, state is updated
     keyStore.get(key) == secondMillis
@@ -534,12 +535,14 @@ class DelayedPublisherTransformerSpec extends Specification {
     and: // only the two input values come out; the first republishing event doesn't go off
     def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
-    OutputVerifier.compareKeyValue(output[0], key, null)
-    OutputVerifier.compareKeyValue(output[1], key, null)
+    compareKeyValue(output[0], key, null)
+    compareKeyValue(output[1], key, null)
   }
 
-  static sendInput(TopologyTestDriver driver, String topic, String key, ParsedRecord nextValue) {
-    driver.pipeInput(consumerFactory.create(topic, key, nextValue))
+  private static boolean compareKeyValue(record, expectedKey, expectedValue) {
+    // Avro objects are compared as Strings because Avro doesn't support
+    // comparing schemas that include map fields
+    return record.key as String == expectedKey as String
+        && record.value as String == expectedValue as String
   }
-
 }
