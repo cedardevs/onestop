@@ -271,9 +271,7 @@ const BoxIllustration = ({id, box, relation, excludeGlobal}) => {
       style={consolidateStyles(styleBox, stylePosition(box), styleColors)}
     >
       <label style={styleLabel}>{box.label}</label>
-      <div role="listitem" style={defaultStyles.hideOffscreen}>
-        {longDescription}
-      </div>
+      <div style={defaultStyles.hideOffscreen}>{longDescription}</div>
     </output>
   )
 }
@@ -305,7 +303,6 @@ const GeoRelationIllustration = ({relation, excludeGlobal}) => {
 
   return (
     <div
-      role="list"
       style={{
         width: '100%',
         height: '7em',
