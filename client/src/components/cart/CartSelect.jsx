@@ -86,7 +86,6 @@ export default class CartSelect extends React.Component {
     return (
       <div style={style}>
         <Select
-          aria-expanded={isMenuOpen}
           theme={selectTheme}
           styles={selectStyles}
           aria-labelledby="cartDownloadOptionsLabel"

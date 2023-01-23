@@ -116,9 +116,6 @@ const TabPanels = ({options, name, defaultSelection, onSelectionChanged}) => {
         options={internalOptions}
         onSelectionChange={onSelectionChange}
         showLabelsOnly={true}
-        ariaExpanded={selected => {
-          return selected
-        }}
         defaultSelection={defaultSelection}
         stylePanel={styleTabPanel}
         interItemPadding={0}

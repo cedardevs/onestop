@@ -31,7 +31,6 @@ const RadioButtonSet = ({
   options,
   onSelectionChange,
   showLabelsOnly,
-  ariaExpanded, // function (selected) => true/false
   defaultSelection,
   stylePanel,
   interItemPadding, // allows override of default margin between items
@@ -60,7 +59,6 @@ const RadioButtonSet = ({
         label={option.label}
         value={option.value}
         selected={selected}
-        ariaExpanded={ariaExpanded ? ariaExpanded(selected) : null}
         setSelection={setSelectedValue}
         styleContainer={styleContainer(index, interItemPadding)}
         styleLabel={option.styleLabel}
