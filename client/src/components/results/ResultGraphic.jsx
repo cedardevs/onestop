@@ -48,7 +48,6 @@ export default function ResultGraphic(props){
           style={styleImage(height)}
           src={imgUrl}
           alt=""
-          aria-hidden="true"
           width="100px"
           height="100px"
         />
@@ -58,7 +57,7 @@ export default function ResultGraphic(props){
   else {
     // return map image of spatial bounding or, if none, world map
     return (
-      <div aria-hidden={true} style={styleMap(height)}>
+      <div style={styleMap(height)}>
         <MapThumbnail geometry={geometry} interactive={true} />
       </div>
     )
