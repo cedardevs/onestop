@@ -340,9 +340,7 @@ const TimeLineQuery = ({query, outputs}) => {
           }}
           items={queryLabelItems}
         />
-        <div role="listitem" style={defaultStyles.hideOffscreen}>
-          {query.description}
-        </div>
+        <div style={defaultStyles.hideOffscreen}>{query.description}</div>
       </output>
       <span aria-hidden={true}>&nbsp;</span>
     </Spacer>
@@ -366,7 +364,7 @@ const TimeLineQuery = ({query, outputs}) => {
   )
 
   return (
-    <div role="list" style={{marginTop: '.609em'}}>
+    <div style={{marginTop: '.609em'}}>
       <div style={{textAlign: 'center'}}>timeline:</div> {exampleColumn}
     </div>
   )
@@ -475,9 +473,7 @@ const TimeLineResult = ({id, result, relation, queryType}) => {
             <label key="label" style={styleLabel}>
               {result.label}
             </label>
-            <div role="listitem" style={defaultStyles.hideOffscreen}>
-              {longDescription}
-            </div>
+            <div style={defaultStyles.hideOffscreen}>{longDescription}</div>
           </output>,
           continuation,
         ]}

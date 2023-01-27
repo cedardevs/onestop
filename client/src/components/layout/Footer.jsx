@@ -10,7 +10,7 @@ export default class Footer extends React.Component {
   render() {
     const {content} = this.props
     return (
-      <footer role="contentInfo" style={style}>
+      <footer role="contentinfo" style={style}>
         {content}
       </footer>
     )

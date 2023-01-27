@@ -55,7 +55,7 @@ class OverviewView extends React.Component {
         <h3 style={styleSectionHeading}>Time Period:</h3>
         <TimeSummary item={item} />
 
-        <div aria-hidden={true}>
+        <div>
           <h3 style={styleSectionHeading}>Map:</h3>
           <div style={stylePreviewMap}>
             <MapThumbnail geometry={item.spatialBounding} interactive={true} />
