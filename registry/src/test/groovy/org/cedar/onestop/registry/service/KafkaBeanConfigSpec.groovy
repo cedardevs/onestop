@@ -10,6 +10,8 @@ import java.util.concurrent.CompletableFuture
 
 import static org.apache.kafka.streams.KafkaStreams.State.*
 
+//https://kafka.apache.org/30/javadoc/org/apache/kafka/streams/KafkaStreams.State.html
+
 @Unroll
 class KafkaBeanConfigSpec extends Specification {
 
@@ -28,6 +30,7 @@ class KafkaBeanConfigSpec extends Specification {
     // valid transitions to running state
     streamsApp.setState(REBALANCING)
     streamsApp.setState(RUNNING)
+    streamsApp.setState(PENDING_ERROR)
 
     when:
     streamsApp.setState(ERROR)
