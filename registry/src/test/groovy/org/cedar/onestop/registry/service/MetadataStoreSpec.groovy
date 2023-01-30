@@ -146,7 +146,7 @@ class MetadataStoreSpec extends Specification {
     1 * mockAvroStore.get(key) >> testRecord
 
     and:
-    def expected = mockSerde.serializer().serialize(null, testRecord)
+    def expected = mockSerde.serializer().serialize('null-topic', testRecord)
     bytes.length == expected.length
     bytes == expected
 

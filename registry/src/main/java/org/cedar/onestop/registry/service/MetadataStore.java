@@ -115,7 +115,7 @@ public class MetadataStore {
       var table = request.pathVariable("table");
       var key = request.pathVariable("key");
       var record = getRecordFromTable(table, key);
-      var bytes = record != null ? serde.serializer().serialize(null, record) : null;
+      var bytes = record != null ? serde.serializer().serialize("null-topic", record) : null;
       return bytes != null ?
           ServerResponse.ok().contentLength(bytes.length).syncBody(bytes) :
           ServerResponse.notFound().build();
