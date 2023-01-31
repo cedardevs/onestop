@@ -43,7 +43,7 @@ object Versions {
     const val JSONP = "2.0.0-RC2"
     const val JACKSON_CORE = "2.13.3" // A lot of other dependencies bring this in though.
 
-    const val ONESTOP_SCHEMAS: String = "upgrade-dependencies-SNAPSHOT"//"0.7.5"
+    const val ONESTOP_SCHEMAS: String = "0.7.6"
 }
 
 // data classes
