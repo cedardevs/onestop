@@ -78,7 +78,6 @@ public class StreamFunctions {
       builder.setInitialSource(input.getSource());
     }
 
-    log.debug("Content from internal store: " + input.getContent());
     var contentType = input.getContentType().strip().toLowerCase();
     if (contentType.equals("application/json") || contentType.equals("text/json")) {
       var operation = input.getOperation();
@@ -94,7 +93,6 @@ public class StreamFunctions {
     }
 
     var errors = builder.getErrors();
-    log.debug("Errors after content aggregation: " + errors);
     var failedState = errors != null && !errors.isEmpty();
 
     // Note: we always preserve existing events, hence currentState.getEvents() instead of builder.getEvents()
