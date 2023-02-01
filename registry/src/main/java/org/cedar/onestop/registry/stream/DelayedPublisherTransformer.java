@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.time.Duration;
 
 @SuppressWarnings("unchecked")
 public class DelayedPublisherTransformer implements Transformer<String, ParsedRecord, KeyValue<String, ParsedRecord>> {
@@ -46,7 +47,7 @@ public class DelayedPublisherTransformer implements Transformer<String, ParsedRe
     triggerKeysStore = (KeyValueStore<String, Long>) this.context.getStateStore(triggerKeysStoreName);
     lookupStore = (TimestampedKeyValueStore<String, ParsedRecord>) this.context.getStateStore(lookupStoreName);
 
-    this.context.schedule(interval, PunctuationType.WALL_CLOCK_TIME, this::publishUpTo);
+    this.context.schedule(Duration.ofMillis(interval), PunctuationType.WALL_CLOCK_TIME, this::publishUpTo);
   }
 
   @Override

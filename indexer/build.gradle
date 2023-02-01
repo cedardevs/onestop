@@ -45,7 +45,7 @@ dependencies {
   implementation("org.yaml:snakeyaml:${Versions.SNAKE_YAML}")
   implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
   implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
-  implementation("org.apache.commons:commons-text:1.2")
+  implementation("org.apache.commons:commons-text:1.10.0")
 
   testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   testImplementation(project(path: ':elastic-common', configuration: 'testElastic'))
@@ -55,7 +55,7 @@ dependencies {
   testImplementation("org.codehaus.groovy:groovy-json:${Versions.GROOVY}")
   testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
   testImplementation("org.apache.kafka:kafka-streams-test-utils:${Versions.KAFKA}")
-  testImplementation("org.springframework.kafka:spring-kafka-test:${Versions.SPRING_KAFKA}")
+  testImplementation("org.springframework.kafka:spring-kafka-test:2.9.5")
   testImplementation("org.apache.kafka:kafka-clients:${Versions.KAFKA}:test")
   testImplementation("org.apache.kafka:kafka_2.12:${Versions.KAFKA}")
   testImplementation("org.apache.kafka:kafka_2.12:${Versions.KAFKA}:test")

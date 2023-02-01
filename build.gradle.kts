@@ -302,15 +302,15 @@ subprojects {
                 }
 
                 if (requested.group == "org.apache.avro" && requested.name == "avro") {
-                    if(requested.version!! < Versions.AVRO) {
+                    if(requested.version!! < "2.0") {
                         useVersion(Versions.AVRO)
                         because("latest avro does not depend on vulnerable jackson-mapper-asl which has not been updated since 2013")
                     }
                 }
 
                 if (requested.group == "org.apache.logging.log4j" && requested.name == "log4j-api") {
-                    if (requested.version!!.startsWith("2.11.1")) {
-                        useVersion("2.13.3")
+                    if (requested.version!! < "2.13") {
+                        useVersion("2.17.2")
                         because("fixes vulnerability in 2.11.1 and before")
                     }
                 }
@@ -343,6 +343,13 @@ subprojects {
                     }
                 }
 
+                if (requested.group == "org.apache.commons" && requested.name == "commons-compress") {
+                    if (requested.version!! < "2.0") {
+                        useVersion("1.21")
+                        because("fixes CVE-2021-36090, CVE-2021-35516, CVE-2021-35515, CVE-2021-35517: Crafty ZIPs")
+                    }
+                }
+
                 if (requested.group == "org.jasig.cas.client" && requested.name == "cas-client-core") {
                     if (requested.version!! <= "3.5.0") {
                         useVersion("3.6.0")
@@ -364,9 +371,10 @@ subprojects {
                 }
                 if (requested.group.startsWith("org.apache.tomcat") &&
                         requested.name.contains("tomcat") &&
-                        requested.version!! < "9.0.58") {
-                    useVersion("9.0.58")
-                    because("Enforce tomcat 9.0.58+ to avoid vulnerabilities CVE-2022-23181")
+                        requested.version!! < "9.0.68") {
+                    useVersion("9.0.68")
+                    because("Enforce tomcat 9.0.58+ to avoid vulnerabilities CVE-2022-23181\n" +
+                            "9.0.68+ to avoid CVE-2022-34305")
                 }
                 if (requested.group.startsWith("org.apache.tomcat.embed") &&
                     requested.version!! < "9.0.58") {
@@ -381,8 +389,18 @@ subprojects {
                             " for this commit to take effect: " +
                             "https://github.com/reactor/reactor-netty/commit/857277287671d5b40708064b3afef1a7ae7b7a47")
                 }
+                if (requested.group.startsWith("junit") &&
+                        requested.name == "junit" &&
+                        requested.version!! < "4.2") {
+                    useVersion("4.13.2")
+                    because("Fixes CVE-2020-15250: Local information for the test rule TemporaryFolder.")
+                }
             }
         }
 
     }
+}
+
+subprojects {
+    tasks.register<DependencyReportTask>("allDeps") {}
 }

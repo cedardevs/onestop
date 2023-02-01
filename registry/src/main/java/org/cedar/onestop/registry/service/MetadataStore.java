@@ -4,7 +4,7 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.state.HostInfo;
-import org.apache.kafka.streams.state.StreamsMetadata;
+import org.apache.kafka.streams.KeyQueryMetadata;
 import org.cedar.schemas.avro.psi.AggregatedInput;
 import org.cedar.schemas.avro.psi.ParsedRecord;
 import org.cedar.schemas.avro.psi.RecordType;
@@ -115,7 +115,7 @@ public class MetadataStore {
       var table = request.pathVariable("table");
       var key = request.pathVariable("key");
       var record = getRecordFromTable(table, key);
-      var bytes = record != null ? serde.serializer().serialize(null, record) : null;
+      var bytes = record != null ? serde.serializer().serialize("null-topic", record) : null;
       return bytes != null ?
           ServerResponse.ok().contentLength(bytes.length).syncBody(bytes) :
           ServerResponse.notFound().build();
@@ -126,8 +126,8 @@ public class MetadataStore {
   }
 
   @SuppressWarnings("unchecked")
-  private <T extends SpecificRecord> T getRemoteStoreState(StreamsMetadata metadata, String store, String id) {
-    String url = "http://" + metadata.host() + ":" + metadata.port() + "/db/" + store + '/' + id;
+  private <T extends SpecificRecord> T getRemoteStoreState(KeyQueryMetadata metadata, String store, String id) {
+    String url = "http://" + metadata.activeHost().host() + ":" + metadata.activeHost().port() + "/db/" + store + '/' + id;
     log.debug("getting remote avro from: " + url);
     try {
       var bytes = webClient.get().uri(url).retrieve().bodyToMono(byte[].class).block();
@@ -138,8 +138,8 @@ public class MetadataStore {
     }
   }
 
-  private boolean thisHost(final StreamsMetadata metadata) {
-    var otherHostInfo = metadata != null ? metadata.hostInfo() : null;
+  private boolean thisHost(final KeyQueryMetadata metadata) {
+    var otherHostInfo = metadata != null ? metadata.activeHost() : null;
     log.debug("checking if " + otherHostInfo + " is the local host: " + hostInfo);
     return hostInfo.equals(otherHostInfo);
   }

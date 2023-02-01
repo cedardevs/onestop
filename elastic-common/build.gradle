@@ -17,7 +17,7 @@ dependencies {
     // implementation 'com.mapbox.mapboxsdk:mapbox-sdk-geojson:5.3.0' // TODO use this with EsMapping.kt and schemas for geojson object?
 
     testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
-    testImplementation("junit:junit:4.12")
+    testImplementation("junit:junit:4.13.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.testcontainers:testcontainers:${Versions.TEST_CONTAINERS}")
     testImplementation("org.testcontainers:elasticsearch:${Versions.TEST_CONTAINERS}")

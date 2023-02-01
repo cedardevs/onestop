@@ -8,9 +8,8 @@ import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.kstream.Consumed
 import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.kstream.Produced
-//import org.apache.kafka.streams.TestInputTopic
-//import org.apache.kafka.streams.TestOutputTopic
-import org.apache.kafka.streams.test.ConsumerRecordFactory
+import org.apache.kafka.streams.TestInputTopic
+import org.apache.kafka.streams.TestOutputTopic
 import spock.lang.Specification
 
 
@@ -48,19 +47,15 @@ class JsonMapSerdeSpec extends Specification {
         .to(outputTopicName, Produced.with(Serdes.String(), JsonSerdes.Map()))
 
     def driver = new TopologyTestDriver(builder.build(), buildTestStreamConfig())
-//    TestInputTopic inputTopic = driver.createInputTopic(inputTopicName, Serdes.String().serializer(), serde.serializer())
-//    TestOutputTopic outputTopic = driver.createOutputTopic(outputTopicName, Serdes.String().deserializer(), serde.deserializer())
-
-    def consumerFactory = new ConsumerRecordFactory(Serdes.String().serializer(), serde.serializer())
+    TestInputTopic inputTopic = driver.createInputTopic(inputTopicName, Serdes.String().serializer(), serde.serializer())
+    TestOutputTopic outputTopic = driver.createOutputTopic(outputTopicName, Serdes.String().deserializer(), serde.deserializer())
 
     when:
-//    inputTopic.pipeInput('A', value)
-    driver.pipeInput(consumerFactory.create(inputTopicName, 'A', value))
+    inputTopic.pipeInput('A', value)
 
     then:
     collector == [ value ]
-//    outputTopic.readRecord().value() == value
-    driver.readOutput('test_out').value() == '{"hello":"world"}'.bytes
+    outputTopic.readRecord().value() == value
   }
 
   def 'can materialize ktables'() {
@@ -77,12 +72,10 @@ class JsonMapSerdeSpec extends Specification {
         .reduce({a, b -> b}, Materialized.as(tableName).withKeySerde(Serdes.String()).withValueSerde(JsonSerdes.Map()))
 
     def driver = new TopologyTestDriver(builder.build(), buildTestStreamConfig())
-//    TestInputTopic inputTopic = driver.createInputTopic(topicName, Serdes.String().serializer(), serde.serializer())
-    def consumerFactory = new ConsumerRecordFactory(Serdes.String().serializer(), serde.serializer())
+    TestInputTopic inputTopic = driver.createInputTopic(topicName, Serdes.String().serializer(), serde.serializer())
 
     when:
-//    inputTopic.pipeInput(key, value)
-    driver.pipeInput(consumerFactory.create(topicName, key, value))
+    inputTopic.pipeInput(key, value)
 
     then:
     def storedResult = driver.getKeyValueStore(tableName).get(key)

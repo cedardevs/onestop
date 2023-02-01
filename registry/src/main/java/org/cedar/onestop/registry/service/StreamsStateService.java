@@ -3,9 +3,10 @@ package org.cedar.onestop.registry.service;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyQueryMetadata;
+import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
-import org.apache.kafka.streams.state.StreamsMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +23,11 @@ public class StreamsStateService {
    * Find the metadata for the given store and key if it exists.
    * @param store   Store to find
    * @param key     The key to find
-   * @return {@link StreamsMetadata}
+   * @return {@link KeyQueryMetadata}
    */
-  public <K> StreamsMetadata metadataForStoreAndKey(final String store, final K key,
+  public <K> KeyQueryMetadata metadataForStoreAndKey(final String store, final K key,
                                                     final Serializer<K> serializer) {
-    final StreamsMetadata metadata = streamsApp.metadataForKey(store, key, serializer);
+    final KeyQueryMetadata metadata = streamsApp.queryMetadataForKey(store, key, serializer);
     if (metadata == null) {
       throw new RuntimeException("Unable to retrieve metadata for store [" + store + "] and key [" + key +"]");
     }
@@ -39,8 +40,7 @@ public class StreamsStateService {
    * @return The store
    */
   public ReadOnlyKeyValueStore<String, SpecificRecord> getAvroStore(String storeName) {
-    return streamsApp.store(storeName, QueryableStoreTypes.keyValueStore());
+    return streamsApp.store(StoreQueryParameters.fromNameAndType(storeName, QueryableStoreTypes.keyValueStore()));
   }
 
 }
-
