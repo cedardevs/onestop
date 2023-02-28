@@ -16,6 +16,7 @@ import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.kafka.common.util.LogAndContinueExceptionHandler;
 import org.cedar.onestop.kafka.common.util.IgnoreRecordTooLargeHandler;
+import org.cedar.onestop.kafka.common.util.UncaughtExceptionHandler;
 import org.cedar.onestop.registry.stream.TopicInitializer;
 import org.cedar.onestop.registry.stream.TopologyBuilders;
 import org.cedar.schemas.avro.psi.Input;
@@ -48,6 +49,12 @@ public class KafkaBeanConfig {
 
   @Value("${publishing.message.request.size:3000000}")
   private int MaxRequestSize;
+
+  @Value("${streams.exception.max.failures:2}")
+  private int maxFailures;
+
+  @Value("${streams.exception.max.time.millis:3600000}")
+  private long maxTimeInterval;
 
   @ConfigurationProperties(prefix = "kafka")
   @Bean
@@ -94,7 +101,8 @@ public class KafkaBeanConfig {
     topicInitializer.initialize();
     var streamsTopology = TopologyBuilders.buildTopology(publishInterval, adminClient);
     var app = new KafkaStreams(streamsTopology, streamsConfig);
-    KafkaHelpers.onError(app).thenAcceptAsync(o -> streamsErrorFuture.complete(0));
+    final UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler(maxFailures, maxTimeInterval);
+    KafkaHelpers.onError(app, exceptionHandler).thenAcceptAsync(o -> streamsErrorFuture.complete(0));
     return app;
   }
 

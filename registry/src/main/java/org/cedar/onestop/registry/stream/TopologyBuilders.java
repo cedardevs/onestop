@@ -66,7 +66,6 @@ public class TopologyBuilders {
     log.debug("existing topics: {}", existingTopics);
     consumeLegacyChangelogs(builder, RecordType.collection, existingTopics);
     consumeLegacyChangelogs(builder, RecordType.granule, existingTopics);
-
     return builder.build();
   }
 

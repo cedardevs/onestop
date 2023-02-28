@@ -44,7 +44,7 @@ public class AppConfig {
 
     if (log.isDebugEnabled()) {
       log.debug("Combined app config:");
-      combinedConfig.forEach((s, o) -> log.debug("  " + s + ": " + o));
+      combinedConfig.forEach((s, o) -> log.debug("  " + s + ": " + (s.toString().contains("password") ? "[Redacted]" : o)));
     }
 
     return combinedConfig;
@@ -132,6 +132,21 @@ public class AppConfig {
 
   public Object getOrDefault(Object key, Object defaultValue) {
     return combined.getOrDefault(key, defaultValue);
+  }
+
+  /* Alternative getOrDefault that returns the value (or default) cast as the requested class
+     Intended to provide protection against wrong types in yaml
+     Note: only works for objects within the same hierarchy!!! (e.g. Integer -> String would fail)
+  */
+  public <T> T getOrDefault(Object key, T defaultValue, Class<T> clazz) {
+    var result = combined.getOrDefault(key, defaultValue);
+    try {
+      return clazz.cast(result);
+    } catch (ClassCastException e) {
+      log.error("Error while trying to cast key "+key+" with value or default "+result+". Exception: "+e);
+      log.error("Returning default: "+defaultValue+" ("+defaultValue.getClass()+")");
+      return defaultValue;
+    }
   }
 
 }
