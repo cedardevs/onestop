@@ -9,6 +9,7 @@ import org.cedar.onestop.indexer.util.ElasticsearchService;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.util.KafkaHelpers;
 import org.cedar.onestop.kafka.common.util.KafkaHealthProbeServer;
+import org.cedar.onestop.kafka.common.util.UncaughtExceptionHandler;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ public class IndexerApp {
   private final Properties streamsProps;
   private final KafkaStreams streamsApp;
   private final KafkaHealthProbeServer probeServer;
+  private final UncaughtExceptionHandler exceptionHandler;
 
   private boolean initialized;
 
@@ -45,6 +47,9 @@ public class IndexerApp {
     streamsTopology = buildSearchIndexTopology(elasticService, appConfig);
     streamsProps = KafkaHelpers.buildStreamsConfig(appConfig);
     streamsApp = new KafkaStreams(streamsTopology, streamsProps);
+    var maxFailures = appConfig.getOrDefault("streams.exception.max.failures", 2, Integer.class);
+    var maxTimeInterval = appConfig.getOrDefault("streams.exception.max.time.millis", 3600000L, Long.class);
+    exceptionHandler = new UncaughtExceptionHandler(maxFailures, maxTimeInterval);
     probeServer = new KafkaHealthProbeServer(streamsApp);
   }
 
@@ -58,7 +63,7 @@ public class IndexerApp {
 
   public void start() throws Exception {
     init();
-    KafkaHelpers.onError(streamsApp).thenAcceptAsync(o -> stop());
+    KafkaHelpers.onError(streamsApp, exceptionHandler).thenAcceptAsync(o -> stop());
     streamsApp.start();
     probeServer.start();
   }
