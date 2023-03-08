@@ -145,7 +145,7 @@ describe('The facet utils', function(){
             count: 10,
             category: 'totesDifferentCategory',
             term: 'Short Name > Long Name',
-            id: 'totes-Different-Category-Short-Name-Long-Name',
+            id: 'totesDifferentCategory-Short-Name-Long-Name',
             selected: false,
             termHierarchy: [],
             keyword: 'Long Name',
@@ -154,7 +154,7 @@ describe('The facet utils', function(){
             count: 5,
             category: 'totesDifferentCategory',
             term: 'TLA > Three Letter Acronym',
-            id: 'totes-Different-Category-TLA-Three-Letter-Acronym',
+            id: 'totesDifferentCategory-TLA-Three-Letter-Acronym',
             selected: false,
             termHierarchy: [],
             keyword: 'Three Letter Acronym',
@@ -162,12 +162,12 @@ describe('The facet utils', function(){
         ],
         hierarchy: [
           {
-            id: 'totes-Different-Category-Short-Name-Long-Name',
+            id: 'totesDifferentCategory-Short-Name-Long-Name',
             children: [],
             parent: null,
           },
           {
-            id: 'totes-Different-Category-TLA-Three-Letter-Acronym',
+            id: 'totesDifferentCategory-TLA-Three-Letter-Acronym',
             children: [],
             parent: null,
           },
