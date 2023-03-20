@@ -30,9 +30,9 @@ config: |-
   ui:
     googleAnalytics:
       profiles:
-        - trackingId: 'UA-127993388-1'
+        - trackingId: '358541492'
           gaOptions:
-            name: 127993388
+            name: 358541492
       reactGaOptions:
         alwaysSendToDefaultTracker: false
     features:
