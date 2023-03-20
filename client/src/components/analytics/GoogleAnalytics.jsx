@@ -54,7 +54,7 @@ export default class GoogleAnalytics extends React.Component {
       },
       profileNames
     )
-    ReactGA.send({ hitType: 'pageview', page: page, title: 'Custom Title' });
+    ReactGA.send({hitType: 'pageview', page: page})
   }
 
   render() {
