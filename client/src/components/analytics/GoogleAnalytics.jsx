@@ -1,7 +1,7 @@
 // utils/GoogleAnalytics.js
 import React from 'react'
 import PropTypes from 'prop-types'
-import * as ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 import {Route} from 'react-router-dom'
 
 export default class GoogleAnalytics extends React.Component {
@@ -54,7 +54,7 @@ export default class GoogleAnalytics extends React.Component {
       },
       profileNames
     )
-    ReactGA.pageview(page, profileNames)
+    ReactGA.send({hitType: 'pageview', page: page})
   }
 
   render() {
