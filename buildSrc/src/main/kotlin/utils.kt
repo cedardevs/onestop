@@ -21,15 +21,15 @@ object Versions {
     const val NODE: String = "14.17.0"
     const val NPM: String = "8.4.1"
 
-    const val ELASTIC: String = "7.17.5"
-    const val CONFLUENT: String = "7.1.5"
+    const val ELASTIC: String = "7.17.9"
+    const val CONFLUENT: String = "7.3.2"
     const val KAFKA: String = "${CONFLUENT}-ccs"
     const val SPRING_KAFKA: String = "3.1.2.RELEASE"
     const val AVRO: String = "1.11.1"
 
     const val GROOVY: String = "3.0.9"
     const val SPOCK: String = "2.2-M1-groovy-3.0"
-    const val ELASTIC_SERVER: String = "7.17.5" // When changed update references to ElasticsearchVersion and ./circleci/config.yml. This used by TestContainers.
+    const val ELASTIC_SERVER: String = "7.17.9" // When changed update references to ElasticsearchVersion and ./circleci/config.yml. This used by TestContainers.
     const val TEST_CONTAINERS: String = "1.16.3"
     const val OPEN_SAML = "3.4.3"
     const val LOGBACK = "1.4.4"
@@ -38,10 +38,10 @@ object Versions {
     const val JUNIT = "4.12"
     const val AUTH0_JAVA_JWT = "3.4.1"
     const val PAC4J = "4.5.5"
-    const val SNAKE_YAML = "1.30"
+    const val SNAKE_YAML = "1.33"
     const val REACTOR_BOM = "Dysprosium-SR7"
     const val JSONP = "2.0.0-RC2"
-    const val JACKSON_CORE = "2.13.3" // A lot of other dependencies bring this in though.
+    const val JACKSON_CORE = "2.14.2" // A lot of other dependencies bring this in though.
 
     const val ONESTOP_SCHEMAS: String = "0.7.6"
 }

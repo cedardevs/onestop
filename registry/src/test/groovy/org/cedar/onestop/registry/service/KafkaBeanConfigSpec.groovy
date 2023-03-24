@@ -7,6 +7,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
 import static org.apache.kafka.streams.KafkaStreams.State.*
 
@@ -37,6 +38,8 @@ class KafkaBeanConfigSpec extends Specification {
 
     then:
     noExceptionThrown()
+    // the test future sometimes hasn't completed by the time we check that it is done, so take a short nap
+    sleep(1000)
     testFuture.isDone()
   }
 

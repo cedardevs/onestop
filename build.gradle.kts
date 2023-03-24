@@ -52,7 +52,7 @@ plugins {
     // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
     // - A Gradle plugin that allows you to package executable jar or war archives,
     //   run Spring Boot applications, and use the dependency management provided by spring-boot-dependencies
-    id("org.springframework.boot").version("2.7.0").apply(false)
+    id("org.springframework.boot").version("2.7.9").apply(false)
 
     // Gogradle plugin
     // https://github.com/gogradle/gogradle
@@ -298,6 +298,20 @@ subprojects {
                     if (requested.version!!.startsWith("2.0") && requested.version!! <= "2.1.4") {
                         useVersion("2.1.4")
                         because("fixes CVE-2019-12400")
+                    }
+                }
+
+                if (requested.group == "org.yaml" && requested.name == "snakeyaml") {
+                    if(requested.version!! < "1.33") {
+                        useVersion(Versions.SNAKE_YAML)
+                        because("multiple CVEs for versions < 1.33")
+                    }
+                }
+
+                if (requested.group == "org.apache.httpcomponents" && requested.name == "httpclient") {
+                    if(requested.version!! < "4.5.14") {
+                        useVersion("4.5.14")
+                        because("multiple CVEs for versions < 4.5.13")
                     }
                 }
 
