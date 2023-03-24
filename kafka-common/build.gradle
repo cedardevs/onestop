@@ -20,7 +20,7 @@ dependencies {
 
   // reactor release train BOM governs reactor dependency versions
   implementation(platform("io.projectreactor:reactor-bom:${Versions.REACTOR_BOM}"))
-  implementation("io.projectreactor.netty:reactor-netty:1.0.16")
+  implementation("io.projectreactor.netty:reactor-netty:1.0.28")
 
   testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
