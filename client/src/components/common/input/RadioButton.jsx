@@ -67,7 +67,6 @@ const RadioButton = ({
         style={styleInput}
         checked={checked}
         disabled={disabled}
-        aria-expanded={ariaExpanded}
         onChange={() => {}}
         onFocus={() => setFocusing(true)}
         onBlur={() => setFocusing(false)}

@@ -223,7 +223,7 @@ export default class Logo extends React.Component {
             onMouseOver={this.handleTextMouseOver}
             onMouseOut={this.handleTextMouseOut}
           >
-            <span style={stylesOneStopText} aria-label="One Stop">
+            <span style={stylesOneStopText}>
               <span style={styleOneStopOImageWrapper}>
                 <SvgIcon
                   size="1.1em"

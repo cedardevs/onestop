@@ -7,8 +7,11 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
 import static org.apache.kafka.streams.KafkaStreams.State.*
+
+//https://kafka.apache.org/30/javadoc/org/apache/kafka/streams/KafkaStreams.State.html
 
 @Unroll
 class KafkaBeanConfigSpec extends Specification {
@@ -28,12 +31,15 @@ class KafkaBeanConfigSpec extends Specification {
     // valid transitions to running state
     streamsApp.setState(REBALANCING)
     streamsApp.setState(RUNNING)
+    streamsApp.setState(PENDING_ERROR)
 
     when:
     streamsApp.setState(ERROR)
 
     then:
     noExceptionThrown()
+    // the test future sometimes hasn't completed by the time we check that it is done, so take a short nap
+    sleep(1000)
     testFuture.isDone()
   }
 

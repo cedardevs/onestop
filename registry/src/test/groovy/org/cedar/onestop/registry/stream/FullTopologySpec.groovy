@@ -6,15 +6,16 @@ import org.apache.kafka.clients.admin.MockAdminClient
 import org.apache.kafka.common.Node
 import org.apache.kafka.common.header.internals.RecordHeaders
 import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.streams.TestInputTopic
+import org.apache.kafka.streams.TestOutputTopic
 import org.apache.kafka.streams.TopologyTestDriver
-import org.apache.kafka.streams.test.ConsumerRecordFactory
-import org.apache.kafka.streams.test.OutputVerifier
 import org.cedar.onestop.registry.util.TimeFormatUtils
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
 import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
-import spock.lang.Specification
+import spock.lang.*
 
+import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -43,19 +44,18 @@ class FullTopologySpec extends Specification {
   def mockAdminClient = new MockAdminClient([mockNode], mockNode)
   def topology = TopologyBuilders.buildTopology(5000, mockAdminClient)
   def driver = new TopologyTestDriver(topology, new Properties(config))
-  def inputFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
-  def parsedFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
 
   def inputType = RecordType.granule
   def inputSource = DEFAULT_SOURCE
-  def inputTopic = inputTopic(inputType, inputSource)
+  def inputTopic = driver.createInputTopic(inputTopic(inputType, inputSource), STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
+  def parsedGranuleTopic = driver.createInputTopic(parsedTopic(inputType), STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
+  def parsedCollectionTopic = driver.createInputTopic(parsedTopic(RecordType.collection), STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
   def inputChangelogTopic = inputChangelogTopicCombined(config[APPLICATION_ID_CONFIG], inputType)
-  def parsedTopic = parsedTopic(inputType)
   def publishedTopic = publishedTopic(inputType)
   def inputStore = driver.getKeyValueStore(inputStoreCombined(inputType))
   def parsedStore = driver.getKeyValueStore(parsedStore(inputType))
 
-  def cleanup(){
+  def cleanup() {
     driver.close()
   }
 
@@ -65,8 +65,8 @@ class FullTopologySpec extends Specification {
     def value2 = buildTestGranule('{"name":"test"}', Method.PATCH)
 
     when:
-    driver.pipeInput(inputFactory.create(inputTopic, key, value1))
-    driver.pipeInput(inputFactory.create(inputTopic, key, value2))
+    inputTopic.pipeInput(key, value1)
+    inputTopic.pipeInput(key, value2)
 
     and:
     def aggregate = inputStore.get('101cccf3-2f54-4dec-9804-192545496955')
@@ -85,8 +85,8 @@ class FullTopologySpec extends Specification {
     def value2 = buildTestGranule(json2,  Method.PATCH)
 
     when:
-    driver.pipeInput(inputFactory.create(inputTopic, key, value1))
-    driver.pipeInput(inputFactory.create(inputTopic, key, value2))
+    inputTopic.pipeInput(key, value1)
+    inputTopic.pipeInput(key, value2)
 
     and:
     def aggregate = inputStore.get('101cccf3-2f54-4dec-9804-192545496955')
@@ -106,12 +106,11 @@ class FullTopologySpec extends Specification {
     def avroInputs = jsonInputs.collect {
       AvroUtils.jsonToAvro(JsonOutput.toJson(it), Input.classSchema)
     }
-    def recordInputs = avroInputs.collect {
-      inputFactory.create(inputTopic, key, it)
-    }
 
     when:
-    driver.pipeInput(recordInputs)
+    avroInputs.each {
+      inputTopic.pipeInput(key, it)
+    }
 
     then:
     def (out1, out2, out3, out4) = readAllOutput(driver, inputChangelogTopic)
@@ -130,7 +129,7 @@ class FullTopologySpec extends Specification {
     def value1 = Input.newBuilder().setMethod(Method.DELETE).setType(inputType).build()
 
     when:
-    driver.pipeInput(inputFactory.create(inputTopic, key, value1))
+    inputTopic.pipeInput(key, value1)
 
     and:
     def aggregate = inputStore.get('101cccf3-2f54-4dec-9804-192545496955')
@@ -159,12 +158,12 @@ class FullTopologySpec extends Specification {
         .build()
 
     when:
-    driver.pipeInput(parsedFactory.create(parsedTopic, key, value1))
+    parsedGranuleTopic.pipeInput(key, value1)
 
     then:
     parsedStore.get(key).equals(value1)
     def output = readAllOutput(driver, publishedTopic)
-    OutputVerifier.compareKeyValue(output[0], key, value1)
+    compareKeyValue(output[0], key, value1)
     output.size() == 1
   }
 
@@ -177,8 +176,8 @@ class FullTopologySpec extends Specification {
         .build()
 
     when: 'publish a value, then a tombstone'
-    driver.pipeInput(parsedFactory.create(parsedTopic, key, record))
-    driver.pipeInput(parsedFactory.create(parsedTopic, key, null, new RecordHeaders()))
+    parsedGranuleTopic.pipeInput(key, record)
+    parsedGranuleTopic.pipeInput(key, null)
 
     then:
     parsedStore.get(key) == null
@@ -186,8 +185,8 @@ class FullTopologySpec extends Specification {
     and:
     def output = readAllOutput(driver, publishedTopic)
     output.size() == 2
-    OutputVerifier.compareKeyValue(output[0], key, record)
-    OutputVerifier.compareKeyValue(output[1], key, null)
+    compareKeyValue(output[0], key, record)
+    compareKeyValue(output[1], key, null)
   }
 
   def 'saves and updates parsed granule values with  '() {
@@ -221,14 +220,14 @@ class FullTopologySpec extends Specification {
         .build()
 
     when:
-    driver.pipeInput(parsedFactory.create(parsedTopic, key, value1))
-    driver.pipeInput(parsedFactory.create(parsedTopic, key, value2))
+    parsedGranuleTopic.pipeInput(key, value1)
+    parsedGranuleTopic.pipeInput(key, value2)
 
     then:
     parsedStore.get(key).equals(value2)
     def output = readAllOutput(driver, publishedTopic)
-    OutputVerifier.compareKeyValue(output[0], key, value1)
-    OutputVerifier.compareKeyValue(output[1], key, value2)
+    compareKeyValue(output[0], key, value1)
+    compareKeyValue(output[1], key, value2)
     output.size() == 2
   }
 
@@ -249,12 +248,12 @@ class FullTopologySpec extends Specification {
         .build()
 
     when:
-    driver.pipeInput(parsedFactory.create(parsedTopic, key, value))
+    parsedGranuleTopic.pipeInput(key, value)
 
     then:
     parsedStore.get(key).equals(value)
     def output = readAllOutput(driver, publishedTopic)
-    OutputVerifier.compareKeyValue(output[0], key, null)
+    compareKeyValue(output[0], key, null)
     output.size() == 1
   }
 
@@ -279,21 +278,21 @@ class FullTopologySpec extends Specification {
         .build()
 
     when:
-    driver.pipeInput(parsedFactory.create(parsedTopic, key, plusFiveMessage))
+    parsedGranuleTopic.pipeInput(key, plusFiveMessage)
 
     then: // a tombstone is published
     parsedStore.get(key).equals(plusFiveMessage)
     def output1 = readAllOutput(driver, publishedTopic)
-    OutputVerifier.compareKeyValue(output1[0], key, null)
+    compareKeyValue(output1[0], key, null)
     output1.size() == 1
 
     when:
-    driver.advanceWallClockTime(6000)
+    driver.advanceWallClockTime(Duration.ofMillis(6000))
 
     then:
     parsedStore.get(key).equals(plusFiveMessage)
     def output2 = readAllOutput(driver, publishedTopic)
-    OutputVerifier.compareKeyValue(output2[0], key, plusFiveMessage)
+    compareKeyValue(output2[0], key, plusFiveMessage)
     output2.size() == 1
   }
 
@@ -327,13 +326,13 @@ class FullTopologySpec extends Specification {
     def flattenedGranule = flattenedGranuleBuilder.build()
 
     when:
-    driver.pipeInput(parsedFactory.create(parsedTopic(RecordType.collection), collectionKey, collection))
-    driver.pipeInput(parsedFactory.create(parsedTopic(RecordType.granule), granuleKey, granule))
+    parsedCollectionTopic.pipeInput(collectionKey, collection)
+    parsedGranuleTopic.pipeInput(granuleKey, granule)
 
     then:
     parsedStore.get(granuleKey).equals(granule)
     def output = readAllOutput(driver, flattenedGranuleTopic())
-    OutputVerifier.compareKeyValue(output[0], granuleKey, flattenedGranule)
+    compareKeyValue(output[0], granuleKey, flattenedGranule)
     output.size() == 1
   }
 
@@ -345,13 +344,13 @@ class FullTopologySpec extends Specification {
 
     when:
     // send a dummy value first, else nothing is stored in the ktable => nothing is deleted => no tombstone is emitted
-    driver.pipeInput(parsedFactory.create(parsedTopic(RecordType.granule), granuleKey, dummyValue))
-    driver.pipeInput(parsedFactory.create(parsedTopic(RecordType.granule), granuleKey, null, new RecordHeaders()))
+    parsedGranuleTopic.pipeInput(granuleKey, dummyValue)
+    parsedGranuleTopic.pipeInput(granuleKey, null)
 
     then:
     parsedStore.get(granuleKey) == null
     def output = readAllOutput(driver, flattenedGranuleTopic())
-    OutputVerifier.compareKeyValue(output[0], granuleKey, null)
+    compareKeyValue(output[0], granuleKey, null)
     output.size() == 1
   }
 
@@ -366,4 +365,10 @@ class FullTopologySpec extends Specification {
     return builder.build()
   }
 
+  private static boolean compareKeyValue(record, expectedKey, expectedValue) {
+    // Avro objects are compared as Strings because Avro doesn't support
+    // comparing schemas that include map fields
+    return record.key as String == expectedKey as String
+        && record.value as String == expectedValue as String
+  }
 }

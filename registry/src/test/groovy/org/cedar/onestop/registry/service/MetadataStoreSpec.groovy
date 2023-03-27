@@ -3,7 +3,7 @@ package org.cedar.onestop.registry.service
 import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.HostInfo
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
-import org.apache.kafka.streams.state.StreamsMetadata
+import org.apache.kafka.streams.KeyQueryMetadata
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
 import org.springframework.web.reactive.function.client.WebClient
@@ -14,7 +14,7 @@ import spock.lang.Unroll
 class MetadataStoreSpec extends Specification {
 
   HostInfo localHostInfo = new HostInfo("thetesthost", 8080)
-  StreamsMetadata localStreamsMetadata = new StreamsMetadata(localHostInfo, Collections.emptySet(), Collections.emptySet())
+  KeyQueryMetadata localStreamsMetadata = new KeyQueryMetadata(localHostInfo, Collections.emptySet(), 0)
 
   StreamsStateService mockStreamsStateService = Mock(StreamsStateService)
   ReadOnlyKeyValueStore mockAvroStore = Mock(ReadOnlyKeyValueStore)
@@ -146,7 +146,7 @@ class MetadataStoreSpec extends Specification {
     1 * mockAvroStore.get(key) >> testRecord
 
     and:
-    def expected = mockSerde.serializer().serialize(null, testRecord)
+    def expected = mockSerde.serializer().serialize('null-topic', testRecord)
     bytes.length == expected.length
     bytes == expected
 
@@ -167,7 +167,7 @@ class MetadataStoreSpec extends Specification {
 
     // NOTE: the "remote" metadata actually points to the location where the embedded server is running
     def remoteHostInfo = new HostInfo("localhost", testPort)
-    def remoteStreamsMetadata = new StreamsMetadata(remoteHostInfo, null, null)
+    def remoteStreamsMetadata = new KeyQueryMetadata(remoteHostInfo, Collections.emptySet(), 0)
 
     when:
     def result = metadataStore.retrieveInput(testType, testSource, testId)
@@ -194,7 +194,7 @@ class MetadataStoreSpec extends Specification {
 
     // NOTE: the "remote" metadata actually points to the location where the embedded server is running
     def remoteHostInfo = new HostInfo("localhost", testPort)
-    def remoteStreamsMetadata = new StreamsMetadata(remoteHostInfo, null, null)
+    def remoteStreamsMetadata = new KeyQueryMetadata(remoteHostInfo, Collections.emptySet(), 0)
 
     when:
     def result = metadataStore.retrieveParsed(testType, testSource, testId)

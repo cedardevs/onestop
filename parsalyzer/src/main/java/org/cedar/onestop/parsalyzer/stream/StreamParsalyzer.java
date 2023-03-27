@@ -13,6 +13,8 @@ import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
 import org.cedar.onestop.kafka.common.util.DataUtils;
+import org.cedar.onestop.kafka.common.util.LogAndContinueExceptionHandler;
+import org.cedar.onestop.kafka.common.util.IgnoreRecordTooLargeHandler;
 import org.cedar.onestop.parsalyzer.util.RecordParser;
 import org.cedar.onestop.parsalyzer.util.RoutingUtils;
 import org.cedar.schemas.analyze.Analyzers;
@@ -34,7 +36,8 @@ public class StreamParsalyzer {
   public static KafkaStreams buildStreamsApp(AppConfig config) {
     var topology = buildTopology();
     var streamsConfig = streamsConfig(StreamsApps.PARSALYZER_ID, config);
-    return new KafkaStreams(topology, streamsConfig);
+    var streamsApp = new KafkaStreams(topology, streamsConfig);
+    return streamsApp;
   }
 
   static Topology buildTopology() {
@@ -49,7 +52,6 @@ public class StreamParsalyzer {
 
   private static void addTopologyForType(StreamsBuilder builder, RecordType type) {
     var inputStream = builder.<String, AggregatedInput>stream(inputChangelogTopicCombined(StreamsApps.REGISTRY_ID, type));
-
     inputStream
         .filterNot(RoutingUtils::hasErrors)
         .filter(RoutingUtils::requiresExtraction)
@@ -90,6 +92,8 @@ public class StreamParsalyzer {
     streamsConfiguration.put(APPLICATION_ID_CONFIG, appId);
     streamsConfiguration.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     streamsConfiguration.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
+    streamsConfiguration.put(DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class.getName());
+    streamsConfiguration.put(DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG, IgnoreRecordTooLargeHandler.class.getName());
     streamsConfiguration.putAll(filteredConfigs);
     return streamsConfiguration;
   }

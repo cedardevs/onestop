@@ -99,4 +99,23 @@ class AppConfigSpec extends Specification {
     actualMap.get("kafka.auto.offset.reset") == "latest"
     !actualMap.containsKey('producer.one')
   }
+
+  def 'type casting works with getOrDefault'() {
+    def filePath = Thread.currentThread().contextClassLoader.getResource('test-config.yaml').file
+    def config = new AppConfig(filePath)
+
+    expect:
+    // Integer works, default is unused
+    config.getOrDefault("kafka.cache.max.bytes.buffering", 2000, Integer.class) == 209715200
+
+    // Key found, value fails cast so default is used (e.g. bad type in yaml)
+    config.getOrDefault("kafka.cache.max.bytes.buffering", 2010, String.class) == 2010
+
+    // Key not found, default value returned (technically no casting required)
+    config.getOrDefault("keynotfound", "2020", String.class) == "2020"
+
+    // Key not found, default value fails to cast to Integer so returns a String
+    // (Downstream code must accept a String or Integer)
+    config.getOrDefault("keynotfound", "2030", Integer.class) == "2030"
+  }
 }

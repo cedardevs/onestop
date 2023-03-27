@@ -19,7 +19,10 @@ const hierarchy = (category, facets) => {
 }
 
 const id = (category, term) => {
-  const idParts = _.concat(_.words(category), _.words(term))
+  const idParts = _.concat(
+    _.words(_.replace(category, '-', '--'), /[0-9a-zA-Z-_]+/g),
+    _.words(_.replace(term, '-', '--'), /[0-9a-zA-Z-_]+/g)
+  )
   return idParts.join('-')
 }
 

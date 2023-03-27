@@ -9,7 +9,7 @@ export default class Header extends React.Component {
   render() {
     const {content} = this.props
     return (
-      <header role="banner" style={styleHeader}>
+      <header aria-label="One Stop" role="banner" style={styleHeader}>
         {content}
       </header>
     )

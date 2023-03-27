@@ -8,10 +8,13 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.cedar.onestop.data.util.MapUtils;
 import org.cedar.onestop.kafka.common.conf.AppConfig;
 import org.cedar.onestop.kafka.common.conf.KafkaConfigNames;
 import org.cedar.onestop.kafka.common.constants.StreamsApps;
+import org.cedar.onestop.kafka.common.util.LogAndContinueExceptionHandler;
+import org.cedar.onestop.kafka.common.util.IgnoreRecordTooLargeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +30,7 @@ import static org.apache.kafka.streams.StreamsConfig.*;
 public class KafkaHelpers {
   private static final Logger log = LoggerFactory.getLogger(KafkaHelpers.class);
 
-  public static CompletableFuture<Object> onError(KafkaStreams streams) {
+  public static CompletableFuture<Object> onError(KafkaStreams streams, StreamsUncaughtExceptionHandler handler) {
     var stateFuture = new CompletableFuture<KafkaStreams.State>();
     streams.setStateListener((newState, oldState) -> {
       if (!stateFuture.isDone() && (newState == ERROR || newState == NOT_RUNNING)) {
@@ -36,13 +39,9 @@ public class KafkaHelpers {
       }
     });
 
-    var exceptionFuture = new CompletableFuture<Throwable>();
-    streams.setUncaughtExceptionHandler((Thread t, Throwable e) -> {
-      log.error("Caught unhandled exception in thread [" + t + "]", e);
-      exceptionFuture.complete(e);
-    });
+    streams.setUncaughtExceptionHandler(handler);
 
-    return CompletableFuture.anyOf(stateFuture, exceptionFuture);
+    return CompletableFuture.anyOf(stateFuture);
   }
 
   public static CreateTopicsResult ensureTopics(AdminClient client, Collection<String> names, int partitions, short replicas) throws ExecutionException, InterruptedException {
@@ -88,6 +87,8 @@ public class KafkaHelpers {
     streamsConfiguration.put(APPLICATION_ID_CONFIG, StreamsApps.INDEXER_ID);
     streamsConfiguration.put(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
     streamsConfiguration.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
+    streamsConfiguration.put(DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class.getName());
+    streamsConfiguration.put(DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG, IgnoreRecordTooLargeHandler.class.getName());
     streamsConfiguration.putAll(filteredConfigs);
     return streamsConfiguration;
   }
