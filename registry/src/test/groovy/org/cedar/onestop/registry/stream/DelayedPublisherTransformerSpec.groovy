@@ -451,7 +451,7 @@ class DelayedPublisherTransformerSpec extends Specification {
   def 'second value with future publishing date arrives after initial delay has elapsed'() {
     def key = 'A'
     // first message has near future date
-    def firstDate = ZonedDateTime.now(UTC_ID).plus(200, ChronoUnit.MILLIS)
+    def firstDate = ZonedDateTime.now(UTC_ID).plus(100000, ChronoUnit.MILLIS)
     def firstMillis = Instant.from(firstDate).toEpochMilli()
     def publishing1 = Publishing.newBuilder()
         .setIsPrivate(true)
@@ -477,7 +477,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
     when:
     inputTopic.pipeInput(key, firstValue)
-    driver.advanceWallClockTime(Duration.ofMillis(500))
+    driver.advanceWallClockTime(Duration.ofMillis(200000))
     inputTopic.pipeInput(key, secondValue)
 
     then:

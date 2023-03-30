@@ -259,40 +259,40 @@ class FullTopologySpec extends Specification {
 
   def 're-publishes granules at an indicated time'() {
     def key = '101cccf3-2f54-4dec-9804-192545496955'
-    def plusFiveTime = ZonedDateTime.now(UTC_ID).plusSeconds(5)
-    def plusFiveString = ISO_OFFSET_DATE_TIME.format(plusFiveTime)
-    Long plusFiveLong = TimeFormatUtils.parseTimestamp(plusFiveString)
+    def plusTime = ZonedDateTime.now(UTC_ID).plusSeconds(10)
+    def plusString = ISO_OFFSET_DATE_TIME.format(plusTime)
+    Long plusLong = TimeFormatUtils.parseTimestamp(plusString)
     def discovery = Discovery.newBuilder()
         .setTitle("secret")
         .build()
 
     def publishing = Publishing.newBuilder()
         .setIsPrivate(true)
-        .setUntil(plusFiveLong)
+        .setUntil(plusLong)
         .build()
 
-    def plusFiveMessage = ParsedRecord.newBuilder()
+    def plusMessage = ParsedRecord.newBuilder()
         .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(publishing)
         .build()
 
     when:
-    parsedGranuleTopic.pipeInput(key, plusFiveMessage)
+    parsedGranuleTopic.pipeInput(key, plusMessage)
 
     then: // a tombstone is published
-    parsedStore.get(key).equals(plusFiveMessage)
+    parsedStore.get(key).equals(plusMessage)
     def output1 = readAllOutput(driver, publishedTopic)
     compareKeyValue(output1[0], key, null)
     output1.size() == 1
 
     when:
-    driver.advanceWallClockTime(Duration.ofMillis(6000))
+    driver.advanceWallClockTime(Duration.ofMillis(200000))
 
     then:
-    parsedStore.get(key).equals(plusFiveMessage)
+    parsedStore.get(key).equals(plusMessage)
     def output2 = readAllOutput(driver, publishedTopic)
-    compareKeyValue(output2[0], key, plusFiveMessage)
+    compareKeyValue(output2[0], key, plusMessage)
     output2.size() == 1
   }
 
