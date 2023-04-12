@@ -143,7 +143,19 @@ allprojects {
         mavenCentral()
         maven(url= "https://repo.spring.io/milestone")
         maven(url = "https://packages.confluent.io/maven/")
-        maven(url = "https://jitpack.io")
+        maven(url = "https://maven.repository.redhat.com/ga/")
+        maven {
+          name = "NCEI_MAVEN_DEV"
+          url = uri("https://artifacts.ncei.noaa.gov/artifactory/ncei-maven-dev/")
+          credentials(HttpHeaderCredentials::class) {
+            name = "X-JFrog-Art-Api"
+            value = System.getenv("ARTIFACTORY_API_KEY")
+          }
+          authentication {
+            create<HttpHeaderAuthentication>("header")
+          }
+        }
+
     }
 }
 
@@ -293,6 +305,10 @@ subprojects {
         // override versions of dependencies with vulnerabilities
         configurations.all {
             resolutionStrategy.eachDependency {
+
+                if (requested.group == "com.github.everit-org.json-schema" && requested.name == "org.everit.json.schema") {
+                  useTarget("org.everit.json:org.everit.json.schema:1.12.2.redhat-00002")
+                }
 
                 if (requested.group == "org.apache.santuario" && requested.name == "xmlsec") {
                     if (requested.version!!.startsWith("2.0") && requested.version!! <= "2.1.4") {
