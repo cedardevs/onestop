@@ -144,8 +144,8 @@ allprojects {
         maven(url= "https://repo.spring.io/milestone")
         maven(url = "https://packages.confluent.io/maven/")
         maven {
-          name = "NCEI_MAVEN_DEV"
-          url = uri("https://artifacts.ncei.noaa.gov/artifactory/ncei-maven-dev/")
+          name = "NCEI_MAVEN_PROD"
+          url = uri("https://artifacts.ncei.noaa.gov/artifactory/ncei-maven/")
           credentials(HttpHeaderCredentials::class) {
             name = "X-JFrog-Art-Api"
             value = System.getenv("ARTIFACTORY_API_KEY")
