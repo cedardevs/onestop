@@ -89,10 +89,10 @@ export default function GranuleItem(props){
 
   const xmlLink = (
     <a
-      href={getApiRegistryPath() + '/metadata/granule/' + itemId + '/raw/xml'}
+      href={getApiRegistryPath() + '/metadata/granule/' + itemId + '/raw'}
       target={'_blank'}
     >
-      XML
+      Download raw metadata
     </a>
   )
 

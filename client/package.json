@@ -14,9 +14,11 @@
     "build": "npm install && NODE_ENV=production ./node_modules/.bin/webpack --mode production",
     "clean": "rm -rf node_modules && rm -rf build && rm -rf coverage",
     "retire": "retire -p",
+    "retireGitLabCICD": "retire -p --jsrepo https://artifacts.ncei.noaa.gov/artifactory/jsretire-repository/jsrepository.json --noderepo https://artifacts.ncei.noaa.gov/artifactory/jsretire-repository/npmrepository.json --cacert /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem",
     "dependencies": "npm list -depth=8",
     "auditFix": "npm audit fix --force",
-    "audit": "npm audit --trace-deprecation"
+    "audit": "npm audit --trace-deprecation",
+    "updateBrowsers": "echo updating browsers;npx browserslist@latest --update-db"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.3",

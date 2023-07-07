@@ -18,7 +18,7 @@ object Versions {
     // https://github.com/opencontainers/image-spec/blob/master/annotations.md#annotations
     const val LABEL_SCHEMA: String = "1.0"
 
-    const val NODE: String = "14.17.0"
+    const val NODE: String = "16.19.1"
     const val NPM: String = "8.4.1"
 
     const val ELASTIC: String = "7.17.9"
@@ -44,7 +44,12 @@ object Versions {
     const val JACKSON_CORE = "2.14.2" // A lot of other dependencies bring this in though.
 
     const val ONESTOP_SCHEMAS: String = "0.7.6"
+
+    // From schemas subproject
+    const val COMMONS_TEXT = "1.10.0"
 }
+
+val gitLabCICD: Boolean = System.getProperty("gitLabCICD").toBoolean()
 
 // data classes
 data class Author(
@@ -57,9 +62,6 @@ data class Author(
 fun environment(variable: String, default: String = ""): String {
     return (System.getenv(variable) ?: default).trim()
 }
-
-
-
 
 
 fun formatAuthors(authors: Collection<Author>, pretty: Boolean = false): String {

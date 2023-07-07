@@ -38,6 +38,7 @@ class AppConfigSpec extends Specification {
     result.get("kafka.cache.max.bytes.buffering") == 209715200
     result.get("kafka.commit.interval.ms") == 50000
     result.get("kafka.auto.offset.reset") == "latest"
+    result.get("streams.exception.max.time.millis") == 2147483647 // Must fit within an int. See UncaughtExceptionHandler.
     !result.containsKey('producer.one')
   }
 

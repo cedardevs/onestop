@@ -48,7 +48,7 @@ public class IndexerApp {
     streamsProps = KafkaHelpers.buildStreamsConfig(appConfig);
     streamsApp = new KafkaStreams(streamsTopology, streamsProps);
     var maxFailures = appConfig.getOrDefault("streams.exception.max.failures", 2, Integer.class);
-    var maxTimeInterval = appConfig.getOrDefault("streams.exception.max.time.millis", 3600000L, Long.class);
+    var maxTimeInterval = appConfig.getOrDefault("streams.exception.max.time.millis", 3600000, Integer.class);
     exceptionHandler = new UncaughtExceptionHandler(maxFailures, maxTimeInterval);
     probeServer = new KafkaHealthProbeServer(streamsApp);
   }

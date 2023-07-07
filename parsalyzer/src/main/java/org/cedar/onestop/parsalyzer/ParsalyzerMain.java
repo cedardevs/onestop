@@ -19,7 +19,7 @@ public class ParsalyzerMain {
     var streamsApp = StreamParsalyzer.buildStreamsApp(appConfig);
     var probeServer = new KafkaHealthProbeServer(streamsApp);
     var maxFailures = appConfig.getOrDefault("streams.exception.max.failures", 2, Integer.class);
-    var maxTimeInterval = appConfig.getOrDefault("streams.exception.max.time.millis", 3600000L, Long.class);
+    var maxTimeInterval = appConfig.getOrDefault("streams.exception.max.time.millis", 3600000, Integer.class);
     var exceptionHandler = new UncaughtExceptionHandler(maxFailures, maxTimeInterval);
 
     Runtime.getRuntime().addShutdownHook(new Thread(streamsApp::close));

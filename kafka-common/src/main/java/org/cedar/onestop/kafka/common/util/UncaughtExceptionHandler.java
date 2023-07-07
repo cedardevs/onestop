@@ -17,12 +17,12 @@ import org.slf4j.LoggerFactory;
 public class UncaughtExceptionHandler implements StreamsUncaughtExceptionHandler {
   private static final Logger log = LoggerFactory.getLogger(UncaughtExceptionHandler.class);
   static int maxFailures;
-  static long maxTimeIntervalMillis;
+  static int maxTimeIntervalMillis;
   private Instant previousErrorTime;
   private int currentFailureCount;
 
 
-  public UncaughtExceptionHandler(final int maxFailures, final long maxTimeIntervalMillis) {
+  public UncaughtExceptionHandler(final int maxFailures, final int maxTimeIntervalMillis) {
       log.info("Initializing streams uncaught exception handler with max failures "+maxFailures+" and interval "+maxTimeIntervalMillis);
       this.maxFailures = maxFailures;
       this.maxTimeIntervalMillis = maxTimeIntervalMillis;

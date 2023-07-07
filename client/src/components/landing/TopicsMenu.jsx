@@ -62,7 +62,7 @@ class TopicsMenu extends React.Component {
     ]
     topics = topics.map((topic, i) => {
       return (
-        <li>
+        <li key={i}>
           <TopicsMenuButton key={i} topic={topic} onClick={this.search} />
         </li>
       )

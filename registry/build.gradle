@@ -28,7 +28,7 @@ dependencies {
   implementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
   implementation("com.github.cedardevs.schemas:schemas-core:${Versions.ONESTOP_SCHEMAS}")
   implementation(project(':kafka-common'))
-  implementation('org.json:json:20211205')
+  implementation('org.json:json:20230227')
   implementation('javax.validation:validation-api:2.0.1.Final')
   implementation("org.hibernate.validator:hibernate-validator:6.0.2.Final")
 
@@ -117,7 +117,11 @@ task generateOpenApi(type: NpmTask) {
 
 task retire(type: NpmTask) {
   dependsOn npmInstall
-  args = ["run", "retire"]
+  if (gitLabCICD) {
+    args = ['run', 'retireGitLabCICD']
+  } else {
+    args = ['run', 'retire']
+  }
 }
 
 check.dependsOn retire, integrationTest
@@ -164,11 +168,4 @@ dependencyCheck {
   analyzers.retirejs.enabled = false
   analyzers.retirejs.forceupdate = false
   analyzers.retirejs.filterNonVulnerable = false
-}
-
-repositories {
-  maven {
-    url 'https://repo.maven.apache.org/maven2'
-    name 'Maven Central'
-  }
 }
