@@ -1,3 +1,13 @@
+pluginManagement {
+  repositories {
+    if (System.getProperty("gitLabCICD").toBoolean()) {
+      maven {
+        url = uri("https://artifacts.ncei.noaa.gov/artifactory/gradle-plugins/")
+      }
+    }
+  }
+}
+
 rootProject.name = "onestop"
 
 include(

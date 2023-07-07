@@ -3,7 +3,11 @@ import org.testcontainers.utility.DockerImageName
 
 buildscript {
   repositories {
-    mavenCentral()
+    if (gitLabCICD) {
+      maven { url "https://artifacts.ncei.noaa.gov/artifactory/gradle.mavencentral/" }
+    } else {
+      mavenCentral()
+    }
   }
   dependencies {
     classpath "org.testcontainers:postgresql:1.15.2"

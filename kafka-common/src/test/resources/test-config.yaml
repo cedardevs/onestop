@@ -1,6 +1,9 @@
 kafka:
   bootstrap:
     servers: "http://bootstrap-servers:3000"
+  auto:
+    register:
+      schemas: True
   schema:
     registry:
       url: "http://schema-registry:5000"
@@ -13,6 +16,22 @@ kafka:
   commit:
     interval:
       ms: 50000
+  security:
+    protocol: "SSL"
+  ssl:
+    key:
+      password: "asdf"
+    keystore:
+      location: "/etc/pki/java/keystore.jks"
+      password: "asdf"
+      type: "JKS"
+    truststore:
+      location: "/etc/pki/java/cacerts"
+      password: "asdf"
+      type: "JKS"
+  max:
+    request:
+      size: 50000000
   auto:
     offset:
       reset: "latest"
@@ -20,3 +39,19 @@ kafka:
     one: "invalid kafka config won't be saved"
 elasticsearch:
   setting: "this will not be saved"
+
+streams:
+  exception:
+    max:
+      failures: 3
+      time:
+        millis: 2147483647
+
+logging:
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file: "/psi/logs/parsalyzer.log"
+  level:
+    root: INFO
+    org.springframework.web: ERROR
+    org.cedar.onestop: DEBUG

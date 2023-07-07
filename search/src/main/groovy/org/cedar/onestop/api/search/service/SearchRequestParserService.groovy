@@ -126,7 +126,7 @@ class SearchRequestParserService {
         function_score: [
             query             : [
                 bool: [
-                    must: allTextQueries
+                    must: allTextQueries.flatten()
                 ]
             ],
             field_value_factor: [
@@ -211,7 +211,7 @@ class SearchRequestParserService {
       ])
     }
 
-    return allFilters
+    return allFilters.flatten()
   }
 
   private static List<Map> constructDateTimeFilter(Map filterRequest) {

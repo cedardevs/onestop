@@ -54,7 +54,7 @@ public class KafkaBeanConfig {
   private int maxFailures;
 
   @Value("${streams.exception.max.time.millis:3600000}")
-  private long maxTimeInterval;
+  private int maxTimeInterval;
 
   @ConfigurationProperties(prefix = "kafka")
   @Bean

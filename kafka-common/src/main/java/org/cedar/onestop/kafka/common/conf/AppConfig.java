@@ -5,6 +5,8 @@ import org.cedar.onestop.kafka.common.util.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.LoaderOptions;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +18,7 @@ public class AppConfig {
   private static final Logger log = LoggerFactory.getLogger(AppConfig.class);
 
   public static final String CONFIG_FILE_ENV_VAR = "CONFIG_LOCATION";
+  private static final SafeConstructor safeConstructor = new SafeConstructor(new LoaderOptions());
 
   private final Map<String, Object> defaults;
   private final Map<Object, Object> systemProperties;
@@ -55,23 +58,23 @@ public class AppConfig {
       return Collections.emptyMap();
     }
     try {
-      Yaml yaml = new Yaml();
+      Yaml yaml = new Yaml(safeConstructor);
       InputStream inputStream = Files.newInputStream(Path.of(filePath));
       Map<String, Object> configFileMap = yaml.load(inputStream);
       return MapUtils.consolidateNestedKeysInMap(null, ".", configFileMap);
     }
     catch (IOException e) {
-      log.error("Cannot open config file path [ " + filePath + " ]. Using defaults and/or system/environment variables.");
+      log.error("Cannot open config file path [ " + filePath + " ]. Using defaults and/or system/environment variables.", e);
     }
     catch (Exception e) {
       // In case there's any other exception trying to parse the file...
-      log.error("Cannot parse config file path [ " + filePath + " ] as YAML. Using defaults and/or system/environment variables.");
+      log.error("Cannot parse config file path [ " + filePath + " ] as YAML. Using defaults and/or system/environment variables.", e);
     }
     return new LinkedHashMap<>();
   }
 
   private static Map<String, Object> getDefaults() {
-    Yaml yaml = new Yaml();
+    Yaml yaml = new Yaml(safeConstructor);
     InputStream input = ClassLoader.getSystemClassLoader().getResourceAsStream("application.yml");
     if (input == null) {
       return Collections.emptyMap();

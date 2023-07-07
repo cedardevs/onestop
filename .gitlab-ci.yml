@@ -1,0 +1,482 @@
+stages:
+  - build
+  - test
+  - artifactory
+  - security
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+# ------------------------------ ENVIRONMENT SETUP -----------------------------
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+  # Re-write gradle-wrapper.properties so we can source the distro from artifactory
+  - echo distributionBase=GRADLE_USER_HOME > gradle/wrapper/gradle-wrapper.properties
+  - echo distributionPath=wrapper/dists >> gradle/wrapper/gradle-wrapper.properties
+  - echo distributionUrl=https\://artifacts.ncei.noaa.gov:443/artifactory/gradle-distributions-cache/distributions/gradle-7.4.2-bin.zip >> gradle/wrapper/gradle-wrapper.properties
+  - echo zipStoreBase=GRADLE_USER_HOME >> gradle/wrapper/gradle-wrapper.properties
+  - echo zipStorePath=wrapper/dists >> gradle/wrapper/gradle-wrapper.properties
+  # Write a .npmrc file in user home for npm package resolution through artifactory
+  - echo registry=https://artifacts.ncei.noaa.gov/artifactory/npm.upstream/ >> ~/.npmrc
+  - echo cafile=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem >> ~/.npmrc
+
+# Run pipeline on merge request or branch commit, but not on commit to a branch with open merge request
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
+# ---------------------------------- REGISTRY ----------------------------------
+build-registry:
+  stage: build
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/centos7-openjdk11:build
+  script:
+    - ./gradlew --system-prop gitLabCICD=true registry:build -x registry:test -x registry:BuildDockerImage -x integrationTest -x dependencyCheckAggregate --stacktrace
+    - mkdir -p dist/registry
+    - mv registry/build/libs/onestop-registry-all.jar dist/registry/psi-registry-all.jar
+  artifacts:
+    paths:
+      - dist/registry
+  rules:
+    - if: '$CI_COMMIT_TITLE !~ /^wip.*/i'
+      when: always
+    - when: manual
+
+test-registry:
+  stage: test
+  needs:
+    - build-registry
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/centos7-openjdk11:build
+  script:
+    - ./gradlew --system-prop gitLabCICD=true registry:test -x registry:generateOpenAPI -x registry:updatePackageJSON -x registry:nodeSetup -x registry:npmInstall
+  artifacts:
+    paths:
+      - registry/build/reports/tests/test
+    reports:
+      junit: registry/build/test-results/test/*.xml
+    when: always
+  rules:
+    - if: '$CI_COMMIT_TITLE !~ /^wip.*/i'
+      when: always
+    - when: manual
+
+artifactory-registry:
+  stage: artifactory
+  needs:
+    - build-registry
+    - test-registry
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/ansible:latest
+  variables:
+    ARTIFACTORY_URL: "https://artifacts.ncei.noaa.gov"
+    # Make sure that each user has their own API key defined in settings -> CI/CD -> Variables
+    # Currently only Ian's username has a valid API key. $ARTIFACTORY_API_KEY
+    ARTIFACTORY_USER: "ian.krintz"
+    JFROG_CLI_BUILD_NAME: "${CI_PROJECT_NAME}"
+    JFROG_CLI_BUILD_NUMBER: "${CI_BUILD_REF}"
+  script:
+    - echo "Send it to artifactory now."
+    - whoami
+    - env | sort
+    - jf c add --url=$ARTIFACTORY_URL --user=$ARTIFACTORY_USER --access-token=$ARTIFACTORY_API_KEY
+    - jf rt upload --build-name=${CI_PROJECT_NAME} --build-number=${CI_BUILD_REF} dist/registry/psi-registry-all.jar ncei-generic-dev-local/${CI_PROJECT_PATH}/psi-registry-all.jar
+    - jf rt build-collect-env ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+    - jf rt build-add-git ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+    - jf rt build-publish --build-url=${CI_PIPELINE_URL} ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+
+dependency-scan-registry:
+  stage: security
+  allow_failure: true
+  needs:
+    - build-registry
+  tags:
+    - security
+  image: artifacts.ncei.noaa.gov/ncei/security/blackduck-cicd:latest
+  variables:
+    DETECT_PROJECT_NAME: "onestop-registry"
+    DETECT_PROJECT_VERSION_NAME: "CICD"
+    DETECT_SOURCE_PATH: "${CI_PROJECT_DIR}/dist/registry/"
+  script:
+    - /opt/detect/runscan.sh
+  artifacts:
+    paths:
+      - security_reports/
+  rules:
+    - when: manual
+    - if: $CI_COMMIT_REF_NAME == "develop"
+      variables:
+        DETECT_PROJECT_VERSION_NAME: "develop"
+    - if: $CI_COMMIT_REF_NAME == "master"
+      variables:
+        DETECT_PROJECT_VERSION_NAME: "master"
+
+# --------------------------------- PARSALYZER ---------------------------------
+
+build-parsalyzer:
+  stage: build
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/centos7-openjdk11:build
+  script:
+    - ./gradlew --system-prop gitLabCICD=true parsalyzer:build -x parsalyzer:test -x parsalyzer:BuildDockerImage --stacktrace
+    - mkdir -p dist/parsalyzer
+    - mv parsalyzer/build/libs/onestop-parsalyzer-unspecified-all.jar dist/parsalyzer/parsalyzer.jar
+  artifacts:
+    paths:
+      - dist/parsalyzer
+  rules:
+    - if: '$CI_COMMIT_TITLE !~ /^wip.*/i'
+      when: always
+    - when: manual
+
+test-parsalyzer:
+  stage: test
+  needs:
+    - build-parsalyzer
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/centos7-openjdk11:build
+  script:
+    - ./gradlew --system-prop gitLabCICD=true parsalyzer:test
+  artifacts:
+    paths:
+      - parsalyzer/build/reports/tests/test
+    reports:
+      junit: parsalyzer/build/test-results/test/*.xml
+    when: always
+  rules:
+    - if: '$CI_COMMIT_TITLE !~ /^wip.*/i'
+      when: always
+    - when: manual
+
+artifactory-parsalyzer:
+  stage: artifactory
+  needs:
+    - build-parsalyzer
+    - test-parsalyzer
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/ansible:latest
+  variables:
+    ARTIFACTORY_URL: "https://artifacts.ncei.noaa.gov"
+    # Make sure that each user has their own API key defined in settings -> CI/CD -> Variables
+    # Currently only Ian's username has a valid API key. $ARTIFACTORY_API_KEY
+    ARTIFACTORY_USER: "ian.krintz"
+    JFROG_CLI_BUILD_NAME: "${CI_PROJECT_NAME}"
+    JFROG_CLI_BUILD_NUMBER: "${CI_BUILD_REF}"
+  script:
+    - echo "Send it to artifactory now."
+    - whoami
+    - env | sort
+    - jf c add --url=$ARTIFACTORY_URL --user=$ARTIFACTORY_USER --access-token=$ARTIFACTORY_API_KEY
+    - jf rt upload --build-name=${CI_PROJECT_NAME} --build-number=${CI_BUILD_REF} dist/parsalyzer/parsalyzer.jar ncei-generic-dev-local/${CI_PROJECT_PATH}/parsalyzer.jar
+    - jf rt build-collect-env ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+    - jf rt build-add-git ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+    - jf rt build-publish --build-url=${CI_PIPELINE_URL} ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+
+dependency-scan-parsalyzer:
+  stage: security
+  when: manual
+  allow_failure: true
+  needs:
+    - build-parsalyzer
+  tags:
+    - security
+  image: artifacts.ncei.noaa.gov/ncei/security/blackduck-cicd:latest
+  variables:
+    DETECT_PROJECT_NAME: "onestop/parsalyzer"
+    DETECT_PROJECT_VERSION_NAME: "CICD"
+    DETECT_SOURCE_PATH: "${CI_PROJECT_DIR}/dist/parsalyzer/"
+  script:
+    - /opt/detect/runscan.sh
+  artifacts:
+    paths:
+      - security_reports/
+  rules:
+    - when: manual
+    - if: $CI_COMMIT_REF_NAME == "develop"
+      variables:
+        DETECT_PROJECT_VERSION_NAME: "develop"
+    - if: $CI_COMMIT_REF_NAME == "master"
+      variables:
+        DETECT_PROJECT_VERSION_NAME: "master"
+
+# ---------------------------------- INDEXER -----------------------------------
+
+build-indexer:
+  stage: build
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/centos7-openjdk11:build
+  script:
+    - ./gradlew --system-prop gitLabCICD=true indexer:build -x BuildDockerImage -x indexer:test -x indexer:integrationTest --stacktrace
+    - mkdir -p dist/indexer
+    - mv indexer/build/libs/onestop-indexer-unspecified-all.jar dist/indexer/indexer.jar
+  artifacts:
+    paths:
+      - dist/indexer
+  rules:
+    - if: '$CI_COMMIT_TITLE !~ /^wip.*/i'
+      when: always
+    - when: manual
+
+test-indexer:
+  stage: test
+  needs:
+    - build-indexer
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/centos7-openjdk11:build
+  script:
+    - ./gradlew --system-prop gitLabCICD=true indexer:test
+  artifacts:
+    paths:
+      - indexer/build/reports/tests/test
+    reports:
+      junit: indexer/build/test-results/test/*.xml
+    when: always
+  rules:
+    - if: '$CI_COMMIT_TITLE !~ /^wip.*/i'
+      when: always
+    - when: manual
+
+artifactory-indexer:
+  stage: artifactory
+  needs:
+    - build-indexer
+    - test-indexer
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/ansible:latest
+  variables:
+    ARTIFACTORY_URL: "https://artifacts.ncei.noaa.gov"
+    # Make sure that each user has their own API key defined in settings -> CI/CD -> Variables
+    # Currently only Ian's username has a valid API key. $ARTIFACTORY_API_KEY
+    ARTIFACTORY_USER: "ian.krintz"
+    JFROG_CLI_BUILD_NAME: "${CI_PROJECT_NAME}"
+    JFROG_CLI_BUILD_NUMBER: "${CI_BUILD_REF}"
+  script:
+    - echo "Send it to artifactory now."
+    - whoami
+    - env | sort
+    - jf c add --url=$ARTIFACTORY_URL --user=$ARTIFACTORY_USER --access-token=$ARTIFACTORY_API_KEY
+    - jf rt upload --build-name=${CI_PROJECT_NAME} --build-number=${CI_BUILD_REF} dist/indexer/indexer.jar ncei-generic-dev-local/${CI_PROJECT_PATH}/indexer.jar
+    - jf rt build-collect-env ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+    - jf rt build-add-git ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+    - jf rt build-publish --build-url=${CI_PIPELINE_URL} ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+
+dependency-scan-indexer:
+  stage: security
+  when: manual
+  allow_failure: true
+  needs:
+    - build-indexer
+  tags:
+    - security
+  image: artifacts.ncei.noaa.gov/ncei/security/blackduck-cicd:latest
+  variables:
+    DETECT_PROJECT_NAME: "onestop-indexer"
+    DETECT_PROJECT_VERSION_NAME: "CICD"
+    DETECT_SOURCE_PATH: "${CI_PROJECT_DIR}/dist/indexer/"
+  script:
+    - /opt/detect/runscan.sh
+  artifacts:
+    paths:
+      - security_reports/
+  rules:
+    - when: manual
+    - if: $CI_COMMIT_REF_NAME == "develop"
+      variables:
+        DETECT_PROJECT_VERSION_NAME: "develop"
+    - if: $CI_COMMIT_REF_NAME == "master"
+      variables:
+        DETECT_PROJECT_VERSION_NAME: "master"
+
+# ----------------------------------- SEARCH -----------------------------------
+
+build-search:
+  stage: build
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/centos7-openjdk11:build
+  script:
+    - ./gradlew --system-prop gitLabCICD=true --system-prop enableSearchWar=true search:build -x search:integrationTest -x search:test
+    - mkdir -p dist/search
+    - mv search/build/libs/onestop.war dist/search/onestop-search.war
+  artifacts:
+    paths:
+      - dist/search
+  rules:
+    - if: '$CI_COMMIT_TITLE !~ /^wip.*/i'
+      when: always
+    - when: manual
+
+test-search:
+  stage: test
+  needs:
+    - build-search
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/centos7-openjdk11:build
+  script:
+    - ./gradlew --system-prop gitLabCICD=true search:test
+  artifacts:
+    paths:
+      - search/build/reports/tests/test
+    reports:
+      junit: search/build/test-results/test/*.xml
+    when: always
+  rules:
+    - if: '$CI_COMMIT_TITLE !~ /^wip.*/i'
+      when: always
+    - when: manual
+
+artifactory-search:
+  stage: artifactory
+  needs:
+    - build-search
+    - test-search
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/ansible:latest
+  variables:
+    ARTIFACTORY_URL: "https://artifacts.ncei.noaa.gov"
+    # Make sure that each user has their own API key defined in settings -> CI/CD -> Variables
+    # Currently only Ian's username has a valid API key. $ARTIFACTORY_API_KEY
+    ARTIFACTORY_USER: "ian.krintz"
+    JFROG_CLI_BUILD_NAME: "${CI_PROJECT_NAME}"
+    JFROG_CLI_BUILD_NUMBER: "${CI_BUILD_REF}"
+  script:
+    - echo "Send it to artifactory now."
+    - whoami
+    - env | sort
+    - jf c add --url=$ARTIFACTORY_URL --user=$ARTIFACTORY_USER --access-token=$ARTIFACTORY_API_KEY
+    - jf rt upload --build-name=${CI_PROJECT_NAME} --build-number=${CI_BUILD_REF} dist/search/onestop-search.war ncei-generic-dev-local/${CI_PROJECT_PATH}/onestop-search.war
+    - jf rt build-collect-env ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+    - jf rt build-add-git ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+    - jf rt build-publish --build-url=${CI_PIPELINE_URL} ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+
+dependency-scan-search:
+  stage: security
+  when: manual
+  allow_failure: true
+  needs:
+    - build-search
+  tags:
+    - security
+  image: artifacts.ncei.noaa.gov/ncei/security/blackduck-cicd:latest
+  variables:
+    DETECT_PROJECT_NAME: "onestop-search"
+    DETECT_PROJECT_VERSION_NAME: "CICD"
+    DETECT_SOURCE_PATH: "${CI_PROJECT_DIR}/dist/search/"
+  script:
+    - /opt/detect/runscan.sh
+  artifacts:
+    paths:
+      - security_reports/
+  rules:
+    - when: manual
+    - if: $CI_COMMIT_REF_NAME == "develop"
+      variables:
+        DETECT_PROJECT_VERSION_NAME: "develop"
+    - if: $CI_COMMIT_REF_NAME == "master"
+      variables:
+        DETECT_PROJECT_VERSION_NAME: "master"
+
+# ----------------------------------- CLIENT -----------------------------------
+
+build-client:
+  stage: build
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/centos7-openjdk11:build
+  script:
+    - ./gradlew --system-prop gitLabCICD=true client:build client:tar -x client:npmInstall -x client:npm_run_test -x client:formatCheck
+    - mkdir -p dist/client
+    - mv client/build/libs/onestop-client.tar.gz dist/client/onestop-client.tar.gz
+  artifacts:
+    paths:
+      - dist/client
+  rules:
+    - if: '$CI_COMMIT_TITLE !~ /^wip.*/i'
+      when: always
+    - when: manual
+
+test-client:
+  stage: test
+  needs:
+    - build-client
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/centos7-openjdk11:build
+  script:
+    - ./gradlew --system-prop gitLabCICD=true client:test
+  artifacts:
+    paths:
+      - client/build/coverage
+    reports:
+      junit: client/build/junit/*.xml
+    when: always
+  rules:
+    - if: '$CI_COMMIT_TITLE !~ /^wip.*/i'
+      when: always
+    - when: manual
+
+artifactory-client:
+  stage: artifactory
+  needs:
+    - build-client
+    # Removed for testing, need to fix this test - test-client
+  tags:
+    - build
+  image: artifacts.ncei.noaa.gov/ncei/ansible:latest
+  variables:
+    ARTIFACTORY_URL: "https://artifacts.ncei.noaa.gov"
+    # Make sure that each user has their own API key defined in settings -> CI/CD -> Variables
+    # Currently only Ian's username has a valid API key. $ARTIFACTORY_API_KEY
+    ARTIFACTORY_USER: "ian.krintz"
+    JFROG_CLI_BUILD_NAME: "${CI_PROJECT_NAME}"
+    JFROG_CLI_BUILD_NUMBER: "${CI_BUILD_REF}"
+  script:
+    - echo "Send it to artifactory now."
+    - whoami
+    - env | sort
+    - jf c add --url=$ARTIFACTORY_URL --user=$ARTIFACTORY_USER --access-token=$ARTIFACTORY_API_KEY
+    - jf rt upload --build-name=${CI_PROJECT_NAME} --build-number=${CI_BUILD_REF} dist/client/onestop-client.tar.gz ncei-generic-dev-local/${CI_PROJECT_PATH}/onestop-client.tar.gz
+    - jf rt build-collect-env ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+    - jf rt build-add-git ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+    - jf rt build-publish --build-url=${CI_PIPELINE_URL} ${CI_PROJECT_NAME} ${CI_BUILD_REF}
+
+dependency-scan-client:
+  stage: security
+  when: manual
+  allow_failure: true
+  needs:
+    - build-client
+  tags:
+    - security
+  image: artifacts.ncei.noaa.gov/ncei/security/blackduck-cicd:latest
+  variables:
+    DETECT_PROJECT_NAME: "onestop-client"
+    DETECT_PROJECT_VERSION_NAME: "CICD"
+    DETECT_SOURCE_PATH: "${CI_PROJECT_DIR}/dist/client/"
+  script:
+    - /opt/detect/runscan.sh
+  artifacts:
+    paths:
+      - security_reports/
+  rules:
+    - when: manual
+    - if: $CI_COMMIT_REF_NAME == "develop"
+      variables:
+        DETECT_PROJECT_VERSION_NAME: "develop"
+    - if: $CI_COMMIT_REF_NAME == "master"
+      variables:
+        DETECT_PROJECT_VERSION_NAME: "master"

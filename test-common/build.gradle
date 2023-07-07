@@ -1,9 +1,3 @@
-buildscript {
-  repositories {
-    mavenCentral()
-  }
-}
-
 plugins {
   id 'application'
   id 'java-library'

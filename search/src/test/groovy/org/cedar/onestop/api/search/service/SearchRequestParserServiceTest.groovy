@@ -452,7 +452,7 @@ class SearchRequestParserServiceTest extends Specification {
         bool: [
             must  : [:],
             filter: [
-                [[bool: [
+                [bool: [
                     minimum_should_match: 1,
                     should              : [
                         [bool: [
@@ -478,7 +478,7 @@ class SearchRequestParserServiceTest extends Specification {
                             ]
                         ]]
                     ]
-                ]]]
+                ]]
             ]
         ]
     ]

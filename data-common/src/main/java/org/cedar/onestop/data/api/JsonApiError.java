@@ -120,7 +120,7 @@ public class JsonApiError {
     }
 
     /**
-     * A human-readable explanation specific to this occurrence of the problem. Like title, this field’s value can be localized.
+     * A human-readable explanation specific to this occurrence of the problem. Like title, the value of this field can be localized.
      * @param detail String
      * @return
      */
@@ -141,7 +141,7 @@ public class JsonApiError {
 
     /**
      * An object containing references to the source of the error,
-     * @param source ErrorSource An object containing references to the source of the error,
+     * @param source ErrorSource An object containing references to the source of the error.
      * @return
      */
     public Builder setSource(ErrorSource source) {

@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import Immutable from 'seamless-immutable'
 import {fetchGranuleSearch} from './AsyncHelpers'
 import {
   assembleSearchRequest,
@@ -235,7 +236,11 @@ const granulesForCartPromise = (
 
   // Ensure the filter page offset is 0, since we are grabbing as much as we can
   // from the beginning -- up to `maxCartAddition` in a single request.
-  const filterStateModifiedForCartRequest = granuleFilter.set('pageOffset', 0)
+  const filterStateModifiedForCartRequest = Immutable.set(
+    granuleFilter,
+    'pageOffset',
+    0
+  )
 
   // generate the request body based on filters, and if we need facets or not
   const body = granuleBodyBuilder(

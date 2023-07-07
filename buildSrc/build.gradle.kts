@@ -2,9 +2,16 @@ plugins {
     `kotlin-dsl`
 }
 
+val gitLabCICD: Boolean = System.getProperty("gitLabCICD").toBoolean()
+
 repositories {
-    mavenCentral()
-    maven { url = uri("https://jcenter.bintray.com") }
+    if (gitLabCICD) {
+      maven { url = uri("https://artifacts.ncei.noaa.gov/artifactory/gradle-plugins/") }
+      maven { url = uri("https://artifacts.ncei.noaa.gov/artifactory/gradle.mavencentral/") }
+    } else {
+      mavenCentral()
+      maven { url = uri("https://jcenter.bintray.com") }
+    }
 }
 
 dependencies {

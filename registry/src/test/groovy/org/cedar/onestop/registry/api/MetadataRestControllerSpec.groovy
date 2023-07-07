@@ -163,6 +163,36 @@ class MetadataRestControllerSpec extends Specification {
     result.errors == null
   }
 
+  def 'produce implicit raw json with default source'() {
+    def path = "/metadata/${testType}/${testId}/raw"
+    def request = buildMockRequest(path)
+
+    when:
+    def result = controller.retrieveRaw(testType.toString(), testId, request, mockResponse)
+
+    then:
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
+
+    and:
+    result.getViewName() == "redirect:/metadata/collection/unknown/8834cfd3-3b71-40b8-b037-315607a30c42/raw/json"
+    mockResponse.status == 200
+  }
+
+  def 'produce implicit raw json with explicit source'() {
+    def path = "/metadata/${testType}/${testSource}/${testId}/raw"
+    def request = buildMockRequest(path)
+
+    when:
+    def result = controller.retrieveRaw(testType.toString(), testSource, testId, request, mockResponse)
+
+    then:
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
+
+    and:
+    result.getViewName() == "redirect:/metadata/collection/unknown/8834cfd3-3b71-40b8-b037-315607a30c42/raw/json"
+    mockResponse.status == 200
+  }
+
   def 'returns raw XML with default source'() {
     def path = "/metadata/${testType}/${testId}/raw/xml"
     def request = buildMockRequest(path)
@@ -189,6 +219,34 @@ class MetadataRestControllerSpec extends Specification {
 
     and:
     result == testAggInput.rawXml
+  }
+
+  def 'returns raw JSON with default source'() {
+    def path = "/metadata/${testType}/${testId}/raw/json"
+    def request = buildMockRequest(path)
+
+    when:
+    def result = controller.retrieveRawJson(testType.toString(), testId, request, mockResponse)
+
+    then:
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
+
+    and:
+    result == testAggInput.rawJson
+  }
+
+  def 'returns raw JSON with explicit source'() {
+    def path = "/metadata/${testType}/${testSource}/${testId}/raw/json"
+    def request = buildMockRequest(path)
+
+    when:
+    def result = controller.retrieveRawJson(testType.toString(), testSource, testId, request, mockResponse)
+
+    then:
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testAggInput
+
+    and:
+    result == testAggInput.rawJson
   }
 
   def 'handles nonexistent input'() {

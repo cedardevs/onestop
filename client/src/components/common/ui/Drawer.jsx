@@ -1,5 +1,11 @@
 import React, {useRef, useState} from 'react'
-import {animated, useChain, useSpring, config} from 'react-spring'
+import {
+  animated,
+  useChain,
+  useSpring,
+  useTransition,
+  config,
+} from 'react-spring'
 import {useMeasure, usePrevious} from '../../../effects/CommonEffects'
 
 export const DIRECTION_DOWN = 'down'
@@ -122,11 +128,7 @@ const Drawer = ({
   })
 
   // chain animations and reverse the chain when drawer is closing
-  useChain(
-    drawer.open
-      ? [ {current: downRef.current}, {current: overRef.current} ]
-      : [ {current: overRef.current}, {current: downRef.current} ]
-  )
+  useChain(drawer.open ? [ downRef, overRef ] : [ overRef, downRef ])
 
   const styleContent = {
     overflow: 'hidden',

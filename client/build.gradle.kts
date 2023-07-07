@@ -7,7 +7,11 @@ task<com.moowork.gradle.node.npm.NpmTask>("formatCheck") {
 }
 
 task<com.moowork.gradle.node.npm.NpmTask>("retire") {
-    setArgs(mutableListOf("run", "retire"))
+    if (gitLabCICD) {
+      setArgs(mutableListOf("run", "retireGitLabCICD"))
+    } else {
+      setArgs(mutableListOf("run", "retire"))
+    }
 }
 
 tasks.getByName("check") {

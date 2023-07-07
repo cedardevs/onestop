@@ -20,7 +20,7 @@ dependencies {
 
   // reactor release train BOM governs reactor dependency versions
   implementation(platform("io.projectreactor:reactor-bom:${Versions.REACTOR_BOM}"))
-  implementation("io.projectreactor.netty:reactor-netty:1.0.28")
+  implementation("io.projectreactor.netty:reactor-netty:1.0.33")
 
   testImplementation("org.codehaus.groovy:groovy:${Versions.GROOVY}")
   testImplementation("org.spockframework:spock-core:${Versions.SPOCK}")
@@ -36,7 +36,7 @@ dependencies {
   testImplementation("io.confluent:kafka-schema-registry:${Versions.CONFLUENT}:tests")
   testImplementation("io.confluent:kafka-streams-avro-serde:${Versions.CONFLUENT}")
   testImplementation("com.github.everit-org.json-schema:org.everit.json.schema:1.9.2")
-  testImplementation("org.json:json:20180813")
+  testImplementation("org.json:json:20230227")
 }
 
 jar {

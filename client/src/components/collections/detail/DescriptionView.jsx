@@ -214,11 +214,11 @@ export default class DescriptionView extends React.Component {
     const xmlLink = (
       <a
         href={
-          getApiRegistryPath() + '/metadata/collection/' + itemUuid + '/raw/xml'
+          getApiRegistryPath() + '/metadata/collection/' + itemUuid + '/raw'
         }
         target={'_blank'}
       >
-        Download full XML metadata here
+        Download the full metadata here
       </a>
     )
 

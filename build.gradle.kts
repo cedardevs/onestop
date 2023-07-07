@@ -4,6 +4,16 @@ import com.moowork.gradle.node.task.NodeTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 
+buildscript {
+  repositories {
+    if (gitLabCICD) {
+      maven { url = uri("https://artifacts.ncei.noaa.gov/artifactory/gradle-plugins/") }
+    }
+  }
+  extra.apply{ set("gitLabCICD", gitLabCICD) }
+}
+
+
 plugins {
     `kotlin-dsl`
 
@@ -52,7 +62,7 @@ plugins {
     // https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/
     // - A Gradle plugin that allows you to package executable jar or war archives,
     //   run Spring Boot applications, and use the dependency management provided by spring-boot-dependencies
-    id("org.springframework.boot").version("2.7.9").apply(false)
+    id("org.springframework.boot").version("2.7.12").apply(false)
 
     // Gogradle plugin
     // https://github.com/gogradle/gogradle
@@ -61,9 +71,13 @@ plugins {
 
 }
 
-// resolve build dependencies from Bintray
 repositories {
-    mavenCentral()
+    if (gitLabCICD) {
+      maven(url = uri("https://artifacts.ncei.noaa.gov/artifactory/gradle.mavencentral/"))
+      maven(url = uri("https://artifacts.ncei.noaa.gov/artifactory/gradle-plugins/"))
+    } else {
+      mavenCentral()
+    }
 }
 
 subprojects {
@@ -138,11 +152,22 @@ dependencyCheck {
 }
 
 allprojects {
-    // resolve all subproject dependencies from these repos
+    // resolve subproject dependencies through repos based on build environment
     repositories {
+      if (gitLabCICD) {
+        maven(url = "https://artifacts.ncei.noaa.gov/artifactory/spring-milestone/")
+        maven(url = "https://artifacts.ncei.noaa.gov/artifactory/confluent-maven/")
+
+        maven(url = "https://artifacts.ncei.noaa.gov/artifactory/gradle.mavencentral/")
+        maven(url = "https://artifacts.ncei.noaa.gov/artifactory/gradle-plugins/")
+      } else {
         mavenCentral()
-        maven(url= "https://repo.spring.io/milestone")
+        maven(url = "https://repo.spring.io/milestone")
         maven(url = "https://packages.confluent.io/maven/")
+      }
+      // Switch based on artifactory access. Check logs during build to ensure jitpack isn't used on-prem.
+      if (System.getenv("ARTIFACTORY_API_KEY") != null) {
+        project.logger.lifecycle("Using NCEI Artifactory for dependency resolution")
         maven {
           name = "NCEI_MAVEN_PROD"
           url = uri("https://artifacts.ncei.noaa.gov/artifactory/ncei-maven/")
@@ -154,7 +179,10 @@ allprojects {
             create<HttpHeaderAuthentication>("header")
           }
         }
-
+      } else {
+        project.logger.lifecycle("*** WARNING: using jitpack for dependency resolution. This is NOT allowed for NCEI on-prem builds ***")
+        maven(url = "https://jitpack.io")
+      }
     }
 }
 
@@ -249,7 +277,14 @@ subprojects {
         // apply a common node/npm version to all projects using node
         configure<com.moowork.gradle.node.NodeExtension> {
             version = Versions.NODE
-            npmVersion = Versions.NPM
+            // pull the node dist from artifactory if in GitLab CI/CD
+            if (gitLabCICD) {
+              distBaseUrl = "https://artifacts.ncei.noaa.gov/artifactory/node-dist"
+              // npmVersion is intentionally not set; use the one bundled with node
+              // since we cannot set the url to artifactory for the npm dist
+            } else {
+              npmVersion = Versions.NPM
+            }
             workDir = file("${rootProject.buildDir}/nodejs")
             npmWorkDir = file("${rootProject.buildDir}/npm")
             nodeModulesDir = file("${project.projectDir}")
@@ -304,6 +339,16 @@ subprojects {
         // override versions of dependencies with vulnerabilities
         configurations.all {
             resolutionStrategy.eachDependency {
+
+                if (requested.group == "org.xerial.snappy" && requested.name == "snappy-java") {
+                      useVersion("1.1.10.1")
+                      because("override version since kafka-clients only use up to version 1.1.8.4")
+                }
+
+                if (requested.group == "org.mozilla" && requested.name == "rhino") {
+                      useVersion("1.7.14")
+                      because("override version since json-schema-validator only uses up to version 1.7.7.2")
+                }
 
                 if (requested.group == "com.github.everit-org.json-schema" && requested.name == "org.everit.json.schema") {
                   useTarget("com.github.erosb:everit-json-schema:1.14.2")
@@ -400,14 +445,14 @@ subprojects {
                 }
                 if (requested.group.startsWith("org.apache.tomcat") &&
                         requested.name.contains("tomcat") &&
-                        requested.version!! < "9.0.68") {
-                    useVersion("9.0.68")
+                        requested.version!! < "9.0.75") {
+                    useVersion("9.0.75")
                     because("Enforce tomcat 9.0.58+ to avoid vulnerabilities CVE-2022-23181\n" +
                             "9.0.68+ to avoid CVE-2022-34305")
                 }
                 if (requested.group.startsWith("org.apache.tomcat.embed") &&
-                    requested.version!! < "9.0.58") {
-                    useVersion("9.0.58")
+                    requested.version!! < "9.0.75") {
+                    useVersion("9.0.75")
                     because("Fixes CVE-2022-23181")
                 }
                 if (requested.group.startsWith("io.netty.incubator") &&

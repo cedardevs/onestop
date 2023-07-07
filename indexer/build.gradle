@@ -2,9 +2,6 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer
 import org.testcontainers.utility.DockerImageName
 
 buildscript {
-  repositories {
-    mavenCentral()
-  }
   dependencies {
     classpath "org.testcontainers:elasticsearch:${Versions.TEST_CONTAINERS}"
     classpath "org.testcontainers:kafka:${Versions.TEST_CONTAINERS}"
