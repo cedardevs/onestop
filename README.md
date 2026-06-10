@@ -1,3 +1,9 @@
+> [!CAUTION]
+> ### This repository has been archived and is no longer maintained.
+> ### The code is provided for historical reference and may contain unpatched or unknown vulnerabilities.
+> ### It should not be used in production systems.
+---
+
 # OneStop Stack
 
 [![Build Status](https://circleci.com/gh/cedardevs/onestop.svg?style=svg)](https://circleci.com/gh/cedardevs/onestop)
